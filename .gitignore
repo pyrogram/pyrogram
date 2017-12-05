@@ -1,3 +1,7 @@
+# User's personal information
+*.session
+config.ini
+
 # Pyrogram generated code
 pyrogram/api/errors/exceptions/
 pyrogram/api/functions/
