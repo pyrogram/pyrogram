@@ -1,0 +1,11 @@
+{notice}
+
+from ..error import Error
+
+
+class {super_class}(Error):
+    CODE = {code}
+    NAME = {name}
+
+
+{sub_classes}

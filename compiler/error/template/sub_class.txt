@@ -1,0 +1,5 @@
+class {sub_class}({super_class}):
+    ID = {id}
+    MESSAGE = {message}
+
+
