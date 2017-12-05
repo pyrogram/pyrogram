@@ -1,0 +1,26 @@
+{notice}
+
+from io import BytesIO
+
+from pyrogram.api.core import *
+
+
+class {class_name}(Object):
+    ID = {object_id}
+
+    def __init__(self{arguments}):
+        {fields}
+
+    @staticmethod
+    def read(b: BytesIO) -> "{class_name}":
+        {read_flags}
+        {read_types}
+        return {class_name}({return_arguments})
+
+    def write(self) -> bytes:
+        b = BytesIO()
+        b.write(Int(self.ID, False))
+
+        {write_flags}
+        {write_types}
+        return b.getvalue()
