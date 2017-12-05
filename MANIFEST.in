@@ -1,0 +1,9 @@
+## Include
+include COPYING COPYING.lesser NOTICE
+recursive-include compiler *.tl *.csv *.txt
+
+## Exclude
+prune pyrogram/api/errors/exceptions
+prune pyrogram/api/functions
+prune pyrogram/api/types
+exclude pyrogram/api/all.py
