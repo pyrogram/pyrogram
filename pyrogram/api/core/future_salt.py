@@ -16,10 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .future_salt import FutureSalt
-from .future_salts import FutureSalts
-from .gzip_packed import GzipPacked
-from .message import Message
-from .msg_container import MsgContainer
+from datetime import datetime
+from io import BytesIO
+
 from .object import Object
-from .primitives import *
+from .primitives import Int, Long
+
+
+class FutureSalt(Object):
+    ID = 0x0949d9dc
+
+    def __init__(self, valid_since: int or datetime, valid_until: int or datetime, salt: int):
+        self.valid_since = valid_since
+        self.valid_until = valid_until
+        self.salt = salt
+
+    @staticmethod
+    def read(b: BytesIO) -> "FutureSalt":
+        valid_since = datetime.fromtimestamp(Int.read(b))
+        valid_until = datetime.fromtimestamp(Int.read(b))
+        salt = Long.read(b)
+
+        return FutureSalt(valid_since, valid_until, salt)

@@ -16,10 +16,41 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .future_salt import FutureSalt
-from .future_salts import FutureSalts
-from .gzip_packed import GzipPacked
-from .message import Message
-from .msg_container import MsgContainer
+from gzip import compress, decompress
+from io import BytesIO
+
 from .object import Object
-from .primitives import *
+from .primitives import Int, Bytes
+
+
+class GzipPacked(Object):
+    ID = 0x3072cfa1
+
+    def __init__(self, packed_data: Object):
+        self.packed_data = packed_data
+
+    @staticmethod
+    def read(b: BytesIO) -> "GzipPacked":
+        # Return the Object itself instead of a GzipPacked wrapping it
+        return Object.read(
+            BytesIO(
+                decompress(
+                    Bytes.read(b)
+                )
+            )
+        )
+
+    def write(self) -> bytes:
+        b = BytesIO()
+
+        b.write(Int(self.ID, False))
+
+        b.write(
+            Bytes(
+                compress(
+                    self.packed_data.write()
+                )
+            )
+        )
+
+        return b.getvalue()
