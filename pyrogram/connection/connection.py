@@ -1,0 +1,59 @@
+# Pyrogram - Telegram MTProto API Client Library for Python
+# Copyright (C) 2017 Dan Tès <https://github.com/delivrance>
+#
+# This file is part of Pyrogram.
+#
+# Pyrogram is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pyrogram is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
+import logging
+import time
+
+from .transport import *
+
+log = logging.getLogger(__name__)
+
+
+class Connection:
+    MODES = {
+        0: TCPFull,
+        1: TCPAbridged,
+        2: TCPIntermediate
+    }
+
+    def __init__(self, ipv4: str, mode: int = 1):
+        self.address = (ipv4, 80)
+        self.mode = self.MODES.get(mode, TCPAbridged)
+        self.connection = None
+
+    def connect(self):
+        while True:
+            self.connection = self.mode()
+
+            try:
+                log.info("Connecting...")
+                self.connection.connect(self.address)
+            except OSError:
+                self.connection.close()
+                time.sleep(1)
+            else:
+                break
+
+    def close(self):
+        self.connection.close()
+
+    def send(self, data: bytes):
+        self.connection.send(data)
+
+    def recv(self) -> bytes or None:
+        return self.connection.recv()
