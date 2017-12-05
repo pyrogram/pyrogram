@@ -1,3 +1,9 @@
+# Pyrogram generated code
+pyrogram/api/errors/exceptions/
+pyrogram/api/functions/
+pyrogram/api/types/
+pyrogram/api/all.py
+
 # PyCharm stuff
 .idea/
 
