@@ -453,3 +453,32 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_chat_action(self,
+                         chat_id: int or str,
+                         action: str,
+                         progress: int = 0):
+        actions = {
+            "cancel": types.SendMessageCancelAction,
+            "typing": types.SendMessageTypingAction,
+            "playing": types.SendMessageGamePlayAction,
+            "choose_contact": types.SendMessageChooseContactAction,
+            "upload_photo": types.SendMessageUploadPhotoAction,
+            "record_video": types.SendMessageRecordVideoAction,
+            "upload_video": types.SendMessageUploadVideoAction,
+            "record_audio": types.SendMessageRecordAudioAction,
+            "upload_audio": types.SendMessageUploadAudioAction,
+            "upload_document": types.SendMessageUploadDocumentAction,
+            "find_location": types.SendMessageGeoLocationAction,
+            "record_video_note": types.SendMessageRecordRoundAction,
+            "upload_video_note": types.SendMessageUploadRoundAction,
+        }
+
+        return self.send(
+            functions.messages.SetTyping(
+                peer=self.resolve_peer(chat_id),
+                action=actions.get(
+                    action.lower()
+                )(progress=progress)
+            )
+        )
