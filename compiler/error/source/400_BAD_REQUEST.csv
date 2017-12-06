@@ -27,3 +27,4 @@ INPUT_METHOD_INVALID|The method called is invalid
 PASSWORD_HASH_INVALID|Two-step verification password is invalid
 USERNAME_NOT_OCCUPIED|The username is not occupied by anyone
 USERNAME_INVALID|The username is invalid
+MESSAGE_ID_INVALID|The message id is invalid
