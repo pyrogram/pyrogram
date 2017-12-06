@@ -432,3 +432,24 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_contact(self,
+                     chat_id: int or str,
+                     phone_number: str,
+                     first_name: str,
+                     last_name: str,
+                     disable_notification: bool = None,
+                     reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaContact(
+                    phone_number,
+                    first_name,
+                    last_name
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
