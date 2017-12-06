@@ -16,7 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyaes import AES
+# TODO: Workaround
+try:
+    from pyaes import AES
+except ImportError:
+    pass
 
 BLOCK_SIZE = 16
 
