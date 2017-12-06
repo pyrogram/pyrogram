@@ -30,7 +30,7 @@ class GzipPacked(Object):
         self.packed_data = packed_data
 
     @staticmethod
-    def read(b: BytesIO) -> "GzipPacked":
+    def read(b: BytesIO, *args) -> "GzipPacked":
         # Return the Object itself instead of a GzipPacked wrapping it
         return Object.read(
             BytesIO(

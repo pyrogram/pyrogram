@@ -32,7 +32,7 @@ class Message(Object):
         self.body = body
 
     @staticmethod
-    def read(b: BytesIO) -> "Message":
+    def read(b: BytesIO, *args) -> "Message":
         msg_id = Long.read(b)
         seq_no = Int.read(b)
         length = Int.read(b)

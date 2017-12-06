@@ -23,7 +23,7 @@ from . import Bytes
 
 class String(Bytes):
     @staticmethod
-    def read(b: BytesIO) -> str:
+    def read(b: BytesIO, *args) -> str:
         return super(String, String).read(b).decode()
 
     def __new__(cls, value: str) -> bytes:

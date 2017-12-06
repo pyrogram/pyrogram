@@ -23,7 +23,7 @@ from ..object import Object
 
 class Bytes(Object):
     @staticmethod
-    def read(b: BytesIO) -> bytes:
+    def read(b: BytesIO, *args) -> bytes:
         length = int.from_bytes(b.read(1), "little")
 
         if length <= 253:

@@ -30,7 +30,7 @@ class MsgContainer(Object):
         self.messages = messages
 
     @staticmethod
-    def read(b: BytesIO) -> "MsgContainer":
+    def read(b: BytesIO, *args) -> "MsgContainer":
         count = Int.read(b)
         return MsgContainer([Message.read(b) for _ in range(count)])
 

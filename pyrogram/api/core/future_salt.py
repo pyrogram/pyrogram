@@ -32,7 +32,7 @@ class FutureSalt(Object):
         self.salt = salt
 
     @staticmethod
-    def read(b: BytesIO) -> "FutureSalt":
+    def read(b: BytesIO, *args) -> "FutureSalt":
         valid_since = datetime.fromtimestamp(Int.read(b))
         valid_until = datetime.fromtimestamp(Int.read(b))
         salt = Long.read(b)

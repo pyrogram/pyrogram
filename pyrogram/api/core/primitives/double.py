@@ -24,7 +24,7 @@ from ..object import Object
 
 class Double(Object):
     @staticmethod
-    def read(b: BytesIO) -> float:
+    def read(b: BytesIO, *args) -> float:
         return unpack("d", b.read(8))[0]
 
     def __new__(cls, value: float) -> bytes:

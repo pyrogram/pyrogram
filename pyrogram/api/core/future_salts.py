@@ -33,7 +33,7 @@ class FutureSalts(Object):
         self.salts = salts
 
     @staticmethod
-    def read(b: BytesIO) -> "FutureSalts":
+    def read(b: BytesIO, *args) -> "FutureSalts":
         req_msg_id = Long.read(b)
         now = datetime.fromtimestamp(Int.read(b))
 
