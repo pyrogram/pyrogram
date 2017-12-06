@@ -243,7 +243,7 @@ class Client:
             self.save_session()
 
         self.rnd_id = self.session.msg_id
-        # self.get_dialogs()
+        self.get_dialogs()
 
     def get_dialogs(self):
         peers = []
