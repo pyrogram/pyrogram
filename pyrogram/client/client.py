@@ -411,3 +411,24 @@ class Client:
                 random_id=[self.rnd_id() for _ in message_ids]
             )
         )
+
+    def send_location(self,
+                      chat_id: int or str,
+                      latitude: float,
+                      longitude: float,
+                      disable_notification: bool = None,
+                      reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaGeoPoint(
+                    types.InputGeoPoint(
+                        latitude,
+                        longitude
+                    )
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
