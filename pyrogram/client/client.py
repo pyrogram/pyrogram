@@ -24,8 +24,6 @@ from collections import namedtuple
 from configparser import ConfigParser
 from hashlib import sha256
 
-from pyrogram.extensions import Markdown
-
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -40,6 +38,7 @@ from pyrogram.api.types import (
     Dialog, Message,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel)
+from pyrogram.extensions import Markdown
 from pyrogram.session import Auth, Session
 
 log = logging.getLogger(__name__)
