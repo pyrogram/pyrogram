@@ -340,13 +340,12 @@ class Client:
             )
         )
 
-    def send_message(
-            self,
-            chat_id: int or str,
-            text: str,
-            disable_web_page_preview: bool = None,
-            reply_to_msg_id: int = None,
-    ):
+    def send_message(self,
+                     chat_id: int or str,
+                     text: str,
+                     disable_web_page_preview: bool = None,
+                     disable_notification: bool = None,
+                     reply_to_msg_id: int = None):
         # TODO: Resolve usernames when they don't exists yet (contacts.ResolveUsername)
 
         if chat_id in ("self", "me"):
@@ -389,7 +388,8 @@ class Client:
                 peer=input_peer,
                 message=text,
                 random_id=self.rnd_id(),
-                no_webpage=disable_web_page_preview,
+                no_webpage=disable_web_page_preview or None,
+                silent=disable_notification or None,
                 reply_to_msg_id=reply_to_msg_id,
                 entities=entities
             )
