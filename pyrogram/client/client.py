@@ -470,10 +470,7 @@ class Client:
         "upload_video_note": types.SendMessageUploadRoundAction,
     }
 
-    def send_chat_action(self,
-                         chat_id: int or str,
-                         action: str,
-                         progress: int = 0):
+    def send_chat_action(self, chat_id: int or str, action: str, progress: int = 0):
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
