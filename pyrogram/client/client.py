@@ -332,21 +332,7 @@ class Client:
                 username = username.lower()
                 self.peers_by_username[username] = i
 
-    def get_me(self):
-        return self.send(
-            functions.users.GetFullUser(
-                InputPeerSelf()
-            )
-        )
-
-    def send_message(self,
-                     chat_id: int or str,
-                     text: str,
-                     disable_web_page_preview: bool = None,
-                     disable_notification: bool = None,
-                     reply_to_msg_id: int = None):
-        # TODO: Resolve usernames when they don't exists yet (contacts.ResolveUsername)
-
+    def resolve_peer(self, chat_id: int or str):
         if chat_id in ("self", "me"):
             input_peer = InputPeerSelf()
         else:
@@ -380,16 +366,48 @@ class Client:
             else:
                 raise PeerIdInvalid
 
+        return input_peer
+
+    def get_me(self):
+        return self.send(
+            functions.users.GetFullUser(
+                InputPeerSelf()
+            )
+        )
+
+    def send_message(self,
+                     chat_id: int or str,
+                     text: str,
+                     disable_web_page_preview: bool = None,
+                     disable_notification: bool = None,
+                     reply_to_msg_id: int = None):
+        # TODO: Resolve usernames when they don't exists yet (contacts.ResolveUsername)
+
         text, entities = Markdown.parse(text)
 
         return self.send(
             functions.messages.SendMessage(
-                peer=input_peer,
+                peer=self.resolve_peer(chat_id),
                 message=text,
-                random_id=self.rnd_id(),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_msg_id,
-                entities=entities
+                entities=entities,
+                random_id=self.rnd_id(),
+            )
+        )
+
+    def forward_messages(self,
+                         chat_id: int or str,
+                         from_chat_id: int or str,
+                         message_ids: list,
+                         disable_notification: bool = None):
+        return self.send(
+            functions.messages.ForwardMessages(
+                to_peer=self.resolve_peer(chat_id),
+                from_peer=self.resolve_peer(from_chat_id),
+                id=message_ids,
+                silent=disable_notification or None,
+                random_id=[self.rnd_id() for _ in message_ids]
             )
         )
