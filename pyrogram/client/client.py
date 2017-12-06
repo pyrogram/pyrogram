@@ -482,3 +482,13 @@ class Client:
                 )(progress=progress)
             )
         )
+
+    def edit_message_text(self, chat_id: int or str, message_id: int, text: str, disable_web_page_preview: bool = None):
+        return self.send(
+            functions.messages.EditMessage(
+                peer=self.resolve_peer(chat_id),
+                id=message_id,
+                message=text,
+                disable_web_page_preview=disable_web_page_preview or None
+            )
+        )
