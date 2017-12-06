@@ -20,5 +20,4 @@ __copyright__ = "Copyright (C) 2017 Dan Tès <https://github.com/delivrance>"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.0.1a0"
 
-from . import api
 from .client import Client
