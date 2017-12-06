@@ -35,7 +35,7 @@ class Vector(Object):
 
     def __new__(cls, value: list, t: Object = None) -> bytes:
         return b"".join(
-            [Int(cls.ID), Int(len(value))]
+            [Int(cls.ID, False), Int(len(value))]
             + [
                 t(i) if t
                 else i.write()
