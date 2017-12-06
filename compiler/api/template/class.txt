@@ -12,7 +12,7 @@ class {class_name}(Object):
         {fields}
 
     @staticmethod
-    def read(b: BytesIO) -> "{class_name}":
+    def read(b: BytesIO, *args) -> "{class_name}":
         {read_flags}
         {read_types}
         return {class_name}({return_arguments})
