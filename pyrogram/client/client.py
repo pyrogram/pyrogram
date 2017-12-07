@@ -397,19 +397,14 @@ class Client:
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
                      reply_to_msg_id: int = None):
-        # TODO: Resolve usernames when they don't exists yet (contacts.ResolveUsername)
-
-        text, entities = Markdown.parse(text)
-
         return self.send(
             functions.messages.SendMessage(
                 peer=self.resolve_peer(chat_id),
-                message=text,
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_msg_id,
-                entities=entities,
                 random_id=self.rnd_id(),
+                **Markdown.parse(text)
             )
         )
 
@@ -470,7 +465,10 @@ class Client:
             )
         )
 
-    def send_chat_action(self, chat_id: int or str, action: str, progress: int = 0):
+    def send_chat_action(self,
+                         chat_id: int or str,
+                         action: str,
+                         progress: int = 0):
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
@@ -480,7 +478,11 @@ class Client:
             )
         )
 
-    def edit_message_text(self, chat_id: int or str, message_id: int, text: str, disable_web_page_preview: bool = None):
+    def edit_message_text(self,
+                          chat_id: int or str,
+                          message_id: int,
+                          text: str,
+                          disable_web_page_preview: bool = None):
         return self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),

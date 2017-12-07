@@ -117,4 +117,7 @@ class Markdown:
             entities.append(entity)
             text = text.replace(pattern, replace)
 
-        return cls.remove_surrogates(text), entities
+        return dict(
+            message=cls.remove_surrogates(text),
+            entities=entities
+        )
