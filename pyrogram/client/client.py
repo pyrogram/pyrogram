@@ -488,6 +488,6 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 message=text,
-                disable_web_page_preview=disable_web_page_preview or None
+                no_webpage=disable_web_page_preview or None
             )
         )
