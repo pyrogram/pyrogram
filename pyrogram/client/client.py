@@ -496,6 +496,9 @@ class Client:
     def delete_messages(self,
                         message_ids: list,
                         revoke: bool = None):
+        # TODO: Maybe "revoke" is superfluous.
+        # If I want to delete a message, chances are I want it to
+        # be deleted even from the other side
         return self.send(
             functions.messages.DeleteMessages(
                 id=message_ids,
