@@ -473,7 +473,8 @@ class Client:
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
                 action=self.CHAT_ACTIONS.get(
-                    action.lower()
+                    action.lower(),
+                    types.SendMessageTypingAction
                 )(progress=progress)
             )
         )
