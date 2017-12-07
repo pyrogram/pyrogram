@@ -488,7 +488,7 @@ class Client:
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
-                message=text,
-                no_webpage=disable_web_page_preview or None
+                no_webpage=disable_web_page_preview or None,
+                **Markdown.parse(text)
             )
         )
