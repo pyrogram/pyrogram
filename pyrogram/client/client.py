@@ -492,3 +492,13 @@ class Client:
                 **Markdown.parse(text)
             )
         )
+
+    def delete_messages(self,
+                        message_ids: list,
+                        revoke: bool = None):
+        return self.send(
+            functions.messages.DeleteMessages(
+                id=message_ids,
+                revoke=revoke or None
+            )
+        )
