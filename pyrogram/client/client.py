@@ -81,6 +81,12 @@ class Client:
         self.config = None
         self.session = None
 
+        self.update_handler = None
+
+    # TODO: Better update handler
+    def set_update_handler(self, callback):
+        self.update_handler = callback
+
     def send(self, data: Object):
         return self.session.send(data)
 
@@ -249,6 +255,7 @@ class Client:
         self.load_session(self.session_name)
 
         self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+        self.session.update_handler = self.update_handler
 
         terms = self.session.start()
 

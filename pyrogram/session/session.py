@@ -96,6 +96,8 @@ class Session:
 
         self.is_connected = Event()
 
+        self.update_handler = None
+
         self.total_connections = 0
         self.total_messages = 0
         self.total_bytes = 0
@@ -246,19 +248,22 @@ class Session:
                 self.pending_acks.add(i.body.answer_msg_id)
                 continue
 
+            if isinstance(i.body, types.NewSessionCreated):
+                continue
+
             msg_id = None
 
             if isinstance(i.body, (types.BadMsgNotification, types.BadServerSalt)):
                 msg_id = i.body.bad_msg_id
-
             elif isinstance(i.body, types.RpcResult):
                 msg_id = i.body.req_msg_id
-
             elif isinstance(i.body, types.Pong):
                 msg_id = i.body.msg_id
-
             elif isinstance(i.body, core.FutureSalts):
                 msg_id = i.body.req_msg_id
+            else:
+                if self.update_handler:
+                    self.update_handler(i.body)
 
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(i.body, "result", i.body)
