@@ -260,7 +260,7 @@ class Client:
         terms = self.session.start()
 
         if self.user_id is None:
-            print(terms, "\n")
+            print("\n".join(terms.splitlines()), "\n")
 
             self.user_id = self.authorize()
             self.save_session()
