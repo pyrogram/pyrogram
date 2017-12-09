@@ -66,9 +66,13 @@ class Session:
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
 
+    notice_displayed = False
+
     def __init__(self, dc_id: int, test_mode: bool, auth_key: bytes, api_id: str):
-        print("Pyrogram v{}, {}".format(__version__, __copyright__))
-        print("Licensed under the terms of the " + __license__)
+        if not Session.notice_displayed:
+            print("Pyrogram v{}, {}".format(__version__, __copyright__))
+            print("Licensed under the terms of the " + __license__, end="\n\n")
+            Session.notice_displayed = True
 
         self.connection = Connection(DataCenter(dc_id, test_mode))
 
