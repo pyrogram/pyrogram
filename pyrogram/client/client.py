@@ -268,6 +268,9 @@ class Client:
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
 
+    def stop(self):
+        self.session.stop()
+
     def get_dialogs(self):
         peers = []
 
