@@ -255,7 +255,6 @@ class Client:
         self.load_session(self.session_name)
 
         self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
-        self.session.update_handler = self.update_handler
 
         terms = self.session.start()
 
@@ -265,6 +264,7 @@ class Client:
             self.user_id = self.authorize()
             self.save_session()
 
+        self.session.update_handler = self.update_handler
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
 
