@@ -16,23 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from hashlib import sha1, sha256
+from hashlib import sha256
 
 
-class KDF:
-    def __new__(cls, auth_key: bytes, msg_key: bytes, outgoing: bool) -> tuple:
-        # https://core.telegram.org/mtproto/description#defining-aes-key-and-initialization-vector
-        x = 0 if outgoing else 8
-
-        sha1_a = sha1(msg_key + auth_key[x:x + 32]).digest()
-        sha1_b = sha1(auth_key[x + 32:x + 48] + msg_key + auth_key[x + 48:x + 64]).digest()
-        sha1_c = sha1(auth_key[x + 64:x + 96] + msg_key).digest()
-        sha1_d = sha1(msg_key + auth_key[x + 96:x + 128]).digest()
-
-        aes_key = sha1_a[:8] + sha1_b[8:20] + sha1_c[4:16]
-        aes_iv = sha1_a[8:20] + sha1_b[:8] + sha1_c[16:20] + sha1_d[:8]
-
-        return aes_key, aes_iv
+# class KDF:
+#     def __new__(cls, auth_key: bytes, msg_key: bytes, outgoing: bool) -> tuple:
+#         # https://core.telegram.org/mtproto/description#defining-aes-key-and-initialization-vector
+#         x = 0 if outgoing else 8
+#
+#         sha1_a = sha1(msg_key + auth_key[x:x + 32]).digest()
+#         sha1_b = sha1(auth_key[x + 32:x + 48] + msg_key + auth_key[x + 48:x + 64]).digest()
+#         sha1_c = sha1(auth_key[x + 64:x + 96] + msg_key).digest()
+#         sha1_d = sha1(msg_key + auth_key[x + 96:x + 128]).digest()
+#
+#         aes_key = sha1_a[:8] + sha1_b[8:20] + sha1_c[4:16]
+#         aes_iv = sha1_a[8:20] + sha1_b[:8] + sha1_c[16:20] + sha1_d[:8]
+#
+#         return aes_key, aes_iv
 
 
 class KDF2:

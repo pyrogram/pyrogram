@@ -32,7 +32,7 @@ from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt
 from pyrogram.api.errors import Error
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, KDF, KDF2
+from pyrogram.crypto import IGE, KDF2
 from .internals import MsgId, MsgFactory, DataCenter
 
 log = logging.getLogger(__name__)
@@ -174,13 +174,13 @@ class Session:
         self.stop()
         self.start()
 
-    def pack(self, message: Message) -> bytes:
-        data = Long(self.current_salt.salt) + self.session_id + message.write()
-        msg_key = sha1(data).digest()[-16:]
-        aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
-        padding = urandom(-len(data) % 16)
-
-        return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
+    # def pack(self, message: Message) -> bytes:
+    #     data = Long(self.current_salt.salt) + self.session_id + message.write()
+    #     msg_key = sha1(data).digest()[-16:]
+    #     aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
+    #     padding = urandom(-len(data) % 16)
+    #
+    #     return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
 
     def pack2(self, message: Message):
         data = Long(self.current_salt.salt) + self.session_id + message.write()
@@ -197,29 +197,29 @@ class Session:
 
         return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
 
-    def unpack(self, b: BytesIO) -> Message:
-        assert b.read(8) == self.auth_key_id, b.getvalue()
-
-        msg_key = b.read(16)
-        aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
-        data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
-        data.read(8)  # Server salt
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
-        assert data.read(8) == self.session_id
-
-        message = Message.read(data)
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-value-of-msg-key
-        # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
-        # 32 = salt (8) + session_id (8) + msg_id (8) + seq_no (4) + length (4)
-        assert msg_key == sha1(data.getvalue()[:32 + message.length]).digest()[-16:]
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
-        # TODO: check for lower msg_ids
-        assert message.msg_id % 2 != 0
-
-        return message
+    # def unpack(self, b: BytesIO) -> Message:
+    #     assert b.read(8) == self.auth_key_id, b.getvalue()
+    #
+    #     msg_key = b.read(16)
+    #     aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
+    #     data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
+    #     data.read(8)  # Server salt
+    #
+    #     # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
+    #     assert data.read(8) == self.session_id
+    #
+    #     message = Message.read(data)
+    #
+    #     # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-value-of-msg-key
+    #     # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
+    #     # 32 = salt (8) + session_id (8) + msg_id (8) + seq_no (4) + length (4)
+    #     assert msg_key == sha1(data.getvalue()[:32 + message.length]).digest()[-16:]
+    #
+    #     # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
+    #     # TODO: check for lower msg_ids
+    #     assert message.msg_id % 2 != 0
+    #
+    #     return message
 
     def unpack2(self, b: BytesIO) -> Message:
         assert b.read(8) == self.auth_key_id, b.getvalue()

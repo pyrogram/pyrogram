@@ -17,6 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .ige import IGE
-from .kdf import KDF, KDF2
+from .kdf import KDF2
 from .prime import Prime
 from .rsa import RSA
