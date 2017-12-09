@@ -20,7 +20,7 @@ import logging
 import platform
 import threading
 from datetime import timedelta, datetime
-from hashlib import sha1
+from hashlib import sha1, sha256
 from io import BytesIO
 from os import urandom
 from queue import Queue
@@ -32,7 +32,7 @@ from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt
 from pyrogram.api.errors import Error
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, KDF
+from pyrogram.crypto import IGE, KDF, KDF2
 from .internals import MsgId, MsgFactory, DataCenter
 
 log = logging.getLogger(__name__)
@@ -182,6 +182,21 @@ class Session:
 
         return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
 
+    def pack2(self, message: Message):
+        data = Long(self.current_salt.salt) + self.session_id + message.write()
+        # MTProto 2.0 requires a minimum of 12 padding bytes.
+        # I don't get why it says up to 1024 when what it actually needs after the
+        # required 12 bytes is just extra 0..15 padding bytes for aes
+        # TODO: It works, but recheck this. What's the meaning of 12..1024 padding bytes?
+        padding = urandom(-(len(data) + 12) % 16 + 12)
+
+        # 88 = 88 + 0 (outgoing message)
+        msg_key_large = sha256(self.auth_key[88: 88 + 32] + data + padding).digest()
+        msg_key = msg_key_large[8:24]
+        aes_key, aes_iv = KDF2(self.auth_key, msg_key, True)
+
+        return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
+
     def unpack(self, b: BytesIO) -> Message:
         assert b.read(8) == self.auth_key_id, b.getvalue()
 
@@ -199,6 +214,30 @@ class Session:
         # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
         # 32 = salt (8) + session_id (8) + msg_id (8) + seq_no (4) + length (4)
         assert msg_key == sha1(data.getvalue()[:32 + message.length]).digest()[-16:]
+
+        # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
+        # TODO: check for lower msg_ids
+        assert message.msg_id % 2 != 0
+
+        return message
+
+    def unpack2(self, b: BytesIO) -> Message:
+        assert b.read(8) == self.auth_key_id, b.getvalue()
+
+        msg_key = b.read(16)
+        aes_key, aes_iv = KDF2(self.auth_key, msg_key, False)
+        data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
+        data.read(8)
+
+        # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
+        assert data.read(8) == self.session_id
+
+        message = Message.read(data)
+
+        # https://core.telegram.org/mtproto/security_guidelines#checking-sha256-hash-value-of-msg-key
+        # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
+        # 96 = 88 + 8 (incoming message)
+        assert msg_key == sha256(self.auth_key[96:96 + 32] + data.getvalue()).digest()[8:24]
 
         # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
         # TODO: check for lower msg_ids
