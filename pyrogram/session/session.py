@@ -264,7 +264,7 @@ class Session:
 
     def unpack_dispatch_and_ack(self, packet: bytes):
         # TODO: A better dispatcher
-        data = self.unpack(BytesIO(packet))
+        data = self.unpack2(BytesIO(packet))
 
         messages = (
             data.body.messages
@@ -394,7 +394,7 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        payload = self.pack(message)
+        payload = self.pack2(message)
 
         try:
             self.connection.send(payload)
