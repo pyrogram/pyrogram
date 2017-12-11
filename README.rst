@@ -23,6 +23,10 @@ Table of Contents
 
     -   `Using Raw Functions`_
 
+-   `Development`_
+
+-   `Documentation`_
+
 -   `Contribution`_
 
 -   `Feedback`_
@@ -30,7 +34,7 @@ Table of Contents
 -   `Copyright & License`_
 
 
-Overview 
+Overview
 ========
 
 **Pyrogram** is a Client Library written from the ground up in Python, designed
@@ -94,7 +98,8 @@ Getting Started
 ===============
 
 This section provides all the information you need to start using Pyrogram.
-There are a couple of steps you have to follow before you can use the library:
+There are a couple of steps you have to follow before you can use the library
+to make API calls.
 
 Setup
 -----
@@ -166,9 +171,6 @@ The result is a much cleaner interface that allows you to:
 
         client.send_message(chat_id="me", text="Hi there! I'm using Pyrogram")
 
-**Note:** Currently, only a limited number of such high-level methods are
-available.
-
 Using Raw Functions
 -------------------
 
@@ -203,17 +205,52 @@ Client class:
             )
         )
 
+Development
+===========
+
+The library is still in its early stages, thus lots of functionalities aiming to
+make working with Telegram's API easy are yet to be added.
+
+However, being the core functionalities already implemented, every Telegram API
+method listed in the API scheme can be used right away; the goal is therefore to
+build a powerful, simple to use, `bot-like`_ interface on top of those low-level
+functions.
+
+
+Documentation
+=============
+
+Soon. For now, have a look at the ``pyrogram.Client`` code to get some insights.
+
+Currently you are able to easily:
+
+-   ``send_message``
+
+-   ``forward_messages``
+
+-   ``edit_message_text``
+
+-   ``delete_messages``
+
+-   ``send_chat_action``
+
+-   Some more...
+
+as well as listening for updates and catching API errors.
+
 
 Contribution
 ============
 
-You are welcome to contribute by either submitting pull requests or reporting
-issues/bugs as well as suggesting features and best practices.
-Any help is appreciated.
+**You are very welcome to contribute** by either submitting pull requests or
+reporting issues/bugs as well as suggesting best practices, ideas, enhancements
+on both code and documentation. Any help is appreciated!
 
 
 Feedback
 ========
+
+Means for getting in touch:
 
 -   `Telegram`_
 -   `Github`_
