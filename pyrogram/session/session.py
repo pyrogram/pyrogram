@@ -424,7 +424,7 @@ class Session:
             try:
                 return self._send(data)
             except (OSError, TimeoutError):
-                log.debug("Retrying {}".format(type(data)))
+                log.warning("Retrying {}".format(type(data)))
                 continue
         else:
             return None
