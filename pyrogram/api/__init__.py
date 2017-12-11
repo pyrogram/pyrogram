@@ -15,3 +15,12 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
+from importlib import import_module
+
+from .all import objects
+from .core.object import Object
+
+for k, v in objects.items():
+    path, name = v.rsplit(".", 1)
+    Object.all[k] = getattr(import_module("pyrogram.api." + path), name)

@@ -18,7 +18,6 @@
 
 from collections import OrderedDict
 from datetime import datetime
-from importlib import import_module
 from io import BytesIO
 from json import JSONEncoder, dumps
 
@@ -26,16 +25,11 @@ from ..all import objects
 
 
 class Object:
+    all = {}
+
     @staticmethod
     def read(b: BytesIO, *args):
-        id = int.from_bytes(b.read(4), "little")
-        name = objects.get(id)
-        path, name = name.rsplit(".", 1)
-
-        return getattr(
-            import_module("pyrogram.api." + path),
-            name
-        ).read(b, *args)
+        return Object.all[int.from_bytes(b.read(4), "little")].read(b, *args)
 
     def write(self, *args) -> bytes:
         pass
