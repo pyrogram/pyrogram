@@ -47,7 +47,7 @@ for Python application developers. It offers simple and complete access to the
 -   Handles all the low-level details of communication with the Telegram servers
     by implementing the `MTProto Mobile Protocol v2.0`_.
 
--   Makes use of the latest Telegram API version (`Layer 72`_).
+-   Makes use of the latest Telegram API version (`Layer 73`_).
 
 -   Can be easily installed and upgraded using ``pip``.
 
@@ -269,7 +269,7 @@ Copyright & License
 
 .. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
 
-.. _`Layer 72`: compiler/api/source/main_api.tl
+.. _`Layer 73`: compiler/api/source/main_api.tl
 
 .. _`your own`: `API Keys`_
 
@@ -299,8 +299,8 @@ Copyright & License
         <b>Telegram MTProto API Client Library for Python</b>
         <br><br>
         <a href="https://github.com">
-            <img src="https://img.shields.io/badge/scheme-layer%2072-eda738.svg?style=for-the-badge&colorA=262b30"
-                alt="Scheme Layer 72">
+            <img src="https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30"
+                alt="Scheme Layer 73">
         </a>
         <a href="https://github.com">
             <img src="https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30"
@@ -314,9 +314,9 @@ Copyright & License
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
-.. |scheme| image:: https://img.shields.io/badge/scheme-layer%2072-eda738.svg?style=for-the-badge&colorA=262b30
+.. |scheme| image:: https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30
     :target: https://github.com
-    :alt: Scheme Layer 72
+    :alt: Scheme Layer 73
 
 .. |mtproto| image:: https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30
     :target: https://github.com
