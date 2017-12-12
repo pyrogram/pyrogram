@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 from sys import argv
 
 from setuptools import setup
@@ -27,4 +28,9 @@ if len(argv) > 1 and argv[1] != "sdist":
     api_compiler.start()
     error_compiler.start()
 
-setup()
+# PyPI doesn't like raw html
+with open("README.rst", encoding="UTF-8") as f:
+    readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
+    readme = re.sub(r"\|header\|", "|logo|\n######\n\n|description|\n\n|scheme| |mtproto|", readme)
+
+setup(long_description=readme)
