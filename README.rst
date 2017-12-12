@@ -169,7 +169,10 @@ The result is a much cleaner interface that allows you to:
 
     .. code:: python
 
-        client.send_message(chat_id="me", text="Hi there! I'm using Pyrogram")
+        client.send_message(
+            chat_id="me",
+            text="Hi there! I'm using Pyrogram"
+        )
 
 Using Raw Functions
 -------------------
