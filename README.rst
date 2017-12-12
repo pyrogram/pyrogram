@@ -290,34 +290,34 @@ Copyright & License
 .. |header| raw:: html
 
     <h1 align="center">
-        <a href="https://github.com">
-            <img src="https://www.pyrogram.ml/images/logo.png" alt="Pyrogram">
+        <a href="https://pyrogram.ml">
+            <img src="https://pyrogram.ml/images/logo.png" alt="Pyrogram">
         </a>
     </h1>
 
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
         <br><br>
-        <a href="https://github.com">
+        <a href="compiler/api/source/main_api.tl">
             <img src="https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30"
                 alt="Scheme Layer 73">
         </a>
-        <a href="https://github.com">
+        <a href="https://core.telegram.org/mtproto">
             <img src="https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30"
                 alt="MTProto v2.0">
         </a>
     </p>
 
-.. |logo| image:: https://www.pyrogram.ml/images/logo.png
-    :target: https://github.com
+.. |logo| image:: https://pyrogram.ml/images/logo.png
+    :target: https://pyrogram.ml
     :alt: Pyrogram
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
 .. |scheme| image:: https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30
-    :target: https://github.com
+    :target: compiler/api/source/main_api.tl
     :alt: Scheme Layer 73
 
 .. |mtproto| image:: https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30
-    :target: https://github.com
+    :target: https://core.telegram.org/mtproto
     :alt: MTProto v2.0
