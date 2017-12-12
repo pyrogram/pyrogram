@@ -16,9 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__copyright__ = "Copyright (C) 2017 Dan Tès <https://github.com/delivrance>"
-__license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.1.2"
+from pyrogram.api import types
 
-from .client import ChatAction
-from .client import Client
+
+class ChatAction:
+    CANCEL = types.SendMessageCancelAction
+    TYPING = types.SendMessageTypingAction
+    PLAYING = types.SendMessageGamePlayAction
+    CHOOSE_CONTACT = types.SendMessageChooseContactAction
+    UPLOAD_PHOTO = types.SendMessageUploadPhotoAction
+    RECORD_VIDEO = types.SendMessageRecordVideoAction
+    UPLOAD_VIDEO = types.SendMessageUploadVideoAction
+    RECORD_AUDIO = types.SendMessageRecordAudioAction
+    UPLOAD_AUDIO = types.SendMessageUploadAudioAction
+    UPLOAD_DOCUMENT = types.SendMessageUploadDocumentAction
+    FIND_LOCATION = types.SendMessageGeoLocationAction
+    RECORD_VIDEO_NOTE = types.SendMessageRecordRoundAction
+    UPLOAD_VIDEO_NOTE = types.SendMessageUploadRoundAction

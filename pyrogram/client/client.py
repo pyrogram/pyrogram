@@ -49,22 +49,6 @@ Config = namedtuple("Config", ["api_id", "api_hash"])
 class Client:
     DIALOGS_AT_ONCE = 100
 
-    CHAT_ACTIONS = {
-        "cancel": types.SendMessageCancelAction,
-        "typing": types.SendMessageTypingAction,
-        "playing": types.SendMessageGamePlayAction,
-        "choose_contact": types.SendMessageChooseContactAction,
-        "upload_photo": types.SendMessageUploadPhotoAction,
-        "record_video": types.SendMessageRecordVideoAction,
-        "upload_video": types.SendMessageUploadVideoAction,
-        "record_audio": types.SendMessageRecordAudioAction,
-        "upload_audio": types.SendMessageUploadAudioAction,
-        "upload_document": types.SendMessageUploadDocumentAction,
-        "find_location": types.SendMessageGeoLocationAction,
-        "record_video_note": types.SendMessageRecordRoundAction,
-        "upload_video_note": types.SendMessageUploadRoundAction,
-    }
-
     def __init__(self, session_name: str, test_mode: bool = False):
         self.session_name = session_name
         self.test_mode = test_mode
@@ -477,15 +461,12 @@ class Client:
 
     def send_chat_action(self,
                          chat_id: int or str,
-                         action: str,
+                         action: callable,
                          progress: int = 0):
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
-                action=self.CHAT_ACTIONS.get(
-                    action.lower(),
-                    types.SendMessageTypingAction
-                )(progress=progress)
+                action=action(progress=progress)
             )
         )
 
