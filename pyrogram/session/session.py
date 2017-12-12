@@ -321,7 +321,7 @@ class Session:
         # )
 
         if len(self.pending_acks) >= self.ACKS_THRESHOLD:
-            log.warning("Send {} acks".format(len(self.pending_acks)))
+            log.info("Send {} acks".format(len(self.pending_acks)))
 
             try:
                 self._send(types.MsgsAck(list(self.pending_acks)), False)
