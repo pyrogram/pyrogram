@@ -84,7 +84,7 @@ class Client:
         self.update_handler = None
 
     # TODO: Better update handler
-    def set_update_handler(self, callback):
+    def set_update_handler(self, callback: callable):
         self.update_handler = callback
 
     def send(self, data: Object):
