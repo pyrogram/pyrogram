@@ -333,31 +333,10 @@ class Client:
             logging.info("Dialogs count: {}".format(len(peers)))
 
         for i in peers:
-            id = i["id"]
-            username = i["username"]
-
-            self.peers_by_id[id] = i
-
-            if username:
-                username = username.lower()
-                self.peers_by_username[username] = i
-
-    def resolve_peer(self, chat_id: int or str):
-        if chat_id in ("self", "me"):
-            input_peer = InputPeerSelf()
-        else:
-            try:
-                peer = (
-                    self.peers_by_username[chat_id.lower()]
-                    if isinstance(chat_id, str)
-                    else self.peers_by_id[chat_id]
-                )
-            except KeyError:
-                raise PeerIdInvalid
-
-            peer_type = peer["type"]
-            peer_id = peer["id"]
-            peer_access_hash = peer["access_hash"]
+            peer_id = i["id"]
+            peer_type = i["type"]
+            peer_username = i["username"]
+            peer_access_hash = i["access_hash"]
 
             if peer_type == "user":
                 input_peer = InputPeerUser(
@@ -374,9 +353,26 @@ class Client:
                     peer_access_hash
                 )
             else:
-                raise PeerIdInvalid
+                continue
 
-        return input_peer
+            self.peers_by_id[peer_id] = input_peer
+
+            if peer_username:
+                peer_username = peer_username.lower()
+                self.peers_by_username[peer_username] = input_peer
+
+    def resolve_peer(self, chat_id: int or str):
+        if chat_id in ("self", "me"):
+            return InputPeerSelf()
+        else:
+            try:
+                return (
+                    self.peers_by_username[chat_id.lower()]
+                    if isinstance(chat_id, str)
+                    else self.peers_by_id[chat_id]
+                )
+            except KeyError:
+                raise PeerIdInvalid
 
     def get_me(self):
         return self.send(
