@@ -25,6 +25,7 @@ from pyrogram.api.types import (
     MessageEntityCode as Code,
     MessageEntityTextUrl as Url,
     MessageEntityPre as Pre,
+    InputMessageEntityMentionName as Mention
 )
 
 
@@ -45,7 +46,10 @@ class Markdown:
     PRE_RE = r"(?P<pre>```(?P<lang>.*)\n(?P<code>(.|\n)*)\n```)"
 
     # [url](github.com)
-    URL_RE = r"(?P<url>(\[(?P<text>.+?)\]\((?P<path>.+?)\)))"
+    URL_RE = r"(?P<url>(\[(?P<url_text>.+?)\]\((?P<url_path>.+?)\)))"
+
+    # [name](tg://user?id=123456789)
+    MENTION_RE = r"(?P<mention>(\[(?P<mention_text>.+?)\]\(tg:\/\/user\?id=(?P<user_id>\d+?)\)))"
 
     # **bold**
     # __italic__
@@ -63,7 +67,7 @@ class Markdown:
         )
     )
 
-    MARKDOWN_RE = re.compile("|".join([PRE_RE, URL_RE, INLINE_RE]))
+    MARKDOWN_RE = re.compile("|".join([PRE_RE, MENTION_RE, URL_RE, INLINE_RE]))
 
     @classmethod
     def add_surrogates(cls, text):
@@ -79,13 +83,15 @@ class Markdown:
         # Replace each surrogate pair with a SMP code point
         return text.encode("utf-16", "surrogatepass").decode("utf-16")
 
-    @classmethod
-    def parse(cls, text):
+    def __init__(self, peers_by_id):
+        self.peers_by_id = peers_by_id
+
+    def parse(self, text):
         entities = []
-        text = cls.add_surrogates(text)
+        text = self.add_surrogates(text)
         offset = 0
 
-        for match in cls.MARKDOWN_RE.finditer(text):
+        for match in self.MARKDOWN_RE.finditer(text):
             start = match.start() - offset
 
             if match.group("pre"):
@@ -96,10 +102,16 @@ class Markdown:
                 offset += len(lang) + 8
             elif match.group("url"):
                 pattern = match.group("url")
-                replace = match.group("text")
-                path = match.group("path")
+                replace = match.group("url_text")
+                path = match.group("url_path")
                 entity = Url(start, len(replace), path)
                 offset += len(path) + 4
+            elif match.group("mention"):
+                pattern = match.group("mention")
+                replace = match.group("mention_text")
+                user_id = match.group("user_id")
+                entity = Mention(start, len(replace), self.peers_by_id[int(user_id)])
+                offset += len(user_id) + 17
             elif match.group("inline"):
                 pattern = match.group("inline")
                 replace = match.group("body")
@@ -109,7 +121,7 @@ class Markdown:
                 if start_delimiter != end_delimiter:
                     continue
 
-                entity = cls.INLINE_DELIMITERS[start_delimiter](start, len(replace))
+                entity = self.INLINE_DELIMITERS[start_delimiter](start, len(replace))
                 offset += len(start_delimiter) * 2
             else:
                 continue
@@ -118,6 +130,6 @@ class Markdown:
             text = text.replace(pattern, replace)
 
         return dict(
-            message=cls.remove_surrogates(text),
+            message=self.remove_surrogates(text),
             entities=entities
         )

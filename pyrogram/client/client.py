@@ -62,6 +62,8 @@ class Client:
         self.peers_by_id = {}
         self.peers_by_username = {}
 
+        self.markdown = Markdown(self.peers_by_id)
+
         self.config = None
         self.session = None
 
@@ -394,7 +396,7 @@ class Client:
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_msg_id,
                 random_id=self.rnd_id(),
-                **Markdown.parse(text)
+                **self.markdown.parse(text)
             )
         )
 
@@ -476,7 +478,7 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
-                **Markdown.parse(text)
+                **self.markdown.parse(text)
             )
         )
 
