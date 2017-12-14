@@ -576,7 +576,6 @@ class Client:
                    title: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
-
         return self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
