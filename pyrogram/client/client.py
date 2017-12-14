@@ -19,10 +19,12 @@
 import base64
 import json
 import logging
+import math
+import os
 import time
 from collections import namedtuple
 from configparser import ConfigParser
-from hashlib import sha256
+from hashlib import sha256, md5
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -494,3 +496,49 @@ class Client:
                 revoke=revoke or None
             )
         )
+
+    def save_file(self, path):
+        file_size = os.path.getsize(path)
+        file_total_parts = math.ceil(file_size / 512 / 1024)
+        is_big = True if file_size >= 10 * 1024 * 1024 else False
+        session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+
+        try:
+            session.start()
+
+            file_id = session.msg_id()
+            md5_sum = md5()
+
+            with open(path, "rb") as f:
+                file_part = 0
+
+                while True:
+                    chunk = f.read(512 * 1024)
+
+                    if not chunk:
+                        md5_sum = md5_sum.digest().hex()
+                        break
+
+                    md5_sum.update(chunk)
+
+                    session.send(
+                        (functions.upload.SaveBigFilePart if is_big else functions.upload.SaveFilePart)(
+                            file_id=file_id,
+                            file_part=file_part,
+                            bytes=chunk,
+                            file_total_parts=file_total_parts
+                        )
+                    )
+
+                    file_part += 1
+        except Exception as e:
+            log.error(e)
+        else:
+            return types.InputFile(
+                id=file_id,
+                parts=file_part,
+                name=os.path.basename(path),
+                md5_checksum=md5_sum
+            )
+        finally:
+            session.stop()
