@@ -20,6 +20,7 @@ import base64
 import json
 import logging
 import math
+import mimetypes
 import os
 import time
 from collections import namedtuple
@@ -255,6 +256,8 @@ class Client:
         self.session.update_handler = self.update_handler
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
+
+        mimetypes.init()
 
     def stop(self):
         self.session.stop()
@@ -557,6 +560,38 @@ class Client:
                     file=self.save_file(photo),
                     caption=caption,
                     ttl_seconds=ttl_seconds
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
+
+    def send_audio(self,
+                   chat_id: int or str,
+                   audio: str,
+                   caption: str = "",
+                   duration: int = 0,
+                   performer: str = None,
+                   title: str = None,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaUploadedDocument(
+                    mime_type=mimetypes.types_map["." + audio.split(".")[-1]],
+                    file=self.save_file(audio),
+                    caption=caption,
+                    attributes=[
+                        types.DocumentAttributeAudio(
+                            duration=duration,
+                            performer=performer,
+                            title=title
+                        ),
+                        types.DocumentAttributeFilename(os.path.basename(audio))
+                    ]
                 ),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
