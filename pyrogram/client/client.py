@@ -542,3 +542,24 @@ class Client:
             )
         finally:
             session.stop()
+
+    def send_photo(self,
+                   chat_id: int or str,
+                   photo: str,
+                   caption: str = "",
+                   ttl_seconds: int = None,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaUploadedPhoto(
+                    file=self.save_file(photo),
+                    caption=caption,
+                    ttl_seconds=ttl_seconds
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
