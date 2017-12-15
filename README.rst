@@ -256,7 +256,7 @@ Feedback
 Means for getting in touch:
 
 -   `Telegram`_
--   `Github`_
+-   `GitHub`_
 -   `Email`_
 
 Copyright & License
@@ -282,9 +282,9 @@ Copyright & License
 
 .. _`bot-like`: https://core.telegram.org/bots/api#available-methods
 
-.. _`Telegram`: https://t.me/haskell
+.. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
 
-.. _`Github`: https://github.com/pyrogram/pyrogram/issues
+.. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
 
 .. _`Email`: admin@pyrogram.ml
 
