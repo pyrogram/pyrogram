@@ -597,3 +597,26 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_document(self,
+                      chat_id: int or str,
+                      document: str,
+                      caption: str = "",
+                      disable_notification: bool = None,
+                      reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaUploadedDocument(
+                    mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
+                    file=self.save_file(document),
+                    caption=caption,
+                    attributes=[
+                        types.DocumentAttributeFilename(os.path.basename(document))
+                    ]
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
