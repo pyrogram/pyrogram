@@ -74,7 +74,7 @@ def start():
 
             with open("{}/source/{}".format(home, i)) as f_csv, \
                     open("{}/{}_{}.py".format(dest, name.lower(), code), "w") as f_class:
-                reader = csv.reader(f_csv, delimiter="|")
+                reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)
                 name = " ".join([str(i.capitalize()) for i in re.sub(r"_", " ", name).lower().split(" ")])

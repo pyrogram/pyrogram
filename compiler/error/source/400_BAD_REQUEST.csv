@@ -1,32 +1,32 @@
-id|message
-FIRSTNAME_INVALID|The first name is invalid
-LASTNAME_INVALID|The last name is invalid
-PHONE_NUMBER_INVALID|The phone number is invalid
-PHONE_CODE_HASH_EMPTY|phone_code_hash is missing
-PHONE_CODE_EMPTY|phone_code is missing
-PHONE_CODE_EXPIRED|The confirmation code has expired
-PHONE_CODE_INVALID|The confirmation code is invalid
-API_ID_INVALID|The api_id/api_hash combination is invalid
-PHONE_NUMBER_OCCUPIED|The phone number is already in use
-PHONE_NUMBER_UNOCCUPIED|The phone number is not yet being used
-USERS_TOO_FEW|Not enough users (to create a chat, for example)
-USERS_TOO_MUCH|The maximum number of users has been exceeded (to create a chat, for example)
-TYPE_CONSTRUCTOR_INVALID|The type constructor is invalid
-FILE_PART_INVALID|The file part number is invalid
-FILE_PARTS_INVALID|The number of file parts is invalid
-FILE_PART_X_MISSING|Part {x} of the file is missing from storage
-MD5_CHECKSUM_INVALID|The MD5 checksums do not match
-PHOTO_INVALID_DIMENSIONS|The photo dimensions are invalid
-FIELD_NAME_INVALID|The field with the name FIELD_NAME is invalid
-FIELD_NAME_EMPTY|The field with the name FIELD_NAME is missing
-MSG_WAIT_FAILED|A waiting call returned an error
-PEER_ID_INVALID|The id/access_hash combination is invalid
-MESSAGE_EMPTY|The message sent is empty
-ENCRYPTED_MESSAGE_INVALID|The special binding message (bind_auth_key_inner) contains invalid data
-INPUT_METHOD_INVALID|The method called is invalid
-PASSWORD_HASH_INVALID|Two-step verification password is invalid
-USERNAME_NOT_OCCUPIED|The username is not occupied by anyone
-USERNAME_INVALID|The username is invalid
-MESSAGE_ID_INVALID|The message id is invalid
-MESSAGE_NOT_MODIFIED|The message was not modified
-ENTITY_MENTION_USER_INVALID|The mentioned entity is not an user
+id	message
+FIRSTNAME_INVALID	The first name is invalid
+LASTNAME_INVALID	The last name is invalid
+PHONE_NUMBER_INVALID	The phone number is invalid
+PHONE_CODE_HASH_EMPTY	phone_code_hash is missing
+PHONE_CODE_EMPTY	phone_code is missing
+PHONE_CODE_EXPIRED	The confirmation code has expired
+PHONE_CODE_INVALID	The confirmation code is invalid
+API_ID_INVALID	The api_id/api_hash combination is invalid
+PHONE_NUMBER_OCCUPIED	The phone number is already in use
+PHONE_NUMBER_UNOCCUPIED	The phone number is not yet being used
+USERS_TOO_FEW	Not enough users (to create a chat, for example)
+USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
+TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
+FILE_PART_INVALID	The file part number is invalid
+FILE_PARTS_INVALID	The number of file parts is invalid
+FILE_PART_X_MISSING	Part {x} of the file is missing from storage
+MD5_CHECKSUM_INVALID	The MD5 checksums do not match
+PHOTO_INVALID_DIMENSIONS	The photo dimensions are invalid
+FIELD_NAME_INVALID	The field with the name FIELD_NAME is invalid
+FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
+MSG_WAIT_FAILED	A waiting call returned an error
+PEER_ID_INVALID	The id/access_hash combination is invalid
+MESSAGE_EMPTY	The message sent is empty
+ENCRYPTED_MESSAGE_INVALID	The special binding message (bind_auth_key_inner) contains invalid data
+INPUT_METHOD_INVALID	The method called is invalid
+PASSWORD_HASH_INVALID	Two-step verification password is invalid
+USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
+USERNAME_INVALID	The username is invalid
+MESSAGE_ID_INVALID	The message id is invalid
+MESSAGE_NOT_MODIFIED	The message was not modified
+ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
