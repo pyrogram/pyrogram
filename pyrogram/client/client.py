@@ -620,3 +620,33 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_video(self,
+                   chat_id: int or str,
+                   video: str,
+                   duration: int = 0,
+                   width: int = 0,
+                   height: int = 0,
+                   caption: str = "",
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaUploadedDocument(
+                    mime_type=mimetypes.types_map[".mp4"],
+                    file=self.save_file(video),
+                    caption=caption,
+                    attributes=[
+                        types.DocumentAttributeVideo(
+                            duration=duration,
+                            w=width,
+                            h=height
+                        )
+                    ]
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
