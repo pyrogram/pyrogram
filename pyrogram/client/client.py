@@ -677,3 +677,32 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_video_note(self,
+                        chat_id: int or str,
+                        video_note: str,
+                        duration: int = 0,
+                        length: int = 1,
+                        disable_notification: bool = None,
+                        reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaUploadedDocument(
+                    mime_type=mimetypes.types_map[".mp4"],
+                    file=self.save_file(video_note),
+                    caption="",
+                    attributes=[
+                        types.DocumentAttributeVideo(
+                            round_message=True,
+                            duration=duration,
+                            w=length,
+                            h=length
+                        )
+                    ]
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
