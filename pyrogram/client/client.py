@@ -706,3 +706,32 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+    def send_venue(self,
+                   chat_id: int or str,
+                   latitude: float,
+                   longitude: float,
+                   title: str,
+                   address: str,
+                   foursquare_id: str = "",
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaVenue(
+                    geo_point=types.InputGeoPoint(
+                        lat=latitude,
+                        long=longitude
+                    ),
+                    title=title,
+                    address=address,
+                    provider="",
+                    venue_id=foursquare_id,
+                    venue_type=""
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
