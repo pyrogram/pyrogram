@@ -580,7 +580,7 @@ class Client:
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map["." + audio.split(".")[-1]],
+                    mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                     file=self.save_file(audio),
                     caption=caption,
                     attributes=[
