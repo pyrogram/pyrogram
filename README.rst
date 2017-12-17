@@ -7,21 +7,9 @@ Table of Contents
 
 -   `Requirements`_
 
-    -   `API Keys`_
-
 -   `Installation`_
 
 -   `Getting Started`_
-
-    -   `Setup`_
-
-    -   `Authorization`_
-
--   `Usage`_
-
-    -   `Simple API Access`_
-
-    -   `Using Raw Functions`_
 
 -   `Development`_
 
@@ -31,7 +19,7 @@ Table of Contents
 
 -   `Feedback`_
 
--   `Copyright & License`_
+-   `License`_
 
 
 Overview
@@ -69,20 +57,6 @@ Requirements
 
 -   A Telegram API key.
 
-API Keys
---------
-
-To obtain an API key:
-
-#.  Visit https://my.telegram.org/apps and log in with your Telegram Account.
-
-#.  Fill out the form to register a new Telegram application.
-
-#.  Done. The Telegram API key consists of two parts: the **App api_id** and
-    the **App api_hash**.
-
-**Important:** This key should be kept secret.
-
 
 Installation
 ============
@@ -97,116 +71,10 @@ You can install and upgrade the library using standard Python tools:
 Getting Started
 ===============
 
-This section provides all the information you need to start using Pyrogram.
-There are a couple of steps you have to follow before you can use the library
-to make API calls.
+The `Wiki`_ contains all the information needed to get you started with Pyrogram:
 
-Setup
------
+-   `Getting Started`_
 
-Create a new ``config.ini`` file at the root of your working directory, paste
-the following and replace the **api_id** and **api_hash** values
-with `your own`_:
-
-.. code:: ini
-
-    [pyrogram]
-    api_id = 12345
-    api_hash = 0123456789abcdef0123456789abcdef
-
-Authorization
--------------
-
-Telegram requires that users be authorized in order to use the API.
-Pyrogram automatically manages this access, all you need to do is create an
-instance of the ``pyrogram.Client`` class and call the ``start`` method:
-
-.. code:: python
-
-    from pyrogram import Client
-
-    client = Client(session_name="example")
-    client.start()
-
-This starts an interactive shell asking you to input your **phone number**
-(including your `Country Code`_) and the **phone code** you will receive:
-
-.. code::
-
-    Enter phone number: +39**********
-    Is "+39**********" correct? (y/n): y
-    Enter phone code: 32768
-
-
-After successfully authorizing yourself, a new file called ``example.session``
-will be created allowing Pyrogram executing API calls with your identity.
-
-**Important**: The ``*.session`` file must be kept secret.
-
-
-Usage
-=====
-
-Having `your session`_ created you can now start playing with the API.
-
-Simple API Access
------------------
-
-The easiest way to interact with the API is via the ``pyrogram.Client`` class
-which exposes `bot-like`_ methods. The purpose of this Client class is to make
-it **even simpler** to work with Telegram's API by abstracting the raw functions
-listed in the API scheme.
-
-The result is a much cleaner interface that allows you to:
-
--   Get information about the authorized user:
-
-    .. code:: python
-
-        print(client.get_me())
-
--   Send a message to yourself (Saved Messages):
-
-    .. code:: python
-
-        client.send_message(
-            chat_id="me",
-            text="Hi there! I'm using Pyrogram"
-        )
-
-Using Raw Functions
--------------------
-
-If you want **complete**, low-level access to the Telegram API you have to use
-the raw ``functions`` and ``types`` exposed by the ``pyrogram.api`` package and
-call any Telegram API method you wish using the ``send`` method provided by the
-Client class:
-
--   Update first name, last name and bio:
-
-    .. code:: python
-
-        from pyrogram.api import functions
-
-        client.send(
-            functions.account.UpdateProfile(
-                first_name="Dan", last_name="Tès",
-                about="Bio written from Pyrogram"
-            )
-        )
-
--   Share your Last Seen time only with your contacts:
-
-    .. code:: python
-
-        from pyrogram.api import functions, types
-
-        client.send(
-            functions.account.SetPrivacy(
-                key=types.InputPrivacyKeyStatusTimestamp(),
-                rules=[types.InputPrivacyValueAllowContacts()]
-            )
-        )
 
 Development
 ===========
@@ -259,8 +127,9 @@ Means for getting in touch:
 -   `GitHub`_
 -   `Email`_
 
-Copyright & License
-===================
+
+License
+=======
 
 -   Copyright (C) 2017 Dan Tès <https://github.com/delivrance>
 
@@ -274,15 +143,13 @@ Copyright & License
 
 .. _`Layer 73`: compiler/api/source/main_api.tl
 
-.. _`your own`: `API Keys`_
+.. _`Wiki`: https://github.com/pyrogram/pyrogram/wiki
 
-.. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
-
-.. _`your session`: `Authorization`_
-
-.. _`bot-like`: https://core.telegram.org/bots/api#available-methods
+.. _`Getting Started`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
 
 .. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
+
+.. _`bot-like`: https://core.telegram.org/bots/api#available-methods
 
 .. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
 
@@ -300,7 +167,15 @@ Copyright & License
 
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
-        <br><br>
+        <br>
+        <a href="https://github.com/pyrogram/pyrogram/wiki">
+            Wiki
+        </a>
+        •
+        <a href="https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw">
+            Telegram Group
+        </a
+        <br><br><br>
         <a href="compiler/api/source/main_api.tl">
             <img src="https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30"
                 alt="Scheme Layer 73">
