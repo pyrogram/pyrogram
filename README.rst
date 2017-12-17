@@ -80,7 +80,7 @@ Development
 ===========
 
 The library is still in its early stages, thus lots of functionalities aiming to
-make working with Telegram's API easy are yet to be added.
+make working with Telegram's API easy are yet to be added and documented.
 
 However, being the core functionalities already implemented, every Telegram API
 method listed in the API scheme can be used right away; the goal is therefore to
