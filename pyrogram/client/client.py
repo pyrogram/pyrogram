@@ -26,6 +26,8 @@ import time
 from collections import namedtuple
 from configparser import ConfigParser
 from hashlib import sha256, md5
+from signal import signal, SIGINT, SIGTERM, SIGABRT
+from threading import Event
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -71,6 +73,7 @@ class Client:
         self.session = None
 
         self.update_handler = None
+        self.is_idle = Event()
 
     # TODO: Better update handler
     def set_update_handler(self, callback: callable):
@@ -78,6 +81,16 @@ class Client:
 
     def send(self, data: Object):
         return self.session.send(data)
+
+    def signal_handler(self, *args):
+        self.stop()
+        self.is_idle.set()
+
+    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        for s in stop_signals:
+            signal(s, self.signal_handler)
+
+        self.is_idle.wait()
 
     def authorize(self):
         while True:
