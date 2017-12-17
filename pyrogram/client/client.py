@@ -339,7 +339,7 @@ class Client:
         )
 
         offset_date = parse_dialogs(dialogs)
-        logging.info("Dialogs count: {}".format(len(peers)))
+        log.info("Dialogs count: {}".format(len(peers)))
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
             dialogs = self.send(
@@ -350,7 +350,7 @@ class Client:
             )
 
             offset_date = parse_dialogs(dialogs)
-            logging.info("Dialogs count: {}".format(len(peers)))
+            log.info("Dialogs count: {}".format(len(peers)))
 
         for i in peers:
             peer_id = i["id"]
