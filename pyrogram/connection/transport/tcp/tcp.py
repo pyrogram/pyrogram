@@ -32,6 +32,10 @@ class TCP(socket.socket):
     def recv(self, *args):
         pass
 
+    def close(self):
+        self.shutdown(socket.SHUT_RDWR)
+        super().close()
+
     def recvall(self, length: int) -> bytes or None:
         data = b""
 
