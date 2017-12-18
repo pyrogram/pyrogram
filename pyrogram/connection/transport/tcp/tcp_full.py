@@ -19,7 +19,6 @@
 import logging
 from binascii import crc32
 from struct import pack, unpack
-from threading import Lock
 
 from .tcp import TCP
 
@@ -30,7 +29,6 @@ class TCPFull(TCP):
     def __init__(self):
         super().__init__()
         self.seq_no = None
-        self.lock = Lock()
 
     def connect(self, address: tuple):
         super().connect(address)
@@ -38,14 +36,12 @@ class TCPFull(TCP):
         log.info("Connected!")
 
     def send(self, data: bytes):
-        with self.lock:
-            # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)
-            data = pack("<II", len(data) + 12, self.seq_no) + data
-            data += pack("<I", crc32(data))
+        # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)
+        data = pack("<II", len(data) + 12, self.seq_no) + data
+        data += pack("<I", crc32(data))
+        self.seq_no += 1
 
-            self.seq_no += 1
-
-            super().sendall(data)
+        super().sendall(data)
 
     def recv(self) -> bytes or None:
         length = self.recvall(4)

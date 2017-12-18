@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import threading
 import time
 
 from .transport import *
@@ -34,6 +35,7 @@ class Connection:
     def __init__(self, ipv4: str, mode: int = 1):
         self.address = (ipv4, 80)
         self.mode = self.MODES.get(mode, TCPAbridged)
+        self.lock = threading.Lock()
         self.connection = None
 
     def connect(self):
@@ -53,7 +55,8 @@ class Connection:
         self.connection.close()
 
     def send(self, data: bytes):
-        self.connection.send(data)
+        with self.lock:
+            self.connection.send(data)
 
     def recv(self) -> bytes or None:
         return self.connection.recv()
