@@ -30,3 +30,4 @@ USERNAME_INVALID	The username is invalid
 MESSAGE_ID_INVALID	The message id is invalid
 MESSAGE_NOT_MODIFIED	The message was not modified
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
+MESSAGE_TOO_LONG	The message text is over 4096 characters
