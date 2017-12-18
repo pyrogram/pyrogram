@@ -177,11 +177,11 @@ License
         </a
         <br><br><br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30"
+            <img src="https://www.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 73">
         </a>
         <a href="https://core.telegram.org/mtproto">
-            <img src="https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30"
+            <img src="https://www.pyrogram.ml/images/mtproto.svg"
                 alt="MTProto v2.0">
         </a>
     </p>
@@ -192,10 +192,10 @@ License
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
-.. |scheme| image:: https://img.shields.io/badge/scheme-layer%2073-eda738.svg?style=for-the-badge&colorA=262b30
+.. |scheme| image:: https://www.pyrogram.ml/images/scheme.svg
     :target: compiler/api/source/main_api.tl
     :alt: Scheme Layer 73
 
-.. |mtproto| image:: https://img.shields.io/badge/mtproto-v2.0-eda738.svg?style=for-the-badge&colorA=262b30
+.. |mtproto| image:: https://www.pyrogram.ml/images/mtproto.svg
     :target: https://core.telegram.org/mtproto
     :alt: MTProto v2.0
