@@ -35,7 +35,7 @@ from pyrogram.api.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
-    PasswordHashInvalid, FloodWait, PeerIdInvalid
+    PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -454,6 +454,35 @@ class Client:
             )
         )
 
+    def send_venue(self,
+                   chat_id: int or str,
+                   latitude: float,
+                   longitude: float,
+                   title: str,
+                   address: str,
+                   foursquare_id: str = "",
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        return self.send(
+            functions.messages.SendMedia(
+                peer=self.resolve_peer(chat_id),
+                media=types.InputMediaVenue(
+                    geo_point=types.InputGeoPoint(
+                        lat=latitude,
+                        long=longitude
+                    ),
+                    title=title,
+                    address=address,
+                    provider="",
+                    venue_id=foursquare_id,
+                    venue_type=""
+                ),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id,
+                random_id=self.rnd_id()
+            )
+        )
+
     def send_contact(self,
                      chat_id: int or str,
                      phone_number: str,
@@ -513,29 +542,31 @@ class Client:
             )
         )
 
-    def save_file(self, path):
+    # TODO: Remove redundant code
+    def save_file(self, path: str, file_id: int = None, file_part: int = 0):
+        part_size = 512 * 1024
         file_size = os.path.getsize(path)
-        file_total_parts = math.ceil(file_size / 512 / 1024)
-        is_big = True if file_size >= 10 * 1024 * 1024 else False
+        file_total_parts = math.ceil(file_size / part_size)
+        # is_big = True if file_size > 10 * 1024 * 1024 else False
+        is_big = False  # Treat all files as not-big to have the server check for the md5 sum
+        is_missing_part = True if file_id is not None else False
+        file_id = file_id or self.rnd_id()
+        md5_sum = md5() if not is_big and not is_missing_part else None
+
         session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+        session.start()
 
         try:
-            session.start()
-
-            file_id = session.msg_id()
-            md5_sum = md5()
-
             with open(path, "rb") as f:
-                file_part = 0
+                f.seek(part_size * file_part)
 
                 while True:
-                    chunk = f.read(512 * 1024)
+                    chunk = f.read(part_size)
 
                     if not chunk:
-                        md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
+                        if not is_big:
+                            md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
-
-                    md5_sum.update(chunk)
 
                     session.send(
                         (functions.upload.SaveBigFilePart if is_big else functions.upload.SaveFilePart)(
@@ -546,13 +577,19 @@ class Client:
                         )
                     )
 
+                    if is_missing_part:
+                        return
+
+                    if not is_big:
+                        md5_sum.update(chunk)
+
                     file_part += 1
         except Exception as e:
             log.error(e)
         else:
-            return types.InputFile(
+            return (types.InputFileBig if is_big else types.InputFile)(
                 id=file_id,
-                parts=file_part,
+                parts=file_total_parts,
                 name=os.path.basename(path),
                 md5_checksum=md5_sum
             )
@@ -566,19 +603,27 @@ class Client:
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedPhoto(
-                    file=self.save_file(photo),
-                    caption=caption,
-                    ttl_seconds=ttl_seconds
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        file = self.save_file(photo)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=file,
+                            caption=caption,
+                            ttl_seconds=ttl_seconds
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(photo, file_id=file.id, file_part=e.x)
+            else:
+                return r
 
     def send_audio(self,
                    chat_id: int or str,
@@ -589,27 +634,35 @@ class Client:
                    title: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
-                    file=self.save_file(audio),
-                    caption=caption,
-                    attributes=[
-                        types.DocumentAttributeAudio(
-                            duration=duration,
-                            performer=performer,
-                            title=title
+        file = self.save_file(audio)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeAudio(
+                                    duration=duration,
+                                    performer=performer,
+                                    title=title
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(audio))
+                            ]
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(audio))
-                    ]
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(audio, file_id=file.id, file_part=e.x)
+            else:
+                return r
 
     def send_document(self,
                       chat_id: int or str,
@@ -617,22 +670,30 @@ class Client:
                       caption: str = "",
                       disable_notification: bool = None,
                       reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
-                    file=self.save_file(document),
-                    caption=caption,
-                    attributes=[
-                        types.DocumentAttributeFilename(os.path.basename(document))
-                    ]
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        file = self.save_file(document)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeFilename(os.path.basename(document))
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(document, file_id=file.id, file_part=e.x)
+            else:
+                return r
 
     def send_video(self,
                    chat_id: int or str,
@@ -643,26 +704,34 @@ class Client:
                    caption: str = "",
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map[".mp4"],
-                    file=self.save_file(video),
-                    caption=caption,
-                    attributes=[
-                        types.DocumentAttributeVideo(
-                            duration=duration,
-                            w=width,
-                            h=height
-                        )
-                    ]
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        file = self.save_file(video)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map[".mp4"],
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    duration=duration,
+                                    w=width,
+                                    h=height
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(video, file_id=file.id, file_part=e.x)
+            else:
+                return r
 
     def send_voice(self,
                    chat_id: int or str,
@@ -671,25 +740,33 @@ class Client:
                    duration: int = 0,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
-                    file=self.save_file(voice),
-                    caption=caption,
-                    attributes=[
-                        types.DocumentAttributeAudio(
-                            voice=True,
-                            duration=duration
-                        )
-                    ]
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        file = self.save_file(voice)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeAudio(
+                                    voice=True,
+                                    duration=duration
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(voice, file_id=file.id, file_part=e.x)
+            else:
+                return r
 
     def send_video_note(self,
                         chat_id: int or str,
@@ -698,53 +775,32 @@ class Client:
                         length: int = 1,
                         disable_notification: bool = None,
                         reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map[".mp4"],
-                    file=self.save_file(video_note),
-                    caption="",
-                    attributes=[
-                        types.DocumentAttributeVideo(
-                            round_message=True,
-                            duration=duration,
-                            w=length,
-                            h=length
-                        )
-                    ]
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        file = self.save_file(video_note)
 
-    def send_venue(self,
-                   chat_id: int or str,
-                   latitude: float,
-                   longitude: float,
-                   title: str,
-                   address: str,
-                   foursquare_id: str = "",
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None):
-        return self.send(
-            functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
-                media=types.InputMediaVenue(
-                    geo_point=types.InputGeoPoint(
-                        lat=latitude,
-                        long=longitude
-                    ),
-                    title=title,
-                    address=address,
-                    provider="",
-                    venue_id=foursquare_id,
-                    venue_type=""
-                ),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
-            )
-        )
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map[".mp4"],
+                            file=file,
+                            caption="",
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    round_message=True,
+                                    duration=duration,
+                                    w=length,
+                                    h=length
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(video_note, file_id=file.id, file_part=e.x)
+            else:
+                return r
