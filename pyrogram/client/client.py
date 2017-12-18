@@ -532,7 +532,7 @@ class Client:
                     chunk = f.read(512 * 1024)
 
                     if not chunk:
-                        md5_sum = md5_sum.digest().hex()
+                        md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
                     md5_sum.update(chunk)
