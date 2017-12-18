@@ -33,8 +33,12 @@ class TCP(socket.socket):
         pass
 
     def close(self):
-        self.shutdown(socket.SHUT_RDWR)
-        super().close()
+        try:
+            self.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        finally:
+            super().close()
 
     def recvall(self, length: int) -> bytes or None:
         data = b""
