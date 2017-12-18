@@ -32,7 +32,7 @@ from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
 from pyrogram.api.errors import Error
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, KDF2
+from pyrogram.crypto import IGE, KDF
 from .internals import MsgId, MsgFactory, DataCenter
 
 log = logging.getLogger(__name__)
@@ -178,15 +178,7 @@ class Session:
         self.stop()
         self.start()
 
-    # def pack(self, message: Message) -> bytes:
-    #     data = Long(self.current_salt.salt) + self.session_id + message.write()
-    #     msg_key = sha1(data).digest()[-16:]
-    #     aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
-    #     padding = urandom(-len(data) % 16)
-    #
-    #     return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
-
-    def pack2(self, message: Message):
+    def pack(self, message: Message):
         data = Long(self.current_salt.salt) + self.session_id + message.write()
         # MTProto 2.0 requires a minimum of 12 padding bytes.
         # I don't get why it says up to 1024 when what it actually needs after the
@@ -197,39 +189,15 @@ class Session:
         # 88 = 88 + 0 (outgoing message)
         msg_key_large = sha256(self.auth_key[88: 88 + 32] + data + padding).digest()
         msg_key = msg_key_large[8:24]
-        aes_key, aes_iv = KDF2(self.auth_key, msg_key, True)
+        aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
 
         return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
 
-    # def unpack(self, b: BytesIO) -> Message:
-    #     assert b.read(8) == self.auth_key_id, b.getvalue()
-    #
-    #     msg_key = b.read(16)
-    #     aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
-    #     data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
-    #     data.read(8)  # Server salt
-    #
-    #     # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
-    #     assert data.read(8) == self.session_id
-    #
-    #     message = Message.read(data)
-    #
-    #     # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-value-of-msg-key
-    #     # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
-    #     # 32 = salt (8) + session_id (8) + msg_id (8) + seq_no (4) + length (4)
-    #     assert msg_key == sha1(data.getvalue()[:32 + message.length]).digest()[-16:]
-    #
-    #     # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
-    #     # TODO: check for lower msg_ids
-    #     assert message.msg_id % 2 != 0
-    #
-    #     return message
-
-    def unpack2(self, b: BytesIO) -> Message:
+    def unpack(self, b: BytesIO) -> Message:
         assert b.read(8) == self.auth_key_id, b.getvalue()
 
         msg_key = b.read(16)
-        aes_key, aes_iv = KDF2(self.auth_key, msg_key, False)
+        aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
         data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
         data.read(8)
 
@@ -268,7 +236,7 @@ class Session:
 
     def unpack_dispatch_and_ack(self, packet: bytes):
         # TODO: A better dispatcher
-        data = self.unpack2(BytesIO(packet))
+        data = self.unpack(BytesIO(packet))
 
         messages = (
             data.body.messages
@@ -398,7 +366,7 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        payload = self.pack2(message)
+        payload = self.pack(message)
 
         try:
             self.connection.send(payload)
