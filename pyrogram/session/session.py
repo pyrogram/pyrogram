@@ -29,7 +29,7 @@ from threading import Event, Thread
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
-from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt
+from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
 from pyrogram.api.errors import Error
 from pyrogram.connection import Connection
 from pyrogram.crypto import IGE, KDF2
@@ -382,7 +382,7 @@ class Session:
         while True:
             packet = self.connection.recv()
 
-            if packet is None:
+            if packet is None or (len(packet) == 4 and Int.read(BytesIO(packet)) == -404):
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
                 break
