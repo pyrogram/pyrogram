@@ -43,6 +43,7 @@ from pyrogram.api.types import (
     Dialog, Message,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel)
+from pyrogram.crypto import CTR
 from pyrogram.extensions import Markdown
 from pyrogram.session import Auth, Session
 
@@ -804,3 +805,86 @@ class Client:
                 self.save_file(video_note, file_id=file.id, file_part=e.x)
             else:
                 return r
+
+    def get_file(self, id: int, access_hash: int, version: int):
+        # TODO: Refine
+        limit = 512 * 1024
+        offset = 0
+
+        session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+        session.start()
+
+        try:
+            r = session.send(
+                functions.upload.GetFile(
+                    location=types.InputDocumentFileLocation(
+                        id=id,
+                        access_hash=access_hash,
+                        version=version
+                    ),
+                    offset=offset,
+                    limit=limit
+                )
+            )
+
+            if isinstance(r, types.upload.FileCdnRedirect):
+                ctr = CTR(r.encryption_key, r.encryption_iv)
+
+                cdn_session = Session(
+                    r.dc_id,
+                    self.test_mode,
+                    Auth(r.dc_id, self.test_mode).create(),
+                    self.config.api_id,
+                    is_cdn=True
+                )
+
+                cdn_session.start()
+
+                try:
+                    with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                        while True:
+                            r2 = cdn_session.send(
+                                functions.upload.GetCdnFile(
+                                    location=types.InputDocumentFileLocation(
+                                        id=id,
+                                        access_hash=access_hash,
+                                        version=version
+                                    ),
+                                    file_token=r.file_token,
+                                    offset=offset,
+                                    limit=limit
+                                )
+                            )
+
+                            if isinstance(r2, types.upload.CdnFileReuploadNeeded):
+                                session.send(
+                                    functions.upload.ReuploadCdnFile(
+                                        file_token=r.file_token,
+                                        request_token=r2.request_token
+                                    )
+                                )
+                                continue
+                            elif isinstance(r2, types.upload.CdnFile):
+                                chunk = r2.bytes
+
+                                if not chunk:
+                                    break
+
+                                # https://core.telegram.org/cdn#decrypting-files
+                                decrypted_chunk = ctr.decrypt(chunk, offset)
+
+                                # TODO: https://core.telegram.org/cdn#verifying-files
+                                # TODO: Save to temp file, flush each chunk, rename to full if everything is ok
+
+                                f.write(decrypted_chunk)
+                                offset += limit
+                except Exception as e:
+                    log.error(e)
+                finally:
+                    cdn_session.stop()
+        except Exception as e:
+            log.error(e)
+        else:
+            return True
+        finally:
+            session.stop()
