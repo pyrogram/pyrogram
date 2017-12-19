@@ -68,11 +68,13 @@ class Session:
 
     notice_displayed = False
 
-    def __init__(self, dc_id: int, test_mode: bool, auth_key: bytes, api_id: str):
+    def __init__(self, dc_id: int, test_mode: bool, auth_key: bytes, api_id: str, is_cdn: bool = False):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
+
+        self.is_cdn = is_cdn
 
         self.connection = Connection(DataCenter(dc_id, test_mode))
 
@@ -107,6 +109,8 @@ class Session:
         self.total_bytes = 0
 
     def start(self):
+        terms = None
+
         while True:
             try:
                 self.connection.connect()
@@ -128,19 +132,20 @@ class Session:
                 self.next_salt_thread = Thread(target=self.next_salt, name="NextSaltThread")
                 self.next_salt_thread.start()
 
-                terms = self._send(
-                    functions.InvokeWithLayer(
-                        layer,
-                        functions.InitConnection(
-                            self.api_id,
-                            self.DEVICE_MODEL,
-                            self.SYSTEM_VERSION,
-                            self.APP_VERSION,
-                            "en", "", "en",
-                            functions.help.GetTermsOfService(),
+                if not self.is_cdn:
+                    terms = self._send(
+                        functions.InvokeWithLayer(
+                            layer,
+                            functions.InitConnection(
+                                self.api_id,
+                                self.DEVICE_MODEL,
+                                self.SYSTEM_VERSION,
+                                self.APP_VERSION,
+                                "en", "", "en",
+                                functions.help.GetTermsOfService(),
+                            )
                         )
-                    )
-                )
+                    ).text
 
                 if self.ping_thread is not None:
                     self.ping_thread.join()
@@ -161,7 +166,7 @@ class Session:
 
         log.debug("Session started")
 
-        return terms.text
+        return terms
 
     def stop(self):
         self.is_connected.clear()
