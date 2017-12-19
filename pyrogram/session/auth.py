@@ -242,8 +242,8 @@ class Auth:
                         set_client_dh_params_answer.__class__.__name__
                     )
                 )
-            except:  # TODO: Too broad exception clause
-                log.warning("Auth key creation failed. Let's try again.")
+            except Exception as e:  # TODO: Too broad exception clause
+                log.warning("Auth key creation failed. Let's try again: {}".format(repr(e)))
                 continue
             else:
                 return auth_key
