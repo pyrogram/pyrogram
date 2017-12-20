@@ -806,8 +806,10 @@ class Client:
             else:
                 return r
 
-    def get_file(self, id: int, access_hash: int, version: int):
+    def get_file(self, id: int, access_hash: int, version: int = 0):
         # TODO: Refine
+        # TODO: Use proper file name and extension
+
         limit = 512 * 1024
         offset = 0
 
@@ -827,6 +829,28 @@ class Client:
                 )
             )
 
+            if isinstance(r, types.upload.File):
+                with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                    while True:
+                        chunk = r.bytes
+
+                        if not chunk:
+                            break
+
+                        f.write(chunk)
+                        offset += limit
+
+                        r = session.send(
+                            functions.upload.GetFile(
+                                location=types.InputDocumentFileLocation(
+                                    id=id,
+                                    access_hash=access_hash,
+                                    version=version
+                                ),
+                                offset=offset,
+                                limit=limit
+                            )
+                        )
             if isinstance(r, types.upload.FileCdnRedirect):
                 ctr = CTR(r.encryption_key, r.encryption_iv)
 
