@@ -244,6 +244,7 @@ class Auth:
                 )
             except Exception as e:  # TODO: Too broad exception clause
                 log.warning("Auth key creation failed. Let's try again: {}".format(repr(e)))
+                time.sleep(1)
                 continue
             else:
                 return auth_key
