@@ -45,14 +45,6 @@ for Python application developers. It offers simple and complete access to the
 Requirements
 ============
 
--   Operating systems:
-
-    -   Linux
-
-    -   macOS
-
-    -   Windows
-
 -   Python 3.3 or higher.
 
 -   A Telegram API key.
@@ -61,19 +53,41 @@ Requirements
 Installation
 ============
 
-You can install and upgrade the library using standard Python tools:
+You can easily install and upgrade the library using standard Python tools:
 
 .. code:: shell
 
     $ pip install --upgrade pyrogram
-
+    
 
 Getting Started
 ===============
 
-The `Wiki`_ contains all the information needed to get you started with Pyrogram:
+-   Create a new ``config.ini`` file at the root of your working directory, copy-paste
+    the following and replace the **api_id** and **api_hash** values with `your own`_:
 
--   `Getting Started`_
+    .. code:: ini
+
+        [pyrogram]
+        api_id = 12345
+        api_hash = 0123456789abcdef0123456789abcdef
+
+-   Then you can start with this:
+
+    .. code:: python
+
+        from pyrogram import Client
+
+        client = Client(session_name="example")
+        client.start()
+
+        # Get information about yourself
+        print(client.get_me())
+    
+That's all you need for getting started with Pyrogram. For more detailed information,
+please refer to the `Wiki`_:
+
+-   `Introduction`_
 
 
 Development
@@ -145,7 +159,9 @@ License
 
 .. _`Wiki`: https://github.com/pyrogram/pyrogram/wiki
 
-.. _`Getting Started`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
+.. _`your own`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started#api-keys
+
+.. _`Introduction`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
 
 .. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
 
@@ -167,7 +183,12 @@ License
 
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
+        
         <br>
+        <a href="https://pypi.python.org/pypi/Pyrogram">
+            Download
+        </a>
+        •
         <a href="https://github.com/pyrogram/pyrogram/wiki">
             Wiki
         </a>
