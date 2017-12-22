@@ -31,3 +31,14 @@ MESSAGE_ID_INVALID	The message id is invalid
 MESSAGE_NOT_MODIFIED	The message was not modified
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
 MESSAGE_TOO_LONG	The message text is over 4096 characters
+ACCESS_TOKEN_EXPIRED	The bot token is invalid
+BOT_METHOD_INVALID	The method can't be used by bots
+QUERY_TOO_SHORT	The query is too short
+SEARCH_QUERY_EMPTY	The query is empty
+CHAT_ID_INVALID	The chat id is invalid
+DATE_EMPTY	The date argument is empty
+PERSISTENT_TIMESTAMP_EMPTY	The pts is empty
+CDN_METHOD_INVALID	The method can't be used on CDN DCs
+VOLUME_LOC_NOT_FOUND	The volume location can't be found
+FILE_ID_INVALID	The file id is invalid
+LOCATION_INVALID	The file location is invalid
