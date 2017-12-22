@@ -27,7 +27,7 @@ class RSA:
 
     # TODO Add CDNs keys
     server_public_keys = {
-        0xc3b42b026ce86b21 - (1 << 64): PublicKey(  # Main
+        0xc3b42b026ce86b21 - (1 << 64): PublicKey(  # Telegram servers
             # -----BEGIN RSA PUBLIC KEY-----
             # MIIBCgKCAQEAwVACPi9w23mF3tBkdZz+zwrzKOaaQdr01vAbU4E1pvkfj4sqDsm6
             # lyDONS789sVoD/xCS9Y0hkkC3gtL1tSfTlgCMOOul9lcixlEKzwKENj1Yz/s7daS
@@ -49,7 +49,7 @@ class RSA:
             ),  # Modulus
             int("010001", 16)  # Exponent
         ),
-        0x15931aac70e0d30f7 - (1 << 64): PublicKey(  # CDN DC121 (Test)
+        0x15931aac70e0d30f7 - (1 << 64): PublicKey(  # CDN DC-121
             # -----BEGIN RSA PUBLIC KEY-----
             # MIIBCgKCAQEA+Lf3PvgE1yxbJUCMaEAkV0QySTVpnaDjiednB5RbtNWjCeqSVakY
             # HbqqGMIIv5WCGdFdrqOfMNcNSstPtSU6R9UmRw6tquOIykpSuUOje9H+4XVIKquj
@@ -67,6 +67,28 @@ class RSA:
                 "61CB4CEA53FE62557E2918A608DF585E6575ECD5E16A3D2D21F471919214869E"
                 "265F1DD00F048B2E41F60B413BC98BF977D044A38E9ABEDAE01338468D9D7B9A"
                 "EBDA2DA877B8585DDDC33BD1514A5E32D7303C026E3C45F77DE561C5DCDFCE99",
+                16
+            ),  # Modulus
+            int("010001", 16)  # Exponent
+        ),
+        0x1254672538e935938 - (1 << 64): PublicKey(  # CDN DC-140
+            # -----BEGIN RSA PUBLIC KEY-----
+            # MIIBCgKCAQEAzuHVC7sE50Kho/yDVZtWnlmA5Bf/aM8KZY3WzS16w6w1sBqipj8o
+            # gMGG7ULbGBtYmKEaI7IIJO6WM2m1MaXVnsqS8d7PaGAZiy8rSN3S7S2a8wp4RXZe
+            # hs0JAXvZeIz45iByCMBfycbJKmSweYkesRUI7hUO8eQhmm/UYUEpJY7VOt0Iemiu
+            # URSpqlRQ2FlcyHahYUNcvbICb4+/AP7coKBn6cB5FyzM7MCcKxbEKOx3Y3MUnbZq
+            # q5pN6/eRazkegyrlp4kuJ94KsbRFHFX5Dx8uzjrO9wi8LF7gIgZu5DRMcmjXJKq6
+            # rGZ2Z9cnrD8pVu1L2vcInd4K6ximZS2hbwIDAQAB
+            # -----END RSA PUBLIC KEY-----
+            int(
+                "CEE1D50BBB04E742A1A3FC83559B569E5980E417FF68CF0A658DD6CD2D7AC3AC"
+                "35B01AA2A63F2880C186ED42DB181B5898A11A23B20824EE963369B531A5D59E"
+                "CA92F1DECF6860198B2F2B48DDD2ED2D9AF30A7845765E86CD09017BD9788CF8"
+                "E6207208C05FC9C6C92A64B079891EB11508EE150EF1E4219A6FD4614129258E"
+                "D53ADD087A68AE5114A9AA5450D8595CC876A161435CBDB2026F8FBF00FEDCA0"
+                "A067E9C079172CCCECC09C2B16C428EC776373149DB66AAB9A4DEBF7916B391E"
+                "832AE5A7892E27DE0AB1B4451C55F90F1F2ECE3ACEF708BC2C5EE022066EE434"
+                "4C7268D724AABAAC667667D727AC3F2956ED4BDAF7089DDE0AEB18A6652DA16F",
                 16
             ),  # Modulus
             int("010001", 16)  # Exponent
