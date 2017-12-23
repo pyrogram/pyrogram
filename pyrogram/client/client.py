@@ -920,3 +920,16 @@ class Client:
             return True
         finally:
             session.stop()
+
+    def get_user_profile_photos(self,
+                                user_id: int or str,
+                                offset: int = 0,
+                                limit: int = 100):
+        return self.send(
+            functions.photos.GetUserPhotos(
+                user_id=self.resolve_peer(user_id),
+                offset=offset,
+                max_id=0,
+                limit=limit
+            )
+        )
