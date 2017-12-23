@@ -124,11 +124,6 @@ class Session:
                 self.current_salt = FutureSalt(0, 0, self._send(functions.Ping(0)).new_server_salt)
                 self.current_salt = self._send(functions.GetFutureSalts(1)).salts[0]
 
-                if self.next_salt_thread is not None:
-                    self.next_salt_thread.join()
-
-                self.next_salt_thread_event.clear()
-
                 self.next_salt_thread = Thread(target=self.next_salt, name="NextSaltThread")
                 self.next_salt_thread.start()
 
@@ -146,11 +141,6 @@ class Session:
                             )
                         )
                     ).text
-
-                if self.ping_thread is not None:
-                    self.ping_thread.join()
-
-                self.ping_thread_event.clear()
 
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
@@ -170,8 +160,16 @@ class Session:
 
     def stop(self):
         self.is_connected.clear()
+
         self.ping_thread_event.set()
         self.next_salt_thread_event.set()
+
+        self.ping_thread.join()
+        self.next_salt_thread.join()
+
+        self.ping_thread_event.clear()
+        self.next_salt_thread_event.clear()
+
         self.connection.close()
 
         for i in range(self.WORKERS):
