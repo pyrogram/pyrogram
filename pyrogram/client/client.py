@@ -806,9 +806,29 @@ class Client:
             else:
                 return r
 
-    def get_file(self, id: int, access_hash: int, version: int = 0):
+    def get_file(self,
+                 id: int = None,
+                 access_hash: int = None,
+                 volume_id: int = None,
+                 local_id: int = None,
+                 secret: int = None,
+                 version: int = 0):
         # TODO: Refine
         # TODO: Use proper file name and extension
+        # TODO: Remove redundant code
+
+        if volume_id:  # Photos are accessed by volume_id, local_id, secret
+            location = types.InputFileLocation(
+                volume_id=volume_id,
+                local_id=local_id,
+                secret=secret
+            )
+        else:  # Any other file can be more easily accessed by id and access_hash
+            location = types.InputDocumentFileLocation(
+                id=id,
+                access_hash=access_hash,
+                version=version
+            )
 
         limit = 512 * 1024
         offset = 0
@@ -819,11 +839,7 @@ class Client:
         try:
             r = session.send(
                 functions.upload.GetFile(
-                    location=types.InputDocumentFileLocation(
-                        id=id,
-                        access_hash=access_hash,
-                        version=version
-                    ),
+                    location=location,
                     offset=offset,
                     limit=limit
                 )
@@ -842,11 +858,7 @@ class Client:
 
                         r = session.send(
                             functions.upload.GetFile(
-                                location=types.InputDocumentFileLocation(
-                                    id=id,
-                                    access_hash=access_hash,
-                                    version=version
-                                ),
+                                location=location,
                                 offset=offset,
                                 limit=limit
                             )
@@ -869,11 +881,7 @@ class Client:
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
-                                    location=types.InputDocumentFileLocation(
-                                        id=id,
-                                        access_hash=access_hash,
-                                        version=version
-                                    ),
+                                    location=location,
                                     file_token=r.file_token,
                                     offset=offset,
                                     limit=limit
