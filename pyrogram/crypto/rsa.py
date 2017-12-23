@@ -25,7 +25,6 @@ class RSA:
     # To get modulus and exponent:
     # grep -v -- - public.key | tr -d \\n | base64 -d | openssl asn1parse -inform DER -i
 
-    # TODO Add CDNs keys
     server_public_keys = {
         0xc3b42b026ce86b21 - (1 << 64): PublicKey(  # Telegram servers
             # -----BEGIN RSA PUBLIC KEY-----
