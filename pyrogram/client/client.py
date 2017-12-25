@@ -962,3 +962,20 @@ class Client:
                     channel=channel
                 )
             )
+
+    def leave_chat(self, chat_id: int or str):
+        peer = self.resolve_peer(chat_id)
+
+        if isinstance(peer, types.InputPeerChannel):
+            return self.send(
+                functions.channels.LeaveChannel(
+                    channel=self.resolve_peer(chat_id)
+                )
+            )
+        elif isinstance(peer, types.InputPeerChat):
+            return self.send(
+                functions.messages.DeleteChatUser(
+                    chat_id=peer.chat_id,
+                    user_id=types.InputPeerSelf()
+                )
+            )
