@@ -302,10 +302,6 @@ class Client:
                     continue
 
                 for message in d.messages:  # type: Message
-                    # Only search for Messages
-                    if not isinstance(message, Message):
-                        continue
-
                     is_this = peer_id == message.from_id or dialog.peer == message.to_id
 
                     if is_this:
