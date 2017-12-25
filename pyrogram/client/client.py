@@ -959,7 +959,7 @@ class Client:
                 )
             )
 
-    def leave_chat(self, chat_id: int or str):
+    def leave_chat(self, chat_id: int or str, delete: bool = False):
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
@@ -969,9 +969,19 @@ class Client:
                 )
             )
         elif isinstance(peer, types.InputPeerChat):
-            return self.send(
+            r = self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=peer.chat_id,
                     user_id=types.InputPeerSelf()
                 )
             )
+
+            if delete:
+                self.send(
+                    functions.messages.DeleteHistory(
+                        peer=peer,
+                        max_id=0
+                    )
+                )
+
+            return r
