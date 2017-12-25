@@ -22,6 +22,7 @@ import logging
 import math
 import mimetypes
 import os
+import re
 import time
 from collections import namedtuple
 from configparser import ConfigParser
@@ -53,6 +54,7 @@ Config = namedtuple("Config", ["api_id", "api_hash"])
 
 
 class Client:
+    INVITE_LINK_RE = re.compile(r"^(?:https?:\/\/)?t\.me\/joinchat\/(.+)$")
     DIALOGS_AT_ONCE = 100
 
     def __init__(self, session_name: str, test_mode: bool = False):
@@ -933,3 +935,30 @@ class Client:
                 limit=limit
             )
         )
+
+    def join_chat(self, chat_id: str):
+        match = self.INVITE_LINK_RE.match(chat_id)
+
+        if match:
+            return self.send(
+                functions.messages.ImportChatInvite(
+                    hash=match.group(1)
+                )
+            )
+        else:
+            resolved_peer = self.send(
+                functions.contacts.ResolveUsername(
+                    username=chat_id.lower().strip("@")
+                )
+            )
+
+            channel = InputPeerChannel(
+                channel_id=resolved_peer.chats[0].id,
+                access_hash=resolved_peer.chats[0].access_hash
+            )
+
+            return self.send(
+                functions.channels.JoinChannel(
+                    channel=channel
+                )
+            )
