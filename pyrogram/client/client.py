@@ -388,7 +388,7 @@ class Client:
         else:
             try:
                 return (
-                    self.peers_by_username[chat_id.lower()]
+                    self.peers_by_username[chat_id.lower().strip("@")]
                     if isinstance(chat_id, str)
                     else self.peers_by_id[chat_id]
                 )
