@@ -164,8 +164,11 @@ class Session:
         self.ping_thread_event.set()
         self.next_salt_thread_event.set()
 
-        self.ping_thread.join()
-        self.next_salt_thread.join()
+        if self.ping_thread is not None:
+            self.ping_thread.join()
+
+        if self.next_salt_thread is not None:
+            self.next_salt_thread.join()
 
         self.ping_thread_event.clear()
         self.next_salt_thread_event.clear()
