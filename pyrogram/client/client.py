@@ -528,6 +528,18 @@ class Client:
             )
         )
 
+    def edit_message_caption(self,
+                             chat_id: int or str,
+                             message_id: int,
+                             caption: str):
+        return self.send(
+            functions.messages.EditMessage(
+                peer=self.resolve_peer(chat_id),
+                id=message_id,
+                message=caption
+            )
+        )
+
     def delete_messages(self,
                         message_ids: list,
                         revoke: bool = None):
