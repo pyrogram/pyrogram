@@ -7,7 +7,7 @@
 ---types---
 
 // boolFalse#bc799737 = Bool;  // Parsed manually
-// boolTrue#997275b5 = Bool;  // parsed manually
+// boolTrue#997275b5 = Bool;  // Parsed manually
 
 // true#3fedd339 = True;  // Not used
 
@@ -15,7 +15,7 @@
 
 // error#c4b9f9bb code:int text:string = Error;  // Not used
 
-// null#56730bcc = Null;  // Not used
+// null#56730bcc = Null;  // Parsed manually
 
 inputPeerEmpty#7f3b18ea = InputPeer;
 inputPeerSelf#7da07ec9 = InputPeer;

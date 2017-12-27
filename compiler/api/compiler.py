@@ -125,6 +125,7 @@ class Compiler:
 
             f.write("\n    0xbc799737: \"core.BoolFalse\",")
             f.write("\n    0x997275b5: \"core.BoolTrue\",")
+            f.write("\n    0x56730bcc: \"core.Null\",")
             f.write("\n    0x1cb5c415: \"core.Vector\",")
             f.write("\n    0x73f1f8dc: \"core.MsgContainer\",")
             f.write("\n    0xae500895: \"core.FutureSalts\",")
