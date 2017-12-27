@@ -1027,3 +1027,19 @@ class Client:
                 )
 
             return r
+
+    def export_chat_invite_link(self, chat_id: int or str):
+        peer = self.resolve_peer(chat_id)
+
+        if isinstance(peer, types.InputPeerChat):
+            return self.send(
+                functions.messages.ExportChatInvite(
+                    chat_id=peer.chat_id
+                )
+            ).link
+        elif isinstance(peer, types.InputPeerChannel):
+            return self.send(
+                functions.channels.ExportInvite(
+                    channel=peer
+                )
+            ).link
