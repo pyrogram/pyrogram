@@ -817,6 +817,7 @@ class Client:
                 return r
 
     def get_file(self,
+                 dc_id: int,
                  id: int = None,
                  access_hash: int = None,
                  volume_id: int = None,
@@ -826,6 +827,38 @@ class Client:
         # TODO: Refine
         # TODO: Use proper file name and extension
         # TODO: Remove redundant code
+
+        if dc_id != self.dc_id:
+            exported_auth = self.send(
+                functions.auth.ExportAuthorization(
+                    dc_id=dc_id
+                )
+            )
+
+            session = Session(
+                dc_id,
+                self.test_mode,
+                Auth(dc_id, self.test_mode).create(),
+                self.config.api_id
+            )
+
+            session.start()
+
+            session.send(
+                functions.auth.ImportAuthorization(
+                    id=exported_auth.id,
+                    bytes=exported_auth.bytes
+                )
+            )
+        else:
+            session = Session(
+                dc_id,
+                self.test_mode,
+                self.auth_key,
+                self.config.api_id
+            )
+
+            session.start()
 
         if volume_id:  # Photos are accessed by volume_id, local_id, secret
             location = types.InputFileLocation(
@@ -842,9 +875,6 @@ class Client:
 
         limit = 512 * 1024
         offset = 0
-
-        session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
-        session.start()
 
         try:
             r = session.send(
