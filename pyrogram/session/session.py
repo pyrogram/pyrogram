@@ -257,7 +257,10 @@ class Session:
 
         for i in messages:
             if i.seq_no % 2 != 0:
-                self.pending_acks.add(i.msg_id)
+                if i.msg_id in self.pending_acks:
+                    continue
+                else:
+                    self.pending_acks.add(i.msg_id)
 
             # log.debug("{}".format(type(i.body)))
 
