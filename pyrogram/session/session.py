@@ -275,12 +275,10 @@ class Session:
 
             if isinstance(i.body, (types.BadMsgNotification, types.BadServerSalt)):
                 msg_id = i.body.bad_msg_id
-            elif isinstance(i.body, types.RpcResult):
+            elif isinstance(i.body, (core.FutureSalts, types.RpcResult)):
                 msg_id = i.body.req_msg_id
             elif isinstance(i.body, types.Pong):
                 msg_id = i.body.msg_id
-            elif isinstance(i.body, core.FutureSalts):
-                msg_id = i.body.req_msg_id
             else:
                 if self.update_handler:
                     self.update_handler(i.body)
