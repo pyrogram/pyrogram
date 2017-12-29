@@ -20,6 +20,8 @@ from pyrogram.api import types
 
 
 class ChatAction:
+    """This class provides constants to be used for sending Chat Actions"""
+
     CANCEL = types.SendMessageCancelAction
     TYPING = types.SendMessageTypingAction
     PLAYING = types.SendMessageGamePlayAction

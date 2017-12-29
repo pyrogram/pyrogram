@@ -43,7 +43,8 @@ from pyrogram.api.types import (
     PeerUser, PeerChat, PeerChannel,
     Dialog, Message,
     InputPeerEmpty, InputPeerSelf,
-    InputPeerUser, InputPeerChat, InputPeerChannel)
+    InputPeerUser, InputPeerChat, InputPeerChannel
+)
 from pyrogram.crypto import CTR
 from pyrogram.extensions import Markdown
 from pyrogram.session import Auth, Session
@@ -54,6 +55,13 @@ Config = namedtuple("Config", ["api_id", "api_hash"])
 
 
 class Client:
+    """This object represents a Telegram Client.
+
+    Args:
+        session_name: Name to uniquely identify an authorized session.
+        test_mode: Enable or disable log-in to testing servers.
+    """
+
     INVITE_LINK_RE = re.compile(r"^(?:https?:\/\/)?t\.me\/joinchat\/(.+)$")
     DIALOGS_AT_ONCE = 100
 
@@ -78,11 +86,52 @@ class Client:
         self.update_handler = None
         self.is_idle = Event()
 
+    def start(self):
+        """Use this method to start the Client after creating it."""
+        self.load_config()
+        self.load_session(self.session_name)
+
+        self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+
+        terms = self.session.start()
+
+        if self.user_id is None:
+            print("\n".join(terms.splitlines()), "\n")
+
+            self.user_id = self.authorize()
+            self.save_session()
+
+        self.session.update_handler = self.update_handler
+        self.rnd_id = self.session.msg_id
+        self.get_dialogs()
+
+        mimetypes.init()
+
+    def stop(self):
+        """Use this method to manually stop the Client."""
+        self.session.stop()
+
     # TODO: Better update handler
     def set_update_handler(self, callback: callable):
+        """Use this method to set the update handler
+
+        Args:
+            callback:
+                A callback function that accepts a single argument: the update object.
+        """
         self.update_handler = callback
 
     def send(self, data: Object):
+        """Use this method to send Raw Function calls.
+
+        This method makes possible to manually call every single Telegram API method in a low-level manner.
+        Functions are listed in the **pyrogram.api.functions** package.
+
+        Args:
+            data:
+                The API Scheme function filled with proper arguments.
+
+        """
         return self.session.send(data)
 
     def signal_handler(self, *args):
@@ -90,6 +139,13 @@ class Client:
         self.is_idle.set()
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Blocks the program execution until one of the signals are received,
+        then gently stop the Client by closing the underlying connection.
+
+        Args:
+            stop_signals:
+                Iterable containing signals the signal handler will listen to.
+        """
         for s in stop_signals:
             signal(s, self.signal_handler)
 
@@ -255,29 +311,6 @@ class Client:
                 indent=4
             )
 
-    def start(self):
-        self.load_config()
-        self.load_session(self.session_name)
-
-        self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
-
-        terms = self.session.start()
-
-        if self.user_id is None:
-            print("\n".join(terms.splitlines()), "\n")
-
-            self.user_id = self.authorize()
-            self.save_session()
-
-        self.session.update_handler = self.update_handler
-        self.rnd_id = self.session.msg_id
-        self.get_dialogs()
-
-        mimetypes.init()
-
-    def stop(self):
-        self.session.stop()
-
     def get_dialogs(self):
         peers = []
 
@@ -394,6 +427,11 @@ class Client:
                 raise PeerIdInvalid
 
     def get_me(self):
+        """A simple method for testing the user authorization. Requires no parameters.
+
+        Returns:
+            Full information about the user in form of a **UserFull** object.
+        """
         return self.send(
             functions.users.GetFullUser(
                 InputPeerSelf()
@@ -406,6 +444,29 @@ class Client:
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
                      reply_to_msg_id: int = None):
+        """Use this method to send text messages.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            text:
+                Text of the message to be sent.
+
+            disable_web_page_preview:
+                Disables link previews for links in this message.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_msg_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
         return self.send(
             functions.messages.SendMessage(
                 peer=self.resolve_peer(chat_id),
@@ -422,6 +483,27 @@ class Client:
                          from_chat_id: int or str,
                          message_ids: list,
                          disable_notification: bool = None):
+        """Use this method to forward messages of any kind.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            from_chat_id:
+                Unique identifier for the chat where the original message was sent
+                (or channel username in the format @channelusername).
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            message_ids:
+                A list of Message identifiers in the chat specified in *from_chat_id*.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
         return self.send(
             functions.messages.ForwardMessages(
                 to_peer=self.resolve_peer(chat_id),
@@ -432,12 +514,418 @@ class Client:
             )
         )
 
+    def send_photo(self,
+                   chat_id: int or str,
+                   photo: str,
+                   caption: str = "",
+                   ttl_seconds: int = None,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        """Use this method to send photos.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            photo:
+                Photo to send.
+                Pass a file path as string to send a photo that exists on your local machine.
+
+            caption:
+                Photo caption, 0-200 characters.
+
+            ttl_seconds:
+                Self-Destruct Timer.
+                If you set a timer, the photo will self-destruct after it was viewed.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(photo)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=file,
+                            caption=caption,
+                            ttl_seconds=ttl_seconds
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(photo, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
+    def send_audio(self,
+                   chat_id: int or str,
+                   audio: str,
+                   caption: str = "",
+                   duration: int = 0,
+                   performer: str = None,
+                   title: str = None,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        """Use this method to send audio files.
+
+        For sending voice messages, use the **send_voice** method instead.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            audio:
+                Audio file to send.
+                Pass a file path as string to send an audio file that exists on your local machine.
+
+            caption:
+                Audio caption, 0-200 characters.
+
+            duration:
+                Duration of the audio in seconds.
+
+            performer:
+                Performer.
+
+            title:
+                Track name.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(audio)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeAudio(
+                                    duration=duration,
+                                    performer=performer,
+                                    title=title
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(audio))
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(audio, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
+    def send_document(self,
+                      chat_id: int or str,
+                      document: str,
+                      caption: str = "",
+                      disable_notification: bool = None,
+                      reply_to_message_id: int = None):
+        """Use this method to send general files.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            document:
+                File to send.
+                Pass a file path as string to send a file that exists on your local machine.
+
+            caption:
+                Document caption, 0-200 characters.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(document)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeFilename(os.path.basename(document))
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(document, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
+    def send_video(self,
+                   chat_id: int or str,
+                   video: str,
+                   duration: int = 0,
+                   width: int = 0,
+                   height: int = 0,
+                   caption: str = "",
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        """Use this method to send video files.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            video:
+                Video to send.
+                Pass a file path as string to send a video that exists on your local machine.
+
+            duration:
+                Duration of sent video in seconds.
+
+            width:
+                Video width.
+
+            height:
+                Video height.
+
+            caption:
+                Video caption, 0-200 characters.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(video)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map[".mp4"],
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    duration=duration,
+                                    w=width,
+                                    h=height
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(video, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
+    def send_voice(self,
+                   chat_id: int or str,
+                   voice: str,
+                   caption: str = "",
+                   duration: int = 0,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None):
+        """Use this method to send audio files.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            voice:
+                Audio file to send.
+                Pass a file path as string to send an audio file that exists on your local machine.
+
+            caption:
+                Voice message caption, 0-200 characters.
+
+            duration:
+                Duration of the voice message in seconds.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(voice)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
+                            file=file,
+                            caption=caption,
+                            attributes=[
+                                types.DocumentAttributeAudio(
+                                    voice=True,
+                                    duration=duration
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(voice, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
+    def send_video_note(self,
+                        chat_id: int or str,
+                        video_note: str,
+                        duration: int = 0,
+                        length: int = 1,
+                        disable_notification: bool = None,
+                        reply_to_message_id: int = None):
+        """Use this method to send video messages.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            video_note:
+                Video note to send.
+                Pass a file path as string to send a video note that exists on your local machine.
+
+            duration:
+                Duration of sent video in seconds.
+
+            length:
+                Video width and height.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message
+
+        Returns:
+            On success, the sent Message is returned.
+        """
+        file = self.save_file(video_note)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map[".mp4"],
+                            file=file,
+                            caption="",
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    round_message=True,
+                                    duration=duration,
+                                    w=length,
+                                    h=length
+                                )
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id()
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(video_note, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
     def send_location(self,
                       chat_id: int or str,
                       latitude: float,
                       longitude: float,
                       disable_notification: bool = None,
                       reply_to_message_id: int = None):
+        """Use this method to send points on the map.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            latitude:
+                Latitude of the location.
+
+            longitude:
+                Longitude of the location.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message
+
+        Returns:
+            On success, the sent Message is returned.
+        """
         return self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
@@ -462,6 +950,38 @@ class Client:
                    foursquare_id: str = "",
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
+        """Use this method to send information about a venue.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            latitude:
+                Latitude of the venue.
+
+            longitude:
+                Longitude of the venue.
+
+            title:
+                Name of the venue.
+
+            address:
+                Address of the venue.
+
+            foursquare_id:
+                Foursquare identifier of the venue.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message
+
+        Returns:
+            On success, the sent Message is returned.
+        """
         return self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
@@ -489,6 +1009,32 @@ class Client:
                      last_name: str,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None):
+        """Use this method to send phone contacts.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            phone_number:
+                Contact's phone number.
+
+            first_name:
+                Contact's first name.
+
+            last_name:
+                Contact's last name.
+
+            disable_notification:
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id:
+                If the message is a reply, ID of the original message.
+
+        Returns:
+             On success, the sent Message is returned.
+        """
         return self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
@@ -507,10 +1053,53 @@ class Client:
                          chat_id: int or str,
                          action: callable,
                          progress: int = 0):
+        """Use this method when you need to tell the other party that something is happening on your side.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            action:
+                Type of action to broadcast.
+                Choose one from the :class:`pyrogram.ChatAction` class,
+                depending on what the user is about to receive.
+
+            progress:
+                Progress of the upload process.
+
+        """
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
                 action=action(progress=progress)
+            )
+        )
+
+    def get_user_profile_photos(self,
+                                user_id: int or str,
+                                offset: int = 0,
+                                limit: int = 100):
+        """Use this method to get a list of profile pictures for a user.
+
+        Args:
+            user_id:
+                Unique identifier of the target user.
+
+            offset:
+                Sequential number of the first photo to be returned.
+                By default, all photos are returned.
+
+            limit:
+                Limits the number of photos to be retrieved.
+                Values between 1—100 are accepted. Defaults to 100.
+        """
+        return self.send(
+            functions.photos.GetUserPhotos(
+                user_id=self.resolve_peer(user_id),
+                offset=offset,
+                max_id=0,
+                limit=limit
             )
         )
 
@@ -519,6 +1108,22 @@ class Client:
                           message_id: int,
                           text: str,
                           disable_web_page_preview: bool = None):
+        """Use this method to edit text messages.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            message_id:
+                Message identifier in the chat specified in chat_id.
+
+            text:
+                New text of the message.
+
+            disable_web_page_preview:
+                Disables link previews for links in this message.
+        """
         return self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
@@ -532,6 +1137,19 @@ class Client:
                              chat_id: int or str,
                              message_id: int,
                              caption: str):
+        """Use this method to edit captions of messages.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            message_id:
+                Message identifier in the chat specified in chat_id.
+
+            caption:
+                New caption of the message.
+        """
         return self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
@@ -543,6 +1161,21 @@ class Client:
     def delete_messages(self,
                         message_ids: list,
                         revoke: bool = None):
+        """Use this method to delete messages, including service messages, with the following limitations:
+
+        - A message can only be deleted if it was sent less than 48 hours ago.
+        - Users can delete outgoing messages in groups and supergroups.
+        - Users granted *can_post_messages* permissions can delete outgoing messages in channels.
+        - If the user is an administrator of a group, it can delete any message there.
+        - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
+
+        Args:
+            message_ids:
+                List of identifiers of the messages to delete.
+
+            revoke:
+                Deletes messages on both parts (for private chats).
+        """
         # TODO: Maybe "revoke" is superfluous.
         # If I want to delete a message, chances are I want it to
         # be deleted even from the other side
@@ -606,215 +1239,6 @@ class Client:
             )
         finally:
             session.stop()
-
-    def send_photo(self,
-                   chat_id: int or str,
-                   photo: str,
-                   caption: str = "",
-                   ttl_seconds: int = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None):
-        file = self.save_file(photo)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=file,
-                            caption=caption,
-                            ttl_seconds=ttl_seconds
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(photo, file_id=file.id, file_part=e.x)
-            else:
-                return r
-
-    def send_audio(self,
-                   chat_id: int or str,
-                   audio: str,
-                   caption: str = "",
-                   duration: int = 0,
-                   performer: str = None,
-                   title: str = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None):
-        file = self.save_file(audio)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            caption=caption,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    duration=duration,
-                                    performer=performer,
-                                    title=title
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(audio))
-                            ]
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(audio, file_id=file.id, file_part=e.x)
-            else:
-                return r
-
-    def send_document(self,
-                      chat_id: int or str,
-                      document: str,
-                      caption: str = "",
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None):
-        file = self.save_file(document)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
-                            file=file,
-                            caption=caption,
-                            attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(document))
-                            ]
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(document, file_id=file.id, file_part=e.x)
-            else:
-                return r
-
-    def send_video(self,
-                   chat_id: int or str,
-                   video: str,
-                   duration: int = 0,
-                   width: int = 0,
-                   height: int = 0,
-                   caption: str = "",
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None):
-        file = self.save_file(video)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
-                            file=file,
-                            caption=caption,
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    duration=duration,
-                                    w=width,
-                                    h=height
-                                )
-                            ]
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(video, file_id=file.id, file_part=e.x)
-            else:
-                return r
-
-    def send_voice(self,
-                   chat_id: int or str,
-                   voice: str,
-                   caption: str = "",
-                   duration: int = 0,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None):
-        file = self.save_file(voice)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            caption=caption,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    voice=True,
-                                    duration=duration
-                                )
-                            ]
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(voice, file_id=file.id, file_part=e.x)
-            else:
-                return r
-
-    def send_video_note(self,
-                        chat_id: int or str,
-                        video_note: str,
-                        duration: int = 0,
-                        length: int = 1,
-                        disable_notification: bool = None,
-                        reply_to_message_id: int = None):
-        file = self.save_file(video_note)
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
-                            file=file,
-                            caption="",
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    round_message=True,
-                                    duration=duration,
-                                    w=length,
-                                    h=length
-                                )
-                            ]
-                        ),
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
-                    )
-                )
-            except FilePartMissing as e:
-                self.save_file(video_note, file_id=file.id, file_part=e.x)
-            else:
-                return r
 
     def get_file(self,
                  dc_id: int,
@@ -961,20 +1385,14 @@ class Client:
         finally:
             session.stop()
 
-    def get_user_profile_photos(self,
-                                user_id: int or str,
-                                offset: int = 0,
-                                limit: int = 100):
-        return self.send(
-            functions.photos.GetUserPhotos(
-                user_id=self.resolve_peer(user_id),
-                offset=offset,
-                max_id=0,
-                limit=limit
-            )
-        )
-
     def join_chat(self, chat_id: str):
+        """Use this method to join a group chat or channel.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
+                channel (in the format @channelusername)
+        """
         match = self.INVITE_LINK_RE.match(chat_id)
 
         if match:
@@ -1002,6 +1420,16 @@ class Client:
             )
 
     def leave_chat(self, chat_id: int or str, delete: bool = False):
+        """Use this method to leave a group chat or channel.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+            delete:
+                Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
+        """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
@@ -1029,6 +1457,18 @@ class Client:
             return r
 
     def export_chat_invite_link(self, chat_id: int or str):
+        """Use this method to export an invite link to a supergroup or a channel.
+
+        The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Args:
+            chat_id:
+                Unique identifier for the target chat or username of the target channel
+                (in the format @channelusername).
+
+        Returns:
+            On success, the exported invite link as string is returned.
+        """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
