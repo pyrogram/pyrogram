@@ -24,6 +24,9 @@ from .exceptions.all import exceptions
 
 
 class Error(Exception):
+    """This is the base exception class for all Telegram API related errors.
+    For a finer grained control, see the specific errors below.
+    """
     ID = None
     CODE = None
     NAME = None
@@ -65,6 +68,10 @@ class Error(Exception):
 
 
 class UnknownError(Error):
+    """This object represents an Unknown Error, that is, an error which
+    Pyrogram does not know anything about, yet.
+    """
     CODE = 520
+    """:obj:`int`: Error code"""
     NAME = "Unknown error"
     MESSAGE = "{x}"
