@@ -89,6 +89,9 @@ please refer to the `Wiki`_:
 
 -   `Introduction`_
 
+Other references:
+
+-   `docs.pyrogram.ml`_
 
 Development
 ===========
@@ -105,23 +108,8 @@ functions.
 Documentation
 =============
 
-Soon. For now, have a look at the ``pyrogram.Client`` code to get some insights.
-
-Currently you are able to easily:
-
--   ``send_message``
-
--   ``forward_messages``
-
--   ``edit_message_text``
-
--   ``delete_messages``
-
--   ``send_chat_action``
-
--   Some more...
-
-as well as listening for updates and catching API errors.
+- Pyrogram's API documentation at `docs.pyrogram.ml`_.
+- Guides and examples can be found on the `Wiki`_.
 
 
 Contribution
@@ -165,6 +153,8 @@ License
 
 .. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
 
+.. _`docs.pyrogram.ml`: https://docs.pyrogram.ml
+
 .. _`bot-like`: https://core.telegram.org/bots/api#available-methods
 
 .. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
@@ -186,12 +176,12 @@ License
         <b>Telegram MTProto API Client Library for Python</b>
         
         <br>
-        <a href="https://pypi.python.org/pypi/Pyrogram">
-            Download
-        </a>
-        •
         <a href="https://github.com/pyrogram/pyrogram/wiki">
             Wiki
+        </a>
+        •
+        <a href="https://docs.pyrogram.ml">
+            Documentation
         </a>
         •
         <a href="https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw">
