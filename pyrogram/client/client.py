@@ -111,6 +111,23 @@ class Client:
         """Use this method to manually stop the Client."""
         self.session.stop()
 
+    def signal_handler(self, *args):
+        self.stop()
+        self.is_idle.set()
+
+    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Blocks the program execution until one of the signals are received,
+        then gently stop the Client by closing the underlying connection.
+
+        Args:
+            stop_signals:
+                Iterable containing signals the signal handler will listen to.
+        """
+        for s in stop_signals:
+            signal(s, self.signal_handler)
+
+        self.is_idle.wait()
+
     # TODO: Better update handler
     def set_update_handler(self, callback: callable):
         """Use this method to set the update handler
@@ -131,25 +148,10 @@ class Client:
             data:
                 The API Scheme function filled with proper arguments.
 
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.session.send(data)
-
-    def signal_handler(self, *args):
-        self.stop()
-        self.is_idle.set()
-
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Blocks the program execution until one of the signals are received,
-        then gently stop the Client by closing the underlying connection.
-
-        Args:
-            stop_signals:
-                Iterable containing signals the signal handler will listen to.
-        """
-        for s in stop_signals:
-            signal(s, self.signal_handler)
-
-        self.is_idle.wait()
 
     def authorize(self):
         while True:
@@ -431,6 +433,9 @@ class Client:
 
         Returns:
             Full information about the user in form of a **UserFull** object.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.users.GetFullUser(
@@ -466,6 +471,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.SendMessage(
@@ -503,6 +511,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.ForwardMessages(
@@ -548,6 +559,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(photo)
 
@@ -614,6 +628,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(audio)
 
@@ -674,6 +691,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(document)
 
@@ -741,6 +761,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(video)
 
@@ -804,6 +827,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(voice)
 
@@ -866,6 +892,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         file = self.save_file(video_note)
 
@@ -925,6 +954,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -981,6 +1013,9 @@ class Client:
 
         Returns:
             On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1034,6 +1069,9 @@ class Client:
 
         Returns:
              On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1068,6 +1106,8 @@ class Client:
             progress:
                 Progress of the upload process.
 
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.SetTyping(
@@ -1093,6 +1133,9 @@ class Client:
             limit:
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.photos.GetUserPhotos(
@@ -1123,6 +1166,9 @@ class Client:
 
             disable_web_page_preview:
                 Disables link previews for links in this message.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.EditMessage(
@@ -1149,6 +1195,9 @@ class Client:
 
             caption:
                 New caption of the message.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         return self.send(
             functions.messages.EditMessage(
@@ -1175,6 +1224,9 @@ class Client:
 
             revoke:
                 Deletes messages on both parts (for private chats).
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         # TODO: Maybe "revoke" is superfluous.
         # If I want to delete a message, chances are I want it to
@@ -1392,6 +1444,9 @@ class Client:
             chat_id:
                 Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
                 channel (in the format @channelusername)
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 
@@ -1429,6 +1484,9 @@ class Client:
 
             delete:
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         peer = self.resolve_peer(chat_id)
 
@@ -1468,6 +1526,9 @@ class Client:
 
         Returns:
             On success, the exported invite link as string is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         peer = self.resolve_peer(chat_id)
 
