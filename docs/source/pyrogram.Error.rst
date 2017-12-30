@@ -1,7 +1,7 @@
 pyrogram.Error
 ===============
 
-.. autoclass:: pyrogram.Error
+.. autoexception:: pyrogram.Error
     :members:
     :show-inheritance:
 
