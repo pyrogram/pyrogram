@@ -39,6 +39,9 @@ extensions = [
     'sphinx.ext.napoleon'
 ]
 
+# Don't show source files on docs
+html_show_sourcelink = False
+
 # Order by source, not alphabetically
 autodoc_member_order = 'bysource'
 
