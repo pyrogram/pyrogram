@@ -108,12 +108,12 @@ def start():
                         notice=notice,
                         super_class=super_class,
                         code=code,
-                        name="\"{}\"".format(name),
+                        docstring='"""{}"""'.format(name),
                         sub_classes="".join([sub_class_template.format(
                             sub_class=k[0],
                             super_class=super_class,
                             id="\"{}\"".format(k[1]),
-                            message="\"{}\"".format(k[2])
+                            docstring='"""{}"""'.format(k[2])
                         ) for k in sub_classes])
                     )
 

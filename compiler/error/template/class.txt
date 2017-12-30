@@ -4,8 +4,10 @@ from ..error import Error
 
 
 class {super_class}(Error):
+    {docstring}
     CODE = {code}
-    NAME = {name}
+    """:obj:`int`: Error Code"""
+    NAME = __doc__
 
 
 {sub_classes}
