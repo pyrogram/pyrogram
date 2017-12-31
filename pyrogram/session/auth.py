@@ -32,6 +32,8 @@ log = logging.getLogger(__name__)
 
 
 class Auth:
+    MAX_RETRIES = 5
+
     CURRENT_DH_PRIME = int(
         "C71CAEB9C6B1C9048E6C522F70F13F73980D40238E3E21C14934D037563D930F"
         "48198A0AA7C14058229493D22530F4DBFA336F6E0AC925139543AED44CCE7C37"
@@ -76,9 +78,10 @@ class Auth:
         https://core.telegram.org/mtproto/auth_key
         https://core.telegram.org/mtproto/samples-auth_key
         """
+        retries_left = self.MAX_RETRIES
 
         # The server may close the connection at any time, causing the auth key creation to fail.
-        # If that happens, just try again until it succeed.
+        # If that happens, just try again up to MAX_RETRIES times.
         while True:
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))
@@ -243,6 +246,11 @@ class Auth:
                     )
                 )
             except Exception as e:
+                if retries_left:
+                    retries_left -= 1
+                else:
+                    raise e
+
                 log.warning("Auth key creation failed. Let's try again: {}".format(repr(e)))
                 time.sleep(1)
                 continue
