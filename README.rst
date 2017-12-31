@@ -88,13 +88,10 @@ Getting Started
         )
     
 That's all you need for getting started with Pyrogram. For more detailed information,
-please refer to the `Wiki`_:
+please refer to the documentation:
 
--   `Introduction`_
-
-Other references:
-
--   https://docs.pyrogram.ml
+-   Wiki: `Introduction`_.
+-   Docs: https://docs.pyrogram.ml.
 
 Development
 ===========
