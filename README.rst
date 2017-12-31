@@ -80,9 +80,12 @@ Getting Started
 
         client = Client(session_name="example")
         client.start()
-
-        # Get information about yourself
-        print(client.get_me())
+        
+        # Send a message to yourself (Saved Messages)
+        client.send_message(
+            chat_id="me",
+            text="Hi there! I'm using Pyrogram"
+        )
     
 That's all you need for getting started with Pyrogram. For more detailed information,
 please refer to the `Wiki`_:
@@ -91,7 +94,7 @@ please refer to the `Wiki`_:
 
 Other references:
 
--   `docs.pyrogram.ml`_
+-   https://docs.pyrogram.ml
 
 Development
 ===========
@@ -108,7 +111,7 @@ functions.
 Documentation
 =============
 
-- Pyrogram's API documentation at `docs.pyrogram.ml`_.
+- Pyrogram's API documentation at https://docs.pyrogram.ml.
 - Guides and examples can be found on the `Wiki`_.
 
 
@@ -153,8 +156,6 @@ License
 
 .. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
 
-.. _`docs.pyrogram.ml`: https://docs.pyrogram.ml
-
 .. _`bot-like`: https://core.telegram.org/bots/api#available-methods
 
 .. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
@@ -176,6 +177,10 @@ License
         <b>Telegram MTProto API Client Library for Python</b>
         
         <br>
+        <a href="https://pypi.python.org/pypi/Pyrogram">
+            Download
+        </a>
+        •
         <a href="https://github.com/pyrogram/pyrogram/wiki">
             Wiki
         </a>
@@ -185,7 +190,7 @@ License
         </a>
         •
         <a href="https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw">
-            Telegram Group
+            Group Chat
         </a
         <br><br><br>
         <a href="compiler/api/source/main_api.tl">
