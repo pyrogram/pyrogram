@@ -3,11 +3,13 @@ Welcome to Pyrogram
 
 .. raw:: html
 
-    <h1 align="center">
-        <a href="https://pyrogram.ml">
-            <div><img src="https://pyrogram.ml/images/logo2.png" alt="Pyrogram Icon"></div>
-        </a>
-    </h1>
+    <div align="center">
+        <img src="https://pyrogram.ml/images/logo2.png" alt="Logo">
+    </div>
+
+    <p align="center">
+        <b>Telegram MTProto API Client Library for Python</b>
+    </p>
 
 Welcome to Pyrogram's documentation. Here you can find a detailed description of the Pyrogram API.
 You will notice that methods are named after the well established `Telegram Bot API`_ and that most of them
