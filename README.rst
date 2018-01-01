@@ -133,7 +133,7 @@ Means for getting in touch:
 License
 =======
 
--   Copyright (C) 2017 Dan Tès <https://github.com/delivrance>
+-   Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
 
 -   Licensed under the terms of the
     `GNU Lesser General Public License v3 or later (LGPLv3+)`_
@@ -187,7 +187,7 @@ License
         </a>
         •
         <a href="https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw">
-            Group Chat
+            Community
         </a
         <br><br><br>
         <a href="compiler/api/source/main_api.tl">
