@@ -5,7 +5,9 @@ Table of Contents
 
 -   `Overview`_
 
--   `Requirements`_
+    -   `Features`_
+
+    -   `Requirements`_
 
 -   `Installation`_
 
@@ -25,25 +27,37 @@ Table of Contents
 Overview
 ========
 
-**Pyrogram** is a Client Library written from the ground up in Python, designed
-for Python application developers. It offers simple and complete access to the
-`Telegram Messenger API`_. Pyrogram:
+**Pyrogram** is a fully functional Telegram Client Library written from the ground up in Python.
+It offers simple and complete access to the `Telegram Messenger API`_ and is designed for Python
+developers keen on building custom Telegram applications.
 
--   Provides idiomatic, developer-friendly Python code (either generated or
-    hand-written) making the Telegram API simple to use.
 
--   Handles all the low-level details of communication with the Telegram servers
-    by implementing the `MTProto Mobile Protocol v2.0`_.
+Features
+--------
 
--   Makes use of the latest Telegram API version (`Layer 73`_).
+-   **Easy to setup**: Pyrogram can be easily installed and upgraded using ``pip``, requires
+    a minimal set of dependencies (which are also automatically managed) and very few lines
+    of code to get started with.
 
--   Can be easily installed and upgraded using ``pip``.
+-   **Easy to use**: Pyrogram provides idiomatic, developer-friendly, clean and readable
+    Python code (either generated or hand-written) making the Telegram API simple to use.
+    
+-   **High level**: Pyrogram automatically handles all the low-level details of
+    communication with the Telegram servers by implementing the
+    `MTProto Mobile Protocol v2.0`_ and the mechanisms needed for establishing
+    a reliable connection.
+    
+-   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 73`_.
+    
+-   **Documented**: Pyrogram API public methods are documented and resemble the well
+    established Telegram Bot API, thus offering a familiar look to Bot developers.
 
--   Requires a minimal set of dependencies.
+-   **Full API support**: Beside the simple, bot-like methods offered by the Pyrogram API,
+    the library also provides a complete, low-level access to every single Telegram API method.
 
 
 Requirements
-============
+------------
 
 -   Python 3.3 or higher.
 
