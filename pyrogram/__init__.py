@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__copyright__ = "Copyright (C) 2017 Dan Tès <https://github.com/delivrance>"
+__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.3.0"
 

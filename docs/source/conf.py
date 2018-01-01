@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Pyrogram'
-copyright = '2017, Dan Tès'
+copyright = '2017-2018, Dan Tès'
 author = 'Dan Tès'
 
 # The version info for the project you're documenting, acts as replacement for
