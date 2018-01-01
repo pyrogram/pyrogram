@@ -4,7 +4,9 @@ Welcome to Pyrogram
 .. raw:: html
 
     <div align="center">
-        <img src="https://pyrogram.ml/images/logo2.png" alt="Logo">
+        <a href="https://pyrogram.ml">
+            <img src="https://pyrogram.ml/images/logo2.png" alt="Logo">
+        </a>
     </div>
 
     <p align="center">
