@@ -9,9 +9,13 @@ Table of Contents
 
     -   `Requirements`_
 
--   `Installation`_
-
 -   `Getting Started`_
+    
+    -   `Installation`_
+    
+    -   `Setup`_
+    
+    -   `Usage`_
 
 -   `Development`_
 
@@ -62,20 +66,22 @@ Requirements
 -   Python 3.3 or higher.
 
 -   A Telegram API key.
-
-
-Installation
-============
-
-You can easily install and upgrade the library using standard Python tools:
-
-.. code:: shell
-
-    $ pip install --upgrade pyrogram
     
 
 Getting Started
 ===============
+
+Installation
+------------
+
+-   You can easily install and upgrade the library using standard Python tools:
+
+    .. code:: shell
+
+        $ pip install --upgrade pyrogram
+
+Setup
+-----
 
 -   Create a new ``config.ini`` file at the root of your working directory, copy-paste
     the following and replace the **api_id** and **api_hash** values with `your own`_:
@@ -86,20 +92,27 @@ Getting Started
         api_id = 12345
         api_hash = 0123456789abcdef0123456789abcdef
 
--   Then you can start with this:
+Usage
+-----
+
+-   You can now start by running the code below from a new Python file.
 
     .. code:: python
 
         from pyrogram import Client
-
+        
+        # Create and start a new Client
         client = Client(session_name="example")
         client.start()
-        
-        # Send a message to yourself (Saved Messages)
+
+        # Send a text message to yourself (Saved Messages)
         client.send_message(
             chat_id="me",
             text="Hi there! I'm using Pyrogram"
         )
+        
+        # When done, stop the Client
+        client.stop()
     
 That's all you need for getting started with Pyrogram. For more detailed information,
 please refer to the documentation:
@@ -165,7 +178,7 @@ License
 
 .. _`Introduction`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
 
-.. _`Telegram`: https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw
+.. _`Telegram`: https://t.me/haskell
 
 .. _`bot-like`: https://core.telegram.org/bots/api#available-methods
 
