@@ -6,6 +6,9 @@ from pyrogram.api.core import *
 
 
 class {class_name}(Object):
+    """
+    {docstring_args}
+    """
     ID = {object_id}
 
     def __init__(self{arguments}, **kwargs):

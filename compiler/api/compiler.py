@@ -178,6 +178,58 @@ class Compiler:
             ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in args]
         ) if args else "pass"
 
+        docstring_args = []
+
+        for i, arg in enumerate(sorted_args):
+            arg_name, arg_type = arg
+            is_optional = arg_type.startswith("flags.")
+            arg_type = arg_type.split("?")[-1]
+
+            if arg_type in core_types:
+                if "int" in arg_type or arg_type == "long":
+                    arg_type = "``int``"
+                elif arg_type == "double":
+                    arg_type = "``float``"
+                else:
+                    arg_type = "``{}``".format(arg_type.lower())
+            elif arg_type == "true":
+                arg_type = "``bool``"
+            elif arg_type == "!X":
+                arg_type = "A function from :class:`pyrogram.api.functions`"
+            else:
+                if arg_type.startswith("Vector"):
+                    sub_type = arg_type.split("<")[1][:-1]
+
+                    if sub_type in core_types:
+                        arg_type = "List of ``{}``".format(self.caml(sub_type))
+                    else:
+                        arg_type = "List of :class:`pyrogram.api.types.{}`".format(
+                            ".".join(
+                                arg_type.split(".")[:-1]
+                                + [self.caml(arg_type.split(".")[-1])]
+                            )
+                        )
+                else:
+                    arg_type = ":class:`pyrogram.api.types.{}`".format(
+                        ".".join(
+                            arg_type.split(".")[:-1]
+                            + [self.caml(arg_type.split(".")[-1])]
+                        )
+                    )
+
+            docstring_args.append(
+                "{}: {}{}".format(
+                    arg_name,
+                    arg_type,
+                    " (optional)" if is_optional else ""
+                )
+            )
+
+        if docstring_args:
+            docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
+        else:
+            docstring_args = "No parameters required."
+
         if has_flags:
             write_flags = []
             for i in args:
@@ -268,6 +320,7 @@ class Compiler:
                 self.template.format(
                     notice=self.notice,
                     class_name=self.caml(name),
+                    docstring_args=docstring_args,
                     object_id=object_id,
                     arguments=arguments,
                     fields=fields,
