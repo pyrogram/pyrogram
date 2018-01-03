@@ -55,11 +55,19 @@ Config = namedtuple("Config", ["api_id", "api_hash"])
 
 
 class Client:
-    """This object represents a Telegram Client.
+    """This class represents a Client, the main mean for interacting with Telegram.
+    It exposes bot-like methods for an easy access to the API as well as a simple way to
+    invoke every single Telegram API method available.
 
     Args:
-        session_name: Name to uniquely identify an authorized session.
-        test_mode: Enable or disable log-in to testing servers.
+        session_name (:obj:`str`):
+            Name to uniquely identify an authorized session. It will be used
+            to save the session to a file named ``<session_name>.session``.
+
+        test_mode (:obj:`bool`, optional):
+            Enable or disable log-in to testing servers. Defaults to ``False``.
+            Only applicable for new sessions and will be ignored in case previously
+            created sessions are loaded.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?:\/\/)?t\.me\/joinchat\/(.+)$")
@@ -87,7 +95,8 @@ class Client:
         self.is_idle = Event()
 
     def start(self):
-        """Use this method to start the Client after creating it."""
+        """Use this method to start the Client after creating it.
+        Requires no parameters."""
         self.load_config()
         self.load_session(self.session_name)
 
@@ -108,7 +117,9 @@ class Client:
         mimetypes.init()
 
     def stop(self):
-        """Use this method to manually stop the Client."""
+        """Use this method to manually stop the Client.
+        Requires no parameters.
+        """
         self.session.stop()
 
     def signal_handler(self, *args):
@@ -120,8 +131,9 @@ class Client:
         then gently stop the Client by closing the underlying connection.
 
         Args:
-            stop_signals:
+            stop_signals (:obj:`tuple`, optional):
                 Iterable containing signals the signal handler will listen to.
+                Defaults to ``(SIGINT, SIGTERM, SIGABRT)``.
         """
         for s in stop_signals:
             signal(s, self.signal_handler)
@@ -130,26 +142,29 @@ class Client:
 
     # TODO: Better update handler
     def set_update_handler(self, callback: callable):
-        """Use this method to set the update handler
+        """Use this method to set the update handler.
 
         Args:
-            callback:
+            callback (:obj:`callable`):
                 A callback function that accepts a single argument: the update object.
         """
         self.update_handler = callback
 
     def send(self, data: Object):
-        """Use this method to send Raw Function calls.
+        """Use this method to send `Raw Function`_ queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
-        Functions are listed in the **pyrogram.api.functions** package.
+        Available functions are listed in the ``pyrogram.api.functions`` package and may accept compound
+        data types from ``pyrogram.api.types`` as well as bare types such as ``int``, ``str``, etc...
 
         Args:
-            data:
+            data (:obj:`Object`):
                 The API Scheme function filled with proper arguments.
 
         Raises:
             :class:`pyrogram.Error`
+
+        .. _`Raw Function`: https://github.com/pyrogram/pyrogram/wiki/Usage#using-raw-functions
         """
         return self.session.send(data)
 
@@ -432,7 +447,7 @@ class Client:
         """A simple method for testing the user authorization. Requires no parameters.
 
         Returns:
-            Full information about the user in form of a **UserFull** object.
+            Full information about the user in form of a ``types.UserFull`` object.
 
         Raises:
             :class:`pyrogram.Error`
@@ -452,21 +467,22 @@ class Client:
         """Use this method to send text messages.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            text:
+            text (:obj:`str`):
                 Text of the message to be sent.
 
-            disable_web_page_preview:
+            disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_msg_id:
+            reply_to_msg_id (:obj:`bool`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -494,20 +510,22 @@ class Client:
         """Use this method to forward messages of any kind.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            from_chat_id:
+            from_chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the chat where the original message was sent
-                (or channel username in the format @channelusername).
+                (or channel/supergroup username in the format @username). For your personal cloud
+                storage (Saved Messages) you can simply use "me" or "self".
 
-            disable_notification:
+            message_ids (:obj:`list`):
+                A list of Message identifiers in the chat specified in *from_chat_id*.
+
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
-
-            message_ids:
-                A list of Message identifiers in the chat specified in *from_chat_id*.
 
         Returns:
             On success, the sent Message is returned.
@@ -535,26 +553,28 @@ class Client:
         """Use this method to send photos.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            photo:
+            photo (:obj:`str`):
                 Photo to send.
                 Pass a file path as string to send a photo that exists on your local machine.
 
-            caption:
+            caption (:obj:`bool`, optional):
                 Photo caption, 0-200 characters.
 
-            ttl_seconds:
+            ttl_seconds (:obj:`int`, optional):
                 Self-Destruct Timer.
-                If you set a timer, the photo will self-destruct after it was viewed.
+                If you set a timer, the photo will self-destruct in :obj:`ttl_seconds`
+                seconds after it was viewed.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -596,34 +616,35 @@ class Client:
                    reply_to_message_id: int = None):
         """Use this method to send audio files.
 
-        For sending voice messages, use the **send_voice** method instead.
+        For sending voice messages, use the :obj:`send_voice` method instead.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            audio:
+            audio (:obj:`str`):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption:
+            caption (:obj:`str`, optional):
                 Audio caption, 0-200 characters.
 
-            duration:
+            duration (:obj:`int`, optional):
                 Duration of the audio in seconds.
 
-            performer:
+            performer (:obj:`str`, optional):
                 Performer.
 
-            title:
+            title (:obj:`str`, optional):
                 Track name.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -671,22 +692,23 @@ class Client:
         """Use this method to send general files.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            document:
+            document (:obj:`str`):
                 File to send.
                 Pass a file path as string to send a file that exists on your local machine.
 
-            caption:
+            caption (:obj:`str`, optional):
                 Document caption, 0-200 characters.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -732,31 +754,32 @@ class Client:
         """Use this method to send video files.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            video:
+            video (:obj:`str`):
                 Video to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
-            duration:
+            duration (:obj:`int`, optional):
                 Duration of sent video in seconds.
 
-            width:
+            width (:obj:`int`, optional):
                 Video width.
 
-            height:
+            height (:obj:`int`, optional):
                 Video height.
 
-            caption:
+            caption (:obj:`str`, optional):
                 Video caption, 0-200 characters.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -804,25 +827,26 @@ class Client:
         """Use this method to send audio files.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            voice:
+            voice (:obj:`str`):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption:
+            caption (:obj:`str`, optional):
                 Voice message caption, 0-200 characters.
 
-            duration:
+            duration (:obj:`int`, optional):
                 Duration of the voice message in seconds.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -869,25 +893,26 @@ class Client:
         """Use this method to send video messages.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            video_note:
+            video_note (:obj:`str`):
                 Video note to send.
                 Pass a file path as string to send a video note that exists on your local machine.
 
-            duration:
+            duration (:obj:`int`, optional):
                 Duration of sent video in seconds.
 
-            length:
+            length (:obj:`int`, optional):
                 Video width and height.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -935,21 +960,22 @@ class Client:
         """Use this method to send points on the map.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            latitude:
+            latitude (:obj:`float`):
                 Latitude of the location.
 
-            longitude:
+            longitude (:obj:`float`):
                 Longitude of the location.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -985,30 +1011,31 @@ class Client:
         """Use this method to send information about a venue.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            latitude:
+            latitude (:obj:`float`):
                 Latitude of the venue.
 
-            longitude:
+            longitude (:obj:`float`):
                 Longitude of the venue.
 
-            title:
+            title (:obj:`str`):
                 Name of the venue.
 
-            address:
+            address (:obj:`str`):
                 Address of the venue.
 
-            foursquare_id:
+            foursquare_id (:obj:`str`, optional):
                 Foursquare identifier of the venue.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -1047,24 +1074,25 @@ class Client:
         """Use this method to send phone contacts.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            phone_number:
+            phone_number (:obj:`str`):
                 Contact's phone number.
 
-            first_name:
+            first_name (:obj:`str`):
                 Contact's first name.
 
-            last_name:
+            last_name (:obj:`str`):
                 Contact's last name.
 
-            disable_notification:
+            disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id:
+            reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -1094,16 +1122,17 @@ class Client:
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            action:
+            action (:obj:`callable`):
                 Type of action to broadcast.
                 Choose one from the :class:`pyrogram.ChatAction` class,
                 depending on what the user is about to receive.
 
-            progress:
+            progress (:obj:`int`, optional):
                 Progress of the upload process.
 
         Raises:
@@ -1123,14 +1152,14 @@ class Client:
         """Use this method to get a list of profile pictures for a user.
 
         Args:
-            user_id:
+            user_id (:obj:`int` | :obj:`str`):
                 Unique identifier of the target user.
 
-            offset:
+            offset (:obj:`int`, optional):
                 Sequential number of the first photo to be returned.
                 By default, all photos are returned.
 
-            limit:
+            limit (:obj:`int`, optional):
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
 
@@ -1154,17 +1183,18 @@ class Client:
         """Use this method to edit text messages.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            message_id:
+            message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
 
-            text:
+            text (:obj:`str`):
                 New text of the message.
 
-            disable_web_page_preview:
+            disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
 
         Raises:
@@ -1186,14 +1216,15 @@ class Client:
         """Use this method to edit captions of messages.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
 
-            message_id:
+            message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
 
-            caption:
+            caption (:obj:`str`):
                 New caption of the message.
 
         Raises:
@@ -1219,10 +1250,10 @@ class Client:
         - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
 
         Args:
-            message_ids:
+            message_ids (:obj:`list`):
                 List of identifiers of the messages to delete.
 
-            revoke:
+            revoke (:obj:`bool`, optional):
                 Deletes messages on both parts (for private chats).
 
         Raises:
@@ -1441,9 +1472,9 @@ class Client:
         """Use this method to join a group chat or channel.
 
         Args:
-            chat_id:
+            chat_id (:obj:`str`):
                 Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
-                channel (in the format @channelusername)
+                channel/supergroup (in the format @username).
 
         Raises:
             :class:`pyrogram.Error`
@@ -1478,11 +1509,11 @@ class Client:
         """Use this method to leave a group chat or channel.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
-            delete:
+            delete (:obj:`bool`, optional):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
@@ -1520,9 +1551,9 @@ class Client:
         The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Args:
-            chat_id:
-                Unique identifier for the target chat or username of the target channel
-                (in the format @channelusername).
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
         Returns:
             On success, the exported invite link as string is returned.
