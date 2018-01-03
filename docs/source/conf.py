@@ -91,6 +91,9 @@ todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
+# Don't use any extension for HTML files
+html_file_suffix = ""
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
