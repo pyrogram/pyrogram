@@ -205,8 +205,8 @@ class Compiler:
                     else:
                         arg_type = "List of :class:`pyrogram.api.types.{}`".format(
                             ".".join(
-                                arg_type.split(".")[:-1]
-                                + [self.caml(arg_type.split(".")[-1])]
+                                sub_type.split(".")[:-1]
+                                + [self.caml(sub_type.split(".")[-1])]
                             )
                         )
                 else:
