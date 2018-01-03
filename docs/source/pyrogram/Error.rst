@@ -1,7 +1,7 @@
 Error
 =====
 
-.. autoexception:: pyrogram.api.errors.error.Error
+.. autoexception:: pyrogram.Error
     :members:
     :show-inheritance:
 
