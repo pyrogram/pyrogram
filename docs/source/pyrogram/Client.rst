@@ -1,5 +1,5 @@
-pyrogram.Client
-===============
+Client
+======
 
 .. autoclass:: pyrogram.Client
     :members:

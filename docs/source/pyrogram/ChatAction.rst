@@ -1,5 +1,5 @@
-pyrogram.ChatAction
-===================
+ChatAction
+==========
 
 .. autoclass:: pyrogram.ChatAction
     :members:
