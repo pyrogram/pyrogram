@@ -51,7 +51,7 @@ Features
     `MTProto Mobile Protocol v2.0`_ and the mechanisms needed for establishing
     a reliable connection.
     
--   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 73`_.
+-   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 74`_.
     
 -   **Documented**: Pyrogram API public methods are documented and resemble the well
     established Telegram Bot API, thus offering a familiar look to Bot developers.
@@ -170,7 +170,7 @@ License
 
 .. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
 
-.. _`Layer 73`: compiler/api/source/main_api.tl
+.. _`Layer 74`: compiler/api/source/main_api.tl
 
 .. _`Wiki`: https://github.com/pyrogram/pyrogram/wiki
 
@@ -219,7 +219,7 @@ License
         <br><br><br>
         <a href="compiler/api/source/main_api.tl">
             <img src="https://www.pyrogram.ml/images/scheme.svg"
-                alt="Scheme Layer 73">
+                alt="Scheme Layer 74">
         </a>
         <a href="https://core.telegram.org/mtproto">
             <img src="https://www.pyrogram.ml/images/mtproto.svg"
@@ -235,7 +235,7 @@ License
 
 .. |scheme| image:: https://www.pyrogram.ml/images/scheme.svg
     :target: compiler/api/source/main_api.tl
-    :alt: Scheme Layer 73
+    :alt: Scheme Layer 74
 
 .. |mtproto| image:: https://www.pyrogram.ml/images/mtproto.svg
     :target: https://core.telegram.org/mtproto
