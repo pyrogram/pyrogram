@@ -22,8 +22,19 @@ accept the same parameters as well.
     For more information on how to install and setup the library, please refer to the Wiki_.
 
 .. toctree::
-    pyrogram
-    :caption: Documentation
+    :caption: Pyrogram Package
+
+    pyrogram/Client
+    pyrogram/ChatAction
+    pyrogram/Error
+
+
+.. toctree::
+    :caption: Telegram API
+
+    methods/index
+    types/index
+
 
 .. _Wiki: https://github.com/pyrogram/pyrogram/wiki
 
