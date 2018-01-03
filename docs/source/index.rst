@@ -32,7 +32,7 @@ accept the same parameters as well.
 .. toctree::
     :caption: Telegram API
 
-    methods/index
+    functions/index
     types/index
 
 
