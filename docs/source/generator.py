@@ -26,6 +26,7 @@ types_path = "../../pyrogram/api/types"
 types_base = "types"
 
 shutil.rmtree(types_base, ignore_errors=True)
+shutil.rmtree(functions_base, ignore_errors=True)
 
 with open("_templates/page.txt") as f:
     page_template = f.read()
