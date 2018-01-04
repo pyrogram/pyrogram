@@ -125,7 +125,7 @@ class Auth:
                 # Step 5. TODO: Handle "server_DH_params_fail". Code assumes response is ok
                 log.debug("Send req_DH_params")
                 server_dh_params = self.send(
-                    functions.ReqDhParams(
+                    functions.ReqDHParams(
                         nonce,
                         server_nonce,
                         int.to_bytes(p, 4, "big"),
@@ -171,7 +171,7 @@ class Auth:
 
                 retry_id = 0
 
-                data = types.ClientDhInnerData(
+                data = types.ClientDHInnerData(
                     nonce,
                     server_nonce,
                     retry_id,
@@ -185,7 +185,7 @@ class Auth:
 
                 log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = self.send(
-                    functions.SetClientDhParams(
+                    functions.SetClientDHParams(
                         nonce,
                         server_nonce,
                         encrypted_data
