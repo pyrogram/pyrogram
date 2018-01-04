@@ -101,7 +101,7 @@ class Compiler:
                 if namespace:
                     self.namespaces[self.section].add(namespace)
 
-                self.compile(namespace, name, id, args, has_flags)
+                self.compile(namespace, name, id, args, has_flags, type)
 
                 self.objects[id] = "{}.{}{}.{}".format(
                     self.section,
@@ -150,7 +150,7 @@ class Compiler:
 
         return args + flags
 
-    def compile(self, namespace, name, id, args, has_flags):
+    def compile(self, namespace, name, id, args, has_flags, type):
         path = "{}/{}/{}".format(dest, self.section, namespace)
         os.makedirs(path, exist_ok=True)
 
@@ -187,21 +187,19 @@ class Compiler:
 
             if arg_type in core_types:
                 if "int" in arg_type or arg_type == "long":
-                    arg_type = "``int``"
+                    arg_type = ":obj:`int`"
                 elif arg_type == "double":
-                    arg_type = "``float``"
+                    arg_type = ":obj:`float`"
                 else:
-                    arg_type = "``{}``".format(arg_type.lower())
+                    arg_type = ":obj:`{}`".format(arg_type.lower())
             elif arg_type == "true":
-                arg_type = "``bool``"
-            elif arg_type == "!X":
-                arg_type = "A function from :class:`pyrogram.api.functions`"
+                arg_type = ":obj:`bool`"
             else:
                 if arg_type.startswith("Vector"):
                     sub_type = arg_type.split("<")[1][:-1]
 
                     if sub_type in core_types:
-                        arg_type = "List of ``{}``".format(self.caml(sub_type))
+                        arg_type = "List of :obj:`{}`".format(self.caml(sub_type))
                     else:
                         arg_type = "List of :class:`pyrogram.api.types.{}`".format(
                             ".".join(
@@ -229,6 +227,22 @@ class Compiler:
             docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
         else:
             docstring_args = "No parameters required."
+
+        docstring_args = "Attributes:\n        ID (:obj:`int`): ``{}``\n\n    ".format(object_id) + docstring_args
+
+        docstring_args += "\n\n    Returns:\n        "
+        if type in core_types:
+            docstring_args += ":obj:`{}`".format(type.lower())
+        else:
+            docstring_args += ":class:`pyrogram.api.types.{}`".format(
+                ".".join(
+                    type.split(".")[:-1]
+                    + [self.caml(type.split(".")[-1])]
+                )
+            )
+
+        if self.section == "functions":
+            docstring_args += "\n\n    Raises:\n        :class:`pyrogram.Error`"
 
         if has_flags:
             write_flags = []
