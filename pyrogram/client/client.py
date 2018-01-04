@@ -447,7 +447,7 @@ class Client:
         """A simple method for testing the user authorization. Requires no parameters.
 
         Returns:
-            Full information about the user in form of a ``types.UserFull`` object.
+            Full information about the user in form of a :obj:`pyrogram.api.types.UserFull` object.
 
         Raises:
             :class:`pyrogram.Error`
