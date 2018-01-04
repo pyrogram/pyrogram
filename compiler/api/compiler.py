@@ -20,163 +20,159 @@ import os
 import re
 import shutil
 
-home = "compiler/api"
-dest = "pyrogram/api"
+HOME = "compiler/api"
+DESTINATION = "pyrogram/api"
 notice_path = "NOTICE"
+SECTION_RE = re.compile(r"---(\w+)---")
+LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
+COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);$", re.MULTILINE)
+ARGS_RE = re.compile("[^{](\w+):([\w?!.<>]+)")
+FLAGS_RE = re.compile(r"flags\.(\d+)\?")
+FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
 
 core_types = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool"]
 
 
-# TODO: Compiler was written in a rush. variables/methods name and pretty much all the code is fuzzy, but it works
-# TODO: Some constructors have flags:# but not flags.\d+\?
+class Combinator:
+    def __init__(self, section: str, namespace: str, name: str, id: str, args: list, has_flags: bool, return_type: str):
+        self.section = section
+        self.namespace = namespace
+        self.name = name
+        self.id = id
+        self.args = args
+        self.has_flags = has_flags
+        self.return_type = return_type
 
-class Compiler:
-    def __init__(self):
-        self.section = "types"  # TL Schema starts with types
-        self.namespaces = {"types": set(), "functions": set()}
-        self.objects = {}
-        self.layer = None
 
-        self.schema = None
+def snek(s: str):
+    # https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s).lower()
 
-        with open("{}/template/class.txt".format(home)) as f:
-            self.template = f.read()
 
-        with open(notice_path) as f:
-            notice = []
+def capit(s: str):
+    return "".join([i[0].upper() + i[1:] for i in s.split("_")])
 
-            for line in f.readlines():
-                notice.append("# {}".format(line).strip())
 
-            self.notice = "\n".join(notice)
+#
+# def caml(s: str):
+#     r = snek(s).split("_")
+#     return "".join([str(i.title()) for i in r])
 
-    def read_schema(self):
-        """Read schema files"""
-        with open("{}/source/auth_key.tl".format(home)) as auth, \
-                open("{}/source/sys_msgs.tl".format(home)) as system, \
-                open("{}/source/main_api.tl".format(home)) as api:
-            self.schema = auth.read() + system.read() + api.read()
 
-    def parse_schema(self):
-        """Parse schema line by line"""
-        total = len(self.schema.splitlines())
+def sort_args(args):
+    """Put flags at the end"""
+    args = args.copy()
+    flags = [i for i in args if FLAGS_RE.match(i[1])]
 
-        for i, line in enumerate(self.schema.splitlines()):
-            # Check for section changer lines
-            section = re.match(r"---(\w+)---", line)
-            if section:
-                self.section = section.group(1)
-                continue
+    for i in flags:
+        args.remove(i)
 
-            # Save the layer version
-            layer = re.match(r"//\sLAYER\s(\d+)", line)
-            if layer:
-                self.layer = layer.group(1)
-                continue
+    return args + flags
 
-            combinator = re.match(r"^([\w.]+)#([0-9a-f]+)\s(.*)=\s([\w<>.]+);$", line, re.MULTILINE)
 
-            if combinator:
-                name, id, args, type = combinator.groups()
-                namespace, name = name.split(".") if "." in name else ("", name)
-                args = re.findall(r"[^{](\w+):([\w?!.<>]+)", line)
+def start():
+    shutil.rmtree("{}/types".format(DESTINATION), ignore_errors=True)
+    shutil.rmtree("{}/functions".format(DESTINATION), ignore_errors=True)
 
-                print("Compiling APIs: [{}%]".format(round(i * 100 / total)), end="\r")
+    with open("{}/source/auth_key.tl".format(HOME)) as auth, \
+            open("{}/source/sys_msgs.tl".format(HOME)) as system, \
+            open("{}/source/main_api.tl".format(HOME)) as api:
+        schema = (auth.read() + system.read() + api.read()).splitlines()
 
-                for i in args:
-                    if re.match(r"flags\.\d+\?", i[1]):
-                        has_flags = True
-                        break
-                else:
-                    has_flags = False
+    with open("{}/template/class.txt".format(HOME)) as f:
+        template = f.read()
 
-                if name == "updates":
-                    name = "update"
+    with open(notice_path) as f:
+        notice = []
 
-                for i, item in enumerate(args):
-                    # if item[0] in keyword.kwlist + dir(builtins) + ["self"]:
-                    if item[0] == "self":
-                        args[i] = ("is_{}".format(item[0]), item[1])
+        for line in f.readlines():
+            notice.append("# {}".format(line).strip())
 
-                if namespace:
-                    self.namespaces[self.section].add(namespace)
+        notice = "\n".join(notice)
 
-                self.compile(namespace, name, id, args, has_flags, type)
+    total = len(schema)
+    section = None
+    layer = None
+    namespaces = {"types": set(), "functions": set()}
+    combinators = []
 
-                self.objects[id] = "{}.{}{}.{}".format(
-                    self.section,
-                    "{}.".format(namespace) if namespace else "",
-                    self.snek(name),
-                    self.caml(name)
+    for i, line in enumerate(schema):
+        # Check for section changer lines
+        s = SECTION_RE.match(line)
+        if s:
+            section = s.group(1)
+            continue
+
+        # Save the layer version
+        l = LAYER_RE.match(line)
+        if l:
+            layer = l.group(1)
+            continue
+
+        combinator = COMBINATOR_RE.match(line)
+        if combinator:
+            name, id, return_type = combinator.groups()
+            namespace, name = name.split(".") if "." in name else ("", name)
+            args = ARGS_RE.findall(line)
+
+            # Check if combinator has flags
+            for i in args:
+                if FLAGS_RE.match(i[1]):
+                    has_flags = True
+                    break
+            else:
+                has_flags = False
+
+            # Fix file and folder name collision
+            if name == "updates":
+                name = "update"
+
+            # Fix arg name being "self" (reserved keyword)
+            for i, item in enumerate(args):
+                if item[0] == "self":
+                    args[i] = ("is_self", item[1])
+
+            if namespace:
+                namespaces[section].add(namespace)
+
+            combinators.append(
+                Combinator(
+                    section,
+                    namespace,
+                    name,
+                    "0x{}".format(id.zfill(8)),
+                    args,
+                    has_flags,
+                    return_type
                 )
+            )
 
-    def finish(self):
-        with open("{}/all.py".format(dest), "w") as f:
-            f.write(self.notice + "\n\n")
-            f.write("layer = {}\n\n".format(self.layer))
-            f.write("objects = {")
-
-            for k, v in self.objects.items():
-                v = v.split(".")
-                del v[-2]
-                v = ".".join(v)
-
-                f.write("\n    0x{}: \"{}\",".format(k.zfill(8), v))
-
-            f.write("\n    0xbc799737: \"core.BoolFalse\",")
-            f.write("\n    0x997275b5: \"core.BoolTrue\",")
-            f.write("\n    0x56730bcc: \"core.Null\",")
-            f.write("\n    0x1cb5c415: \"core.Vector\",")
-            f.write("\n    0x73f1f8dc: \"core.MsgContainer\",")
-            f.write("\n    0xae500895: \"core.FutureSalts\",")
-            f.write("\n    0x0949d9dc: \"core.FutureSalt\",")
-            f.write("\n    0x3072cfa1: \"core.GzipPacked\",")
-            f.write("\n    0x5bb8e511: \"core.Message\"")
-
-            f.write("\n}\n")
-
-        for k, v in self.namespaces.items():
-            with open("{}/{}/__init__.py".format(dest, k), "a") as f:
-                f.write("from . import {}\n".format(", ".join([i for i in v])) if v else "")
-
-    @staticmethod
-    def sort_args(args):
-        """Put flags at the end"""
-        args = args.copy()
-        flags = [i for i in args if re.match(r"flags\.\d+\?", i[1])]
-
-        for i in flags:
-            args.remove(i)
-
-        return args + flags
-
-    def compile(self, namespace, name, id, args, has_flags, type):
-        path = "{}/{}/{}".format(dest, self.section, namespace)
+    for c in combinators:  # type: Combinator
+        path = "{}/{}/{}".format(DESTINATION, c.section, c.namespace)
         os.makedirs(path, exist_ok=True)
 
         init = "{}/__init__.py".format(path)
 
         if not os.path.exists(init):
             with open(init, "w") as f:
-                f.write(self.notice + "\n\n")
+                f.write(notice + "\n\n")
 
         with open(init, "a") as f:
-            f.write("from .{} import {}\n".format(self.snek(name), self.caml(name)))
+            f.write("from .{} import {}\n".format(snek(c.name), capit(c.name)))
 
-        sorted_args = self.sort_args(args)
-
-        object_id = "0x{}".format(id)
+        sorted_args = sort_args(c.args)
 
         arguments = ", " + ", ".join(
             ["{}{}".format(
                 i[0],
-                "=None" if re.match(r"flags\.\d+\?", i[1]) else ""
+                "=None" if FLAGS_RE.match(i[1]) else ""
             ) for i in sorted_args]
-        ) if args else ""
+        ) if c.args else ""
 
         fields = "\n        ".join(
-            ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in args]
-        ) if args else "pass"
+            ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in c.args]
+        ) if c.args else "pass"
 
         docstring_args = []
 
@@ -199,19 +195,24 @@ class Compiler:
                     sub_type = arg_type.split("<")[1][:-1]
 
                     if sub_type in core_types:
-                        arg_type = "List of :obj:`{}`".format(self.caml(sub_type))
+                        if "int" in sub_type or sub_type == "long":
+                            arg_type = "List of :obj:`int`"
+                        elif sub_type == "double":
+                            arg_type = "List of :obj:`float`"
+                        else:
+                            arg_type = "List of :obj:`{}`".format(sub_type.lower())
                     else:
                         arg_type = "List of :class:`pyrogram.api.types.{}`".format(
                             ".".join(
                                 sub_type.split(".")[:-1]
-                                + [self.caml(sub_type.split(".")[-1])]
+                                + [capit(sub_type.split(".")[-1])]
                             )
                         )
                 else:
                     arg_type = ":class:`pyrogram.api.types.{}`".format(
                         ".".join(
                             arg_type.split(".")[:-1]
-                            + [self.caml(arg_type.split(".")[-1])]
+                            + [capit(arg_type.split(".")[-1])]
                         )
                     )
 
@@ -228,26 +229,51 @@ class Compiler:
         else:
             docstring_args = "No parameters required."
 
-        docstring_args = "Attributes:\n        ID (:obj:`int`): ``{}``\n\n    ".format(object_id) + docstring_args
+        docstring_args = "Attributes:\n        ID (:obj:`int`): ``{}``\n\n    ".format(c.id) + docstring_args
 
         docstring_args += "\n\n    Returns:\n        "
-        if type in core_types:
-            docstring_args += ":obj:`{}`".format(type.lower())
+        if c.return_type in core_types:
+            if "int" in c.return_type or c.return_type == "long":
+                return_type = ":obj:`int`"
+            elif c.return_type == "double":
+                return_type = ":obj:`float`"
+            else:
+                return_type = ":obj:`{}`".format(c.return_type.lower())
         else:
-            docstring_args += ":class:`pyrogram.api.types.{}`".format(
-                ".".join(
-                    type.split(".")[:-1]
-                    + [self.caml(type.split(".")[-1])]
-                )
-            )
+            if c.return_type.startswith("Vector"):
+                sub_type = c.return_type.split("<")[1][:-1]
 
-        if self.section == "functions":
+                if sub_type in core_types:
+                    if "int" in sub_type or sub_type == "long":
+                        return_type = "List of :obj:`int`"
+                    elif sub_type == "double":
+                        return_type = "List of :obj:`float`"
+                    else:
+                        return_type = "List of :obj:`{}`".format(c.return_type.lower())
+                else:
+                    return_type = "List of :class:`pyrogram.api.types.{}`".format(
+                        ".".join(
+                            sub_type.split(".")[:-1]
+                            + [capit(sub_type.split(".")[-1])]
+                        )
+                    )
+            else:
+                return_type = ":class:`pyrogram.api.types.{}`".format(
+                    ".".join(
+                        c.return_type.split(".")[:-1]
+                        + [capit(c.return_type.split(".")[-1])]
+                    )
+                )
+
+        docstring_args += return_type
+
+        if c.section == "functions":
             docstring_args += "\n\n    Raises:\n        :class:`pyrogram.Error`"
 
-        if has_flags:
+        if c.has_flags:
             write_flags = []
-            for i in args:
-                flag = re.match(r"flags\.(\d+)\?", i[1])
+            for i in c.args:
+                flag = FLAGS_RE.match(i[1])
                 if flag:
                     write_flags.append("flags |= (1 << {}) if self.{} is not None else 0".format(flag.group(1), i[0]))
 
@@ -259,12 +285,12 @@ class Compiler:
         else:
             write_flags = "# No flags"
 
-        read_flags = "flags = Int.read(b)" if has_flags else "# No flags"
+        read_flags = "flags = Int.read(b)" if c.has_flags else "# No flags"
 
         write_types = read_types = ""
 
-        for arg_name, arg_type in args:
-            flag = re.findall(r"flags\.(\d+)\?([\w<>.]+)", arg_type)
+        for arg_name, arg_type in c.args:
+            flag = FLAGS_RE_2.findall(arg_type)
 
             if flag:
                 index, flag_type = flag[0]
@@ -329,13 +355,13 @@ class Compiler:
                     read_types += "\n        "
                     read_types += "{} = Object.read(b)\n        ".format(arg_name)
 
-        with open("{}/{}.py".format(path, self.snek(name)), "w") as f:
+        with open("{}/{}.py".format(path, snek(c.name)), "w") as f:
             f.write(
-                self.template.format(
-                    notice=self.notice,
-                    class_name=self.caml(name),
+                template.format(
+                    notice=notice,
+                    class_name=capit(c.name),
                     docstring_args=docstring_args,
-                    object_id=object_id,
+                    object_id=c.id,
                     arguments=arguments,
                     fields=fields,
                     read_flags=read_flags,
@@ -346,36 +372,34 @@ class Compiler:
                 )
             )
 
-    @staticmethod
-    def snek(s):
-        # https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
-        s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
-        return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s).lower()
+    with open("{}/all.py".format(DESTINATION), "w") as f:
+        f.write(notice + "\n\n")
+        f.write("layer = {}\n\n".format(layer))
+        f.write("objects = {")
 
-    @staticmethod
-    def caml(s):
-        s = Compiler.snek(s).split("_")
-        return "".join([str(i.title()) for i in s])
+        for c in combinators:
+            path = ".".join(filter(None, [c.section, c.namespace, capit(c.name)]))
+            f.write("\n    {}: \"{}\",".format(c.id, path))
 
-    def start(self):
-        shutil.rmtree("{}/types".format(dest), ignore_errors=True)
-        shutil.rmtree("{}/functions".format(dest), ignore_errors=True)
+        f.write("\n    0xbc799737: \"core.BoolFalse\",")
+        f.write("\n    0x997275b5: \"core.BoolTrue\",")
+        f.write("\n    0x56730bcc: \"core.Null\",")
+        f.write("\n    0x1cb5c415: \"core.Vector\",")
+        f.write("\n    0x73f1f8dc: \"core.MsgContainer\",")
+        f.write("\n    0xae500895: \"core.FutureSalts\",")
+        f.write("\n    0x0949d9dc: \"core.FutureSalt\",")
+        f.write("\n    0x3072cfa1: \"core.GzipPacked\",")
+        f.write("\n    0x5bb8e511: \"core.Message\"")
 
-        self.read_schema()
-        self.parse_schema()
-        self.finish()
+        f.write("\n}\n")
 
-        print()
-
-
-def start():
-    c = Compiler()
-    c.start()
+    for k, v in namespaces.items():
+        with open("{}/{}/__init__.py".format(DESTINATION, k), "a") as f:
+            f.write("from . import {}\n".format(", ".join([i for i in v])) if v else "")
 
 
 if "__main__" == __name__:
-    home = "."
-    dest = "../../pyrogram/api"
+    HOME = "."
+    DESTINATION = "../../pyrogram/api"
     notice_path = "../../NOTICE"
-
     start()
