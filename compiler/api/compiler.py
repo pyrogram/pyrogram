@@ -91,13 +91,12 @@ def start():
 
         notice = "\n".join(notice)
 
-    total = len(schema)
     section = None
     layer = None
     namespaces = {"types": set(), "functions": set()}
     combinators = []
 
-    for i, line in enumerate(schema):
+    for line in schema:
         # Check for section changer lines
         s = SECTION_RE.match(line)
         if s:
@@ -148,7 +147,15 @@ def start():
                 )
             )
 
+    total = len(combinators)
+    current = 0
     for c in combinators:  # type: Combinator
+        print("Compiling APIs... [{}%] {}".format(
+            str(round(current * 100 / total)).rjust(3),
+            ".".join(filter(None, [c.section, c.namespace, c.name]))
+        ), end="                \r", flush=True)
+        current += 1
+
         path = "{}/{}/{}".format(DESTINATION, c.section, c.namespace)
         os.makedirs(path, exist_ok=True)
 
