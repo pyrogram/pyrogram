@@ -22,15 +22,12 @@ accept the same parameters as well.
     For more information on how to install and setup the library, please refer to the Wiki_.
 
 .. toctree::
-    :caption: Pyrogram Package
+    :caption: Main Package
 
-    pyrogram/Client
-    pyrogram/ChatAction
-    pyrogram/Error
-
+    pyrogram/index
 
 .. toctree::
-    :caption: Telegram API
+    :caption: Telegram API - Layer 74
 
     functions/index
     types/index
