@@ -15,23 +15,26 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import ast
 import os
 import shutil
 
-functions_path = "../../pyrogram/api/functions"
-functions_base = "functions"
+home = "compiler/docs"
+destination = "docs/source"
 
-types_path = "../../pyrogram/api/types"
+functions_path = "pyrogram/api/functions"
+types_path = "pyrogram/api/types"
+
+functions_base = "functions"
 types_base = "types"
 
 shutil.rmtree(types_base, ignore_errors=True)
 shutil.rmtree(functions_base, ignore_errors=True)
 
-with open("_templates/page.txt") as f:
+with open(home + "/template/page.txt") as f:
     page_template = f.read()
 
-with open("_templates/toctree.txt") as f:
+with open(home + "/template/toctree.txt") as f:
     toctree = f.read()
 
 
@@ -46,15 +49,22 @@ def generate(source_path, base):
                 if not i.startswith("__"):
                     build("/".join([path, i]), level=level + 1)
             except NotADirectoryError:
-                name = "".join([str(j.title()) for j in os.path.splitext(i)[0].split("_")])
+                with open(path + "/" + i) as f:
+                    p = ast.parse(f.read())
+
+                for node in ast.walk(p):
+                    if isinstance(node, ast.ClassDef):
+                        name = node.name
+
+                # name = "".join([str(j.title()) for j in os.path.splitext(i)[0].split("_")])
                 full_path = os.path.basename(path) + "/" + name + ".rst"
 
                 if level:
                     full_path = base + "/" + full_path
 
-                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                os.makedirs(os.path.dirname(destination + "/" + full_path), exist_ok=True)
 
-                with open(full_path, "w") as f:
+                with open(destination + "/" + full_path, "w") as f:
                     f.write(
                         page_template.format(
                             title=name,
@@ -87,7 +97,7 @@ def generate(source_path, base):
 
             inner_path = base + "/index" + ".rst"
 
-        with open(inner_path, "w") as f:
+        with open(destination + "/" + inner_path, "w") as f:
             f.write(
                 toctree.format(
                     title=k.title(),
@@ -99,5 +109,15 @@ def generate(source_path, base):
             f.write("\n")
 
 
-generate(types_path, types_base)
-generate(functions_path, functions_base)
+def start():
+    generate(types_path, types_base)
+    generate(functions_path, functions_base)
+
+
+if "__main__" == __name__:
+    functions_path = "../../pyrogram/api/functions"
+    types_path = "../../pyrogram/api/types"
+    home = "."
+    destination = "../../docs/source"
+
+    start()
