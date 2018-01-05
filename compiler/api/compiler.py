@@ -29,6 +29,7 @@ COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);$", re.M
 ARGS_RE = re.compile("[^{](\w+):([\w?!.<>]+)")
 FLAGS_RE = re.compile(r"flags\.(\d+)\?")
 FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
+FLAGS_RE_3 = re.compile(r"flags:#")
 
 core_types = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool"]
 
@@ -109,13 +110,8 @@ def start():
             namespace, name = name.split(".") if "." in name else ("", name)
             args = ARGS_RE.findall(line)
 
-            # Check if combinator has flags
-            for i in args:
-                if FLAGS_RE.match(i[1]):
-                    has_flags = True
-                    break
-            else:
-                has_flags = False
+            # Pingu!
+            has_flags = not not FLAGS_RE_3.findall(line)
 
             # Fix file and folder name collision
             if name == "updates":
