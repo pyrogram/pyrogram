@@ -31,12 +31,6 @@ types_base = "types"
 shutil.rmtree(types_base, ignore_errors=True)
 shutil.rmtree(functions_base, ignore_errors=True)
 
-with open(home + "/template/page.txt") as f:
-    page_template = f.read()
-
-with open(home + "/template/toctree.txt") as f:
-    toctree = f.read()
-
 
 def generate(source_path, base):
     all_entities = {}
@@ -110,6 +104,15 @@ def generate(source_path, base):
 
 
 def start():
+    global page_template
+    global toctree
+
+    with open(home + "/template/page.txt") as f:
+        page_template = f.read()
+
+    with open(home + "/template/toctree.txt") as f:
+        toctree = f.read()
+
     generate(types_path, types_base)
     generate(functions_path, functions_base)
 
