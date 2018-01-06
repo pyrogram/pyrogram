@@ -32,6 +32,59 @@ FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
 FLAGS_RE_3 = re.compile(r"flags:#")
 
 core_types = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool"]
+types_to_constructors = {}
+types_to_functions = {}
+constructors_to_functions = {}
+
+
+def get_docstring_arg_type(t: str, is_list: bool = False):
+    if t in core_types:
+        if "int" in t or t == "long":
+            return ":obj:`int`"
+        elif t == "double":
+            return ":obj:`float`"
+        else:
+            return ":obj:`{}`".format(t.lower())
+    elif t == "true":
+        return ":obj:`bool`"
+    elif t == "Object":
+        return ":obj:`Any type`"
+    elif t == "!X":
+        return ":obj:`Any function`"
+    elif t.startswith("Vector"):
+        return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
+    else:
+        t = types_to_constructors.get(t, [t])
+        n = len(t) - 1
+
+        t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
+            ":obj:`{0} <pyrogram.api.types.{0}>`".format(i)
+            for i in t
+        )
+
+        if n:
+            t = t.split(", ")
+            t = ", ".join(t[:-1]) + " or " + t[-1]
+
+        return t
+
+
+def get_references(t: str):
+    t = constructors_to_functions.get(t)
+
+    if t:
+        n = len(t) - 1
+
+        t = ", ".join(
+            ":obj:`{0} <pyrogram.api.functions.{0}>`".format(i)
+            for i in t
+        )
+
+        if n:
+            t = t.split(", ")
+            t = ", ".join(t[:-1]) + " and " + t[-1]
+
+    return t
 
 
 class Combinator:
@@ -129,23 +182,36 @@ def start():
                 Combinator(
                     section,
                     namespace,
-                    name,
+                    capit(name),
                     "0x{}".format(id.zfill(8)),
                     args,
                     has_flags,
-                    return_type
+                    ".".join(
+                        return_type.split(".")[:-1]
+                        + [capit(return_type.split(".")[-1])]
+                    )
                 )
             )
 
-    by_types = {}
     for c in combinators:
-        return_type = capit(c.return_type)
+        return_type = c.return_type
 
-        if c.section == "types":
-            if return_type not in by_types:
-                by_types[return_type] = []
+        if return_type.startswith("Vector"):
+            return_type = return_type.split("<")[1][:-1]
 
-            by_types[return_type].append(".".join(filter(None, [c.namespace, capit(c.name)])))
+        d = types_to_constructors if c.section == "types" else types_to_functions
+
+        if return_type not in d:
+            d[return_type] = []
+
+        d[return_type].append(".".join(filter(None, [c.namespace, c.name])))
+
+    for k, v in types_to_constructors.items():
+        for i in v:
+            try:
+                constructors_to_functions[i] = types_to_functions[k]
+            except KeyError:
+                pass
 
     total = len(combinators)
     current = 0
@@ -188,46 +254,12 @@ def start():
             is_optional = arg_type.startswith("flags.")
             arg_type = arg_type.split("?")[-1]
 
-            if arg_type in core_types:
-                if "int" in arg_type or arg_type == "long":
-                    arg_type = ":obj:`int`"
-                elif arg_type == "double":
-                    arg_type = ":obj:`float`"
-                else:
-                    arg_type = ":obj:`{}`".format(arg_type.lower())
-            elif arg_type == "true":
-                arg_type = ":obj:`bool`"
-            else:
-                if arg_type.startswith("Vector"):
-                    sub_type = arg_type.split("<")[1][:-1]
-
-                    if sub_type in core_types:
-                        if "int" in sub_type or sub_type == "long":
-                            arg_type = "List of :obj:`int`"
-                        elif sub_type == "double":
-                            arg_type = "List of :obj:`float`"
-                        else:
-                            arg_type = "List of :obj:`{}`".format(sub_type.lower())
-                    else:
-                        arg_type = "List of :class:`pyrogram.api.types.{}`".format(
-                            ".".join(
-                                sub_type.split(".")[:-1]
-                                + [capit(sub_type.split(".")[-1])]
-                            )
-                        )
-                else:
-                    arg_type = ":class:`pyrogram.api.types.{}`".format(
-                        ".".join(
-                            arg_type.split(".")[:-1]
-                            + [capit(arg_type.split(".")[-1])]
-                        )
-                    )
-
             docstring_args.append(
                 "{}: {}{}".format(
                     arg_name,
-                    arg_type,
-                    " (optional)" if is_optional else ""
+                    "(optional) " if is_optional else "",
+                    get_docstring_arg_type(arg_type),
+
                 )
             )
 
@@ -239,78 +271,17 @@ def start():
         docstring_args = "Attributes:\n        ID (:obj:`int`): ``{}``\n\n    ".format(c.id) + docstring_args
 
         if c.section == "functions":
-            docstring_args += "\n\n    Returns:\n        "
-            if c.return_type in core_types:
-                if "int" in c.return_type or c.return_type == "long":
-                    return_type = ":obj:`int`"
-                elif c.return_type == "double":
-                    return_type = ":obj:`float`"
-                else:
-                    return_type = ":obj:`{}`".format(c.return_type.lower())
-            else:
-                if c.return_type.startswith("Vector"):
-                    sub_type = c.return_type.split("<")[1][:-1]
+            docstring_args += "\n\n    Raises:\n        :obj:`pyrogram.Error`"
 
-                    if sub_type in core_types:
-                        if "int" in sub_type or sub_type == "long":
-                            return_type = "List of :obj:`int`"
-                        elif sub_type == "double":
-                            return_type = "List of :obj:`float`"
-                        else:
-                            return_type = "List of :obj:`{}`".format(c.return_type.lower())
-                    else:
-                        if c.section == "functions":
-                            try:
-                                constructors = by_types[capit(sub_type)]
-                            except KeyError:
-                                return_type = "List of :class:`pyrogram.api.types.{}`".format(
-                                    ".".join(
-                                        sub_type.split(".")[:-1]
-                                        + [capit(sub_type.split(".")[-1])]
-                                    )
-                                )
-                            else:
-                                constructors = ["List of :class:`pyrogram.api.types.{}`".format(
-                                    ".".join(
-                                        i.split(".")[:-1]
-                                        + [capit(i.split(".")[-1])]
-                                    )
-                                ) for i in constructors]
+            try:
+                docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
+            except KeyError:
+                pass
+        else:
+            references = get_references(".".join(filter(None, [c.namespace, c.name])))
 
-                                return_type = " | ".join(constructors)
-                        else:
-                            return_type = "List of :class:`pyrogram.api.types.{}`".format(
-                                ".".join(
-                                    sub_type.split(".")[:-1]
-                                    + [capit(sub_type.split(".")[-1])]
-                                )
-                            )
-                else:
-                    if c.section == "functions":
-                        try:
-                            constructors = by_types[capit(c.return_type)]
-                        except KeyError:
-                            return_type = ":class:`pyrogram.api.types.{}`".format(
-                                ".".join(filter(None, [c.namespace, capit(c.name)]))
-                            )
-                        else:
-                            constructors = [":class:`pyrogram.api.types.{}`".format(
-                                ".".join(
-                                    i.split(".")[:-1]
-                                    + [capit(i.split(".")[-1])]
-                                )
-                            ) for i in constructors]
-
-                            return_type = " | ".join(constructors)
-                    else:
-                        return_type = ":class:`pyrogram.api.types.{}`".format(
-                            ".".join(filter(None, [c.namespace, capit(c.name)]))
-                        )
-
-            docstring_args += return_type
-
-        if c.section == "functions":
-            docstring_args += "\n\n    Raises:\n        :class:`pyrogram.Error`"
+            if references:
+                docstring_args += "\n\n    See Also:\n        This type is returned by " + references + "."
 
         if c.has_flags:
             write_flags = []
