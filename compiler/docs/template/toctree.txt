@@ -1,5 +1,7 @@
 {title}
 {title_markup}
 
+.. module:: {module}
+
 .. toctree::
     {entities}

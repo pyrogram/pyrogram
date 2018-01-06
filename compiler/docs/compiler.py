@@ -85,18 +85,21 @@ def generate(source_path, base):
 
         if k != base:
             inner_path = base + "/" + k + "/index" + ".rst"
+            module = "pyrogram.api.{}.{}".format(base, k)
         else:
             for i in list(all_entities)[::-1]:
                 if i != base:
                     entities.insert(0, "{0}/index".format(i))
 
             inner_path = base + "/index" + ".rst"
+            module = "pyrogram.api.{}".format(base)
 
         with open(destination + "/" + inner_path, "w") as f:
             f.write(
                 toctree.format(
                     title=k.title(),
                     title_markup="=" * len(k),
+                    module=module,
                     entities="\n    ".join(entities)
                 )
             )
