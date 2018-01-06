@@ -117,7 +117,6 @@ Usage
 That's all you need for getting started with Pyrogram. For more detailed information,
 please refer to the documentation:
 
--   Wiki: `Introduction`_.
 -   Docs: https://docs.pyrogram.ml.
 
 Development
@@ -135,9 +134,7 @@ functions.
 Documentation
 =============
 
-- Pyrogram's API documentation at https://docs.pyrogram.ml.
-- Guides and examples can be found on the `Wiki`_.
-
+- The entire Pyrogram's documentation resides at https://docs.pyrogram.ml.
 
 Contribution
 ============
@@ -172,8 +169,6 @@ License
 
 .. _`Layer 74`: compiler/api/source/main_api.tl
 
-.. _`Wiki`: https://github.com/pyrogram/pyrogram/wiki
-
 .. _`your own`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started#api-keys
 
 .. _`Introduction`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
@@ -203,10 +198,6 @@ License
         <br>
         <a href="https://pypi.python.org/pypi/Pyrogram">
             Download
-        </a>
-        •
-        <a href="https://github.com/pyrogram/pyrogram/wiki">
-            Wiki
         </a>
         •
         <a href="https://docs.pyrogram.ml">
