@@ -13,26 +13,54 @@ Welcome to Pyrogram
         <b>Telegram MTProto API Client Library for Python</b>
     </p>
 
-Welcome to Pyrogram's documentation. Here you can find a detailed description of the Pyrogram API.
-You will notice that methods are named after the well established `Telegram Bot API`_ and that most of them
-accept the same parameters as well.
+Preview
+-------
 
-.. note::
-    This document is intended to be used as an API reference documentation.
-    For more information on how to install and setup the library, please refer to the Wiki_.
+.. code-block:: python
+
+    from pyrogram import Client
+
+    client = Client("example")
+    client.start()
+
+    client.send_message("me", "Hi there! I'm using Pyrogram")
+    client.send_photo("me", "/home/dan/pic.jpg", "Nice photo!")
+
+    client.stop()
+
+About
+-----
+
+Welcome to the Pyrogram's documentation! Here you can find resources for learning how to use the library.
+Contents are organized by topic and are accessible from the sidebar.
+
+To get started, press Next.
 
 .. toctree::
+    :hidden:
+    :caption: Getting Started
+
+    getting_started/QuickInstallation
+    getting_started/ProjectSetup
+    getting_started/BasicUsage
+
+.. toctree::
+    :hidden:
+    :caption: Resources
+
+    resources/TextFormatting
+    resources/UpdateHandling
+    resources/ErrorHandling
+
+.. toctree::
+    :hidden:
     :caption: Main Package
 
     pyrogram/index
 
 .. toctree::
-    :caption: Telegram API - Layer 74
+    :hidden:
+    :caption: Telegram API
 
     functions/index
     types/index
-
-
-.. _Wiki: https://github.com/pyrogram/pyrogram/wiki
-
-.. _`Telegram Bot API`: https://core.telegram.org/bots/api#available-methods
