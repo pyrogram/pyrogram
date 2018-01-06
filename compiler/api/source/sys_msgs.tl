@@ -44,7 +44,7 @@ new_session_created#9ec20908 first_msg_id:long unique_id:long server_salt:long =
 
 //// 0xd433ad73 = hex(crc32(b"ipPort ipv4:int port:int = IpPort"))
 ipPort#d433ad73 ipv4:int port:int = IpPort;
-help.configSimple#d997c3c5 date:int expires:int dc_id:int ip_port_list:Vector<ipPort> = help.ConfigSimple;
+help.configSimple#d997c3c5 date:int expires:int dc_id:int ip_port_list:Vector<IpPort> = help.ConfigSimple;
 
 ---functions---
 
