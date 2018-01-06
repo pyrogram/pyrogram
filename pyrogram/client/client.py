@@ -154,8 +154,8 @@ class Client:
         """Use this method to send `Raw Function`_ queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
-        Available functions are listed in the ``pyrogram.api.functions`` package and may accept compound
-        data types from ``pyrogram.api.types`` as well as bare types such as ``int``, ``str``, etc...
+        Available functions are listed in the :obj:`pyrogram.api.functions` package and may accept compound
+        data types from :obj:`pyrogram.api.types` as well as bare types such as :obj:`int`, :obj:`str`, etc...
 
         Args:
             data (:obj:`Object`):
@@ -447,7 +447,7 @@ class Client:
         """A simple method for testing the user authorization. Requires no parameters.
 
         Returns:
-            Full information about the user in form of a :obj:`pyrogram.api.types.UserFull` object.
+            Full information about the user in form of a :obj:`UserFull <pyrogram.api.types.UserFull>` object.
 
         Raises:
             :class:`pyrogram.Error`
