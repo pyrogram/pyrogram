@@ -204,7 +204,7 @@ License
             Documentation
         </a>
         •
-        <a href="https://t.me/joinchat/AWDQ8lK2HgBN7ka4OyWVTw">
+        <a href="https://t.me/PyrogramChat">
             Community
         </a
         <br><br><br>
