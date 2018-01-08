@@ -95,8 +95,8 @@ def generate(source_path, base):
             module = "pyrogram.api.{}".format(base)
 
         with open(destination + "/" + inner_path, "w") as f:
-            # if k == base:
-            #     f.write(":tocdepth: 1\n\n")
+            if k == base:
+                f.write(":tocdepth: 1\n\n")
 
             f.write(
                 toctree.format(

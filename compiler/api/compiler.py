@@ -47,10 +47,10 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
             return ":obj:`{}`".format(t.lower())
     elif t == "true":
         return ":obj:`bool`"
-    elif t == "Object":
-        return ":obj:`Any type`"
+    elif t == "Object" or t == "X":
+        return "Any type from :obj:`pyrogram.api.types`"
     elif t == "!X":
-        return ":obj:`Any function`"
+        return "Any query from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
         return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
     else:
@@ -272,11 +272,7 @@ def start():
 
         if c.section == "functions":
             docstring_args += "\n\n    Raises:\n        :obj:`pyrogram.Error`"
-
-            try:
-                docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
-            except KeyError:
-                pass
+            docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
         else:
             references = get_references(".".join(filter(None, [c.namespace, c.name])))
 
