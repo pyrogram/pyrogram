@@ -277,7 +277,7 @@ def start():
             references = get_references(".".join(filter(None, [c.namespace, c.name])))
 
             if references:
-                docstring_args += "\n\n    See Also:\n        This type is returned by " + references + "."
+                docstring_args += "\n\n    See Also:\n        This type can be returned by " + references + "."
 
         if c.has_flags:
             write_flags = []
