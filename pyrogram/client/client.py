@@ -36,7 +36,8 @@ from pyrogram.api.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
-    PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing
+    PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
+    ChatAdminRequired
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -1545,7 +1546,7 @@ class Client:
 
             return r
 
-    def export_chat_invite_link(self, chat_id: int or str):
+    def export_chat_invite_link(self, chat_id: int or str, new: bool = False):
         """Use this method to export an invite link to a supergroup or a channel.
 
         The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -1555,23 +1556,54 @@ class Client:
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
+            new (:obj:`bool`):
+                The previous link will be deactivated and a new link will be generated.
+                This is also used to create the invite link in case it doesn't exist yet.
+
         Returns:
             On success, the exported invite link as string is returned.
 
         Raises:
             :class:`pyrogram.Error`
+
+        Note:
+            If the returned link is a new one it may take a while for it to be activated.
         """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return self.send(
-                functions.messages.ExportChatInvite(
-                    chat_id=peer.chat_id
-                )
-            ).link
+            if new:
+                return self.send(
+                    functions.messages.ExportChatInvite(
+                        chat_id=peer.chat_id
+                    )
+                ).link
+            else:
+                chat_full = self.send(
+                    functions.messages.GetFullChat(
+                        chat_id=peer.chat_id
+                    )
+                ).full_chat  # type: types.ChatFull
+
+                if isinstance(chat_full.exported_invite, types.ChatInviteExported):
+                    return chat_full.exported_invite.link
+                else:
+                    raise ChatAdminRequired
         elif isinstance(peer, types.InputPeerChannel):
-            return self.send(
-                functions.channels.ExportInvite(
-                    channel=peer
-                )
-            ).link
+            if new:
+                return self.send(
+                    functions.channels.ExportInvite(
+                        channel=peer
+                    )
+                ).link
+            else:
+                channel_full = self.send(
+                    functions.channels.GetFullChannel(
+                        channel=peer
+                    )
+                ).full_chat  # type: types.ChannelFull
+
+                if isinstance(channel_full.exported_invite, types.ChatInviteExported):
+                    return channel_full.exported_invite.link
+                else:
+                    raise ChatAdminRequired
