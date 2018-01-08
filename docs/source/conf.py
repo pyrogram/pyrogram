@@ -125,6 +125,8 @@ html_favicon = '_static/pyrogram.ico'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_style = 'css/style.css'
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
