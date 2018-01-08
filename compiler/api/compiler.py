@@ -43,6 +43,8 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
             return ":obj:`int`"
         elif t == "double":
             return ":obj:`float`"
+        elif t == "string":
+            return ":obj:`str`"
         else:
             return ":obj:`{}`".format(t.lower())
     elif t == "true":
