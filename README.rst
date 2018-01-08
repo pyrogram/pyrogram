@@ -108,9 +108,8 @@ Usage
         client.stop()
     
 That's all you need for getting started with Pyrogram. For more detailed information,
-please refer to the documentation:
+please refer to the Documentation_.
 
--   Docs: https://docs.pyrogram.ml.
 
 Documentation
 =============
