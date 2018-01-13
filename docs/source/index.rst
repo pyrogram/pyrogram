@@ -1,10 +1,10 @@
 .. raw:: html
 
-    <div align="right">
+    <p align="right">
         <a class="github-button" href="https://github.com/pyrogram/pyrogram/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch pyrogram/pyrogram on GitHub">Watch</a>
         <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
         <a class="github-button" href="https://github.com/pyrogram/pyrogram/fork" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
-    </div>
+    </p>
 
     <div align="center">
         <a href="https://pyrogram.ml">
