@@ -40,7 +40,7 @@ extensions = [
 ]
 
 # Don't show source files on docs
-html_show_sourcelink = False
+html_show_sourcelink = True
 
 # Order by source, not alphabetically
 autodoc_member_order = 'bysource'
