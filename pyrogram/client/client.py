@@ -1240,6 +1240,7 @@ class Client:
         )
 
     def delete_messages(self,
+                        chat_id: int or str,
                         message_ids: list,
                         revoke: bool = None):
         """Use this method to delete messages, including service messages, with the following limitations:
@@ -1251,24 +1252,41 @@ class Client:
         - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
 
         Args:
+            chat_id (:obj:`int` or :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
+
             message_ids (:obj:`list`):
                 List of identifiers of the messages to delete.
 
             revoke (:obj:`bool`, optional):
-                Deletes messages on both parts (for private chats).
+                Deletes messages on both parts.
+                This is only for private cloud chats and normal groups, messages on
+                channels and supergroups are always revoked (i.e.: deleted for everyone).
 
         Raises:
             :class:`pyrogram.Error`
         """
-        # TODO: Maybe "revoke" is superfluous.
-        # If I want to delete a message, chances are I want it to
-        # be deleted even from the other side
-        return self.send(
-            functions.messages.DeleteMessages(
-                id=message_ids,
-                revoke=revoke or None
+        peer = self.resolve_peer(chat_id)
+
+        if isinstance(peer, types.InputPeerChannel):
+            return self.send(
+                functions.channels.DeleteMessages(
+                    channel=peer,
+                    id=message_ids
+                )
             )
-        )
+        else:
+            # TODO: Maybe "revoke" is superfluous.
+            # If I want to delete a message, chances are I want it to
+            # be deleted even from the other side
+            return self.send(
+                functions.messages.DeleteMessages(
+                    id=message_ids,
+                    revoke=revoke or None
+                )
+            )
 
     # TODO: Remove redundant code
     def save_file(self, path: str, file_id: int = None, file_part: int = 0):

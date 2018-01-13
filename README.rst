@@ -13,11 +13,9 @@ Table of Contents
     
     -   `Installation`_
     
-    -   `Setup`_
+    -   `Configuration`_
     
     -   `Usage`_
-
--   `Development`_
 
 -   `Documentation`_
 
@@ -80,8 +78,8 @@ Installation
 
         $ pip install --upgrade pyrogram
 
-Setup
------
+Configuration
+-------------
 
 -   Create a new ``config.ini`` file at the root of your working directory, copy-paste
     the following and replace the **api_id** and **api_hash** values with `your own`_:
@@ -95,46 +93,29 @@ Setup
 Usage
 -----
 
--   You can now start by running the code below from a new Python file.
+-   And here's how Pyrogram looks:
 
     .. code:: python
 
         from pyrogram import Client
-        
-        # Create and start a new Client
-        client = Client(session_name="example")
+
+        client = Client("example")
         client.start()
 
-        # Send a text message to yourself (Saved Messages)
-        client.send_message(
-            chat_id="me",
-            text="Hi there! I'm using Pyrogram"
-        )
-        
-        # When done, stop the Client
+        client.send_message("me", "Hi there! I'm using Pyrogram")
+        client.send_photo("me", "/home/dan/pic.jpg", "Nice photo!")
+
         client.stop()
     
 That's all you need for getting started with Pyrogram. For more detailed information,
-please refer to the documentation:
-
--   Docs: https://docs.pyrogram.ml.
-
-Development
-===========
-
-The library is still in its early stages, thus lots of functionalities aiming to
-make working with Telegram's API easy are yet to be added and documented.
-
-However, being the core functionalities already implemented, every Telegram API
-method listed in the API scheme can be used right away; the goal is therefore to
-build a powerful, simple to use, `bot-like`_ interface on top of those low-level
-functions.
+please refer to the Documentation_.
 
 
 Documentation
 =============
 
 - The entire Pyrogram's documentation resides at https://docs.pyrogram.ml.
+
 
 Contribution
 ============
