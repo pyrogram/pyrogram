@@ -1,5 +1,11 @@
 .. raw:: html
 
+    <div align="right">
+        <a class="github-button" href="https://github.com/pyrogram/pyrogram/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch pyrogram/pyrogram on GitHub">Watch</a>
+        <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
+        <a class="github-button" href="https://github.com/pyrogram/pyrogram/fork" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
+    </div>
+
     <div align="center">
         <a href="https://pyrogram.ml">
             <img src="https://pyrogram.ml/images/logo2.png" alt="Logo">
@@ -8,8 +14,20 @@
 
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
+        <br>
+        <a href="https://pypi.python.org/pypi/Pyrogram">
+            Download
+        </a>
+        •
+        <a href="https://github.com/pyrogram/pyrogram">
+            Source code
+        </a>
+        •
+        <a href="https://t.me/PyrogramChat">
+            Community
+        </a>
         <br><br>
-        <a href="compiler/api/source/main_api.tl">
+        <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
             <img src="https://www.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 74">
         </a>
@@ -38,10 +56,10 @@ Features
 
 -   **High level**: Pyrogram automatically handles all the low-level details of
     communication with the Telegram servers by implementing the
-    **MTProto Mobile Protocol v2.0** and the mechanisms needed for establishing
+    `MTProto Mobile Protocol v2.0`_ and the mechanisms needed for establishing
     a reliable connection.
 
--   **Updated**: Pyrogram makes use of the latest Telegram API version, currently **Layer 74**.
+-   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 74`_.
 
 -   **Documented**: Pyrogram API public methods are documented and resemble the well
     established Telegram Bot API, thus offering a familiar look to Bot developers.
@@ -94,3 +112,7 @@ To get started, press Next.
 
     functions/index
     types/index
+
+.. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
+
+.. _`Layer 74`: https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl
