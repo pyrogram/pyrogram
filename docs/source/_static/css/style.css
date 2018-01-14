@@ -11,3 +11,12 @@
 .wy-side-nav-search input[type=text] {
     border-color: #918e86;
 }
+
+.wy-nav-content a:visited {
+    color: #2980B9;
+}
+
+.wy-menu-vertical a:active {
+    color: #3b3936;
+    background-color: #d1ccc1;
+}
