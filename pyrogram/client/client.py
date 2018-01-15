@@ -320,7 +320,7 @@ class Client:
             self.user_id = s["user_id"]
 
     def save_session(self):
-        if session_name is not None:
+        if self.session_name is not None:
             auth_key = base64.b64encode(self.auth_key).decode()
             auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
 
