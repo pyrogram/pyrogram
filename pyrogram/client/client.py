@@ -61,9 +61,13 @@ class Client:
     invoke every single Telegram API method available.
 
     Args:
-        session_name (:obj:`str`):
+        config_file (:obj:`str`, optional):
+            Path of the configuration file containing the api_id and api_hash parameters.
+
+        session_name (:obj:`str`, optional):
             Name to uniquely identify an authorized session. It will be used
             to save the session to a file named ``<session_name>.session``.
+            If left to None the session will be temporary and will not be saved.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
@@ -74,7 +78,8 @@ class Client:
     INVITE_LINK_RE = re.compile(r"^(?:https?:\/\/)?t\.me\/joinchat\/(.+)$")
     DIALOGS_AT_ONCE = 100
 
-    def __init__(self, session_name: str, test_mode: bool = False):
+    def __init__(self, config_file: str = "config.ini", session_name: str = None, test_mode: bool = False):
+        self.config_file = config_file
         self.session_name = session_name
         self.test_mode = test_mode
 
@@ -98,7 +103,7 @@ class Client:
     def start(self):
         """Use this method to start the Client after creating it.
         Requires no parameters."""
-        self.load_config()
+        self.load_config(self.config_file)
         self.load_session(self.session_name)
 
         self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
@@ -289,9 +294,9 @@ class Client:
 
         return r.user.id
 
-    def load_config(self):
+    def load_config(self, config_file):
         config = ConfigParser()
-        config.read("config.ini")
+        config.read(config_file)
 
         self.config = Config(
             int(config["pyrogram"]["api_id"]),
@@ -300,8 +305,11 @@ class Client:
 
     def load_session(self, session_name):
         try:
-            with open("{}.session".format(session_name)) as f:
-                s = json.load(f)
+            if session_name is None:
+                raise FileNotFoundError
+            else:
+                with open("{}.session".format(session_name)) as f:
+                    s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
             self.auth_key = Auth(self.dc_id, self.test_mode).create()
@@ -312,20 +320,21 @@ class Client:
             self.user_id = s["user_id"]
 
     def save_session(self):
-        auth_key = base64.b64encode(self.auth_key).decode()
-        auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
+        if session_name is not None:
+            auth_key = base64.b64encode(self.auth_key).decode()
+            auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
 
-        with open("{}.session".format(self.session_name), "w") as f:
-            json.dump(
-                dict(
-                    dc_id=self.dc_id,
-                    test_mode=self.test_mode,
-                    auth_key=auth_key,
-                    user_id=self.user_id,
-                ),
-                f,
-                indent=4
-            )
+            with open("{}.session".format(self.session_name), "w") as f:
+                json.dump(
+                    dict(
+                        dc_id=self.dc_id,
+                        test_mode=self.test_mode,
+                        auth_key=auth_key,
+                        user_id=self.user_id,
+                    ),
+                    f,
+                    indent=4
+                )
 
     def get_dialogs(self):
         peers = []
