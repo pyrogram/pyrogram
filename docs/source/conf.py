@@ -91,6 +91,8 @@ todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
+html_title = "Pyrogram Documentation"
+
 # Overridden by template
 html_show_copyright = False
 

@@ -1,3 +1,6 @@
+Welcome to Pyrogram
+===================
+
 .. raw:: html
 
     <p align="right">
@@ -38,7 +41,7 @@
     </p>
 
 About
-=====
+-----
 
 Pyrogram is a fully functional Telegram Client Library written from the ground up in Python.
 It offers **simple** and **complete** access to the Telegram Messenger API and is designed for Python developers
