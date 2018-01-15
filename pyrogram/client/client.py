@@ -111,9 +111,9 @@ class Client:
             self.user_id = self.authorize()
             self.save_session()
 
-        self.session.update_handler = self.update_handler
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
+        self.session.update_handler = self.update_handler
 
         mimetypes.init()
 
