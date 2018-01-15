@@ -24,7 +24,7 @@ If you want the latest development version of the library, you can either instal
 
 .. code-block:: bash
 
-    $ pip install git+https://github.com/pyrogram/pyrogram.git
+    $ pip install --upgrade git+https://github.com/pyrogram/pyrogram.git
 
 or manually, using:
 
