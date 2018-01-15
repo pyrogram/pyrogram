@@ -466,7 +466,7 @@ class Client:
         """Use this method to send text messages.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -509,12 +509,12 @@ class Client:
         """Use this method to forward messages of any kind.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
 
-            from_chat_id (:obj:`int` or :obj:`str`):
+            from_chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the chat where the original message was sent
                 (or channel/supergroup username in the format @username). For your personal cloud
                 storage (Saved Messages) you can simply use "me" or "self".
@@ -552,7 +552,7 @@ class Client:
         """Use this method to send photos.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -618,7 +618,7 @@ class Client:
         For sending voice messages, use the :obj:`send_voice` method instead.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -691,7 +691,7 @@ class Client:
         """Use this method to send general files.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -753,7 +753,7 @@ class Client:
         """Use this method to send video files.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -826,7 +826,7 @@ class Client:
         """Use this method to send audio files.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -892,7 +892,7 @@ class Client:
         """Use this method to send video messages.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -959,7 +959,7 @@ class Client:
         """Use this method to send points on the map.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1010,7 +1010,7 @@ class Client:
         """Use this method to send information about a venue.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1073,7 +1073,7 @@ class Client:
         """Use this method to send phone contacts.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1121,7 +1121,7 @@ class Client:
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1151,7 +1151,7 @@ class Client:
         """Use this method to get a list of profile pictures for a user.
 
         Args:
-            user_id (:obj:`int` or :obj:`str`):
+            user_id (:obj:`int` | :obj:`str`):
                 Unique identifier of the target user.
 
             offset (:obj:`int`, optional):
@@ -1182,7 +1182,7 @@ class Client:
         """Use this method to edit text messages.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1215,7 +1215,7 @@ class Client:
         """Use this method to edit captions of messages.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1250,7 +1250,7 @@ class Client:
         - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
                 simply use "me" or "self".
@@ -1526,7 +1526,7 @@ class Client:
         """Use this method to leave a group chat or channel.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
@@ -1568,7 +1568,7 @@ class Client:
         The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Args:
-            chat_id (:obj:`int` or :obj:`str`):
+            chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
