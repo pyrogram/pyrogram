@@ -66,7 +66,7 @@ class Client:
             to save the session to a file named ``<session_name>.session``.
 
         test_mode (:obj:`bool`, optional):
-            Enable or disable log-in to testing servers. Defaults to ``False``.
+            Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
     """
@@ -134,7 +134,7 @@ class Client:
         Args:
             stop_signals (:obj:`tuple`, optional):
                 Iterable containing signals the signal handler will listen to.
-                Defaults to ``(SIGINT, SIGTERM, SIGABRT)``.
+                Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
         for s in stop_signals:
             signal(s, self.signal_handler)
