@@ -32,6 +32,8 @@ The result is a much cleaner interface that allows you to:
 
 .. seealso:: For a complete list of the available methods have a look at the :obj:`pyrogram.Client` class.
 
+.. _using-raw-functions:
+
 Using Raw Functions
 -------------------
 
