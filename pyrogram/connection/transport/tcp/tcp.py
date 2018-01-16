@@ -18,15 +18,30 @@
 
 import logging
 import socket
+from collections import namedtuple
 
 import socks
 
 log = logging.getLogger(__name__)
 
+Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
+
 
 class TCP(socks.socksocket):
-    def __init__(self):
+    def __init__(self, proxy: Proxy):
         super().__init__()
+        self.proxy_enabled = False
+
+        if proxy and proxy.enabled:
+            self.proxy_enabled = True
+
+            self.set_proxy(
+                proxy_type=socks.SOCKS5,
+                addr=proxy.hostname,
+                port=proxy.port,
+                username=proxy.username,
+                password=proxy.password
+            )
 
     def close(self):
         try:

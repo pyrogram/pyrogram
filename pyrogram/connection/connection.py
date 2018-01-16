@@ -32,15 +32,16 @@ class Connection:
         2: TCPIntermediate
     }
 
-    def __init__(self, ipv4: str, mode: int = 1):
+    def __init__(self, ipv4: str, proxy: type, mode: int = 1):
         self.address = (ipv4, 80)
+        self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)
         self.lock = threading.Lock()
         self.connection = None
 
     def connect(self):
         while True:
-            self.connection = self.mode()
+            self.connection = self.mode(self.proxy)
 
             try:
                 log.info("Connecting...")

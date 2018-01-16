@@ -26,14 +26,14 @@ log = logging.getLogger(__name__)
 
 
 class TCPFull(TCP):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, proxy: type):
+        super().__init__(proxy)
         self.seq_no = None
 
     def connect(self, address: tuple):
         super().connect(address)
         self.seq_no = 0
-        log.info("Connected!")
+        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
         # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)

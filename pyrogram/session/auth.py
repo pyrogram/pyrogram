@@ -46,11 +46,11 @@ class Auth:
         16
     )
 
-    def __init__(self, dc_id: int, test_mode: bool):
+    def __init__(self, dc_id: int, test_mode: bool, proxy: type):
         self.dc_id = dc_id
         self.test_mode = test_mode
 
-        self.connection = Connection(DataCenter(dc_id, test_mode))
+        self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
         self.msg_id = MsgId()
 
     def pack(self, data: Object) -> bytes:
