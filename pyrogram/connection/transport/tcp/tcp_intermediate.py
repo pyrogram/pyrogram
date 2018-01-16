@@ -34,7 +34,7 @@ class TCPIntermediate(TCP):
         self.is_first_packet = True
         log.info("Connected!")
 
-    def send(self, data: bytes):
+    def sendall(self, data: bytes, *args):
         length = len(data)
         data = pack("<i", length) + data
 
@@ -44,12 +44,12 @@ class TCPIntermediate(TCP):
 
         super().sendall(data)
 
-    def recv(self) -> bytes or None:
-        length = self.recvall(4)
+    def recvall(self, length: int = 0) -> bytes or None:
+        length = super().recvall(4)
 
         if length is None:
             return None
 
-        packet = self.recvall(unpack("<I", length)[0])
+        packet = super().recvall(unpack("<I", length)[0])
 
         return packet

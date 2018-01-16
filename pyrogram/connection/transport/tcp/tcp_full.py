@@ -35,7 +35,7 @@ class TCPFull(TCP):
         self.seq_no = 0
         log.info("Connected!")
 
-    def send(self, data: bytes):
+    def sendall(self, data: bytes, *args):
         # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)
         data = pack("<II", len(data) + 12, self.seq_no) + data
         data += pack("<I", crc32(data))
@@ -43,13 +43,13 @@ class TCPFull(TCP):
 
         super().sendall(data)
 
-    def recv(self) -> bytes or None:
-        length = self.recvall(4)
+    def recvall(self, length: int = 0) -> bytes or None:
+        length = super().recvall(4)
 
         if length is None:
             return None
 
-        packet = self.recvall(unpack("<I", length)[0] - 4)
+        packet = super().recvall(unpack("<I", length)[0] - 4)
 
         if packet is None:
             return None

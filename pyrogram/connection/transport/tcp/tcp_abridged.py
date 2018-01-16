@@ -33,7 +33,7 @@ class TCPAbridged(TCP):
         self.is_first_packet = True
         log.info("Connected!")
 
-    def send(self, data: bytes):
+    def sendall(self, data: bytes, *args):
         length = len(data) // 4
 
         data = (
@@ -48,20 +48,20 @@ class TCPAbridged(TCP):
 
         super().sendall(data)
 
-    def recv(self) -> bytes or None:
-        length = self.recvall(1)
+    def recvall(self, length: int = 0) -> bytes or None:
+        length = super().recvall(1)
 
         if length is None:
             return None
 
         if length == b"\x7f":
-            length = self.recvall(3)
+            length = super().recvall(3)
 
             if length is None:
                 return None
 
         length = int.from_bytes(length, "little") * 4
 
-        packet = self.recvall(length)
+        packet = super().recvall(length)
 
         return packet

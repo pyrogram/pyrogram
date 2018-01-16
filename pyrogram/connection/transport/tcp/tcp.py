@@ -28,12 +28,6 @@ class TCP(socks.socksocket):
     def __init__(self):
         super().__init__()
 
-    def send(self, *args):
-        pass
-
-    def recv(self, *args):
-        pass
-
     def close(self):
         try:
             self.shutdown(socket.SHUT_RDWR)

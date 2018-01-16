@@ -56,7 +56,7 @@ class Connection:
 
     def send(self, data: bytes):
         with self.lock:
-            self.connection.send(data)
+            self.connection.sendall(data)
 
     def recv(self) -> bytes or None:
-        return self.connection.recv()
+        return self.connection.recvall()
