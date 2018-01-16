@@ -19,10 +19,12 @@
 import logging
 import socket
 
+import socks
+
 log = logging.getLogger(__name__)
 
 
-class TCP(socket.socket):
+class TCP(socks.socksocket):
     def __init__(self):
         super().__init__()
 
