@@ -309,8 +309,6 @@ class Client:
                 password=parser.get("proxy", "password", fallback=None) or None
             )
 
-        print(self.proxy)
-
     def load_session(self, session_name):
         try:
             with open("{}.session".format(session_name)) as f:
