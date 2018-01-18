@@ -60,8 +60,4 @@ class TCPAbridged(TCP):
             if length is None:
                 return None
 
-        length = int.from_bytes(length, "little") * 4
-
-        packet = super().recvall(length)
-
-        return packet
+        return super().recvall(int.from_bytes(length, "little") * 4)

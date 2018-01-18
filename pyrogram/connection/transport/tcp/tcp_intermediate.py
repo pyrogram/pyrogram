@@ -50,6 +50,4 @@ class TCPIntermediate(TCP):
         if length is None:
             return None
 
-        packet = super().recvall(unpack("<I", length)[0])
-
-        return packet
+        return super().recvall(unpack("<I", length)[0])
