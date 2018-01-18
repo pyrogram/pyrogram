@@ -102,6 +102,7 @@ To get started, press Next.
     resources/TextFormatting
     resources/UpdateHandling
     resources/ErrorHandling
+    resources/ProxyServer
 
 .. toctree::
     :hidden:
