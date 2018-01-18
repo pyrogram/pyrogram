@@ -53,6 +53,7 @@ from pyrogram.session import Auth, Session
 log = logging.getLogger(__name__)
 
 Config = namedtuple("Config", ["api_id", "api_hash"])
+Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
 
 
 class Client:
@@ -90,6 +91,7 @@ class Client:
         self.markdown = Markdown(self.peers_by_id)
 
         self.config = None
+        self.proxy = None
         self.session = None
 
         self.update_handler = None
@@ -101,7 +103,7 @@ class Client:
         self.load_config()
         self.load_session(self.session_name)
 
-        self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+        self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
 
         terms = self.session.start()
 
@@ -191,9 +193,9 @@ class Client:
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
 
-                self.session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+                self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
                 self.session.start()
 
                 r = self.send(
@@ -290,13 +292,22 @@ class Client:
         return r.user.id
 
     def load_config(self):
-        config = ConfigParser()
-        config.read("config.ini")
+        parser = ConfigParser()
+        parser.read("config.ini")
 
         self.config = Config(
-            int(config["pyrogram"]["api_id"]),
-            config["pyrogram"]["api_hash"]
+            api_id=parser.getint("pyrogram", "api_id"),
+            api_hash=parser.get("pyrogram", "api_hash")
         )
+
+        if parser.has_section("proxy"):
+            self.proxy = Proxy(
+                enabled=parser.getboolean("proxy", "enabled"),
+                hostname=parser.get("proxy", "hostname"),
+                port=parser.getint("proxy", "port"),
+                username=parser.get("proxy", "username", fallback=None) or None,
+                password=parser.get("proxy", "password", fallback=None) or None
+            )
 
     def load_session(self, session_name):
         try:
@@ -304,7 +315,7 @@ class Client:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
-            self.auth_key = Auth(self.dc_id, self.test_mode).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -1297,7 +1308,7 @@ class Client:
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.auth_key, self.config.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
         session.start()
 
         try:
@@ -1362,7 +1373,8 @@ class Client:
             session = Session(
                 dc_id,
                 self.test_mode,
-                Auth(dc_id, self.test_mode).create(),
+                self.proxy,
+                Auth(dc_id, self.test_mode, self.proxy).create(),
                 self.config.api_id
             )
 
@@ -1378,6 +1390,7 @@ class Client:
             session = Session(
                 dc_id,
                 self.test_mode,
+                self.proxy,
                 self.auth_key,
                 self.config.api_id
             )
@@ -1433,7 +1446,8 @@ class Client:
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
-                    Auth(r.dc_id, self.test_mode).create(),
+                    self.proxy,
+                    Auth(r.dc_id, self.test_mode, self.proxy).create(),
                     self.config.api_id,
                     is_cdn=True
                 )
