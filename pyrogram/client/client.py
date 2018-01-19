@@ -602,9 +602,9 @@ class Client:
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedPhoto(
                             file=file,
-                            caption=caption,
                             ttl_seconds=ttl_seconds
                         ),
+                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -673,7 +673,6 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                             file=file,
-                            caption=caption,
                             attributes=[
                                 types.DocumentAttributeAudio(
                                     duration=duration,
@@ -683,6 +682,7 @@ class Client:
                                 types.DocumentAttributeFilename(os.path.basename(audio))
                             ]
                         ),
+                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -737,11 +737,11 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
                             file=file,
-                            caption=caption,
                             attributes=[
                                 types.DocumentAttributeFilename(os.path.basename(document))
                             ]
                         ),
+                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -808,7 +808,6 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
-                            caption=caption,
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     duration=duration,
@@ -817,6 +816,7 @@ class Client:
                                 )
                             ]
                         ),
+                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -875,7 +875,6 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
                             file=file,
-                            caption=caption,
                             attributes=[
                                 types.DocumentAttributeAudio(
                                     voice=True,
@@ -883,6 +882,7 @@ class Client:
                                 )
                             ]
                         ),
+                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -941,7 +941,6 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
-                            caption="",
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     round_message=True,
@@ -951,6 +950,7 @@ class Client:
                                 )
                             ]
                         ),
+                        message="",
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id()
@@ -1003,6 +1003,7 @@ class Client:
                         longitude
                     )
                 ),
+                message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id()
@@ -1068,6 +1069,7 @@ class Client:
                     venue_id=foursquare_id,
                     venue_type=""
                 ),
+                message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id()
@@ -1119,6 +1121,7 @@ class Client:
                     first_name,
                     last_name
                 ),
+                message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id()
@@ -1244,7 +1247,7 @@ class Client:
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
-                message=caption
+                **self.markdown.parse(caption)
             )
         )
 
