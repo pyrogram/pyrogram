@@ -1640,3 +1640,115 @@ class Client:
                     return channel_full.exported_invite.link
                 else:
                     raise ChatAdminRequired
+
+    def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
+        """Use this method to enable two-step verification (Cloud Password)
+
+        This password will be asked when you log in on a new device in addition to the SMS code.
+
+        Args:
+            password (:obj:`str`):
+                Your password.
+
+            hint (:obj:`str`, optional):
+                A password hint.
+
+            email (:obj:`str`, optional):
+                Recovery e-mail.
+
+        Returns:
+            True on success, False otherwise.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        r = self.send(functions.account.GetPassword())
+
+        if isinstance(r, types.account.NoPassword):
+            salt = r.new_salt + os.urandom(8)
+            password_hash = sha256(salt + password.encode() + salt).digest()
+
+            return self.send(
+                functions.account.UpdatePasswordSettings(
+                    current_password_hash=salt,
+                    new_settings=types.account.PasswordInputSettings(
+                        new_salt=salt,
+                        new_password_hash=password_hash,
+                        hint=hint,
+                        email=email
+                    )
+                )
+            )
+        else:
+            return False
+
+    def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
+        """Use this method to change your two-step verification password (Cloud Password)
+
+        Args:
+            current_password (:obj:`str`):
+                Your current password.
+
+            new_password (:obj:`str`):
+                Your new password.
+
+            new_hint (:obj:`str`, optional):
+                A new password hint.
+
+        Returns:
+            True on success, False otherwise.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        r = self.send(functions.account.GetPassword())
+
+        if isinstance(r, types.account.Password):
+            current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
+
+            new_salt = r.new_salt + os.urandom(8)
+            new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
+
+            return self.send(
+                functions.account.UpdatePasswordSettings(
+                    current_password_hash=current_password_hash,
+                    new_settings=types.account.PasswordInputSettings(
+                        new_salt=new_salt,
+                        new_password_hash=new_password_hash,
+                        hint=new_hint
+                    )
+                )
+            )
+        else:
+            return False
+
+    def remove_cloud_password(self, password: str):
+        """Use this method to turn off your two-step verification password (Cloud Password)
+
+        Args:
+            password (:obj:`str`):
+                Your current password.
+
+        Returns:
+            True on success, False otherwise.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        r = self.send(functions.account.GetPassword())
+
+        if isinstance(r, types.account.Password):
+            password_hash = sha256(r.current_salt + password.encode() + r.current_salt).digest()
+
+            return self.send(
+                functions.account.UpdatePasswordSettings(
+                    current_password_hash=password_hash,
+                    new_settings=types.account.PasswordInputSettings(
+                        new_salt=b"",
+                        new_password_hash=b"",
+                        hint=""
+                    )
+                )
+            )
+        else:
+            return False
