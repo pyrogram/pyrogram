@@ -604,10 +604,10 @@ class Client:
                             file=file,
                             ttl_seconds=ttl_seconds
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -682,10 +682,10 @@ class Client:
                                 types.DocumentAttributeFilename(os.path.basename(audio))
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -741,10 +741,10 @@ class Client:
                                 types.DocumentAttributeFilename(os.path.basename(document))
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -816,10 +816,10 @@ class Client:
                                 )
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -882,10 +882,10 @@ class Client:
                                 )
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
