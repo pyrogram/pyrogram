@@ -72,7 +72,7 @@ class Client:
             created sessions are loaded.
     """
 
-    INVITE_LINK_RE = re.compile(r"^(?:https?:\/\/)?t\.me\/joinchat\/(.+)$")
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
 
     def __init__(self, session_name: str, test_mode: bool = False):
