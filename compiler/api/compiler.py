@@ -22,7 +22,7 @@ import shutil
 
 HOME = "compiler/api"
 DESTINATION = "pyrogram/api"
-notice_path = "NOTICE"
+NOTICE_PATH = "NOTICE"
 SECTION_RE = re.compile(r"---(\w+)---")
 LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
 COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);$", re.MULTILINE)
@@ -133,7 +133,7 @@ def start():
     with open("{}/template/class.txt".format(HOME)) as f:
         template = f.read()
 
-    with open(notice_path) as f:
+    with open(NOTICE_PATH) as f:
         notice = []
 
         for line in f.readlines():
@@ -412,5 +412,5 @@ def start():
 if "__main__" == __name__:
     HOME = "."
     DESTINATION = "../../pyrogram/api"
-    notice_path = "../../NOTICE"
+    NOTICE_PATH = "../../NOTICE"
     start()
