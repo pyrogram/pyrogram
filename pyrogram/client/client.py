@@ -1642,7 +1642,7 @@ class Client:
                     raise ChatAdminRequired
 
     def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
-        """Use this method to enable two-step verification (Cloud Password)
+        """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 
         This password will be asked when you log in on a new device in addition to the SMS code.
 
@@ -1683,7 +1683,7 @@ class Client:
             return False
 
     def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
-        """Use this method to change your two-step verification password (Cloud Password)
+        """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
             current_password (:obj:`str`):
@@ -1723,7 +1723,7 @@ class Client:
             return False
 
     def remove_cloud_password(self, password: str):
-        """Use this method to turn off your two-step verification password (Cloud Password)
+        """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
             password (:obj:`str`):
