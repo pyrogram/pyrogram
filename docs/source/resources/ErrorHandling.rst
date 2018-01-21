@@ -29,8 +29,7 @@ Examples
     )
 
     try:
-        # Something
-        pass
+        ...
     except BadRequest:
         pass
     except Flood:
@@ -53,8 +52,7 @@ can try again. The value is always stored in the ``x`` field of the returned exc
     from pyrogram.api.errors import FloodWait
 
     try:
-        # something
-        pass
+        ...
     except FloodWait as e:
         print(e.x)
 

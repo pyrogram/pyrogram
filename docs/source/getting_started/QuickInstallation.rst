@@ -11,12 +11,6 @@ The most straightforward and recommended way to install or upgrade Pyrogram is b
 
     Pyrogram only works on Python 3.3 or higher; if your **pip** points to Python 2.x use **pip3** instead.
 
-    Also, if you are getting an error while installing or importing the library, please update setuptools and try again.
-
-    .. code-block:: bash
-
-        $ pip install --upgrade setuptools
-
 Bleeding Edge
 -------------
 
@@ -44,4 +38,4 @@ If no errors show up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.4.0'
+    '0.4.2'
