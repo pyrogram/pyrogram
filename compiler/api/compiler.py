@@ -30,6 +30,7 @@ ARGS_RE = re.compile("[^{](\w+):([\w?!.<>]+)")
 FLAGS_RE = re.compile(r"flags\.(\d+)\?")
 FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
 FLAGS_RE_3 = re.compile(r"flags:#")
+INT_RE = re.compile(r"int(\d+)")
 
 core_types = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool"]
 types_to_constructors = {}
@@ -39,10 +40,13 @@ constructors_to_functions = {}
 
 def get_docstring_arg_type(t: str, is_list: bool = False):
     if t in core_types:
-        if "int" in t or t == "long":
-            return ":obj:`int`"
+        if t == "long":
+            return ":obj:`int`:obj:`64-bit`"
+        elif "int" in t:
+            size = INT_RE.match(t)
+            return ":obj:`int`:obj:`{}-bit`".format(size.group(1)) if size else ":obj:`int`:obj:`32-bit`"
         elif t == "double":
-            return ":obj:`float`"
+            return ":obj:`float`:obj:`64-bit`"
         elif t == "string":
             return ":obj:`str`"
         else:
@@ -52,7 +56,7 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
     elif t == "Object" or t == "X":
         return "Any type from :obj:`pyrogram.api.types`"
     elif t == "!X":
-        return "Any query from :obj:`pyrogram.api.functions`"
+        return "Any method from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
         return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
     else:
@@ -253,15 +257,15 @@ def start():
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
-            is_optional = arg_type.startswith("flags.")
+            is_optional = FLAGS_RE.match(arg_type)
+            flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
             docstring_args.append(
                 "{}: {}{}".format(
                     arg_name,
-                    "(optional) " if is_optional else "",
-                    get_docstring_arg_type(arg_type),
-
+                    "(optional {}) ".format(flag_number) if is_optional else "",
+                    get_docstring_arg_type(arg_type)
                 )
             )
 
