@@ -47,7 +47,7 @@ from pyrogram.api.types import (
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
 from pyrogram.crypto import CTR
-from pyrogram.extensions import Markdown
+from pyrogram.extensions import Markdown, HTML
 from pyrogram.session import Auth, Session
 
 log = logging.getLogger(__name__)
@@ -89,6 +89,7 @@ class Client:
         self.peers_by_username = {}
 
         self.markdown = Markdown(self.peers_by_id)
+        self.html = HTML(self.peers_by_id)
 
         self.config = None
         self.proxy = None
