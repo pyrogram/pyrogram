@@ -19,7 +19,7 @@
 import re
 from sys import argv
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from compiler.api import compiler as api_compiler
 from compiler.error import compiler as error_compiler
@@ -31,9 +31,42 @@ if len(argv) > 1 and argv[1] != "sdist":
     error_compiler.start()
     # docs_compiler.start()
 
+with open("pyrogram/__init__.py", encoding="utf-8") as f:
+    version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
+
 # PyPI doesn't like raw html
-with open("README.rst", encoding="UTF-8") as f:
+with open("README.rst", encoding="utf-8") as f:
     readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
     readme = re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|scheme| |mtproto|", readme)
 
-setup(long_description=readme)
+setup(
+    name="Pyrogram",
+    version=version,
+    description="Telegram MTProto API Client Library for Python",
+    url="https://github.com/pyrogram/pyrogram",
+    author="Dan Tès",
+    author_email="admin@pyrogram.ml",
+    license="LGPLv3+",
+    keywords="telegram mtproto api client library python",
+    long_description=readme,
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Topic :: Internet",
+        "Topic :: Communications :: Chat",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Software Development :: Libraries :: Python Modules"
+    ],
+    packages=find_packages(),
+    zip_safe=False,
+    install_requires=["pyaes", "pysocks"],
+    include_package_data=True,
+)
