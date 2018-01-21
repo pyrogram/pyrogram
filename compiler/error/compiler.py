@@ -43,7 +43,7 @@ def start():
 
     files = [i for i in os.listdir("{}/source".format(home))]
 
-    with open(notice_path) as f:
+    with open(notice_path, encoding="utf-8") as f:
         notice = []
 
         for line in f.readlines():
@@ -51,7 +51,7 @@ def start():
 
         notice = "\n".join(notice)
 
-    with open("{}/all.py".format(dest), "w") as f_all:
+    with open("{}/all.py".format(dest), "w", encoding="utf-8") as f_all:
         f_all.write(notice + "\n\n")
         f_all.write("count = {count}\n\n")
         f_all.write("exceptions = {\n")
@@ -66,14 +66,14 @@ def start():
             init = "{}/__init__.py".format(dest)
 
             if not os.path.exists(init):
-                with open(init, "w") as f_init:
+                with open(init, "w", encoding="utf-8") as f_init:
                     f_init.write(notice + "\n\n")
 
-            with open(init, "a") as f_init:
+            with open(init, "a", encoding="utf-8") as f_init:
                 f_init.write("from .{}_{} import *\n".format(name.lower(), code))
 
-            with open("{}/source/{}".format(home, i)) as f_csv, \
-                    open("{}/{}_{}.py".format(dest, name.lower(), code), "w") as f_class:
+            with open("{}/source/{}".format(home, i), encoding="utf-8") as f_csv, \
+                    open("{}/{}_{}.py".format(dest, name.lower(), code), "w", encoding="utf-8") as f_class:
                 reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)
@@ -98,10 +98,10 @@ def start():
 
                     sub_classes.append((sub_class, id, message))
 
-                with open("{}/template/class.txt".format(home), "r") as f_class_template:
+                with open("{}/template/class.txt".format(home), "r", encoding="utf-8") as f_class_template:
                     class_template = f_class_template.read()
 
-                    with open("{}/template/sub_class.txt".format(home), "r") as f_sub_class_template:
+                    with open("{}/template/sub_class.txt".format(home), "r", encoding="utf-8") as f_sub_class_template:
                         sub_class_template = f_sub_class_template.read()
 
                     class_template = class_template.format(
@@ -123,10 +123,10 @@ def start():
 
         f_all.write("}\n")
 
-    with open("{}/all.py".format(dest)) as f:
+    with open("{}/all.py".format(dest), encoding="utf-8") as f:
         content = f.read()
 
-    with open("{}/all.py".format(dest), "w") as f:
+    with open("{}/all.py".format(dest), "w", encoding="utf-8") as f:
         f.write(re.sub("{count}", str(count), content))
 
     print("Compiling Errors: [100%]")

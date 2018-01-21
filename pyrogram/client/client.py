@@ -311,7 +311,7 @@ class Client:
 
     def load_session(self, session_name):
         try:
-            with open("{}.session".format(session_name)) as f:
+            with open("{}.session".format(session_name), encoding="utf-8") as f:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
@@ -326,7 +326,7 @@ class Client:
         auth_key = base64.b64encode(self.auth_key).decode()
         auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
 
-        with open("{}.session".format(self.session_name), "w") as f:
+        with open("{}.session".format(self.session_name), "w", encoding="utf-8") as f:
             json.dump(
                 dict(
                     dc_id=self.dc_id,
@@ -604,10 +604,10 @@ class Client:
                             file=file,
                             ttl_seconds=ttl_seconds
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -682,10 +682,10 @@ class Client:
                                 types.DocumentAttributeFilename(os.path.basename(audio))
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -741,10 +741,10 @@ class Client:
                                 types.DocumentAttributeFilename(os.path.basename(document))
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -816,10 +816,10 @@ class Client:
                                 )
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -882,10 +882,10 @@ class Client:
                                 )
                             ]
                         ),
-                        **self.markdown.parse(caption),
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        **self.markdown.parse(caption)
                     )
                 )
             except FilePartMissing as e:

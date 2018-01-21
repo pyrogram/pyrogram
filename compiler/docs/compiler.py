@@ -44,7 +44,7 @@ def generate(source_path, base):
                 if not i.startswith("__"):
                     build("/".join([path, i]), level=level + 1)
             except NotADirectoryError:
-                with open(path + "/" + i) as f:
+                with open(path + "/" + i, encoding="utf-8") as f:
                     p = ast.parse(f.read())
 
                 for node in ast.walk(p):
@@ -59,7 +59,7 @@ def generate(source_path, base):
 
                 os.makedirs(os.path.dirname(destination + "/" + full_path), exist_ok=True)
 
-                with open(destination + "/" + full_path, "w") as f:
+                with open(destination + "/" + full_path, "w", encoding="utf-8") as f:
                     f.write(
                         page_template.format(
                             title=name,
@@ -94,7 +94,7 @@ def generate(source_path, base):
             inner_path = base + "/index" + ".rst"
             module = "pyrogram.api.{}".format(base)
 
-        with open(destination + "/" + inner_path, "w") as f:
+        with open(destination + "/" + inner_path, "w", encoding="utf-8") as f:
             if k == base:
                 f.write(":tocdepth: 1\n\n")
 
@@ -114,10 +114,10 @@ def start():
     global page_template
     global toctree
 
-    with open(home + "/template/page.txt") as f:
+    with open(home + "/template/page.txt", encoding="utf-8") as f:
         page_template = f.read()
 
-    with open(home + "/template/toctree.txt") as f:
+    with open(home + "/template/toctree.txt", encoding="utf-8") as f:
         toctree = f.read()
 
     generate(types_path, types_base)

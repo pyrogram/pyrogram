@@ -129,15 +129,15 @@ def start():
     shutil.rmtree("{}/types".format(DESTINATION), ignore_errors=True)
     shutil.rmtree("{}/functions".format(DESTINATION), ignore_errors=True)
 
-    with open("{}/source/auth_key.tl".format(HOME)) as auth, \
-            open("{}/source/sys_msgs.tl".format(HOME)) as system, \
-            open("{}/source/main_api.tl".format(HOME)) as api:
+    with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
+            open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
+            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
         schema = (auth.read() + system.read() + api.read()).splitlines()
 
-    with open("{}/template/class.txt".format(HOME)) as f:
+    with open("{}/template/class.txt".format(HOME), encoding="utf-8") as f:
         template = f.read()
 
-    with open(NOTICE_PATH) as f:
+    with open(NOTICE_PATH, encoding="utf-8") as f:
         notice = []
 
         for line in f.readlines():
@@ -234,10 +234,10 @@ def start():
         init = "{}/__init__.py".format(path)
 
         if not os.path.exists(init):
-            with open(init, "w") as f:
+            with open(init, "w", encoding="utf-8") as f:
                 f.write(notice + "\n\n")
 
-        with open(init, "a") as f:
+        with open(init, "a", encoding="utf-8") as f:
             f.write("from .{} import {}\n".format(snek(c.name), capit(c.name)))
 
         sorted_args = sort_args(c.args)
@@ -370,7 +370,7 @@ def start():
                     read_types += "\n        "
                     read_types += "{} = Object.read(b)\n        ".format(arg_name)
 
-        with open("{}/{}.py".format(path, snek(c.name)), "w") as f:
+        with open("{}/{}.py".format(path, snek(c.name)), "w", encoding="utf-8") as f:
             f.write(
                 template.format(
                     notice=notice,
@@ -387,7 +387,7 @@ def start():
                 )
             )
 
-    with open("{}/all.py".format(DESTINATION), "w") as f:
+    with open("{}/all.py".format(DESTINATION), "w", encoding="utf-8") as f:
         f.write(notice + "\n\n")
         f.write("layer = {}\n\n".format(layer))
         f.write("objects = {")
@@ -409,7 +409,7 @@ def start():
         f.write("\n}\n")
 
     for k, v in namespaces.items():
-        with open("{}/{}/__init__.py".format(DESTINATION, k), "a") as f:
+        with open("{}/{}/__init__.py".format(DESTINATION, k), "a", encoding="utf-8") as f:
             f.write("from . import {}\n".format(", ".join([i for i in v])) if v else "")
 
 
