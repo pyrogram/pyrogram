@@ -41,12 +41,12 @@ constructors_to_functions = {}
 def get_docstring_arg_type(t: str, is_list: bool = False):
     if t in core_types:
         if t == "long":
-            return ":obj:`int`:obj:`64-bit`"
+            return ":obj:`int` :obj:`64-bit`"
         elif "int" in t:
             size = INT_RE.match(t)
-            return ":obj:`int`:obj:`{}-bit`".format(size.group(1)) if size else ":obj:`int`:obj:`32-bit`"
+            return ":obj:`int` :obj:`{}-bit`".format(size.group(1)) if size else ":obj:`int` :obj:`32-bit`"
         elif t == "double":
-            return ":obj:`float`:obj:`64-bit`"
+            return ":obj:`float` :obj:`64-bit`"
         elif t == "string":
             return ":obj:`str`"
         else:
@@ -264,7 +264,7 @@ def start():
             docstring_args.append(
                 "{}: {}{}".format(
                     arg_name,
-                    "(optional {}) ".format(flag_number) if is_optional else "",
+                    "``optional.{}``".format(flag_number) if is_optional else "",
                     get_docstring_arg_type(arg_type)
                 )
             )
