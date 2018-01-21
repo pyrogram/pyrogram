@@ -42,7 +42,7 @@ class Error(Exception):
 
         # TODO: Proper log unknown errors
         if self.CODE == 520:
-            with open("unknown_errors.txt", "a") as f:
+            with open("unknown_errors.txt", "a", encoding="utf-8") as f:
                 f.write("{}\t{}\t{}\n".format(x.error_code, x.error_message, query_type))
 
     @staticmethod
