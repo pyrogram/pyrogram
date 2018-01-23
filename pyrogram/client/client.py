@@ -490,7 +490,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
@@ -588,7 +588,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             ttl_seconds (:obj:`int`, optional):
                 Self-Destruct Timer.
@@ -661,7 +661,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             duration (:obj:`int`, optional):
                 Duration of the audio in seconds.
@@ -741,7 +741,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
@@ -810,7 +810,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             duration (:obj:`int`, optional):
                 Duration of sent video in seconds.
@@ -890,7 +890,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             duration (:obj:`int`, optional):
                 Duration of the voice message in seconds.
@@ -1255,7 +1255,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
             disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
@@ -1296,7 +1296,7 @@ class Client:
             parse_mode (:obj:`str`):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to MARKDOWN.
+                Defaults to Markdown.
 
         Raises:
             :class:`pyrogram.Error`
