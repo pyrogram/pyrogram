@@ -16,4 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .markdown import Markdown
+
+class ParseMode:
+    """This class provides a convenient access to parse modes.
+    It is intended to be used with any method that accepts the optional argument **parse_mode**
+    """
+
+    HTML = "html"
+    """Set the parse mode to HTML style"""
+
+    MARKDOWN = "markdown"
+    """Set the parse mode to Markdown style"""

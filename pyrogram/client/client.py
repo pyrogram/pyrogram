@@ -47,8 +47,8 @@ from pyrogram.api.types import (
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
 from pyrogram.crypto import CTR
-from pyrogram.extensions import Markdown
 from pyrogram.session import Auth, Session
+from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +89,7 @@ class Client:
         self.peers_by_username = {}
 
         self.markdown = Markdown(self.peers_by_id)
+        self.html = HTML(self.peers_by_id)
 
         self.config = None
         self.proxy = None
@@ -471,6 +472,7 @@ class Client:
     def send_message(self,
                      chat_id: int or str,
                      text: str,
+                     parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
                      reply_to_msg_id: int = None):
@@ -484,6 +486,11 @@ class Client:
 
             text (:obj:`str`):
                 Text of the message to be sent.
+
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to MARKDOWN.
 
             disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
@@ -501,6 +508,8 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
+
         return self.send(
             functions.messages.SendMessage(
                 peer=self.resolve_peer(chat_id),
@@ -508,7 +517,7 @@ class Client:
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_msg_id,
                 random_id=self.rnd_id(),
-                **self.markdown.parse(text)
+                **style.parse(text)
             )
         )
 
@@ -557,6 +566,7 @@ class Client:
                    chat_id: int or str,
                    photo: str,
                    caption: str = "",
+                   parse_mode: str = "",
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
@@ -574,6 +584,11 @@ class Client:
 
             caption (:obj:`bool`, optional):
                 Photo caption, 0-200 characters.
+
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
 
             ttl_seconds (:obj:`int`, optional):
                 Self-Destruct Timer.
@@ -593,6 +608,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(photo)
 
         while True:
@@ -607,7 +623,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
-                        **self.markdown.parse(caption)
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -619,6 +635,7 @@ class Client:
                    chat_id: int or str,
                    audio: str,
                    caption: str = "",
+                   parse_mode: str = "",
                    duration: int = 0,
                    performer: str = None,
                    title: str = None,
@@ -640,6 +657,11 @@ class Client:
 
             caption (:obj:`str`, optional):
                 Audio caption, 0-200 characters.
+
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
 
             duration (:obj:`int`, optional):
                 Duration of the audio in seconds.
@@ -663,6 +685,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(audio)
 
         while True:
@@ -685,7 +708,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
-                        **self.markdown.parse(caption)
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -697,6 +720,7 @@ class Client:
                       chat_id: int or str,
                       document: str,
                       caption: str = "",
+                      parse_mode: str = "",
                       disable_notification: bool = None,
                       reply_to_message_id: int = None):
         """Use this method to send general files.
@@ -714,6 +738,11 @@ class Client:
             caption (:obj:`str`, optional):
                 Document caption, 0-200 characters.
 
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
+
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -727,6 +756,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(document)
 
         while True:
@@ -744,7 +774,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
-                        **self.markdown.parse(caption)
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -755,10 +785,11 @@ class Client:
     def send_video(self,
                    chat_id: int or str,
                    video: str,
+                   caption: str = "",
+                   parse_mode: str = "",
                    duration: int = 0,
                    width: int = 0,
                    height: int = 0,
-                   caption: str = "",
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
         """Use this method to send video files.
@@ -773,6 +804,14 @@ class Client:
                 Video to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
+            caption (:obj:`str`, optional):
+                Video caption, 0-200 characters.
+
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
+
             duration (:obj:`int`, optional):
                 Duration of sent video in seconds.
 
@@ -781,9 +820,6 @@ class Client:
 
             height (:obj:`int`, optional):
                 Video height.
-
-            caption (:obj:`str`, optional):
-                Video caption, 0-200 characters.
 
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
@@ -798,6 +834,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(video)
 
         while True:
@@ -819,7 +856,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
-                        **self.markdown.parse(caption)
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -831,6 +868,7 @@ class Client:
                    chat_id: int or str,
                    voice: str,
                    caption: str = "",
+                   parse_mode: str = "",
                    duration: int = 0,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
@@ -849,6 +887,11 @@ class Client:
             caption (:obj:`str`, optional):
                 Voice message caption, 0-200 characters.
 
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
+
             duration (:obj:`int`, optional):
                 Duration of the voice message in seconds.
 
@@ -865,6 +908,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(voice)
 
         while True:
@@ -885,7 +929,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
-                        **self.markdown.parse(caption)
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
@@ -1192,6 +1236,7 @@ class Client:
                           chat_id: int or str,
                           message_id: int,
                           text: str,
+                          parse_mode: str = "",
                           disable_web_page_preview: bool = None):
         """Use this method to edit text messages.
 
@@ -1207,25 +1252,33 @@ class Client:
             text (:obj:`str`):
                 New text of the message.
 
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to MARKDOWN.
+
             disable_web_page_preview (:obj:`bool`, optional):
                 Disables link previews for links in this message.
 
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
+
         return self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
-                **self.markdown.parse(text)
+                **style.parse(text)
             )
         )
 
     def edit_message_caption(self,
                              chat_id: int or str,
                              message_id: int,
-                             caption: str):
+                             caption: str,
+                             parse_mode: str = ""):
         """Use this method to edit captions of messages.
 
         Args:
@@ -1240,14 +1293,21 @@ class Client:
             caption (:obj:`str`):
                 New caption of the message.
 
+            parse_mode (:obj:`str`):
+                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
+                to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to MARKDOWN.
+
         Raises:
             :class:`pyrogram.Error`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
+
         return self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
-                **self.markdown.parse(caption)
+                **style.parse(caption)
             )
         )
 

@@ -16,6 +16,5 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .chat_action import ChatAction
-from .client import Client
-from .parse_mode import ParseMode
+from .html import HTML
+from .markdown import Markdown
