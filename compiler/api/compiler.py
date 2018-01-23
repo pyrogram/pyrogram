@@ -264,7 +264,7 @@ def start():
             docstring_args.append(
                 "{}: {}{}".format(
                     arg_name,
-                    "``optional.{}``".format(flag_number) if is_optional else "",
+                    "``optional``".format(flag_number) if is_optional else "",
                     get_docstring_arg_type(arg_type)
                 )
             )
