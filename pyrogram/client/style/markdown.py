@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from struct import unpack
 
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
@@ -27,6 +26,7 @@ from pyrogram.api.types import (
     MessageEntityPre as Pre,
     InputMessageEntityMentionName as Mention
 )
+from . import utils
 
 
 class Markdown:
@@ -35,9 +35,6 @@ class Markdown:
         "__": Italic,
         "`": Code
     }
-
-    # SMP = Supplementary Multilingual Plane: https://en.wikipedia.org/wiki/Plane_(Unicode)#Overview
-    SMP_RE = re.compile(r"[\U00010000-\U0010FFFF]")
 
     # ``` python
     # for i in range(10):
@@ -69,26 +66,12 @@ class Markdown:
 
     MARKDOWN_RE = re.compile("|".join([PRE_RE, MENTION_RE, URL_RE, INLINE_RE]))
 
-    @classmethod
-    def add_surrogates(cls, text):
-        # Replace each SMP code point with a surrogate pair
-        return cls.SMP_RE.sub(
-            lambda match:  # Split SMP in two surrogates
-            "".join(chr(i) for i in unpack("<HH", match.group().encode("utf-16le"))),
-            text
-        )
-
-    @staticmethod
-    def remove_surrogates(text):
-        # Replace each surrogate pair with a SMP code point
-        return text.encode("utf-16", "surrogatepass").decode("utf-16")
-
     def __init__(self, peers_by_id):
         self.peers_by_id = peers_by_id
 
     def parse(self, text):
         entities = []
-        text = self.add_surrogates(text)
+        text = utils.add_surrogates(text)
         offset = 0
 
         for match in self.MARKDOWN_RE.finditer(text):
@@ -130,6 +113,6 @@ class Markdown:
             text = text.replace(pattern, replace)
 
         return dict(
-            message=self.remove_surrogates(text),
+            message=utils.remove_surrogates(text),
             entities=entities
         )

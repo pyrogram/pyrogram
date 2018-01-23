@@ -1,5 +1,22 @@
+# Pyrogram - Telegram MTProto API Client Library for Python
+# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+#
+# This file is part of Pyrogram.
+#
+# Pyrogram is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pyrogram is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
-from struct import unpack
 
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
@@ -10,6 +27,7 @@ from pyrogram.api.types import (
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention,
 )
+from . import utils
 
 
 class HTML:
@@ -17,24 +35,12 @@ class HTML:
     HTML_RE = re.compile(r"<(\w+)(?: href=\"(.*)\")?>(.*)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    @classmethod
-    def add_surrogates(cls, text):
-        return cls.SMP_RE.sub(
-            lambda match:  # Split SMP in two surrogates
-            "".join(chr(i) for i in unpack("<HH", match.group().encode("utf-16le"))),
-            text
-        )
-
-    @staticmethod
-    def remove_surrogates(text):
-        return text.encode("utf-16", "surrogatepass").decode("utf-16")
-
     def __init__(self, peers_by_id):
         self.peers_by_id = peers_by_id
 
     def parse(self, text):
         entities = []
-        text = self.add_surrogates(text)
+        text = utils.add_surrogates(text)
         offset = 0
 
         for match in self.HTML_RE.finditer(text):
@@ -71,6 +77,6 @@ class HTML:
             offset += len(style) * 2 + 5 + (len(url) + 8 if url else 0)
 
         return dict(
-            message=self.remove_surrogates(text),
+            message=utils.remove_surrogates(text),
             entities=entities
         )
