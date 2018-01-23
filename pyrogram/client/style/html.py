@@ -31,7 +31,6 @@ from . import utils
 
 
 class HTML:
-    SMP_RE = re.compile(r"[\U00010000-\U0010FFFF]")
     HTML_RE = re.compile(r"<(\w+)(?: href=\"(.*)\")?>(.*)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
