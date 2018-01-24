@@ -299,7 +299,9 @@ class Client:
                             print("Hint: {}".format(r.hint))
                             self.password = input("Enter password: ")  # TODO: Use getpass
 
-                        self.password = r.current_salt + self.password.encode() + r.current_salt
+                        if type(self.password) is str:
+                            self.password = r.current_salt + self.password.encode() + r.current_salt
+
                         password_hash = sha256(self.password).digest()
 
                         r = self.send(functions.auth.CheckPassword(password_hash))
