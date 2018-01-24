@@ -60,7 +60,7 @@ Pyrogram executing API calls with your identity.
 .. note::
 
     The authorization process is executed only once.
-    However, the code above is always required; as soon as a valid session file exists,
+    However, the code above is always required; as long as a valid session file exists,
     Pyrogram will use that and won't ask you to enter your phone number again when you restart your script.
 
 .. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
