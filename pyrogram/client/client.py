@@ -37,7 +37,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired
+    ChatAdminRequired, FirstnameInvalid
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -64,20 +64,56 @@ class Client:
     Args:
         session_name (:obj:`str`):
             Name to uniquely identify an authorized session. It will be used
-            to save the session to a file named ``<session_name>.session``.
+            to save the session to a file named *<session_name>.session* and to load
+            it when you restart your script. As long as a valid session file exists,
+            Pyrogram won't ask you again to input your phone number.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
+
+        phone_number (:obj:`str`, optional):
+            Pass your phone number (with your Country Code prefix included) to avoid
+            entering it manually. Only applicable for new sessions.
+
+        phone_code (:obj:`str` | :obj:`callable`, optional):
+            Pass the phone code as string (for test numbers only), or pass a callback function
+            which must return the correct phone code as string (e.g., "12345").
+            Only applicable for new sessions.
+
+        password (:obj:`str`, optional):
+            Pass your Two-Step Verification password (if you have one) to avoid entering it
+            manually. Only applicable for new sessions.
+
+        first_name (:obj:`str`, optional):
+            Pass a First Name to avoid entering it manually. It will be used to automatically
+            create a new Telegram account in case the phone number you passed is not registered yet.
+
+        last_name (:obj:`str`, optional):
+            Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
+            be an empty string: ""
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
 
-    def __init__(self, session_name: str, test_mode: bool = False):
+    def __init__(self,
+                 session_name: str,
+                 test_mode: bool = False,
+                 phone_number: str = None,
+                 phone_code: str or callable = None,
+                 password: str = None,
+                 first_name: str = None,
+                 last_name: str = None):
         self.session_name = session_name
         self.test_mode = test_mode
+
+        self.phone_number = phone_number
+        self.password = password
+        self.phone_code = phone_code
+        self.first_name = first_name
+        self.last_name = last_name
 
         self.dc_id = None
         self.auth_key = None
@@ -100,7 +136,11 @@ class Client:
 
     def start(self):
         """Use this method to start the Client after creating it.
-        Requires no parameters."""
+        Requires no parameters.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
         self.load_config()
         self.load_session(self.session_name)
 
@@ -112,6 +152,7 @@ class Client:
             print("\n".join(terms.splitlines()), "\n")
 
             self.user_id = self.authorize()
+            self.password = None
             self.save_session()
 
         self.rnd_id = self.session.msg_id
@@ -171,21 +212,27 @@ class Client:
         return self.session.send(data)
 
     def authorize(self):
+        phone_number_invalid_raises = self.phone_number is not None
+        phone_code_invalid_raises = self.phone_code is not None
+        password_hash_invalid_raises = self.password is not None
+        first_name_invalid_raises = self.first_name is not None
+
         while True:
-            phone_number = input("Enter phone number: ")
+            if self.phone_number is None:
+                self.phone_number = input("Enter phone number: ")
 
-            while True:
-                confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
+                while True:
+                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
 
-                if confirm in ("y", "1"):
-                    break
-                elif confirm in ("n", "2"):
-                    phone_number = input("Enter phone number: ")
+                    if confirm in ("y", "1"):
+                        break
+                    elif confirm in ("n", "2"):
+                        self.phone_number = input("Enter phone number: ")
 
             try:
                 r = self.send(
                     functions.auth.SendCode(
-                        phone_number,
+                        self.phone_number,
                         self.config.api_id,
                         self.config.api_hash
                     )
@@ -201,14 +248,18 @@ class Client:
 
                 r = self.send(
                     functions.auth.SendCode(
-                        phone_number,
+                        self.phone_number,
                         self.config.api_id,
                         self.config.api_hash
                     )
                 )
                 break
             except PhoneNumberInvalid as e:
-                print(e.MESSAGE)
+                if phone_number_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_number = None
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
@@ -221,59 +272,80 @@ class Client:
         phone_code_hash = r.phone_code_hash
 
         while True:
-            phone_code = input("Enter phone code: ")
+            self.phone_code = (
+                input("Enter phone code: ") if self.phone_code is None
+                else self.phone_code if type(self.phone_code) is str
+                else self.phone_code()
+            )
 
             try:
                 if phone_registered:
                     r = self.send(
                         functions.auth.SignIn(
-                            phone_number,
+                            self.phone_number,
                             phone_code_hash,
-                            phone_code
+                            self.phone_code
                         )
                     )
                 else:
                     try:
                         self.send(
                             functions.auth.SignIn(
-                                phone_number,
+                                self.phone_number,
                                 phone_code_hash,
-                                phone_code
+                                self.phone_code
                             )
                         )
                     except PhoneNumberUnoccupied:
                         pass
 
-                    first_name = input("First name: ")
-                    last_name = input("Last name: ")
+                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
+                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
                     r = self.send(
                         functions.auth.SignUp(
-                            phone_number,
+                            self.phone_number,
                             phone_code_hash,
-                            phone_code,
-                            first_name,
-                            last_name
+                            self.phone_code,
+                            self.first_name,
+                            self.last_name
                         )
                     )
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
-                print(e.MESSAGE)
+                if phone_code_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_code = None
+            except FirstnameInvalid as e:
+                if first_name_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.first_name = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
+                r = self.send(functions.account.GetPassword())
 
                 while True:
                     try:
-                        r = self.send(functions.account.GetPassword())
 
-                        print("Hint: {}".format(r.hint))
-                        password = input("Enter password: ")  # TODO: Use getpass
+                        if self.password is None:
+                            print("Hint: {}".format(r.hint))
+                            self.password = input("Enter password: ")  # TODO: Use getpass
 
-                        password = r.current_salt + password.encode() + r.current_salt
-                        password_hash = sha256(password).digest()
+                        if type(self.password) is str:
+                            self.password = r.current_salt + self.password.encode() + r.current_salt
+
+                        password_hash = sha256(self.password).digest()
 
                         r = self.send(functions.auth.CheckPassword(password_hash))
                     except PasswordHashInvalid as e:
-                        print(e.MESSAGE)
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
                     except FloodWait as e:
                         print(e.MESSAGE.format(x=e.x))
                         time.sleep(e.x)
