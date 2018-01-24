@@ -75,9 +75,22 @@ class Client:
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
 
-    def __init__(self, session_name: str, test_mode: bool = False):
+    def __init__(self,
+                 session_name: str,
+                 test_mode: bool = False,
+                 phone_number: str = None,
+                 phone_code: str or callable = None,
+                 password: str = None,
+                 first_name: str = None,
+                 last_name: str = None):
         self.session_name = session_name
         self.test_mode = test_mode
+
+        self.phone_number = phone_number
+        self.password = password
+        self.phone_code = phone_code
+        self.first_name = first_name
+        self.last_name = last_name
 
         self.dc_id = None
         self.auth_key = None
@@ -170,24 +183,27 @@ class Client:
         """
         return self.session.send(data)
 
-    def authorize(self, phone_number=None, code_callback=None, password=None):
-        invalid_phone_raises = phone_number is not None
+    def authorize(self):
+        phone_number_invalid_raises = self.phone_number is not None
+        phone_code_invalid_raises = self.phone_code is not None
+        password_hash_invalid_raises = self.password is not None
+
         while True:
-            if phone_number is None:
-                phone_number = input("Enter phone number: ")
+            if self.phone_number is None:
+                self.phone_number = input("Enter phone number: ")
 
                 while True:
-                    confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
+                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
 
                     if confirm in ("y", "1"):
                         break
                     elif confirm in ("n", "2"):
-                        phone_number = input("Enter phone number: ")
+                        self.phone_number = input("Enter phone number: ")
 
             try:
                 r = self.send(
                     functions.auth.SendCode(
-                        phone_number,
+                        self.phone_number,
                         self.config.api_id,
                         self.config.api_hash
                     )
@@ -203,18 +219,18 @@ class Client:
 
                 r = self.send(
                     functions.auth.SendCode(
-                        phone_number,
+                        self.phone_number,
                         self.config.api_id,
                         self.config.api_hash
                     )
                 )
                 break
             except PhoneNumberInvalid as e:
-                if invalid_phone_raises:
+                if phone_number_invalid_raises:
                     raise
                 else:
                     print(e.MESSAGE)
-                    phone_number = None
+                    self.phone_number = None
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
@@ -225,70 +241,74 @@ class Client:
 
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
-        if not code_callback:
-            def code_callback():
-                return input("Enter phone code: ")
 
         while True:
-            phone_code = code_callback()
+            self.phone_code = (
+                input("Enter phone code: ") if self.phone_code is None
+                else self.phone_code if type(self.phone_code) is str
+                else self.phone_code()
+            )
 
             try:
                 if phone_registered:
                     r = self.send(
                         functions.auth.SignIn(
-                            phone_number,
+                            self.phone_number,
                             phone_code_hash,
-                            phone_code
+                            self.phone_code
                         )
                     )
                 else:
                     try:
                         self.send(
                             functions.auth.SignIn(
-                                phone_number,
+                                self.phone_number,
                                 phone_code_hash,
-                                phone_code
+                                self.phone_code
                             )
                         )
                     except PhoneNumberUnoccupied:
                         pass
 
-                    first_name = input("First name: ")
-                    last_name = input("Last name: ")
+                    self.first_name = self.first_name or input("First name: ")
+                    self.last_name = self.last_name or input("Last name: ")
 
                     r = self.send(
                         functions.auth.SignUp(
-                            phone_number,
+                            self.phone_number,
                             phone_code_hash,
-                            phone_code,
-                            first_name,
-                            last_name
+                            self.phone_code,
+                            self.first_name,
+                            self.last_name
                         )
                     )
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
-                print(e.MESSAGE)
+                if phone_code_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_code = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
-                invalid_password_raises = password is not None
 
                 while True:
                     try:
                         r = self.send(functions.account.GetPassword())
 
-                        if password is None:
+                        if self.password is None:
                             print("Hint: {}".format(r.hint))
-                            password = input("Enter password: ")  # TODO: Use getpass
+                            self.password = input("Enter password: ")  # TODO: Use getpass
 
-                        password = r.current_salt + password.encode() + r.current_salt
-                        password_hash = sha256(password).digest()
+                        self.password = r.current_salt + self.password.encode() + r.current_salt
+                        password_hash = sha256(self.password).digest()
 
                         r = self.send(functions.auth.CheckPassword(password_hash))
                     except PasswordHashInvalid as e:
-                        if invalid_password_raises:
+                        if password_hash_invalid_raises:
                             raise
                         else:
                             print(e.MESSAGE)
-                            password = None
+                            self.password = None
                     except FloodWait as e:
                         print(e.MESSAGE.format(x=e.x))
                         time.sleep(e.x)
