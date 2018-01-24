@@ -59,11 +59,11 @@ Examples
         client.send_message(
             chat_id="me",
             text=(
-                "**bold**\n"
-                "__italic__\n"
-                "[mention](tg://user?id=23122162)\n"
-                "[url](https://pyrogram.ml)\n"
-                "`code`\n"
+                "**bold**, "
+                "__italic__, "
+                "[mention](tg://user?id=23122162), "
+                "[url](https://pyrogram.ml), "
+                "`code`"
             )
         )
 
@@ -91,12 +91,12 @@ Examples
         client.send_message(
             chat_id="me",
             text=(
-                "<b>bold</b>, <strong>bold</strong>\n"
-                "<i>italic</i>, <em>italic</em>\n"
-                "<a href=\"https://pyrogram.ml/\">inline URL</a>\n"
-                "<a href=\"tg://user?id=23122162\">inline mention of a user</a>\n"
-                "<code>inline fixed-width code</code>\n"
-                "<pre>pre-formatted fixed-width code block</pre>\n"
+                "<b>bold</b>, <strong>bold</strong>, "
+                "<i>italic</i>, <em>italic</em>, "
+                "<a href=\"https://pyrogram.ml/\">inline URL</a>, "
+                "<a href=\"tg://user?id=23122162\">inline mention of a user</a>, "
+                "<code>inline fixed-width code</code>, "
+                "<pre>pre-formatted fixed-width code block</pre>"
             ),
             parse_mode=ParseMode.HTML
         )
