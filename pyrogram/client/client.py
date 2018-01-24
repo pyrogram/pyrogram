@@ -170,17 +170,19 @@ class Client:
         """
         return self.session.send(data)
 
-    def authorize(self):
+    def authorize(self, phone_number=None, code_callback=None, password=None):
+        invalid_phone_raises = phone_number is not None
         while True:
-            phone_number = input("Enter phone number: ")
+            if phone_number is None:
+                phone_number = input("Enter phone number: ")
 
-            while True:
-                confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
+                while True:
+                    confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
 
-                if confirm in ("y", "1"):
-                    break
-                elif confirm in ("n", "2"):
-                    phone_number = input("Enter phone number: ")
+                    if confirm in ("y", "1"):
+                        break
+                    elif confirm in ("n", "2"):
+                        phone_number = input("Enter phone number: ")
 
             try:
                 r = self.send(
@@ -208,7 +210,11 @@ class Client:
                 )
                 break
             except PhoneNumberInvalid as e:
-                print(e.MESSAGE)
+                if invalid_phone_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    phone_number = None
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
@@ -219,9 +225,12 @@ class Client:
 
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
+        if not code_callback:
+            def code_callback():
+                return input("Enter phone code: ")
 
         while True:
-            phone_code = input("Enter phone code: ")
+            phone_code = code_callback()
 
             try:
                 if phone_registered:
@@ -260,20 +269,26 @@ class Client:
                 print(e.MESSAGE)
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
+                invalid_password_raises = password is not None
 
                 while True:
                     try:
                         r = self.send(functions.account.GetPassword())
 
-                        print("Hint: {}".format(r.hint))
-                        password = input("Enter password: ")  # TODO: Use getpass
+                        if password is None:
+                            print("Hint: {}".format(r.hint))
+                            password = input("Enter password: ")  # TODO: Use getpass
 
                         password = r.current_salt + password.encode() + r.current_salt
                         password_hash = sha256(password).digest()
 
                         r = self.send(functions.auth.CheckPassword(password_hash))
                     except PasswordHashInvalid as e:
-                        print(e.MESSAGE)
+                        if invalid_password_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            password = None
                     except FloodWait as e:
                         print(e.MESSAGE.format(x=e.x))
                         time.sleep(e.x)
