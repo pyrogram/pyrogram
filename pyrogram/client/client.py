@@ -290,10 +290,10 @@ class Client:
                     self.phone_code = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
+                r = self.send(functions.account.GetPassword())
 
                 while True:
                     try:
-                        r = self.send(functions.account.GetPassword())
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
