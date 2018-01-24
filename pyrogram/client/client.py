@@ -125,6 +125,7 @@ class Client:
             print("\n".join(terms.splitlines()), "\n")
 
             self.user_id = self.authorize()
+            self.password = None
             self.save_session()
 
         self.rnd_id = self.session.msg_id
