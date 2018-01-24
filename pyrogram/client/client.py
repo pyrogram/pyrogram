@@ -64,12 +64,35 @@ class Client:
     Args:
         session_name (:obj:`str`):
             Name to uniquely identify an authorized session. It will be used
-            to save the session to a file named ``<session_name>.session``.
+            to save the session to a file named *<session_name>.session* and to load
+            it when you restart your script. As long as a valid session file exists,
+            Pyrogram won't ask you again to input your phone number.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
+
+        phone_number (:obj:`str`, optional):
+            Pass your phone number (with your Country Code prefix included) to avoid
+            entering it manually. Only applicable for new sessions.
+
+        phone_code (:obj:`str` | :obj:`callable`, optional):
+            Pass the phone code as string (for test numbers only), or pass a callback function
+            which must return the correct phone code as string (e.g., "12345").
+            Only applicable for new sessions.
+
+        password (:obj:`str`, optional):
+            Pass your Two-Step Verification password (if you have one) to avoid entering it
+            manually. Only applicable for new sessions.
+
+        first_name (:obj:`str`, optional):
+            Pass a First Name to avoid entering it manually. It will be used to automatically
+            create a new Telegram account in case the phone number you passed is not registered yet.
+
+        last_name (:obj:`str`, optional):
+            Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
+            be an empty string: ""
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
@@ -113,7 +136,11 @@ class Client:
 
     def start(self):
         """Use this method to start the Client after creating it.
-        Requires no parameters."""
+        Requires no parameters.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
         self.load_config()
         self.load_session(self.session_name)
 
