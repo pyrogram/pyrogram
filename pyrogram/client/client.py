@@ -37,7 +37,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired
+    ChatAdminRequired, FirstnameInvalid
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -215,6 +215,7 @@ class Client:
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
         password_hash_invalid_raises = self.password is not None
+        first_name_invalid_raises = self.first_name is not None
 
         while True:
             if self.phone_number is None:
@@ -298,8 +299,8 @@ class Client:
                     except PhoneNumberUnoccupied:
                         pass
 
-                    self.first_name = self.first_name or input("First name: ")
-                    self.last_name = self.last_name or input("Last name: ")
+                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
+                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
                     r = self.send(
                         functions.auth.SignUp(
@@ -316,6 +317,12 @@ class Client:
                 else:
                     print(e.MESSAGE)
                     self.phone_code = None
+            except FirstnameInvalid as e:
+                if first_name_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.first_name = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
                 r = self.send(functions.account.GetPassword())
