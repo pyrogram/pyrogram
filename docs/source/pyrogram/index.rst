@@ -9,8 +9,8 @@ the same parameters as well, thus offering a familiar look to Bot developers.
 
 .. toctree::
     Client
+    Error
     ChatAction
     ParseMode
-    Error
 
 .. _Telegram Bot API: https://core.telegram.org/bots/api#available-methods
