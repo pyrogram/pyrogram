@@ -11,7 +11,8 @@ Welcome to Pyrogram
 
     <div align="center">
         <a href="https://pyrogram.ml">
-            <img src="https://pyrogram.ml/images/logo2.png" alt="Logo">
+            <div><img src="https://pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
+            <div><img src="https://pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
         </a>
     </div>
 
