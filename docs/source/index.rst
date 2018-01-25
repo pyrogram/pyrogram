@@ -18,7 +18,7 @@ Welcome to Pyrogram
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
         <br>
-        <a href="https://pypi.python.org/pypi/Pyrogram">
+        <a href="https://github.com/pyrogram/pyrogram/releases/latest">
             Download
         </a>
         •
@@ -103,6 +103,7 @@ To get started, press Next.
     resources/UpdateHandling
     resources/ErrorHandling
     resources/ProxyServer
+    resources/AutoAuthorization
 
 .. toctree::
     :hidden:
