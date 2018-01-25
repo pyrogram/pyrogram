@@ -513,18 +513,51 @@ class Client:
                 peer_username = peer_username.lower()
                 self.peers_by_username[peer_username] = input_peer
 
+    def resolve_username(self, username: str):
+        username = username.lower().strip("@")
+
+        resolved_peer = self.send(
+            functions.contacts.ResolveUsername(
+                username=username
+            )
+        )  # type: types.contacts.ResolvedPeer
+
+        if type(resolved_peer.peer) is PeerUser:
+            input_peer = InputPeerUser(
+                user_id=resolved_peer.users[0].id,
+                access_hash=resolved_peer.users[0].access_hash
+            )
+            chat_id = input_peer.user_id
+        elif type(resolved_peer.peer) is PeerChannel:
+            input_peer = InputPeerChannel(
+                channel_id=resolved_peer.chats[0].id,
+                access_hash=resolved_peer.chats[0].access_hash
+            )
+            chat_id = input_peer.channel_id
+        else:
+            raise PeerIdInvalid
+
+        self.peers_by_username[username] = input_peer
+        self.peers_by_id[chat_id] = input_peer
+
+        return input_peer
+
     def resolve_peer(self, chat_id: int or str):
         if chat_id in ("self", "me"):
             return InputPeerSelf()
         else:
-            try:
-                return (
-                    self.peers_by_username[chat_id.lower().strip("@")]
-                    if isinstance(chat_id, str)
-                    else self.peers_by_id[chat_id]
-                )
-            except KeyError:
-                raise PeerIdInvalid
+            if type(chat_id) is str:
+                chat_id = chat_id.lower().strip("@")
+
+                try:
+                    return self.peers_by_username[chat_id]
+                except KeyError:
+                    return self.resolve_username(chat_id)
+            else:
+                try:
+                    return self.peers_by_id[chat_id]
+                except KeyError:
+                    raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
