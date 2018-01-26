@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".encode(errors="replace").decode()
+import sys
+
+__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
+    "\xe8",
+    "e" if sys.getfilesystemencoding() == "ascii" else "\xe8"
+)
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.4.2"
 

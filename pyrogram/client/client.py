@@ -93,6 +93,9 @@ class Client:
         last_name (:obj:`str`, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: ""
+
+        workers (:obj:`int`, optional):
+            Thread pool size for handling incoming messages (updates). Defaults to 4.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
@@ -105,7 +108,8 @@ class Client:
                  phone_code: str or callable = None,
                  password: str = None,
                  first_name: str = None,
-                 last_name: str = None):
+                 last_name: str = None,
+                 workers: int = 4):
         self.session_name = session_name
         self.test_mode = test_mode
 
@@ -114,6 +118,8 @@ class Client:
         self.phone_code = phone_code
         self.first_name = first_name
         self.last_name = last_name
+
+        self.workers = workers
 
         self.dc_id = None
         self.auth_key = None
@@ -144,7 +150,14 @@ class Client:
         self.load_config()
         self.load_session(self.session_name)
 
-        self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+        self.session = Session(
+            self.dc_id,
+            self.test_mode,
+            self.proxy,
+            self.auth_key,
+            self.config.api_id,
+            workers=self.workers
+        )
 
         terms = self.session.start()
 
@@ -243,7 +256,14 @@ class Client:
                 self.dc_id = e.x
                 self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
 
-                self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+                self.session = Session(
+                    self.dc_id,
+                    self.test_mode,
+                    self.proxy,
+                    self.auth_key,
+                    self.config.api_id,
+                    workers=self.workers
+                )
                 self.session.start()
 
                 r = self.send(
@@ -513,18 +533,51 @@ class Client:
                 peer_username = peer_username.lower()
                 self.peers_by_username[peer_username] = input_peer
 
+    def resolve_username(self, username: str):
+        username = username.lower().strip("@")
+
+        resolved_peer = self.send(
+            functions.contacts.ResolveUsername(
+                username=username
+            )
+        )  # type: types.contacts.ResolvedPeer
+
+        if type(resolved_peer.peer) is PeerUser:
+            input_peer = InputPeerUser(
+                user_id=resolved_peer.users[0].id,
+                access_hash=resolved_peer.users[0].access_hash
+            )
+            chat_id = input_peer.user_id
+        elif type(resolved_peer.peer) is PeerChannel:
+            input_peer = InputPeerChannel(
+                channel_id=resolved_peer.chats[0].id,
+                access_hash=resolved_peer.chats[0].access_hash
+            )
+            chat_id = input_peer.channel_id
+        else:
+            raise PeerIdInvalid
+
+        self.peers_by_username[username] = input_peer
+        self.peers_by_id[chat_id] = input_peer
+
+        return input_peer
+
     def resolve_peer(self, chat_id: int or str):
         if chat_id in ("self", "me"):
             return InputPeerSelf()
         else:
-            try:
-                return (
-                    self.peers_by_username[chat_id.lower().strip("@")]
-                    if isinstance(chat_id, str)
-                    else self.peers_by_id[chat_id]
-                )
-            except KeyError:
-                raise PeerIdInvalid
+            if type(chat_id) is str:
+                chat_id = chat_id.lower().strip("@")
+
+                try:
+                    return self.peers_by_username[chat_id]
+                except KeyError:
+                    return self.resolve_username(chat_id)
+            else:
+                try:
+                    return self.peers_by_id[chat_id]
+                except KeyError:
+                    raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.

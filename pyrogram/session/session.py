@@ -60,7 +60,6 @@ class Session:
 
     INITIAL_SALT = 0x616e67656c696361
 
-    WORKERS = 4
     WAIT_TIMEOUT = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -68,13 +67,21 @@ class Session:
 
     notice_displayed = False
 
-    def __init__(self, dc_id: int, test_mode: bool, proxy: type, auth_key: bytes, api_id: str, is_cdn: bool = False):
+    def __init__(self,
+                 dc_id: int,
+                 test_mode: bool,
+                 proxy: type,
+                 auth_key: bytes,
+                 api_id: str,
+                 is_cdn: bool = False,
+                 workers: int = 2):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
         self.is_cdn = is_cdn
+        self.workers = workers
 
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
 
@@ -115,7 +122,7 @@ class Session:
             try:
                 self.connection.connect()
 
-                for i in range(self.WORKERS):
+                for i in range(self.workers):
                     Thread(target=self.worker, name="Worker#{}".format(i + 1)).start()
 
                 Thread(target=self.recv, name="RecvThread").start()
@@ -175,7 +182,7 @@ class Session:
 
         self.connection.close()
 
-        for i in range(self.WORKERS):
+        for i in range(self.workers):
             self.recv_queue.put(None)
 
         log.debug("Session stopped")
