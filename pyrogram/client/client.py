@@ -93,6 +93,9 @@ class Client:
         last_name (:obj:`str`, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: ""
+
+        workers (:obj:`int`, optional):
+            Thread pool size for handling incoming messages (updates). Defaults to 4.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
