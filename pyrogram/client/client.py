@@ -524,6 +524,7 @@ class Client:
                     peer_id,
                     peer_access_hash
                 )
+                peer_id = int("-100" + str(peer_id))
             else:
                 continue
 
@@ -553,7 +554,7 @@ class Client:
                 channel_id=resolved_peer.chats[0].id,
                 access_hash=resolved_peer.chats[0].access_hash
             )
-            chat_id = input_peer.channel_id
+            chat_id = int("-100" + str(input_peer.channel_id))
         else:
             raise PeerIdInvalid
 
@@ -577,7 +578,10 @@ class Client:
                 try:
                     return self.peers_by_id[chat_id]
                 except KeyError:
-                    raise PeerIdInvalid
+                    try:
+                        return self.peers_by_id[int("-100" + str(chat_id))]
+                    except KeyError:
+                        raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
