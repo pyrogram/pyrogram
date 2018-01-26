@@ -105,7 +105,8 @@ class Client:
                  phone_code: str or callable = None,
                  password: str = None,
                  first_name: str = None,
-                 last_name: str = None):
+                 last_name: str = None,
+                 workers: int = 4):
         self.session_name = session_name
         self.test_mode = test_mode
 
@@ -114,6 +115,8 @@ class Client:
         self.phone_code = phone_code
         self.first_name = first_name
         self.last_name = last_name
+
+        self.workers = workers
 
         self.dc_id = None
         self.auth_key = None
@@ -144,7 +147,14 @@ class Client:
         self.load_config()
         self.load_session(self.session_name)
 
-        self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+        self.session = Session(
+            self.dc_id,
+            self.test_mode,
+            self.proxy,
+            self.auth_key,
+            self.config.api_id,
+            workers=self.workers
+        )
 
         terms = self.session.start()
 
@@ -243,7 +253,14 @@ class Client:
                 self.dc_id = e.x
                 self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
 
-                self.session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+                self.session = Session(
+                    self.dc_id,
+                    self.test_mode,
+                    self.proxy,
+                    self.auth_key,
+                    self.config.api_id,
+                    workers=self.workers
+                )
                 self.session.start()
 
                 r = self.send(
