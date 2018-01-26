@@ -524,6 +524,7 @@ class Client:
                     peer_id,
                     peer_access_hash
                 )
+                peer_id = int("-100" + str(peer_id))
             else:
                 continue
 
@@ -547,37 +548,40 @@ class Client:
                 user_id=resolved_peer.users[0].id,
                 access_hash=resolved_peer.users[0].access_hash
             )
-            chat_id = input_peer.user_id
+            peer_id = input_peer.user_id
         elif type(resolved_peer.peer) is PeerChannel:
             input_peer = InputPeerChannel(
                 channel_id=resolved_peer.chats[0].id,
                 access_hash=resolved_peer.chats[0].access_hash
             )
-            chat_id = input_peer.channel_id
+            peer_id = int("-100" + str(input_peer.channel_id))
         else:
             raise PeerIdInvalid
 
         self.peers_by_username[username] = input_peer
-        self.peers_by_id[chat_id] = input_peer
+        self.peers_by_id[peer_id] = input_peer
 
         return input_peer
 
-    def resolve_peer(self, chat_id: int or str):
-        if chat_id in ("self", "me"):
+    def resolve_peer(self, peer_id: int or str):
+        if peer_id in ("self", "me"):
             return InputPeerSelf()
         else:
-            if type(chat_id) is str:
-                chat_id = chat_id.lower().strip("@")
+            if type(peer_id) is str:
+                peer_id = peer_id.lower().strip("@")
 
                 try:
-                    return self.peers_by_username[chat_id]
+                    return self.peers_by_username[peer_id]
                 except KeyError:
-                    return self.resolve_username(chat_id)
+                    return self.resolve_username(peer_id)
             else:
                 try:
-                    return self.peers_by_id[chat_id]
+                    return self.peers_by_id[peer_id]
                 except KeyError:
-                    raise PeerIdInvalid
+                    try:
+                        return self.peers_by_id[int("-100" + str(peer_id))]
+                    except KeyError:
+                        raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
