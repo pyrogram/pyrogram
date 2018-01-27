@@ -67,6 +67,6 @@ setup(
     ],
     packages=find_packages(),
     zip_safe=False,
-    install_requires=["pyaes", "pysocks", "tgcrypto"],
+    install_requires=["pyaes", "pysocks"],
     include_package_data=True,
 )
