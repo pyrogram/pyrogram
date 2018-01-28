@@ -46,7 +46,7 @@ from pyrogram.api.types import (
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
-from pyrogram.crypto import CTR
+from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .style import Markdown, HTML
 
@@ -1633,8 +1633,6 @@ class Client:
                             )
                         )
             if isinstance(r, types.upload.FileCdnRedirect):
-                ctr = CTR(r.encryption_key, r.encryption_iv)
-
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
@@ -1673,7 +1671,7 @@ class Client:
                                     break
 
                                 # https://core.telegram.org/cdn#decrypting-files
-                                decrypted_chunk = ctr.decrypt(chunk, offset)
+                                decrypted_chunk = AES.ctr_decrypt(chunk, r.encryption_key, r.encryption_iv, offset)
 
                                 # TODO: https://core.telegram.org/cdn#verifying-files
                                 # TODO: Save to temp file, flush each chunk, rename to full if everything is ok
