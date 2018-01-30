@@ -33,7 +33,7 @@ class Connection:
     }
 
     def __init__(self, ipv4: str, proxy: type, mode: int = 1):
-        self.address = (ipv4, 443)
+        self.address = (ipv4, 80)
         self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)
         self.lock = threading.Lock()
