@@ -26,6 +26,7 @@ from os import urandom
 from queue import Queue
 from threading import Event, Thread
 
+import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
@@ -109,6 +110,7 @@ class Session:
 
         self.is_connected = Event()
 
+        self.client = None
         self.update_handler = None
 
         self.total_connections = 0
@@ -247,6 +249,10 @@ class Session:
 
         log.debug("{} stopped".format(name))
 
+    def set_update_handler(self, client: pyrogram, update_handler: callable):
+        self.client = client
+        self.update_handler = update_handler
+
     def unpack_dispatch_and_ack(self, packet: bytes):
         # TODO: A better dispatcher
         data = self.unpack(BytesIO(packet))
@@ -288,7 +294,7 @@ class Session:
                 msg_id = i.body.msg_id
             else:
                 if self.update_handler:
-                    self.update_handler(i.body)
+                    self.update_handler(self.client, i.body)
 
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(i.body, "result", i.body)
