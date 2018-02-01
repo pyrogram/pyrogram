@@ -43,3 +43,4 @@ VOLUME_LOC_NOT_FOUND	The volume location can't be found
 FILE_ID_INVALID	The file id is invalid
 LOCATION_INVALID	The file location is invalid
 CHAT_ADMIN_REQUIRED	The method requires admin privileges
+PHONE_NUMBER_BANNED The phone number is banned
