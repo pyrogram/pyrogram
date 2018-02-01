@@ -274,7 +274,7 @@ class Client:
                     )
                 )
                 break
-            except PhoneNumberInvalid as e:
+            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
                 if phone_number_invalid_raises:
                     raise
                 else:
@@ -283,9 +283,6 @@ class Client:
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
-            except PhoneNumberBanned as e:
-                log.error(e, exc_info=True)
-                raise
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
