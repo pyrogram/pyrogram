@@ -37,7 +37,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired, FirstnameInvalid
+    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -283,6 +283,9 @@ class Client:
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
+            except PhoneNumberBanned as e:
+                log.error(e, exc_info=True)
+                raise
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
