@@ -29,3 +29,4 @@ from .api.errors import Error
 from .client import ChatAction
 from .client import Client
 from .client import ParseMode
+from .client.input_media import InputMedia
