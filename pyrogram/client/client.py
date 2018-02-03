@@ -37,7 +37,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired, FirstnameInvalid
+    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -274,7 +274,7 @@ class Client:
                     )
                 )
                 break
-            except PhoneNumberInvalid as e:
+            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
                 if phone_number_invalid_raises:
                     raise
                 else:
