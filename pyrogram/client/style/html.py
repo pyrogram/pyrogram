@@ -31,7 +31,7 @@ from . import utils
 
 
 class HTML:
-    HTML_RE = re.compile(r"<(\w+)(?: href=\"(.*)\")?>(.*)</\1>")
+    HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])(.*)\2)?>(.*)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
     def __init__(self, peers_by_id):
