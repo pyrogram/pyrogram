@@ -605,7 +605,7 @@ class Client:
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
-                     reply_to_msg_id: int = None):
+                     reply_to_message_id: int = None):
         """Use this method to send text messages.
 
         Args:
@@ -629,7 +629,7 @@ class Client:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_msg_id (:obj:`bool`, optional):
+            reply_to_message_id (:obj:`bool`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -645,7 +645,7 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_msg_id,
+                reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 **style.parse(text)
             )
