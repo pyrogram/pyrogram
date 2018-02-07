@@ -48,6 +48,7 @@ from pyrogram.api.types import (
 )
 from pyrogram.crypto import CTR
 from pyrogram.session import Auth, Session
+from .input_media import InputMedia
 from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
@@ -1941,3 +1942,79 @@ class Client:
             )
         else:
             return False
+
+    def send_media_group(self,
+                         chat_id: int or str,
+                         media: list,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None):
+        multi_media = []
+
+        for i in media:
+            if isinstance(i, InputMedia.Photo):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=media
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+            elif isinstance(i, InputMedia.Video):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            file=media,
+                            mime_type=mimetypes.types_map[".mp4"],
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    duration=i.duration,
+                                    w=i.width,
+                                    h=i.height
+                                )
+                            ]
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+
+        return self.send(
+            functions.messages.SendMultiMedia(
+                peer=self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
