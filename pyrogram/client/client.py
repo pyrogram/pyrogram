@@ -495,12 +495,17 @@ class Client:
         log.info("Dialogs count: {}".format(len(peers)))
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.send(
-                functions.messages.GetDialogs(
-                    offset_date, 0, types.InputPeerEmpty(),
-                    self.DIALOGS_AT_ONCE, True
+            try:
+                dialogs = self.send(
+                    functions.messages.GetDialogs(
+                        offset_date, 0, types.InputPeerEmpty(),
+                        self.DIALOGS_AT_ONCE, True
+                    )
                 )
-            )
+            except FloodWait as e:
+                log.info("Get dialogs flood wait: {}".format(e.x))
+                time.sleep(e.x)
+                continue
 
             offset_date = parse_dialogs(dialogs)
             log.info("Dialogs count: {}".format(len(peers)))
