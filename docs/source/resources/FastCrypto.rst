@@ -3,7 +3,7 @@ Fast Crypto
 
 Pyrogram's speed can be *dramatically* boosted up by installing TgCrypto_, a high-performance, easy-to-install crypto
 library specifically written in C for Pyrogram [#f1]_. TgCrypto is a replacement for the painfully slow PyAES and
-implements the required crypto algorithms MTProto requires, namely AES-IGE and AES-CTR 256 bit.
+implements the crypto algorithms MTProto requires, namely AES-IGE and AES-CTR 256 bit.
 
 Installation
 ------------
