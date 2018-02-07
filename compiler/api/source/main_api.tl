@@ -733,7 +733,7 @@ payments.savedInfo#fb8fe43c flags:# has_saved_credentials:flags.1?true saved_inf
 inputPaymentCredentialsSaved#c10eb2cf id:string tmp_password:bytes = InputPaymentCredentials;
 inputPaymentCredentials#3417d728 flags:# save:flags.0?true data:DataJSON = InputPaymentCredentials;
 inputPaymentCredentialsApplePay#aa1c39f payment_data:DataJSON = InputPaymentCredentials;
-inputPaymentCredentialsAndroidPay#795667a6 payment_token:DataJSON = InputPaymentCredentials;
+inputPaymentCredentialsAndroidPay#ca05d50e payment_token:DataJSON google_transaction_id:string = InputPaymentCredentials;
 
 account.tmpPassword#db64fd34 tmp_password:bytes valid_until:int = account.TmpPassword;
 
@@ -813,7 +813,7 @@ recentMeUrlStickerSet#bc0a57dc url:string set:StickerSetCovered = RecentMeUrl;
 
 help.recentMeUrls#e0310d7 urls:Vector<RecentMeUrl> chats:Vector<Chat> users:Vector<User> = help.RecentMeUrls;
 
-inputSingleMedia#31bc3d25 media:InputMedia flags:# random_id:long message:string entities:flags.0?Vector<MessageEntity> = InputSingleMedia;
+inputSingleMedia#1cc6e91f flags:# media:InputMedia random_id:long message:string entities:flags.0?Vector<MessageEntity> = InputSingleMedia;
 
 ---functions---
 
@@ -841,8 +841,8 @@ auth.resendCode#3ef1a9bf phone_number:string phone_code_hash:string = auth.SentC
 auth.cancelCode#1f040578 phone_number:string phone_code_hash:string = Bool;
 auth.dropTempAuthKeys#8e48a188 except_auth_keys:Vector<long> = Bool;
 
-account.registerDevice#637ea878 token_type:int token:string = Bool;
-account.unregisterDevice#65c55b40 token_type:int token:string = Bool;
+account.registerDevice#1389cc token_type:int token:string app_sandbox:Bool other_uids:Vector<int> = Bool;
+account.unregisterDevice#3076c4bf token_type:int token:string other_uids:Vector<int> = Bool;
 account.updateNotifySettings#84be5b93 peer:InputNotifyPeer settings:InputPeerNotifySettings = Bool;
 account.getNotifySettings#12b3ad31 peer:InputNotifyPeer = PeerNotifySettings;
 account.resetNotifySettings#db7e1747 = Bool;
@@ -910,7 +910,6 @@ messages.editChatPhoto#ca4c79d8 chat_id:int photo:InputChatPhoto = Updates;
 messages.addChatUser#f9a0aa09 chat_id:int user_id:InputUser fwd_limit:int = Updates;
 messages.deleteChatUser#e0611f16 chat_id:int user_id:InputUser = Updates;
 messages.createChat#9cb126e users:Vector<InputUser> title:string = Updates;
-messages.forwardMessage#33963bf9 peer:InputPeer id:int random_id:long = Updates;
 messages.getDhConfig#26cf8950 version:int random_length:int = messages.DhConfig;
 messages.requestEncryption#f64daf43 user_id:InputUser random_id:int g_a:bytes = EncryptedChat;
 messages.acceptEncryption#3dbc0415 peer:InputEncryptedChat g_b:bytes key_fingerprint:long = EncryptedChat;
@@ -923,6 +922,7 @@ messages.sendEncryptedService#32d439a4 peer:InputEncryptedChat random_id:long da
 messages.receivedQueue#55a5bb66 max_qts:int = Vector<long>;
 messages.reportEncryptedSpam#4b0c8c0f peer:InputEncryptedChat = Bool;
 messages.readMessageContents#36a73f77 id:Vector<int> = messages.AffectedMessages;
+messages.getStickers#ae22e045 emoticon:string hash:string = messages.Stickers;
 messages.getAllStickers#1c9618b1 hash:int = messages.AllStickers;
 messages.getWebPagePreview#8b68b0cc flags:# message:string entities:flags.3?Vector<MessageEntity> = MessageMedia;
 messages.exportChatInvite#7d885289 chat_id:int = ExportedChatInvite;
@@ -1034,7 +1034,7 @@ channels.inviteToChannel#199f3a6c channel:InputChannel users:Vector<InputUser> =
 channels.exportInvite#c7560885 channel:InputChannel = ExportedChatInvite;
 channels.deleteChannel#c0111fe3 channel:InputChannel = Updates;
 channels.toggleInvites#49609307 channel:InputChannel enabled:Bool = Updates;
-channels.exportMessageLink#c846d22d channel:InputChannel id:int = ExportedMessageLink;
+channels.exportMessageLink#ceb77163 channel:InputChannel id:int grouped:Bool = ExportedMessageLink;
 channels.toggleSignatures#1f69b606 channel:InputChannel enabled:Bool = Updates;
 channels.updatePinnedMessage#a72ded52 flags:# silent:flags.0?true channel:InputChannel id:int = Updates;
 channels.getAdminedPublicChannels#8d8d82d7 = messages.Chats;

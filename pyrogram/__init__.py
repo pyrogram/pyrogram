@@ -23,9 +23,10 @@ __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance
     "e" if sys.getfilesystemencoding() == "ascii" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.4.2"
+__version__ = "0.5.0"
 
 from .api.errors import Error
 from .client import ChatAction
 from .client import Client
 from .client import ParseMode
+from .client.input_media import InputMedia

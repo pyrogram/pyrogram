@@ -37,7 +37,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired, FirstnameInvalid
+    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
@@ -48,6 +48,7 @@ from pyrogram.api.types import (
 )
 from pyrogram.crypto import CTR
 from pyrogram.session import Auth, Session
+from .input_media import InputMedia
 from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
@@ -274,7 +275,7 @@ class Client:
                     )
                 )
                 break
-            except PhoneNumberInvalid as e:
+            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
                 if phone_number_invalid_raises:
                     raise
                 else:
@@ -494,12 +495,17 @@ class Client:
         log.info("Dialogs count: {}".format(len(peers)))
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.send(
-                functions.messages.GetDialogs(
-                    offset_date, 0, types.InputPeerEmpty(),
-                    self.DIALOGS_AT_ONCE, True
+            try:
+                dialogs = self.send(
+                    functions.messages.GetDialogs(
+                        offset_date, 0, types.InputPeerEmpty(),
+                        self.DIALOGS_AT_ONCE, True
+                    )
                 )
-            )
+            except FloodWait as e:
+                log.info("Get dialogs flood wait: {}".format(e.x))
+                time.sleep(e.x)
+                continue
 
             offset_date = parse_dialogs(dialogs)
             log.info("Dialogs count: {}".format(len(peers)))
@@ -604,7 +610,7 @@ class Client:
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
-                     reply_to_msg_id: int = None):
+                     reply_to_message_id: int = None):
         """Use this method to send text messages.
 
         Args:
@@ -628,7 +634,7 @@ class Client:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_msg_id (:obj:`bool`, optional):
+            reply_to_message_id (:obj:`bool`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -644,7 +650,7 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_msg_id,
+                reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 **style.parse(text)
             )
@@ -1941,3 +1947,99 @@ class Client:
             )
         else:
             return False
+
+    def send_media_group(self,
+                         chat_id: int or str,
+                         media: list,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None):
+        """Use this method to send a group of photos or videos as an album.
+        On success, an Update containing the sent Messages is returned.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
+
+            media (:obj:`list`):
+                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                describing photos and videos to be sent, must include 2–10 items.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+        """
+        multi_media = []
+
+        for i in media:
+            if isinstance(i, InputMedia.Photo):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=media
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+            elif isinstance(i, InputMedia.Video):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            file=media,
+                            mime_type=mimetypes.types_map[".mp4"],
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    duration=i.duration,
+                                    w=i.width,
+                                    h=i.height
+                                )
+                            ]
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+
+        return self.send(
+            functions.messages.SendMultiMedia(
+                peer=self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
