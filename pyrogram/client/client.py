@@ -171,7 +171,7 @@ class Client:
 
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
-        self.session.update_handler = self.update_handler
+        self.session.set_update_handler(self, self.update_handler)
 
         mimetypes.init()
 
