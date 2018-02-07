@@ -85,7 +85,9 @@ class Client:
 
         password (:obj:`str`, optional):
             Pass your Two-Step Verification password (if you have one) to avoid entering it
-            manually. Only applicable for new sessions.
+            manually. Only applicable for new sessions. Or it will be used to
+            automatically enabling two-step verification in case the phone
+            number you passed is not registered yet.
 
         first_name (:obj:`str`, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
@@ -166,7 +168,8 @@ class Client:
             print("\n".join(terms.splitlines()), "\n")
 
             self.user_id = self.authorize()
-            self.password = None
+            if self.password is not None:
+                self.enable_cloud_password(password=self.password)
             self.save_session()
 
         self.rnd_id = self.session.msg_id
