@@ -23,12 +23,14 @@ import math
 import mimetypes
 import os
 import re
+import threading
 import time
 from collections import namedtuple
 from configparser import ConfigParser
 from hashlib import sha256, md5
+from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
-from threading import Event
+from threading import Event, Thread
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -141,6 +143,8 @@ class Client:
         self.update_handler = None
         self.is_idle = Event()
 
+        self.update_queue = Queue()
+
     def start(self):
         """Use this method to start the Client after creating it.
         Requires no parameters.
@@ -156,7 +160,8 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.config.api_id
+            self.config.api_id,
+            client=self
         )
 
         terms = self.session.start()
@@ -170,7 +175,9 @@ class Client:
 
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
-        self.session.set_update_handler(self, self.update_handler)
+
+        for i in range(self.workers):
+            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
 
         mimetypes.init()
 
@@ -179,6 +186,26 @@ class Client:
         Requires no parameters.
         """
         self.session.stop()
+
+        for i in range(self.workers):
+            self.update_queue.put(None)
+
+    def update_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            update = self.update_queue.get()
+
+            if update is None:
+                break
+
+            try:
+                self.update_handler(self, update)
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
 
     def signal_handler(self, *args):
         self.stop()
@@ -261,7 +288,8 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.config.api_id
+                    self.config.api_id,
+                    client=self
                 )
                 self.session.start()
 

@@ -74,7 +74,8 @@ class Session:
                  proxy: type,
                  auth_key: bytes,
                  api_id: str,
-                 is_cdn: bool = False):
+                 is_cdn: bool = False,
+                 client: pyrogram = None):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
@@ -83,6 +84,7 @@ class Session:
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
         self.api_id = api_id
         self.is_cdn = is_cdn
+        self.client = client
 
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
@@ -105,9 +107,6 @@ class Session:
         self.next_salt_thread_event = Event()
 
         self.is_connected = Event()
-
-        self.client = None
-        self.update_handler = None
 
     def start(self):
         terms = None
@@ -236,10 +235,6 @@ class Session:
 
         log.debug("{} stopped".format(name))
 
-    def set_update_handler(self, client: pyrogram, update_handler: callable):
-        self.client = client
-        self.update_handler = update_handler
-
     def unpack_dispatch_and_ack(self, packet: bytes):
         data = self.unpack(BytesIO(packet))
 
@@ -274,8 +269,8 @@ class Session:
             elif isinstance(msg.body, types.Pong):
                 msg_id = msg.body.msg_id
             else:
-                if self.update_handler:
-                    self.update_handler(self.client, msg.body)
+                if self.client is not None:
+                    self.client.update_queue.put(msg.body)
 
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(msg.body, "result", msg.body)
