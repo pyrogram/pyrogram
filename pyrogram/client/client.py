@@ -156,8 +156,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.config.api_id,
-            net_workers=self.workers
+            self.config.api_id
         )
 
         terms = self.session.start()
@@ -262,8 +261,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.config.api_id,
-                    net_workers=self.workers
+                    self.config.api_id
                 )
                 self.session.start()
 
