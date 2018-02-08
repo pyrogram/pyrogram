@@ -2016,7 +2016,8 @@ class Client:
                                     duration=i.duration,
                                     w=i.width,
                                     h=i.height
-                                )
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(i.media))
                             ]
                         )
                     )
