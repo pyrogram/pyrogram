@@ -157,7 +157,7 @@ class Client:
             self.proxy,
             self.auth_key,
             self.config.api_id,
-            workers=self.workers
+            net_workers=self.workers
         )
 
         terms = self.session.start()
@@ -263,7 +263,7 @@ class Client:
                     self.proxy,
                     self.auth_key,
                     self.config.api_id,
-                    workers=self.workers
+                    net_workers=self.workers
                 )
                 self.session.start()
 

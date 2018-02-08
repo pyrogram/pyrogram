@@ -75,14 +75,14 @@ class Session:
                  auth_key: bytes,
                  api_id: str,
                  is_cdn: bool = False,
-                 workers: int = 2):
+                 net_workers: int = 2):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
         self.is_cdn = is_cdn
-        self.workers = workers
+        self.net_workers = net_workers
 
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
 
@@ -124,8 +124,8 @@ class Session:
             try:
                 self.connection.connect()
 
-                for i in range(self.workers):
-                    Thread(target=self.worker, name="Worker#{}".format(i + 1)).start()
+                for i in range(self.net_workers):
+                    Thread(target=self.net_worker, name="NetWorker#{}".format(i + 1)).start()
 
                 Thread(target=self.recv, name="RecvThread").start()
 
@@ -184,7 +184,7 @@ class Session:
 
         self.connection.close()
 
-        for i in range(self.workers):
+        for i in range(self.net_workers):
             self.recv_queue.put(None)
 
         log.debug("Session stopped")
@@ -232,7 +232,7 @@ class Session:
 
         return message
 
-    def worker(self):
+    def net_worker(self):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
 
