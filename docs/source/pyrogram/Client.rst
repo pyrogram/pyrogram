@@ -39,3 +39,4 @@ Client
         enable_cloud_password
         change_cloud_password
         remove_cloud_password
+        send_media_group
