@@ -38,4 +38,4 @@ If no errors show up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.4.2'
+    '0.5.0'
