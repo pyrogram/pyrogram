@@ -264,34 +264,34 @@ class Session:
 
         log.debug(data)
 
-        for i in messages:
-            if i.seq_no % 2 != 0:
-                if i.msg_id in self.pending_acks:
+        for msg in messages:
+            if msg.seq_no % 2 != 0:
+                if msg.msg_id in self.pending_acks:
                     continue
                 else:
-                    self.pending_acks.add(i.msg_id)
+                    self.pending_acks.add(msg.msg_id)
 
-            if isinstance(i.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
-                self.pending_acks.add(i.body.answer_msg_id)
+            if isinstance(msg.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
+                self.pending_acks.add(msg.body.answer_msg_id)
                 continue
 
-            if isinstance(i.body, types.NewSessionCreated):
+            if isinstance(msg.body, types.NewSessionCreated):
                 continue
 
             msg_id = None
 
-            if isinstance(i.body, (types.BadMsgNotification, types.BadServerSalt)):
-                msg_id = i.body.bad_msg_id
-            elif isinstance(i.body, (core.FutureSalts, types.RpcResult)):
-                msg_id = i.body.req_msg_id
-            elif isinstance(i.body, types.Pong):
-                msg_id = i.body.msg_id
+            if isinstance(msg.body, (types.BadMsgNotification, types.BadServerSalt)):
+                msg_id = msg.body.bad_msg_id
+            elif isinstance(msg.body, (core.FutureSalts, types.RpcResult)):
+                msg_id = msg.body.req_msg_id
+            elif isinstance(msg.body, types.Pong):
+                msg_id = msg.body.msg_id
             else:
                 if self.update_handler:
-                    self.update_handler(self.client, i.body)
+                    self.update_handler(self.client, msg.body)
 
             if msg_id in self.results:
-                self.results[msg_id].value = getattr(i.body, "result", i.body)
+                self.results[msg_id].value = getattr(msg.body, "result", msg.body)
                 self.results[msg_id].event.set()
 
         if len(self.pending_acks) >= self.ACKS_THRESHOLD:
