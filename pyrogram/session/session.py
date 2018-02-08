@@ -113,10 +113,6 @@ class Session:
         self.client = None
         self.update_handler = None
 
-        self.total_connections = 0
-        self.total_messages = 0
-        self.total_bytes = 0
-
     def start(self):
         terms = None
 
@@ -161,7 +157,6 @@ class Session:
                 break
 
         self.is_connected.set()
-        self.total_connections += 1
 
         log.debug("Session started")
 
