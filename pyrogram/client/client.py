@@ -141,9 +141,9 @@ class Client:
         self.proxy = None
         self.session = None
 
-        self.update_handler = None
         self.is_idle = Event()
 
+        self.event_handler = None
         self.update_queue = Queue()
         self.event_queue = Queue()
 
@@ -235,7 +235,7 @@ class Client:
                 break
 
             try:
-                self.update_handler(self, event)
+                self.event_handler(self, event)
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -259,15 +259,14 @@ class Client:
 
         self.is_idle.wait()
 
-    # TODO: Better update handler
-    def set_update_handler(self, callback: callable):
+    def set_event_handler(self, callback: callable):
         """Use this method to set the update handler.
 
         Args:
             callback (:obj:`callable`):
                 A callback function that accepts a single argument: the update object.
         """
-        self.update_handler = callback
+        self.event_handler = callback
 
     def send(self, data: Object):
         """Use this method to send :ref:`Raw Function <using-raw-functions>` queries.
