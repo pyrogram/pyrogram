@@ -190,10 +190,6 @@ class Session:
 
     def pack(self, message: Message):
         data = Long(self.current_salt.salt) + self.session_id + message.write()
-        # MTProto 2.0 requires a minimum of 12 padding bytes.
-        # I don't get why it says up to 1024 when what it actually needs after the
-        # required 12 bytes is just extra 0..15 padding bytes for aes
-        # TODO: It works, but recheck this. What's the meaning of 12..1024 padding bytes?
         padding = urandom(-(len(data) + 12) % 16 + 12)
 
         # 88 = 88 + 0 (outgoing message)
