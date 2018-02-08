@@ -92,9 +92,9 @@ To get started, press Next.
     :hidden:
     :caption: Getting Started
 
-    getting_started/QuickInstallation
-    getting_started/ProjectSetup
-    getting_started/BasicUsage
+    start/QuickInstallation
+    start/ProjectSetup
+    start/BasicUsage
 
 .. toctree::
     :hidden:
