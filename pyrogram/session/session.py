@@ -254,7 +254,6 @@ class Session:
         self.update_handler = update_handler
 
     def unpack_dispatch_and_ack(self, packet: bytes):
-        # TODO: A better dispatcher
         data = self.unpack(BytesIO(packet))
 
         messages = (
@@ -265,17 +264,12 @@ class Session:
 
         log.debug(data)
 
-        self.total_bytes += len(packet)
-        self.total_messages += len(messages)
-
         for i in messages:
             if i.seq_no % 2 != 0:
                 if i.msg_id in self.pending_acks:
                     continue
                 else:
                     self.pending_acks.add(i.msg_id)
-
-            # log.debug("{}".format(type(i.body)))
 
             if isinstance(i.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
                 self.pending_acks.add(i.body.answer_msg_id)
@@ -299,14 +293,6 @@ class Session:
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(i.body, "result", i.body)
                 self.results[msg_id].event.set()
-
-        # print(
-        #     "This packet bytes: ({}) | Total bytes: ({})\n"
-        #     "This packet messages: ({}) | Total messages: ({})\n"
-        #     "Total connections: ({})".format(
-        #         len(packet), self.total_bytes, len(messages), self.total_messages, self.total_connections
-        #     )
-        # )
 
         if len(self.pending_acks) >= self.ACKS_THRESHOLD:
             log.info("Send {} acks".format(len(self.pending_acks)))
