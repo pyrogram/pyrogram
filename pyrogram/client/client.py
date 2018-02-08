@@ -98,7 +98,7 @@ class Client:
             be an empty string: ""
 
         workers (:obj:`int`, optional):
-            Thread pool size for handling incoming messages (updates). Defaults to 4.
+            Thread pool size for handling incoming events (updates). Defaults to 4.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
@@ -260,11 +260,11 @@ class Client:
         self.is_idle.wait()
 
     def set_event_handler(self, callback: callable):
-        """Use this method to set the update handler.
+        """Use this method to set the event handler.
 
         Args:
             callback (:obj:`callable`):
-                A callback function that accepts a single argument: the update object.
+                A callback function that accepts a single argument: the event (update) object.
         """
         self.event_handler = callback
 
