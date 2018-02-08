@@ -63,9 +63,6 @@ Features
     `MTProto Mobile Protocol v2.0`_ and the mechanisms needed for establishing
     a reliable connection.
 
--   **Fast**: Pyrogram's speed is boosted up by `TgCrypto`_, a high-performance, easy-to-install
-    crypto library written in C.
-
 -   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 75`_.
 
 -   **Documented**: Pyrogram API public methods are documented and resemble the well
@@ -108,7 +105,6 @@ To get started, press Next.
     resources/ErrorHandling
     resources/ProxyServer
     resources/AutoAuthorization
-    resources/FastCrypto
 
 .. toctree::
     :hidden:
@@ -124,7 +120,5 @@ To get started, press Next.
     types/index
 
 .. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
-
-.. _TgCrypto: https://docs.pyrogram.ml/resources/FastCrypto/
 
 .. _`Layer 75`: https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl
