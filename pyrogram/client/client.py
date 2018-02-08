@@ -985,7 +985,8 @@ class Client:
                                     duration=duration,
                                     w=width,
                                     h=height
-                                )
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(video))
                             ]
                         ),
                         silent=disable_notification or None,
