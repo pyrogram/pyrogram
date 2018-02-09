@@ -351,7 +351,8 @@ class Client:
 
         Args:
             callback (:obj:`callable`):
-                A callback function that accepts two arguments: the Client itself and the event (update) object.
+                A function that takes ``client, event`` as positional arguments.
+                It will be called when a new event is generated on your account.
         """
         self.event_handler = callback
 
