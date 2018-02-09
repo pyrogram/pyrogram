@@ -23,12 +23,14 @@ import math
 import mimetypes
 import os
 import re
+import threading
 import time
 from collections import namedtuple
 from configparser import ConfigParser
 from hashlib import sha256, md5
+from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
-from threading import Event
+from threading import Event, Thread
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -41,13 +43,13 @@ from pyrogram.api.errors import (
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
-    PeerUser, PeerChat, PeerChannel,
-    Dialog, Message,
+    PeerUser, PeerChannel,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
+from .input_media import InputMedia
 from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
@@ -95,11 +97,12 @@ class Client:
             be an empty string: ""
 
         workers (:obj:`int`, optional):
-            Thread pool size for handling incoming messages (updates). Defaults to 4.
+            Thread pool size for handling incoming events (updates). Defaults to 4.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
+    UPDATE_WORKERS = 2
 
     def __init__(self,
                  session_name: str,
@@ -137,8 +140,11 @@ class Client:
         self.proxy = None
         self.session = None
 
-        self.update_handler = None
         self.is_idle = Event()
+
+        self.event_handler = None
+        self.update_queue = Queue()
+        self.event_queue = Queue()
 
     def start(self):
         """Use this method to start the Client after creating it.
@@ -156,7 +162,7 @@ class Client:
             self.proxy,
             self.auth_key,
             self.config.api_id,
-            workers=self.workers
+            client=self
         )
 
         terms = self.session.start()
@@ -170,7 +176,12 @@ class Client:
 
         self.rnd_id = self.session.msg_id
         self.get_dialogs()
-        self.session.update_handler = self.update_handler
+
+        for i in range(self.UPDATE_WORKERS):
+            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+
+        for i in range(self.workers):
+            Thread(target=self.event_worker, name="EventWorker#{}".format(i + 1)).start()
 
         mimetypes.init()
 
@@ -179,6 +190,142 @@ class Client:
         Requires no parameters.
         """
         self.session.stop()
+
+        for i in range(self.UPDATE_WORKERS):
+            self.update_queue.put(None)
+
+        for i in range(self.workers):
+            self.event_queue.put(None)
+
+    def fetch_peers(self, entities: list):
+        for entity in entities:
+            if isinstance(entity, User):
+                user_id = entity.id
+
+                if user_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+
+                input_peer = InputPeerUser(
+                    user_id=user_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[user_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_username[username] = input_peer
+
+            if isinstance(entity, Chat):
+                chat_id = entity.id
+
+                if chat_id in self.peers_by_id:
+                    continue
+
+                input_peer = InputPeerChat(
+                    chat_id=chat_id
+                )
+
+                self.peers_by_id[chat_id] = input_peer
+
+            if isinstance(entity, Channel):
+                channel_id = entity.id
+                peer_id = int("-100" + str(channel_id))
+
+                if peer_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+
+                input_peer = InputPeerChannel(
+                    channel_id=channel_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[peer_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_username[username] = input_peer
+
+    def update_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            update = self.update_queue.get()
+
+            if update is None:
+                break
+
+            try:
+                if isinstance(update, (types.Update, types.UpdatesCombined)):
+                    self.fetch_peers(update.users)
+                    self.fetch_peers(update.chats)
+
+                    for i in update.updates:
+                        self.event_queue.put(i)
+                elif isinstance(update, types.UpdateShortMessage):
+                    if update.user_id not in self.peers_by_id:
+                        diff = self.send(
+                            functions.updates.GetDifference(
+                                pts=update.pts - 1,
+                                date=update.date,
+                                qts=-1
+                            )
+                        )
+
+                        self.fetch_peers(diff.users)
+
+                    self.event_queue.put(update)
+                elif isinstance(update, types.UpdateShortChatMessage):
+                    if update.chat_id not in self.peers_by_id:
+                        diff = self.send(
+                            functions.updates.GetDifference(
+                                pts=update.pts - 1,
+                                date=update.date,
+                                qts=-1
+                            )
+                        )
+
+                        self.fetch_peers(diff.users)
+                        self.fetch_peers(diff.chats)
+
+                    self.event_queue.put(update)
+                elif isinstance(update, types.UpdateShort):
+                    self.event_queue.put(update.update)
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
+
+    def event_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            event = self.event_queue.get()
+
+            if event is None:
+                break
+
+            try:
+                if self.event_handler:
+                    self.event_handler(self, event)
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
 
     def signal_handler(self, *args):
         self.stop()
@@ -198,15 +345,15 @@ class Client:
 
         self.is_idle.wait()
 
-    # TODO: Better update handler
-    def set_update_handler(self, callback: callable):
-        """Use this method to set the update handler.
+    def set_event_handler(self, callback: callable):
+        """Use this method to set the event handler.
 
         Args:
             callback (:obj:`callable`):
-                A callback function that accepts a single argument: the update object.
+                A function that takes ``client, event`` as positional arguments.
+                It will be called when a new event is generated on your account.
         """
-        self.update_handler = callback
+        self.event_handler = callback
 
     def send(self, data: Object):
         """Use this method to send :ref:`Raw Function <using-raw-functions>` queries.
@@ -262,7 +409,7 @@ class Client:
                     self.proxy,
                     self.auth_key,
                     self.config.api_id,
-                    workers=self.workers
+                    client=self
                 )
                 self.session.start()
 
@@ -432,53 +579,17 @@ class Client:
             )
 
     def get_dialogs(self):
-        peers = []
+        def parse_dialogs(d):
+            self.fetch_peers(d.chats)
+            self.fetch_peers(d.users)
 
-        def parse_dialogs(d) -> int:
-            oldest_date = 1 << 32
-
-            for dialog in d.dialogs:  # type: Dialog
-                # Only search for Users, Chats and Channels
-                if not isinstance(dialog.peer, (PeerUser, PeerChat, PeerChannel)):
+            for m in reversed(d.messages):
+                if isinstance(m, types.MessageEmpty):
                     continue
-
-                if isinstance(dialog.peer, PeerUser):
-                    peer_type = "user"
-                    peer_id = dialog.peer.user_id
-                elif isinstance(dialog.peer, PeerChat):
-                    peer_type = "chat"
-                    peer_id = dialog.peer.chat_id
-                elif isinstance(dialog.peer, PeerChannel):
-                    peer_type = "channel"
-                    peer_id = dialog.peer.channel_id
                 else:
-                    continue
-
-                for message in d.messages:  # type: Message
-                    is_this = peer_id == message.from_id or dialog.peer == message.to_id
-
-                    if is_this:
-                        for entity in (d.users if peer_type == "user" else d.chats):  # type: User or Chat or Channel
-                            if entity.id == peer_id:
-                                peers.append(
-                                    dict(
-                                        id=peer_id,
-                                        access_hash=getattr(entity, "access_hash", None),
-                                        type=peer_type,
-                                        first_name=getattr(entity, "first_name", None),
-                                        last_name=getattr(entity, "last_name", None),
-                                        title=getattr(entity, "title", None),
-                                        username=getattr(entity, "username", None),
-                                    )
-                                )
-
-                                if message.date < oldest_date:
-                                    oldest_date = message.date
-
-                                break
-                        break
-
-            return oldest_date
+                    return m.date
+            else:
+                return 0
 
         pinned_dialogs = self.send(functions.messages.GetPinnedDialogs())
         parse_dialogs(pinned_dialogs)
@@ -491,48 +602,23 @@ class Client:
         )
 
         offset_date = parse_dialogs(dialogs)
-        log.info("Dialogs count: {}".format(len(peers)))
+        log.info("Entities count: {}".format(len(self.peers_by_id)))
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.send(
-                functions.messages.GetDialogs(
-                    offset_date, 0, types.InputPeerEmpty(),
-                    self.DIALOGS_AT_ONCE, True
+            try:
+                dialogs = self.send(
+                    functions.messages.GetDialogs(
+                        offset_date, 0, types.InputPeerEmpty(),
+                        self.DIALOGS_AT_ONCE, True
+                    )
                 )
-            )
-
-            offset_date = parse_dialogs(dialogs)
-            log.info("Dialogs count: {}".format(len(peers)))
-
-        for i in peers:
-            peer_id = i["id"]
-            peer_type = i["type"]
-            peer_username = i["username"]
-            peer_access_hash = i["access_hash"]
-
-            if peer_type == "user":
-                input_peer = InputPeerUser(
-                    peer_id,
-                    peer_access_hash
-                )
-            elif peer_type == "chat":
-                input_peer = InputPeerChat(
-                    peer_id
-                )
-            elif peer_type == "channel":
-                input_peer = InputPeerChannel(
-                    peer_id,
-                    peer_access_hash
-                )
-                peer_id = int("-100" + str(peer_id))
-            else:
+            except FloodWait as e:
+                log.info("Get dialogs flood wait: {}".format(e.x))
+                time.sleep(e.x)
                 continue
 
-            self.peers_by_id[peer_id] = input_peer
-
-            if peer_username:
-                peer_username = peer_username.lower()
-                self.peers_by_username[peer_username] = input_peer
+            offset_date = parse_dialogs(dialogs)
+            log.info("Entities count: {}".format(len(self.peers_by_id)))
 
     def resolve_username(self, username: str):
         username = username.lower().strip("@")
@@ -604,7 +690,7 @@ class Client:
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
-                     reply_to_msg_id: int = None):
+                     reply_to_message_id: int = None):
         """Use this method to send text messages.
 
         Args:
@@ -628,7 +714,7 @@ class Client:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_msg_id (:obj:`bool`, optional):
+            reply_to_message_id (:obj:`bool`, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -644,7 +730,7 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_msg_id,
+                reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 **style.parse(text)
             )
@@ -979,7 +1065,8 @@ class Client:
                                     duration=duration,
                                     w=width,
                                     h=height
-                                )
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(video))
                             ]
                         ),
                         silent=disable_notification or None,
@@ -1939,3 +2026,100 @@ class Client:
             )
         else:
             return False
+
+    def send_media_group(self,
+                         chat_id: int or str,
+                         media: list,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None):
+        """Use this method to send a group of photos or videos as an album.
+        On success, an Update containing the sent Messages is returned.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
+
+            media (:obj:`list`):
+                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                describing photos and videos to be sent, must include 2–10 items.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+        """
+        multi_media = []
+
+        for i in media:
+            if isinstance(i, InputMedia.Photo):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=media
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+            elif isinstance(i, InputMedia.Video):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            file=media,
+                            mime_type=mimetypes.types_map[".mp4"],
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    duration=i.duration,
+                                    w=i.width,
+                                    h=i.height
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(i.media))
+                            ]
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+
+        return self.send(
+            functions.messages.SendMultiMedia(
+                peer=self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
