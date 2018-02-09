@@ -26,6 +26,7 @@ from os import urandom
 from queue import Queue
 from threading import Event, Thread
 
+import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
@@ -59,7 +60,7 @@ class Session:
     )
 
     INITIAL_SALT = 0x616e67656c696361
-
+    NET_WORKERS = 2
     WAIT_TIMEOUT = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -74,18 +75,16 @@ class Session:
                  auth_key: bytes,
                  api_id: str,
                  is_cdn: bool = False,
-                 workers: int = 2):
+                 client: pyrogram = None):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
-        self.is_cdn = is_cdn
-        self.workers = workers
-
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
-
         self.api_id = api_id
+        self.is_cdn = is_cdn
+        self.client = client
 
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
@@ -109,12 +108,6 @@ class Session:
 
         self.is_connected = Event()
 
-        self.update_handler = None
-
-        self.total_connections = 0
-        self.total_messages = 0
-        self.total_bytes = 0
-
     def start(self):
         terms = None
 
@@ -122,8 +115,8 @@ class Session:
             try:
                 self.connection.connect()
 
-                for i in range(self.workers):
-                    Thread(target=self.worker, name="Worker#{}".format(i + 1)).start()
+                for i in range(self.NET_WORKERS):
+                    Thread(target=self.net_worker, name="NetWorker#{}".format(i + 1)).start()
 
                 Thread(target=self.recv, name="RecvThread").start()
 
@@ -159,7 +152,6 @@ class Session:
                 break
 
         self.is_connected.set()
-        self.total_connections += 1
 
         log.debug("Session started")
 
@@ -182,7 +174,7 @@ class Session:
 
         self.connection.close()
 
-        for i in range(self.workers):
+        for i in range(self.NET_WORKERS):
             self.recv_queue.put(None)
 
         log.debug("Session stopped")
@@ -193,10 +185,6 @@ class Session:
 
     def pack(self, message: Message):
         data = Long(self.current_salt.salt) + self.session_id + message.write()
-        # MTProto 2.0 requires a minimum of 12 padding bytes.
-        # I don't get why it says up to 1024 when what it actually needs after the
-        # required 12 bytes is just extra 0..15 padding bytes for aes
-        # TODO: It works, but recheck this. What's the meaning of 12..1024 padding bytes?
         padding = urandom(-(len(data) + 12) % 16 + 12)
 
         # 88 = 88 + 0 (outgoing message)
@@ -230,7 +218,7 @@ class Session:
 
         return message
 
-    def worker(self):
+    def net_worker(self):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
 
@@ -248,7 +236,6 @@ class Session:
         log.debug("{} stopped".format(name))
 
     def unpack_dispatch_and_ack(self, packet: bytes):
-        # TODO: A better dispatcher
         data = self.unpack(BytesIO(packet))
 
         messages = (
@@ -259,48 +246,35 @@ class Session:
 
         log.debug(data)
 
-        self.total_bytes += len(packet)
-        self.total_messages += len(messages)
-
-        for i in messages:
-            if i.seq_no % 2 != 0:
-                if i.msg_id in self.pending_acks:
+        for msg in messages:
+            if msg.seq_no % 2 != 0:
+                if msg.msg_id in self.pending_acks:
                     continue
                 else:
-                    self.pending_acks.add(i.msg_id)
+                    self.pending_acks.add(msg.msg_id)
 
-            # log.debug("{}".format(type(i.body)))
-
-            if isinstance(i.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
-                self.pending_acks.add(i.body.answer_msg_id)
+            if isinstance(msg.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
+                self.pending_acks.add(msg.body.answer_msg_id)
                 continue
 
-            if isinstance(i.body, types.NewSessionCreated):
+            if isinstance(msg.body, types.NewSessionCreated):
                 continue
 
             msg_id = None
 
-            if isinstance(i.body, (types.BadMsgNotification, types.BadServerSalt)):
-                msg_id = i.body.bad_msg_id
-            elif isinstance(i.body, (core.FutureSalts, types.RpcResult)):
-                msg_id = i.body.req_msg_id
-            elif isinstance(i.body, types.Pong):
-                msg_id = i.body.msg_id
+            if isinstance(msg.body, (types.BadMsgNotification, types.BadServerSalt)):
+                msg_id = msg.body.bad_msg_id
+            elif isinstance(msg.body, (core.FutureSalts, types.RpcResult)):
+                msg_id = msg.body.req_msg_id
+            elif isinstance(msg.body, types.Pong):
+                msg_id = msg.body.msg_id
             else:
-                if self.update_handler:
-                    self.update_handler(i.body)
+                if self.client is not None:
+                    self.client.update_queue.put(msg.body)
 
             if msg_id in self.results:
-                self.results[msg_id].value = getattr(i.body, "result", i.body)
+                self.results[msg_id].value = getattr(msg.body, "result", msg.body)
                 self.results[msg_id].event.set()
-
-        # print(
-        #     "This packet bytes: ({}) | Total bytes: ({})\n"
-        #     "This packet messages: ({}) | Total messages: ({})\n"
-        #     "Total connections: ({})".format(
-        #         len(packet), self.total_bytes, len(messages), self.total_messages, self.total_connections
-        #     )
-        # )
 
         if len(self.pending_acks) >= self.ACKS_THRESHOLD:
             log.info("Send {} acks".format(len(self.pending_acks)))
