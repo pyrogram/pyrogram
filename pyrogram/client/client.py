@@ -198,6 +198,67 @@ class Client:
         for i in range(self.workers):
             self.event_queue.put(None)
 
+    def fetch_peers(self, entities: list):
+        for entity in entities:
+            if isinstance(entity, User):
+                user_id = entity.id
+
+                if user_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+
+                input_peer = InputPeerUser(
+                    user_id=user_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[user_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_id[username] = input_peer
+
+            if isinstance(entity, Chat):
+                chat_id = entity.id
+
+                if chat_id in self.peers_by_id:
+                    continue
+
+                input_peer = InputPeerChat(
+                    chat_id=chat_id
+                )
+
+                self.peers_by_id[chat_id] = input_peer
+
+            if isinstance(entity, Channel):
+                channel_id = entity.id
+                peer_id = int("-100" + str(channel_id))
+
+                if peer_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+
+                input_peer = InputPeerChannel(
+                    channel_id=channel_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[peer_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_username[username] = input_peer
+
     def update_worker(self):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
@@ -209,16 +270,41 @@ class Client:
                 break
 
             try:
-                # TODO: Fetch users and chats
                 if isinstance(update, (types.Update, types.UpdatesCombined)):
+                    self.fetch_peers(update.users)
+                    self.fetch_peers(update.chats)
+
                     for i in update.updates:
                         self.event_queue.put(i)
-                elif isinstance(update, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
+                elif isinstance(update, types.UpdateShortMessage):
+                    if update.user_id not in self.peers_by_id:
+                        diff = self.send(
+                            functions.updates.GetDifference(
+                                pts=update.pts - 1,
+                                date=update.date,
+                                qts=-1
+                            )
+                        )
+
+                        self.fetch_peers(diff.users)
+
+                    self.event_queue.put(update)
+                elif isinstance(update, types.UpdateShortChatMessage):
+                    if update.chat_id not in self.peers_by_id:
+                        diff = self.send(
+                            functions.updates.GetDifference(
+                                pts=update.pts - 1,
+                                date=update.date,
+                                qts=-1
+                            )
+                        )
+
+                        self.fetch_peers(diff.users)
+                        self.fetch_peers(diff.chats)
+
                     self.event_queue.put(update)
                 elif isinstance(update, types.UpdateShort):
                     self.event_queue.put(update.update)
-                else:
-                    print(">>>>>", type(update))
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -235,7 +321,8 @@ class Client:
                 break
 
             try:
-                self.event_handler(self, event)
+                if self.event_handler:
+                    self.event_handler(self, event)
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -264,7 +351,7 @@ class Client:
 
         Args:
             callback (:obj:`callable`):
-                A callback function that accepts a single argument: the event (update) object.
+                A callback function that accepts two arguments: the Client itself and the event (update) object.
         """
         self.event_handler = callback
 
