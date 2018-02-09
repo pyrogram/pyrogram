@@ -274,7 +274,7 @@ def start():
         else:
             docstring_args = "No parameters required."
 
-        docstring_args = "Attributes:\n        ID (:obj:`int`): ``{}``\n\n    ".format(c.id) + docstring_args
+        docstring_args = "Attributes:\n        ID: ``{}``\n\n    ".format(c.id) + docstring_args
 
         if c.section == "functions":
             docstring_args += "\n\n    Raises:\n        :obj:`pyrogram.Error`"
