@@ -43,8 +43,7 @@ from pyrogram.api.errors import (
 )
 from pyrogram.api.types import (
     User, Chat, Channel,
-    PeerUser, PeerChat, PeerChannel,
-    Dialog, Message,
+    PeerUser, PeerChannel,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
@@ -221,7 +220,7 @@ class Client:
                 self.peers_by_id[user_id] = input_peer
 
                 if username is not None:
-                    self.peers_by_id[username] = input_peer
+                    self.peers_by_username[username] = input_peer
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
@@ -580,53 +579,17 @@ class Client:
             )
 
     def get_dialogs(self):
-        peers = []
+        def parse_dialogs(d):
+            self.fetch_peers(d.chats)
+            self.fetch_peers(d.users)
 
-        def parse_dialogs(d) -> int:
-            oldest_date = 1 << 32
-
-            for dialog in d.dialogs:  # type: Dialog
-                # Only search for Users, Chats and Channels
-                if not isinstance(dialog.peer, (PeerUser, PeerChat, PeerChannel)):
+            for m in reversed(d.messages):
+                if isinstance(m, types.MessageEmpty):
                     continue
-
-                if isinstance(dialog.peer, PeerUser):
-                    peer_type = "user"
-                    peer_id = dialog.peer.user_id
-                elif isinstance(dialog.peer, PeerChat):
-                    peer_type = "chat"
-                    peer_id = dialog.peer.chat_id
-                elif isinstance(dialog.peer, PeerChannel):
-                    peer_type = "channel"
-                    peer_id = dialog.peer.channel_id
                 else:
-                    continue
-
-                for message in d.messages:  # type: Message
-                    is_this = peer_id == message.from_id or dialog.peer == message.to_id
-
-                    if is_this:
-                        for entity in (d.users if peer_type == "user" else d.chats):  # type: User or Chat or Channel
-                            if entity.id == peer_id:
-                                peers.append(
-                                    dict(
-                                        id=peer_id,
-                                        access_hash=getattr(entity, "access_hash", None),
-                                        type=peer_type,
-                                        first_name=getattr(entity, "first_name", None),
-                                        last_name=getattr(entity, "last_name", None),
-                                        title=getattr(entity, "title", None),
-                                        username=getattr(entity, "username", None),
-                                    )
-                                )
-
-                                if message.date < oldest_date:
-                                    oldest_date = message.date
-
-                                break
-                        break
-
-            return oldest_date
+                    return m.date
+            else:
+                return 0
 
         pinned_dialogs = self.send(functions.messages.GetPinnedDialogs())
         parse_dialogs(pinned_dialogs)
@@ -639,7 +602,7 @@ class Client:
         )
 
         offset_date = parse_dialogs(dialogs)
-        log.info("Dialogs count: {}".format(len(peers)))
+        log.info("Entities count: {}".format(len(self.peers_by_id)))
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
             try:
@@ -655,37 +618,7 @@ class Client:
                 continue
 
             offset_date = parse_dialogs(dialogs)
-            log.info("Dialogs count: {}".format(len(peers)))
-
-        for i in peers:
-            peer_id = i["id"]
-            peer_type = i["type"]
-            peer_username = i["username"]
-            peer_access_hash = i["access_hash"]
-
-            if peer_type == "user":
-                input_peer = InputPeerUser(
-                    peer_id,
-                    peer_access_hash
-                )
-            elif peer_type == "chat":
-                input_peer = InputPeerChat(
-                    peer_id
-                )
-            elif peer_type == "channel":
-                input_peer = InputPeerChannel(
-                    peer_id,
-                    peer_access_hash
-                )
-                peer_id = int("-100" + str(peer_id))
-            else:
-                continue
-
-            self.peers_by_id[peer_id] = input_peer
-
-            if peer_username:
-                peer_username = peer_username.lower()
-                self.peers_by_username[peer_username] = input_peer
+            log.info("Entities count: {}".format(len(self.peers_by_id)))
 
     def resolve_username(self, username: str):
         username = username.lower().strip("@")
