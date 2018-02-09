@@ -14,7 +14,7 @@ Client
         start
         stop
         idle
-        set_update_handler
+        set_event_handler
         send
         get_me
         send_message
