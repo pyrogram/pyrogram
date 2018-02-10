@@ -274,36 +274,30 @@ class Client:
                     self.fetch_peers(update.chats)
 
                     for i in update.updates:
-                        self.event_queue.put(i)
-                elif isinstance(update, types.UpdateShortMessage):
-                    if update.user_id not in self.peers_by_id:
-                        diff = self.send(
-                            functions.updates.GetDifference(
-                                pts=update.pts - 1,
-                                date=update.date,
-                                qts=-1
-                            )
+                        self.event_queue.put((i, update.users, update.chats))
+                elif isinstance(update, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
+                    diff = self.send(
+                        functions.updates.GetDifference(
+                            pts=update.pts - update.pts_count,
+                            date=update.date,
+                            qts=-1
                         )
+                    )
 
-                        self.fetch_peers(diff.users)
+                    self.fetch_peers(diff.users)
+                    self.fetch_peers(diff.chats)
 
-                    self.event_queue.put(update)
-                elif isinstance(update, types.UpdateShortChatMessage):
-                    if update.chat_id not in self.peers_by_id:
-                        diff = self.send(
-                            functions.updates.GetDifference(
-                                pts=update.pts - 1,
-                                date=update.date,
-                                qts=-1
-                            )
-                        )
-
-                        self.fetch_peers(diff.users)
-                        self.fetch_peers(diff.chats)
-
-                    self.event_queue.put(update)
+                    self.event_queue.put((
+                        types.UpdateNewMessage(
+                            message=diff.new_messages[0],
+                            pts=update.pts,
+                            pts_count=update.pts_count
+                        ),
+                        diff.users,
+                        diff.chats
+                    ))
                 elif isinstance(update, types.UpdateShort):
-                    self.event_queue.put(update.update)
+                    self.event_queue.put((update.update, [], []))
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -321,7 +315,12 @@ class Client:
 
             try:
                 if self.event_handler:
-                    self.event_handler(self, event)
+                    self.event_handler(
+                        self,
+                        event[0],
+                        {i.id: i for i in event[1]},
+                        {i.id: i for i in event[2]}
+                    )
             except Exception as e:
                 log.error(e, exc_info=True)
 
