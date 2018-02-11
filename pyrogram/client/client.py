@@ -133,6 +133,8 @@ class Client:
         self.peers_by_id = {}
         self.peers_by_username = {}
 
+        self.channels_pts = {}
+
         self.markdown = Markdown(self.peers_by_id)
         self.html = HTML(self.peers_by_id)
 
@@ -274,6 +276,28 @@ class Client:
                     self.fetch_peers(update.chats)
 
                     for i in update.updates:
+                        channel_id = getattr(
+                            getattr(
+                                getattr(
+                                    i, "message", None
+                                ), "to_id", None
+                            ), "channel_id", None
+                        ) or getattr(i, "channel_id", None)
+
+                        pts = getattr(i, "pts", None)
+
+                        if channel_id and pts:
+                            if channel_id not in self.channels_pts:
+                                self.channels_pts[channel_id] = []
+
+                            if pts in self.channels_pts[channel_id]:
+                                continue
+
+                            self.channels_pts[channel_id].append(pts)
+
+                            if len(self.channels_pts[channel_id]) > 50:
+                                self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
+
                         self.event_queue.put((i, update.users, update.chats))
                 elif isinstance(update, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = self.send(
