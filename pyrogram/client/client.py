@@ -379,7 +379,7 @@ class Client:
         self.event_handler = callback
 
     def send(self, data: Object):
-        """Use this method to send :ref:`Raw Function <using-raw-functions>` queries.
+        """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`pyrogram.api.functions` package and may accept compound
