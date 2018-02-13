@@ -703,25 +703,33 @@ class Client:
 
         return input_peer
 
-    def resolve_peer(self, peer_id: int or str):
-        if peer_id in ("self", "me"):
-            return InputPeerSelf()
-        else:
-            if type(peer_id) is str:
-                peer_id = peer_id.lower().strip("@")
+    def resolve_peer(self, peer_id: int or str or types.PeerUser or types.PeerChat or types.PeerChannel):
+        if type(peer_id) is str:
+            if peer_id in ("self", "me"):
+                return InputPeerSelf()
 
-                try:
-                    return self.peers_by_username[peer_id]
-                except KeyError:
-                    return self.resolve_username(peer_id)
-            else:
-                try:
-                    return self.peers_by_id[peer_id]
-                except KeyError:
-                    try:
-                        return self.peers_by_id[int("-100" + str(peer_id))]
-                    except KeyError:
-                        raise PeerIdInvalid
+            peer_id = peer_id.lower().strip("@")
+
+            try:
+                return self.peers_by_username[peer_id]
+            except KeyError:
+                return self.resolve_username(peer_id)
+
+        if type(peer_id) is not int:
+            if isinstance(peer_id, types.PeerUser):
+                peer_id = peer_id.user_id
+            elif isinstance(peer_id, types.PeerChat):
+                peer_id = peer_id.chat_id
+            elif isinstance(peer_id, types.PeerChannel):
+                peer_id = int("-100" + str(peer_id.channel_id))
+
+        try:
+            return self.peers_by_id[peer_id]
+        except KeyError:
+            try:
+                return self.peers_by_id[int("-100" + str(peer_id))]
+            except KeyError:
+                raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
