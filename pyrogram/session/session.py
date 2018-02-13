@@ -60,7 +60,7 @@ class Session:
     )
 
     INITIAL_SALT = 0x616e67656c696361
-    NET_WORKERS = 2
+    NET_WORKERS = 1
     WAIT_TIMEOUT = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -270,7 +270,7 @@ class Session:
                 msg_id = msg.body.msg_id
             else:
                 if self.client is not None:
-                    self.client.update_queue.put(msg.body)
+                    self.client.updates_queue.put(msg.body)
 
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(msg.body, "result", msg.body)
