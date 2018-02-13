@@ -383,7 +383,7 @@ class Client:
             client (:obj:`pyrogram.Client`):
                 The Client itself, useful when you want to call other API methods inside the update handler.
 
-            update (:obj:`types.Update <pyrogram.api.types.Update>`):
+            update (:obj:`Update`):
                 The received update, which can be one of the many single Updates listed in the *updates*
                 field you see in the :obj:`types.Update <pyrogram.api.types.Update>` type.
 
@@ -703,7 +703,26 @@ class Client:
 
         return input_peer
 
-    def resolve_peer(self, peer_id: int or str or types.PeerUser or types.PeerChat or types.PeerChannel):
+    def resolve_peer(self, peer_id: int or str):
+        """Use this method to get the *InputPeer* of a known *peer_id*.
+
+        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to  use which is
+        not available yet in the Client class as an easy-to-use method).
+
+        Args:
+            peer_id (:obj:`int` | :obj:`str` | :obj:`Peer`):
+                The Peer ID you want to extract the InputPeer from. Can be one of these types: :obj:`int` (direct ID),
+                :obj:`str` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
+                :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
+
+        Returns:
+            :obj:`InputPeerUser <pyrogram.api.types.InputPeerUser>` or
+            :obj:`InputPeerChat <pyrogram.api.types.InputPeerChat>` or
+            :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
