@@ -1086,6 +1086,7 @@ class Client:
                    duration: int = 0,
                    width: int = 0,
                    height: int = 0,
+                   supports_streaming: bool = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
         """Use this method to send video files.
@@ -1117,6 +1118,9 @@ class Client:
             height (:obj:`int`, optional):
                 Video height.
 
+            supports_streaming (:obj:`bool`, optional):
+                Pass True, if the uploaded video is suitable for streaming.
+
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -1143,6 +1147,7 @@ class Client:
                             file=file,
                             attributes=[
                                 types.DocumentAttributeVideo(
+                                    supports_streaming=supports_streaming,
                                     duration=duration,
                                     w=width,
                                     h=height
