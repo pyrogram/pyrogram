@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from threading import Lock
 from time import time
 
 
@@ -24,11 +25,13 @@ class MsgId:
         self.delta_time = delta_time
         self.last_time = 0
         self.offset = 0
+        self.lock = Lock()
 
     def __call__(self) -> int:
-        now = time()
-        self.offset = self.offset + 4 if now == self.last_time else 0
-        msg_id = int((now + self.delta_time) * 2 ** 32) + self.offset
-        self.last_time = now
+        with self.lock:
+            now = time()
+            self.offset = self.offset + 4 if now == self.last_time else 0
+            msg_id = int((now + self.delta_time) * 2 ** 32) + self.offset
+            self.last_time = now
 
-        return msg_id
+            return msg_id

@@ -46,3 +46,4 @@ CHAT_ADMIN_REQUIRED	The method requires admin privileges
 PHONE_NUMBER_BANNED	The phone number is banned
 ABOUT_TOO_LONG	The about text is too long
 MULTI_MEDIA_TOO_LONG	The album contains more than 10 items
+USERNAME_OCCUPIED	The username is already in use
