@@ -29,8 +29,9 @@ Here's a complete example on how to set it up:
         main()
 
 The last line of the main() function, :obj:`client.idle() <pyrogram.Client.idle>`, is not strictly necessary but highly
-recommended; it will block your script execution until you press :obj:`CTRL`:obj:`C` and automatically call the
-:obj:`stop <pyrogram.Client.stop>` method which stops the Client and gently close the underlying connection.
+recommended when using the update handler; it will block your script execution until you press :obj:`CTRL`:obj:`C` and
+automatically call the :obj:`stop <pyrogram.Client.stop>` method which stops the Client and gently close the underlying
+connection.
 
 Examples
 --------
@@ -41,6 +42,7 @@ Examples
 
         from pyrogram.api import types
 
+        def update_handler(client, update, users, chats):
             if isinstance(update, types.UpdateNewMessage): # Filter by UpdateNewMessage (PM and Groups)
                 message = update.message  # type: types.Message
 

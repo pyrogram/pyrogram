@@ -14,8 +14,9 @@ Client
         start
         stop
         idle
-        set_event_handler
+        set_update_handler
         send
+        resolve_peer
         get_me
         send_message
         forward_messages
