@@ -11,6 +11,7 @@ the same parameters as well, thus offering a familiar look to Bot developers.
     Client
     ChatAction
     ParseMode
+    Emoji
     InputMedia
     Error
 
