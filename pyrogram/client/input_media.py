@@ -20,10 +20,11 @@
 class InputMedia:
     class Photo:
         """This object represents a photo to be sent inside an album.
+        It is intended to be used with :obj:`pyrogram.Client.send_media_group`.
 
         Args:
             media (:obj:`str`):
-                File to send.
+                Photo file to send.
                 Pass a file path as string to send a photo that exists on your local machine.
 
             caption (:obj:`str`):
@@ -45,10 +46,11 @@ class InputMedia:
 
     class Video:
         """This object represents a video to be sent inside an album.
+        It is intended to be used with :obj:`pyrogram.Client.send_media_group`.
 
         Args:
             media (:obj:`str`):
-                File to send.
+                Video file to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
             caption (:obj:`str`):

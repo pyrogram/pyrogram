@@ -30,6 +30,7 @@ Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "passwor
 class TCP(socks.socksocket):
     def __init__(self, proxy: Proxy):
         super().__init__()
+        self.settimeout(10)
         self.proxy_enabled = False
 
         if proxy and proxy.enabled:

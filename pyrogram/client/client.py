@@ -706,7 +706,7 @@ class Client:
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
 
-        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to  use which is
+        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to use which is
         not available yet in the Client class as an easy-to-use method).
 
         Args:
