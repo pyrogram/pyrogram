@@ -53,13 +53,25 @@ class InputMedia:
                 Video file to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
-            caption (:obj:`str`):
+            caption (:obj:`str`, optional):
                 Caption of the video to be sent, 0-200 characters
 
-            parse_mode (:obj:`str`):
+            parse_mode (:obj:`str`, optional):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
+
+            width (:obj:`int`, optional):
+                Video width.
+
+            height (:obj:`int`, optional):
+                Video height
+
+            duration (:obj:`int`, optional):
+                Video duration.
+
+            supports_streaming (:obj:`bool`, optional):
+                Pass True, if the uploaded video is suitable for streaming.
         """
 
         def __init__(self,
@@ -68,10 +80,12 @@ class InputMedia:
                      parse_mode: str = "",
                      width: int = 0,
                      height: int = 0,
-                     duration: int = 0):
+                     duration: int = 0,
+                     supports_streaming: bool = None):
             self.media = media
             self.caption = caption
             self.parse_mode = parse_mode
             self.width = width
             self.height = height
             self.duration = duration
+            self.supports_streaming = supports_streaming

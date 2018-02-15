@@ -2180,6 +2180,7 @@ class Client:
                             mime_type=mimetypes.types_map[".mp4"],
                             attributes=[
                                 types.DocumentAttributeVideo(
+                                    supports_streaming=i.supports_streaming,
                                     duration=i.duration,
                                     w=i.width,
                                     h=i.height
