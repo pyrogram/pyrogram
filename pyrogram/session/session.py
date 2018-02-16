@@ -296,7 +296,7 @@ class Session:
                 break
 
             try:
-                self._send(functions.Ping(0), False)
+                self._send(functions.PingDelayDisconnect(0, self.PING_INTERVAL + 15), False)
             except (OSError, TimeoutError):
                 pass
 

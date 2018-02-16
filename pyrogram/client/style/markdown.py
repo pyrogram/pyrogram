@@ -24,95 +24,84 @@ from pyrogram.api.types import (
     MessageEntityCode as Code,
     MessageEntityTextUrl as Url,
     MessageEntityPre as Pre,
+    MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention
 )
 from . import utils
 
 
 class Markdown:
-    INLINE_DELIMITERS = {
-        "**": Bold,
-        "__": Italic,
-        "`": Code
-    }
+    BOLD_DELIMITER = "**"
+    ITALIC_DELIMITER = "__"
+    CODE_DELIMITER = "`"
+    PRE_DELIMITER = "```"
 
-    # ``` python
-    # for i in range(10):
-    #     print(i)
-    # ```
-    PRE_RE = r"(?P<pre>```(?P<lang>.*)\n(?P<code>(.|\n)*)\n```)"
-
-    # [url](github.com)
-    URL_RE = r"(?P<url>(\[(?P<url_text>.+?)\]\((?P<url_path>.+?)\)))"
-
-    # [name](tg://user?id=123456789)
-    MENTION_RE = r"(?P<mention>(\[(?P<mention_text>.+?)\]\(tg:\/\/user\?id=(?P<user_id>\d+?)\)))"
-
-    # **bold**
-    # __italic__
-    # `code`
-    INLINE_RE = r"(?P<inline>(?P<start_delimiter>{d})(?P<body>.+?)(?P<end_delimiter>{d}))".format(
+    MARKDOWN_RE = re.compile(r"```([\w ]*)\n([\w\W]*)(?:\n|)```|\[([^[(]+)\]\(([^])]+)\)|({d})(.+?)\5".format(
         d="|".join(
             ["".join(i) for i in [
                 ["\{}".format(j) for j in i]
-                for i in sorted(  # Sort delimiters by length
-                    INLINE_DELIMITERS.keys(),
-                    key=lambda k: len(k),  # Or: key=len
-                    reverse=True
-                )
+                for i in [
+                    PRE_DELIMITER,
+                    CODE_DELIMITER,
+                    ITALIC_DELIMITER,
+                    BOLD_DELIMITER
+                ]
             ]]
         )
-    )
+    ))
+    MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    MARKDOWN_RE = re.compile("|".join([PRE_RE, MENTION_RE, URL_RE, INLINE_RE]))
-
-    def __init__(self, peers_by_id):
+    def __init__(self, peers_by_id: dict):
         self.peers_by_id = peers_by_id
 
-    def parse(self, text):
+    def parse(self, message: str):
         entities = []
-        text = utils.add_surrogates(text)
+        message = utils.add_surrogates(message).strip()
         offset = 0
 
-        for match in self.MARKDOWN_RE.finditer(text):
+        for match in self.MARKDOWN_RE.finditer(message):
             start = match.start() - offset
+            lang, pre, text, url, style, body = match.groups()
 
-            if match.group("pre"):
-                pattern = match.group("pre")
-                lang = match.group("lang")
-                replace = match.group("code")
-                entity = Pre(start, len(replace), lang.strip())
-                offset += len(lang) + 8
-            elif match.group("url"):
-                pattern = match.group("url")
-                replace = match.group("url_text")
-                path = match.group("url_path")
-                entity = Url(start, len(replace), path)
-                offset += len(path) + 4
-            elif match.group("mention"):
-                pattern = match.group("mention")
-                replace = match.group("mention_text")
-                user_id = match.group("user_id")
-                entity = Mention(start, len(replace), self.peers_by_id[int(user_id)])
-                offset += len(user_id) + 17
-            elif match.group("inline"):
-                pattern = match.group("inline")
-                replace = match.group("body")
-                start_delimiter = match.group("start_delimiter")
-                end_delimiter = match.group("end_delimiter")
+            if pre:
+                body = pre = pre.strip()
+                entity = Pre(start, len(pre), lang.strip() or "")
+                offset += len(lang) + len(self.PRE_DELIMITER) * 2
+            elif url:
+                mention = self.MENTION_RE.match(url)
 
-                if start_delimiter != end_delimiter:
+                if mention:
+                    user_id = int(mention.group(1))
+                    input_user = self.peers_by_id.get(user_id, None)
+
+                    entity = (
+                        Mention(start, len(text), input_user)
+                        if input_user
+                        else MentionInvalid(start, len(text), user_id)
+                    )
+                else:
+                    entity = Url(start, len(text), url)
+
+                body = text
+                offset += len(url) + 4
+            else:
+                if style == self.BOLD_DELIMITER:
+                    entity = Bold(start, len(body))
+                elif style == self.ITALIC_DELIMITER:
+                    entity = Italic(start, len(body))
+                elif style == self.CODE_DELIMITER:
+                    entity = Code(start, len(body))
+                elif style == self.PRE_DELIMITER:
+                    entity = Pre(start, len(body), "")
+                else:
                     continue
 
-                entity = self.INLINE_DELIMITERS[start_delimiter](start, len(replace))
-                offset += len(start_delimiter) * 2
-            else:
-                continue
+                offset += len(style) * 2
 
             entities.append(entity)
-            text = text.replace(pattern, replace)
+            message = message.replace(match.group(), body)
 
         return dict(
-            message=utils.remove_surrogates(text),
+            message=utils.remove_surrogates(message),
             entities=entities
         )
