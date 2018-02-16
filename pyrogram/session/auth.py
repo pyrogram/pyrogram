@@ -25,7 +25,7 @@ from os import urandom
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object, Long, Int
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, RSA, Prime
+from pyrogram.crypto import AES, RSA, Prime
 from .internals import MsgId, DataCenter
 
 log = logging.getLogger(__name__)
@@ -152,7 +152,7 @@ class Auth:
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
 
-                answer_with_hash = IGE.decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
+                answer_with_hash = AES.ige_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
                 answer = answer_with_hash[20:]
 
                 server_dh_inner_data = Object.read(BytesIO(answer))
@@ -181,7 +181,7 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 16)
                 data_with_hash = sha + data + padding
-                encrypted_data = IGE.encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
+                encrypted_data = AES.ige_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = self.send(
@@ -236,7 +236,7 @@ class Auth:
                 log.debug("Nonce fields check: OK")
 
                 # Step 9
-                server_salt = IGE.xor(new_nonce[:8], server_nonce[:8])
+                server_salt = AES.xor(new_nonce[:8], server_nonce[:8])
 
                 log.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
 
