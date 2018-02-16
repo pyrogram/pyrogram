@@ -18,7 +18,7 @@ Here's a complete example on how to set it up:
     def update_handler(client, update, users, chats):
         print(update)
 
-    def main()
+    def main():
         client = Client(session_name="example")
         client.set_update_handler(update_handler)
 
