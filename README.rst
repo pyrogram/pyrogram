@@ -80,6 +80,12 @@ Installation
     .. code:: shell
 
         $ pip install --upgrade pyrogram
+        
+-   Or, with TgCrypto_:
+
+    .. code:: shell
+
+        $ pip install --upgrade pyrogram[tgcrypto]
 
 Configuration
 -------------
