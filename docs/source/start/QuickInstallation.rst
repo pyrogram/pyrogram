@@ -7,6 +7,12 @@ The most straightforward and recommended way to install or upgrade Pyrogram is b
 
     $ pip install --upgrade pyrogram
 
+Or, with TgCrypto_:
+
+.. code-block:: bash
+
+    $ pip install --upgrade pyrogram[tgcrypto]
+
 .. important::
 
     Pyrogram only works on Python 3.3 or higher; if your **pip** points to Python 2.x use **pip3** instead.
@@ -39,3 +45,5 @@ If no errors show up you are good to go.
     >>> import pyrogram
     >>> pyrogram.__version__
     '0.6.1'
+
+.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
