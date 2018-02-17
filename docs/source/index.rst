@@ -35,9 +35,9 @@ Welcome to Pyrogram
             <img src="https://www.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 75">
         </a>
-        <a href="https://core.telegram.org/mtproto">
-            <img src="https://www.pyrogram.ml/images/mtproto.svg"
-                alt="MTProto v2.0">
+        <a href="https://github.com/pyrogram/tgcrypto">
+            <img src="https://www.pyrogram.ml/images/tgcrypto.svg"
+                alt="TgCrypto">
         </a>
     </p>
 
@@ -64,7 +64,7 @@ Features
     a reliable connection.
 
 -   **Fast**: Pyrogram's speed is boosted up by `TgCrypto`_, a high-performance, easy-to-install
-    crypto library written in C.
+    Telegram Crypto Library written in C as a Python extension.
 
 -   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 75`_.
 
@@ -108,7 +108,7 @@ To get started, press Next.
     resources/ErrorHandling
     resources/SOCKS5Proxy
     resources/AutoAuthorization
-    resources/FastCrypto
+    resources/TgCrypto
 
 .. toctree::
     :hidden:
