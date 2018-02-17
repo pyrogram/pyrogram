@@ -125,6 +125,6 @@ To get started, press Next.
 
 .. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
 
-.. _TgCrypto: https://docs.pyrogram.ml/resources/FastCrypto/
+.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto/
 
 .. _`Layer 75`: https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl
