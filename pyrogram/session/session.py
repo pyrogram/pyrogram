@@ -337,7 +337,10 @@ class Session:
         while True:
             packet = self.connection.recv()
 
-            if packet is None or (len(packet) == 4 and Int.read(BytesIO(packet)) == -404):
+            if packet is None or len(packet) == 4:
+                if packet:
+                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
                 break
