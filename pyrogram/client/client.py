@@ -1723,11 +1723,7 @@ class Client:
                  volume_id: int = None,
                  local_id: int = None,
                  secret: int = None,
-                 version: int = 0):
-        # TODO: Refine
-        # TODO: Use proper file name and extension
-        # TODO: Remove redundant code
-
+                 version: int = 0) -> str:
         if dc_id != self.dc_id:
             exported_auth = self.send(
                 functions.auth.ExportAuthorization(
@@ -1763,19 +1759,23 @@ class Client:
             session.start()
 
         if volume_id:  # Photos are accessed by volume_id, local_id, secret
+            file_name = "_".join(str(i) for i in [dc_id, volume_id, local_id, secret])
+
             location = types.InputFileLocation(
                 volume_id=volume_id,
                 local_id=local_id,
                 secret=secret
             )
         else:  # Any other file can be more easily accessed by id and access_hash
+            file_name = "_".join(str(i) for i in [dc_id, id, access_hash, version])
+
             location = types.InputDocumentFileLocation(
                 id=id,
                 access_hash=access_hash,
                 version=version
             )
 
-        limit = 512 * 1024
+        limit = 1024 * 1024
         offset = 0
 
         try:
@@ -1788,7 +1788,7 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                with open(file_name, "wb") as f:
                     while True:
                         chunk = r.bytes
 
@@ -1796,6 +1796,9 @@ class Client:
                             break
 
                         f.write(chunk)
+                        f.flush()
+                        os.fsync(f.fileno())
+
                         offset += limit
 
                         r = session.send(
@@ -1805,6 +1808,7 @@ class Client:
                                 limit=limit
                             )
                         )
+
             if isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
@@ -1818,39 +1822,63 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
-                        while True:
-                            r2 = cdn_session.send(
-                                functions.upload.GetCdnFile(
-                                    location=location,
-                                    file_token=r.file_token,
-                                    offset=offset,
-                                    limit=limit
-                                )
+                    r2 = cdn_session.send(
+                        functions.upload.GetCdnFile(
+                            location=location,
+                            file_token=r.file_token,
+                            offset=offset,
+                            limit=limit
+                        )
+                    )
+
+                    if isinstance(r2, types.upload.CdnFileReuploadNeeded):
+                        session.send(
+                            functions.upload.ReuploadCdnFile(
+                                file_token=r.file_token,
+                                request_token=r2.request_token
                             )
-
-                            if isinstance(r2, types.upload.CdnFileReuploadNeeded):
-                                session.send(
-                                    functions.upload.ReuploadCdnFile(
-                                        file_token=r.file_token,
-                                        request_token=r2.request_token
-                                    )
-                                )
-                                continue
-                            elif isinstance(r2, types.upload.CdnFile):
-                                chunk = r2.bytes
-
-                                if not chunk:
+                        )
+                    else:
+                        with open(file_name, "wb") as f:
+                            while True:
+                                if not isinstance(r2, types.upload.CdnFile):
                                     break
 
-                                # https://core.telegram.org/cdn#decrypting-files
-                                decrypted_chunk = AES.ctr_decrypt(chunk, r.encryption_key, r.encryption_iv, offset)
+                                chunk = r2.bytes
 
-                                # TODO: https://core.telegram.org/cdn#verifying-files
-                                # TODO: Save to temp file, flush each chunk, rename to full if everything is ok
+                                # https://core.telegram.org/cdn#decrypting-files
+                                decrypted_chunk = AES.ctr_decrypt(
+                                    chunk,
+                                    r.encryption_key,
+                                    r.encryption_iv,
+                                    offset
+                                )
+
+                                hashes = session.send(
+                                    functions.upload.GetCdnFileHashes(
+                                        r.file_token,
+                                        offset
+                                    )
+                                )
+
+                                for i, h in enumerate(hashes):
+                                    cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
+                                    assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
 
                                 f.write(decrypted_chunk)
+                                f.flush()
+                                os.fsync(f.fileno())
+
                                 offset += limit
+
+                                r2 = cdn_session.send(
+                                    functions.upload.GetCdnFile(
+                                        location=location,
+                                        file_token=r.file_token,
+                                        offset=offset,
+                                        limit=limit
+                                    )
+                                )
                 except Exception as e:
                     log.error(e)
                 finally:
@@ -1858,7 +1886,7 @@ class Client:
         except Exception as e:
             log.error(e)
         else:
-            return True
+            return file_name
         finally:
             session.stop()
 
