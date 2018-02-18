@@ -51,12 +51,12 @@ class Auth:
         self.test_mode = test_mode
 
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
-        self.msg_id = MsgId()
 
-    def pack(self, data: Object) -> bytes:
+    @staticmethod
+    def pack(data: Object) -> bytes:
         return (
             bytes(8)
-            + Long(self.msg_id())
+            + Long(MsgId())
             + Int(len(data.write()))
             + data.write()
         )

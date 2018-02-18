@@ -89,9 +89,8 @@ class Session:
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
-        self.msg_id = MsgId()
-        self.session_id = Long(self.msg_id())
-        self.msg_factory = MsgFactory(self.msg_id)
+        self.session_id = Long(MsgId())
+        self.msg_factory = MsgFactory()
 
         self.current_salt = None
 
