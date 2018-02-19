@@ -201,8 +201,8 @@ License
         •
         <a href="https://t.me/PyrogramChat">
             Community
-        </a
-        <br><br><br>
+        </a>
+        <br><br>
         <a href="compiler/api/source/main_api.tl">
             <img src="https://www.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 75">
