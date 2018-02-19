@@ -80,6 +80,12 @@ Installation
     .. code:: shell
 
         $ pip install --upgrade pyrogram
+        
+-   Or, with TgCrypto_:
+
+    .. code:: shell
+
+        $ pip install --upgrade pyrogram[tgcrypto]
 
 Configuration
 -------------
@@ -168,7 +174,7 @@ License
 
 .. _`Email`: admin@pyrogram.ml
 
-.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
+.. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
 .. _`GNU Lesser General Public License v3 or later (LGPLv3+)`: COPYING.lesser
 
