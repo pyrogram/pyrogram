@@ -320,10 +320,10 @@ class Client:
                             pass
 
                         os.renames("./{}".format(tmp_file_name), "./downloads/{}".format(file_name))
-
-                        done.set()
             except Exception as e:
                 log.error(e, exc_info=True)
+            finally:
+                done.set()
 
         log.debug("{} stopped".format(name))
 
