@@ -183,6 +183,7 @@ class Client:
 
         self.rnd_id = MsgId
         self.get_dialogs()
+        self.get_contacts()
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
