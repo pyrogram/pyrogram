@@ -800,18 +800,20 @@ class Client:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
 
-            if peer_id.startswith("+"):
+            peer_id = peer_id.lower().strip("@+")
+
+            try:
+                int(peer_id)
+            except ValueError:
+                try:
+                    return self.peers_by_username[peer_id]
+                except KeyError:
+                    return self.resolve_username(peer_id)
+            else:
                 try:
                     return self.peers_by_phone[peer_id]
                 except KeyError:
                     raise PeerIdInvalid
-
-            peer_id = peer_id.lower().strip("@")
-
-            try:
-                return self.peers_by_username[peer_id]
-            except KeyError:
-                return self.resolve_username(peer_id)
 
         if type(peer_id) is not int:
             if isinstance(peer_id, types.PeerUser):
