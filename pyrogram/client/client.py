@@ -2337,4 +2337,7 @@ class Client:
         )
 
     def get_contacts(self, _hash: int = 0):
-        return self.send(functions.contacts.GetContacts(_hash))
+        contacts = self.send(functions.contacts.GetContacts(_hash))
+        self.fetch_peers(contacts.users)
+
+        return contacts
