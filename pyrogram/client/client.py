@@ -135,6 +135,7 @@ class Client:
 
         self.peers_by_id = {}
         self.peers_by_username = {}
+        self.peers_by_phone = {}
 
         self.channels_pts = {}
 
@@ -225,6 +226,7 @@ class Client:
                     continue
 
                 username = entity.username
+                phone = entity.phone
 
                 input_peer = InputPeerUser(
                     user_id=user_id,
@@ -235,6 +237,9 @@ class Client:
 
                 if username is not None:
                     self.peers_by_username[username] = input_peer
+
+                if phone is not None:
+                    self.peers_by_phone[phone] = input_peer
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
@@ -794,6 +799,12 @@ class Client:
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
+
+            if peer_id.startswith("+"):
+                try:
+                    return self.peers_by_phone[peer_id]
+                except KeyError:
+                    raise PeerIdInvalid
 
             peer_id = peer_id.lower().strip("@")
 
