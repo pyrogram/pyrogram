@@ -135,6 +135,7 @@ class Client:
 
         self.peers_by_id = {}
         self.peers_by_username = {}
+        self.peers_by_phone = {}
 
         self.channels_pts = {}
 
@@ -183,6 +184,7 @@ class Client:
 
         self.rnd_id = MsgId
         self.get_dialogs()
+        self.get_contacts()
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
@@ -224,6 +226,7 @@ class Client:
                     continue
 
                 username = entity.username
+                phone = entity.phone
 
                 input_peer = InputPeerUser(
                     user_id=user_id,
@@ -234,6 +237,9 @@ class Client:
 
                 if username is not None:
                     self.peers_by_username[username] = input_peer
+
+                if phone is not None:
+                    self.peers_by_phone[phone] = input_peer
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
@@ -794,12 +800,20 @@ class Client:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
 
-            peer_id = peer_id.lower().strip("@")
+            peer_id = peer_id.lower().strip("@+")
 
             try:
-                return self.peers_by_username[peer_id]
-            except KeyError:
-                return self.resolve_username(peer_id)
+                int(peer_id)
+            except ValueError:
+                try:
+                    return self.peers_by_username[peer_id]
+                except KeyError:
+                    return self.resolve_username(peer_id)
+            else:
+                try:
+                    return self.peers_by_phone[peer_id]
+                except KeyError:
+                    raise PeerIdInvalid
 
         if type(peer_id) is not int:
             if isinstance(peer_id, types.PeerUser):
@@ -2306,3 +2320,38 @@ class Client:
         self.download_queue.put((media, file_name, done))
 
         done.wait()
+
+    def add_contacts(self, contacts: list):
+        imported_contacts = self.send(
+            functions.contacts.ImportContacts(
+                contacts=contacts
+            )
+        )
+
+        self.fetch_peers(imported_contacts.users)
+
+        return imported_contacts
+
+    def delete_contacts(self, ids: list):
+        contacts = []
+
+        for i in ids:
+            try:
+                input_user = self.resolve_peer(i)
+            except PeerIdInvalid:
+                continue
+            else:
+                if isinstance(input_user, types.InputPeerUser):
+                    contacts.append(input_user)
+
+        return self.send(
+            functions.contacts.DeleteContacts(
+                id=contacts
+            )
+        )
+
+    def get_contacts(self, _hash: int = 0):
+        contacts = self.send(functions.contacts.GetContacts(_hash))
+        self.fetch_peers(contacts.users)
+
+        return contacts

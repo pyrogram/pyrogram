@@ -30,4 +30,5 @@ from .client import ChatAction
 from .client import Client
 from .client import ParseMode
 from .client.input_media import InputMedia
+from .client.input_phone_contact import InputPhoneContact
 from .client import Emoji
