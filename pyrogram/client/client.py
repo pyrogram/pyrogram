@@ -2351,7 +2351,14 @@ class Client:
         )
 
     def get_contacts(self, _hash: int = 0):
-        contacts = self.send(functions.contacts.GetContacts(_hash))
-        self.fetch_peers(contacts.users)
-
-        return contacts
+        while True:
+            try:
+                contacts = self.send(functions.contacts.GetContacts(_hash))
+            except FloodWait as e:
+                log.info("Get contacts flood wait: {}".format(e.x))
+                time.sleep(e.x)
+                continue
+            else:
+                log.info("Contacts count: {}".format(len(contacts.users)))
+                self.fetch_peers(contacts.users)
+                return contacts
