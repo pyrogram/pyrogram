@@ -2350,6 +2350,18 @@ class Client:
         done.wait()
 
     def add_contacts(self, contacts: list):
+        """Use this method to add contacts to your Telegram address book.
+
+        Args:
+            contacts (:obj:`list`):
+                A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
+
+        Returns:
+            On success, the added contacts are returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(
                 contacts=contacts
@@ -2361,6 +2373,19 @@ class Client:
         return imported_contacts
 
     def delete_contacts(self, ids: list):
+        """Use this method to delete contacts from your Telegram address book
+
+        Args:
+            ids (:obj:`list`):
+                A list of unique identifiers for the target users. Can be an ID (int), a username (string)
+                or phone number (string).
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
         contacts = []
 
         for i in ids:
