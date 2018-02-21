@@ -5,6 +5,10 @@ Manually writing phone number, phone code and password on the terminal every tim
 Pyrogram is able to automate both **Sign-In** and **Sign-Up** processes, all you need to do is pass the relevant
 parameters when creating a new Client.
 
+.. note:: If you omit any of the optional parameter required for the authorization, Pyrogram will ask you to
+   manually write it. For instance, if you don't want to set a *last_name* when creating a new account you
+   have to explicitly pass an empty string ""; the default value (None) will trigger the input() call.
+
 Sign-In
 -------
 
