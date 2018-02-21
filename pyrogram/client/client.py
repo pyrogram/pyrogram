@@ -2390,3 +2390,12 @@ class Client:
                 log.info("Contacts count: {}".format(len(contacts.users)))
                 self.fetch_peers(contacts.users)
                 return contacts
+
+    @staticmethod
+    def get_contacts_hash(ids: list, contacts_saved_count: int = 0):
+
+        acc = 0
+        acc = ((acc * 20261) + 0x80000000 + contacts_saved_count) % 0x80000000
+        for _id in sorted(ids):
+            acc = ((acc * 20261) + 0x80000000 + _id) % 0x80000000
+        return acc
