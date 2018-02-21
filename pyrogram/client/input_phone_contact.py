@@ -16,20 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from threading import Lock
-from time import time
+from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
 
 
-class MsgId:
-    last_time = 0
-    offset = 0
-    lock = Lock()
+class InputPhoneContact:
+    """This object represents a Phone Contact to be added in your Telegram address book.
+    It is intended to be used with :obj:`pyrogram.Client.add_contacts`
 
-    def __new__(cls) -> int:
-        with cls.lock:
-            now = time()
-            cls.offset = cls.offset + 4 if now == cls.last_time else 0
-            msg_id = int(now * 2 ** 32) + cls.offset
-            cls.last_time = now
+    Args:
+        phone (:obj:`str`):
+            Contact's phone number
 
-            return msg_id
+        first_name (:obj:`str`):
+            Contact's first name
+
+        last_name (:obj:`str`, optional):
+            Contact's last name
+    """
+
+    def __new__(cls, phone: str, first_name: str, last_name: str = ""):
+        return RawInputPhoneContact(
+            client_id=0,
+            phone="+" + phone.strip("+"),
+            first_name=first_name,
+            last_name=last_name
+        )

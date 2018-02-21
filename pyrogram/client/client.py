@@ -27,6 +27,7 @@ import threading
 import time
 from collections import namedtuple
 from configparser import ConfigParser
+from datetime import datetime
 from hashlib import sha256, md5
 from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
@@ -39,8 +40,8 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned
-)
+    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
+    VolumeLocNotFound)
 from pyrogram.api.types import (
     User, Chat, Channel,
     PeerUser, PeerChannel,
@@ -49,12 +50,13 @@ from pyrogram.api.types import (
 )
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
+from pyrogram.session.internals import MsgId
 from .input_media import InputMedia
 from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
-Config = namedtuple("Config", ["api_id", "api_hash"])
+ApiKey = namedtuple("ApiKey", ["api_id", "api_hash"])
 Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
 
 
@@ -69,6 +71,17 @@ class Client:
             to save the session to a file named *<session_name>.session* and to load
             it when you restart your script. As long as a valid session file exists,
             Pyrogram won't ask you again to input your phone number.
+
+        api_key (:obj:`tuple`, optional):
+            Your Telegram API Key as tuple: *(api_id, api_hash)*.
+            E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
+            don't want to use the *config.ini* file.
+
+        proxy (:obj:`dict`, optional):
+            Your SOCKS5 Proxy settings as dict: *{hostname: str, port: int, username: str, password: str}*.
+            E.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+            *username* and *password* can be omitted if your proxy doesn't require authorization.
+            This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
@@ -103,9 +116,12 @@ class Client:
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 2
+    DOWNLOAD_WORKERS = 1
 
     def __init__(self,
                  session_name: str,
+                 api_key: tuple or ApiKey = None,
+                 proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: str or callable = None,
@@ -114,6 +130,8 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
+        self.api_key = api_key
+        self.proxy = proxy
         self.test_mode = test_mode
 
         self.phone_number = phone_number
@@ -132,14 +150,13 @@ class Client:
 
         self.peers_by_id = {}
         self.peers_by_username = {}
+        self.peers_by_phone = {}
 
         self.channels_pts = {}
 
         self.markdown = Markdown(self.peers_by_id)
         self.html = HTML(self.peers_by_id)
 
-        self.config = None
-        self.proxy = None
         self.session = None
 
         self.is_idle = Event()
@@ -147,6 +164,8 @@ class Client:
         self.updates_queue = Queue()
         self.update_queue = Queue()
         self.update_handler = None
+
+        self.download_queue = Queue()
 
     def start(self):
         """Use this method to start the Client after creating it.
@@ -163,7 +182,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.config.api_id,
+            self.api_key.api_id,
             client=self
         )
 
@@ -176,14 +195,18 @@ class Client:
             self.password = None
             self.save_session()
 
-        self.rnd_id = self.session.msg_id
+        self.rnd_id = MsgId
         self.get_dialogs()
+        self.get_contacts()
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
 
         for i in range(self.workers):
             Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+
+        for i in range(self.DOWNLOAD_WORKERS):
+            Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
 
         mimetypes.init()
 
@@ -199,6 +222,9 @@ class Client:
         for _ in range(self.workers):
             self.update_queue.put(None)
 
+        for _ in range(self.DOWNLOAD_WORKERS):
+            self.download_queue.put(None)
+
     def fetch_peers(self, entities: list):
         for entity in entities:
             if isinstance(entity, User):
@@ -213,6 +239,7 @@ class Client:
                     continue
 
                 username = entity.username
+                phone = entity.phone
 
                 input_peer = InputPeerUser(
                     user_id=user_id,
@@ -223,6 +250,9 @@ class Client:
 
                 if username is not None:
                     self.peers_by_username[username] = input_peer
+
+                if phone is not None:
+                    self.peers_by_phone[phone] = input_peer
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
@@ -259,6 +289,62 @@ class Client:
 
                 if username is not None:
                     self.peers_by_username[username] = input_peer
+
+    def download_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            media = self.download_queue.get()
+
+            if media is None:
+                break
+
+            media, file_name, done = media
+
+            try:
+                if isinstance(media, types.MessageMediaDocument):
+                    document = media.document
+
+                    if isinstance(document, types.Document):
+                        if not file_name:
+                            file_name = "doc_{}{}".format(
+                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
+                                mimetypes.guess_extension(document.mime_type) or ".unknown"
+                            )
+
+                            for i in document.attributes:
+                                if isinstance(i, types.DocumentAttributeFilename):
+                                    file_name = i.file_name
+                                    break
+                                elif isinstance(i, types.DocumentAttributeSticker):
+                                    file_name = file_name.replace("doc", "sticker")
+                                elif isinstance(i, types.DocumentAttributeAudio):
+                                    file_name = file_name.replace("doc", "audio")
+                                elif isinstance(i, types.DocumentAttributeVideo):
+                                    file_name = file_name.replace("doc", "video")
+                                elif isinstance(i, types.DocumentAttributeAnimated):
+                                    file_name = file_name.replace("doc", "gif")
+
+                        tmp_file_name = self.get_file(
+                            dc_id=document.dc_id,
+                            id=document.id,
+                            access_hash=document.access_hash,
+                            version=document.version
+                        )
+
+                        try:
+                            os.remove("./downloads/{}".format(file_name))
+                        except FileNotFoundError:
+                            pass
+
+                        os.renames("./{}".format(tmp_file_name), "./downloads/{}".format(file_name))
+            except Exception as e:
+                log.error(e, exc_info=True)
+            finally:
+                done.set()
+
+        log.debug("{} stopped".format(name))
 
     def updates_worker(self):
         name = threading.current_thread().name
@@ -447,8 +533,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -462,7 +548,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.config.api_id,
+                    self.api_key.api_id,
                     client=self
                 )
                 self.session.start()
@@ -470,8 +556,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
                 break
@@ -589,10 +675,16 @@ class Client:
         parser = ConfigParser()
         parser.read("config.ini")
 
-        self.config = Config(
-            api_id=parser.getint("pyrogram", "api_id"),
-            api_hash=parser.get("pyrogram", "api_hash")
-        )
+        if parser.has_section("pyrogram"):
+            self.api_key = ApiKey(
+                api_id=parser.getint("pyrogram", "api_id"),
+                api_hash=parser.get("pyrogram", "api_hash")
+            )
+        else:
+            self.api_key = ApiKey(
+                api_id=int(self.api_key[0]),
+                api_hash=self.api_key[1]
+            )
 
         if parser.has_section("proxy"):
             self.proxy = Proxy(
@@ -602,6 +694,15 @@ class Client:
                 username=parser.get("proxy", "username", fallback=None) or None,
                 password=parser.get("proxy", "password", fallback=None) or None
             )
+        else:
+            if self.proxy is not None:
+                self.proxy = Proxy(
+                    enabled=True,
+                    hostname=self.proxy["hostname"],
+                    port=int(self.proxy["port"]),
+                    username=self.proxy.get("username", None),
+                    password=self.proxy.get("password", None)
+                )
 
     def load_session(self, session_name):
         try:
@@ -727,12 +828,20 @@ class Client:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
 
-            peer_id = peer_id.lower().strip("@")
+            peer_id = peer_id.lower().strip("@+")
 
             try:
-                return self.peers_by_username[peer_id]
-            except KeyError:
-                return self.resolve_username(peer_id)
+                int(peer_id)
+            except ValueError:
+                try:
+                    return self.peers_by_username[peer_id]
+                except KeyError:
+                    return self.resolve_username(peer_id)
+            else:
+                try:
+                    return self.peers_by_phone[peer_id]
+                except KeyError:
+                    raise PeerIdInvalid
 
         if type(peer_id) is not int:
             if isinstance(peer_id, types.PeerUser):
@@ -1667,13 +1776,12 @@ class Client:
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = math.ceil(file_size / part_size)
-        # is_big = True if file_size > 10 * 1024 * 1024 else False
-        is_big = False  # Treat all files as not-big to have the server check for the md5 sum
+        is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_key.api_id)
         session.start()
 
         try:
@@ -1723,11 +1831,7 @@ class Client:
                  volume_id: int = None,
                  local_id: int = None,
                  secret: int = None,
-                 version: int = 0):
-        # TODO: Refine
-        # TODO: Use proper file name and extension
-        # TODO: Remove redundant code
-
+                 version: int = 0) -> str:
         if dc_id != self.dc_id:
             exported_auth = self.send(
                 functions.auth.ExportAuthorization(
@@ -1740,7 +1844,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 Auth(dc_id, self.test_mode, self.proxy).create(),
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1757,7 +1861,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1775,7 +1879,8 @@ class Client:
                 version=version
             )
 
-        limit = 512 * 1024
+        file_name = str(MsgId())
+        limit = 1024 * 1024
         offset = 0
 
         try:
@@ -1788,7 +1893,7 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                with open(file_name, "wb") as f:
                     while True:
                         chunk = r.bytes
 
@@ -1796,6 +1901,9 @@ class Client:
                             break
 
                         f.write(chunk)
+                        f.flush()
+                        os.fsync(f.fileno())
+
                         offset += limit
 
                         r = session.send(
@@ -1805,20 +1913,21 @@ class Client:
                                 limit=limit
                             )
                         )
+
             if isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
                     self.proxy,
                     Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                    self.config.api_id,
+                    self.api_key.api_id,
                     is_cdn=True
                 )
 
                 cdn_session.start()
 
                 try:
-                    with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                    with open(file_name, "wb") as f:
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
@@ -1830,27 +1939,48 @@ class Client:
                             )
 
                             if isinstance(r2, types.upload.CdnFileReuploadNeeded):
-                                session.send(
-                                    functions.upload.ReuploadCdnFile(
-                                        file_token=r.file_token,
-                                        request_token=r2.request_token
+                                try:
+                                    session.send(
+                                        functions.upload.ReuploadCdnFile(
+                                            file_token=r.file_token,
+                                            request_token=r2.request_token
+                                        )
                                     )
-                                )
-                                continue
-                            elif isinstance(r2, types.upload.CdnFile):
-                                chunk = r2.bytes
-
-                                if not chunk:
+                                except VolumeLocNotFound:
                                     break
+                                else:
+                                    continue
 
-                                # https://core.telegram.org/cdn#decrypting-files
-                                decrypted_chunk = AES.ctr_decrypt(chunk, r.encryption_key, r.encryption_iv, offset)
+                            chunk = r2.bytes
 
-                                # TODO: https://core.telegram.org/cdn#verifying-files
-                                # TODO: Save to temp file, flush each chunk, rename to full if everything is ok
+                            # https://core.telegram.org/cdn#decrypting-files
+                            decrypted_chunk = AES.ctr_decrypt(
+                                chunk,
+                                r.encryption_key,
+                                r.encryption_iv,
+                                offset
+                            )
 
-                                f.write(decrypted_chunk)
-                                offset += limit
+                            hashes = session.send(
+                                functions.upload.GetCdnFileHashes(
+                                    r.file_token,
+                                    offset
+                                )
+                            )
+
+                            # https://core.telegram.org/cdn#verifying-files
+                            for i, h in enumerate(hashes):
+                                cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
+                                assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
+
+                            f.write(decrypted_chunk)
+                            f.flush()
+                            os.fsync(f.fileno())
+
+                            if len(chunk) < limit:
+                                break
+
+                            offset += limit
                 except Exception as e:
                     log.error(e)
                 finally:
@@ -1858,7 +1988,7 @@ class Client:
         except Exception as e:
             log.error(e)
         else:
-            return True
+            return file_name
         finally:
             session.stop()
 
@@ -2210,3 +2340,78 @@ class Client:
                 reply_to_msg_id=reply_to_message_id
             )
         )
+
+    def download_media(self, message: types.Message, file_name: str = None):
+        done = Event()
+        media = message.media if isinstance(message, types.Message) else message
+
+        self.download_queue.put((media, file_name, done))
+
+        done.wait()
+
+    def add_contacts(self, contacts: list):
+        """Use this method to add contacts to your Telegram address book.
+
+        Args:
+            contacts (:obj:`list`):
+                A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
+
+        Returns:
+            On success, the added contacts are returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        imported_contacts = self.send(
+            functions.contacts.ImportContacts(
+                contacts=contacts
+            )
+        )
+
+        self.fetch_peers(imported_contacts.users)
+
+        return imported_contacts
+
+    def delete_contacts(self, ids: list):
+        """Use this method to delete contacts from your Telegram address book
+
+        Args:
+            ids (:obj:`list`):
+                A list of unique identifiers for the target users. Can be an ID (int), a username (string)
+                or phone number (string).
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        contacts = []
+
+        for i in ids:
+            try:
+                input_user = self.resolve_peer(i)
+            except PeerIdInvalid:
+                continue
+            else:
+                if isinstance(input_user, types.InputPeerUser):
+                    contacts.append(input_user)
+
+        return self.send(
+            functions.contacts.DeleteContacts(
+                id=contacts
+            )
+        )
+
+    def get_contacts(self, _hash: int = 0):
+        while True:
+            try:
+                contacts = self.send(functions.contacts.GetContacts(_hash))
+            except FloodWait as e:
+                log.info("Get contacts flood wait: {}".format(e.x))
+                time.sleep(e.x)
+                continue
+            else:
+                log.info("Contacts count: {}".format(len(contacts.users)))
+                self.fetch_peers(contacts.users)
+                return contacts

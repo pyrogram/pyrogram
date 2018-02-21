@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 try:
     import tgcrypto
 except ImportError:
-    logging.warning(
+    log.warning(
         "TgCrypto is missing! "
         "Pyrogram will work the same, but at a much slower speed. "
         "More info: https://docs.pyrogram.ml/resources/TgCrypto"

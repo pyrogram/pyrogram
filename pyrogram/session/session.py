@@ -89,9 +89,8 @@ class Session:
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
-        self.msg_id = MsgId()
-        self.session_id = Long(self.msg_id())
-        self.msg_factory = MsgFactory(self.msg_id)
+        self.session_id = Long(MsgId())
+        self.msg_factory = MsgFactory()
 
         self.current_salt = None
 
@@ -146,7 +145,7 @@ class Session:
                 self.ping_thread.start()
 
                 log.info("Connection inited: Layer {}".format(layer))
-            except (OSError, TimeoutError):
+            except (OSError, TimeoutError, Error):
                 self.stop()
             else:
                 break
@@ -338,7 +337,10 @@ class Session:
         while True:
             packet = self.connection.recv()
 
-            if packet is None or (len(packet) == 4 and Int.read(BytesIO(packet)) == -404):
+            if packet is None or len(packet) == 4:
+                if packet:
+                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
                 break
