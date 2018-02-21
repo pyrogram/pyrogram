@@ -44,6 +44,11 @@ class TCP(socks.socksocket):
                 password=proxy.password
             )
 
+            log.info("Using proxy {}:{}".format(
+                proxy.hostname,
+                proxy.port
+            ))
+
     def close(self):
         try:
             self.shutdown(socket.SHUT_RDWR)
