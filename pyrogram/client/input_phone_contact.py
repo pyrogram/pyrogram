@@ -20,6 +20,20 @@ from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
 
 
 class InputPhoneContact:
+    """This object represents a Phone Contact to be added in your Telegram address book.
+    It is intended to be used with :obj:`pyrogram.Client.add_contacts`
+
+    Args:
+        phone (:obj:`str`):
+            Contact's phone number
+
+        first_name (:obj:`str`):
+            Contact's first name
+
+        last_name (:obj:`str`, optional):
+            Contact's last name
+    """
+
     def __new__(cls, phone: str, first_name: str, last_name: str = ""):
         return RawInputPhoneContact(
             client_id=0,
