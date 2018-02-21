@@ -145,7 +145,7 @@ class Session:
                 self.ping_thread.start()
 
                 log.info("Connection inited: Layer {}".format(layer))
-            except (OSError, TimeoutError):
+            except (OSError, TimeoutError, Error):
                 self.stop()
             else:
                 break
