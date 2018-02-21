@@ -56,7 +56,7 @@ from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
-Config = namedtuple("Config", ["api_id", "api_hash"])
+ApiKey = namedtuple("ApiKey", ["api_id", "api_hash"])
 Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
 
 
@@ -71,6 +71,17 @@ class Client:
             to save the session to a file named *<session_name>.session* and to load
             it when you restart your script. As long as a valid session file exists,
             Pyrogram won't ask you again to input your phone number.
+
+        api_key (:obj:`tuple`, optional):
+            Your Telegram API Key as tuple: *(api_id, api_hash)*.
+            E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
+            don't want to use the *config.ini* file.
+
+        proxy (:obj:`dict`, optional):
+            Your SOCKS5 Proxy settings as dict: *{hostname: str, port: int, username: str, password: str}*.
+            E.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+            *username* and *password* can be omitted if your proxy doesn't require authorization.
+            This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
@@ -109,6 +120,8 @@ class Client:
 
     def __init__(self,
                  session_name: str,
+                 api_key: tuple or ApiKey = None,
+                 proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: str or callable = None,
@@ -117,6 +130,8 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
+        self.api_key = api_key
+        self.proxy = proxy
         self.test_mode = test_mode
 
         self.phone_number = phone_number
@@ -142,8 +157,6 @@ class Client:
         self.markdown = Markdown(self.peers_by_id)
         self.html = HTML(self.peers_by_id)
 
-        self.config = None
-        self.proxy = None
         self.session = None
 
         self.is_idle = Event()
@@ -169,7 +182,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.config.api_id,
+            self.api_key.api_id,
             client=self
         )
 
@@ -520,8 +533,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -535,7 +548,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.config.api_id,
+                    self.api_key.api_id,
                     client=self
                 )
                 self.session.start()
@@ -543,8 +556,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
                 break
@@ -662,10 +675,16 @@ class Client:
         parser = ConfigParser()
         parser.read("config.ini")
 
-        self.config = Config(
-            api_id=parser.getint("pyrogram", "api_id"),
-            api_hash=parser.get("pyrogram", "api_hash")
-        )
+        if parser.has_section("pyrogram"):
+            self.api_key = ApiKey(
+                api_id=parser.getint("pyrogram", "api_id"),
+                api_hash=parser.get("pyrogram", "api_hash")
+            )
+        else:
+            self.api_key = ApiKey(
+                api_id=int(self.api_key[0]),
+                api_hash=self.api_key[1]
+            )
 
         if parser.has_section("proxy"):
             self.proxy = Proxy(
@@ -675,6 +694,15 @@ class Client:
                 username=parser.get("proxy", "username", fallback=None) or None,
                 password=parser.get("proxy", "password", fallback=None) or None
             )
+        else:
+            if self.proxy is not None:
+                self.proxy = Proxy(
+                    enabled=True,
+                    hostname=self.proxy["hostname"],
+                    port=int(self.proxy["port"]),
+                    username=self.proxy.get("username", None),
+                    password=self.proxy.get("password", None)
+                )
 
     def load_session(self, session_name):
         try:
@@ -1753,7 +1781,7 @@ class Client:
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_key.api_id)
         session.start()
 
         try:
@@ -1816,7 +1844,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 Auth(dc_id, self.test_mode, self.proxy).create(),
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1833,7 +1861,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1892,7 +1920,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                    self.config.api_id,
+                    self.api_key.api_id,
                     is_cdn=True
                 )
 
