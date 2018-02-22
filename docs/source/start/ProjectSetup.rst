@@ -19,14 +19,30 @@ If you already have one you can skip this, otherwise:
 Configuration
 -------------
 
-Create a new ``config.ini`` file at the root of your working directory,
-copy-paste the following and replace the **api_id** and **api_hash** values with `your own <#api-keys>`_:
+There are two ways to configure a Pyrogram application project, and you can choose the one that fits better for you:
 
-.. code-block:: ini
+-  Create a new ``config.ini`` file at the root of your working directory,
+   copy-paste the following and replace the **api_id** and **api_hash** values with `your own <#api-keys>`_:
 
-    [pyrogram]
-    api_id = 12345
-    api_hash = 0123456789abcdef0123456789abcdef
+    .. code-block:: ini
+
+        [pyrogram]
+        api_id = 12345
+        api_hash = 0123456789abcdef0123456789abcdef
+
+-  Alternatively, you can pass your API key to Pyrogram by simply using the *api_key* parameter of the Client class:
+
+    .. code-block:: python
+
+        from pyrogram import Client
+
+        client = Client(
+            session_name="example",
+            api_key=(12345, "0123456789abcdef0123456789abcdef")
+        )
+
+.. note:: The examples below will assume you have created a *config.ini* file, thus they won't show the *api_key*
+   parameter usage in the Client class.
 
 Authorization
 -------------

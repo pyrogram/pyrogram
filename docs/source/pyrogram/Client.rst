@@ -26,6 +26,7 @@ Client
         send_video
         send_voice
         send_video_note
+        send_media_group
         send_location
         send_venue
         send_contact
@@ -40,4 +41,5 @@ Client
         enable_cloud_password
         change_cloud_password
         remove_cloud_password
-        send_media_group
+        add_contacts
+        delete_contacts

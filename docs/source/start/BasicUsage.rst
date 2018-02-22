@@ -50,6 +50,8 @@ Here some examples:
 
         from pyrogram.api import functions
 
+        ...
+
         client.send(
             functions.account.UpdateProfile(
                 first_name="Dan", last_name="Tès",
@@ -63,11 +65,100 @@ Here some examples:
 
         from pyrogram.api import functions, types
 
+        ...
+
         client.send(
             functions.account.SetPrivacy(
                 key=types.InputPrivacyKeyStatusTimestamp(),
                 rules=[types.InputPrivacyValueAllowContacts()]
             )
         )
+
+-   Invite users to your channel/supergroup:
+
+    .. code-block:: python
+
+        from pyrogram.api import functions, types
+
+        ...
+
+        client.send(
+            functions.channels.InviteToChannel(
+                channel=client.resolve_peer(123456789),  # ID or Username of your channel
+                users=[  # The users you want to invite
+                    client.resolve_peer(23456789),  # By ID
+                    client.resolve_peer("username"),  # By username
+                    client.resolve_peer("393281234567"),  # By phone number
+                ]
+            )
+        )
+
+-   Get channel/supergroup participants:
+
+    .. code-block:: python
+
+        import time
+        from pyrogram.api import types, functions
+
+        ...
+
+        users = []
+        limit = 200
+        offset = 0
+
+        while True:
+            try:
+                participants = client.send(
+                    functions.channels.GetParticipants(
+                        channel=client.resolve_peer("username"),  # ID or username
+                        filter=types.ChannelParticipantsSearch(""),  # Filter by empty string (search for all)
+                        offset=offset,
+                        limit=limit,
+                        hash=0
+                    )
+                )
+            except FloodWait as e:
+                # Very large channels will trigger FloodWait.
+                # In that case wait X seconds before continuing
+                time.sleep(e.x)
+                continue
+
+            if not participants.participants:
+                break  # No more participants left
+
+            users.extend(participants.users)
+            offset += len(participants.users)
+
+-   Get history of a chat:
+
+    .. code-block:: python
+
+        import time
+        from pyrogram.api import types, functions
+
+        ...
+
+        history = []
+        limit = 100
+        offset = 0
+
+        while True:
+            try:
+                messages = client.send(
+                    functions.messages.GetHistory(
+                        client.resolve_peer("me"),  # Get your own history
+                        0, 0, offset, limit, 0, 0, 0
+                    )
+                )
+            except FloodWait as e:
+                # For very large histories the method call can raise a FloodWait
+                time.sleep(e.x)
+                continue
+
+            if not messages.messages:
+                break  # No more messages left
+
+            history.extend(messages.messages)
+            offset += len(messages.messages)
 
 .. _bot-like: https://core.telegram.org/bots/api#available-methods

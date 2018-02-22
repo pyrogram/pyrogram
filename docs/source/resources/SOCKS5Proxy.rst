@@ -25,5 +25,26 @@ with your own settings:
         -   ``1``, ``yes``, ``True`` or ``on``: Enables the proxy
         -   ``0``, ``no``, ``False`` or ``off``: Disables the proxy
 
--   If your proxy doesn't require authorization you can omit username and password by either leaving the values blank
-    or completely delete the lines.
+Alternatively, you can setup your proxy without the need of the *config.ini* file by using the *proxy* parameter
+in the Client class:
+
+.. code-block:: python
+
+    from pyrogram import Client
+
+    client = Client(
+        session_name="example",
+        proxy=dict(
+            hostname="11.22.33.44",
+            port=1080,
+            username="<your_username>",
+            password="<your_password>"
+        )
+    )
+
+    client.start()
+
+    ...
+
+.. note:: If your proxy doesn't require authorization you can omit *username* and *password* by either leaving the
+   values blank/empty or completely delete the lines.

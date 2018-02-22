@@ -13,6 +13,7 @@ the same parameters as well, thus offering a familiar look to Bot developers.
     ParseMode
     Emoji
     InputMedia
+    InputPhoneContact
     Error
 
 .. _Telegram Bot API: https://core.telegram.org/bots/api#available-methods
