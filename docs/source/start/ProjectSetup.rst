@@ -21,8 +21,9 @@ Configuration
 
 There are two ways to configure a Pyrogram application project, and you can choose the one that fits better for you:
 
--  Create a new ``config.ini`` file at the root of your working directory,
-   copy-paste the following and replace the **api_id** and **api_hash** values with `your own <#api-keys>`_:
+-  Create a new ``config.ini`` file at the root of your working directory, copy-paste the following and replace the
+   **api_id** and **api_hash** values with `your own <#api-keys>`_. This is the preferred method because allows you
+   to keep your credentials out of your code without having to deal with how to load them:
 
     .. code-block:: ini
 
@@ -30,7 +31,8 @@ There are two ways to configure a Pyrogram application project, and you can choo
         api_id = 12345
         api_hash = 0123456789abcdef0123456789abcdef
 
--  Alternatively, you can pass your API key to Pyrogram by simply using the *api_key* parameter of the Client class:
+-  Alternatively, you can pass your API key to Pyrogram by simply using the *api_key* parameter of the Client class.
+   This way you can have full control on how to store and load your credentials:
 
     .. code-block:: python
 
