@@ -68,6 +68,20 @@ class Session:
 
     notice_displayed = False
 
+    BAD_MSG_DESCRIPTION = {
+        16: "[16] msg_id too low, the client time has to be synchronized",
+        17: "[17] msg_id too high, the client time has to be synchronized",
+        18: "[18] incorrect two lower order msg_id bits, the server expects client message msg_id to be divisible by 4",
+        19: "[19] container msg_id is the same as msg_id of a previously received message",
+        20: "[20] message too old, it cannot be verified by the server",
+        32: "[32] msg_seqno too low",
+        33: "[33] msg_seqno too high",
+        34: "[34] an even msg_seqno expected, but odd received",
+        35: "[35] odd msg_seqno expected, but even received",
+        48: "[48] incorrect server salt",
+        64: "[64] invalid container"
+    }
+
     def __init__(self,
                  dc_id: int,
                  test_mode: bool,
@@ -372,6 +386,11 @@ class Session:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
                 Error.raise_it(result, type(data))
+            elif isinstance(result, types.BadMsgNotification):
+                raise Exception(self.BAD_MSG_DESCRIPTION.get(
+                    result.error_code,
+                    "Error code {}".format(result.error_code)
+                ))
             else:
                 return result
 
