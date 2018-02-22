@@ -2412,6 +2412,8 @@ class Client:
                 time.sleep(e.x)
                 continue
             else:
-                log.info("Contacts count: {}".format(len(contacts.users)))
-                self.fetch_peers(contacts.users)
+                if isinstance(contacts, types.contacts.Contacts):
+                    log.info("Contacts count: {}".format(len(contacts.users)))
+                    self.fetch_peers(contacts.users)
+
                 return contacts
