@@ -344,6 +344,11 @@ class Client:
             finally:
                 done.set()
 
+                try:
+                    os.remove("./{}".format(tmp_file_name))
+                except FileNotFoundError:
+                    pass
+
         log.debug("{} stopped".format(name))
 
     def updates_worker(self):
@@ -1879,7 +1884,7 @@ class Client:
                 version=version
             )
 
-        file_name = str(MsgId())
+        file_name = "download_{}.temp".format(MsgId())
         limit = 1024 * 1024
         offset = 0
 
@@ -2341,13 +2346,14 @@ class Client:
             )
         )
 
-    def download_media(self, message: types.Message, file_name: str = None):
+    def download_media(self, message: types.Message, file_name: str = None, block: bool = True):
         done = Event()
         media = message.media if isinstance(message, types.Message) else message
 
         self.download_queue.put((media, file_name, done))
 
-        done.wait()
+        if block:
+            done.wait()
 
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
