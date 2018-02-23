@@ -773,7 +773,7 @@ class Client:
                     )
                 )
             except FloodWait as e:
-                log.info("Get dialogs flood wait: {}".format(e.x))
+                log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
                 continue
 
@@ -2414,7 +2414,7 @@ class Client:
             try:
                 contacts = self.send(functions.contacts.GetContacts(_hash))
             except FloodWait as e:
-                log.info("Get contacts flood wait: {}".format(e.x))
+                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
                 continue
             else:
