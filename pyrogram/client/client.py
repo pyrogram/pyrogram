@@ -301,6 +301,7 @@ class Client:
                 break
 
             media, file_name, done = media
+            tmp_file_name = ""
 
             try:
                 if isinstance(media, types.MessageMediaDocument):
@@ -339,13 +340,37 @@ class Client:
                             pass
 
                         os.renames("./{}".format(tmp_file_name), "./downloads/{}".format(file_name))
+                elif isinstance(media, types.MessageMediaPhoto):
+                    photo = media.photo
+
+                    if isinstance(photo, types.Photo):
+                        if not file_name:
+                            file_name = "photo_{}.jpg".format(
+                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S")
+                            )
+
+                        photo_loc = photo.sizes[-1].location
+
+                        tmp_file_name = self.get_file(
+                            dc_id=photo_loc.dc_id,
+                            volume_id=photo_loc.volume_id,
+                            local_id=photo_loc.local_id,
+                            secret=photo_loc.secret
+                        )
+
+                        try:
+                            os.remove("downloads/{}".format(file_name))
+                        except FileNotFoundError:
+                            pass
+
+                        os.renames("{}".format(tmp_file_name), "downloads/{}".format(file_name))
             except Exception as e:
                 log.error(e, exc_info=True)
             finally:
                 done.set()
 
                 try:
-                    os.remove("./{}".format(tmp_file_name))
+                    os.remove("{}".format(tmp_file_name))
                 except FileNotFoundError:
                     pass
 
