@@ -1221,6 +1221,61 @@ class Client:
             else:
                 return r
 
+    def send_sticker(self,
+                     chat_id: int or str,
+                     sticker: str,
+                     disable_notification: bool = None,
+                     reply_to_message_id: int = None):
+        """Use this method to send .webp stickers.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self".
+
+            sticker (:obj:`str`):
+                Sticker to send.
+                Pass a file path as string to send a sticker that exists on your local machine.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        file = self.save_file(sticker)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type="image/webp",
+                            file=file,
+                            attributes=[
+                                types.DocumentAttributeFilename(os.path.basename(sticker))
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id(),
+                        message=""
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(sticker, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
     def send_video(self,
                    chat_id: int or str,
                    video: str,
