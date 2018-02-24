@@ -31,6 +31,7 @@ Client
         send_venue
         send_contact
         send_chat_action
+        send_sticker
         get_user_profile_photos
         edit_message_text
         edit_message_caption
