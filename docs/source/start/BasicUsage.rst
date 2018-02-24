@@ -119,7 +119,7 @@ Here some examples:
                 )
             except FloodWait as e:
                 # Very large channels will trigger FloodWait.
-                # In that case wait X seconds before continuing
+                # When happens, wait X seconds before continuing
                 time.sleep(e.x)
                 continue
 
@@ -127,7 +127,7 @@ Here some examples:
                 break  # No more participants left
 
             users.extend(participants.users)
-            offset += len(participants.users)
+            offset += limit
 
 -   Get history of a chat:
 
@@ -159,6 +159,6 @@ Here some examples:
                 break  # No more messages left
 
             history.extend(messages.messages)
-            offset += len(messages.messages)
+            offset += limit
 
 .. _bot-like: https://core.telegram.org/bots/api#available-methods
