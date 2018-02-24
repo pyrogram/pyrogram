@@ -1506,6 +1506,104 @@ class Client:
             else:
                 return r
 
+    def send_media_group(self,
+                         chat_id: int or str,
+                         media: list,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None):
+        """Use this method to send a group of photos or videos as an album.
+        On success, an Update containing the sent Messages is returned.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            media (:obj:`list`):
+                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                describing photos and videos to be sent, must include 2–10 items.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+        """
+        multi_media = []
+
+        for i in media:
+            if isinstance(i, InputMedia.Photo):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=media
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+            elif isinstance(i, InputMedia.Video):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            file=media,
+                            mime_type=mimetypes.types_map[".mp4"],
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    supports_streaming=i.supports_streaming,
+                                    duration=i.duration,
+                                    w=i.width,
+                                    h=i.height
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(i.media))
+                            ]
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+
+        return self.send(
+            functions.messages.SendMultiMedia(
+                peer=self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
+
     def send_location(self,
                       chat_id: int or str,
                       latitude: float,
@@ -2340,104 +2438,6 @@ class Client:
             )
         else:
             return False
-
-    def send_media_group(self,
-                         chat_id: int or str,
-                         media: list,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
-        """Use this method to send a group of photos or videos as an album.
-        On success, an Update containing the sent Messages is returned.
-
-        Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
-
-            media (:obj:`list`):
-                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
-                describing photos and videos to be sent, must include 2–10 items.
-
-            disable_notification (:obj:`bool`, optional):
-                Sends the message silently.
-                Users will receive a notification with no sound.
-
-            reply_to_message_id (:obj:`int`, optional):
-                If the message is a reply, ID of the original message.
-        """
-        multi_media = []
-
-        for i in media:
-            if isinstance(i, InputMedia.Photo):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
-
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=media
-                        )
-                    )
-                )
-
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaPhoto(
-                        id=types.InputPhoto(
-                            id=media.photo.id,
-                            access_hash=media.photo.access_hash
-                        )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
-
-                multi_media.append(single_media)
-            elif isinstance(i, InputMedia.Video):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
-
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            file=media,
-                            mime_type=mimetypes.types_map[".mp4"],
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming,
-                                    duration=i.duration,
-                                    w=i.width,
-                                    h=i.height
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(i.media))
-                            ]
-                        )
-                    )
-                )
-
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=media.document.id,
-                            access_hash=media.document.access_hash
-                        )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
-
-                multi_media.append(single_media)
-
-        return self.send(
-            functions.messages.SendMultiMedia(
-                peer=self.resolve_peer(chat_id),
-                multi_media=multi_media,
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
-            )
-        )
 
     def download_media(self,
                        message: types.Message,
