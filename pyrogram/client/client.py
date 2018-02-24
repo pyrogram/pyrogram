@@ -2451,8 +2451,29 @@ class Client:
             message (:obj:`Message <pyrogram.api.types.Message>`):
                 The Message containing the media.
 
-            file_name (:obj:`str`):
-                Specify a file_name to be used
+            file_name (:obj:`str`, optional):
+                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+
+            block (:obj:`bool`, optional):
+                Blocks the code execution until the file has been downloaded.
+                Defaults to True.
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the download progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes downloaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
+        Returns:
+            The relative path of the downloaded file.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
         if isinstance(message, types.Message):
             done = Event()
