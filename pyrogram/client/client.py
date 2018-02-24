@@ -921,7 +921,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             text (:obj:`str`):
                 Text of the message to be sent.
@@ -971,12 +971,13 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             from_chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the chat where the original message was sent
                 (or channel/supergroup username in the format @username). For your personal cloud
                 storage (Saved Messages) you can simply use "me" or "self".
+                Phone numbers that exist in your Telegram address book are also supported.
 
             message_ids (:obj:`list`):
                 A list of Message identifiers in the chat specified in *from_chat_id*.
@@ -1015,7 +1016,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             photo (:obj:`str`):
                 Photo to send.
@@ -1088,7 +1089,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             audio (:obj:`str`):
                 Audio file to send.
@@ -1168,7 +1169,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             document (:obj:`str`):
                 File to send.
@@ -1232,7 +1233,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             sticker (:obj:`str`):
                 Sticker to send.
@@ -1293,7 +1294,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             video (:obj:`str`):
                 Video to send.
@@ -1378,7 +1379,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             voice (:obj:`str`):
                 Audio file to send.
@@ -1450,7 +1451,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             video_note (:obj:`str`):
                 Video note to send.
@@ -1517,7 +1518,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             latitude (:obj:`float`):
                 Latitude of the location.
@@ -1569,7 +1570,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             latitude (:obj:`float`):
                 Latitude of the venue.
@@ -1633,7 +1634,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             phone_number (:obj:`str`):
                 Contact's phone number.
@@ -1682,7 +1683,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             action (:obj:`callable`):
                 Type of action to broadcast.
@@ -1744,7 +1745,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
@@ -1785,7 +1786,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
@@ -1827,7 +1828,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_ids (:obj:`list`):
                 List of identifiers of the messages to delete.
@@ -2352,7 +2353,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             media (:obj:`list`):
                 A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
