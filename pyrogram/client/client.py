@@ -370,7 +370,6 @@ class Client:
             except Exception as e:
                 log.error(e, exc_info=True)
             finally:
-                print(done)
                 done.set()
 
                 try:
