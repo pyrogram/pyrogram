@@ -159,7 +159,7 @@ class Client:
 
         self.session = None
 
-        self.is_idle = Event()
+        self.is_idle = None
 
         self.updates_queue = Queue()
         self.update_queue = Queue()
@@ -472,7 +472,7 @@ class Client:
 
     def signal_handler(self, *args):
         self.stop()
-        self.is_idle.set()
+        self.is_idle = False
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
@@ -486,7 +486,10 @@ class Client:
         for s in stop_signals:
             signal(s, self.signal_handler)
 
-        self.is_idle.wait()
+        self.is_idle = True
+
+        while self.is_idle:
+            time.sleep(1)
 
     def set_update_handler(self, callback: callable):
         """Use this method to set the update handler.
