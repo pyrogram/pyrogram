@@ -311,7 +311,8 @@ class Client:
                         if not file_name:
                             file_name = "doc_{}{}".format(
                                 datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                mimetypes.guess_extension(document.mime_type) or ".unknown"
+                                ".txt" if document.mime_type == "text/plain" else
+                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
                             )
 
                             for i in document.attributes:
