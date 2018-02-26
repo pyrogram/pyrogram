@@ -546,7 +546,12 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        return self.session.send(data)
+        r = self.session.send(data)
+
+        self.fetch_peers(getattr(r, "users", []))
+        self.fetch_peers(getattr(r, "chats", []))
+
+        return r
 
     def authorize(self):
         phone_number_invalid_raises = self.phone_number is not None
@@ -772,9 +777,6 @@ class Client:
 
     def get_dialogs(self):
         def parse_dialogs(d):
-            self.fetch_peers(d.chats)
-            self.fetch_peers(d.users)
-
             for m in reversed(d.messages):
                 if isinstance(m, types.MessageEmpty):
                     continue
@@ -2513,8 +2515,6 @@ class Client:
             )
         )
 
-        self.fetch_peers(imported_contacts.users)
-
         return imported_contacts
 
     def delete_contacts(self, ids: list):
@@ -2559,6 +2559,5 @@ class Client:
             else:
                 if isinstance(contacts, types.contacts.Contacts):
                     log.info("Contacts count: {}".format(len(contacts.users)))
-                    self.fetch_peers(contacts.users)
 
                 return contacts
