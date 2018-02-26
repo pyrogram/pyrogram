@@ -31,5 +31,7 @@ while True:
     history.extend(messages.messages)
     offset += limit
 
+client.stop()
+
 # Now the "history" list contains all the messages sorted by date in
 # descending order (from the most recent to the oldest one)

@@ -35,4 +35,6 @@ while True:
     users.extend(participants.users)
     offset += limit
 
+client.stop()
+
 # Now the "users" list contains all the members of the target chat
