@@ -84,7 +84,7 @@ Here some examples:
 
         client.send(
             functions.channels.InviteToChannel(
-                channel=client.resolve_peer(123456789),  # ID or Username of your channel
+                channel=client.resolve_peer(123456789),  # ID or Username
                 users=[  # The users you want to invite
                     client.resolve_peer(23456789),  # By ID
                     client.resolve_peer("username"),  # By username
