@@ -12,7 +12,7 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install --upgrade tgcrypto
+    $ pip3 install --upgrade tgcrypto
 
 .. note:: Being a C extension for Python, TgCrypto is an optional but *highly recommended* dependency; when TgCrypto is
    not detected in your system, Pyrogram will automatically fall back to PyAES and will show you a warning.

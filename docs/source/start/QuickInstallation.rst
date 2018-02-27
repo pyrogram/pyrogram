@@ -5,17 +5,13 @@ The most straightforward and recommended way to install or upgrade Pyrogram is b
 
 .. code-block:: bash
 
-    $ pip install --upgrade pyrogram
+    $ pip3 install --upgrade pyrogram
 
 Or, with TgCrypto_:
 
 .. code-block:: bash
 
-    $ pip install --upgrade pyrogram[tgcrypto]
-
-.. important::
-
-    Pyrogram only works on Python 3.3 or higher; if your **pip** points to Python 2.x use **pip3** instead.
+    $ pip3 install --upgrade pyrogram[tgcrypto]
 
 Bleeding Edge
 -------------
@@ -24,9 +20,9 @@ If you want the latest development version of the library, you can either instal
 
 .. code-block:: bash
 
-    $ pip install --upgrade git+https://github.com/pyrogram/pyrogram.git
+    $ pip3 install --upgrade git+https://github.com/pyrogram/pyrogram.git
 
-or manually, using:
+Or manually, using:
 
 .. code-block:: bash
 
