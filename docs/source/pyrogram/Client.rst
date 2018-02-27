@@ -44,3 +44,5 @@ Client
         remove_cloud_password
         add_contacts
         delete_contacts
+        get_inline_bot_results
+        send_inline_bot_result
