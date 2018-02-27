@@ -109,6 +109,7 @@ To get started, press Next.
     resources/SOCKS5Proxy
     resources/AutoAuthorization
     resources/TgCrypto
+    resources/BotsInteraction
 
 .. toctree::
     :hidden:
