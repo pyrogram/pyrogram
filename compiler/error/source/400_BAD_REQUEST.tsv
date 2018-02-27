@@ -42,8 +42,10 @@ CDN_METHOD_INVALID	The method can't be used on CDN DCs
 VOLUME_LOC_NOT_FOUND	The volume location can't be found
 FILE_ID_INVALID	The file id is invalid
 LOCATION_INVALID	The file location is invalid
-CHAT_ADMIN_REQUIRED	The method requires admin privileges
+CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 PHONE_NUMBER_BANNED	The phone number is banned
 ABOUT_TOO_LONG	The about text is too long
 MULTI_MEDIA_TOO_LONG	The album contains more than 10 items
 USERNAME_OCCUPIED	The username is already in use
+BOT_INLINE_DISABLED	The inline feature of the bot is disabled
+INLINE_RESULT_EXPIRED	The inline bot query expired

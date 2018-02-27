@@ -159,7 +159,7 @@ class Client:
 
         self.session = None
 
-        self.is_idle = Event()
+        self.is_idle = None
 
         self.updates_queue = Queue()
         self.update_queue = Queue()
@@ -311,7 +311,8 @@ class Client:
                         if not file_name:
                             file_name = "doc_{}{}".format(
                                 datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                mimetypes.guess_extension(document.mime_type) or ".unknown"
+                                ".txt" if document.mime_type == "text/plain" else
+                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
                             )
 
                             for i in document.attributes:
@@ -370,7 +371,6 @@ class Client:
             except Exception as e:
                 log.error(e, exc_info=True)
             finally:
-                print(done)
                 done.set()
 
                 try:
@@ -472,7 +472,7 @@ class Client:
 
     def signal_handler(self, *args):
         self.stop()
-        self.is_idle.set()
+        self.is_idle = False
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
@@ -486,7 +486,10 @@ class Client:
         for s in stop_signals:
             signal(s, self.signal_handler)
 
-        self.is_idle.wait()
+        self.is_idle = True
+
+        while self.is_idle:
+            time.sleep(1)
 
     def set_update_handler(self, callback: callable):
         """Use this method to set the update handler.
@@ -543,7 +546,12 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        return self.session.send(data)
+        r = self.session.send(data)
+
+        self.fetch_peers(getattr(r, "users", []))
+        self.fetch_peers(getattr(r, "chats", []))
+
+        return r
 
     def authorize(self):
         phone_number_invalid_raises = self.phone_number is not None
@@ -769,9 +777,6 @@ class Client:
 
     def get_dialogs(self):
         def parse_dialogs(d):
-            self.fetch_peers(d.chats)
-            self.fetch_peers(d.users)
-
             for m in reversed(d.messages):
                 if isinstance(m, types.MessageEmpty):
                     continue
@@ -2510,8 +2515,6 @@ class Client:
             )
         )
 
-        self.fetch_peers(imported_contacts.users)
-
         return imported_contacts
 
     def delete_contacts(self, ids: list):
@@ -2556,6 +2559,92 @@ class Client:
             else:
                 if isinstance(contacts, types.contacts.Contacts):
                     log.info("Contacts count: {}".format(len(contacts.users)))
-                    self.fetch_peers(contacts.users)
 
                 return contacts
+
+    def get_inline_bot_results(self,
+                               bot: int or str,
+                               query: str,
+                               offset: str = "",
+                               location: tuple = None):
+        """Use this method to get bot results via inline queries.
+        You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
+
+        Args:
+            bot (:obj:`int` | :obj:`str`):
+                Unique identifier of the inline bot you want to get results from. You can specify
+                a @username (str) or a bot ID (int).
+
+            query (:obj:`str`):
+                Text of the query (up to 512 characters).
+
+            offset (:obj:`str`):
+                Offset of the results to be returned.
+
+            location (:obj:`tuple`, optional):
+                Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
+                Useful for location-based results only.
+
+        Returns:
+            On Success, `BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        return self.send(
+            functions.messages.GetInlineBotResults(
+                bot=self.resolve_peer(bot),
+                peer=types.InputPeerSelf(),
+                query=query,
+                offset=offset,
+                geo_point=types.InputGeoPoint(
+                    lat=location[0],
+                    long=location[1]
+                ) if location else None
+            )
+        )
+
+    def send_inline_bot_result(self,
+                               chat_id: int or str,
+                               query_id: int,
+                               result_id: str,
+                               disable_notification: bool = None,
+                               reply_to_message_id: int = None):
+        """Use this method to send an inline bot result.
+        Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            query_id (:obj:`int`):
+                Unique identifier for the answered query.
+
+            result_id (:obj:`str`):
+                Unique identifier for the result that was chosen.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`bool`, optional):
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        return self.send(
+            functions.messages.SendInlineBotResult(
+                peer=self.resolve_peer(chat_id),
+                query_id=query_id,
+                id=result_id,
+                random_id=self.rnd_id(),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
