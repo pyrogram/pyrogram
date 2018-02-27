@@ -8,6 +8,7 @@ you have to change are the target chats (username, id) and file paths for sendin
 - [**hello_world.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/hello_world.py)
 - [**get_history.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/get_history.py)
 - [**get_participants.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/get_participants.py)
+- [**inline_bots.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/inline_bots.py)
 - [**updates.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/updates.py)
 - [**simple_echo.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/simple_echo.py)
 - [**advanced_echo.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/advanced_echo.py)
