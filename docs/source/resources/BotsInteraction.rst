@@ -7,7 +7,8 @@ Inline Bots
 -----------
 
 -   If a bot accepts inline queries, you can call it by using
-    :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>` to get the list of its inline results:
+    :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>` to get the list of its inline results
+    for a query:
 
     .. code-block:: python
 
