@@ -47,3 +47,4 @@ PHONE_NUMBER_BANNED	The phone number is banned
 ABOUT_TOO_LONG	The about text is too long
 MULTI_MEDIA_TOO_LONG	The album contains more than 10 items
 USERNAME_OCCUPIED	The username is already in use
+BOT_INLINE_DISABLED The inline feature of the bot is disabled
