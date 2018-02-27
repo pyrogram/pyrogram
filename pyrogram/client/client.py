@@ -2561,3 +2561,90 @@ class Client:
                     log.info("Contacts count: {}".format(len(contacts.users)))
 
                 return contacts
+
+    def get_inline_bot_results(self,
+                               bot: int or str,
+                               query: str,
+                               offset: str = "",
+                               location: tuple = None):
+        """Use this method to get bot results via inline queries.
+        You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
+
+        Args:
+            bot (:obj:`int` | :obj:`str`):
+                Unique identifier of the inline bot you want to get results from. You can specify
+                a @username (str) or a bot ID (int).
+
+            query (:obj:`str`):
+                Text of the query (up to 512 characters).
+
+            offset (:obj:`str`):
+                Offset of the results to be returned.
+
+            location (:obj:`tuple`, optional):
+                Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
+                Useful for location-based results only.
+
+        Returns:
+            On Success, `BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        return self.send(
+            functions.messages.GetInlineBotResults(
+                bot=self.resolve_peer(bot),
+                peer=types.InputPeerSelf(),
+                query=query,
+                offset=offset,
+                geo_point=types.InputGeoPoint(
+                    lat=location[0],
+                    long=location[1]
+                ) if location else None
+            )
+        )
+
+    def send_inline_bot_result(self,
+                               chat_id: int or str,
+                               query_id: int,
+                               result_id: str,
+                               disable_notification: bool = None,
+                               reply_to_message_id: int = None):
+        """Use this method to send an inline bot result.
+        Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            query_id (:obj:`int`):
+                Unique identifier for the answered query.
+
+            result_id (:obj:`str`):
+                Unique identifier for the result that was chosen.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`bool`, optional):
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        return self.send(
+            functions.messages.SendInlineBotResult(
+                peer=self.resolve_peer(chat_id),
+                query_id=query_id,
+                id=result_id,
+                random_id=self.rnd_id(),
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
