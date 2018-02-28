@@ -20,17 +20,17 @@ import ast
 import os
 import shutil
 
-home = "compiler/docs"
-destination = "docs/source"
+HOME = "compiler/docs"
+DESTINATION = "docs/source"
 
-functions_path = "pyrogram/api/functions"
-types_path = "pyrogram/api/types"
+FUNCTIONS_PATH = "pyrogram/api/functions"
+TYPES_PATH = "pyrogram/api/types"
 
-functions_base = "functions"
-types_base = "types"
+FUNCTIONS_BASE = "functions"
+TYPES_BASE = "types"
 
-shutil.rmtree(types_base, ignore_errors=True)
-shutil.rmtree(functions_base, ignore_errors=True)
+shutil.rmtree(TYPES_BASE, ignore_errors=True)
+shutil.rmtree(FUNCTIONS_BASE, ignore_errors=True)
 
 
 def generate(source_path, base):
@@ -57,9 +57,9 @@ def generate(source_path, base):
                 if level:
                     full_path = base + "/" + full_path
 
-                os.makedirs(os.path.dirname(destination + "/" + full_path), exist_ok=True)
+                os.makedirs(os.path.dirname(DESTINATION + "/" + full_path), exist_ok=True)
 
-                with open(destination + "/" + full_path, "w", encoding="utf-8") as f:
+                with open(DESTINATION + "/" + full_path, "w", encoding="utf-8") as f:
                     f.write(
                         page_template.format(
                             title=name,
@@ -94,7 +94,7 @@ def generate(source_path, base):
             inner_path = base + "/index" + ".rst"
             module = "pyrogram.api.{}".format(base)
 
-        with open(destination + "/" + inner_path, "w", encoding="utf-8") as f:
+        with open(DESTINATION + "/" + inner_path, "w", encoding="utf-8") as f:
             if k == base:
                 f.write(":tocdepth: 1\n\n")
 
@@ -114,20 +114,20 @@ def start():
     global page_template
     global toctree
 
-    with open(home + "/template/page.txt", encoding="utf-8") as f:
+    with open(HOME + "/template/page.txt", encoding="utf-8") as f:
         page_template = f.read()
 
-    with open(home + "/template/toctree.txt", encoding="utf-8") as f:
+    with open(HOME + "/template/toctree.txt", encoding="utf-8") as f:
         toctree = f.read()
 
-    generate(types_path, types_base)
-    generate(functions_path, functions_base)
+    generate(TYPES_PATH, TYPES_BASE)
+    generate(FUNCTIONS_PATH, FUNCTIONS_BASE)
 
 
 if "__main__" == __name__:
-    functions_path = "../../pyrogram/api/functions"
-    types_path = "../../pyrogram/api/types"
-    home = "."
-    destination = "../../docs/source"
+    FUNCTIONS_PATH = "../../pyrogram/api/functions"
+    TYPES_PATH = "../../pyrogram/api/types"
+    HOME = "."
+    DESTINATION = "../../docs/source"
 
     start()
