@@ -51,3 +51,4 @@ BOT_INLINE_DISABLED	The inline feature of the bot is disabled
 INLINE_RESULT_EXPIRED	The inline bot query expired
 INVITE_HASH_INVALID	The invite link hash is invalid
 USER_ALREADY_PARTICIPANT	The user is already a participant of this chat
+TTL_MEDIA_INVALID   This kind of media does not support self-destruction
