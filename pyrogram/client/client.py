@@ -2104,7 +2104,7 @@ class Client:
                     file_part += 1
 
                     if progress:
-                        progress(file_part * part_size, file_size)
+                        progress(min(file_part * part_size, file_size), file_size)
         except Exception as e:
             log.error(e)
         else:
@@ -2202,7 +2202,7 @@ class Client:
                         offset += limit
 
                         if progress:
-                            progress(offset, size)
+                            progress(min(offset, size), size)
 
                         r = session.send(
                             functions.upload.GetFile(
