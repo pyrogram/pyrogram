@@ -1346,7 +1346,7 @@ class Client:
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(video)
-        fileThumb = None if thumb is None else self.save_file(thumb)
+        file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
             try:
@@ -1356,7 +1356,7 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
-                            thumb=fileThumb,
+                            thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=supports_streaming,
