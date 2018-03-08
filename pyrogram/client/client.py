@@ -1048,6 +1048,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1126,6 +1137,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1198,6 +1220,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1254,6 +1287,17 @@ class Client:
 
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
 
         Returns:
             On success, the sent Message is returned.
@@ -1343,6 +1387,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1422,6 +1477,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1489,6 +1555,17 @@ class Client:
 
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (progress, total).
+
+        Other Parameters:
+            progress (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
 
         Returns:
             On success, the sent Message is returned.
