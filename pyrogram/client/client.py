@@ -1290,6 +1290,7 @@ class Client:
                    duration: int = 0,
                    width: int = 0,
                    height: int = 0,
+                   thumb: str = None,
                    supports_streaming: bool = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None):
@@ -1322,6 +1323,11 @@ class Client:
             height (:obj:`int`, optional):
                 Video height.
 
+            thumb (:obj:`str`, optional):
+                Video thumbmail.
+                Pass a file path as string to send a image that exists on your local machine.
+                Thumbmail should have 90 or less pixels of width and 90 or less pixels of height.
+
             supports_streaming (:obj:`bool`, optional):
                 Pass True, if the uploaded video is suitable for streaming.
 
@@ -1340,6 +1346,7 @@ class Client:
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(video)
+        file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
             try:
@@ -1349,6 +1356,7 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
+                            thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=supports_streaming,
