@@ -1324,9 +1324,9 @@ class Client:
                 Video height.
 
             thumb (:obj:`str`, optional):
-                Video thumbmail.
-                Pass a file path as string to send a image that exists on your local machine.
-                Thumbmail should have 90 or less pixels of width and 90 or less pixels of height.
+                Video thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
             supports_streaming (:obj:`bool`, optional):
                 Pass True, if the uploaded video is suitable for streaming.
