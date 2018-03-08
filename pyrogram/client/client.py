@@ -1014,7 +1014,8 @@ class Client:
                    parse_mode: str = "",
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send photos.
 
         Args:
@@ -1054,7 +1055,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo)
+        file = self.save_file(photo, progress=progress)
 
         while True:
             try:
@@ -1085,7 +1086,8 @@ class Client:
                    performer: str = None,
                    title: str = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice` method instead.
@@ -1131,7 +1133,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio)
+        file = self.save_file(audio, progress=progress)
 
         while True:
             try:
@@ -1167,7 +1169,8 @@ class Client:
                       caption: str = "",
                       parse_mode: str = "",
                       disable_notification: bool = None,
-                      reply_to_message_id: int = None):
+                      reply_to_message_id: int = None,
+                      progress: callable = None):
         """Use this method to send general files.
 
         Args:
@@ -1202,7 +1205,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(document)
+        file = self.save_file(document, progress=progress)
 
         while True:
             try:
@@ -1231,7 +1234,8 @@ class Client:
                      chat_id: int or str,
                      sticker: str,
                      disable_notification: bool = None,
-                     reply_to_message_id: int = None):
+                     reply_to_message_id: int = None,
+                     progress: callable = None):
         """Use this method to send .webp stickers.
 
         Args:
@@ -1257,7 +1261,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        file = self.save_file(sticker)
+        file = self.save_file(sticker, progress=progress)
 
         while True:
             try:
@@ -1293,7 +1297,8 @@ class Client:
                    thumb: str = None,
                    supports_streaming: bool = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send video files.
 
         Args:
@@ -1345,7 +1350,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(video)
+        file = self.save_file(video, progress=progress)
         file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
@@ -1385,7 +1390,8 @@ class Client:
                    parse_mode: str = "",
                    duration: int = 0,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         Args:
@@ -1423,7 +1429,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(voice)
+        file = self.save_file(voice, progress=progress)
 
         while True:
             try:
@@ -1457,7 +1463,8 @@ class Client:
                         duration: int = 0,
                         length: int = 1,
                         disable_notification: bool = None,
-                        reply_to_message_id: int = None):
+                        reply_to_message_id: int = None,
+                        progress: callable = None):
         """Use this method to send video messages.
 
         Args:
@@ -1489,7 +1496,7 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        file = self.save_file(video_note)
+        file = self.save_file(video_note, progress=progress)
 
         while True:
             try:
@@ -1519,6 +1526,7 @@ class Client:
             else:
                 return r
 
+    # TODO: Add progress parameter
     def send_media_group(self,
                          chat_id: int or str,
                          media: list,
@@ -1973,7 +1981,11 @@ class Client:
             )
 
     # TODO: Remove redundant code
-    def save_file(self, path: str, file_id: int = None, file_part: int = 0):
+    def save_file(self,
+                  path: str,
+                  file_id: int = None,
+                  file_part: int = 0,
+                  progress: callable = None):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = math.ceil(file_size / part_size)
@@ -2013,6 +2025,9 @@ class Client:
                         md5_sum.update(chunk)
 
                     file_part += 1
+
+                    if progress:
+                        progress(file_part * part_size, file_size)
         except Exception as e:
             log.error(e)
         else:
