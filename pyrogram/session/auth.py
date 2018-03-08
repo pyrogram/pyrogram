@@ -91,8 +91,19 @@ class Auth:
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
                 log.debug("Send req_pq: {}".format(nonce))
-                res_pq = self.send(functions.ReqPq(nonce))
+                res_pq = self.send(functions.ReqPqMulti(nonce))
                 log.debug("Got ResPq: {}".format(res_pq.server_nonce))
+                log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
+
+                for i in res_pq.server_public_key_fingerprints:
+                    if i in RSA.server_public_keys:
+                        log.debug("Using fingerprint: {}".format(i))
+                        public_key_fingerprint = i
+                        break
+                    else:
+                        log.debug("Fingerprint unknown: {}".format(i))
+                else:
+                    raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
@@ -118,7 +129,7 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 255)
                 data_with_hash = sha + data + padding
-                encrypted_data = RSA.encrypt(data_with_hash, res_pq.server_public_key_fingerprints[0])
+                encrypted_data = RSA.encrypt(data_with_hash, public_key_fingerprint)
 
                 log.debug("Done encrypt data with RSA")
 
@@ -130,7 +141,7 @@ class Auth:
                         server_nonce,
                         int.to_bytes(p, 4, "big"),
                         int.to_bytes(q, 4, "big"),
-                        res_pq.server_public_key_fingerprints[0],
+                        public_key_fingerprint,
                         encrypted_data
                     )
                 )
