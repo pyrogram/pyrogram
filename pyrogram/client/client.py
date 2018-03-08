@@ -256,15 +256,16 @@ class Client:
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
+                peer_id = -chat_id
 
-                if chat_id in self.peers_by_id:
+                if peer_id in self.peers_by_id:
                     continue
 
                 input_peer = InputPeerChat(
                     chat_id=chat_id
                 )
 
-                self.peers_by_id[chat_id] = input_peer
+                self.peers_by_id[peer_id] = input_peer
 
             if isinstance(entity, Channel):
                 channel_id = entity.id
@@ -886,17 +887,20 @@ class Client:
             if isinstance(peer_id, types.PeerUser):
                 peer_id = peer_id.user_id
             elif isinstance(peer_id, types.PeerChat):
-                peer_id = peer_id.chat_id
+                peer_id = -peer_id.chat_id
             elif isinstance(peer_id, types.PeerChannel):
                 peer_id = int("-100" + str(peer_id.channel_id))
 
-        try:
+        try:  # User
             return self.peers_by_id[peer_id]
         except KeyError:
-            try:
-                return self.peers_by_id[int("-100" + str(peer_id))]
+            try:  # Chat
+                return self.peers_by_id[-peer_id]
             except KeyError:
-                raise PeerIdInvalid
+                try:  # Channel
+                    return self.peers_by_id[int("-100" + str(peer_id))]
+                except (KeyError, ValueError):
+                    raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
