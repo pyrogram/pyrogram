@@ -1050,10 +1050,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1139,10 +1139,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1222,10 +1222,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1290,10 +1290,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1389,10 +1389,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1479,10 +1479,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -1558,10 +1558,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes uploaded so far.
 
             total (:obj:`int`):
@@ -2566,10 +2566,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the download progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes downloaded so far.
 
             total (:obj:`int`):
