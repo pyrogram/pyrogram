@@ -42,12 +42,6 @@ from pyrogram.api.errors import (
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound)
-from pyrogram.api.types import (
-    User, Chat, Channel,
-    PeerUser, PeerChannel,
-    InputPeerEmpty, InputPeerSelf,
-    InputPeerUser, InputPeerChat, InputPeerChannel
-)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
@@ -227,7 +221,7 @@ class Client:
 
     def fetch_peers(self, entities: list):
         for entity in entities:
-            if isinstance(entity, User):
+            if isinstance(entity, types.User):
                 user_id = entity.id
 
                 if user_id in self.peers_by_id:
@@ -241,7 +235,7 @@ class Client:
                 username = entity.username
                 phone = entity.phone
 
-                input_peer = InputPeerUser(
+                input_peer = types.InputPeerUser(
                     user_id=user_id,
                     access_hash=access_hash
                 )
@@ -254,20 +248,20 @@ class Client:
                 if phone is not None:
                     self.peers_by_phone[phone] = input_peer
 
-            if isinstance(entity, Chat):
+            if isinstance(entity, types.Chat):
                 chat_id = entity.id
                 peer_id = -chat_id
 
                 if peer_id in self.peers_by_id:
                     continue
 
-                input_peer = InputPeerChat(
+                input_peer = types.InputPeerChat(
                     chat_id=chat_id
                 )
 
                 self.peers_by_id[peer_id] = input_peer
 
-            if isinstance(entity, Channel):
+            if isinstance(entity, types.Channel):
                 channel_id = entity.id
                 peer_id = int("-100" + str(channel_id))
 
@@ -281,7 +275,7 @@ class Client:
 
                 username = entity.username
 
-                input_peer = InputPeerChannel(
+                input_peer = types.InputPeerChannel(
                     channel_id=channel_id,
                     access_hash=access_hash
                 )
@@ -791,7 +785,7 @@ class Client:
 
         dialogs = self.send(
             functions.messages.GetDialogs(
-                0, 0, InputPeerEmpty(),
+                0, 0, types.InputPeerEmpty(),
                 self.DIALOGS_AT_ONCE, True
             )
         )
@@ -824,14 +818,14 @@ class Client:
             )
         )  # type: types.contacts.ResolvedPeer
 
-        if type(resolved_peer.peer) is PeerUser:
-            input_peer = InputPeerUser(
+        if type(resolved_peer.peer) is types.PeerUser:
+            input_peer = types.InputPeerUser(
                 user_id=resolved_peer.users[0].id,
                 access_hash=resolved_peer.users[0].access_hash
             )
             peer_id = input_peer.user_id
-        elif type(resolved_peer.peer) is PeerChannel:
-            input_peer = InputPeerChannel(
+        elif type(resolved_peer.peer) is types.PeerChannel:
+            input_peer = types.InputPeerChannel(
                 channel_id=resolved_peer.chats[0].id,
                 access_hash=resolved_peer.chats[0].access_hash
             )
@@ -866,7 +860,7 @@ class Client:
         """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
-                return InputPeerSelf()
+                return types.InputPeerSelf()
 
             peer_id = peer_id.lower().strip("@+")
 
@@ -913,7 +907,7 @@ class Client:
         """
         return self.send(
             functions.users.GetFullUser(
-                InputPeerSelf()
+                types.InputPeerSelf()
             )
         )
 
@@ -2323,7 +2317,7 @@ class Client:
                 )
             )
 
-            channel = InputPeerChannel(
+            channel = types.InputPeerChannel(
                 channel_id=resolved_peer.chats[0].id,
                 access_hash=resolved_peer.chats[0].access_hash
             )
