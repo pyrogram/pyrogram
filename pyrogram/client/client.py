@@ -33,6 +33,8 @@ from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
+from PIL import Image
+
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -1409,8 +1411,22 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
+
+        tmp_file_name = "thumbnail_{}.jpg".format(self.rnd_id())
+
+        image = Image.open(thumb)
+        image = image.convert("RGB")
+        image.thumbnail((128, 128), Image.ANTIALIAS)
+        image.save(tmp_file_name)
+
+        file_thumb = None if thumb is None else self.save_file(tmp_file_name)
+
+        try:
+            os.remove(tmp_file_name)
+        except OSError:
+            pass
+
         file = self.save_file(video, progress=progress)
-        file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
             try:
