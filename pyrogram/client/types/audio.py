@@ -5,7 +5,7 @@ class Audio:
                  performer: str = None,
                  title: str = None,
                  mime_type: str = None,
-                 file_size: str = None):
+                 file_size: int = None):
         self.file_id = file_id
         self.duration = duration
         self.performer = performer
