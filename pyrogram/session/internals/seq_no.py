@@ -16,15 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from threading import Lock
+
 
 class SeqNo:
     def __init__(self):
         self.content_related_messages_sent = 0
+        self.lock = Lock()
 
     def __call__(self, is_content_related: bool) -> int:
-        seq_no = (self.content_related_messages_sent * 2) + (1 if is_content_related else 0)
+        with self.lock:
+            seq_no = (self.content_related_messages_sent * 2) + (1 if is_content_related else 0)
 
-        if is_content_related:
-            self.content_related_messages_sent += 1
+            if is_content_related:
+                self.content_related_messages_sent += 1
 
-        return seq_no
+            return seq_no

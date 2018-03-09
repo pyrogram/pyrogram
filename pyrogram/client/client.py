@@ -27,6 +27,7 @@ import threading
 import time
 from collections import namedtuple
 from configparser import ConfigParser
+from datetime import datetime
 from hashlib import sha256, md5
 from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
@@ -39,22 +40,23 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
-    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned
-)
+    ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
+    VolumeLocNotFound)
 from pyrogram.api.types import (
     User, Chat, Channel,
     PeerUser, PeerChannel,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
-from pyrogram.crypto import CTR
+from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
+from pyrogram.session.internals import MsgId
 from .input_media import InputMedia
 from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
-Config = namedtuple("Config", ["api_id", "api_hash"])
+ApiKey = namedtuple("ApiKey", ["api_id", "api_hash"])
 Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
 
 
@@ -69,6 +71,17 @@ class Client:
             to save the session to a file named *<session_name>.session* and to load
             it when you restart your script. As long as a valid session file exists,
             Pyrogram won't ask you again to input your phone number.
+
+        api_key (:obj:`tuple`, optional):
+            Your Telegram API Key as tuple: *(api_id, api_hash)*.
+            E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
+            don't want to use the *config.ini* file.
+
+        proxy (:obj:`dict`, optional):
+            Your SOCKS5 Proxy settings as dict: *{hostname: str, port: int, username: str, password: str}*.
+            E.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+            *username* and *password* can be omitted if your proxy doesn't require authorization.
+            This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (:obj:`bool`, optional):
             Enable or disable log-in to testing servers. Defaults to False.
@@ -97,15 +110,18 @@ class Client:
             be an empty string: ""
 
         workers (:obj:`int`, optional):
-            Thread pool size for handling incoming events (updates). Defaults to 4.
+            Thread pool size for handling incoming updates. Defaults to 4.
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
     DIALOGS_AT_ONCE = 100
-    UPDATE_WORKERS = 2
+    UPDATES_WORKERS = 2
+    DOWNLOAD_WORKERS = 1
 
     def __init__(self,
                  session_name: str,
+                 api_key: tuple or ApiKey = None,
+                 proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: str or callable = None,
@@ -114,6 +130,8 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
+        self.api_key = api_key
+        self.proxy = proxy
         self.test_mode = test_mode
 
         self.phone_number = phone_number
@@ -132,19 +150,22 @@ class Client:
 
         self.peers_by_id = {}
         self.peers_by_username = {}
+        self.peers_by_phone = {}
+
+        self.channels_pts = {}
 
         self.markdown = Markdown(self.peers_by_id)
         self.html = HTML(self.peers_by_id)
 
-        self.config = None
-        self.proxy = None
         self.session = None
 
-        self.is_idle = Event()
+        self.is_idle = None
 
-        self.event_handler = None
+        self.updates_queue = Queue()
         self.update_queue = Queue()
-        self.event_queue = Queue()
+        self.update_handler = None
+
+        self.download_queue = Queue()
 
     def start(self):
         """Use this method to start the Client after creating it.
@@ -161,7 +182,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.config.api_id,
+            self.api_key.api_id,
             client=self
         )
 
@@ -174,14 +195,18 @@ class Client:
             self.password = None
             self.save_session()
 
-        self.rnd_id = self.session.msg_id
+        self.rnd_id = MsgId
         self.get_dialogs()
+        self.get_contacts()
 
-        for i in range(self.UPDATE_WORKERS):
-            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+        for i in range(self.UPDATES_WORKERS):
+            Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
 
         for i in range(self.workers):
-            Thread(target=self.event_worker, name="EventWorker#{}".format(i + 1)).start()
+            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+
+        for i in range(self.DOWNLOAD_WORKERS):
+            Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
 
         mimetypes.init()
 
@@ -191,11 +216,14 @@ class Client:
         """
         self.session.stop()
 
-        for i in range(self.UPDATE_WORKERS):
+        for _ in range(self.UPDATES_WORKERS):
+            self.updates_queue.put(None)
+
+        for _ in range(self.workers):
             self.update_queue.put(None)
 
-        for i in range(self.workers):
-            self.event_queue.put(None)
+        for _ in range(self.DOWNLOAD_WORKERS):
+            self.download_queue.put(None)
 
     def fetch_peers(self, entities: list):
         for entity in entities:
@@ -211,6 +239,7 @@ class Client:
                     continue
 
                 username = entity.username
+                phone = entity.phone
 
                 input_peer = InputPeerUser(
                     user_id=user_id,
@@ -222,17 +251,21 @@ class Client:
                 if username is not None:
                     self.peers_by_username[username] = input_peer
 
+                if phone is not None:
+                    self.peers_by_phone[phone] = input_peer
+
             if isinstance(entity, Chat):
                 chat_id = entity.id
+                peer_id = -chat_id
 
-                if chat_id in self.peers_by_id:
+                if peer_id in self.peers_by_id:
                     continue
 
                 input_peer = InputPeerChat(
                     chat_id=chat_id
                 )
 
-                self.peers_by_id[chat_id] = input_peer
+                self.peers_by_id[peer_id] = input_peer
 
             if isinstance(entity, Channel):
                 channel_id = entity.id
@@ -258,6 +291,163 @@ class Client:
                 if username is not None:
                     self.peers_by_username[username] = input_peer
 
+    def download_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            media = self.download_queue.get()
+
+            if media is None:
+                break
+
+            try:
+                media, file_name, done, progress, path = media
+                tmp_file_name = None
+
+                if isinstance(media, types.MessageMediaDocument):
+                    document = media.document
+
+                    if isinstance(document, types.Document):
+                        if not file_name:
+                            file_name = "doc_{}{}".format(
+                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
+                                ".txt" if document.mime_type == "text/plain" else
+                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
+                            )
+
+                            for i in document.attributes:
+                                if isinstance(i, types.DocumentAttributeFilename):
+                                    file_name = i.file_name
+                                    break
+                                elif isinstance(i, types.DocumentAttributeSticker):
+                                    file_name = file_name.replace("doc", "sticker")
+                                elif isinstance(i, types.DocumentAttributeAudio):
+                                    file_name = file_name.replace("doc", "audio")
+                                elif isinstance(i, types.DocumentAttributeVideo):
+                                    file_name = file_name.replace("doc", "video")
+                                elif isinstance(i, types.DocumentAttributeAnimated):
+                                    file_name = file_name.replace("doc", "gif")
+
+                        tmp_file_name = self.get_file(
+                            dc_id=document.dc_id,
+                            id=document.id,
+                            access_hash=document.access_hash,
+                            version=document.version,
+                            size=document.size,
+                            progress=progress
+                        )
+                elif isinstance(media, types.MessageMediaPhoto):
+                    photo = media.photo
+
+                    if isinstance(photo, types.Photo):
+                        if not file_name:
+                            file_name = "photo_{}.jpg".format(
+                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S")
+                            )
+
+                        photo_loc = photo.sizes[-1].location
+
+                        tmp_file_name = self.get_file(
+                            dc_id=photo_loc.dc_id,
+                            volume_id=photo_loc.volume_id,
+                            local_id=photo_loc.local_id,
+                            secret=photo_loc.secret,
+                            size=photo.sizes[-1].size,
+                            progress=progress
+                        )
+
+                if file_name is not None:
+                    path[0] = "downloads/{}".format(file_name)
+
+                try:
+                    os.remove("downloads/{}".format(file_name))
+                except OSError:
+                    pass
+                finally:
+                    try:
+                        os.renames("{}".format(tmp_file_name), "downloads/{}".format(file_name))
+                    except OSError:
+                        pass
+            except Exception as e:
+                log.error(e, exc_info=True)
+            finally:
+                done.set()
+
+                try:
+                    os.remove("{}".format(tmp_file_name))
+                except OSError:
+                    pass
+
+        log.debug("{} stopped".format(name))
+
+    def updates_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            updates = self.updates_queue.get()
+
+            if updates is None:
+                break
+
+            try:
+                if isinstance(updates, (types.Update, types.UpdatesCombined)):
+                    self.fetch_peers(updates.users)
+                    self.fetch_peers(updates.chats)
+
+                    for update in updates.updates:
+                        channel_id = getattr(
+                            getattr(
+                                getattr(
+                                    update, "message", None
+                                ), "to_id", None
+                            ), "channel_id", None
+                        ) or getattr(update, "channel_id", None)
+
+                        pts = getattr(update, "pts", None)
+
+                        if channel_id and pts:
+                            if channel_id not in self.channels_pts:
+                                self.channels_pts[channel_id] = []
+
+                            if pts in self.channels_pts[channel_id]:
+                                continue
+
+                            self.channels_pts[channel_id].append(pts)
+
+                            if len(self.channels_pts[channel_id]) > 50:
+                                self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
+
+                        self.update_queue.put((update, updates.users, updates.chats))
+                elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
+                    diff = self.send(
+                        functions.updates.GetDifference(
+                            pts=updates.pts - updates.pts_count,
+                            date=updates.date,
+                            qts=-1
+                        )
+                    )
+
+                    self.fetch_peers(diff.users)
+                    self.fetch_peers(diff.chats)
+
+                    self.update_queue.put((
+                        types.UpdateNewMessage(
+                            message=diff.new_messages[0],
+                            pts=updates.pts,
+                            pts_count=updates.pts_count
+                        ),
+                        diff.users,
+                        diff.chats
+                    ))
+                elif isinstance(updates, types.UpdateShort):
+                    self.update_queue.put((updates.update, [], []))
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
+
     def update_worker(self):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
@@ -269,59 +459,13 @@ class Client:
                 break
 
             try:
-                if isinstance(update, (types.Update, types.UpdatesCombined)):
-                    self.fetch_peers(update.users)
-                    self.fetch_peers(update.chats)
-
-                    for i in update.updates:
-                        self.event_queue.put(i)
-                elif isinstance(update, types.UpdateShortMessage):
-                    if update.user_id not in self.peers_by_id:
-                        diff = self.send(
-                            functions.updates.GetDifference(
-                                pts=update.pts - 1,
-                                date=update.date,
-                                qts=-1
-                            )
-                        )
-
-                        self.fetch_peers(diff.users)
-
-                    self.event_queue.put(update)
-                elif isinstance(update, types.UpdateShortChatMessage):
-                    if update.chat_id not in self.peers_by_id:
-                        diff = self.send(
-                            functions.updates.GetDifference(
-                                pts=update.pts - 1,
-                                date=update.date,
-                                qts=-1
-                            )
-                        )
-
-                        self.fetch_peers(diff.users)
-                        self.fetch_peers(diff.chats)
-
-                    self.event_queue.put(update)
-                elif isinstance(update, types.UpdateShort):
-                    self.event_queue.put(update.update)
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))
-
-    def event_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            event = self.event_queue.get()
-
-            if event is None:
-                break
-
-            try:
-                if self.event_handler:
-                    self.event_handler(self, event)
+                if self.update_handler:
+                    self.update_handler(
+                        self,
+                        update[0],
+                        {i.id: i for i in update[1]},
+                        {i.id: i for i in update[2]}
+                    )
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -329,7 +473,7 @@ class Client:
 
     def signal_handler(self, *args):
         self.stop()
-        self.is_idle.set()
+        self.is_idle = False
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
@@ -343,20 +487,54 @@ class Client:
         for s in stop_signals:
             signal(s, self.signal_handler)
 
-        self.is_idle.wait()
+        self.is_idle = True
 
-    def set_event_handler(self, callback: callable):
-        """Use this method to set the event handler.
+        while self.is_idle:
+            time.sleep(1)
+
+    def set_update_handler(self, callback: callable):
+        """Use this method to set the update handler.
+
+        You must call this method *before* you *start()* the Client.
 
         Args:
             callback (:obj:`callable`):
-                A function that takes ``client, event`` as positional arguments.
-                It will be called when a new event is generated on your account.
+                A function that will be called when a new update is received from the server. It takes
+                :obj:`(client, update, users, chats)` as positional arguments (Look at the section below for
+                a detailed description).
+
+        Other Parameters:
+            client (:obj:`pyrogram.Client`):
+                The Client itself, useful when you want to call other API methods inside the update handler.
+
+            update (:obj:`Update`):
+                The received update, which can be one of the many single Updates listed in the *updates*
+                field you see in the :obj:`types.Update <pyrogram.api.types.Update>` type.
+
+            users (:obj:`dict`):
+                Dictionary of all :obj:`types.User <pyrogram.api.types.User>` mentioned in the update.
+                You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
+                the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
+
+            chats (:obj:`dict`):
+                Dictionary of all :obj:`types.Chat <pyrogram.api.types.Chat>` and
+                :obj:`types.Channel <pyrogram.api.types.Channel>` mentioned in the update.
+                You can access extra info about the chat (such as *title*, *participants_count*, etc...)
+                by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
+
+        Note:
+            The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
+            They mean you have been blocked by the user or banned from the group/channel.
+
+            - :obj:`types.UserEmpty <pyrogram.api.types.UserEmpty>`
+            - :obj:`types.ChatEmpty <pyrogram.api.types.ChatEmpty>`
+            - :obj:`types.ChatForbidden <pyrogram.api.types.ChatForbidden>`
+            - :obj:`types.ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
         """
-        self.event_handler = callback
+        self.update_handler = callback
 
     def send(self, data: Object):
-        """Use this method to send :ref:`Raw Function <using-raw-functions>` queries.
+        """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`pyrogram.api.functions` package and may accept compound
@@ -369,7 +547,12 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        return self.session.send(data)
+        r = self.session.send(data)
+
+        self.fetch_peers(getattr(r, "users", []))
+        self.fetch_peers(getattr(r, "chats", []))
+
+        return r
 
     def authorize(self):
         phone_number_invalid_raises = self.phone_number is not None
@@ -393,8 +576,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -408,7 +591,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.config.api_id,
+                    self.api_key.api_id,
                     client=self
                 )
                 self.session.start()
@@ -416,8 +599,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.config.api_id,
-                        self.config.api_hash
+                        self.api_key.api_id,
+                        self.api_key.api_hash
                     )
                 )
                 break
@@ -535,10 +718,16 @@ class Client:
         parser = ConfigParser()
         parser.read("config.ini")
 
-        self.config = Config(
-            api_id=parser.getint("pyrogram", "api_id"),
-            api_hash=parser.get("pyrogram", "api_hash")
-        )
+        if parser.has_section("pyrogram"):
+            self.api_key = ApiKey(
+                api_id=parser.getint("pyrogram", "api_id"),
+                api_hash=parser.get("pyrogram", "api_hash")
+            )
+        else:
+            self.api_key = ApiKey(
+                api_id=int(self.api_key[0]),
+                api_hash=self.api_key[1]
+            )
 
         if parser.has_section("proxy"):
             self.proxy = Proxy(
@@ -548,6 +737,15 @@ class Client:
                 username=parser.get("proxy", "username", fallback=None) or None,
                 password=parser.get("proxy", "password", fallback=None) or None
             )
+        else:
+            if self.proxy is not None:
+                self.proxy = Proxy(
+                    enabled=True,
+                    hostname=self.proxy["hostname"],
+                    port=int(self.proxy["port"]),
+                    username=self.proxy.get("username", None),
+                    password=self.proxy.get("password", None)
+                )
 
     def load_session(self, session_name):
         try:
@@ -580,9 +778,6 @@ class Client:
 
     def get_dialogs(self):
         def parse_dialogs(d):
-            self.fetch_peers(d.chats)
-            self.fetch_peers(d.users)
-
             for m in reversed(d.messages):
                 if isinstance(m, types.MessageEmpty):
                     continue
@@ -613,7 +808,7 @@ class Client:
                     )
                 )
             except FloodWait as e:
-                log.info("Get dialogs flood wait: {}".format(e.x))
+                log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
                 continue
 
@@ -650,24 +845,62 @@ class Client:
         return input_peer
 
     def resolve_peer(self, peer_id: int or str):
-        if peer_id in ("self", "me"):
-            return InputPeerSelf()
-        else:
-            if type(peer_id) is str:
-                peer_id = peer_id.lower().strip("@")
+        """Use this method to get the *InputPeer* of a known *peer_id*.
 
+        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to use which is
+        not available yet in the Client class as an easy-to-use method).
+
+        Args:
+            peer_id (:obj:`int` | :obj:`str` | :obj:`Peer`):
+                The Peer ID you want to extract the InputPeer from. Can be one of these types: :obj:`int` (direct ID),
+                :obj:`str` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
+                :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
+
+        Returns:
+            :obj:`InputPeerUser <pyrogram.api.types.InputPeerUser>` or
+            :obj:`InputPeerChat <pyrogram.api.types.InputPeerChat>` or
+            :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        if type(peer_id) is str:
+            if peer_id in ("self", "me"):
+                return InputPeerSelf()
+
+            peer_id = peer_id.lower().strip("@+")
+
+            try:
+                int(peer_id)
+            except ValueError:
                 try:
                     return self.peers_by_username[peer_id]
                 except KeyError:
                     return self.resolve_username(peer_id)
             else:
                 try:
-                    return self.peers_by_id[peer_id]
+                    return self.peers_by_phone[peer_id]
                 except KeyError:
-                    try:
-                        return self.peers_by_id[int("-100" + str(peer_id))]
-                    except KeyError:
-                        raise PeerIdInvalid
+                    raise PeerIdInvalid
+
+        if type(peer_id) is not int:
+            if isinstance(peer_id, types.PeerUser):
+                peer_id = peer_id.user_id
+            elif isinstance(peer_id, types.PeerChat):
+                peer_id = -peer_id.chat_id
+            elif isinstance(peer_id, types.PeerChannel):
+                peer_id = int("-100" + str(peer_id.channel_id))
+
+        try:  # User
+            return self.peers_by_id[peer_id]
+        except KeyError:
+            try:  # Chat
+                return self.peers_by_id[-peer_id]
+            except KeyError:
+                try:  # Channel
+                    return self.peers_by_id[int("-100" + str(peer_id))]
+                except (KeyError, ValueError):
+                    raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
@@ -697,7 +930,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             text (:obj:`str`):
                 Text of the message to be sent.
@@ -747,12 +980,13 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             from_chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the chat where the original message was sent
                 (or channel/supergroup username in the format @username). For your personal cloud
                 storage (Saved Messages) you can simply use "me" or "self".
+                Phone numbers that exist in your Telegram address book are also supported.
 
             message_ids (:obj:`list`):
                 A list of Message identifiers in the chat specified in *from_chat_id*.
@@ -784,14 +1018,15 @@ class Client:
                    parse_mode: str = "",
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send photos.
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             photo (:obj:`str`):
                 Photo to send.
@@ -817,6 +1052,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -824,7 +1070,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo)
+        file = self.save_file(photo, progress=progress)
 
         while True:
             try:
@@ -855,7 +1101,8 @@ class Client:
                    performer: str = None,
                    title: str = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice` method instead.
@@ -864,7 +1111,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             audio (:obj:`str`):
                 Audio file to send.
@@ -894,6 +1141,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -901,7 +1159,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio)
+        file = self.save_file(audio, progress=progress)
 
         while True:
             try:
@@ -937,14 +1195,15 @@ class Client:
                       caption: str = "",
                       parse_mode: str = "",
                       disable_notification: bool = None,
-                      reply_to_message_id: int = None):
+                      reply_to_message_id: int = None,
+                      progress: callable = None):
         """Use this method to send general files.
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             document (:obj:`str`):
                 File to send.
@@ -965,6 +1224,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -972,7 +1242,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(document)
+        file = self.save_file(document, progress=progress)
 
         while True:
             try:
@@ -997,6 +1267,73 @@ class Client:
             else:
                 return r
 
+    def send_sticker(self,
+                     chat_id: int or str,
+                     sticker: str,
+                     disable_notification: bool = None,
+                     reply_to_message_id: int = None,
+                     progress: callable = None):
+        """Use this method to send .webp stickers.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            sticker (:obj:`str`):
+                Sticker to send.
+                Pass a file path as string to send a sticker that exists on your local machine.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        file = self.save_file(sticker, progress=progress)
+
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type="image/webp",
+                            file=file,
+                            attributes=[
+                                types.DocumentAttributeFilename(os.path.basename(sticker))
+                            ]
+                        ),
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id,
+                        random_id=self.rnd_id(),
+                        message=""
+                    )
+                )
+            except FilePartMissing as e:
+                self.save_file(sticker, file_id=file.id, file_part=e.x)
+            else:
+                return r
+
     def send_video(self,
                    chat_id: int or str,
                    video: str,
@@ -1005,15 +1342,18 @@ class Client:
                    duration: int = 0,
                    width: int = 0,
                    height: int = 0,
+                   thumb: str = None,
+                   supports_streaming: bool = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send video files.
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             video (:obj:`str`):
                 Video to send.
@@ -1036,12 +1376,31 @@ class Client:
             height (:obj:`int`, optional):
                 Video height.
 
+            thumb (:obj:`str`, optional):
+                Video thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+
+            supports_streaming (:obj:`bool`, optional):
+                Pass True, if the uploaded video is suitable for streaming.
+
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
 
         Returns:
             On success, the sent Message is returned.
@@ -1050,7 +1409,8 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(video)
+        file = self.save_file(video, progress=progress)
+        file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
             try:
@@ -1060,8 +1420,10 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
+                            thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
+                                    supports_streaming=supports_streaming,
                                     duration=duration,
                                     w=width,
                                     h=height
@@ -1087,14 +1449,15 @@ class Client:
                    parse_mode: str = "",
                    duration: int = 0,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             voice (:obj:`str`):
                 Audio file to send.
@@ -1118,6 +1481,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1125,7 +1499,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(voice)
+        file = self.save_file(voice, progress=progress)
 
         while True:
             try:
@@ -1159,14 +1533,15 @@ class Client:
                         duration: int = 0,
                         length: int = 1,
                         disable_notification: bool = None,
-                        reply_to_message_id: int = None):
+                        reply_to_message_id: int = None,
+                        progress: callable = None):
         """Use this method to send video messages.
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             video_note (:obj:`str`):
                 Video note to send.
@@ -1185,13 +1560,24 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
         Raises:
             :class:`pyrogram.Error`
         """
-        file = self.save_file(video_note)
+        file = self.save_file(video_note, progress=progress)
 
         while True:
             try:
@@ -1221,6 +1607,105 @@ class Client:
             else:
                 return r
 
+    # TODO: Add progress parameter
+    def send_media_group(self,
+                         chat_id: int or str,
+                         media: list,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None):
+        """Use this method to send a group of photos or videos as an album.
+        On success, an Update containing the sent Messages is returned.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            media (:obj:`list`):
+                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                describing photos and videos to be sent, must include 2–10 items.
+
+            disable_notification (:obj:`bool`, optional):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (:obj:`int`, optional):
+                If the message is a reply, ID of the original message.
+        """
+        multi_media = []
+
+        for i in media:
+            if isinstance(i, InputMedia.Photo):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=media
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+            elif isinstance(i, InputMedia.Video):
+                style = self.html if i.parse_mode.lower() == "html" else self.markdown
+                media = self.save_file(i.media)
+
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            file=media,
+                            mime_type=mimetypes.types_map[".mp4"],
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    supports_streaming=i.supports_streaming,
+                                    duration=i.duration,
+                                    w=i.width,
+                                    h=i.height
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(i.media))
+                            ]
+                        )
+                    )
+                )
+
+                single_media = types.InputSingleMedia(
+                    media=types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash
+                        )
+                    ),
+                    random_id=self.rnd_id(),
+                    **style.parse(i.caption)
+                )
+
+                multi_media.append(single_media)
+
+        return self.send(
+            functions.messages.SendMultiMedia(
+                peer=self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
+
     def send_location(self,
                       chat_id: int or str,
                       latitude: float,
@@ -1233,7 +1718,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             latitude (:obj:`float`):
                 Latitude of the location.
@@ -1285,7 +1770,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             latitude (:obj:`float`):
                 Latitude of the venue.
@@ -1349,7 +1834,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             phone_number (:obj:`str`):
                 Contact's phone number.
@@ -1398,7 +1883,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             action (:obj:`callable`):
                 Type of action to broadcast.
@@ -1460,7 +1945,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
@@ -1501,7 +1986,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_id (:obj:`int`):
                 Message identifier in the chat specified in chat_id.
@@ -1543,7 +2028,7 @@ class Client:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
             message_ids (:obj:`list`):
                 List of identifiers of the messages to delete.
@@ -1577,17 +2062,20 @@ class Client:
             )
 
     # TODO: Remove redundant code
-    def save_file(self, path: str, file_id: int = None, file_part: int = 0):
+    def save_file(self,
+                  path: str,
+                  file_id: int = None,
+                  file_part: int = 0,
+                  progress: callable = None):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = math.ceil(file_size / part_size)
-        # is_big = True if file_size > 10 * 1024 * 1024 else False
-        is_big = False  # Treat all files as not-big to have the server check for the md5 sum
+        is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.config.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_key.api_id)
         session.start()
 
         try:
@@ -1618,6 +2106,9 @@ class Client:
                         md5_sum.update(chunk)
 
                     file_part += 1
+
+                    if progress:
+                        progress(min(file_part * part_size, file_size), file_size)
         except Exception as e:
             log.error(e)
         else:
@@ -1637,11 +2128,9 @@ class Client:
                  volume_id: int = None,
                  local_id: int = None,
                  secret: int = None,
-                 version: int = 0):
-        # TODO: Refine
-        # TODO: Use proper file name and extension
-        # TODO: Remove redundant code
-
+                 version: int = 0,
+                 size: int = None,
+                 progress: callable = None) -> str:
         if dc_id != self.dc_id:
             exported_auth = self.send(
                 functions.auth.ExportAuthorization(
@@ -1654,7 +2143,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 Auth(dc_id, self.test_mode, self.proxy).create(),
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1671,7 +2160,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.config.api_id
+                self.api_key.api_id
             )
 
             session.start()
@@ -1689,7 +2178,8 @@ class Client:
                 version=version
             )
 
-        limit = 512 * 1024
+        file_name = "download_{}.temp".format(MsgId())
+        limit = 1024 * 1024
         offset = 0
 
         try:
@@ -1702,7 +2192,7 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                with open(file_name, "wb") as f:
                     while True:
                         chunk = r.bytes
 
@@ -1710,7 +2200,13 @@ class Client:
                             break
 
                         f.write(chunk)
+                        f.flush()
+                        os.fsync(f.fileno())
+
                         offset += limit
+
+                        if progress:
+                            progress(min(offset, size), size)
 
                         r = session.send(
                             functions.upload.GetFile(
@@ -1719,22 +2215,21 @@ class Client:
                                 limit=limit
                             )
                         )
-            if isinstance(r, types.upload.FileCdnRedirect):
-                ctr = CTR(r.encryption_key, r.encryption_iv)
 
+            if isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
                     self.proxy,
                     Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                    self.config.api_id,
+                    self.api_key.api_id,
                     is_cdn=True
                 )
 
                 cdn_session.start()
 
                 try:
-                    with open("_".join([str(id), str(access_hash), str(version)]) + ".jpg", "wb") as f:
+                    with open(file_name, "wb") as f:
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
@@ -1746,27 +2241,51 @@ class Client:
                             )
 
                             if isinstance(r2, types.upload.CdnFileReuploadNeeded):
-                                session.send(
-                                    functions.upload.ReuploadCdnFile(
-                                        file_token=r.file_token,
-                                        request_token=r2.request_token
+                                try:
+                                    session.send(
+                                        functions.upload.ReuploadCdnFile(
+                                            file_token=r.file_token,
+                                            request_token=r2.request_token
+                                        )
                                     )
-                                )
-                                continue
-                            elif isinstance(r2, types.upload.CdnFile):
-                                chunk = r2.bytes
-
-                                if not chunk:
+                                except VolumeLocNotFound:
                                     break
+                                else:
+                                    continue
 
-                                # https://core.telegram.org/cdn#decrypting-files
-                                decrypted_chunk = ctr.decrypt(chunk, offset)
+                            chunk = r2.bytes
 
-                                # TODO: https://core.telegram.org/cdn#verifying-files
-                                # TODO: Save to temp file, flush each chunk, rename to full if everything is ok
+                            # https://core.telegram.org/cdn#decrypting-files
+                            decrypted_chunk = AES.ctr_decrypt(
+                                chunk,
+                                r.encryption_key,
+                                r.encryption_iv,
+                                offset
+                            )
 
-                                f.write(decrypted_chunk)
-                                offset += limit
+                            hashes = session.send(
+                                functions.upload.GetCdnFileHashes(
+                                    r.file_token,
+                                    offset
+                                )
+                            )
+
+                            # https://core.telegram.org/cdn#verifying-files
+                            for i, h in enumerate(hashes):
+                                cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
+                                assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
+
+                            f.write(decrypted_chunk)
+                            f.flush()
+                            os.fsync(f.fileno())
+
+                            offset += limit
+
+                            if progress:
+                                progress(min(offset, size), size)
+
+                            if len(chunk) < limit:
+                                break
                 except Exception as e:
                     log.error(e)
                 finally:
@@ -1774,7 +2293,7 @@ class Client:
         except Exception as e:
             log.error(e)
         else:
-            return True
+            return file_name
         finally:
             session.stop()
 
@@ -2029,98 +2548,206 @@ class Client:
         else:
             return False
 
-    def send_media_group(self,
-                         chat_id: int or str,
-                         media: list,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
-        """Use this method to send a group of photos or videos as an album.
-        On success, an Update containing the sent Messages is returned.
+    def download_media(self,
+                       message: types.Message,
+                       file_name: str = None,
+                       block: bool = True,
+                       progress: callable = None):
+        """Use this method to download the media from a Message.
+
+        Files are saved in the *downloads* folder.
+
+        Args:
+            message (:obj:`Message <pyrogram.api.types.Message>`):
+                The Message containing the media.
+
+            file_name (:obj:`str`, optional):
+                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+
+            block (:obj:`bool`, optional):
+                Blocks the code execution until the file has been downloaded.
+                Defaults to True.
+
+            progress (:obj:`callable`):
+                Pass a callback function to view the download progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes downloaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
+        Returns:
+            The relative path of the downloaded file.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        if isinstance(message, types.Message):
+            done = Event()
+            media = message.media
+            path = [None]
+
+            if media is not None:
+                self.download_queue.put((media, file_name, done, progress, path))
+            else:
+                return
+
+            if block:
+                done.wait()
+
+            return path[0]
+
+    def add_contacts(self, contacts: list):
+        """Use this method to add contacts to your Telegram address book.
+
+        Args:
+            contacts (:obj:`list`):
+                A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
+
+        Returns:
+            On success, the added contacts are returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        imported_contacts = self.send(
+            functions.contacts.ImportContacts(
+                contacts=contacts
+            )
+        )
+
+        return imported_contacts
+
+    def delete_contacts(self, ids: list):
+        """Use this method to delete contacts from your Telegram address book
+
+        Args:
+            ids (:obj:`list`):
+                A list of unique identifiers for the target users.
+                Can be an ID (int), a username (string) or phone number (string).
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        contacts = []
+
+        for i in ids:
+            try:
+                input_user = self.resolve_peer(i)
+            except PeerIdInvalid:
+                continue
+            else:
+                if isinstance(input_user, types.InputPeerUser):
+                    contacts.append(input_user)
+
+        return self.send(
+            functions.contacts.DeleteContacts(
+                id=contacts
+            )
+        )
+
+    def get_contacts(self, _hash: int = 0):
+        while True:
+            try:
+                contacts = self.send(functions.contacts.GetContacts(_hash))
+            except FloodWait as e:
+                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
+                time.sleep(e.x)
+                continue
+            else:
+                if isinstance(contacts, types.contacts.Contacts):
+                    log.info("Contacts count: {}".format(len(contacts.users)))
+
+                return contacts
+
+    def get_inline_bot_results(self,
+                               bot: int or str,
+                               query: str,
+                               offset: str = "",
+                               location: tuple = None):
+        """Use this method to get bot results via inline queries.
+        You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
+
+        Args:
+            bot (:obj:`int` | :obj:`str`):
+                Unique identifier of the inline bot you want to get results from. You can specify
+                a @username (str) or a bot ID (int).
+
+            query (:obj:`str`):
+                Text of the query (up to 512 characters).
+
+            offset (:obj:`str`):
+                Offset of the results to be returned.
+
+            location (:obj:`tuple`, optional):
+                Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
+                Useful for location-based results only.
+
+        Returns:
+            On Success, `BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        return self.send(
+            functions.messages.GetInlineBotResults(
+                bot=self.resolve_peer(bot),
+                peer=types.InputPeerSelf(),
+                query=query,
+                offset=offset,
+                geo_point=types.InputGeoPoint(
+                    lat=location[0],
+                    long=location[1]
+                ) if location else None
+            )
+        )
+
+    def send_inline_bot_result(self,
+                               chat_id: int or str,
+                               query_id: int,
+                               result_id: str,
+                               disable_notification: bool = None,
+                               reply_to_message_id: int = None):
+        """Use this method to send an inline bot result.
+        Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
         Args:
             chat_id (:obj:`int` | :obj:`str`):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self".
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
 
-            media (:obj:`list`):
-                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
-                describing photos and videos to be sent, must include 2–10 items.
+            query_id (:obj:`int`):
+                Unique identifier for the answered query.
+
+            result_id (:obj:`str`):
+                Unique identifier for the result that was chosen.
 
             disable_notification (:obj:`bool`, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (:obj:`bool`, optional):
                 If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`pyrogram.Error`
         """
-        multi_media = []
-
-        for i in media:
-            if isinstance(i, InputMedia.Photo):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
-
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=media
-                        )
-                    )
-                )
-
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaPhoto(
-                        id=types.InputPhoto(
-                            id=media.photo.id,
-                            access_hash=media.photo.access_hash
-                        )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
-
-                multi_media.append(single_media)
-            elif isinstance(i, InputMedia.Video):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
-
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            file=media,
-                            mime_type=mimetypes.types_map[".mp4"],
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    duration=i.duration,
-                                    w=i.width,
-                                    h=i.height
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(i.media))
-                            ]
-                        )
-                    )
-                )
-
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=media.document.id,
-                            access_hash=media.document.access_hash
-                        )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
-
-                multi_media.append(single_media)
-
         return self.send(
-            functions.messages.SendMultiMedia(
+            functions.messages.SendInlineBotResult(
                 peer=self.resolve_peer(chat_id),
-                multi_media=multi_media,
+                query_id=query_id,
+                id=result_id,
+                random_id=self.rnd_id(),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id
             )

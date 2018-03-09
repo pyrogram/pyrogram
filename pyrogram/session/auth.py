@@ -25,7 +25,7 @@ from os import urandom
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object, Long, Int
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, RSA, Prime
+from pyrogram.crypto import AES, RSA, Prime
 from .internals import MsgId, DataCenter
 
 log = logging.getLogger(__name__)
@@ -51,12 +51,12 @@ class Auth:
         self.test_mode = test_mode
 
         self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
-        self.msg_id = MsgId()
 
-    def pack(self, data: Object) -> bytes:
+    @staticmethod
+    def pack(data: Object) -> bytes:
         return (
             bytes(8)
-            + Long(self.msg_id())
+            + Long(MsgId())
             + Int(len(data.write()))
             + data.write()
         )
@@ -91,8 +91,19 @@ class Auth:
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
                 log.debug("Send req_pq: {}".format(nonce))
-                res_pq = self.send(functions.ReqPq(nonce))
+                res_pq = self.send(functions.ReqPqMulti(nonce))
                 log.debug("Got ResPq: {}".format(res_pq.server_nonce))
+                log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
+
+                for i in res_pq.server_public_key_fingerprints:
+                    if i in RSA.server_public_keys:
+                        log.debug("Using fingerprint: {}".format(i))
+                        public_key_fingerprint = i
+                        break
+                    else:
+                        log.debug("Fingerprint unknown: {}".format(i))
+                else:
+                    raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
@@ -118,7 +129,7 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 255)
                 data_with_hash = sha + data + padding
-                encrypted_data = RSA.encrypt(data_with_hash, res_pq.server_public_key_fingerprints[0])
+                encrypted_data = RSA.encrypt(data_with_hash, public_key_fingerprint)
 
                 log.debug("Done encrypt data with RSA")
 
@@ -130,7 +141,7 @@ class Auth:
                         server_nonce,
                         int.to_bytes(p, 4, "big"),
                         int.to_bytes(q, 4, "big"),
-                        res_pq.server_public_key_fingerprints[0],
+                        public_key_fingerprint,
                         encrypted_data
                     )
                 )
@@ -152,7 +163,7 @@ class Auth:
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
 
-                answer_with_hash = IGE.decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
+                answer_with_hash = AES.ige_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
                 answer = answer_with_hash[20:]
 
                 server_dh_inner_data = Object.read(BytesIO(answer))
@@ -181,7 +192,7 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 16)
                 data_with_hash = sha + data + padding
-                encrypted_data = IGE.encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
+                encrypted_data = AES.ige_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = self.send(
@@ -236,7 +247,7 @@ class Auth:
                 log.debug("Nonce fields check: OK")
 
                 # Step 9
-                server_salt = IGE.xor(new_nonce[:8], server_nonce[:8])
+                server_salt = AES.xor(new_nonce[:8], server_nonce[:8])
 
                 log.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
 

@@ -31,7 +31,7 @@ from . import utils
 
 
 class HTML:
-    HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])(.*)\2)?>(.*)</\1>")
+    HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])([^<]+)\2)?>([^>]+)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
     def __init__(self, peers_by_id):
@@ -44,7 +44,7 @@ class HTML:
 
         for match in self.HTML_RE.finditer(text):
             start = match.start() - offset
-            style, url, body = match.groups()
+            style, url, body = match.group(1, 3, 4)
 
             if url:
                 mention = self.MENTION_RE.match(url)

@@ -16,20 +16,29 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    from pyaes import AESModeOfOperationCTR
-except ImportError:
-    pass
+from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
+from pyrogram.session.internals import MsgId
 
 
-class CTR:
-    def __init__(self, key: bytes, iv: bytes):
-        self.ctr = AESModeOfOperationCTR(key)
-        self.iv = iv
+class InputPhoneContact:
+    """This object represents a Phone Contact to be added in your Telegram address book.
+    It is intended to be used with :obj:`pyrogram.Client.add_contacts`
 
-    def decrypt(self, data: bytes, offset: int) -> bytes:
-        replace = int.to_bytes(offset // 16, byteorder="big", length=4)
-        iv = self.iv[:-4] + replace
-        self.ctr._counter._counter = list(iv)
+    Args:
+        phone (:obj:`str`):
+            Contact's phone number
 
-        return self.ctr.decrypt(data)
+        first_name (:obj:`str`):
+            Contact's first name
+
+        last_name (:obj:`str`, optional):
+            Contact's last name
+    """
+
+    def __new__(cls, phone: str, first_name: str, last_name: str = ""):
+        return RawInputPhoneContact(
+            client_id=MsgId(),
+            phone="+" + phone.strip("+"),
+            first_name=first_name,
+            last_name=last_name
+        )

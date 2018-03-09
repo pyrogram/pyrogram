@@ -33,7 +33,7 @@ from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
 from pyrogram.api.errors import Error
 from pyrogram.connection import Connection
-from pyrogram.crypto import IGE, KDF
+from pyrogram.crypto import AES, KDF
 from .internals import MsgId, MsgFactory, DataCenter
 
 log = logging.getLogger(__name__)
@@ -60,13 +60,27 @@ class Session:
     )
 
     INITIAL_SALT = 0x616e67656c696361
-    NET_WORKERS = 2
+    NET_WORKERS = 1
     WAIT_TIMEOUT = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
 
     notice_displayed = False
+
+    BAD_MSG_DESCRIPTION = {
+        16: "[16] msg_id too low, the client time has to be synchronized",
+        17: "[17] msg_id too high, the client time has to be synchronized",
+        18: "[18] incorrect two lower order msg_id bits, the server expects client message msg_id to be divisible by 4",
+        19: "[19] container msg_id is the same as msg_id of a previously received message",
+        20: "[20] message too old, it cannot be verified by the server",
+        32: "[32] msg_seqno too low",
+        33: "[33] msg_seqno too high",
+        34: "[34] an even msg_seqno expected, but odd received",
+        35: "[35] odd msg_seqno expected, but even received",
+        48: "[48] incorrect server salt",
+        64: "[64] invalid container"
+    }
 
     def __init__(self,
                  dc_id: int,
@@ -89,9 +103,8 @@ class Session:
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
-        self.msg_id = MsgId()
-        self.session_id = Long(self.msg_id())
-        self.msg_factory = MsgFactory(self.msg_id)
+        self.session_id = Long(MsgId())
+        self.msg_factory = MsgFactory()
 
         self.current_salt = None
 
@@ -146,7 +159,7 @@ class Session:
                 self.ping_thread.start()
 
                 log.info("Connection inited: Layer {}".format(layer))
-            except (OSError, TimeoutError):
+            except (OSError, TimeoutError, Error):
                 self.stop()
             else:
                 break
@@ -192,14 +205,14 @@ class Session:
         msg_key = msg_key_large[8:24]
         aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
 
-        return self.auth_key_id + msg_key + IGE.encrypt(data + padding, aes_key, aes_iv)
+        return self.auth_key_id + msg_key + AES.ige_encrypt(data + padding, aes_key, aes_iv)
 
     def unpack(self, b: BytesIO) -> Message:
         assert b.read(8) == self.auth_key_id, b.getvalue()
 
         msg_key = b.read(16)
         aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
-        data = BytesIO(IGE.decrypt(b.read(), aes_key, aes_iv))
+        data = BytesIO(AES.ige_decrypt(b.read(), aes_key, aes_iv))
         data.read(8)
 
         # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
@@ -270,7 +283,7 @@ class Session:
                 msg_id = msg.body.msg_id
             else:
                 if self.client is not None:
-                    self.client.update_queue.put(msg.body)
+                    self.client.updates_queue.put(msg.body)
 
             if msg_id in self.results:
                 self.results[msg_id].value = getattr(msg.body, "result", msg.body)
@@ -296,7 +309,7 @@ class Session:
                 break
 
             try:
-                self._send(functions.Ping(0), False)
+                self._send(functions.PingDelayDisconnect(0, self.PING_INTERVAL + 15), False)
             except (OSError, TimeoutError):
                 pass
 
@@ -338,7 +351,10 @@ class Session:
         while True:
             packet = self.connection.recv()
 
-            if packet is None or (len(packet) == 4 and Int.read(BytesIO(packet)) == -404):
+            if packet is None or len(packet) == 4:
+                if packet:
+                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
                 break
@@ -370,6 +386,11 @@ class Session:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
                 Error.raise_it(result, type(data))
+            elif isinstance(result, types.BadMsgNotification):
+                raise Exception(self.BAD_MSG_DESCRIPTION.get(
+                    result.error_code,
+                    "Error code {}".format(result.error_code)
+                ))
             else:
                 return result
 
