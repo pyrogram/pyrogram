@@ -13,3 +13,4 @@ you have to change are the target chats (username, id) and file paths for sendin
 - [**simple_echo.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/simple_echo.py)
 - [**advanced_echo.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/advanced_echo.py)
 - [**advanced_echo2.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/advanced_echo2.py)
+- [**welcome_bot.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/welcome_bot.py)
