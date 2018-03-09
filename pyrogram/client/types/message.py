@@ -1,13 +1,14 @@
-from . import User, Chat
+from . import User, Chat, Audio
 
 
 class Message:
     def __init__(self,
                  message_id: int,
-                 from_user: User,
                  date: int,
                  chat: Chat,
-                 forward_from: Chat = None,
+                 from_user: User = None,
+                 forward_from: User = None,
+                 forward_from_chat: Chat = None,
                  forward_from_message_id: int = None,
                  forward_signature: str = None,
                  forward_date: int = None,
@@ -16,9 +17,9 @@ class Message:
                  media_group_id: str = None,
                  author_signature: str = None,
                  text: str = None,
-                 entities=None,
-                 caption_entities=None,
-                 audio=None,
+                 entities: list = None,
+                 caption_entities: list = None,
+                 audio: Audio = None,
                  document=None,
                  game=None,
                  photo=None,
@@ -42,12 +43,14 @@ class Message:
                  migrate_from_chat_id: int = None,
                  pinned_message: "Message" = None,
                  invoice=None,
-                 successful_payment=None):
+                 successful_payment=None,
+                 connected_website=None):
         self.message_id = message_id
-        self.from_user = from_user
         self.date = date
         self.chat = chat
+        self.from_user = from_user
         self.forward_from = forward_from
+        self.forward_from_chat = forward_from_chat
         self.forward_from_message_id = forward_from_message_id
         self.forward_signature = forward_signature
         self.forward_date = forward_date
@@ -83,3 +86,4 @@ class Message:
         self.pinned_message = pinned_message
         self.invoice = invoice
         self.successful_payment = successful_payment
+        self.connected_website = connected_website
