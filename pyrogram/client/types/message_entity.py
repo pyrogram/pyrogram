@@ -1,13 +1,10 @@
-from . import User
-
-
 class MessageEntity:
     def __init__(self,
                  type: str,
                  offset: int,
                  length: int,
                  url: str = None,
-                 user: User = None):
+                 user: "User" = None):
         self.type = type
         self.offset = offset
         self.length = length

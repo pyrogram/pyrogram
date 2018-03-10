@@ -1,6 +1,3 @@
-from . import Message, ChatPhoto
-
-
 class Chat:
     def __init__(self,
                  id: int,
@@ -10,10 +7,10 @@ class Chat:
                  first_name: str = None,
                  last_name: str = None,
                  all_members_are_administrators: bool = None,
-                 photo: ChatPhoto = None,
+                 photo: "ChatPhoto" = None,
                  description: str = None,
                  invite_link: str = None,
-                 pinned_message: Message = None,
+                 pinned_message: "Message" = None,
                  sticker_set_name: str = None,
                  can_set_sticker_set: bool = None):
         self.id = id

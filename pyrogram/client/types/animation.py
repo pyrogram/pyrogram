@@ -1,10 +1,7 @@
-from . import PhotoSize
-
-
 class Animation:
     def __init__(self,
                  file_id: str,
-                 thumb: PhotoSize = None,
+                 thumb: "PhotoSize" = None,
                  file_name: str = None,
                  mime_type: str = None,
                  file_size: int = None):

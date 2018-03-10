@@ -1,9 +1,6 @@
-from . import Location
-
-
 class Venue:
     def __init__(self,
-                 location: Location,
+                 location: "Location",
                  title: str,
                  address: str,
                  foursquare_id: str = None):

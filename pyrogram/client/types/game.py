@@ -1,6 +1,3 @@
-from . import Animation
-
-
 class Game:
     def __init__(self,
                  title: str,
@@ -8,7 +5,7 @@ class Game:
                  photo: list,
                  text: str = None,
                  text_entities: list = None,
-                 animation: Animation = None):
+                 animation: "Animation" = None):
         self.title = title
         self.description = description
         self.photo = photo

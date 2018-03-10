@@ -1,13 +1,10 @@
-from . import PhotoSize
-
-
 class Video:
     def __init__(self,
                  file_id: str,
                  width: int,
                  height: int,
                  duration: int,
-                 thumb: PhotoSize = None,
+                 thumb: "PhotoSize" = None,
                  mime_type: str = None,
                  file_size: int = None):
         self.file_id = file_id

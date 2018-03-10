@@ -1,9 +1,6 @@
-from . import User
-
-
 class ChatMember:
     def __init__(self,
-                 user: User,
+                 user: "User",
                  status: str,
                  until_date: int = None,
                  can_be_edited: bool = None,
