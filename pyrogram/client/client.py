@@ -572,6 +572,8 @@ class Client:
                     elif confirm in ("n", "2"):
                         self.phone_number = input("Enter phone number: ")
 
+            self.phone_number = self.phone_number.strip("+")
+
             try:
                 r = self.send(
                     functions.auth.SendCode(
