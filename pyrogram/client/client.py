@@ -2754,3 +2754,39 @@ class Client:
                 reply_to_msg_id=reply_to_message_id
             )
         )
+
+    def get_messages(self,
+                     chat_id: int or str,
+                     message_ids: list):
+        """Use this method to get messages that belong to a specific chat.
+        You can retrieve up to 200 messages at once.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            message_ids (:obj:`list`):
+                A list of Message identifiers in the chat specified in *chat_id*.
+
+        Returns:
+            List of the requested messages
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        peer = self.resolve_peer(chat_id)
+        message_ids = [types.InputMessageID(i) for i in message_ids]
+
+        if isinstance(peer, types.InputPeerChannel):
+            rpc = functions.channels.GetMessages(
+                channel=peer,
+                id=message_ids
+            )
+        else:
+            rpc = functions.messages.GetMessages(
+                id=message_ids
+            )
+
+        return self.send(rpc)
