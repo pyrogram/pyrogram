@@ -160,9 +160,7 @@ License
 
 .. _`Layer 75`: compiler/api/source/main_api.tl
 
-.. _`your own`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started#api-keys
-
-.. _`Introduction`: https://github.com/pyrogram/pyrogram/wiki/Getting-Started
+.. _`your own`: https://docs.pyrogram.ml/start/ProjectSetup/#api-keys
 
 .. _`Telegram`: https://t.me/haskell
 
