@@ -47,3 +47,4 @@ Client
         delete_contacts
         get_inline_bot_results
         send_inline_bot_result
+        get_messages
