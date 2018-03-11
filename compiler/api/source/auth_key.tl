@@ -29,6 +29,7 @@ destroy_auth_key_fail#ea109b13 = DestroyAuthKeyRes;
 ---functions---
 
 req_pq#60469778 nonce:int128 = ResPQ;
+req_pq_multi#be7e8ef1 nonce:int128 = ResPQ;
 
 req_DH_params#d712e4be nonce:int128 server_nonce:int128 p:bytes q:bytes public_key_fingerprint:long encrypted_data:bytes = Server_DH_Params;
 

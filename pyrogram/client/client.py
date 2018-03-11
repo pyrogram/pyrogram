@@ -256,15 +256,16 @@ class Client:
 
             if isinstance(entity, Chat):
                 chat_id = entity.id
+                peer_id = -chat_id
 
-                if chat_id in self.peers_by_id:
+                if peer_id in self.peers_by_id:
                     continue
 
                 input_peer = InputPeerChat(
                     chat_id=chat_id
                 )
 
-                self.peers_by_id[chat_id] = input_peer
+                self.peers_by_id[peer_id] = input_peer
 
             if isinstance(entity, Channel):
                 channel_id = entity.id
@@ -570,6 +571,8 @@ class Client:
                         break
                     elif confirm in ("n", "2"):
                         self.phone_number = input("Enter phone number: ")
+
+            self.phone_number = self.phone_number.strip("+")
 
             try:
                 r = self.send(
@@ -886,17 +889,20 @@ class Client:
             if isinstance(peer_id, types.PeerUser):
                 peer_id = peer_id.user_id
             elif isinstance(peer_id, types.PeerChat):
-                peer_id = peer_id.chat_id
+                peer_id = -peer_id.chat_id
             elif isinstance(peer_id, types.PeerChannel):
                 peer_id = int("-100" + str(peer_id.channel_id))
 
-        try:
+        try:  # User
             return self.peers_by_id[peer_id]
         except KeyError:
-            try:
-                return self.peers_by_id[int("-100" + str(peer_id))]
+            try:  # Chat
+                return self.peers_by_id[-peer_id]
             except KeyError:
-                raise PeerIdInvalid
+                try:  # Channel
+                    return self.peers_by_id[int("-100" + str(peer_id))]
+                except (KeyError, ValueError):
+                    raise PeerIdInvalid
 
     def get_me(self):
         """A simple method for testing the user authorization. Requires no parameters.
@@ -1014,7 +1020,8 @@ class Client:
                    parse_mode: str = "",
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send photos.
 
         Args:
@@ -1047,6 +1054,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1054,7 +1072,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo)
+        file = self.save_file(photo, progress=progress)
 
         while True:
             try:
@@ -1085,7 +1103,8 @@ class Client:
                    performer: str = None,
                    title: str = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice` method instead.
@@ -1124,6 +1143,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1131,7 +1161,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio)
+        file = self.save_file(audio, progress=progress)
 
         while True:
             try:
@@ -1167,7 +1197,8 @@ class Client:
                       caption: str = "",
                       parse_mode: str = "",
                       disable_notification: bool = None,
-                      reply_to_message_id: int = None):
+                      reply_to_message_id: int = None,
+                      progress: callable = None):
         """Use this method to send general files.
 
         Args:
@@ -1195,6 +1226,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1202,7 +1244,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(document)
+        file = self.save_file(document, progress=progress)
 
         while True:
             try:
@@ -1231,7 +1273,8 @@ class Client:
                      chat_id: int or str,
                      sticker: str,
                      disable_notification: bool = None,
-                     reply_to_message_id: int = None):
+                     reply_to_message_id: int = None,
+                     progress: callable = None):
         """Use this method to send .webp stickers.
 
         Args:
@@ -1251,13 +1294,24 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
         Raises:
             :class:`pyrogram.Error`
         """
-        file = self.save_file(sticker)
+        file = self.save_file(sticker, progress=progress)
 
         while True:
             try:
@@ -1290,9 +1344,11 @@ class Client:
                    duration: int = 0,
                    width: int = 0,
                    height: int = 0,
+                   thumb: str = None,
                    supports_streaming: bool = None,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send video files.
 
         Args:
@@ -1322,6 +1378,11 @@ class Client:
             height (:obj:`int`, optional):
                 Video height.
 
+            thumb (:obj:`str`, optional):
+                Video thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+
             supports_streaming (:obj:`bool`, optional):
                 Pass True, if the uploaded video is suitable for streaming.
 
@@ -1332,6 +1393,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message.
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1339,7 +1411,8 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(video)
+        file = self.save_file(video, progress=progress)
+        file_thumb = None if thumb is None else self.save_file(thumb)
 
         while True:
             try:
@@ -1349,6 +1422,7 @@ class Client:
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
                             file=file,
+                            thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=supports_streaming,
@@ -1377,7 +1451,8 @@ class Client:
                    parse_mode: str = "",
                    duration: int = 0,
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   progress: callable = None):
         """Use this method to send audio files.
 
         Args:
@@ -1408,6 +1483,17 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1415,7 +1501,7 @@ class Client:
             :class:`pyrogram.Error`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(voice)
+        file = self.save_file(voice, progress=progress)
 
         while True:
             try:
@@ -1449,7 +1535,8 @@ class Client:
                         duration: int = 0,
                         length: int = 1,
                         disable_notification: bool = None,
-                        reply_to_message_id: int = None):
+                        reply_to_message_id: int = None,
+                        progress: callable = None):
         """Use this method to send video messages.
 
         Args:
@@ -1475,13 +1562,24 @@ class Client:
             reply_to_message_id (:obj:`int`, optional):
                 If the message is a reply, ID of the original message
 
+            progress (:obj:`callable`):
+                Pass a callback function to view the upload progress.
+                The function must accept two arguments (current, total).
+
+        Other Parameters:
+            current (:obj:`int`):
+                The amount of bytes uploaded so far.
+
+            total (:obj:`int`):
+                The size of the file.
+
         Returns:
             On success, the sent Message is returned.
 
         Raises:
             :class:`pyrogram.Error`
         """
-        file = self.save_file(video_note)
+        file = self.save_file(video_note, progress=progress)
 
         while True:
             try:
@@ -1511,6 +1609,7 @@ class Client:
             else:
                 return r
 
+    # TODO: Add progress parameter
     def send_media_group(self,
                          chat_id: int or str,
                          media: list,
@@ -1965,7 +2064,11 @@ class Client:
             )
 
     # TODO: Remove redundant code
-    def save_file(self, path: str, file_id: int = None, file_part: int = 0):
+    def save_file(self,
+                  path: str,
+                  file_id: int = None,
+                  file_part: int = 0,
+                  progress: callable = None):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = math.ceil(file_size / part_size)
@@ -2005,6 +2108,9 @@ class Client:
                         md5_sum.update(chunk)
 
                     file_part += 1
+
+                    if progress:
+                        progress(min(file_part * part_size, file_size), file_size)
         except Exception as e:
             log.error(e)
         else:
@@ -2102,7 +2208,7 @@ class Client:
                         offset += limit
 
                         if progress:
-                            progress(offset, size)
+                            progress(min(offset, size), size)
 
                         r = session.send(
                             functions.upload.GetFile(
@@ -2466,10 +2572,10 @@ class Client:
 
             progress (:obj:`callable`):
                 Pass a callback function to view the download progress.
-                The function must accept two arguments (progress, total).
+                The function must accept two arguments (current, total).
 
         Other Parameters:
-            progress (:obj:`int`):
+            current (:obj:`int`):
                 The amount of bytes downloaded so far.
 
             total (:obj:`int`):
@@ -2648,3 +2754,39 @@ class Client:
                 reply_to_msg_id=reply_to_message_id
             )
         )
+
+    def get_messages(self,
+                     chat_id: int or str,
+                     message_ids: list):
+        """Use this method to get messages that belong to a specific chat.
+        You can retrieve up to 200 messages at once.
+
+        Args:
+            chat_id (:obj:`int` | :obj:`str`):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username). For your personal cloud storage (Saved Messages) you can
+                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+
+            message_ids (:obj:`list`):
+                A list of Message identifiers in the chat specified in *chat_id*.
+
+        Returns:
+            List of the requested messages
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        peer = self.resolve_peer(chat_id)
+        message_ids = [types.InputMessageID(i) for i in message_ids]
+
+        if isinstance(peer, types.InputPeerChannel):
+            rpc = functions.channels.GetMessages(
+                channel=peer,
+                id=message_ids
+            )
+        else:
+            rpc = functions.messages.GetMessages(
+                id=message_ids
+            )
+
+        return self.send(rpc)

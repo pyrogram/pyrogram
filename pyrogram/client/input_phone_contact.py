@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
+from pyrogram.session.internals import MsgId
 
 
 class InputPhoneContact:
@@ -36,7 +37,7 @@ class InputPhoneContact:
 
     def __new__(cls, phone: str, first_name: str, last_name: str = ""):
         return RawInputPhoneContact(
-            client_id=0,
+            client_id=MsgId(),
             phone="+" + phone.strip("+"),
             first_name=first_name,
             last_name=last_name
