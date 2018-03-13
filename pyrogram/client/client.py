@@ -337,13 +337,17 @@ class Client:
                             size=document.size,
                             progress=progress
                         )
-                elif isinstance(media, types.MessageMediaPhoto):
-                    photo = media.photo
+                elif isinstance(media, (types.MessageMediaPhoto, types.Photo)):
+                    if isinstance(media, types.MessageMediaPhoto):
+                        photo = media.photo
+                    else:
+                        photo = media
 
                     if isinstance(photo, types.Photo):
                         if not file_name:
-                            file_name = "photo_{}.jpg".format(
-                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S")
+                            file_name = "photo_{}_{}.jpg".format(
+                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S"),
+                                self.rnd_id()
                             )
 
                         photo_loc = photo.sizes[-1].location
@@ -2587,10 +2591,14 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        if isinstance(message, types.Message):
+        if isinstance(message, (types.Message, types.Photo)):
             done = Event()
-            media = message.media
             path = [None]
+
+            if isinstance(message, types.Message):
+                media = message.media
+            else:
+                media = message
 
             if media is not None:
                 self.download_queue.put((media, file_name, done, progress, path))
@@ -2601,6 +2609,48 @@ class Client:
                 done.wait()
 
             return path[0]
+
+    def download_photo(self,
+                       photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
+                       file_name: str = None,
+                       block: bool = True):
+        """Use this method to download a photo not contained inside a Message.
+        For example, a photo of a User or a Chat/Channel.
+
+        Photos are saved in the *downloads* folder.
+
+        Args:
+            photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
+                The photo object.
+
+            file_name (:obj:`str`, optional):
+                Specify a custom *file_name* to be used.
+
+            block (:obj:`bool`, optional):
+                Blocks the code execution until the photo has been downloaded.
+                Defaults to True.
+
+        Returns:
+            The relative path of the downloaded photo.
+
+        Raises:
+            :class:`pyrogram.Error`
+        """
+        if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
+            photo = types.Photo(
+                id=0,
+                access_hash=0,
+                date=int(time.time()),
+                sizes=[types.PhotoSize(
+                    type="",
+                    location=photo.photo_big,
+                    w=0,
+                    h=0,
+                    size=0
+                )]
+            )
+
+        return self.download_media(photo, file_name, block)
 
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
