@@ -33,6 +33,7 @@ Client
         send_chat_action
         send_sticker
         download_media
+        download_photo
         get_user_profile_photos
         edit_message_text
         edit_message_caption
