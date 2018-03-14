@@ -2742,7 +2742,7 @@ class Client:
                 Useful for location-based results only.
 
         Returns:
-            On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+            On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
             :class:`pyrogram.Error`
