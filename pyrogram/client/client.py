@@ -513,16 +513,16 @@ class Client:
 
             update (:obj:`Update`):
                 The received update, which can be one of the many single Updates listed in the *updates*
-                field you see in the :obj:`types.Update <pyrogram.api.types.Update>` type.
+                field you see in the :obj:`Update <pyrogram.api.types.Update>` type.
 
             users (:obj:`dict`):
-                Dictionary of all :obj:`types.User <pyrogram.api.types.User>` mentioned in the update.
+                Dictionary of all :obj:`User <pyrogram.api.types.User>` mentioned in the update.
                 You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
                 the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
 
             chats (:obj:`dict`):
-                Dictionary of all :obj:`types.Chat <pyrogram.api.types.Chat>` and
-                :obj:`types.Channel <pyrogram.api.types.Channel>` mentioned in the update.
+                Dictionary of all :obj:`Chat <pyrogram.api.types.Chat>` and
+                :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
                 You can access extra info about the chat (such as *title*, *participants_count*, etc...)
                 by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
 
@@ -530,10 +530,10 @@ class Client:
             The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
             They mean you have been blocked by the user or banned from the group/channel.
 
-            - :obj:`types.UserEmpty <pyrogram.api.types.UserEmpty>`
-            - :obj:`types.ChatEmpty <pyrogram.api.types.ChatEmpty>`
-            - :obj:`types.ChatForbidden <pyrogram.api.types.ChatForbidden>`
-            - :obj:`types.ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
+            - :obj:`UserEmpty <pyrogram.api.types.UserEmpty>`
+            - :obj:`ChatEmpty <pyrogram.api.types.ChatEmpty>`
+            - :obj:`ChatForbidden <pyrogram.api.types.ChatForbidden>`
+            - :obj:`ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
         """
         self.update_handler = callback
 
@@ -2742,7 +2742,7 @@ class Client:
                 Useful for location-based results only.
 
         Returns:
-            On Success, `BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+            On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
 
         Raises:
             :class:`pyrogram.Error`
