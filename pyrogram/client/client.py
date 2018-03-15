@@ -201,6 +201,8 @@ class Client:
         if self.token is None:
             self.get_dialogs()
             self.get_contacts()
+        else:
+            self.send(functions.updates.GetState())
 
         self.rnd_id = MsgId
 
