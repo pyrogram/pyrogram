@@ -41,7 +41,7 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound)
+    VolumeLocNotFound, UserMigrate)
 from pyrogram.api.types import (
     User, Chat, Channel,
     PeerUser, PeerChannel,
@@ -123,6 +123,7 @@ class Client:
                  api_key: tuple or ApiKey = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
+                 token: str = None,
                  phone_number: str = None,
                  phone_code: str or callable = None,
                  password: str = None,
@@ -134,6 +135,7 @@ class Client:
         self.proxy = proxy
         self.test_mode = test_mode
 
+        self.token = token
         self.phone_number = phone_number
         self.password = password
         self.phone_code = phone_code
@@ -186,18 +188,21 @@ class Client:
             client=self
         )
 
-        terms = self.session.start()
+        self.session.start()
 
         if self.user_id is None:
-            print("\n".join(terms.splitlines()), "\n")
+            if self.token is None:
+                self.authorize_user()
+            else:
+                self.authorize_bot()
 
-            self.user_id = self.authorize()
-            self.password = None
             self.save_session()
 
+        if self.token is None:
+            self.get_dialogs()
+            self.get_contacts()
+
         self.rnd_id = MsgId
-        self.get_dialogs()
-        self.get_contacts()
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
@@ -224,6 +229,199 @@ class Client:
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
+
+    def authorize_bot(self):
+        try:
+            r = self.send(
+                functions.auth.ImportBotAuthorization(
+                    flags=0,
+                    api_id=self.api_key.api_id,
+                    api_hash=self.api_key.api_hash,
+                    bot_auth_token=self.token
+                )
+            )
+        except UserMigrate as e:
+            self.session.stop()
+
+            self.dc_id = e.x
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+
+            self.session = Session(
+                self.dc_id,
+                self.test_mode,
+                self.proxy,
+                self.auth_key,
+                self.api_key.api_id,
+                client=self
+            )
+
+            self.session.start()
+            self.authorize_bot()
+        else:
+            self.user_id = r.user.id
+
+    def authorize_user(self):
+        phone_number_invalid_raises = self.phone_number is not None
+        phone_code_invalid_raises = self.phone_code is not None
+        password_hash_invalid_raises = self.password is not None
+        first_name_invalid_raises = self.first_name is not None
+
+        while True:
+            if self.phone_number is None:
+                self.phone_number = input("Enter phone number: ")
+
+                while True:
+                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
+
+                    if confirm in ("y", "1"):
+                        break
+                    elif confirm in ("n", "2"):
+                        self.phone_number = input("Enter phone number: ")
+
+            self.phone_number = self.phone_number.strip("+")
+
+            try:
+                r = self.send(
+                    functions.auth.SendCode(
+                        self.phone_number,
+                        self.api_key.api_id,
+                        self.api_key.api_hash
+                    )
+                )
+            except (PhoneMigrate, NetworkMigrate) as e:
+                self.session.stop()
+
+                self.dc_id = e.x
+                self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+
+                self.session = Session(
+                    self.dc_id,
+                    self.test_mode,
+                    self.proxy,
+                    self.auth_key,
+                    self.api_key.api_id,
+                    client=self
+                )
+                self.session.start()
+
+                r = self.send(
+                    functions.auth.SendCode(
+                        self.phone_number,
+                        self.api_key.api_id,
+                        self.api_key.api_hash
+                    )
+                )
+                break
+            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
+                if phone_number_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_number = None
+            except FloodWait as e:
+                print(e.MESSAGE.format(x=e.x))
+                time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+            else:
+                break
+
+        phone_registered = r.phone_registered
+        phone_code_hash = r.phone_code_hash
+
+        while True:
+            self.phone_code = (
+                input("Enter phone code: ") if self.phone_code is None
+                else self.phone_code if type(self.phone_code) is str
+                else self.phone_code()
+            )
+
+            try:
+                if phone_registered:
+                    r = self.send(
+                        functions.auth.SignIn(
+                            self.phone_number,
+                            phone_code_hash,
+                            self.phone_code
+                        )
+                    )
+                else:
+                    try:
+                        self.send(
+                            functions.auth.SignIn(
+                                self.phone_number,
+                                phone_code_hash,
+                                self.phone_code
+                            )
+                        )
+                    except PhoneNumberUnoccupied:
+                        pass
+
+                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
+                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
+
+                    r = self.send(
+                        functions.auth.SignUp(
+                            self.phone_number,
+                            phone_code_hash,
+                            self.phone_code,
+                            self.first_name,
+                            self.last_name
+                        )
+                    )
+            except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
+                if phone_code_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_code = None
+            except FirstnameInvalid as e:
+                if first_name_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.first_name = None
+            except SessionPasswordNeeded as e:
+                print(e.MESSAGE)
+                r = self.send(functions.account.GetPassword())
+
+                while True:
+                    try:
+
+                        if self.password is None:
+                            print("Hint: {}".format(r.hint))
+                            self.password = input("Enter password: ")  # TODO: Use getpass
+
+                        if type(self.password) is str:
+                            self.password = r.current_salt + self.password.encode() + r.current_salt
+
+                        password_hash = sha256(self.password).digest()
+
+                        r = self.send(functions.auth.CheckPassword(password_hash))
+                    except PasswordHashInvalid as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
+                    except FloodWait as e:
+                        print(e.MESSAGE.format(x=e.x))
+                        time.sleep(e.x)
+                    except Exception as e:
+                        log.error(e, exc_info=True)
+                    else:
+                        break
+                break
+            except FloodWait as e:
+                print(e.MESSAGE.format(x=e.x))
+                time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+            else:
+                break
+
+        self.password = None
+        self.user_id = r.user.id
 
     def fetch_peers(self, entities: list):
         for entity in entities:
@@ -557,168 +755,6 @@ class Client:
         self.fetch_peers(getattr(r, "chats", []))
 
         return r
-
-    def authorize(self):
-        phone_number_invalid_raises = self.phone_number is not None
-        phone_code_invalid_raises = self.phone_code is not None
-        password_hash_invalid_raises = self.password is not None
-        first_name_invalid_raises = self.first_name is not None
-
-        while True:
-            if self.phone_number is None:
-                self.phone_number = input("Enter phone number: ")
-
-                while True:
-                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
-
-                    if confirm in ("y", "1"):
-                        break
-                    elif confirm in ("n", "2"):
-                        self.phone_number = input("Enter phone number: ")
-
-            self.phone_number = self.phone_number.strip("+")
-
-            try:
-                r = self.send(
-                    functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
-                    )
-                )
-            except (PhoneMigrate, NetworkMigrate) as e:
-                self.session.stop()
-
-                self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
-
-                self.session = Session(
-                    self.dc_id,
-                    self.test_mode,
-                    self.proxy,
-                    self.auth_key,
-                    self.api_key.api_id,
-                    client=self
-                )
-                self.session.start()
-
-                r = self.send(
-                    functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
-                    )
-                )
-                break
-            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
-                if phone_number_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.phone_number = None
-            except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
-            else:
-                break
-
-        phone_registered = r.phone_registered
-        phone_code_hash = r.phone_code_hash
-
-        while True:
-            self.phone_code = (
-                input("Enter phone code: ") if self.phone_code is None
-                else self.phone_code if type(self.phone_code) is str
-                else self.phone_code()
-            )
-
-            try:
-                if phone_registered:
-                    r = self.send(
-                        functions.auth.SignIn(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code
-                        )
-                    )
-                else:
-                    try:
-                        self.send(
-                            functions.auth.SignIn(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code
-                            )
-                        )
-                    except PhoneNumberUnoccupied:
-                        pass
-
-                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
-                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
-
-                    r = self.send(
-                        functions.auth.SignUp(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code,
-                            self.first_name,
-                            self.last_name
-                        )
-                    )
-            except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
-                if phone_code_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.phone_code = None
-            except FirstnameInvalid as e:
-                if first_name_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.first_name = None
-            except SessionPasswordNeeded as e:
-                print(e.MESSAGE)
-                r = self.send(functions.account.GetPassword())
-
-                while True:
-                    try:
-
-                        if self.password is None:
-                            print("Hint: {}".format(r.hint))
-                            self.password = input("Enter password: ")  # TODO: Use getpass
-
-                        if type(self.password) is str:
-                            self.password = r.current_salt + self.password.encode() + r.current_salt
-
-                        password_hash = sha256(self.password).digest()
-
-                        r = self.send(functions.auth.CheckPassword(password_hash))
-                    except PasswordHashInvalid as e:
-                        if password_hash_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
-                    except FloodWait as e:
-                        print(e.MESSAGE.format(x=e.x))
-                        time.sleep(e.x)
-                    except Exception as e:
-                        log.error(e, exc_info=True)
-                    else:
-                        break
-                break
-            except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
-            else:
-                break
-
-        return r.user.id
 
     def load_config(self):
         parser = ConfigParser()
