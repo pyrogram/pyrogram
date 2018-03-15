@@ -122,8 +122,6 @@ class Session:
         self.is_connected = Event()
 
     def start(self):
-        terms = None
-
         while True:
             try:
                 self.connection.connect()
@@ -141,7 +139,7 @@ class Session:
                 self.next_salt_thread.start()
 
                 if not self.is_cdn:
-                    terms = self._send(
+                    self._send(
                         functions.InvokeWithLayer(
                             layer,
                             functions.InitConnection(
@@ -150,10 +148,10 @@ class Session:
                                 self.SYSTEM_VERSION,
                                 self.APP_VERSION,
                                 "en", "", "en",
-                                functions.help.GetTermsOfService(),
+                                functions.help.GetConfig(),
                             )
                         )
-                    ).text
+                    )
 
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
@@ -167,8 +165,6 @@ class Session:
         self.is_connected.set()
 
         log.debug("Session started")
-
-        return terms
 
     def stop(self):
         self.is_connected.clear()
