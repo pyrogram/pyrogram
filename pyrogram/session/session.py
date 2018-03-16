@@ -186,6 +186,9 @@ class Session:
         for i in range(self.NET_WORKERS):
             self.recv_queue.put(None)
 
+        for i in self.results.values():
+            i.event.set()
+
         log.debug("Session stopped")
 
     def restart(self):
