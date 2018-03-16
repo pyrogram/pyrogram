@@ -400,7 +400,7 @@ class Session:
             try:
                 return self._send(data)
             except (OSError, TimeoutError):
-                log.warning("Retrying {}".format(type(data)))
+                (log.warning if i > 0 else log.info)("{}: {} Retrying {}".format(i, datetime.now(), type(data)))
                 continue
         else:
             return None
