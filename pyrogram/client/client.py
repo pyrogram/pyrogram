@@ -23,6 +23,7 @@ import math
 import mimetypes
 import os
 import re
+import struct
 import threading
 import time
 from collections import namedtuple
@@ -915,6 +916,12 @@ class Client:
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
                 return InputPeerSelf()
+
+            match = self.INVITE_LINK_RE.match(peer_id)
+
+            if match:
+                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), altchars="-_")
+                return self.resolve_peer(struct.unpack(">2iq", decoded)[1])
 
             peer_id = peer_id.lower().strip("@+")
 
