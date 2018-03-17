@@ -88,6 +88,10 @@ class Client:
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
+        token (:obj:`str`, optional):
+            Pass your Bot API token to log-in as Bot.
+            E.g.: 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+
         phone_number (:obj:`str`, optional):
             Pass your phone number (with your Country Code prefix included) to avoid
             entering it manually. Only applicable for new sessions.
