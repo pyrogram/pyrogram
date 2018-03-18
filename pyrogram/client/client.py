@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import base64
+import binascii
 import json
 import logging
 import math
@@ -919,9 +920,11 @@ class Client:
 
             match = self.INVITE_LINK_RE.match(peer_id)
 
-            if match:
-                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), altchars="-_")
+            try:
+                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), "-_")
                 return self.resolve_peer(struct.unpack(">2iq", decoded)[1])
+            except (AttributeError, binascii.Error, struct.error):
+                pass
 
             peer_id = peer_id.lower().strip("@+")
 
