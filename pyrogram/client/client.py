@@ -175,6 +175,9 @@ class Client:
 
         self.download_queue = Queue()
 
+        self.load_session_hook = None
+        self.save_session_hook = None
+
     def start(self):
         """Use this method to start the Client after creating it.
         Requires no parameters.
@@ -183,7 +186,10 @@ class Client:
             :class:`pyrogram.Error`
         """
         self.load_config()
-        self.load_session(self.session_name)
+        if callable(self.load_session_hook):
+            self.load_session_hook(self)
+        else:
+            self.load_session(self.session_name)
 
         self.session = Session(
             self.dc_id,
@@ -202,7 +208,10 @@ class Client:
             else:
                 self.authorize_bot()
 
-            self.save_session()
+            if callable(self.save_session_hook):
+                self.save_session_hook(self)
+            else:
+                self.save_session()
 
         if self.token is None:
             self.get_dialogs()
