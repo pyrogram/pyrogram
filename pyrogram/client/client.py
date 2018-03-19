@@ -455,7 +455,7 @@ class Client:
                 self.peers_by_id[user_id] = input_peer
 
                 if username is not None:
-                    self.peers_by_username[username] = input_peer
+                    self.peers_by_username[username.lower()] = input_peer
 
                 if phone is not None:
                     self.peers_by_phone[phone] = input_peer
@@ -495,7 +495,7 @@ class Client:
                 self.peers_by_id[peer_id] = input_peer
 
                 if username is not None:
-                    self.peers_by_username[username] = input_peer
+                    self.peers_by_username[username.lower()] = input_peer
 
     def download_worker(self):
         name = threading.current_thread().name
@@ -889,7 +889,7 @@ class Client:
         else:
             raise PeerIdInvalid
 
-        self.peers_by_username[username] = input_peer
+        self.peers_by_username[username.lower()] = input_peer
         self.peers_by_id[peer_id] = input_peer
 
         return input_peer
