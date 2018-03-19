@@ -17,6 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .chat_action import ChatAction
-from .client import Client, Proxy
+from .client import Client, ApiKey, Proxy
 from .parse_mode import ParseMode
 from .emoji import Emoji

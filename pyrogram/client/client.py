@@ -190,15 +190,14 @@ class Client:
             self.load_session_hook(self)
         else:
             self.load_session(self.session_name)
-
-        self.session = Session(
-            self.dc_id,
-            self.test_mode,
-            self.proxy,
-            self.auth_key,
-            self.api_key.api_id,
-            client=self
-        )
+            self.session = Session(
+                self.dc_id,
+                self.test_mode,
+                self.proxy,
+                self.auth_key,
+                self.api_key.api_id,
+                client=self
+            )
 
         self.session.start()
 
