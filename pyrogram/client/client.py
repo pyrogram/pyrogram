@@ -639,9 +639,6 @@ class Client:
                         )
                     )
 
-                    self.fetch_peers(diff.users)
-                    self.fetch_peers(diff.chats)
-
                     self.update_queue.put((
                         types.UpdateNewMessage(
                             message=diff.new_messages[0],
