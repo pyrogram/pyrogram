@@ -53,7 +53,7 @@ class AES:
 
     @staticmethod
     def ctr_decrypt(data: bytes, key: bytes, iv: bytes, offset: int) -> bytes:
-        replace = int.to_bytes(offset // 16, byteorder="big", length=4)
+        replace = int.to_bytes(offset // 16, 4, "big")
         iv = iv[:-4] + replace
 
         if is_fast:
