@@ -154,7 +154,7 @@ class Client:
         self.auth_key = None
         self.user_id = None
 
-        self.rnd_id = None
+        self.rnd_id = MsgId
 
         self.peers_by_id = {}
         self.peers_by_username = {}
@@ -167,6 +167,7 @@ class Client:
 
         self.session = None
 
+        self.is_started = None
         self.is_idle = None
 
         self.updates_queue = Queue()
@@ -195,6 +196,7 @@ class Client:
         )
 
         self.session.start()
+        self.is_started = True
 
         if self.user_id is None:
             if self.token is None:
@@ -209,8 +211,6 @@ class Client:
             self.get_contacts()
         else:
             self.send(functions.updates.GetState())
-
-        self.rnd_id = MsgId
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
@@ -227,6 +227,7 @@ class Client:
         """Use this method to manually stop the Client.
         Requires no parameters.
         """
+        self.is_started = False
         self.session.stop()
 
         for _ in range(self.UPDATES_WORKERS):
@@ -754,12 +755,15 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
-        r = self.session.send(data)
+        if self.is_started:
+            r = self.session.send(data)
 
-        self.fetch_peers(getattr(r, "users", []))
-        self.fetch_peers(getattr(r, "chats", []))
+            self.fetch_peers(getattr(r, "users", []))
+            self.fetch_peers(getattr(r, "chats", []))
 
-        return r
+            return r
+        else:
+            raise ConnectionError("client '{}' is not started".format(self.session_name))
 
     def load_config(self):
         parser = ConfigParser()
