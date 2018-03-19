@@ -865,35 +865,6 @@ class Client:
             offset_date = parse_dialogs(dialogs)
             log.info("Entities count: {}".format(len(self.peers_by_id)))
 
-    def resolve_username(self, username: str):
-        username = username.lower().strip("@")
-
-        resolved_peer = self.send(
-            functions.contacts.ResolveUsername(
-                username=username
-            )
-        )  # type: types.contacts.ResolvedPeer
-
-        if type(resolved_peer.peer) is PeerUser:
-            input_peer = InputPeerUser(
-                user_id=resolved_peer.users[0].id,
-                access_hash=resolved_peer.users[0].access_hash
-            )
-            peer_id = input_peer.user_id
-        elif type(resolved_peer.peer) is PeerChannel:
-            input_peer = InputPeerChannel(
-                channel_id=resolved_peer.chats[0].id,
-                access_hash=resolved_peer.chats[0].access_hash
-            )
-            peer_id = int("-100" + str(input_peer.channel_id))
-        else:
-            raise PeerIdInvalid
-
-        self.peers_by_username[username.lower()] = input_peer
-        self.peers_by_id[peer_id] = input_peer
-
-        return input_peer
-
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
 
@@ -934,7 +905,8 @@ class Client:
                 try:
                     return self.peers_by_username[peer_id]
                 except KeyError:
-                    return self.resolve_username(peer_id)
+                    self.send(functions.contacts.ResolveUsername(peer_id))
+                    return self.peers_by_username[peer_id]
             else:
                 try:
                     return self.peers_by_phone[peer_id]
