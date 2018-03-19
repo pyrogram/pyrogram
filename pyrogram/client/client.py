@@ -633,9 +633,6 @@ class Client:
                                 )
                             )
 
-                            self.fetch_peers(diff.users)
-                            self.fetch_peers(diff.chats)
-
                             updates.users += diff.users
                             updates.chats += diff.chats
 
