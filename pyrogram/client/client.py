@@ -46,7 +46,6 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate)
 from pyrogram.api.types import (
     User, Chat, Channel,
-    PeerUser, PeerChannel,
     InputPeerEmpty, InputPeerSelf,
     InputPeerUser, InputPeerChat, InputPeerChannel
 )
