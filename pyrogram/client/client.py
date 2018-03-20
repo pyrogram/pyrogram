@@ -2668,7 +2668,7 @@ class Client:
         """
 
         if file_name is not None and file_dir is not None:
-            ValueError('file_name and file_dir may not be specified together.')
+            raise ValueError('file_name and file_dir may not be specified together.')
 
         if isinstance(message, (types.Message, types.Photo)):
             done = Event()
