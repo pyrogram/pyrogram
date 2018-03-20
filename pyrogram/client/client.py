@@ -2247,10 +2247,9 @@ class Client:
                 version=version
             )
 
-        fd, file_name = tempfile.mkstemp()
-
         limit = 1024 * 1024
         offset = 0
+        file_name = None
 
         try:
             r = session.send(
@@ -2260,6 +2259,8 @@ class Client:
                     limit=limit
                 )
             )
+
+            fd, file_name = tempfile.mkstemp()
 
             if isinstance(r, types.upload.File):
                 with os.fdopen(fd, "wb") as f:
@@ -2374,10 +2375,11 @@ class Client:
         except Exception as e:
             log.error(e, exc_info=True)
 
-            try:
-                os.remove(file_name)
-            except OSError:
-                pass
+            if file_name:
+                try:
+                    os.remove(file_name)
+                except OSError:
+                    pass
         else:
             return file_name
         finally:
