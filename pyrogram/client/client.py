@@ -2248,6 +2248,8 @@ class Client:
 
             elif isinstance(file_out, str):
                 f = open(file_out, 'wb')
+                close_file = True
+
             elif hasattr(file_out, 'write'):
                 f = file_out
 
@@ -2367,7 +2369,7 @@ class Client:
         else:
             return file_out
         finally:
-            if close_file and f and hasattr(f, 'close'):
+            if close_file and f is not None:
                 f.close()
             session.stop()
 
