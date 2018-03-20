@@ -2341,7 +2341,7 @@ class Client:
                 finally:
                     cdn_session.stop()
         except Exception as e:
-            log.error(e)
+            log.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)
