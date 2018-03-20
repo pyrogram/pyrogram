@@ -510,7 +510,7 @@ class Client:
                 break
 
             try:
-                media, file_name, done, progress, path = media
+                media, file_dir, file_name, done, progress, path = media
 
                 if isinstance(media, types.MessageMediaDocument):
                     document = media.document
@@ -536,6 +536,8 @@ class Client:
                                 elif isinstance(i, types.DocumentAttributeAnimated):
                                     file_name = file_name.replace("doc", "gif")
 
+                            file_name = os.path.join(file_dir if file_dir is not None else '', file_name)
+
                         self.get_file(
                             dc_id=document.dc_id,
                             id=document.id,
@@ -557,6 +559,8 @@ class Client:
                                 datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S"),
                                 self.rnd_id()
                             )
+
+                            file_name = os.path.join(file_dir if file_dir is not None else '', file_name)
 
                         photo_loc = photo.sizes[-1].location
 
@@ -2614,6 +2618,7 @@ class Client:
     def download_media(self,
                        message: types.Message,
                        file_name: str = None,
+                       file_dir: str = 'downloads',
                        block: bool = True,
                        progress: callable = None):
         """Use this method to download the media from a Message.
@@ -2624,6 +2629,14 @@ class Client:
 
             file_name (:obj:`str`, optional):
                 Specify a custom *file_name* to be used instead of the one provided by Telegram.
+                This parameter is expected to be a full file path to the location you want the
+                file to be placed. If not specified, the file will be put into the directory
+                specified by *file_dir* with a generated name.
+
+            file_dir (:obj:`str`, optional):
+                Specify a directory to place the file in if no *file_name* is specified.
+                If *file_dir* is *None*, the current working directory is used. The default
+                value is the "downloads" folder in the current working directory.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the file has been downloaded.
@@ -2656,7 +2669,7 @@ class Client:
                 media = message
 
             if media is not None:
-                self.download_queue.put((media, file_name, done, progress, path))
+                self.download_queue.put((media, file_dir, file_name, done, progress, path))
             else:
                 return
 
