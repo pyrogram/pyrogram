@@ -2299,6 +2299,17 @@ class Client:
                 cdn_session.start()
 
                 try:
+                    # cant fdopen the closed file descriptor from above
+                    # which is closed due to the with statement in the branch just above
+                    # make a new temp file to write to
+
+                    try:
+                        os.remove(file_name)
+                    except OSError:
+                        pass
+
+                    fd, file_name = tempfile.mkstemp()
+
                     with os.fdopen(fd, "wb") as f:
                         while True:
                             r2 = cdn_session.send(
