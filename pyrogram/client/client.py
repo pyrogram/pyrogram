@@ -2622,7 +2622,7 @@ class Client:
     def download_media(self,
                        message: types.Message,
                        file_name: str = None,
-                       file_dir: str = 'downloads',
+                       file_dir: str = None,
                        block: bool = True,
                        progress: callable = None
                        ):
@@ -2669,6 +2669,9 @@ class Client:
 
         if file_name is not None and file_dir is not None:
             raise ValueError('file_name and file_dir may not be specified together.')
+
+        if file_name is None and file_dir is None:
+            file_dir = 'downloads'
 
         if isinstance(message, (types.Message, types.Photo)):
             done = Event()
