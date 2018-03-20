@@ -54,6 +54,7 @@ class Connection:
 
     def close(self):
         self.connection.close()
+        log.info("Disconnected")
 
     def send(self, data: bytes):
         with self.lock:
