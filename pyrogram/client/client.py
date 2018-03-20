@@ -512,6 +512,10 @@ class Client:
             try:
                 media, file_dir, file_name, done, progress, path = media
 
+                if file_dir is not None:
+                    # Make file_dir if it was specified
+                    os.makedirs(file_dir, exist_ok=True)
+
                 if isinstance(media, types.MessageMediaDocument):
                     document = media.document
 
@@ -2620,7 +2624,8 @@ class Client:
                        file_name: str = None,
                        file_dir: str = 'downloads',
                        block: bool = True,
-                       progress: callable = None):
+                       progress: callable = None
+                       ):
         """Use this method to download the media from a Message.
 
         Args:
@@ -2636,7 +2641,8 @@ class Client:
             file_dir (:obj:`str`, optional):
                 Specify a directory to place the file in if no *file_name* is specified.
                 If *file_dir* is *None*, the current working directory is used. The default
-                value is the "downloads" folder in the current working directory.
+                value is the "downloads" folder in the current working directory.  The
+                directory tree will be created if it does not exist.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the file has been downloaded.
@@ -2658,6 +2664,7 @@ class Client:
 
         Raises:
             :class:`pyrogram.Error`
+            :class:`ValueError` if both file_name and file_dir are specified.
         """
 
         if file_name is not None and file_dir is not None:
@@ -2685,6 +2692,7 @@ class Client:
     def download_photo(self,
                        photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
                        file_name: str = None,
+                       file_dir: str = None,
                        block: bool = True):
         """Use this method to download a photo not contained inside a Message.
         For example, a photo of a User or a Chat/Channel.
@@ -2696,7 +2704,16 @@ class Client:
                 The photo object.
 
             file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used.
+                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+                This parameter is expected to be a full file path to the location you want the
+                photo to be placed. If not specified, the photo will be put into the directory
+                specified by *file_dir* with a generated name.
+
+            file_dir (:obj:`str`, optional):
+                Specify a directory to place the photo in if no *file_name* is specified.
+                If *file_dir* is *None*, the current working directory is used. The default
+                value is the "downloads" folder in the current working directory.  The
+                directory tree will be created if it does not exist.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the photo has been downloaded.
@@ -2722,7 +2739,7 @@ class Client:
                 )]
             )
 
-        return self.download_media(photo, file_name, block)
+        return self.download_media(photo, file_name, file_dir, block)
 
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
