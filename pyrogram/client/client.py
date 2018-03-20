@@ -2640,8 +2640,8 @@ class Client:
             file_name (:obj:`str`, optional):
                 Specify a custom *file_name* to be used instead of the one provided by Telegram.
                 This parameter is expected to be a full file path to the location you want the
-                file to be placed. If not specified, the file will be put into the directory
-                specified by *file_dir* with a generated name.
+                file to be placed, or a file like object. If not specified, the file will
+                be put into the directory specified by *file_dir* with a generated name.
 
             file_dir (:obj:`str`, optional):
                 Specify a directory to place the file in if no *file_name* is specified.
@@ -2714,8 +2714,8 @@ class Client:
             file_name (:obj:`str`, optional):
                 Specify a custom *file_name* to be used instead of the one provided by Telegram.
                 This parameter is expected to be a full file path to the location you want the
-                photo to be placed. If not specified, the photo will be put into the directory
-                specified by *file_dir* with a generated name.
+                photo to be placed, or a file like object. If not specified, the photo will
+                be put into the directory specified by *file_dir* with a generated name.
 
             file_dir (:obj:`str`, optional):
                 Specify a directory to place the photo in if no *file_name* is specified.
