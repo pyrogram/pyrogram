@@ -567,6 +567,9 @@ class Client:
                             progress=progress
                         )
 
+                if tmp_file_name is None:
+                    return None
+
                 if file_name is not None:
                     path[0] = "downloads/{}".format(file_name)
 
@@ -2334,11 +2337,16 @@ class Client:
                             if len(chunk) < limit:
                                 break
                 except Exception as e:
-                    log.error(e)
+                    raise e
                 finally:
                     cdn_session.stop()
         except Exception as e:
             log.error(e)
+
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
         else:
             return file_name
         finally:
