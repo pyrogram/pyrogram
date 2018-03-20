@@ -1,6 +1,6 @@
 ## Include
 include COPYING COPYING.lesser NOTICE
-recursive-include compiler *.tl *.tsv *.txt
+recursive-include compiler *.py *.tl *.tsv *.txt
 
 ## Exclude
 prune pyrogram/api/errors/exceptions
