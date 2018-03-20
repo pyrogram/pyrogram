@@ -2299,8 +2299,8 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    # cant fdopen the closed file descriptor from above
-                    # which is closed due to the with statement in the branch just above
+                    # cant fdopen the closed file descriptor which could be closed due
+                    # to the with statement in the branch just above.
                     # make a new temp file to write to
 
                     try:
