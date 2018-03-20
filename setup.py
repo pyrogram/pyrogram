@@ -78,7 +78,7 @@ setup(
         "Documentation": "https://docs.pyrogram.ml",
     },
     python_requires="~=3.3",
-    packages=find_packages(),
+    packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
     install_requires=[
         "pyaes",
@@ -88,6 +88,5 @@ setup(
         "tgcrypto": [
             "tgcrypto"
         ]
-    },
-    include_package_data=True,
+    }
 )
