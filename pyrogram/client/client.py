@@ -516,7 +516,7 @@ class Client:
                     # Make file_dir if it was specified
                     os.makedirs(file_dir, exist_ok=True)
 
-                if file_name is not None:
+                if isinstance(file_name, str) and file_name is not None:
                     os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
                 if isinstance(media, types.MessageMediaDocument):
