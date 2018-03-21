@@ -575,7 +575,7 @@ class Client:
                         )
 
                 if temp_file_path:
-                    final_file_path = re.sub("\\\\", "/", os.path.join(directory, file_name))
+                    final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
                     os.makedirs(directory, exist_ok=True)
                     shutil.move(temp_file_path, final_file_path)
             except Exception as e:
