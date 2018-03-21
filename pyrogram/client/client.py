@@ -574,13 +574,8 @@ class Client:
 
                 if temp_file_path:
                     final_file_path = os.path.join(directory, file_name)
-
-                    try:
-                        os.remove(final_file_path)
-                    except OSError:
-                        pass
-
-                    os.renames(temp_file_path, final_file_path)
+                    os.makedirs(directory, exist_ok=True)
+                    shutil.move(temp_file_path, final_file_path)
             except Exception as e:
                 log.error(e, exc_info=True)
 
