@@ -2250,7 +2250,7 @@ class Client:
 
         limit = 1024 * 1024
         offset = 0
-        file_name = None
+        fd, file_name = tempfile.mkstemp()
 
         try:
             r = session.send(
@@ -2260,8 +2260,6 @@ class Client:
                     limit=limit
                 )
             )
-
-            fd, file_name = tempfile.mkstemp()
 
             if isinstance(r, types.upload.File):
                 with os.fdopen(fd, "wb") as f:
@@ -2288,7 +2286,7 @@ class Client:
                             )
                         )
 
-            if isinstance(r, types.upload.FileCdnRedirect):
+            elif isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
@@ -2301,17 +2299,6 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    # cant fdopen the closed file descriptor which could be closed due
-                    # to the with statement in the branch just above.
-                    # make a new temp file to write to
-
-                    try:
-                        os.remove(file_name)
-                    except OSError:
-                        pass
-
-                    fd, file_name = tempfile.mkstemp()
-
                     with os.fdopen(fd, "wb") as f:
                         while True:
                             r2 = cdn_session.send(
@@ -2376,11 +2363,10 @@ class Client:
         except Exception as e:
             log.error(e, exc_info=True)
 
-            if file_name:
-                try:
-                    os.remove(file_name)
-                except OSError:
-                    pass
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
         else:
             return file_name
         finally:
