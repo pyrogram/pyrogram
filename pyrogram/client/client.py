@@ -582,6 +582,9 @@ class Client:
                             progress=progress
                         )
 
+                if tmp_file_name is None:
+                    return None
+
                 if file_name is not None:
                     path[0] = os.path.join(download_directory, file_name)
 
