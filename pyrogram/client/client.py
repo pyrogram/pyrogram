@@ -35,9 +35,7 @@ from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 import tempfile
-
 import shutil
-
 import errno
 
 from pyrogram.api import functions, types
@@ -599,7 +597,7 @@ class Client:
                         else:
                             os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-                        # avoid errors moving between drives on windows
+                        # avoid errors moving between drives/partitions etc.
                         shutil.move(tmp_file_name, os.path.join(download_directory, file_name))
                     except OSError as e:
                         log.error(e, exc_info=True)
