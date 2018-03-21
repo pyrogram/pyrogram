@@ -609,7 +609,7 @@ class Client:
                 try:
                     os.remove(tmp_file_name)
                 except OSError as e:
-                    if not e.errno == errno.ENOENT:
+                    if e.errno != errno.ENOENT:
                         log.error(e, exc_info=True)
 
         log.debug("{} stopped".format(name))
