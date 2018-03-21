@@ -2250,7 +2250,7 @@ class Client:
 
         limit = 1024 * 1024
         offset = 0
-        fd, file_name = tempfile.mkstemp()
+        file_name = None
 
         try:
             r = session.send(
@@ -2262,7 +2262,9 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with os.fdopen(fd, "wb") as f:
+                with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                    file_name = f.name
+
                     while True:
                         chunk = r.bytes
 
@@ -2299,7 +2301,8 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    with os.fdopen(fd, "wb") as f:
+                    with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                        file_name = f.name
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
