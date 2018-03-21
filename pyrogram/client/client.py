@@ -24,12 +24,11 @@ import math
 import mimetypes
 import os
 import re
+import shutil
 import struct
 import tempfile
 import threading
 import time
-import shutil
-
 from collections import namedtuple
 from configparser import ConfigParser
 from datetime import datetime
@@ -2617,14 +2616,15 @@ class Client:
                        progress: callable = None):
         """Use this method to download the media from a Message.
 
-        Files are saved in the *downloads* folder.
-
         Args:
             message (:obj:`Message <pyrogram.api.types.Message>`):
                 The Message containing the media.
 
             file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all files are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading files in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the file has been downloaded.
@@ -2642,7 +2642,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            The relative path of the downloaded file.
+            On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
             :class:`pyrogram.Error`
@@ -2673,21 +2673,22 @@ class Client:
         """Use this method to download a photo not contained inside a Message.
         For example, a photo of a User or a Chat/Channel.
 
-        Photos are saved in the *downloads* folder.
-
         Args:
             photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
                 The photo object.
 
             file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used.
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all photos are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading photos in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the photo has been downloaded.
                 Defaults to True.
 
         Returns:
-            The relative path of the downloaded photo.
+            On success, the absolute path of the downloaded photo as string is returned, None otherwise.
 
         Raises:
             :class:`pyrogram.Error`
