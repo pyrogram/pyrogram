@@ -81,12 +81,7 @@ setup(
     packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
     install_requires=[
-        "pyaes",
-        "pysocks"
-    ],
-    extras_require={
-        "tgcrypto": [
-            "tgcrypto"
-        ]
-    }
+        "pysocks",
+        "tgcrypto"
+    ]
 )
