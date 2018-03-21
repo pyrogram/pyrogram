@@ -28,6 +28,8 @@ import struct
 import tempfile
 import threading
 import time
+import shutil
+
 from collections import namedtuple
 from configparser import ConfigParser
 from datetime import datetime
