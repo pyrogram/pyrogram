@@ -122,7 +122,7 @@ class Client:
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)?([\w-]+)$")
     DIALOGS_AT_ONCE = 100
-    UPDATES_WORKERS = 2
+    UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
 
     def __init__(self,
@@ -619,6 +619,25 @@ class Client:
                         ) or getattr(update, "channel_id", None)
 
                         pts = getattr(update, "pts", None)
+                        pts_count = getattr(update, "pts_count", None)
+
+                        if isinstance(update, types.UpdateNewChannelMessage):
+                            diff = self.send(
+                                functions.updates.GetChannelDifference(
+                                    channel=self.resolve_peer(update.message.to_id.channel_id),
+                                    filter=types.ChannelMessagesFilter(
+                                        ranges=[types.MessageRange(
+                                            min_id=update.message.id,
+                                            max_id=update.message.id
+                                        )]
+                                    ),
+                                    pts=pts - pts_count,
+                                    limit=pts
+                                )
+                            )
+
+                            updates.users += diff.users
+                            updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
