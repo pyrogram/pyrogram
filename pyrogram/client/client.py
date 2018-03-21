@@ -24,7 +24,9 @@ import math
 import mimetypes
 import os
 import re
+import shutil
 import struct
+import tempfile
 import threading
 import time
 from collections import namedtuple
@@ -503,13 +505,17 @@ class Client:
 
         while True:
             media = self.download_queue.get()
+            temp_file_path = ""
+            final_file_path = ""
 
             if media is None:
                 break
 
             try:
                 media, file_name, done, progress, path = media
-                tmp_file_name = None
+
+                directory, file_name = os.path.split(file_name)
+                directory = directory or "downloads"
 
                 if isinstance(media, types.MessageMediaDocument):
                     document = media.document
@@ -535,7 +541,7 @@ class Client:
                                 elif isinstance(i, types.DocumentAttributeAnimated):
                                     file_name = file_name.replace("doc", "gif")
 
-                        tmp_file_name = self.get_file(
+                        temp_file_path = self.get_file(
                             dc_id=document.dc_id,
                             id=document.id,
                             access_hash=document.access_hash,
@@ -558,7 +564,7 @@ class Client:
 
                         photo_loc = photo.sizes[-1].location
 
-                        tmp_file_name = self.get_file(
+                        temp_file_path = self.get_file(
                             dc_id=photo_loc.dc_id,
                             volume_id=photo_loc.volume_id,
                             local_id=photo_loc.local_id,
@@ -567,30 +573,24 @@ class Client:
                             progress=progress
                         )
 
-                if tmp_file_name is None:
-                    return None
-
-                if file_name is not None:
-                    path[0] = "downloads/{}".format(file_name)
-
-                try:
-                    os.remove("downloads/{}".format(file_name))
-                except OSError:
-                    pass
-                finally:
-                    try:
-                        os.renames("{}".format(tmp_file_name), "downloads/{}".format(file_name))
-                    except OSError:
-                        pass
+                if temp_file_path:
+                    final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
+                    os.makedirs(directory, exist_ok=True)
+                    shutil.move(temp_file_path, final_file_path)
             except Exception as e:
                 log.error(e, exc_info=True)
-            finally:
-                done.set()
 
                 try:
-                    os.remove("{}".format(tmp_file_name))
+                    os.remove(temp_file_path)
                 except OSError:
                     pass
+            else:
+                # TODO: "" or None for faulty download, which is better?
+                # os.path methods return "" in case something does not exist, I prefer this.
+                # For now let's keep None
+                path[0] = final_file_path or None
+            finally:
+                done.set()
 
         log.debug("{} stopped".format(name))
 
@@ -2228,9 +2228,9 @@ class Client:
                 version=version
             )
 
-        file_name = "download_{}.temp".format(MsgId())
         limit = 1024 * 1024
         offset = 0
+        file_name = ""
 
         try:
             r = session.send(
@@ -2242,7 +2242,9 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with open(file_name, "wb") as f:
+                with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                    file_name = f.name
+
                     while True:
                         chunk = r.bytes
 
@@ -2266,7 +2268,7 @@ class Client:
                             )
                         )
 
-            if isinstance(r, types.upload.FileCdnRedirect):
+            elif isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
@@ -2279,7 +2281,9 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    with open(file_name, "wb") as f:
+                    with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                        file_name = f.name
+
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
@@ -2347,6 +2351,8 @@ class Client:
                 os.remove(file_name)
             except OSError:
                 pass
+
+            return ""
         else:
             return file_name
         finally:
@@ -2605,19 +2611,20 @@ class Client:
 
     def download_media(self,
                        message: types.Message,
-                       file_name: str = None,
+                       file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
         """Use this method to download the media from a Message.
-
-        Files are saved in the *downloads* folder.
 
         Args:
             message (:obj:`Message <pyrogram.api.types.Message>`):
                 The Message containing the media.
 
             file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all files are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading files in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the file has been downloaded.
@@ -2635,7 +2642,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            The relative path of the downloaded file.
+            On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
             :class:`pyrogram.Error`
@@ -2661,26 +2668,27 @@ class Client:
 
     def download_photo(self,
                        photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
-                       file_name: str = None,
+                       file_name: str = "",
                        block: bool = True):
         """Use this method to download a photo not contained inside a Message.
         For example, a photo of a User or a Chat/Channel.
-
-        Photos are saved in the *downloads* folder.
 
         Args:
             photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
                 The photo object.
 
             file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used.
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all photos are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading photos in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
 
             block (:obj:`bool`, optional):
                 Blocks the code execution until the photo has been downloaded.
                 Defaults to True.
 
         Returns:
-            The relative path of the downloaded photo.
+            On success, the absolute path of the downloaded photo as string is returned, None otherwise.
 
         Raises:
             :class:`pyrogram.Error`
