@@ -1381,7 +1381,6 @@ class Client:
             thumb (:obj:`str`, optional):
                 Video thumbnail.
                 Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
             supports_streaming (:obj:`bool`, optional):
                 Pass True, if the uploaded video is suitable for streaming.
@@ -1416,7 +1415,13 @@ class Client:
 
         image = Image.open(thumb)
         image = image.convert("RGB")
-        image.thumbnail((128, 128), Image.ANTIALIAS)
+        
+        thumb_width, thumb_height = image.size
+        ratio = thumb_width / thumb_height
+        thumb_width = round(ratio * 400 / (ratio + 1))
+        thumb_height = round(400 / (ratio + 1))
+
+        image.thumbnail((thumb_width, thumb_height), Image.ANTIALIAS)
         image.save(tmp_file_name)
 
         file_thumb = None if thumb is None else self.save_file(tmp_file_name)
