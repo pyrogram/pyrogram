@@ -29,7 +29,6 @@ import struct
 import tempfile
 import threading
 import time
-from collections import namedtuple
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -59,8 +58,20 @@ from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
-ApiKey = namedtuple("ApiKey", ["api_id", "api_hash"])
-Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
+
+class APIKey:
+    def __init__(self, api_id: int, api_hash: str):
+        self.api_id = api_id
+        self.api_hash = api_hash
+
+
+class Proxy:
+    def __init__(self, enabled: bool, hostname: str, port: int, username: str, password: str):
+        self.enabled = enabled
+        self.hostname = hostname
+        self.port = port
+        self.username = username
+        self.password = password
 
 
 class Client:
@@ -127,7 +138,7 @@ class Client:
 
     def __init__(self,
                  session_name: str,
-                 api_key: tuple or ApiKey = None,
+                 api_key: tuple or APIKey = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  token: str = None,
@@ -790,18 +801,28 @@ class Client:
         parser = ConfigParser()
         parser.read("config.ini")
 
-        if parser.has_section("pyrogram"):
-            self.api_key = ApiKey(
+        if self.api_key is not None:
+            self.api_key = APIKey(
+                api_id=int(self.api_key[0]),
+                api_hash=self.api_key[1]
+            )
+        elif parser.has_section("pyrogram"):
+            self.api_key = APIKey(
                 api_id=parser.getint("pyrogram", "api_id"),
                 api_hash=parser.get("pyrogram", "api_hash")
             )
         else:
-            self.api_key = ApiKey(
-                api_id=int(self.api_key[0]),
-                api_hash=self.api_key[1]
-            )
+            raise AttributeError("No API Key found")
 
-        if parser.has_section("proxy"):
+        if self.proxy is not None:
+            self.proxy = Proxy(
+                enabled=True,
+                hostname=self.proxy["hostname"],
+                port=int(self.proxy["port"]),
+                username=self.proxy.get("username", None),
+                password=self.proxy.get("password", None)
+            )
+        elif parser.has_section("proxy"):
             self.proxy = Proxy(
                 enabled=parser.getboolean("proxy", "enabled"),
                 hostname=parser.get("proxy", "hostname"),
@@ -809,15 +830,6 @@ class Client:
                 username=parser.get("proxy", "username", fallback=None) or None,
                 password=parser.get("proxy", "password", fallback=None) or None
             )
-        else:
-            if self.proxy is not None:
-                self.proxy = Proxy(
-                    enabled=True,
-                    hostname=self.proxy["hostname"],
-                    port=int(self.proxy["port"]),
-                    username=self.proxy.get("username", None),
-                    password=self.proxy.get("password", None)
-                )
 
     def load_session(self, session_name):
         try:

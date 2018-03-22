@@ -24,6 +24,12 @@ from setuptools import setup, find_packages
 from compiler.api import compiler as api_compiler
 from compiler.error import compiler as error_compiler
 
+
+def requirements():
+    with open("requirements.txt", encoding="utf-8") as r:
+        return [i.strip() for i in r]
+
+
 if len(argv) > 1 and argv[1] != "sdist":
     api_compiler.start()
     error_compiler.start()
@@ -76,8 +82,5 @@ setup(
     python_requires="~=3.4",
     packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
-    install_requires=[
-        "pysocks",
-        "tgcrypto"
-    ]
+    install_requires=requirements()
 )
