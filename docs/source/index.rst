@@ -3,16 +3,10 @@ Welcome to Pyrogram
 
 .. raw:: html
 
-    <p align="right">
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch pyrogram/pyrogram on GitHub">Watch</a>
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram/fork" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
-    </p>
-
     <div align="center">
-        <a href="https://pyrogram.ml">
-            <div><img src="https://pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
-            <div><img src="https://pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
+        <a href="https://docs.pyrogram.ml">
+            <div><img src="https://media.pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
+            <div><img src="https://media.pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
         </a>
     </div>
 
@@ -32,11 +26,11 @@ Welcome to Pyrogram
         </a>
         <br><br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://www.pyrogram.ml/images/scheme.svg"
+            <img src="https://media.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 75">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://www.pyrogram.ml/images/tgcrypto.svg"
+            <img src="https://media.pyrogram.ml/images/tgcrypto.svg"
                 alt="TgCrypto">
         </a>
     </p>
