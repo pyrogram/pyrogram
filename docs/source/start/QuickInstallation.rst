@@ -40,6 +40,6 @@ If no errors show up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.6.3'
+    '0.6.4'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
