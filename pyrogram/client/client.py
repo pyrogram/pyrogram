@@ -131,7 +131,7 @@ class Client:
             Thread pool size for handling incoming updates. Defaults to 4.
     """
 
-    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)?([\w-]+)$")
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
@@ -1974,10 +1974,15 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        if "Upload" in action.__name__:
+            action = action(progress)
+        else:
+            action = action()
+
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
-                action=action(progress=progress)
+                action=action
             )
         )
 
@@ -2171,14 +2176,21 @@ class Client:
                             md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
-                    session.send(
-                        (functions.upload.SaveBigFilePart if is_big else functions.upload.SaveFilePart)(
+                    if is_big:
+                        rpc = functions.upload.SaveBigFilePart(
                             file_id=file_id,
                             file_part=file_part,
-                            bytes=chunk,
-                            file_total_parts=file_total_parts
+                            file_total_parts=file_total_parts,
+                            bytes=chunk
                         )
-                    )
+                    else:
+                        rpc = functions.upload.SaveFilePart(
+                            file_id=file_id,
+                            file_part=file_part,
+                            bytes=chunk
+                        )
+
+                    assert self.send(rpc), "Couldn't upload file"
 
                     if is_missing_part:
                         return
@@ -2191,14 +2203,22 @@ class Client:
                     if progress:
                         progress(min(file_part * part_size, file_size), file_size)
         except Exception as e:
-            log.error(e)
+            log.error(e, exc_info=True)
         else:
-            return (types.InputFileBig if is_big else types.InputFile)(
-                id=file_id,
-                parts=file_total_parts,
-                name=os.path.basename(path),
-                md5_checksum=md5_sum
-            )
+            if is_big:
+                return types.InputFileBig(
+                    id=file_id,
+                    parts=file_total_parts,
+                    name=os.path.basename(path),
+
+                )
+            else:
+                return types.InputFile(
+                    id=file_id,
+                    parts=file_total_parts,
+                    name=os.path.basename(path),
+                    md5_checksum=md5_sum
+                )
         finally:
             session.stop()
 
@@ -2318,7 +2338,6 @@ class Client:
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
-                                    location=location,
                                     file_token=r.file_token,
                                     offset=offset,
                                     limit=limit

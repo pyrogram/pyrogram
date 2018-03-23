@@ -11,7 +11,7 @@ class {class_name}(Object):
     """
     ID = {object_id}
 
-    def __init__(self{arguments}, **kwargs):
+    def __init__(self{arguments}):
         {fields}
 
     @staticmethod
