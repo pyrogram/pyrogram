@@ -131,7 +131,7 @@ class Client:
             Thread pool size for handling incoming updates. Defaults to 4.
     """
 
-    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)?([\w-]+)$")
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
