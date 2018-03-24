@@ -1414,7 +1414,7 @@ class Client:
                    width: int = 0,
                    height: int = 0,
                    thumb: str = None,
-                   supports_streaming: bool = None,
+                   supports_streaming: bool = True,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    progress: callable = None):
@@ -1495,7 +1495,7 @@ class Client:
                             thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=supports_streaming,
+                                    supports_streaming=supports_streaming or None,
                                     duration=duration,
                                     w=width,
                                     h=height
@@ -1748,7 +1748,7 @@ class Client:
                             mime_type=mimetypes.types_map[".mp4"],
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming,
+                                    supports_streaming=i.supports_streaming or None,
                                     duration=i.duration,
                                     w=i.width,
                                     h=i.height
