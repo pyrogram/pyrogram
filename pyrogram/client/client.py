@@ -81,10 +81,10 @@ class Client:
 
     Args:
         session_name (:obj:`str`):
-            Name to uniquely identify an authorized session. It will be used
-            to save the session to a file named *<session_name>.session* and to load
-            it when you restart your script. As long as a valid session file exists,
-            Pyrogram won't ask you again to input your phone number.
+            Name to uniquely identify a session of either a User or a Bot.
+            For Users: pass a string of your choice, e.g.: "my_main_account".
+            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
         api_key (:obj:`tuple`, optional):
             Your Telegram API Key as tuple: *(api_id, api_hash)*.
@@ -92,8 +92,8 @@ class Client:
             don't want to use the *config.ini* file.
 
         proxy (:obj:`dict`, optional):
-            Your SOCKS5 Proxy settings as dict: *{hostname: str, port: int, username: str, password: str}*.
-            E.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+            Your SOCKS5 Proxy settings as dict,
+            e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
             *username* and *password* can be omitted if your proxy doesn't require authorization.
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
@@ -101,10 +101,6 @@ class Client:
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
-
-        token (:obj:`str`, optional):
-            Pass your Bot API token to log-in as Bot.
-            E.g.: 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 
         phone_number (:obj:`str`, optional):
             Pass your phone number (with your Country Code prefix included) to avoid
@@ -132,6 +128,7 @@ class Client:
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
+    BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
@@ -141,7 +138,6 @@ class Client:
                  api_key: tuple or APIKey = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
-                 token: str = None,
                  phone_number: str = None,
                  phone_code: str or callable = None,
                  password: str = None,
@@ -153,7 +149,6 @@ class Client:
         self.proxy = proxy
         self.test_mode = test_mode
 
-        self.token = token
         self.phone_number = phone_number
         self.password = password
         self.phone_code = phone_code
@@ -161,6 +156,8 @@ class Client:
         self.last_name = last_name
 
         self.workers = workers
+
+        self.token = None
 
         self.dc_id = None
         self.auth_key = None
@@ -195,6 +192,10 @@ class Client:
         Raises:
             :class:`pyrogram.Error`
         """
+        if self.BOT_TOKEN_RE.match(self.session_name):
+            self.token = self.session_name
+            self.session_name = self.session_name.split(":")[0]
+
         self.load_config()
         self.load_session(self.session_name)
 
@@ -1413,7 +1414,7 @@ class Client:
                    width: int = 0,
                    height: int = 0,
                    thumb: str = None,
-                   supports_streaming: bool = None,
+                   supports_streaming: bool = True,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    progress: callable = None):
@@ -1494,7 +1495,7 @@ class Client:
                             thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=supports_streaming,
+                                    supports_streaming=supports_streaming or None,
                                     duration=duration,
                                     w=width,
                                     h=height
@@ -1747,7 +1748,7 @@ class Client:
                             mime_type=mimetypes.types_map[".mp4"],
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming,
+                                    supports_streaming=i.supports_streaming or None,
                                     duration=i.duration,
                                     w=i.width,
                                     h=i.height
