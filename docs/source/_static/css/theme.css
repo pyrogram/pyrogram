@@ -3607,7 +3607,7 @@ code.code-large,.rst-content tt.code-large{
 .wy-plain-list-disc li,.rst-content .section ul li,.rst-content .toctree-wrapper ul li,article ul li{
     list-style:disc;
     margin-left:24px;
-    margin-bottom: 6px;
+    margin-bottom: 4px
 }
 .wy-plain-list-disc li p:last-child,.rst-content .section ul li p:last-child,.rst-content .toctree-wrapper ul li p:last-child,article ul li p:last-child{
     margin-bottom:0
