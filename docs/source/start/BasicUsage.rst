@@ -3,14 +3,14 @@ Basic Usage
 
 .. note::
 
-    All the snippets below assume you have successfully created and started a :obj:`pyrogram.Client` instance.
-    You also must be authorized, that is, a valid *.session file does exist in your working directory.
+    All the snippets below assume you have successfully created and started a :class:`Client <pyrogram.Client>`
+    instance. You also must be authorized, that is, a valid *.session file does exist in your working directory.
 
 Simple API Access
 -----------------
 
-The easiest way to interact with the API is via the :obj:`pyrogram.Client` class which exposes bot-like_ methods.
-The purpose of this Client class is to make it even simpler to work with Telegram's API by abstracting the
+The easiest way to interact with the API is via the :class:`Client <pyrogram.Client>` class which exposes bot-like_
+methods. The purpose of this Client class is to make it even simpler to work with Telegram's API by abstracting the
 raw functions listed in the API scheme.
 
 The result is a much cleaner interface that allows you to:
@@ -30,7 +30,7 @@ The result is a much cleaner interface that allows you to:
             text="Hi there! I'm using Pyrogram"
         )
 
-.. seealso:: For a complete list of the available methods have a look at the :obj:`pyrogram.Client` class.
+.. seealso:: For a complete list of the available methods have a look at the :class:`Client <pyrogram.Client>` class.
 
 .. _using-raw-functions:
 
@@ -38,8 +38,8 @@ Using Raw Functions
 -------------------
 
 If you want **complete**, low-level access to the Telegram API you have to use the raw
-:obj:`functions <pyrogram.api.functions>` and :obj:`types <pyrogram.api.types>` exposed by the ``pyrogram.api``
-package and call any Telegram API method you wish using the :obj:`send <pyrogram.Client.send>` method provided by
+:mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>` exposed by the ``pyrogram.api``
+package and call any Telegram API method you wish using the :meth:`send <pyrogram.Client.send>` method provided by
 the Client class.
 
 Here some examples:

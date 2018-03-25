@@ -25,7 +25,7 @@ Usage
       -   ``1``, ``yes``, ``True`` or ``on``: Enables the proxy
       -   ``0``, ``no``, ``False`` or ``off``: Disables the proxy
 
--  Alternatively, you can setup your proxy without the need of the *config.ini* file by using the *proxy* parameter
+-  Alternatively, you can setup your proxy without the need of the ``config.ini`` file by using the *proxy* parameter
    in the Client class:
 
    .. code-block:: python
@@ -46,5 +46,5 @@ Usage
 
        ...
 
-.. note:: If your proxy doesn't require authorization you can omit *username* and *password* by either leaving the
+.. note:: If your proxy doesn't require authorization you can omit ``username`` and ``password`` by either leaving the
    values blank/empty or completely delete the lines.

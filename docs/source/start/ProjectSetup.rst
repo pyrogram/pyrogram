@@ -44,15 +44,15 @@ There are two ways to configure a Pyrogram application project, and you can choo
         )
 
 .. note:: The examples below will assume you have created a *config.ini* file, thus they won't show the *api_key*
-   parameter usage in the Client class.
+   parameter usage in the :class:`Client <pyrogram.Client>` class.
 
 Authorization
 -------------
 
 Telegram requires that users be authorized in order to use the API.
 Pyrogram automatically manages this access, all you need to do is create an instance of
-the :class:`pyrogram.Client` class by passing to it a ``<session_name>`` of your choice
-and call the :obj:`start <pyrogram.Client.start>` method:
+the :class:`Client <pyrogram.Client>` class by passing to it a ``<session_name>`` of your choice
+and call the :meth:`start <pyrogram.Client.start>` method:
 
 .. code-block:: python
 

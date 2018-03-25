@@ -2,10 +2,10 @@ Update Handling
 ===============
 
 Updates are events that happen in your Telegram account (incoming messages, new channel posts, user name changes, ...)
-and can be handled by using a callback function, that is, a function called every time an :obj:`Update` is received from
+and can be handled by using a callback function, that is, a function called every time an ``Update`` is received from
 Telegram.
 
-To set an update handler simply call :obj:`set_update_handler <pyrogram.Client.set_update_handler>`
+To set an update handler simply call :meth:`set_update_handler <pyrogram.Client.set_update_handler>`
 by passing the name of your defined callback function as argument *before* you start the Client.
 
 Here's a complete example on how to set it up:
@@ -28,9 +28,9 @@ Here's a complete example on how to set it up:
     if __name__ == "__main__":
         main()
 
-The last line of the main() function, :obj:`client.idle() <pyrogram.Client.idle>`, is not strictly necessary but highly
-recommended when using the update handler; it will block your script execution until you press :obj:`CTRL`:obj:`C` and
-automatically call the :obj:`stop <pyrogram.Client.stop>` method which stops the Client and gently close the underlying
+The last line of the main function, :meth:`client.idle() <pyrogram.Client.idle>`, is not strictly necessary but highly
+recommended when using the update handler; it will block your script execution until you press ``CTRL+C`` and
+automatically call the :meth:`stop <pyrogram.Client.stop>` method which stops the Client and gently close the underlying
 connection.
 
 Examples

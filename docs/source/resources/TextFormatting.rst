@@ -8,7 +8,7 @@ Beside bold, italic, and pre-formatted code, **Pyrogram does also support inline
 Markdown Style
 --------------
 
-To use this mode, pass :obj:`pyrogram.ParseMode.MARKDOWN` or "markdown" in the *parse_mode* field when using
+To use this mode, pass :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or "markdown" in the *parse_mode* field when using
 :obj:`send_message <pyrogram.Client.send_message>`. Use the following syntax in your message:
 
 .. code::
@@ -30,7 +30,7 @@ To use this mode, pass :obj:`pyrogram.ParseMode.MARKDOWN` or "markdown" in the *
 HTML Style
 ----------
 
-To use this mode, pass :obj:`pyrogram.ParseMode.HTML` or "html" in the *parse_mode* field when using
+To use this mode, pass :obj:`HTML <pyrogram.ParseMode.HTML>` or "html" in the *parse_mode* field when using
 :obj:`send_message <pyrogram.Client.send_message>`. The following tags are currently supported:
 
 .. code::

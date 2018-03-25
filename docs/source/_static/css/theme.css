@@ -3590,7 +3590,7 @@ code,.rst-content tt,.rst-content code{
     max-width:100%;
     background:#fff;
     border:solid 1px #e1e4e5;
-    font-size:85%;
+    font-size:80%;
     padding:0 5px;
     font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,monospace;
     color:#E74C3C;
@@ -4518,11 +4518,11 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
     line-height:normal
 }
 .rst-content tt.literal,.rst-content tt.literal,.rst-content code.literal{
-    color:#E74C3C
+    color:#404040
 }
 .rst-content tt.xref,a .rst-content tt,.rst-content tt.xref,.rst-content code.xref,a .rst-content tt,a .rst-content code{
     font-weight:bold;
-    color:#404040
+    color:#2980B9
 }
 .rst-content a tt,.rst-content a tt,.rst-content a code{
     color:#2980B9
