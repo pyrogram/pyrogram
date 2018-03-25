@@ -80,50 +80,50 @@ class Client:
     invoke every single Telegram API method available.
 
     Args:
-        session_name (:obj:`str`):
+        session_name (``str``):
             Name to uniquely identify a session of either a User or a Bot.
             For Users: pass a string of your choice, e.g.: "my_main_account".
             For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
-        api_key (:obj:`tuple`, optional):
+        api_key (``tuple``, optional):
             Your Telegram API Key as tuple: *(api_id, api_hash)*.
             E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
             don't want to use the *config.ini* file.
 
-        proxy (:obj:`dict`, optional):
+        proxy (``dict``, optional):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
             *username* and *password* can be omitted if your proxy doesn't require authorization.
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
-        test_mode (:obj:`bool`, optional):
+        test_mode (``bool``, optional):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
-        phone_number (:obj:`str`, optional):
+        phone_number (``str``, optional):
             Pass your phone number (with your Country Code prefix included) to avoid
             entering it manually. Only applicable for new sessions.
 
-        phone_code (:obj:`str` | :obj:`callable`, optional):
+        phone_code (``str`` | ``callable``, optional):
             Pass the phone code as string (for test numbers only), or pass a callback function
             which must return the correct phone code as string (e.g., "12345").
             Only applicable for new sessions.
 
-        password (:obj:`str`, optional):
+        password (``str``, optional):
             Pass your Two-Step Verification password (if you have one) to avoid entering it
             manually. Only applicable for new sessions.
 
-        first_name (:obj:`str`, optional):
+        first_name (``str``, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
 
-        last_name (:obj:`str`, optional):
+        last_name (``str``, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: ""
 
-        workers (:obj:`int`, optional):
+        workers (``int``, optional):
             Thread pool size for handling incoming updates. Defaults to 4.
     """
 
@@ -634,22 +634,25 @@ class Client:
                         pts_count = getattr(update, "pts_count", None)
 
                         if isinstance(update, types.UpdateNewChannelMessage):
-                            diff = self.send(
-                                functions.updates.GetChannelDifference(
-                                    channel=self.resolve_peer(update.message.to_id.channel_id),
-                                    filter=types.ChannelMessagesFilter(
-                                        ranges=[types.MessageRange(
-                                            min_id=update.message.id,
-                                            max_id=update.message.id
-                                        )]
-                                    ),
-                                    pts=pts - pts_count,
-                                    limit=pts
-                                )
-                            )
+                            message = update.message
 
-                            updates.users += diff.users
-                            updates.chats += diff.chats
+                            if not isinstance(message, types.MessageEmpty):
+                                diff = self.send(
+                                    functions.updates.GetChannelDifference(
+                                        channel=self.resolve_peer(update.message.to_id.channel_id),
+                                        filter=types.ChannelMessagesFilter(
+                                            ranges=[types.MessageRange(
+                                                min_id=update.message.id,
+                                                max_id=update.message.id
+                                            )]
+                                        ),
+                                        pts=pts - pts_count,
+                                        limit=pts
+                                    )
+                                )
+
+                                updates.users += diff.users
+                                updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
@@ -721,7 +724,7 @@ class Client:
         then gently stop the Client by closing the underlying connection.
 
         Args:
-            stop_signals (:obj:`tuple`, optional):
+            stop_signals (``tuple``, optional):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
@@ -739,25 +742,25 @@ class Client:
         You must call this method *before* you *start()* the Client.
 
         Args:
-            callback (:obj:`callable`):
+            callback (``callable``):
                 A function that will be called when a new update is received from the server. It takes
                 :obj:`(client, update, users, chats)` as positional arguments (Look at the section below for
                 a detailed description).
 
         Other Parameters:
-            client (:obj:`pyrogram.Client`):
+            client (:class:`Client <pyrogram.Client>`):
                 The Client itself, useful when you want to call other API methods inside the update handler.
 
-            update (:obj:`Update`):
+            update (``Update``):
                 The received update, which can be one of the many single Updates listed in the *updates*
                 field you see in the :obj:`Update <pyrogram.api.types.Update>` type.
 
-            users (:obj:`dict`):
+            users (``dict``):
                 Dictionary of all :obj:`User <pyrogram.api.types.User>` mentioned in the update.
                 You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
                 the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
 
-            chats (:obj:`dict`):
+            chats (``dict``):
                 Dictionary of all :obj:`Chat <pyrogram.api.types.Chat>` and
                 :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
                 You can access extra info about the chat (such as *title*, *participants_count*, etc...)
@@ -779,10 +782,10 @@ class Client:
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`pyrogram.api.functions` package and may accept compound
-        data types from :obj:`pyrogram.api.types` as well as bare types such as :obj:`int`, :obj:`str`, etc...
+        data types from :obj:`pyrogram.api.types` as well as bare types such as ``int``, ``str``, etc...
 
         Args:
-            data (:obj:`Object`):
+            data (``Object``):
                 The API Scheme function filled with proper arguments.
 
         Raises:
@@ -907,9 +910,9 @@ class Client:
         not available yet in the Client class as an easy-to-use method).
 
         Args:
-            peer_id (:obj:`int` | :obj:`str` | :obj:`Peer`):
-                The Peer ID you want to extract the InputPeer from. Can be one of these types: :obj:`int` (direct ID),
-                :obj:`str` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
+            peer_id (``int`` | ``str`` | ``Peer``):
+                The Peer ID you want to extract the InputPeer from. Can be one of these types: ``int`` (direct ID),
+                ``str`` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
                 :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
 
         Returns:
@@ -992,28 +995,28 @@ class Client:
         """Use this method to send text messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            text (:obj:`str`):
+            text (``str``):
                 Text of the message to be sent.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (:obj:`bool`, optional):
+            disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`bool`, optional):
+            reply_to_message_id (``bool``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -1043,22 +1046,22 @@ class Client:
         """Use this method to forward messages of any kind.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            from_chat_id (:obj:`int` | :obj:`str`):
+            from_chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the source chat where the original message was sent.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (:obj:`list`):
+            message_ids (``list``):
                 A list of Message identifiers in the chat specified in *from_chat_id*.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
@@ -1090,45 +1093,45 @@ class Client:
         """Use this method to send photos.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            photo (:obj:`str`):
+            photo (``str``):
                 Photo to send.
                 Pass a file path as string to send a photo that exists on your local machine.
 
-            caption (:obj:`bool`, optional):
+            caption (``bool``, optional):
                 Photo caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            ttl_seconds (:obj:`int`, optional):
+            ttl_seconds (``int``, optional):
                 Self-Destruct Timer.
                 If you set a timer, the photo will self-destruct in :obj:`ttl_seconds`
                 seconds after it was viewed.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1176,49 +1179,49 @@ class Client:
         For sending voice messages, use the :obj:`send_voice` method instead.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            audio (:obj:`str`):
+            audio (``str``):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Audio caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of the audio in seconds.
 
-            performer (:obj:`str`, optional):
+            performer (``str``, optional):
                 Performer.
 
-            title (:obj:`str`, optional):
+            title (``str``, optional):
                 Track name.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1269,40 +1272,40 @@ class Client:
         """Use this method to send general files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            document (:obj:`str`):
+            document (``str``):
                 File to send.
                 Pass a file path as string to send a file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Document caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1346,32 +1349,32 @@ class Client:
         """Use this method to send .webp stickers.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            sticker (:obj:`str`):
+            sticker (``str``):
                 Sticker to send.
                 Pass a file path as string to send a sticker that exists on your local machine.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1421,57 +1424,57 @@ class Client:
         """Use this method to send video files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video (:obj:`str`):
+            video (``str``):
                 Video to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Video caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of sent video in seconds.
 
-            width (:obj:`int`, optional):
+            width (``int``, optional):
                 Video width.
 
-            height (:obj:`int`, optional):
+            height (``int``, optional):
                 Video height.
 
-            thumb (:obj:`str`, optional):
+            thumb (``str``, optional):
                 Video thumbnail.
                 Pass a file path as string to send an image that exists on your local machine.
                 Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
-            supports_streaming (:obj:`bool`, optional):
+            supports_streaming (``bool``, optional):
                 Pass True, if the uploaded video is suitable for streaming.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1526,43 +1529,43 @@ class Client:
         """Use this method to send audio files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            voice (:obj:`str`):
+            voice (``str``):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Voice message caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of the voice message in seconds.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1611,38 +1614,38 @@ class Client:
         """Use this method to send video messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video_note (:obj:`str`):
+            video_note (``str``):
                 Video note to send.
                 Pass a file path as string to send a video note that exists on your local machine.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of sent video in seconds.
 
-            length (:obj:`int`, optional):
+            length (``int``, optional):
                 Video width and height.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -1691,21 +1694,21 @@ class Client:
         On success, an Update containing the sent Messages is returned.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            media (:obj:`list`):
+            media (``list``):
                 A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
         """
         multi_media = []
@@ -1790,23 +1793,23 @@ class Client:
         """Use this method to send points on the map.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            latitude (:obj:`float`):
+            latitude (``float``):
                 Latitude of the location.
 
-            longitude (:obj:`float`):
+            longitude (``float``):
                 Longitude of the location.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -1843,32 +1846,32 @@ class Client:
         """Use this method to send information about a venue.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            latitude (:obj:`float`):
+            latitude (``float``):
                 Latitude of the venue.
 
-            longitude (:obj:`float`):
+            longitude (``float``):
                 Longitude of the venue.
 
-            title (:obj:`str`):
+            title (``str``):
                 Name of the venue.
 
-            address (:obj:`str`):
+            address (``str``):
                 Address of the venue.
 
-            foursquare_id (:obj:`str`, optional):
+            foursquare_id (``str``, optional):
                 Foursquare identifier of the venue.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
@@ -1908,26 +1911,26 @@ class Client:
         """Use this method to send phone contacts.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            phone_number (:obj:`str`):
+            phone_number (``str``):
                 Contact's phone number.
 
-            first_name (:obj:`str`):
+            first_name (``str``):
                 Contact's first name.
 
-            last_name (:obj:`str`):
+            last_name (``str``):
                 Contact's last name.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -1958,18 +1961,18 @@ class Client:
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            action (:obj:`callable`):
+            action (``callable``):
                 Type of action to broadcast.
                 Choose one from the :class:`pyrogram.ChatAction` class,
                 depending on what the user is about to receive.
 
-            progress (:obj:`int`, optional):
+            progress (``int``, optional):
                 Progress of the upload process.
 
         Raises:
@@ -1994,14 +1997,14 @@ class Client:
         """Use this method to get a list of profile pictures for a user.
 
         Args:
-            user_id (:obj:`int` | :obj:`str`):
+            user_id (``int`` | ``str``):
                 Unique identifier of the target user.
 
-            offset (:obj:`int`, optional):
+            offset (``int``, optional):
                 Sequential number of the first photo to be returned.
                 By default, all photos are returned.
 
-            limit (:obj:`int`, optional):
+            limit (``int``, optional):
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
 
@@ -2026,24 +2029,24 @@ class Client:
         """Use this method to edit text messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_id (:obj:`int`):
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            text (:obj:`str`):
+            text (``str``):
                 New text of the message.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (:obj:`bool`, optional):
+            disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
         Raises:
@@ -2068,19 +2071,19 @@ class Client:
         """Use this method to edit captions of messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_id (:obj:`int`):
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            caption (:obj:`str`):
+            caption (``str``):
                 New caption of the message.
 
-            parse_mode (:obj:`str`):
+            parse_mode (``str``):
                 Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
                 to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
@@ -2111,16 +2114,16 @@ class Client:
         - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (:obj:`list`):
+            message_ids (``list``):
                 List of identifiers of the messages to delete.
 
-            revoke (:obj:`bool`, optional):
+            revoke (``bool``, optional):
                 Deletes messages on both parts.
                 This is only for private cloud chats and normal groups, messages on
                 channels and supergroups are always revoked (i.e.: deleted for everyone).
@@ -2413,7 +2416,7 @@ class Client:
         """Use this method to join a group chat or channel.
 
         Args:
-            chat_id (:obj:`str`):
+            chat_id (``str``):
                 Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
                 channel/supergroup (in the format @username).
 
@@ -2450,11 +2453,11 @@ class Client:
         """Use this method to leave a group chat or channel.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            delete (:obj:`bool`, optional):
+            delete (``bool``, optional):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
@@ -2492,11 +2495,11 @@ class Client:
         The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            new (:obj:`bool`):
+            new (``bool``):
                 The previous link will be deactivated and a new link will be generated.
                 This is also used to create the invite link in case it doesn't exist yet.
 
@@ -2554,13 +2557,13 @@ class Client:
         This password will be asked when you log in on a new device in addition to the SMS code.
 
         Args:
-            password (:obj:`str`):
+            password (``str``):
                 Your password.
 
-            hint (:obj:`str`, optional):
+            hint (``str``, optional):
                 A password hint.
 
-            email (:obj:`str`, optional):
+            email (``str``, optional):
                 Recovery e-mail.
 
         Returns:
@@ -2593,13 +2596,13 @@ class Client:
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
-            current_password (:obj:`str`):
+            current_password (``str``):
                 Your current password.
 
-            new_password (:obj:`str`):
+            new_password (``str``):
                 Your new password.
 
-            new_hint (:obj:`str`, optional):
+            new_hint (``str``, optional):
                 A new password hint.
 
         Returns:
@@ -2633,7 +2636,7 @@ class Client:
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
-            password (:obj:`str`):
+            password (``str``):
                 Your current password.
 
         Returns:
@@ -2671,25 +2674,25 @@ class Client:
             message (:obj:`Message <pyrogram.api.types.Message>`):
                 The Message containing the media.
 
-            file_name (:obj:`str`, optional):
+            file_name (``str``, optional):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
 
-            block (:obj:`bool`, optional):
+            block (``bool``, optional):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the download progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes downloaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
@@ -2728,13 +2731,13 @@ class Client:
             photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
                 The photo object.
 
-            file_name (:obj:`str`, optional):
+            file_name (``str``, optional):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all photos are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading photos in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
 
-            block (:obj:`bool`, optional):
+            block (``bool``, optional):
                 Blocks the code execution until the photo has been downloaded.
                 Defaults to True.
 
@@ -2764,7 +2767,7 @@ class Client:
         """Use this method to add contacts to your Telegram address book.
 
         Args:
-            contacts (:obj:`list`):
+            contacts (``list``):
                 A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
 
         Returns:
@@ -2785,7 +2788,7 @@ class Client:
         """Use this method to delete contacts from your Telegram address book
 
         Args:
-            ids (:obj:`list`):
+            ids (``list``):
                 A list of unique identifiers for the target users.
                 Can be an ID (int), a username (string) or phone number (string).
 
@@ -2835,17 +2838,17 @@ class Client:
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
         Args:
-            bot (:obj:`int` | :obj:`str`):
+            bot (``int`` | ``str``):
                 Unique identifier of the inline bot you want to get results from. You can specify
                 a @username (str) or a bot ID (int).
 
-            query (:obj:`str`):
+            query (``str``):
                 Text of the query (up to 512 characters).
 
-            offset (:obj:`str`):
+            offset (``str``):
                 Offset of the results to be returned.
 
-            location (:obj:`tuple`, optional):
+            location (``tuple``, optional):
                 Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
                 Useful for location-based results only.
 
@@ -2878,23 +2881,23 @@ class Client:
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            query_id (:obj:`int`):
+            query_id (``int``):
                 Unique identifier for the answered query.
 
-            result_id (:obj:`str`):
+            result_id (``str``):
                 Unique identifier for the result that was chosen.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`bool`, optional):
+            reply_to_message_id (``bool``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -2921,13 +2924,13 @@ class Client:
         You can retrieve up to 200 messages at once.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (:obj:`list`):
+            message_ids (``list``):
                 A list of Message identifiers in the chat specified in *chat_id*.
 
         Returns:
