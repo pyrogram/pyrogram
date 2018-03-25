@@ -10,7 +10,7 @@ The most straightforward and recommended way to install or upgrade Pyrogram is b
 Bleeding Edge
 -------------
 
-If you want the latest development version of the library, you can either install it automatically with:
+If you want the latest development version of the library, you can install it with:
 
 .. code-block:: bash
 
