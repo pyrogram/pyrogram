@@ -277,7 +277,7 @@ def start():
         docstring_args = "Attributes:\n        ID: ``{}``\n\n    ".format(c.id) + docstring_args
 
         if c.section == "functions":
-            docstring_args += "\n\n    Raises:\n        :obj:`pyrogram.Error`"
+            docstring_args += "\n\n    Raises:\n        :obj:`Error <pyrogram.Error>`"
             docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
         else:
             references = get_references(".".join(filter(None, [c.namespace, c.name])))

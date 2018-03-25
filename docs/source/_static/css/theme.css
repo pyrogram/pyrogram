@@ -4518,6 +4518,7 @@ footer span.commit code,footer span.commit .rst-content tt,.rst-content footer s
     line-height:normal
 }
 .rst-content tt.literal,.rst-content tt.literal,.rst-content code.literal{
+    font-weight:bold;
     color:#404040
 }
 .rst-content tt.xref,a .rst-content tt,.rst-content tt.xref,.rst-content code.xref,a .rst-content tt,a .rst-content code{
