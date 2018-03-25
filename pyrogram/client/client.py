@@ -634,22 +634,25 @@ class Client:
                         pts_count = getattr(update, "pts_count", None)
 
                         if isinstance(update, types.UpdateNewChannelMessage):
-                            diff = self.send(
-                                functions.updates.GetChannelDifference(
-                                    channel=self.resolve_peer(update.message.to_id.channel_id),
-                                    filter=types.ChannelMessagesFilter(
-                                        ranges=[types.MessageRange(
-                                            min_id=update.message.id,
-                                            max_id=update.message.id
-                                        )]
-                                    ),
-                                    pts=pts - pts_count,
-                                    limit=pts
-                                )
-                            )
+                            message = update.message
 
-                            updates.users += diff.users
-                            updates.chats += diff.chats
+                            if not isinstance(message, types.MessageEmpty):
+                                diff = self.send(
+                                    functions.updates.GetChannelDifference(
+                                        channel=self.resolve_peer(update.message.to_id.channel_id),
+                                        filter=types.ChannelMessagesFilter(
+                                            ranges=[types.MessageRange(
+                                                min_id=update.message.id,
+                                                max_id=update.message.id
+                                            )]
+                                        ),
+                                        pts=pts - pts_count,
+                                        limit=pts
+                                    )
+                                )
+
+                                updates.users += diff.users
+                                updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
