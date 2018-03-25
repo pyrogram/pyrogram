@@ -190,7 +190,7 @@ class Client:
         Requires no parameters.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
@@ -789,7 +789,7 @@ class Client:
                 The API Scheme function filled with proper arguments.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if self.is_started:
             r = self.session.send(data)
@@ -921,7 +921,7 @@ class Client:
             :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
@@ -977,7 +977,7 @@ class Client:
             Full information about the user in form of a :obj:`UserFull <pyrogram.api.types.UserFull>` object.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.users.GetFullUser(
@@ -1023,7 +1023,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -1069,7 +1069,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.ForwardMessages(
@@ -1138,7 +1138,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(photo, progress=progress)
@@ -1228,7 +1228,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(audio, progress=progress)
@@ -1312,7 +1312,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(document, progress=progress)
@@ -1381,7 +1381,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         file = self.save_file(sticker, progress=progress)
 
@@ -1481,7 +1481,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(video, progress=progress)
@@ -1572,7 +1572,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(voice, progress=progress)
@@ -1652,7 +1652,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         file = self.save_file(video_note, progress=progress)
 
@@ -1816,7 +1816,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1878,7 +1878,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1937,7 +1937,7 @@ class Client:
              On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1976,7 +1976,7 @@ class Client:
                 Progress of the upload process.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if "Upload" in action.__name__:
             action = action(progress)
@@ -2009,7 +2009,7 @@ class Client:
                 Values between 1—100 are accepted. Defaults to 100.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.photos.GetUserPhotos(
@@ -2050,7 +2050,7 @@ class Client:
                 Disables link previews for links in this message.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -2089,7 +2089,7 @@ class Client:
                 Defaults to Markdown.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -2129,7 +2129,7 @@ class Client:
                 channels and supergroups are always revoked (i.e.: deleted for everyone).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
 
@@ -2421,7 +2421,7 @@ class Client:
                 channel/supergroup (in the format @username).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 
@@ -2461,7 +2461,7 @@ class Client:
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
 
@@ -2507,7 +2507,7 @@ class Client:
             On success, the exported invite link as string is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
 
         Note:
             If the returned link is a new one it may take a while for it to be activated.
@@ -2570,7 +2570,7 @@ class Client:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2609,7 +2609,7 @@ class Client:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2643,7 +2643,7 @@ class Client:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2699,7 +2699,7 @@ class Client:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if isinstance(message, (types.Message, types.Photo)):
             done = Event()
@@ -2745,7 +2745,7 @@ class Client:
             On success, the absolute path of the downloaded photo as string is returned, None otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
             photo = types.Photo(
@@ -2774,7 +2774,7 @@ class Client:
             On success, the added contacts are returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(
@@ -2796,7 +2796,7 @@ class Client:
             True on success.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         contacts = []
 
@@ -2856,7 +2856,7 @@ class Client:
             On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.GetInlineBotResults(
@@ -2904,7 +2904,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendInlineBotResult(
@@ -2937,7 +2937,7 @@ class Client:
             List of the requested messages
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
         message_ids = [types.InputMessageID(i) for i in message_ids]
