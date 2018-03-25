@@ -41,20 +41,20 @@ constructors_to_functions = {}
 def get_docstring_arg_type(t: str, is_list: bool = False):
     if t in core_types:
         if t == "long":
-            return ":obj:`int` :obj:`64-bit`"
+            return "``int`` ``64-bit``"
         elif "int" in t:
             size = INT_RE.match(t)
-            return ":obj:`int` :obj:`{}-bit`".format(size.group(1)) if size else ":obj:`int` :obj:`32-bit`"
+            return "``int`` ``{}-bit``".format(size.group(1)) if size else "``int`` ``32-bit``"
         elif t == "double":
-            return ":obj:`float` :obj:`64-bit`"
+            return "``float`` ``64-bit``"
         elif t == "string":
-            return ":obj:`str`"
+            return "``str``"
         else:
-            return ":obj:`{}`".format(t.lower())
+            return "``{}``".format(t.lower())
     elif t == "true":
-        return ":obj:`bool`"
+        return "``bool``"
     elif t == "Object" or t == "X":
-        return "Any type from :obj:`pyrogram.api.types`"
+        return "Any object from :obj:`pyrogram.api.types`"
     elif t == "!X":
         return "Any method from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
@@ -262,9 +262,9 @@ def start():
             arg_type = arg_type.split("?")[-1]
 
             docstring_args.append(
-                "{}: {}{}".format(
+                "{}{}: {}".format(
                     arg_name,
-                    "``optional`` ".format(flag_number) if is_optional else "",
+                    " (optional)".format(flag_number) if is_optional else "",
                     get_docstring_arg_type(arg_type)
                 )
             )

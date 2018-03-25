@@ -1,7 +1,7 @@
 class {sub_class}({super_class}):
     {docstring}
     ID = {id}
-    """:obj:`str`: Error ID"""
+    """``str``: Error ID"""
     MESSAGE = __doc__
 
 
