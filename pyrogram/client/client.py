@@ -36,6 +36,7 @@ from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -699,13 +700,81 @@ class Client:
                 break
 
             try:
-                if self.update_handler:
-                    self.update_handler(
-                        self,
-                        update[0],
-                        {i.id: i for i in update[1]},
-                        {i.id: i for i in update[2]}
+                users = {i.id: i for i in update[1]}
+                chats = {i.id: i for i in update[2]}
+                update = update[0]
+
+                if isinstance(update, types.UpdateNewMessage):
+                    message = update.message  # type: types.Message
+
+                    if isinstance(message, types.Message):
+                        from_user = users[message.from_id]  # type: types.User
+                        text = message.message or None
+
+                        if isinstance(message.to_id, types.PeerUser):
+                            to_user_id = message.to_id.user_id
+                            to_user = users[to_user_id]  # type: types.User
+
+                            chat = pyrogram.Chat(
+                                id=to_user_id,
+                                type="private",
+                                username=to_user.username,
+                                first_name=to_user.first_name,
+                                last_name=to_user.last_name
+                            )
+                        else:
+                            to_group_id = message.to_id.chat_id
+                            to_group = chats[to_group_id]  # type: types.Chat
+
+                            chat = pyrogram.Chat(
+                                id=-to_group_id,
+                                type="group",
+                                title=to_group.title,
+                                all_members_are_administrators=to_group.admins_enabled
+                            )
+                    else:
+                        continue
+                elif isinstance(update, types.UpdateNewChannelMessage):
+                    message = update.message  # type: types.Message
+
+                    if isinstance(message, types.Message):
+                        from_user = users.get(message.from_id, None)  # type: types.User or None
+                        to_channel_id = message.to_id.channel_id
+                        to_channel = chats[to_channel_id]  # type: types.Channel
+                        text = message.message or None
+
+                        chat = pyrogram.Chat(
+                            id=int("-100" + str(to_channel_id)),
+                            type="supergroup" if to_channel.megagroup else "channel",
+                            title=to_channel.title,
+                            username=to_channel.username
+                        )
+                    else:
+                        continue
+                else:
+                    continue
+
+                u = pyrogram.Update(
+                    update_id=0,
+                    message=pyrogram.Message(
+                        message_id=message.id,
+                        date=message.date,
+                        chat=chat,
+                        from_user=pyrogram.User(
+                            id=from_user.id,
+                            is_bot=from_user.bot,
+                            first_name=from_user.first_name,
+                            last_name=from_user.last_name,
+                            username=from_user.username,
+                            language_code=from_user.lang_code
+                        ) if from_user else None,
+                        text=text
                     )
+                )
+
+                if self.update_handler:
+                    self.update_handler(self, u)
+                    # self.update_handler(self, update, users, chats)
             except Exception as e:
                 log.error(e, exc_info=True)
 
