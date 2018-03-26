@@ -72,7 +72,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Libraries :: Application Frameworks"
     ],
-    keywords="telegram mtproto api client library python",
+    keywords="telegram chat messenger mtproto api client library python",
     project_urls={
         "Tracker": "https://github.com/pyrogram/pyrogram/issues",
         "Community": "https://t.me/PyrogramChat",
