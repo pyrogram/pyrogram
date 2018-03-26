@@ -16,19 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 try:
     import tgcrypto
-except ImportError:
-    sys.exit(
+except ImportError as e:
+    e.msg = (
         "TgCrypto is missing and Pyrogram can't run without. "
         "Please install it using \"pip3 install tgcrypto\". "
         "More info: https://docs.pyrogram.ml/resources/TgCrypto"
     )
 
+    raise e
 
-# TODO: Ugly IFs
+
 class AES:
     @classmethod
     def ige_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
