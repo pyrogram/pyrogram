@@ -18,9 +18,16 @@
 
 import logging
 import socket
+import sys
 from collections import namedtuple
 
-import socks
+try:
+    import socks
+except ImportError:
+    sys.exit(
+        "PySocks is missing and Pyrogram can't run without. "
+        "Please install it using \"pip3 install pysocks\"."
+    )
 
 log = logging.getLogger(__name__)
 
