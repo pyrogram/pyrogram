@@ -32,3 +32,4 @@ from .client import ParseMode
 from .client.input_media import InputMedia
 from .client.input_phone_contact import InputPhoneContact
 from .client import Emoji
+from .api.types.pyrogram import *
