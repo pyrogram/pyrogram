@@ -16,52 +16,34 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
-log = logging.getLogger(__name__)
+import sys
 
 try:
     import tgcrypto
 except ImportError:
-    log.warning(
-        "TgCrypto is missing! "
-        "Pyrogram will work the same, but at a much slower speed. "
+    sys.exit(
+        "TgCrypto is missing and Pyrogram can't run without. "
+        "Please install it using \"pip3 install tgcrypto\". "
         "More info: https://docs.pyrogram.ml/resources/TgCrypto"
     )
-    is_fast = False
-    import pyaes
-else:
-    log.info("Using TgCrypto")
-    is_fast = True
 
 
 # TODO: Ugly IFs
 class AES:
     @classmethod
     def ige_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
-        if is_fast:
-            return tgcrypto.ige_encrypt(data, key, iv)
-        else:
-            return cls.ige(data, key, iv, True)
+        return tgcrypto.ige_encrypt(data, key, iv)
 
     @classmethod
     def ige_decrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
-        if is_fast:
-            return tgcrypto.ige_decrypt(data, key, iv)
-        else:
-            return cls.ige(data, key, iv, False)
+        return tgcrypto.ige_decrypt(data, key, iv)
 
     @staticmethod
     def ctr_decrypt(data: bytes, key: bytes, iv: bytes, offset: int) -> bytes:
         replace = int.to_bytes(offset // 16, 4, "big")
         iv = iv[:-4] + replace
 
-        if is_fast:
-            return tgcrypto.ctr_decrypt(data, key, iv)
-        else:
-            ctr = pyaes.AESModeOfOperationCTR(key)
-            ctr._counter._counter = list(iv)
-            return ctr.decrypt(data)
+        return tgcrypto.ctr_decrypt(data, key, iv)
 
     @staticmethod
     def xor(a: bytes, b: bytes) -> bytes:
@@ -70,23 +52,3 @@ class AES:
             len(a),
             "big",
         )
-
-    @classmethod
-    def ige(cls, data: bytes, key: bytes, iv: bytes, encrypt: bool) -> bytes:
-        cipher = pyaes.AES(key)
-
-        iv_1 = iv[:16]
-        iv_2 = iv[16:]
-
-        data = [data[i: i + 16] for i in range(0, len(data), 16)]
-
-        if encrypt:
-            for i, chunk in enumerate(data):
-                iv_1 = data[i] = cls.xor(cipher.encrypt(cls.xor(chunk, iv_1)), iv_2)
-                iv_2 = chunk
-        else:
-            for i, chunk in enumerate(data):
-                iv_2 = data[i] = cls.xor(cipher.decrypt(cls.xor(chunk, iv_2)), iv_1)
-                iv_1 = chunk
-
-        return b"".join(data)
