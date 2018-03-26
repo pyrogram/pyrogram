@@ -46,6 +46,7 @@ from pyrogram.api.errors import (
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate)
+from pyrogram.client import utils
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
@@ -704,77 +705,43 @@ class Client:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                if isinstance(update, types.UpdateNewMessage):
-                    message = update.message  # type: types.Message
+                valid_updates = (types.UpdateNewMessage, types.UpdateNewChannelMessage,
+                                 types.UpdateEditMessage, types.UpdateEditChannelMessage)
+
+                if isinstance(update, valid_updates):
+                    message = update.message
 
                     if isinstance(message, types.Message):
-                        from_user = users[message.from_id]  # type: types.User
-                        text = message.message or None
+                        m = utils.parse_message(message, users, chats)
 
-                        if isinstance(message.to_id, types.PeerUser):
-                            to_user_id = message.to_id.user_id
-                            to_user = users[to_user_id]  # type: types.User
+                        if message.reply_to_msg_id:
+                            rm = self.get_messages(m.chat.id, [message.reply_to_msg_id])
 
-                            chat = pyrogram.Chat(
-                                id=to_user_id,
-                                type="private",
-                                username=to_user.username,
-                                first_name=to_user.first_name,
-                                last_name=to_user.last_name
-                            )
-                        else:
-                            to_group_id = message.to_id.chat_id
-                            to_group = chats[to_group_id]  # type: types.Chat
+                            message = rm.messages[0]
 
-                            chat = pyrogram.Chat(
-                                id=-to_group_id,
-                                type="group",
-                                title=to_group.title,
-                                all_members_are_administrators=to_group.admins_enabled
-                            )
-                    else:
-                        continue
-                elif isinstance(update, types.UpdateNewChannelMessage):
-                    message = update.message  # type: types.Message
-
-                    if isinstance(message, types.Message):
-                        from_user = users.get(message.from_id, None)  # type: types.User or None
-                        to_channel_id = message.to_id.channel_id
-                        to_channel = chats[to_channel_id]  # type: types.Channel
-                        text = message.message or None
-
-                        chat = pyrogram.Chat(
-                            id=int("-100" + str(to_channel_id)),
-                            type="supergroup" if to_channel.megagroup else "channel",
-                            title=to_channel.title,
-                            username=to_channel.username
-                        )
-                    else:
-                        continue
+                            if isinstance(message, types.Message):
+                                m.reply_to_message = utils.parse_message(
+                                    message,
+                                    {i.id: i for i in rm.users},
+                                    {i.id: i for i in rm.chats}
+                                )
+                            else:
+                                continue
                 else:
                     continue
 
+                edit = isinstance(update, (types.UpdateEditMessage, types.UpdateEditChannelMessage))
+
                 u = pyrogram.Update(
                     update_id=0,
-                    message=pyrogram.Message(
-                        message_id=message.id,
-                        date=message.date,
-                        chat=chat,
-                        from_user=pyrogram.User(
-                            id=from_user.id,
-                            is_bot=from_user.bot,
-                            first_name=from_user.first_name,
-                            last_name=from_user.last_name,
-                            username=from_user.username,
-                            language_code=from_user.lang_code
-                        ) if from_user else None,
-                        text=text
-                    )
+                    message=(m if m.chat.type is not "channel" else None) if not edit else None,
+                    edited_message=(m if m.chat.type is not "channel" else None) if edit else None,
+                    channel_post=(m if m.chat.type is "channel" else None) if not edit else None,
+                    edited_channel_post=(m if m.chat.type is "channel" else None) if edit else None
                 )
 
                 if self.update_handler:
                     self.update_handler(self, u)
-                    # self.update_handler(self, update, users, chats)
             except Exception as e:
                 log.error(e, exc_info=True)
 
