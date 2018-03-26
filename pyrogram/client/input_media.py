@@ -81,7 +81,7 @@ class InputMedia:
                      width: int = 0,
                      height: int = 0,
                      duration: int = 0,
-                     supports_streaming: bool = None):
+                     supports_streaming: bool = True):
             self.media = media
             self.caption = caption
             self.parse_mode = parse_mode

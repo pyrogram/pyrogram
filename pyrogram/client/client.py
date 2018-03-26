@@ -17,15 +17,18 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import base64
+import binascii
 import json
 import logging
 import math
 import mimetypes
 import os
 import re
+import shutil
+import struct
+import tempfile
 import threading
 import time
-from collections import namedtuple
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -41,7 +44,7 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound)
+    VolumeLocNotFound, UserMigrate)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
@@ -50,8 +53,20 @@ from .style import Markdown, HTML
 
 log = logging.getLogger(__name__)
 
-ApiKey = namedtuple("ApiKey", ["api_id", "api_hash"])
-Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
+
+class APIKey:
+    def __init__(self, api_id: int, api_hash: str):
+        self.api_id = api_id
+        self.api_hash = api_hash
+
+
+class Proxy:
+    def __init__(self, enabled: bool, hostname: str, port: int, username: str, password: str):
+        self.enabled = enabled
+        self.hostname = hostname
+        self.port = port
+        self.username = username
+        self.password = password
 
 
 class Client:
@@ -60,61 +75,62 @@ class Client:
     invoke every single Telegram API method available.
 
     Args:
-        session_name (:obj:`str`):
-            Name to uniquely identify an authorized session. It will be used
-            to save the session to a file named *<session_name>.session* and to load
-            it when you restart your script. As long as a valid session file exists,
-            Pyrogram won't ask you again to input your phone number.
+        session_name (``str``):
+            Name to uniquely identify a session of either a User or a Bot.
+            For Users: pass a string of your choice, e.g.: "my_main_account".
+            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
-        api_key (:obj:`tuple`, optional):
+        api_key (``tuple``, optional):
             Your Telegram API Key as tuple: *(api_id, api_hash)*.
             E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
             don't want to use the *config.ini* file.
 
-        proxy (:obj:`dict`, optional):
-            Your SOCKS5 Proxy settings as dict: *{hostname: str, port: int, username: str, password: str}*.
-            E.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+        proxy (``dict``, optional):
+            Your SOCKS5 Proxy settings as dict,
+            e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
             *username* and *password* can be omitted if your proxy doesn't require authorization.
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
-        test_mode (:obj:`bool`, optional):
+        test_mode (``bool``, optional):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
-        phone_number (:obj:`str`, optional):
+        phone_number (``str``, optional):
             Pass your phone number (with your Country Code prefix included) to avoid
             entering it manually. Only applicable for new sessions.
 
-        phone_code (:obj:`str` | :obj:`callable`, optional):
+        phone_code (``str`` | ``callable``, optional):
             Pass the phone code as string (for test numbers only), or pass a callback function
             which must return the correct phone code as string (e.g., "12345").
             Only applicable for new sessions.
 
-        password (:obj:`str`, optional):
+        password (``str``, optional):
             Pass your Two-Step Verification password (if you have one) to avoid entering it
             manually. Only applicable for new sessions.
 
-        first_name (:obj:`str`, optional):
+        first_name (``str``, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
 
-        last_name (:obj:`str`, optional):
+        last_name (``str``, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: ""
 
-        workers (:obj:`int`, optional):
+        workers (``int``, optional):
             Thread pool size for handling incoming updates. Defaults to 4.
     """
 
-    INVITE_LINK_RE = re.compile(r"^(?:https?://)?t\.me/joinchat/(.+)$")
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
+    BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
-    UPDATES_WORKERS = 2
+    UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
 
     def __init__(self,
                  session_name: str,
-                 api_key: tuple or ApiKey = None,
+                 api_key: tuple or APIKey = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -136,11 +152,13 @@ class Client:
 
         self.workers = workers
 
+        self.token = None
+
         self.dc_id = None
         self.auth_key = None
         self.user_id = None
 
-        self.rnd_id = None
+        self.rnd_id = MsgId
 
         self.peers_by_id = {}
         self.peers_by_username = {}
@@ -153,6 +171,7 @@ class Client:
 
         self.session = None
 
+        self.is_started = None
         self.is_idle = None
 
         self.updates_queue = Queue()
@@ -166,8 +185,12 @@ class Client:
         Requires no parameters.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
+        if self.BOT_TOKEN_RE.match(self.session_name):
+            self.token = self.session_name
+            self.session_name = self.session_name.split(":")[0]
+
         self.load_config()
         self.load_session(self.session_name)
 
@@ -180,18 +203,22 @@ class Client:
             client=self
         )
 
-        terms = self.session.start()
+        self.session.start()
+        self.is_started = True
 
         if self.user_id is None:
-            print("\n".join(terms.splitlines()), "\n")
+            if self.token is None:
+                self.authorize_user()
+            else:
+                self.authorize_bot()
 
-            self.user_id = self.authorize()
-            self.password = None
             self.save_session()
 
-        self.rnd_id = MsgId
-        self.get_dialogs()
-        self.get_contacts()
+        if self.token is None:
+            self.get_dialogs()
+            self.get_contacts()
+        else:
+            self.send(functions.updates.GetState())
 
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
@@ -208,6 +235,7 @@ class Client:
         """Use this method to manually stop the Client.
         Requires no parameters.
         """
+        self.is_started = False
         self.session.stop()
 
         for _ in range(self.UPDATES_WORKERS):
@@ -219,336 +247,37 @@ class Client:
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
 
-    def fetch_peers(self, entities: list):
-        for entity in entities:
-            if isinstance(entity, types.User):
-                user_id = entity.id
-
-                if user_id in self.peers_by_id:
-                    continue
-
-                access_hash = entity.access_hash
-
-                if access_hash is None:
-                    continue
-
-                username = entity.username
-                phone = entity.phone
-
-                input_peer = types.InputPeerUser(
-                    user_id=user_id,
-                    access_hash=access_hash
+    def authorize_bot(self):
+        try:
+            r = self.send(
+                functions.auth.ImportBotAuthorization(
+                    flags=0,
+                    api_id=self.api_key.api_id,
+                    api_hash=self.api_key.api_hash,
+                    bot_auth_token=self.token
                 )
-
-                self.peers_by_id[user_id] = input_peer
-
-                if username is not None:
-                    self.peers_by_username[username] = input_peer
-
-                if phone is not None:
-                    self.peers_by_phone[phone] = input_peer
-
-            if isinstance(entity, types.Chat):
-                chat_id = entity.id
-                peer_id = -chat_id
-
-                if peer_id in self.peers_by_id:
-                    continue
-
-                input_peer = types.InputPeerChat(
-                    chat_id=chat_id
-                )
-
-                self.peers_by_id[peer_id] = input_peer
-
-            if isinstance(entity, types.Channel):
-                channel_id = entity.id
-                peer_id = int("-100" + str(channel_id))
-
-                if peer_id in self.peers_by_id:
-                    continue
-
-                access_hash = entity.access_hash
-
-                if access_hash is None:
-                    continue
-
-                username = entity.username
-
-                input_peer = types.InputPeerChannel(
-                    channel_id=channel_id,
-                    access_hash=access_hash
-                )
-
-                self.peers_by_id[peer_id] = input_peer
-
-                if username is not None:
-                    self.peers_by_username[username] = input_peer
-
-    def download_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            media = self.download_queue.get()
-
-            if media is None:
-                break
-
-            try:
-                media, file_name, done, progress, path = media
-                tmp_file_name = None
-
-                if isinstance(media, types.MessageMediaDocument):
-                    document = media.document
-
-                    if isinstance(document, types.Document):
-                        if not file_name:
-                            file_name = "doc_{}{}".format(
-                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                ".txt" if document.mime_type == "text/plain" else
-                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
-                            )
-
-                            for i in document.attributes:
-                                if isinstance(i, types.DocumentAttributeFilename):
-                                    file_name = i.file_name
-                                    break
-                                elif isinstance(i, types.DocumentAttributeSticker):
-                                    file_name = file_name.replace("doc", "sticker")
-                                elif isinstance(i, types.DocumentAttributeAudio):
-                                    file_name = file_name.replace("doc", "audio")
-                                elif isinstance(i, types.DocumentAttributeVideo):
-                                    file_name = file_name.replace("doc", "video")
-                                elif isinstance(i, types.DocumentAttributeAnimated):
-                                    file_name = file_name.replace("doc", "gif")
-
-                        tmp_file_name = self.get_file(
-                            dc_id=document.dc_id,
-                            id=document.id,
-                            access_hash=document.access_hash,
-                            version=document.version,
-                            size=document.size,
-                            progress=progress
-                        )
-                elif isinstance(media, types.MessageMediaPhoto):
-                    photo = media.photo
-
-                    if isinstance(photo, types.Photo):
-                        if not file_name:
-                            file_name = "photo_{}.jpg".format(
-                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S")
-                            )
-
-                        photo_loc = photo.sizes[-1].location
-
-                        tmp_file_name = self.get_file(
-                            dc_id=photo_loc.dc_id,
-                            volume_id=photo_loc.volume_id,
-                            local_id=photo_loc.local_id,
-                            secret=photo_loc.secret,
-                            size=photo.sizes[-1].size,
-                            progress=progress
-                        )
-
-                if file_name is not None:
-                    path[0] = "downloads/{}".format(file_name)
-
-                try:
-                    os.remove("downloads/{}".format(file_name))
-                except OSError:
-                    pass
-                finally:
-                    try:
-                        os.renames("{}".format(tmp_file_name), "downloads/{}".format(file_name))
-                    except OSError:
-                        pass
-            except Exception as e:
-                log.error(e, exc_info=True)
-            finally:
-                done.set()
-
-                try:
-                    os.remove("{}".format(tmp_file_name))
-                except OSError:
-                    pass
-
-        log.debug("{} stopped".format(name))
-
-    def updates_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            updates = self.updates_queue.get()
-
-            if updates is None:
-                break
-
-            try:
-                if isinstance(updates, (types.Update, types.UpdatesCombined)):
-                    self.fetch_peers(updates.users)
-                    self.fetch_peers(updates.chats)
-
-                    for update in updates.updates:
-                        channel_id = getattr(
-                            getattr(
-                                getattr(
-                                    update, "message", None
-                                ), "to_id", None
-                            ), "channel_id", None
-                        ) or getattr(update, "channel_id", None)
-
-                        pts = getattr(update, "pts", None)
-
-                        if channel_id and pts:
-                            if channel_id not in self.channels_pts:
-                                self.channels_pts[channel_id] = []
-
-                            if pts in self.channels_pts[channel_id]:
-                                continue
-
-                            self.channels_pts[channel_id].append(pts)
-
-                            if len(self.channels_pts[channel_id]) > 50:
-                                self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
-
-                        self.update_queue.put((update, updates.users, updates.chats))
-                elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
-                    diff = self.send(
-                        functions.updates.GetDifference(
-                            pts=updates.pts - updates.pts_count,
-                            date=updates.date,
-                            qts=-1
-                        )
-                    )
-
-                    self.fetch_peers(diff.users)
-                    self.fetch_peers(diff.chats)
-
-                    self.update_queue.put((
-                        types.UpdateNewMessage(
-                            message=diff.new_messages[0],
-                            pts=updates.pts,
-                            pts_count=updates.pts_count
-                        ),
-                        diff.users,
-                        diff.chats
-                    ))
-                elif isinstance(updates, types.UpdateShort):
-                    self.update_queue.put((updates.update, [], []))
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))
-
-    def update_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            update = self.update_queue.get()
-
-            if update is None:
-                break
-
-            try:
-                if self.update_handler:
-                    self.update_handler(
-                        self,
-                        update[0],
-                        {i.id: i for i in update[1]},
-                        {i.id: i for i in update[2]}
-                    )
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))
-
-    def signal_handler(self, *args):
-        self.stop()
-        self.is_idle = False
-
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Blocks the program execution until one of the signals are received,
-        then gently stop the Client by closing the underlying connection.
-
-        Args:
-            stop_signals (:obj:`tuple`, optional):
-                Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
-        """
-        for s in stop_signals:
-            signal(s, self.signal_handler)
-
-        self.is_idle = True
-
-        while self.is_idle:
-            time.sleep(1)
-
-    def set_update_handler(self, callback: callable):
-        """Use this method to set the update handler.
-
-        You must call this method *before* you *start()* the Client.
-
-        Args:
-            callback (:obj:`callable`):
-                A function that will be called when a new update is received from the server. It takes
-                :obj:`(client, update, users, chats)` as positional arguments (Look at the section below for
-                a detailed description).
-
-        Other Parameters:
-            client (:obj:`pyrogram.Client`):
-                The Client itself, useful when you want to call other API methods inside the update handler.
-
-            update (:obj:`Update`):
-                The received update, which can be one of the many single Updates listed in the *updates*
-                field you see in the :obj:`types.Update <pyrogram.api.types.Update>` type.
-
-            users (:obj:`dict`):
-                Dictionary of all :obj:`types.User <pyrogram.api.types.User>` mentioned in the update.
-                You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
-                the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
-
-            chats (:obj:`dict`):
-                Dictionary of all :obj:`types.Chat <pyrogram.api.types.Chat>` and
-                :obj:`types.Channel <pyrogram.api.types.Channel>` mentioned in the update.
-                You can access extra info about the chat (such as *title*, *participants_count*, etc...)
-                by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
-
-        Note:
-            The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
-            They mean you have been blocked by the user or banned from the group/channel.
-
-            - :obj:`types.UserEmpty <pyrogram.api.types.UserEmpty>`
-            - :obj:`types.ChatEmpty <pyrogram.api.types.ChatEmpty>`
-            - :obj:`types.ChatForbidden <pyrogram.api.types.ChatForbidden>`
-            - :obj:`types.ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
-        """
-        self.update_handler = callback
-
-    def send(self, data: Object):
-        """Use this method to send Raw Function queries.
-
-        This method makes possible to manually call every single Telegram API method in a low-level manner.
-        Available functions are listed in the :obj:`pyrogram.api.functions` package and may accept compound
-        data types from :obj:`pyrogram.api.types` as well as bare types such as :obj:`int`, :obj:`str`, etc...
-
-        Args:
-            data (:obj:`Object`):
-                The API Scheme function filled with proper arguments.
-
-        Raises:
-            :class:`pyrogram.Error`
-        """
-        r = self.session.send(data)
-
-        self.fetch_peers(getattr(r, "users", []))
-        self.fetch_peers(getattr(r, "chats", []))
-
-        return r
-
-    def authorize(self):
+            )
+        except UserMigrate as e:
+            self.session.stop()
+
+            self.dc_id = e.x
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+
+            self.session = Session(
+                self.dc_id,
+                self.test_mode,
+                self.proxy,
+                self.auth_key,
+                self.api_key.api_id,
+                client=self
+            )
+
+            self.session.start()
+            self.authorize_bot()
+        else:
+            self.user_id = r.user.id
+
+    def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
         password_hash_invalid_raises = self.password is not None
@@ -565,6 +294,8 @@ class Client:
                         break
                     elif confirm in ("n", "2"):
                         self.phone_number = input("Enter phone number: ")
+
+            self.phone_number = self.phone_number.strip("+")
 
             try:
                 r = self.send(
@@ -706,24 +437,392 @@ class Client:
             else:
                 break
 
-        return r.user.id
+        self.password = None
+        self.user_id = r.user.id
+
+    def fetch_peers(self, entities: list):
+        for entity in entities:
+            if isinstance(entity, types.User):
+                user_id = entity.id
+
+                if user_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+                phone = entity.phone
+
+                input_peer = types.InputPeerUser(
+                    user_id=user_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[user_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_username[username.lower()] = input_peer
+
+                if phone is not None:
+                    self.peers_by_phone[phone] = input_peer
+
+            if isinstance(entity, types.Chat):
+                chat_id = entity.id
+                peer_id = -chat_id
+
+                if peer_id in self.peers_by_id:
+                    continue
+
+                input_peer = types.InputPeerChat(
+                    chat_id=chat_id
+                )
+
+                self.peers_by_id[peer_id] = input_peer
+
+            if isinstance(entity, types.Channel):
+                channel_id = entity.id
+                peer_id = int("-100" + str(channel_id))
+
+                if peer_id in self.peers_by_id:
+                    continue
+
+                access_hash = entity.access_hash
+
+                if access_hash is None:
+                    continue
+
+                username = entity.username
+
+                input_peer = types.InputPeerChannel(
+                    channel_id=channel_id,
+                    access_hash=access_hash
+                )
+
+                self.peers_by_id[peer_id] = input_peer
+
+                if username is not None:
+                    self.peers_by_username[username.lower()] = input_peer
+
+    def download_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            media = self.download_queue.get()
+            temp_file_path = ""
+            final_file_path = ""
+
+            if media is None:
+                break
+
+            try:
+                media, file_name, done, progress, path = media
+
+                directory, file_name = os.path.split(file_name)
+                directory = directory or "downloads"
+
+                if isinstance(media, types.MessageMediaDocument):
+                    document = media.document
+
+                    if isinstance(document, types.Document):
+                        if not file_name:
+                            file_name = "doc_{}{}".format(
+                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
+                                ".txt" if document.mime_type == "text/plain" else
+                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
+                            )
+
+                            for i in document.attributes:
+                                if isinstance(i, types.DocumentAttributeFilename):
+                                    file_name = i.file_name
+                                    break
+                                elif isinstance(i, types.DocumentAttributeSticker):
+                                    file_name = file_name.replace("doc", "sticker")
+                                elif isinstance(i, types.DocumentAttributeAudio):
+                                    file_name = file_name.replace("doc", "audio")
+                                elif isinstance(i, types.DocumentAttributeVideo):
+                                    file_name = file_name.replace("doc", "video")
+                                elif isinstance(i, types.DocumentAttributeAnimated):
+                                    file_name = file_name.replace("doc", "gif")
+
+                        temp_file_path = self.get_file(
+                            dc_id=document.dc_id,
+                            id=document.id,
+                            access_hash=document.access_hash,
+                            version=document.version,
+                            size=document.size,
+                            progress=progress
+                        )
+                elif isinstance(media, (types.MessageMediaPhoto, types.Photo)):
+                    if isinstance(media, types.MessageMediaPhoto):
+                        photo = media.photo
+                    else:
+                        photo = media
+
+                    if isinstance(photo, types.Photo):
+                        if not file_name:
+                            file_name = "photo_{}_{}.jpg".format(
+                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S"),
+                                self.rnd_id()
+                            )
+
+                        photo_loc = photo.sizes[-1].location
+
+                        temp_file_path = self.get_file(
+                            dc_id=photo_loc.dc_id,
+                            volume_id=photo_loc.volume_id,
+                            local_id=photo_loc.local_id,
+                            secret=photo_loc.secret,
+                            size=photo.sizes[-1].size,
+                            progress=progress
+                        )
+
+                if temp_file_path:
+                    final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
+                    os.makedirs(directory, exist_ok=True)
+                    shutil.move(temp_file_path, final_file_path)
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+                try:
+                    os.remove(temp_file_path)
+                except OSError:
+                    pass
+            else:
+                # TODO: "" or None for faulty download, which is better?
+                # os.path methods return "" in case something does not exist, I prefer this.
+                # For now let's keep None
+                path[0] = final_file_path or None
+            finally:
+                done.set()
+
+        log.debug("{} stopped".format(name))
+
+    def updates_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            updates = self.updates_queue.get()
+
+            if updates is None:
+                break
+
+            try:
+                if isinstance(updates, (types.Update, types.UpdatesCombined)):
+                    self.fetch_peers(updates.users)
+                    self.fetch_peers(updates.chats)
+
+                    for update in updates.updates:
+                        channel_id = getattr(
+                            getattr(
+                                getattr(
+                                    update, "message", None
+                                ), "to_id", None
+                            ), "channel_id", None
+                        ) or getattr(update, "channel_id", None)
+
+                        pts = getattr(update, "pts", None)
+                        pts_count = getattr(update, "pts_count", None)
+
+                        if isinstance(update, types.UpdateNewChannelMessage):
+                            message = update.message
+
+                            if not isinstance(message, types.MessageEmpty):
+                                diff = self.send(
+                                    functions.updates.GetChannelDifference(
+                                        channel=self.resolve_peer(update.message.to_id.channel_id),
+                                        filter=types.ChannelMessagesFilter(
+                                            ranges=[types.MessageRange(
+                                                min_id=update.message.id,
+                                                max_id=update.message.id
+                                            )]
+                                        ),
+                                        pts=pts - pts_count,
+                                        limit=pts
+                                    )
+                                )
+
+                                if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
+                                    updates.users += diff.users
+                                    updates.chats += diff.chats
+
+                        if channel_id and pts:
+                            if channel_id not in self.channels_pts:
+                                self.channels_pts[channel_id] = []
+
+                            if pts in self.channels_pts[channel_id]:
+                                continue
+
+                            self.channels_pts[channel_id].append(pts)
+
+                            if len(self.channels_pts[channel_id]) > 50:
+                                self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
+
+                        self.update_queue.put((update, updates.users, updates.chats))
+                elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
+                    diff = self.send(
+                        functions.updates.GetDifference(
+                            pts=updates.pts - updates.pts_count,
+                            date=updates.date,
+                            qts=-1
+                        )
+                    )
+
+                    self.update_queue.put((
+                        types.UpdateNewMessage(
+                            message=diff.new_messages[0],
+                            pts=updates.pts,
+                            pts_count=updates.pts_count
+                        ),
+                        diff.users,
+                        diff.chats
+                    ))
+                elif isinstance(updates, types.UpdateShort):
+                    self.update_queue.put((updates.update, [], []))
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
+
+    def update_worker(self):
+        name = threading.current_thread().name
+        log.debug("{} started".format(name))
+
+        while True:
+            update = self.update_queue.get()
+
+            if update is None:
+                break
+
+            try:
+                if self.update_handler:
+                    self.update_handler(
+                        self,
+                        update[0],
+                        {i.id: i for i in update[1]},
+                        {i.id: i for i in update[2]}
+                    )
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+        log.debug("{} stopped".format(name))
+
+    def signal_handler(self, *args):
+        self.stop()
+        self.is_idle = False
+
+    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Blocks the program execution until one of the signals are received,
+        then gently stop the Client by closing the underlying connection.
+
+        Args:
+            stop_signals (``tuple``, optional):
+                Iterable containing signals the signal handler will listen to.
+                Defaults to (SIGINT, SIGTERM, SIGABRT).
+        """
+        for s in stop_signals:
+            signal(s, self.signal_handler)
+
+        self.is_idle = True
+
+        while self.is_idle:
+            time.sleep(1)
+
+    def set_update_handler(self, callback: callable):
+        """Use this method to set the update handler.
+
+        You must call this method *before* you *start()* the Client.
+
+        Args:
+            callback (``callable``):
+                A function that will be called when a new update is received from the server. It takes
+                *(client, update, users, chats)* as positional arguments (Look at the section below for
+                a detailed description).
+
+        Other Parameters:
+            client (:class:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the update handler.
+
+            update (``Update``):
+                The received update, which can be one of the many single Updates listed in the *updates*
+                field you see in the :obj:`Update <pyrogram.api.types.Update>` type.
+
+            users (``dict``):
+                Dictionary of all :obj:`User <pyrogram.api.types.User>` mentioned in the update.
+                You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
+                the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
+
+            chats (``dict``):
+                Dictionary of all :obj:`Chat <pyrogram.api.types.Chat>` and
+                :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
+                You can access extra info about the chat (such as *title*, *participants_count*, etc...)
+                by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
+
+        Note:
+            The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
+            They mean you have been blocked by the user or banned from the group/channel.
+
+            - :obj:`UserEmpty <pyrogram.api.types.UserEmpty>`
+            - :obj:`ChatEmpty <pyrogram.api.types.ChatEmpty>`
+            - :obj:`ChatForbidden <pyrogram.api.types.ChatForbidden>`
+            - :obj:`ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
+        """
+        self.update_handler = callback
+
+    def send(self, data: Object):
+        """Use this method to send Raw Function queries.
+
+        This method makes possible to manually call every single Telegram API method in a low-level manner.
+        Available functions are listed in the :obj:`functions <pyrogram.api.functions>` package and may accept compound
+        data types from :obj:`types <pyrogram.api.types>` as well as bare types such as ``int``, ``str``, etc...
+
+        Args:
+            data (``Object``):
+                The API Scheme function filled with proper arguments.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if self.is_started:
+            r = self.session.send(data)
+
+            self.fetch_peers(getattr(r, "users", []))
+            self.fetch_peers(getattr(r, "chats", []))
+
+            return r
+        else:
+            raise ConnectionError("client '{}' is not started".format(self.session_name))
 
     def load_config(self):
         parser = ConfigParser()
         parser.read("config.ini")
 
-        if parser.has_section("pyrogram"):
-            self.api_key = ApiKey(
+        if self.api_key is not None:
+            self.api_key = APIKey(
+                api_id=int(self.api_key[0]),
+                api_hash=self.api_key[1]
+            )
+        elif parser.has_section("pyrogram"):
+            self.api_key = APIKey(
                 api_id=parser.getint("pyrogram", "api_id"),
                 api_hash=parser.get("pyrogram", "api_hash")
             )
         else:
-            self.api_key = ApiKey(
-                api_id=int(self.api_key[0]),
-                api_hash=self.api_key[1]
-            )
+            raise AttributeError("No API Key found")
 
-        if parser.has_section("proxy"):
+        if self.proxy is not None:
+            self.proxy = Proxy(
+                enabled=True,
+                hostname=self.proxy["hostname"],
+                port=int(self.proxy["port"]),
+                username=self.proxy.get("username", None),
+                password=self.proxy.get("password", None)
+            )
+        elif parser.has_section("proxy"):
             self.proxy = Proxy(
                 enabled=parser.getboolean("proxy", "enabled"),
                 hostname=parser.get("proxy", "hostname"),
@@ -731,15 +830,6 @@ class Client:
                 username=parser.get("proxy", "username", fallback=None) or None,
                 password=parser.get("proxy", "password", fallback=None) or None
             )
-        else:
-            if self.proxy is not None:
-                self.proxy = Proxy(
-                    enabled=True,
-                    hostname=self.proxy["hostname"],
-                    port=int(self.proxy["port"]),
-                    username=self.proxy.get("username", None),
-                    password=self.proxy.get("password", None)
-                )
 
     def load_session(self, session_name):
         try:
@@ -809,35 +899,6 @@ class Client:
             offset_date = parse_dialogs(dialogs)
             log.info("Entities count: {}".format(len(self.peers_by_id)))
 
-    def resolve_username(self, username: str):
-        username = username.lower().strip("@")
-
-        resolved_peer = self.send(
-            functions.contacts.ResolveUsername(
-                username=username
-            )
-        )  # type: types.contacts.ResolvedPeer
-
-        if type(resolved_peer.peer) is types.PeerUser:
-            input_peer = types.InputPeerUser(
-                user_id=resolved_peer.users[0].id,
-                access_hash=resolved_peer.users[0].access_hash
-            )
-            peer_id = input_peer.user_id
-        elif type(resolved_peer.peer) is types.PeerChannel:
-            input_peer = types.InputPeerChannel(
-                channel_id=resolved_peer.chats[0].id,
-                access_hash=resolved_peer.chats[0].access_hash
-            )
-            peer_id = int("-100" + str(input_peer.channel_id))
-        else:
-            raise PeerIdInvalid
-
-        self.peers_by_username[username] = input_peer
-        self.peers_by_id[peer_id] = input_peer
-
-        return input_peer
-
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
 
@@ -845,9 +906,9 @@ class Client:
         not available yet in the Client class as an easy-to-use method).
 
         Args:
-            peer_id (:obj:`int` | :obj:`str` | :obj:`Peer`):
-                The Peer ID you want to extract the InputPeer from. Can be one of these types: :obj:`int` (direct ID),
-                :obj:`str` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
+            peer_id (``int`` | ``str`` | ``Peer``):
+                The Peer ID you want to extract the InputPeer from. Can be one of these types: ``int`` (direct ID),
+                ``str`` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
                 :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
 
         Returns:
@@ -856,11 +917,19 @@ class Client:
             :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
                 return types.InputPeerSelf()
+
+            match = self.INVITE_LINK_RE.match(peer_id)
+
+            try:
+                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), "-_")
+                return self.resolve_peer(struct.unpack(">2iq", decoded)[1])
+            except (AttributeError, binascii.Error, struct.error):
+                pass
 
             peer_id = peer_id.lower().strip("@+")
 
@@ -870,7 +939,8 @@ class Client:
                 try:
                     return self.peers_by_username[peer_id]
                 except KeyError:
-                    return self.resolve_username(peer_id)
+                    self.send(functions.contacts.ResolveUsername(peer_id))
+                    return self.peers_by_username[peer_id]
             else:
                 try:
                     return self.peers_by_phone[peer_id]
@@ -903,7 +973,7 @@ class Client:
             Full information about the user in form of a :obj:`UserFull <pyrogram.api.types.UserFull>` object.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.users.GetFullUser(
@@ -921,34 +991,35 @@ class Client:
         """Use this method to send text messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            text (:obj:`str`):
+            text (``str``):
                 Text of the message to be sent.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your message.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (:obj:`bool`, optional):
+            disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`bool`, optional):
+            reply_to_message_id (``bool``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -971,21 +1042,22 @@ class Client:
         """Use this method to forward messages of any kind.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            from_chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the chat where the original message was sent
-                (or channel/supergroup username in the format @username). For your personal cloud
-                storage (Saved Messages) you can simply use "me" or "self".
-                Phone numbers that exist in your Telegram address book are also supported.
+            from_chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the source chat where the original message was sent.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (:obj:`list`):
+            message_ids (``list``):
                 A list of Message identifiers in the chat specified in *from_chat_id*.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
@@ -993,7 +1065,7 @@ class Client:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.ForwardMessages(
@@ -1017,51 +1089,52 @@ class Client:
         """Use this method to send photos.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            photo (:obj:`str`):
+            photo (``str``):
                 Photo to send.
                 Pass a file path as string to send a photo that exists on your local machine.
 
-            caption (:obj:`bool`, optional):
+            caption (``bool``, optional):
                 Photo caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            ttl_seconds (:obj:`int`, optional):
+            ttl_seconds (``int``, optional):
                 Self-Destruct Timer.
-                If you set a timer, the photo will self-destruct in :obj:`ttl_seconds`
+                If you set a timer, the photo will self-destruct in *ttl_seconds*
                 seconds after it was viewed.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(photo, progress=progress)
@@ -1102,55 +1175,56 @@ class Client:
         For sending voice messages, use the :obj:`send_voice` method instead.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            audio (:obj:`str`):
+            audio (``str``):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Audio caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of the audio in seconds.
 
-            performer (:obj:`str`, optional):
+            performer (``str``, optional):
                 Performer.
 
-            title (:obj:`str`, optional):
+            title (``str``, optional):
                 Track name.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(audio, progress=progress)
@@ -1194,46 +1268,47 @@ class Client:
         """Use this method to send general files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            document (:obj:`str`):
+            document (``str``):
                 File to send.
                 Pass a file path as string to send a file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Document caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(document, progress=progress)
@@ -1270,38 +1345,39 @@ class Client:
         """Use this method to send .webp stickers.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            sticker (:obj:`str`):
+            sticker (``str``):
                 Sticker to send.
                 Pass a file path as string to send a sticker that exists on your local machine.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         file = self.save_file(sticker, progress=progress)
 
@@ -1337,70 +1413,71 @@ class Client:
                    width: int = 0,
                    height: int = 0,
                    thumb: str = None,
-                   supports_streaming: bool = None,
+                   supports_streaming: bool = True,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    progress: callable = None):
         """Use this method to send video files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video (:obj:`str`):
+            video (``str``):
                 Video to send.
                 Pass a file path as string to send a video that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Video caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of sent video in seconds.
 
-            width (:obj:`int`, optional):
+            width (``int``, optional):
                 Video width.
 
-            height (:obj:`int`, optional):
+            height (``int``, optional):
                 Video height.
 
-            thumb (:obj:`str`, optional):
+            thumb (``str``, optional):
                 Video thumbnail.
                 Pass a file path as string to send an image that exists on your local machine.
                 Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
-            supports_streaming (:obj:`bool`, optional):
+            supports_streaming (``bool``, optional):
                 Pass True, if the uploaded video is suitable for streaming.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(video, progress=progress)
@@ -1417,7 +1494,7 @@ class Client:
                             thumb=file_thumb,
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=supports_streaming,
+                                    supports_streaming=supports_streaming or None,
                                     duration=duration,
                                     w=width,
                                     h=height
@@ -1448,49 +1525,50 @@ class Client:
         """Use this method to send audio files.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            voice (:obj:`str`):
+            voice (``str``):
                 Audio file to send.
                 Pass a file path as string to send an audio file that exists on your local machine.
 
-            caption (:obj:`str`, optional):
+            caption (``str``, optional):
                 Voice message caption, 0-200 characters.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of the voice message in seconds.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         file = self.save_file(voice, progress=progress)
@@ -1532,44 +1610,45 @@ class Client:
         """Use this method to send video messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video_note (:obj:`str`):
+            video_note (``str``):
                 Video note to send.
                 Pass a file path as string to send a video note that exists on your local machine.
 
-            duration (:obj:`int`, optional):
+            duration (``int``, optional):
                 Duration of sent video in seconds.
 
-            length (:obj:`int`, optional):
+            length (``int``, optional):
                 Video width and height.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the upload progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes uploaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         file = self.save_file(video_note, progress=progress)
 
@@ -1611,20 +1690,21 @@ class Client:
         On success, an Update containing the sent Messages is returned.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            media (:obj:`list`):
+            media (``list``):
                 A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
         """
         multi_media = []
@@ -1667,7 +1747,7 @@ class Client:
                             mime_type=mimetypes.types_map[".mp4"],
                             attributes=[
                                 types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming,
+                                    supports_streaming=i.supports_streaming or None,
                                     duration=i.duration,
                                     w=i.width,
                                     h=i.height
@@ -1709,29 +1789,30 @@ class Client:
         """Use this method to send points on the map.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            latitude (:obj:`float`):
+            latitude (``float``):
                 Latitude of the location.
 
-            longitude (:obj:`float`):
+            longitude (``float``):
                 Longitude of the location.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1761,38 +1842,39 @@ class Client:
         """Use this method to send information about a venue.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            latitude (:obj:`float`):
+            latitude (``float``):
                 Latitude of the venue.
 
-            longitude (:obj:`float`):
+            longitude (``float``):
                 Longitude of the venue.
 
-            title (:obj:`str`):
+            title (``str``):
                 Name of the venue.
 
-            address (:obj:`str`):
+            address (``str``):
                 Address of the venue.
 
-            foursquare_id (:obj:`str`, optional):
+            foursquare_id (``str``, optional):
                 Foursquare identifier of the venue.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1825,32 +1907,33 @@ class Client:
         """Use this method to send phone contacts.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            phone_number (:obj:`str`):
+            phone_number (``str``):
                 Contact's phone number.
 
-            first_name (:obj:`str`):
+            first_name (``str``):
                 Contact's first name.
 
-            last_name (:obj:`str`):
+            last_name (``str``):
                 Contact's last name.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`int`, optional):
+            reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
              On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendMedia(
@@ -1874,26 +1957,32 @@ class Client:
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            action (:obj:`callable`):
+            action (``callable``):
                 Type of action to broadcast.
-                Choose one from the :class:`pyrogram.ChatAction` class,
+                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` class,
                 depending on what the user is about to receive.
 
-            progress (:obj:`int`, optional):
+            progress (``int``, optional):
                 Progress of the upload process.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
+        if "Upload" in action.__name__:
+            action = action(progress)
+        else:
+            action = action()
+
         return self.send(
             functions.messages.SetTyping(
                 peer=self.resolve_peer(chat_id),
-                action=action(progress=progress)
+                action=action
             )
         )
 
@@ -1904,19 +1993,19 @@ class Client:
         """Use this method to get a list of profile pictures for a user.
 
         Args:
-            user_id (:obj:`int` | :obj:`str`):
+            user_id (``int`` | ``str``):
                 Unique identifier of the target user.
 
-            offset (:obj:`int`, optional):
+            offset (``int``, optional):
                 Sequential number of the first photo to be returned.
                 By default, all photos are returned.
 
-            limit (:obj:`int`, optional):
+            limit (``int``, optional):
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.photos.GetUserPhotos(
@@ -1936,27 +2025,28 @@ class Client:
         """Use this method to edit text messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_id (:obj:`int`):
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            text (:obj:`str`):
+            text (``str``):
                 New text of the message.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your message.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (:obj:`bool`, optional):
+            disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -1977,24 +2067,25 @@ class Client:
         """Use this method to edit captions of messages.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_id (:obj:`int`):
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            caption (:obj:`str`):
+            caption (``str``):
                 New caption of the message.
 
-            parse_mode (:obj:`str`):
-                Use :obj:`pyrogram.ParseMode.MARKDOWN` or :obj:`pyrogram.ParseMode.HTML` if you want Telegram apps
-                to show bold, italic, fixed-width text or inline URLs in your caption.
+            parse_mode (``str``):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
@@ -2019,21 +2110,22 @@ class Client:
         - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (:obj:`list`):
+            message_ids (``list``):
                 List of identifiers of the messages to delete.
 
-            revoke (:obj:`bool`, optional):
+            revoke (``bool``, optional):
                 Deletes messages on both parts.
                 This is only for private cloud chats and normal groups, messages on
                 channels and supergroups are always revoked (i.e.: deleted for everyone).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
 
@@ -2084,14 +2176,21 @@ class Client:
                             md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
-                    session.send(
-                        (functions.upload.SaveBigFilePart if is_big else functions.upload.SaveFilePart)(
+                    if is_big:
+                        rpc = functions.upload.SaveBigFilePart(
                             file_id=file_id,
                             file_part=file_part,
-                            bytes=chunk,
-                            file_total_parts=file_total_parts
+                            file_total_parts=file_total_parts,
+                            bytes=chunk
                         )
-                    )
+                    else:
+                        rpc = functions.upload.SaveFilePart(
+                            file_id=file_id,
+                            file_part=file_part,
+                            bytes=chunk
+                        )
+
+                    assert self.send(rpc), "Couldn't upload file"
 
                     if is_missing_part:
                         return
@@ -2104,14 +2203,22 @@ class Client:
                     if progress:
                         progress(min(file_part * part_size, file_size), file_size)
         except Exception as e:
-            log.error(e)
+            log.error(e, exc_info=True)
         else:
-            return (types.InputFileBig if is_big else types.InputFile)(
-                id=file_id,
-                parts=file_total_parts,
-                name=os.path.basename(path),
-                md5_checksum=md5_sum
-            )
+            if is_big:
+                return types.InputFileBig(
+                    id=file_id,
+                    parts=file_total_parts,
+                    name=os.path.basename(path),
+
+                )
+            else:
+                return types.InputFile(
+                    id=file_id,
+                    parts=file_total_parts,
+                    name=os.path.basename(path),
+                    md5_checksum=md5_sum
+                )
         finally:
             session.stop()
 
@@ -2172,9 +2279,9 @@ class Client:
                 version=version
             )
 
-        file_name = "download_{}.temp".format(MsgId())
         limit = 1024 * 1024
         offset = 0
+        file_name = ""
 
         try:
             r = session.send(
@@ -2186,7 +2293,9 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with open(file_name, "wb") as f:
+                with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                    file_name = f.name
+
                     while True:
                         chunk = r.bytes
 
@@ -2210,7 +2319,7 @@ class Client:
                             )
                         )
 
-            if isinstance(r, types.upload.FileCdnRedirect):
+            elif isinstance(r, types.upload.FileCdnRedirect):
                 cdn_session = Session(
                     r.dc_id,
                     self.test_mode,
@@ -2223,11 +2332,12 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    with open(file_name, "wb") as f:
+                    with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                        file_name = f.name
+
                         while True:
                             r2 = cdn_session.send(
                                 functions.upload.GetCdnFile(
-                                    location=location,
                                     file_token=r.file_token,
                                     offset=offset,
                                     limit=limit
@@ -2281,11 +2391,18 @@ class Client:
                             if len(chunk) < limit:
                                 break
                 except Exception as e:
-                    log.error(e)
+                    raise e
                 finally:
                     cdn_session.stop()
         except Exception as e:
-            log.error(e)
+            log.error(e, exc_info=True)
+
+            try:
+                os.remove(file_name)
+            except OSError:
+                pass
+
+            return ""
         else:
             return file_name
         finally:
@@ -2295,12 +2412,12 @@ class Client:
         """Use this method to join a group chat or channel.
 
         Args:
-            chat_id (:obj:`str`):
+            chat_id (``str``):
                 Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
                 channel/supergroup (in the format @username).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 
@@ -2332,15 +2449,15 @@ class Client:
         """Use this method to leave a group chat or channel.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            delete (:obj:`bool`, optional):
+            delete (``bool``, optional):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
 
@@ -2374,11 +2491,11 @@ class Client:
         The user must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
+            chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            new (:obj:`bool`):
+            new (``bool``):
                 The previous link will be deactivated and a new link will be generated.
                 This is also used to create the invite link in case it doesn't exist yet.
 
@@ -2386,7 +2503,7 @@ class Client:
             On success, the exported invite link as string is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
 
         Note:
             If the returned link is a new one it may take a while for it to be activated.
@@ -2436,20 +2553,20 @@ class Client:
         This password will be asked when you log in on a new device in addition to the SMS code.
 
         Args:
-            password (:obj:`str`):
+            password (``str``):
                 Your password.
 
-            hint (:obj:`str`, optional):
+            hint (``str``, optional):
                 A password hint.
 
-            email (:obj:`str`, optional):
+            email (``str``, optional):
                 Recovery e-mail.
 
         Returns:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2475,20 +2592,20 @@ class Client:
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
-            current_password (:obj:`str`):
+            current_password (``str``):
                 Your current password.
 
-            new_password (:obj:`str`):
+            new_password (``str``):
                 Your new password.
 
-            new_hint (:obj:`str`, optional):
+            new_hint (``str``, optional):
                 A new password hint.
 
         Returns:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2515,14 +2632,14 @@ class Client:
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
-            password (:obj:`str`):
+            password (``str``):
                 Your current password.
 
         Returns:
             True on success, False otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         r = self.send(functions.account.GetPassword())
 
@@ -2544,45 +2661,50 @@ class Client:
 
     def download_media(self,
                        message: types.Message,
-                       file_name: str = None,
+                       file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
         """Use this method to download the media from a Message.
-
-        Files are saved in the *downloads* folder.
 
         Args:
             message (:obj:`Message <pyrogram.api.types.Message>`):
                 The Message containing the media.
 
-            file_name (:obj:`str`, optional):
-                Specify a custom *file_name* to be used instead of the one provided by Telegram.
+            file_name (``str``, optional):
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all files are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading files in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
 
-            block (:obj:`bool`, optional):
+            block (``bool``, optional):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (:obj:`callable`):
+            progress (``callable``):
                 Pass a callback function to view the download progress.
                 The function must accept two arguments (current, total).
 
         Other Parameters:
-            current (:obj:`int`):
+            current (``int``):
                 The amount of bytes downloaded so far.
 
-            total (:obj:`int`):
+            total (``int``):
                 The size of the file.
 
         Returns:
-            The relative path of the downloaded file.
+            On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
-        if isinstance(message, types.Message):
+        if isinstance(message, (types.Message, types.Photo)):
             done = Event()
-            media = message.media
             path = [None]
+
+            if isinstance(message, types.Message):
+                media = message.media
+            else:
+                media = message
 
             if media is not None:
                 self.download_queue.put((media, file_name, done, progress, path))
@@ -2594,18 +2716,61 @@ class Client:
 
             return path[0]
 
+    def download_photo(self,
+                       photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
+                       file_name: str = "",
+                       block: bool = True):
+        """Use this method to download a photo not contained inside a Message.
+        For example, a photo of a User or a Chat/Channel.
+
+        Args:
+            photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
+                The photo object.
+
+            file_name (``str``, optional):
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all photos are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading photos in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
+
+            block (``bool``, optional):
+                Blocks the code execution until the photo has been downloaded.
+                Defaults to True.
+
+        Returns:
+            On success, the absolute path of the downloaded photo as string is returned, None otherwise.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
+            photo = types.Photo(
+                id=0,
+                access_hash=0,
+                date=int(time.time()),
+                sizes=[types.PhotoSize(
+                    type="",
+                    location=photo.photo_big,
+                    w=0,
+                    h=0,
+                    size=0
+                )]
+            )
+
+        return self.download_media(photo, file_name, block)
+
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
 
         Args:
-            contacts (:obj:`list`):
+            contacts (``list``):
                 A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
 
         Returns:
             On success, the added contacts are returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(
@@ -2619,7 +2784,7 @@ class Client:
         """Use this method to delete contacts from your Telegram address book
 
         Args:
-            ids (:obj:`list`):
+            ids (``list``):
                 A list of unique identifiers for the target users.
                 Can be an ID (int), a username (string) or phone number (string).
 
@@ -2627,7 +2792,7 @@ class Client:
             True on success.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         contacts = []
 
@@ -2669,25 +2834,25 @@ class Client:
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
         Args:
-            bot (:obj:`int` | :obj:`str`):
+            bot (``int`` | ``str``):
                 Unique identifier of the inline bot you want to get results from. You can specify
                 a @username (str) or a bot ID (int).
 
-            query (:obj:`str`):
+            query (``str``):
                 Text of the query (up to 512 characters).
 
-            offset (:obj:`str`):
+            offset (``str``):
                 Offset of the results to be returned.
 
-            location (:obj:`tuple`, optional):
+            location (``tuple``, optional):
                 Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
                 Useful for location-based results only.
 
         Returns:
-            On Success, `BotResults <pyrogram.api.types.messages.BotResults>`_ is returned.
+            On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.GetInlineBotResults(
@@ -2712,29 +2877,30 @@ class Client:
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
         Args:
-            chat_id (:obj:`int` | :obj:`str`):
-                Unique identifier for the target chat or username of the target channel/supergroup
-                (in the format @username). For your personal cloud storage (Saved Messages) you can
-                simply use "me" or "self". Phone numbers that exist in your Telegram address book are also supported.
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            query_id (:obj:`int`):
+            query_id (``int``):
                 Unique identifier for the answered query.
 
-            result_id (:obj:`str`):
+            result_id (``str``):
                 Unique identifier for the result that was chosen.
 
-            disable_notification (:obj:`bool`, optional):
+            disable_notification (``bool``, optional):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (:obj:`bool`, optional):
+            reply_to_message_id (``bool``, optional):
                 If the message is a reply, ID of the original message.
 
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`pyrogram.Error`
+            :class:`Error <pyrogram.Error>`
         """
         return self.send(
             functions.messages.SendInlineBotResult(
@@ -2746,3 +2912,40 @@ class Client:
                 reply_to_msg_id=reply_to_message_id
             )
         )
+
+    def get_messages(self,
+                     chat_id: int or str,
+                     message_ids: list):
+        """Use this method to get messages that belong to a specific chat.
+        You can retrieve up to 200 messages at once.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            message_ids (``list``):
+                A list of Message identifiers in the chat specified in *chat_id*.
+
+        Returns:
+            List of the requested messages
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        peer = self.resolve_peer(chat_id)
+        message_ids = [types.InputMessageID(i) for i in message_ids]
+
+        if isinstance(peer, types.InputPeerChannel):
+            rpc = functions.channels.GetMessages(
+                channel=peer,
+                id=message_ids
+            )
+        else:
+            rpc = functions.messages.GetMessages(
+                id=message_ids
+            )
+
+        return self.send(rpc)

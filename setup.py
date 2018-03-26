@@ -24,12 +24,15 @@ from setuptools import setup, find_packages
 from compiler.api import compiler as api_compiler
 from compiler.error import compiler as error_compiler
 
-# from compiler.docs import compiler as docs_compiler
+
+def requirements():
+    with open("requirements.txt", encoding="utf-8") as r:
+        return [i.strip() for i in r]
+
 
 if len(argv) > 1 and argv[1] != "sdist":
     api_compiler.start()
     error_compiler.start()
-    # docs_compiler.start()
 
 with open("pyrogram/__init__.py", encoding="utf-8") as f:
     version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
@@ -43,12 +46,12 @@ setup(
     name="Pyrogram",
     version=version,
     description="Telegram MTProto API Client Library for Python",
-    url="https://github.com/pyrogram/pyrogram",
+    long_description=readme,
+    url="https://github.com/pyrogram",
+    download_url="https://github.com/pyrogram/pyrogram/releases/latest",
     author="Dan Tès",
     author_email="admin@pyrogram.ml",
     license="LGPLv3+",
-    keywords="telegram mtproto api client library python",
-    long_description=readme,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
@@ -56,25 +59,28 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: Implementation",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Internet",
+        "Topic :: Communications",
         "Topic :: Communications :: Chat",
         "Topic :: Software Development :: Libraries",
-        "Topic :: Software Development :: Libraries :: Python Modules"
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Libraries :: Application Frameworks"
     ],
-    packages=find_packages(),
-    zip_safe=False,
-    install_requires=[
-        "pyaes",
-        "pysocks"
-    ],
-    extras_require={
-        "tgcrypto": [
-            "tgcrypto"
-        ]
+    keywords="telegram chat messenger mtproto api client library python",
+    project_urls={
+        "Tracker": "https://github.com/pyrogram/pyrogram/issues",
+        "Community": "https://t.me/PyrogramChat",
+        "Source": "https://github.com/pyrogram/pyrogram",
+        "Documentation": "https://docs.pyrogram.ml",
     },
-    include_package_data=True,
+    python_requires="~=3.4",
+    packages=find_packages(exclude=["compiler*"]),
+    zip_safe=False,
+    install_requires=requirements()
 )
