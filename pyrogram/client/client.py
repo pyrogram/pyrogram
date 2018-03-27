@@ -730,6 +730,9 @@ class Client:
                     elif isinstance(message, types.MessageService):
                         m = utils.parse_message_service(message, users, chats)
 
+                        if m is None:
+                            continue
+
                         if isinstance(message.action, types.MessageActionPinMessage):
                             pm = self.get_messages(m.chat.id, [message.reply_to_msg_id])
 

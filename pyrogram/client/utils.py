@@ -43,13 +43,13 @@ def parse_user(user: types.User):
     ) if user else None
 
 
-def parse_chat(peer: types.PeerUser or types.PeerChat or types.PeerChannel, users: dict, chats: dict):
-    if isinstance(peer, types.PeerUser):
-        return parse_user_chat(users[peer.user_id])
-    elif isinstance(peer, types.PeerChat):
-        return parse_chat_chat(chats[peer.chat_id])
+def parse_chat(message: types.Message, users: dict, chats: dict):
+    if isinstance(message.to_id, types.PeerUser):
+        return parse_user_chat(users[message.from_id])
+    elif isinstance(message.to_id, types.PeerChat):
+        return parse_chat_chat(chats[message.to_id.chat_id])
     else:
-        return parse_channel_chat(chats[peer.channel_id])
+        return parse_channel_chat(chats[message.to_id.channel_id])
 
 
 def parse_user_chat(user: types.User):
@@ -104,7 +104,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     return pyrogram.Message(
         message_id=message.id,
         date=message.date,
-        chat=parse_chat(message.to_id, users, chats),
+        chat=parse_chat(message, users, chats),
         from_user=parse_user(users.get(message.from_id, None)),
         text=message.message or None if message.media is None else None,
         caption=message.message or None if message.media is not None else None,
@@ -147,6 +147,8 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
         migrate_from_chat_id = action.chat_id
     elif isinstance(action, types.MessageActionChatCreate):
         group_chat_created = True
+    else:
+        return None
 
     return pyrogram.Message(
         message_id=message.id,
