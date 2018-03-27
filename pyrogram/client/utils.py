@@ -43,6 +43,15 @@ def parse_user(user: types.User):
     ) if user else None
 
 
+def parse_chat(peer: types.PeerUser or types.PeerChat or types.PeerChannel, users: dict, chats: dict):
+    if isinstance(peer, types.PeerUser):
+        return parse_user_chat(users[peer.user_id])
+    elif isinstance(peer, types.PeerChat):
+        return parse_chat_chat(chats[peer.chat_id])
+    else:
+        return parse_channel_chat(chats[peer.channel_id])
+
+
 def parse_user_chat(user: types.User):
     return pyrogram.Chat(
         id=user.id,
@@ -58,7 +67,7 @@ def parse_chat_chat(chat: types.Chat):
         id=-chat.id,
         type="group",
         title=chat.title,
-        all_members_are_administrators=chat.admins_enabled
+        all_members_are_administrators=not chat.admins_enabled
     )
 
 
@@ -72,15 +81,6 @@ def parse_channel_chat(channel: types.Channel):
 
 
 def parse_message(message: types.Message, users: dict, chats: dict):
-    from_user = users.get(message.from_id, None)  # type: types.User
-
-    if isinstance(message.to_id, types.PeerUser):
-        chat = parse_user_chat(users[message.to_id.user_id])
-    elif isinstance(message.to_id, types.PeerChat):
-        chat = parse_chat_chat(chats[message.to_id.chat_id])
-    else:
-        chat = parse_channel_chat(chats[message.to_id.channel_id])
-
     entities = parse_entities(message.entities)
 
     forward_from = None
@@ -104,8 +104,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     return pyrogram.Message(
         message_id=message.id,
         date=message.date,
-        chat=chat,
-        from_user=parse_user(from_user),
+        chat=parse_chat(message.to_id, users, chats),
+        from_user=parse_user(users.get(message.from_id, None)),
         text=message.message or None if message.media is None else None,
         caption=message.message or None if message.media is not None else None,
         entities=entities or None if message.media is None else None,
@@ -117,4 +117,47 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         forward_signature=forward_signature,
         forward_date=forward_date,
         edit_date=message.edit_date
+    )
+
+
+def parse_message_service(message: types.MessageService, users: dict, chats: dict):
+    action = message.action
+
+    new_chat_members = None
+    left_chat_member = None
+    new_chat_title = None
+    delete_chat_photo = None
+    migrate_to_chat_id = None
+    migrate_from_chat_id = None
+    group_chat_created = None
+
+    if isinstance(action, types.MessageActionChatAddUser):
+        new_chat_members = [parse_user(users[i]) for i in action.users]
+    elif isinstance(action, types.MessageActionChatJoinedByLink):
+        new_chat_members = [parse_user(users[action.inviter_id])]
+    elif isinstance(action, types.MessageActionChatDeleteUser):
+        left_chat_member = parse_user(users[action.user_id])
+    elif isinstance(action, types.MessageActionChatEditTitle):
+        new_chat_title = action.title
+    elif isinstance(action, types.MessageActionChatDeletePhoto):
+        delete_chat_photo = True
+    elif isinstance(action, types.MessageActionChatMigrateTo):
+        migrate_to_chat_id = action.channel_id
+    elif isinstance(action, types.MessageActionChannelMigrateFrom):
+        migrate_from_chat_id = action.chat_id
+    elif isinstance(action, types.MessageActionChatCreate):
+        group_chat_created = True
+
+    return pyrogram.Message(
+        message_id=message.id,
+        date=message.date,
+        chat=parse_chat(message.to_id, users, chats),
+        from_user=parse_user(users.get(message.from_id, None)),
+        new_chat_members=new_chat_members,
+        left_chat_member=left_chat_member,
+        new_chat_title=new_chat_title,
+        delete_chat_photo=delete_chat_photo,
+        migrate_to_chat_id=migrate_to_chat_id,
+        migrate_from_chat_id=migrate_from_chat_id,
+        group_chat_created=group_chat_created
     )
