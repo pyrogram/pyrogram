@@ -20,7 +20,7 @@ Verifying
 ---------
 
 To verify that Pyrogram is correctly installed, open a Python shell and try to import it.
-If no errors show up you are good to go.
+If no error shows up you are good to go.
 
 .. code-block:: bash
 
