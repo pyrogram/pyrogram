@@ -2293,7 +2293,7 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                with tempfile.NamedTemporaryFile("wb", delete=False) as f:
                     file_name = f.name
 
                     while True:
@@ -2332,7 +2332,7 @@ class Client:
                 cdn_session.start()
 
                 try:
-                    with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                    with tempfile.NamedTemporaryFile("wb", delete=False) as f:
                         file_name = f.name
 
                         while True:
