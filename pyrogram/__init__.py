@@ -20,10 +20,10 @@ import sys
 
 __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
-    "e" if sys.getfilesystemencoding() == "ascii" else "\xe8"
+    "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.6.4"
+__version__ = "0.6.5"
 
 from .api.errors import Error
 from .client import ChatAction
