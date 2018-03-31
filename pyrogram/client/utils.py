@@ -1,4 +1,5 @@
 from base64 import b64encode, b64decode
+from struct import pack
 
 import pyrogram
 from pyrogram.api import types
@@ -103,6 +104,45 @@ def parse_message(message: types.Message, users: dict, chats: dict):
             forward_from_message_id = forward_header.channel_post
             forward_signature = forward_header.post_author
 
+    photo = None
+
+    media = message.media
+
+    if media:
+        if isinstance(media, types.MessageMediaPhoto):
+            photo = media.photo
+
+            if isinstance(photo, types.Photo):
+                sizes = photo.sizes
+                photo_sizes = []
+
+                for size in sizes:
+                    if isinstance(size, (types.PhotoSize, types.PhotoCachedSize)):
+                        location = size.location
+
+                        if isinstance(location, types.FileLocation):
+                            photo_size = pyrogram.PhotoSize(
+                                file_id=encode(
+                                    pack(
+                                        "<iiqqqqi",
+                                        2,
+                                        location.dc_id,
+                                        photo.id,
+                                        photo.access_hash,
+                                        location.volume_id,
+                                        location.secret,
+                                        location.local_id
+                                    )
+                                ),
+                                width=size.w,
+                                height=size.h,
+                                file_size=size.size
+                            )
+
+                            photo_sizes.append(photo_size)
+
+                photo = photo_sizes
+
     return pyrogram.Message(
         message_id=message.id,
         date=message.date,
@@ -118,7 +158,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         forward_from_message_id=forward_from_message_id,
         forward_signature=forward_signature,
         forward_date=forward_date,
-        edit_date=message.edit_date
+        edit_date=message.edit_date,
+        photo=photo
     )
 
 
