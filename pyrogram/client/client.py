@@ -117,10 +117,11 @@ class Client:
         first_name (``str``, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
+            Only applicable for new sessions.
 
         last_name (``str``, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
-            be an empty string: ""
+            be an empty string: "". Only applicable for new sessions.
 
         workers (``int``, optional):
             Thread pool size for handling incoming updates. Defaults to 4.
