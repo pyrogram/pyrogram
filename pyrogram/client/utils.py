@@ -48,7 +48,7 @@ def parse_user(user: types.User):
 
 def parse_chat(message: types.Message, users: dict, chats: dict):
     if isinstance(message.to_id, types.PeerUser):
-        return parse_user_chat(users[message.from_id])
+        return parse_user_chat(users[message.to_id.user_id if message.out else message.from_id])
     elif isinstance(message.to_id, types.PeerChat):
         return parse_chat_chat(chats[message.to_id.chat_id])
     else:
@@ -120,6 +120,11 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                     if isinstance(size, (types.PhotoSize, types.PhotoCachedSize)):
                         location = size.location
 
+                        if isinstance(size, types.PhotoSize):
+                            file_size = size.size
+                        else:
+                            file_size = len(size.bytes)
+
                         if isinstance(location, types.FileLocation):
                             photo_size = pyrogram.PhotoSize(
                                 file_id=encode(
@@ -136,7 +141,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                                 ),
                                 width=size.w,
                                 height=size.h,
-                                file_size=size.size
+                                file_size=file_size
                             )
 
                             photo_sizes.append(photo_size)
@@ -196,7 +201,7 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
     return pyrogram.Message(
         message_id=message.id,
         date=message.date,
-        chat=parse_chat(message.to_id, users, chats),
+        chat=parse_chat(message, users, chats),
         from_user=parse_user(users.get(message.from_id, None)),
         new_chat_members=new_chat_members,
         left_chat_member=left_chat_member,
