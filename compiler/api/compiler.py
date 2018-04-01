@@ -38,7 +38,7 @@ types_to_functions = {}
 constructors_to_functions = {}
 
 
-def get_docstring_arg_type(t: str, is_list: bool = False):
+def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool = False):
     if t in core_types:
         if t == "long":
             return ":obj:`int` :obj:`64-bit`"
@@ -58,13 +58,20 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
     elif t == "!X":
         return "Any method from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
-        return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
+        return "List of " + get_docstring_arg_type(t.split("<", 1)[1][:-1], True, is_pyrogram_type)
     else:
+        if is_pyrogram_type:
+            t = "pyrogram." + t
+
         t = types_to_constructors.get(t, [t])
+
         n = len(t) - 1
 
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
-            ":obj:`{0} <pyrogram.api.types.{0}>`".format(i)
+            ":obj:`{1} <pyrogram.api.types.{0}{1}>`".format(
+                "pyrogram." if is_pyrogram_type else "",
+                i.lstrip("pyrogram.")
+            )
             for i in t
         )
 
@@ -144,8 +151,11 @@ def start():
             open("{}/source/pyrogram.tl".format(HOME), encoding="utf-8") as pyrogram:
         schema = (auth.read() + system.read() + api.read() + pyrogram.read()).splitlines()
 
-    with open("{}/template/class.txt".format(HOME), encoding="utf-8") as f:
-        template = f.read()
+    with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
+        mtproto_template = f.read()
+
+    with open("{}/template/pyrogram.txt".format(HOME), encoding="utf-8") as f:
+        pyrogram_template = f.read()
 
     with open(NOTICE_PATH, encoding="utf-8") as f:
         notice = []
@@ -265,6 +275,7 @@ def start():
         ) if c.args else "pass"
 
         docstring_args = []
+        docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
@@ -272,15 +283,13 @@ def start():
             flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
-            docs = c.docs.split("|")[1:] if c.docs else None
-
             if docs:
                 docstring_args.append(
                     "{} ({}{}):\n            {}\n".format(
                         arg_name,
-                        get_docstring_arg_type(arg_type),
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=True),
                         ", optional" if "Optional" in docs[i] else "",
-                        re.sub("Optional\. ", "", docs[i].split(":")[1])
+                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
                     )
                 )
             else:
@@ -394,25 +403,37 @@ def start():
                     read_types += "{} = Object.read(b)\n        ".format(arg_name)
 
         if c.docs:
-            description = c.docs.split("|")[0].split(":")[1]
+            description = c.docs.split("|")[0].split("§")[1]
             docstring_args = description + "\n\n    " + docstring_args
 
         with open("{}/{}.py".format(path, snek(c.name)), "w", encoding="utf-8") as f:
-            f.write(
-                template.format(
-                    notice=notice,
-                    class_name=capit(c.name),
-                    docstring_args=docstring_args,
-                    object_id=c.id,
-                    arguments=arguments,
-                    fields=fields,
-                    read_flags=read_flags,
-                    read_types=read_types,
-                    write_flags=write_flags,
-                    write_types=write_types,
-                    return_arguments=", ".join([i[0] for i in sorted_args])
+            if c.docs:
+                f.write(
+                    pyrogram_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields
+                    )
                 )
-            )
+            else:
+                f.write(
+                    mtproto_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields,
+                        read_flags=read_flags,
+                        read_types=read_types,
+                        write_flags=write_flags,
+                        write_types=write_types,
+                        return_arguments=", ".join([i[0] for i in sorted_args])
+                    )
+                )
 
     with open("{}/all.py".format(DESTINATION), "w", encoding="utf-8") as f:
         f.write(notice + "\n\n")
