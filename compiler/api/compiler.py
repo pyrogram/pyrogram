@@ -144,8 +144,11 @@ def start():
             open("{}/source/pyrogram.tl".format(HOME), encoding="utf-8") as pyrogram:
         schema = (auth.read() + system.read() + api.read() + pyrogram.read()).splitlines()
 
-    with open("{}/template/class.txt".format(HOME), encoding="utf-8") as f:
-        template = f.read()
+    with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
+        mtproto_template = f.read()
+
+    with open("{}/template/pyrogram.txt".format(HOME), encoding="utf-8") as f:
+        pyrogram_template = f.read()
 
     with open(NOTICE_PATH, encoding="utf-8") as f:
         notice = []
@@ -398,21 +401,33 @@ def start():
             docstring_args = description + "\n\n    " + docstring_args
 
         with open("{}/{}.py".format(path, snek(c.name)), "w", encoding="utf-8") as f:
-            f.write(
-                template.format(
-                    notice=notice,
-                    class_name=capit(c.name),
-                    docstring_args=docstring_args,
-                    object_id=c.id,
-                    arguments=arguments,
-                    fields=fields,
-                    read_flags=read_flags,
-                    read_types=read_types,
-                    write_flags=write_flags,
-                    write_types=write_types,
-                    return_arguments=", ".join([i[0] for i in sorted_args])
+            if c.docs:
+                f.write(
+                    pyrogram_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields
+                    )
                 )
-            )
+            else:
+                f.write(
+                    mtproto_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields,
+                        read_flags=read_flags,
+                        read_types=read_types,
+                        write_flags=write_flags,
+                        write_types=write_types,
+                        return_arguments=", ".join([i[0] for i in sorted_args])
+                    )
+                )
 
     with open("{}/all.py".format(DESTINATION), "w", encoding="utf-8") as f:
         f.write(notice + "\n\n")
