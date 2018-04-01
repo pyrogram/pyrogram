@@ -38,7 +38,7 @@ types_to_functions = {}
 constructors_to_functions = {}
 
 
-def get_docstring_arg_type(t: str, is_list: bool = False):
+def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool = False):
     if t in core_types:
         if t == "long":
             return ":obj:`int` :obj:`64-bit`"
@@ -58,13 +58,20 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
     elif t == "!X":
         return "Any method from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
-        return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
+        return "List of " + get_docstring_arg_type(t.split("<", 1)[1][:-1], True, is_pyrogram_type)
     else:
+        if is_pyrogram_type:
+            t = "pyrogram." + t
+
         t = types_to_constructors.get(t, [t])
+
         n = len(t) - 1
 
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
-            ":obj:`{0} <pyrogram.api.types.{0}>`".format(i)
+            ":obj:`{1} <pyrogram.api.types.{0}{1}>`".format(
+                "pyrogram." if is_pyrogram_type else "",
+                i.lstrip("pyrogram.")
+            )
             for i in t
         )
 
@@ -280,7 +287,7 @@ def start():
                 docstring_args.append(
                     "{} ({}{}):\n            {}\n".format(
                         arg_name,
-                        get_docstring_arg_type(arg_type),
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=True),
                         ", optional" if "Optional" in docs[i] else "",
                         re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
                     )
