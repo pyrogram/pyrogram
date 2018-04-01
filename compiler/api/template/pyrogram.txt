@@ -1,0 +1,10 @@
+{notice}
+
+
+class {class_name}:
+    """{docstring_args}
+    """
+    ID = {object_id}
+
+    def __init__(self{arguments}):
+        {fields}
