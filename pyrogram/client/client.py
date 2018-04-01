@@ -136,6 +136,7 @@ class Client:
                  phone_number: str = None,
                  phone_code: str or callable = None,
                  password: str = None,
+                 force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = 4):
@@ -149,6 +150,7 @@ class Client:
         self.phone_code = phone_code
         self.first_name = first_name
         self.last_name = last_name
+        self.force_sms = force_sms
 
         self.workers = workers
 
@@ -345,6 +347,14 @@ class Client:
 
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
+
+        if self.force_sms:
+            self.send(
+                functions.auth.ResendCode(
+                    phone_number=self.phone_number,
+                    phone_code_hash=phone_code_hash
+                )
+            )
 
         while True:
             self.phone_code = (
