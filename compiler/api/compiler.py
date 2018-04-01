@@ -268,6 +268,7 @@ def start():
         ) if c.args else "pass"
 
         docstring_args = []
+        docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
@@ -275,15 +276,13 @@ def start():
             flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
-            docs = c.docs.split("|")[1:] if c.docs else None
-
             if docs:
                 docstring_args.append(
                     "{} ({}{}):\n            {}\n".format(
                         arg_name,
                         get_docstring_arg_type(arg_type),
                         ", optional" if "Optional" in docs[i] else "",
-                        re.sub("Optional\. ", "", docs[i].split(":")[1])
+                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
                     )
                 )
             else:
@@ -397,7 +396,7 @@ def start():
                     read_types += "{} = Object.read(b)\n        ".format(arg_name)
 
         if c.docs:
-            description = c.docs.split("|")[0].split(":")[1]
+            description = c.docs.split("|")[0].split("§")[1]
             docstring_args = description + "\n\n    " + docstring_args
 
         with open("{}/{}.py".format(path, snek(c.name)), "w", encoding="utf-8") as f:
