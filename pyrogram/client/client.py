@@ -110,6 +110,10 @@ class Client:
             Pass your Two-Step Verification password (if you have one) to avoid entering it
             manually. Only applicable for new sessions.
 
+        force_sms (``str``, optional):
+            Pass True to force Telegram sending the authorization code via SMS.
+            Only applicable for new sessions.
+
         first_name (``str``, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
