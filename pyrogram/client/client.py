@@ -914,6 +914,15 @@ class Client:
             offset_date = parse_dialogs(dialogs)
             log.info("Entities count: {}".format(len(self.peers_by_id)))
 
+        self.send(
+            functions.messages.GetDialogs(
+                0, 0, types.InputPeerEmpty(),
+                self.DIALOGS_AT_ONCE, True
+            )
+        )
+
+        log.info("Entities count: {}".format(len(self.peers_by_id)))
+
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
 
