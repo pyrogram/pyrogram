@@ -649,7 +649,7 @@ class Client:
                             if not isinstance(message, types.MessageEmpty):
                                 diff = self.send(
                                     functions.updates.GetChannelDifference(
-                                        channel=self.resolve_peer(update.message.to_id.channel_id),
+                                        channel=self.resolve_peer(int("-100" + str(update.message.to_id.channel_id))),
                                         filter=types.ChannelMessagesFilter(
                                             ranges=[types.MessageRange(
                                                 min_id=update.message.id,
