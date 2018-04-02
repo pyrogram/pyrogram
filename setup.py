@@ -25,8 +25,8 @@ from compiler.api import compiler as api_compiler
 from compiler.error import compiler as error_compiler
 
 
-def requirements():
-    with open("requirements.txt", encoding="utf-8") as r:
+def read(file: str) -> list:
+    with open(file, encoding="utf-8") as r:
         return [i.strip() for i in r]
 
 
@@ -82,5 +82,6 @@ setup(
     python_requires="~=3.4",
     packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
-    install_requires=requirements()
+    install_requires=read("requirements.txt"),
+    extras_require={"tgcrypto": read("requirements_extras.txt")}
 )
