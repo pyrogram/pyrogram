@@ -194,6 +194,9 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        if self.is_started:
+            raise ConnectionError("Client has already been started")
+
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
             self.session_name = self.session_name.split(":")[0]
