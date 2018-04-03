@@ -802,15 +802,15 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if self.is_started:
-            r = self.session.send(data)
+        if not self.is_started:
+            raise ConnectionError("Client has not been started")
 
-            self.fetch_peers(getattr(r, "users", []))
-            self.fetch_peers(getattr(r, "chats", []))
+        r = self.session.send(data)
 
-            return r
-        else:
-            raise ConnectionError("client '{}' is not started".format(self.session_name))
+        self.fetch_peers(getattr(r, "users", []))
+        self.fetch_peers(getattr(r, "chats", []))
+
+        return r
 
     def load_config(self):
         parser = ConfigParser()
