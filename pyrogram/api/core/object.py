@@ -37,6 +37,9 @@ class Object:
     def __str__(self) -> str:
         return dumps(self, cls=Encoder, indent=4)
 
+    def __bool__(self) -> bool:
+        return True
+
     def __eq__(self, other) -> bool:
         return self.__dict__ == other.__dict__
 
