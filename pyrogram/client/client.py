@@ -245,6 +245,9 @@ class Client:
         """Use this method to manually stop the Client.
         Requires no parameters.
         """
+        if not self.is_started:
+            raise ConnectionError("Client is already stopped")
+
         self.is_started = False
         self.session.stop()
 
