@@ -364,10 +364,14 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
         new_chat_members=new_chat_members,
         left_chat_member=left_chat_member,
         new_chat_title=new_chat_title,
+        # TODO: new_chat_photo
         delete_chat_photo=delete_chat_photo,
         migrate_to_chat_id=migrate_to_chat_id,
         migrate_from_chat_id=migrate_from_chat_id,
         group_chat_created=group_chat_created
+        # TODO: supergroup_chat_created
+        # TODO: channel_chat_created
+        # TODO: pinned_message
     )
 
 
