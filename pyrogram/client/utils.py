@@ -15,6 +15,7 @@ ENTITIES = {
     types.MessageEntityCode.ID: "code",
     types.MessageEntityPre.ID: "pre",
     types.MessageEntityTextUrl.ID: "text_link",
+    # TODO: text_mention
 }
 
 
@@ -83,6 +84,7 @@ def parse_channel_chat(channel: types.Channel):
     )
 
 
+# TODO: Reorganize code, maybe split parts as well
 def parse_message(message: types.Message, users: dict, chats: dict):
     entities = parse_entities(message.entities)
 
