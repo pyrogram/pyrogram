@@ -143,6 +143,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     video = None
     video_note = None
     sticker = None
+    document = None
 
     media = message.media
 
@@ -241,7 +242,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                             mime_type=doc.mime_type,
                             file_size=doc.size
                         )
-                elif types.DocumentAttributeVideo in attributes:
+                elif types.DocumentAttributeVideo in attributes and types.DocumentAttributeAnimated not in attributes:
                     video_attributes = attributes[types.DocumentAttributeVideo]
 
                     if video_attributes.round_message:
@@ -297,6 +298,46 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                         # TODO: Emoji, set_name and mask_position
                         file_size=doc.size,
                     )
+                elif types.DocumentAttributeAnimated in attributes:
+                    document = pyrogram.Document(
+                        file_id=encode(
+                            pack(
+                                "<iiqq",
+                                10,
+                                doc.dc_id,
+                                doc.id,
+                                doc.access_hash
+                            )
+                        ),
+                        thumb=parse_thumb(doc.thumb),
+                        file_name=getattr(
+                            attributes.get(
+                                types.DocumentAttributeFilename, None
+                            ), "file_name", None
+                        ),
+                        mime_type=doc.mime_type,
+                        file_size=doc.size
+                    )
+                else:
+                    document = pyrogram.Document(
+                        file_id=encode(
+                            pack(
+                                "<iiqq",
+                                5,
+                                doc.dc_id,
+                                doc.id,
+                                doc.access_hash
+                            )
+                        ),
+                        thumb=parse_thumb(doc.thumb),
+                        file_name=getattr(
+                            attributes.get(
+                                types.DocumentAttributeFilename, None
+                            ), "file_name", None
+                        ),
+                        mime_type=doc.mime_type,
+                        file_size=doc.size
+                    )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -322,7 +363,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         voice=voice,
         video=video,
         video_note=video_note,
-        sticker=sticker
+        sticker=sticker,
+        document=document
     )
 
 
