@@ -139,6 +139,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     location = None
     contact = None
     audio = None
+    video = None
+    video_note = None
 
     media = message.media
 
@@ -221,6 +223,43 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                         mime_type=doc.mime_type,
                         file_size=doc.size
                     )
+                elif types.DocumentAttributeVideo in attributes:
+                    video_attributes = attributes[types.DocumentAttributeVideo]
+
+                    if video_attributes.round_message:
+                        video_note = pyrogram.VideoNote(
+                            file_id=encode(
+                                pack(
+                                    "<iiqq",
+                                    13,
+                                    doc.dc_id,
+                                    doc.id,
+                                    doc.access_hash
+                                )
+                            ),
+                            length=video_attributes.w,
+                            duration=video_attributes.duration,
+                            thumb=parse_thumb(doc.thumb),
+                            file_size=doc.size
+                        )
+                    else:
+                        video = pyrogram.Video(
+                            file_id=encode(
+                                pack(
+                                    "<iiqq",
+                                    4,
+                                    doc.dc_id,
+                                    doc.id,
+                                    doc.access_hash
+                                )
+                            ),
+                            width=video_attributes.w,
+                            height=video_attributes.h,
+                            duration=video_attributes.duration,
+                            thumb=parse_thumb(doc.thumb),
+                            mime_type=doc.mime_type,
+                            file_size=doc.size
+                        )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -242,6 +281,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         location=location,
         contact=contact,
         audio=audio,
+        video=video,
+        video_note=video_note
     )
 
 
