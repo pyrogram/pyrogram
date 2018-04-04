@@ -107,6 +107,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
             forward_signature = forward_header.post_author
 
     photo = None
+    location = None
 
     media = message.media
 
@@ -149,6 +150,14 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                             photo_sizes.append(photo_size)
 
                 photo = photo_sizes
+        elif isinstance(media, types.MessageMediaGeo):
+            geo_point = media.geo
+
+            if isinstance(geo_point, types.GeoPoint):
+                location = pyrogram.Location(
+                    longitude=geo_point.long,
+                    latitude=geo_point.lat
+                )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -166,7 +175,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         forward_signature=forward_signature,
         forward_date=forward_date,
         edit_date=message.edit_date,
-        photo=photo
+        photo=photo,
+        location=location
     )
 
 
