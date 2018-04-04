@@ -108,6 +108,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
 
     photo = None
     location = None
+    contact = None
 
     media = message.media
 
@@ -158,6 +159,13 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                     longitude=geo_point.long,
                     latitude=geo_point.lat
                 )
+        elif isinstance(media, types.MessageMediaContact):
+            contact = pyrogram.Contact(
+                phone_number=media.phone_number,
+                first_name=media.first_name,
+                last_name=media.last_name,
+                user_id=media.user_id
+            )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -176,7 +184,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         forward_date=forward_date,
         edit_date=message.edit_date,
         photo=photo,
-        location=location
+        location=location,
+        contact=contact
     )
 
 
