@@ -26,10 +26,10 @@ __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.6.5"
 
 from .api.errors import Error
+from .api.types.pyrogram import *
 from .client import ChatAction
 from .client import Client
 from .client import ParseMode
 from .client.input_media import InputMedia
 from .client.input_phone_contact import InputPhoneContact
 from .client import Emoji
-from .api.types.pyrogram import *
