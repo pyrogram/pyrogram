@@ -84,6 +84,35 @@ def parse_channel_chat(channel: types.Channel):
     )
 
 
+def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize):
+    if isinstance(thumb, (types.PhotoSize, types.PhotoCachedSize)):
+        loc = thumb.location
+
+        if isinstance(thumb, types.PhotoSize):
+            file_size = thumb.size
+        else:
+            file_size = len(thumb.bytes)
+
+        if isinstance(loc, types.FileLocation):
+            return pyrogram.PhotoSize(
+                file_id=encode(
+                    pack(
+                        "<iiqqqqi",
+                        0,
+                        loc.dc_id,
+                        0,
+                        0,
+                        loc.volume_id,
+                        loc.secret,
+                        loc.local_id
+                    )
+                ),
+                width=thumb.w,
+                height=thumb.h,
+                file_size=file_size
+            )
+
+
 # TODO: Reorganize code, maybe split parts as well
 def parse_message(message: types.Message, users: dict, chats: dict):
     entities = parse_entities(message.entities)
@@ -109,6 +138,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     photo = None
     location = None
     contact = None
+    audio = None
 
     media = message.media
 
@@ -122,25 +152,25 @@ def parse_message(message: types.Message, users: dict, chats: dict):
 
                 for size in sizes:
                     if isinstance(size, (types.PhotoSize, types.PhotoCachedSize)):
-                        location = size.location
+                        loc = size.location
 
                         if isinstance(size, types.PhotoSize):
                             file_size = size.size
                         else:
                             file_size = len(size.bytes)
 
-                        if isinstance(location, types.FileLocation):
+                        if isinstance(loc, types.FileLocation):
                             photo_size = pyrogram.PhotoSize(
                                 file_id=encode(
                                     pack(
                                         "<iiqqqqi",
                                         2,
-                                        location.dc_id,
+                                        loc.dc_id,
                                         photo.id,
                                         photo.access_hash,
-                                        location.volume_id,
-                                        location.secret,
-                                        location.local_id
+                                        loc.volume_id,
+                                        loc.secret,
+                                        loc.local_id
                                     )
                                 ),
                                 width=size.w,
@@ -166,6 +196,31 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                 last_name=media.last_name,
                 user_id=media.user_id
             )
+        elif isinstance(media, types.MessageMediaDocument):
+            doc = media.document
+
+            if isinstance(doc, types.Document):
+                attributes = {type(i): i for i in doc.attributes}
+
+                if types.DocumentAttributeAudio in attributes:
+                    audio_attributes = attributes[types.DocumentAttributeAudio]
+
+                    audio = pyrogram.Audio(
+                        file_id=encode(
+                            pack(
+                                "<iiqq",
+                                9,
+                                doc.dc_id,
+                                doc.id,
+                                doc.access_hash
+                            )
+                        ),
+                        duration=audio_attributes.duration,
+                        performer=audio_attributes.performer,
+                        title=audio_attributes.title,
+                        mime_type=doc.mime_type,
+                        file_size=doc.size
+                    )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -185,7 +240,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         edit_date=message.edit_date,
         photo=photo,
         location=location,
-        contact=contact
+        contact=contact,
+        audio=audio,
     )
 
 
