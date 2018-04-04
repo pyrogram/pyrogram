@@ -314,6 +314,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         forward_signature=forward_signature,
         forward_date=forward_date,
         edit_date=message.edit_date,
+        media_group_id=message.grouped_id,
         photo=photo,
         location=location,
         contact=contact,
