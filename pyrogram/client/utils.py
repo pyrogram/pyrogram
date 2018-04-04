@@ -19,7 +19,7 @@ ENTITIES = {
 }
 
 
-def parse_entities(entities: list):
+def parse_entities(entities: list) -> list:
     output_entities = []
 
     for entity in entities:
@@ -36,7 +36,7 @@ def parse_entities(entities: list):
     return output_entities
 
 
-def parse_user(user: types.User):
+def parse_user(user: types.User) -> pyrogram.User or None:
     return pyrogram.User(
         id=user.id,
         is_bot=user.bot,
@@ -47,7 +47,7 @@ def parse_user(user: types.User):
     ) if user else None
 
 
-def parse_chat(message: types.Message, users: dict, chats: dict):
+def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Chat:
     if isinstance(message.to_id, types.PeerUser):
         return parse_user_chat(users[message.to_id.user_id if message.out else message.from_id])
     elif isinstance(message.to_id, types.PeerChat):
@@ -56,7 +56,7 @@ def parse_chat(message: types.Message, users: dict, chats: dict):
         return parse_channel_chat(chats[message.to_id.channel_id])
 
 
-def parse_user_chat(user: types.User):
+def parse_user_chat(user: types.User) -> pyrogram.Chat:
     return pyrogram.Chat(
         id=user.id,
         type="private",
@@ -66,7 +66,7 @@ def parse_user_chat(user: types.User):
     )
 
 
-def parse_chat_chat(chat: types.Chat):
+def parse_chat_chat(chat: types.Chat) -> pyrogram.Chat:
     return pyrogram.Chat(
         id=-chat.id,
         type="group",
@@ -75,7 +75,7 @@ def parse_chat_chat(chat: types.Chat):
     )
 
 
-def parse_channel_chat(channel: types.Channel):
+def parse_channel_chat(channel: types.Channel) -> pyrogram.Chat:
     return pyrogram.Chat(
         id=int("-100" + str(channel.id)),
         type="supergroup" if channel.megagroup else "channel",
@@ -84,7 +84,7 @@ def parse_channel_chat(channel: types.Channel):
     )
 
 
-def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize):
+def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.PhotoSize or None:
     if isinstance(thumb, (types.PhotoSize, types.PhotoCachedSize)):
         loc = thumb.location
 
@@ -114,7 +114,7 @@ def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize):
 
 
 # TODO: Reorganize code, maybe split parts as well
-def parse_message(message: types.Message, users: dict, chats: dict):
+def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.Message:
     entities = parse_entities(message.entities)
 
     forward_from = None
@@ -368,7 +368,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     )
 
 
-def parse_message_service(message: types.MessageService, users: dict, chats: dict):
+def parse_message_service(message: types.MessageService, users: dict, chats: dict) -> pyrogram.Message or None:
     action = message.action
 
     new_chat_members = None
@@ -417,7 +417,7 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
     )
 
 
-def decode(s):
+def decode(s: str) -> bytes:
     s = b64decode(s + "=" * (-len(s) % 4), "-_")
     r = b""
 
@@ -436,7 +436,7 @@ def decode(s):
     return r
 
 
-def encode(s):
+def encode(s: bytes) -> str:
     r = b""
     n = 0
 
