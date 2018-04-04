@@ -139,6 +139,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     location = None
     contact = None
     audio = None
+    voice = None
     video = None
     video_note = None
 
@@ -207,22 +208,38 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                 if types.DocumentAttributeAudio in attributes:
                     audio_attributes = attributes[types.DocumentAttributeAudio]
 
-                    audio = pyrogram.Audio(
-                        file_id=encode(
-                            pack(
-                                "<iiqq",
-                                9,
-                                doc.dc_id,
-                                doc.id,
-                                doc.access_hash
-                            )
-                        ),
-                        duration=audio_attributes.duration,
-                        performer=audio_attributes.performer,
-                        title=audio_attributes.title,
-                        mime_type=doc.mime_type,
-                        file_size=doc.size
-                    )
+                    if audio_attributes.voice:
+                        voice = pyrogram.Voice(
+                            file_id=encode(
+                                pack(
+                                    "<iiqq",
+                                    3,
+                                    doc.dc_id,
+                                    doc.id,
+                                    doc.access_hash
+                                )
+                            ),
+                            duration=audio_attributes.duration,
+                            mime_type=doc.mime_type,
+                            file_size=doc.size
+                        )
+                    else:
+                        audio = pyrogram.Audio(
+                            file_id=encode(
+                                pack(
+                                    "<iiqq",
+                                    9,
+                                    doc.dc_id,
+                                    doc.id,
+                                    doc.access_hash
+                                )
+                            ),
+                            duration=audio_attributes.duration,
+                            performer=audio_attributes.performer,
+                            title=audio_attributes.title,
+                            mime_type=doc.mime_type,
+                            file_size=doc.size
+                        )
                 elif types.DocumentAttributeVideo in attributes:
                     video_attributes = attributes[types.DocumentAttributeVideo]
 
@@ -281,6 +298,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         location=location,
         contact=contact,
         audio=audio,
+        voice=voice,
         video=video,
         video_note=video_note
     )
