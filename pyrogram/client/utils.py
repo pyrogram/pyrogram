@@ -142,6 +142,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
     voice = None
     video = None
     video_note = None
+    sticker = None
 
     media = message.media
 
@@ -277,6 +278,25 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                             mime_type=doc.mime_type,
                             file_size=doc.size
                         )
+                elif types.DocumentAttributeSticker in attributes:
+                    image_size_attribute = attributes[types.DocumentAttributeImageSize]
+
+                    sticker = pyrogram.Sticker(
+                        file_id=encode(
+                            pack(
+                                "<iiqq",
+                                8,
+                                doc.dc_id,
+                                doc.id,
+                                doc.access_hash
+                            )
+                        ),
+                        width=image_size_attribute.w,
+                        height=image_size_attribute.h,
+                        thumb=parse_thumb(doc.thumb),
+                        # TODO: Emoji, set_name and mask_position
+                        file_size=doc.size,
+                    )
 
     return pyrogram.Message(
         message_id=message.id,
@@ -300,7 +320,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
         audio=audio,
         voice=voice,
         video=video,
-        video_note=video_note
+        video_note=video_note,
+        sticker=sticker
     )
 
 
