@@ -279,7 +279,7 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                             file_size=doc.size
                         )
                 elif types.DocumentAttributeSticker in attributes:
-                    image_size_attribute = attributes[types.DocumentAttributeImageSize]
+                    image_size_attributes = attributes[types.DocumentAttributeImageSize]
 
                     sticker = pyrogram.Sticker(
                         file_id=encode(
@@ -291,8 +291,8 @@ def parse_message(message: types.Message, users: dict, chats: dict):
                                 doc.access_hash
                             )
                         ),
-                        width=image_size_attribute.w,
-                        height=image_size_attribute.h,
+                        width=image_size_attributes.w,
+                        height=image_size_attributes.h,
                         thumb=parse_thumb(doc.thumb),
                         # TODO: Emoji, set_name and mask_position
                         file_size=doc.size,
