@@ -355,16 +355,18 @@ def parse_message(
                         mime_type=doc.mime_type,
                         file_size=doc.size
                     )
+        else:
+            media = None
 
     m = pyrogram.Message(
         message_id=message.id,
         date=message.date,
         chat=parse_chat(message, users, chats),
         from_user=parse_user(users.get(message.from_id, None)),
-        text=message.message or None if message.media is None else None,
-        caption=message.message or None if message.media is not None else None,
-        entities=entities or None if message.media is None else None,
-        caption_entities=entities or None if message.media is not None else None,
+        text=message.message or None if media is None else None,
+        caption=message.message or None if media is not None else None,
+        entities=entities or None if media is None else None,
+        caption_entities=entities or None if media is not None else None,
         author_signature=message.post_author,
         forward_from=forward_from,
         forward_from_chat=forward_from_chat,
