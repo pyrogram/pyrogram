@@ -1,2 +1,2 @@
-pysocks
-tgcrypto
+pyaes>=1.6.1
+pysocks>=1.6.8
