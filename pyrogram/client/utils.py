@@ -368,7 +368,7 @@ def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.
     )
 
 
-def parse_message_service(message: types.MessageService, users: dict, chats: dict) -> pyrogram.Message or None:
+def parse_message_service(message: types.MessageService, users: dict, chats: dict) -> pyrogram.Message:
     action = message.action
 
     new_chat_members = None
@@ -395,8 +395,6 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
         migrate_from_chat_id = action.chat_id
     elif isinstance(action, types.MessageActionChatCreate):
         group_chat_created = True
-    else:
-        return None
 
     return pyrogram.Message(
         message_id=message.id,
@@ -413,7 +411,6 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
         group_chat_created=group_chat_created
         # TODO: supergroup_chat_created
         # TODO: channel_chat_created
-        # TODO: pinned_message
     )
 
 
