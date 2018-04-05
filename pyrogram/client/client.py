@@ -961,7 +961,7 @@ class Client:
             except (AttributeError, binascii.Error, struct.error):
                 pass
 
-            peer_id = peer_id.lower().strip("@+")
+            peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
 
             try:
                 int(peer_id)
