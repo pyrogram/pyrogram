@@ -404,6 +404,7 @@ def parse_message_service(
     migrate_from_chat_id = None
     group_chat_created = None
     channel_chat_created = None
+    new_chat_photo = None
 
     if isinstance(action, types.MessageActionChatAddUser):
         new_chat_members = [parse_user(users[i]) for i in action.users]
@@ -423,6 +424,44 @@ def parse_message_service(
         group_chat_created = True
     elif isinstance(action, types.MessageActionChannelCreate):
         channel_chat_created = True
+    elif isinstance(action, types.MessageActionChatEditPhoto):
+        photo = action.photo
+
+        if isinstance(photo, types.Photo):
+            sizes = photo.sizes
+            photo_sizes = []
+
+            for size in sizes:
+                if isinstance(size, (types.PhotoSize, types.PhotoCachedSize)):
+                    loc = size.location
+
+                    if isinstance(size, types.PhotoSize):
+                        file_size = size.size
+                    else:
+                        file_size = len(size.bytes)
+
+                    if isinstance(loc, types.FileLocation):
+                        photo_size = pyrogram.PhotoSize(
+                            file_id=encode(
+                                pack(
+                                    "<iiqqqqi",
+                                    2,
+                                    loc.dc_id,
+                                    photo.id,
+                                    photo.access_hash,
+                                    loc.volume_id,
+                                    loc.secret,
+                                    loc.local_id
+                                )
+                            ),
+                            width=size.w,
+                            height=size.h,
+                            file_size=file_size
+                        )
+
+                        photo_sizes.append(photo_size)
+
+            new_chat_photo = photo_sizes
 
     m = pyrogram.Message(
         message_id=message.id,
@@ -432,7 +471,7 @@ def parse_message_service(
         new_chat_members=new_chat_members,
         left_chat_member=left_chat_member,
         new_chat_title=new_chat_title,
-        # TODO: new_chat_photo
+        new_chat_photo=new_chat_photo,
         delete_chat_photo=delete_chat_photo,
         migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
         migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
