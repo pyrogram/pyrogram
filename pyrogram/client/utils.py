@@ -403,6 +403,7 @@ def parse_message_service(
     migrate_to_chat_id = None
     migrate_from_chat_id = None
     group_chat_created = None
+    channel_chat_created = None
 
     if isinstance(action, types.MessageActionChatAddUser):
         new_chat_members = [parse_user(users[i]) for i in action.users]
@@ -420,6 +421,8 @@ def parse_message_service(
         migrate_from_chat_id = action.chat_id
     elif isinstance(action, types.MessageActionChatCreate):
         group_chat_created = True
+    elif isinstance(action, types.MessageActionChannelCreate):
+        channel_chat_created = True
 
     m = pyrogram.Message(
         message_id=message.id,
@@ -433,9 +436,9 @@ def parse_message_service(
         delete_chat_photo=delete_chat_photo,
         migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
         migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
-        group_chat_created=group_chat_created
+        group_chat_created=group_chat_created,
+        channel_chat_created=channel_chat_created
         # TODO: supergroup_chat_created
-        # TODO: channel_chat_created
     )
 
     if isinstance(action, types.MessageActionPinMessage):
