@@ -242,7 +242,27 @@ def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.
                             mime_type=doc.mime_type,
                             file_size=doc.size
                         )
-                elif types.DocumentAttributeVideo in attributes and types.DocumentAttributeAnimated not in attributes:
+                elif types.DocumentAttributeAnimated in attributes:
+                    document = pyrogram.Document(
+                        file_id=encode(
+                            pack(
+                                "<iiqq",
+                                10,
+                                doc.dc_id,
+                                doc.id,
+                                doc.access_hash
+                            )
+                        ),
+                        thumb=parse_thumb(doc.thumb),
+                        file_name=getattr(
+                            attributes.get(
+                                types.DocumentAttributeFilename, None
+                            ), "file_name", None
+                        ),
+                        mime_type=doc.mime_type,
+                        file_size=doc.size
+                    )
+                elif types.DocumentAttributeVideo in attributes:
                     video_attributes = attributes[types.DocumentAttributeVideo]
 
                     if video_attributes.round_message:
@@ -297,26 +317,6 @@ def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.
                         thumb=parse_thumb(doc.thumb),
                         # TODO: Emoji, set_name and mask_position
                         file_size=doc.size,
-                    )
-                elif types.DocumentAttributeAnimated in attributes:
-                    document = pyrogram.Document(
-                        file_id=encode(
-                            pack(
-                                "<iiqq",
-                                10,
-                                doc.dc_id,
-                                doc.id,
-                                doc.access_hash
-                            )
-                        ),
-                        thumb=parse_thumb(doc.thumb),
-                        file_name=getattr(
-                            attributes.get(
-                                types.DocumentAttributeFilename, None
-                            ), "file_name", None
-                        ),
-                        mime_type=doc.mime_type,
-                        file_size=doc.size
                     )
                 else:
                     document = pyrogram.Document(
