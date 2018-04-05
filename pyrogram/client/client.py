@@ -54,12 +54,6 @@ from .style import Markdown, HTML
 log = logging.getLogger(__name__)
 
 
-class APIKey:
-    def __init__(self, api_id: int, api_hash: str):
-        self.api_id = api_id
-        self.api_hash = api_hash
-
-
 class Proxy:
     def __init__(self, enabled: bool, hostname: str, port: int, username: str, password: str):
         self.enabled = enabled
