@@ -114,7 +114,13 @@ def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.Pho
 
 
 # TODO: Reorganize code, maybe split parts as well
-def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.Message:
+def parse_message(
+        client,
+        message: types.Message,
+        users: dict,
+        chats: dict,
+        replies: int = 1
+) -> pyrogram.Message:
     entities = parse_entities(message.entities)
 
     forward_from = None
@@ -339,7 +345,7 @@ def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.
                         file_size=doc.size
                     )
 
-    return pyrogram.Message(
+    m = pyrogram.Message(
         message_id=message.id,
         date=message.date,
         chat=parse_chat(message, users, chats),
@@ -367,8 +373,27 @@ def parse_message(message: types.Message, users: dict, chats: dict) -> pyrogram.
         document=document
     )
 
+    if message.reply_to_msg_id and replies:
+        reply_to_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
 
-def parse_message_service(message: types.MessageService, users: dict, chats: dict) -> pyrogram.Message:
+        message = reply_to_message.messages[0]
+        users = {i.id: i for i in reply_to_message.users}
+        chats = {i.id: i for i in reply_to_message.chats}
+
+        if isinstance(message, types.Message):
+            m.reply_to_message = parse_message(client, message, users, chats, replies - 1)
+        elif isinstance(message, types.MessageService):
+            m.reply_to_message = parse_message_service(client, message, users, chats)
+
+    return m
+
+
+def parse_message_service(
+        client,
+        message: types.MessageService,
+        users: dict,
+        chats: dict
+) -> pyrogram.Message:
     action = message.action
 
     new_chat_members = None
@@ -396,7 +421,7 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
     elif isinstance(action, types.MessageActionChatCreate):
         group_chat_created = True
 
-    return pyrogram.Message(
+    m = pyrogram.Message(
         message_id=message.id,
         date=message.date,
         chat=parse_chat(message, users, chats),
@@ -412,6 +437,21 @@ def parse_message_service(message: types.MessageService, users: dict, chats: dic
         # TODO: supergroup_chat_created
         # TODO: channel_chat_created
     )
+
+    if isinstance(action, types.MessageActionPinMessage):
+        pin_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
+
+        message = pin_message.messages[0]
+        users = {i.id: i for i in pin_message.users}
+        chats = {i.id: i for i in pin_message.chats}
+
+        if isinstance(message, types.Message):
+            m.pinned_message = parse_message(client, message, users, chats)
+        elif isinstance(message, types.MessageService):
+            # TODO: We can't pin a service message, can we?
+            m.pinned_message = parse_message_service(client, message, users, chats)
+
+    return m
 
 
 def decode(s: str) -> bytes:

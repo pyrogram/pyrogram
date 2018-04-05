@@ -712,37 +712,9 @@ class Client:
                     message = update.message
 
                     if isinstance(message, types.Message):
-                        m = utils.parse_message(message, users, chats)
-
-                        if message.reply_to_msg_id:
-                            rm = self.get_messages(m.chat.id, [message.reply_to_msg_id])
-
-                            message = rm.messages[0]
-
-                            if isinstance(message, types.Message):
-                                m.reply_to_message = utils.parse_message(
-                                    message,
-                                    {i.id: i for i in rm.users},
-                                    {i.id: i for i in rm.chats}
-                                )
-                            else:
-                                continue
+                        m = utils.parse_message(self, message, users, chats)
                     elif isinstance(message, types.MessageService):
-                        m = utils.parse_message_service(message, users, chats)
-
-                        if isinstance(message.action, types.MessageActionPinMessage):
-                            pm = self.get_messages(m.chat.id, [message.reply_to_msg_id])
-
-                            message = pm.messages[0]
-
-                            if isinstance(message, types.Message):
-                                m.pinned_message = utils.parse_message(
-                                    message,
-                                    {i.id: i for i in pm.users},
-                                    {i.id: i for i in pm.chats}
-                                )
-                            else:
-                                continue
+                        m = utils.parse_message_service(self, message, users, chats)
                     else:
                         continue
                 else:
