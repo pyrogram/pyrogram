@@ -15,11 +15,11 @@ ENTITIES = {
     types.MessageEntityCode.ID: "code",
     types.MessageEntityPre.ID: "pre",
     types.MessageEntityTextUrl.ID: "text_link",
-    # TODO: text_mention
+    types.MessageEntityMentionName.ID: "text_mention"
 }
 
 
-def parse_entities(entities: list) -> list:
+def parse_entities(entities: list, users: dict) -> list:
     output_entities = []
 
     for entity in entities:
@@ -30,7 +30,13 @@ def parse_entities(entities: list) -> list:
                 type=entity_type,
                 offset=entity.offset,
                 length=entity.length,
-                url=getattr(entity, "url", None)
+                url=getattr(entity, "url", None),
+                user=parse_user(
+                    users.get(
+                        getattr(entity, "user_id", None),
+                        None
+                    )
+                )
             ))
 
     return output_entities
@@ -121,7 +127,7 @@ def parse_message(
         chats: dict,
         replies: int = 1
 ) -> pyrogram.Message:
-    entities = parse_entities(message.entities)
+    entities = parse_entities(message.entities, users)
 
     forward_from = None
     forward_from_chat = None
