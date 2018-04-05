@@ -144,6 +144,7 @@ def parse_message(
     photo = None
     location = None
     contact = None
+    venue = None
     audio = None
     voice = None
     video = None
@@ -206,6 +207,16 @@ def parse_message(
                 first_name=media.first_name,
                 last_name=media.last_name,
                 user_id=media.user_id
+            )
+        elif isinstance(media, types.MessageMediaVenue):
+            venue = pyrogram.Venue(
+                location=pyrogram.Location(
+                    longitude=media.geo.long,
+                    latitude=media.geo.lat
+                ),
+                title=media.title,
+                address=media.address,
+                foursquare_id=media.venue_id
             )
         elif isinstance(media, types.MessageMediaDocument):
             doc = media.document
@@ -365,6 +376,7 @@ def parse_message(
         photo=photo,
         location=location,
         contact=contact,
+        venue=venue,
         audio=audio,
         voice=voice,
         video=video,
