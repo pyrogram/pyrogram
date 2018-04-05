@@ -431,8 +431,8 @@ def parse_message_service(
         new_chat_title=new_chat_title,
         # TODO: new_chat_photo
         delete_chat_photo=delete_chat_photo,
-        migrate_to_chat_id=migrate_to_chat_id,
-        migrate_from_chat_id=migrate_from_chat_id,
+        migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
+        migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
         group_chat_created=group_chat_created
         # TODO: supergroup_chat_created
         # TODO: channel_chat_created
