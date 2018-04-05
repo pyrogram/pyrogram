@@ -81,10 +81,13 @@ class Client:
             For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
-        api_key (``tuple``, optional):
-            Your Telegram API Key as tuple: *(api_id, api_hash)*.
-            E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
-            don't want to use the *config.ini* file.
+        api_id (``int``, optional):
+            The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
+            This is an alternative way to pass it if you don't want to use the *config.ini* file.
+
+        api_hash (``str``, optional):
+            The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
+            This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         proxy (``dict``, optional):
             Your SOCKS5 Proxy settings as dict,
@@ -135,7 +138,8 @@ class Client:
 
     def __init__(self,
                  session_name: str,
-                 api_key: tuple or APIKey = None,
+                 api_id: int = None,
+                 api_hash: str = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -146,7 +150,8 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
-        self.api_key = api_key
+        self.api_id = api_id
+        self.api_hash = api_hash
         self.proxy = proxy
         self.test_mode = test_mode
 
@@ -209,7 +214,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.api_key.api_id,
+            self.api_id,
             client=self
         )
 
@@ -265,8 +270,8 @@ class Client:
             r = self.send(
                 functions.auth.ImportBotAuthorization(
                     flags=0,
-                    api_id=self.api_key.api_id,
-                    api_hash=self.api_key.api_hash,
+                    api_id=self.api_id,
+                    api_hash=self.api_hash,
                     bot_auth_token=self.token
                 )
             )
@@ -281,7 +286,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.api_key.api_id,
+                self.api_id,
                 client=self
             )
 
@@ -314,8 +319,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
+                        self.api_id,
+                        self.api_hash
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -329,7 +334,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.api_key.api_id,
+                    self.api_id,
                     client=self
                 )
                 self.session.start()
@@ -337,8 +342,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
+                        self.api_id,
+                        self.api_hash
                     )
                 )
                 break
@@ -822,18 +827,14 @@ class Client:
         parser = ConfigParser()
         parser.read("config.ini")
 
-        if self.api_key is not None:
-            self.api_key = APIKey(
-                api_id=int(self.api_key[0]),
-                api_hash=self.api_key[1]
-            )
-        elif parser.has_section("pyrogram"):
-            self.api_key = APIKey(
-                api_id=parser.getint("pyrogram", "api_id"),
-                api_hash=parser.get("pyrogram", "api_hash")
-            )
+        if self.api_id and self.api_hash:
+            pass
         else:
-            raise AttributeError("No API Key found")
+            if parser.has_section("pyrogram"):
+                self.api_id = parser.getint("pyrogram", "api_id")
+                self.api_hash = parser.get("pyrogram", "api_hash")
+            else:
+                raise AttributeError("No API Key found")
 
         if self.proxy is not None:
             self.proxy = Proxy(
@@ -2191,7 +2192,7 @@ class Client:
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_key.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_id)
         session.start()
 
         try:
@@ -2274,7 +2275,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 Auth(dc_id, self.test_mode, self.proxy).create(),
-                self.api_key.api_id
+                self.api_id
             )
 
             session.start()
@@ -2291,7 +2292,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.api_key.api_id
+                self.api_id
             )
 
             session.start()
@@ -2355,7 +2356,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                    self.api_key.api_id,
+                    self.api_id,
                     is_cdn=True
                 )
 
