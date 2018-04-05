@@ -30,6 +30,7 @@ from .api.types.pyrogram import *
 from .client import ChatAction
 from .client import Client
 from .client import ParseMode
-from .client.input_media import InputMedia
+from .client.input_media_photo import InputMediaPhoto
+from .client.input_media_video import InputMediaVideo
 from .client.input_phone_contact import InputPhoneContact
 from .client import Emoji
