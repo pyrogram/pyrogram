@@ -46,7 +46,7 @@ from pyrogram.api.errors import (
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate)
-from pyrogram.client import utils
+from pyrogram.client import message_parser
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
@@ -732,9 +732,9 @@ class Client:
                     message = update.message
 
                     if isinstance(message, types.Message):
-                        m = utils.parse_message(self, message, users, chats)
+                        m = message_parser.parse_message(self, message, users, chats)
                     elif isinstance(message, types.MessageService):
-                        m = utils.parse_message_service(self, message, users, chats)
+                        m = message_parser.parse_message_service(self, message, users, chats)
                     else:
                         continue
                 else:
