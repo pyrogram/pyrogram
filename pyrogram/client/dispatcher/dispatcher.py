@@ -67,12 +67,16 @@ class Dispatcher:
     def dispatch(self, update):
         if update.message:
             key = MessageHandler
+            value = update.message
         elif update.edited_message:
             key = EditedMessageHandler
+            value = update.edited_message
         elif update.channel_post:
             key = ChannelPostHandler
+            value = update.channel_post
         elif update.edited_channel_post:
             key = EditedChannelPostHandler
+            value = update.edited_channel_post
         else:
             return
 
@@ -80,7 +84,7 @@ class Dispatcher:
             handler = group.get(key, None)
 
             if handler is not None:
-                handler.callback(self.client, update)
+                handler.callback(self.client, value)
 
     def update_worker(self):
         name = threading.current_thread().name
