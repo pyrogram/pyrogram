@@ -18,6 +18,5 @@
 
 from .chat_action import ChatAction
 from .client import Client
-from .parse_mode import ParseMode
 from .emoji import Emoji
-from . import message_parser
+from .parse_mode import ParseMode
