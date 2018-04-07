@@ -16,8 +16,5 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .channel_post_handler import ChannelPostHandler
-from .edited_channel_post_handler import EditedChannelPostHandler
-from .edited_message_handler import EditedMessageHandler
 from .handler import Handler
 from .message_handler import MessageHandler

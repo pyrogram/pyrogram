@@ -26,8 +26,7 @@ import pyrogram
 from pyrogram.api import types
 from . import message_parser
 from ..handler import (
-    Handler, MessageHandler, EditedMessageHandler,
-    ChannelPostHandler, EditedChannelPostHandler
+    Handler, MessageHandler
 )
 
 log = logging.getLogger(__name__)
@@ -65,18 +64,14 @@ class Dispatcher:
             )
 
     def dispatch(self, update):
-        if update.message:
+        message = (update.message
+                   or update.channel_post
+                   or update.edited_message
+                   or update.edited_channel_post)
+
+        if message:
             key = MessageHandler
-            value = update.message
-        elif update.edited_message:
-            key = EditedMessageHandler
-            value = update.edited_message
-        elif update.channel_post:
-            key = ChannelPostHandler
-            value = update.channel_post
-        elif update.edited_channel_post:
-            key = EditedChannelPostHandler
-            value = update.edited_channel_post
+            value = message
         else:
             return
 
