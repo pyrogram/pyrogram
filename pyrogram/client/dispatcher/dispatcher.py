@@ -33,6 +33,18 @@ log = logging.getLogger(__name__)
 
 
 class Dispatcher:
+    MESSAGE_UPDATES = (
+        types.UpdateNewMessage,
+        types.UpdateNewChannelMessage
+    )
+
+    EDIT_UPDATES = (
+        types.UpdateEditMessage,
+        types.UpdateEditChannelMessage
+    )
+
+    ALLOWED_UPDATES = MESSAGE_UPDATES + EDIT_UPDATES
+
     def __init__(self, client, workers):
         self.client = client
         self.workers = workers
@@ -41,7 +53,10 @@ class Dispatcher:
 
     def start(self):
         for i in range(self.workers):
-            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+            Thread(
+                target=self.update_worker,
+                name="UpdateWorker#{}".format(i + 1)
+            ).start()
 
     def stop(self):
         for _ in range(self.workers):
@@ -57,7 +72,8 @@ class Dispatcher:
         else:
             raise ValueError(
                 "'{0}' is already registered in Group #{1}. "
-                "You can register a different handler in this group or another '{0}' in a different group".format(
+                "You can register a different handler in this group "
+                "or another '{0}' in a different group".format(
                     type(handler).__name__,
                     group
                 )
@@ -96,30 +112,40 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                valid_updates = (types.UpdateNewMessage, types.UpdateNewChannelMessage,
-                                 types.UpdateEditMessage, types.UpdateEditChannelMessage)
-
-                if isinstance(update, valid_updates):
-                    message = update.message
-
-                    if isinstance(message, types.Message):
-                        m = message_parser.parse_message(self.client, message, users, chats)
-                    elif isinstance(message, types.MessageService):
-                        m = message_parser.parse_message_service(self.client, message, users, chats)
+                if isinstance(update, Dispatcher.ALLOWED_UPDATES):
+                    if isinstance(update.message, types.Message):
+                        parser = message_parser.parse_message
+                    elif isinstance(update.message, types.MessageService):
+                        parser = message_parser.parse_message_service
                     else:
                         continue
+
+                    message = parser(
+                        self.client,
+                        update.message,
+                        users,
+                        chats
+                    )
                 else:
                     continue
 
-                edit = isinstance(update, (types.UpdateEditMessage, types.UpdateEditChannelMessage))
+                is_edited_message = isinstance(update, Dispatcher.EDIT_UPDATES)
 
                 self.dispatch(
                     pyrogram.Update(
                         update_id=0,
-                        message=(m if m.chat.type is not "channel" else None) if not edit else None,
-                        edited_message=(m if m.chat.type is not "channel" else None) if edit else None,
-                        channel_post=(m if m.chat.type is "channel" else None) if not edit else None,
-                        edited_channel_post=(m if m.chat.type is "channel" else None) if edit else None
+                        message=((message if message.chat.type != "channel"
+                                  else None) if not is_edited_message
+                                 else None),
+                        edited_message=((message if message.chat.type != "channel"
+                                         else None) if is_edited_message
+                                        else None),
+                        channel_post=((message if message.chat.type == "channel"
+                                       else None) if not is_edited_message
+                                      else None),
+                        edited_channel_post=((message if message.chat.type == "channel"
+                                              else None) if is_edited_message
+                                             else None)
                     )
                 )
             except Exception as e:
