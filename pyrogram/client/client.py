@@ -45,14 +45,16 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
+from . import message_parser
 from .dispatcher import Dispatcher
 from .handler import Handler
 from .input_media import InputMedia
 from .style import Markdown, HTML
+from .utils import decode
 
 log = logging.getLogger(__name__)
 
@@ -132,6 +134,18 @@ class Client:
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
+
+    MEDIA_TYPE_ID = {
+        0: "Thumbnail",
+        2: "Photo",
+        3: "Voice",
+        4: "Video",
+        5: "Document",
+        8: "Sticker",
+        9: "Audio",
+        10: "GIF",
+        13: "VideoNote"
+    }
 
     def __init__(self,
                  session_name: str,
@@ -1075,7 +1089,9 @@ class Client:
 
             photo (``str``):
                 Photo to send.
-                Pass a file path as string to send a photo that exists on your local machine.
+                Pass a file_id as string to send a photo that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
+                pass a file path as string to upload a new photo that exists on your local machine.
 
             caption (``bool``, optional):
                 Photo caption, 0-200 characters.
@@ -1109,23 +1125,55 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo, progress=progress)
+
+        if os.path.exists(photo):
+            file = self.save_file(photo, progress=progress)
+            media = types.InputMediaUploadedPhoto(
+                file=file,
+                ttl_seconds=ttl_seconds
+            )
+        elif photo.startswith("http"):
+            media = types.InputMediaPhotoExternal(
+                url=photo,
+                ttl_seconds=ttl_seconds
+            )
+        else:
+            try:
+                decoded = decode(photo)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 2:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaPhoto(
+                    id=types.InputPhoto(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    ),
+                    ttl_seconds=ttl_seconds
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=file,
-                            ttl_seconds=ttl_seconds
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1135,7 +1183,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(photo, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_audio(self,
                    chat_id: int or str,
