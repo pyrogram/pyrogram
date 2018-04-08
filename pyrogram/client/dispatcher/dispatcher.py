@@ -24,7 +24,7 @@ from threading import Thread
 
 import pyrogram
 from pyrogram.api import types
-from . import message_parser
+from .. import message_parser
 from ..handler import (
     Handler, MessageHandler, RawUpdateHandler
 )

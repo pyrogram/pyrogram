@@ -20,7 +20,7 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
-from ..utils import encode
+from .utils import encode
 
 # TODO: Organize the code better?
 
