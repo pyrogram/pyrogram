@@ -33,7 +33,11 @@ class Error(Exception):
     MESSAGE = None
 
     def __init__(self, x: int or RpcError = None, query_type: type = None):
-        super().__init__("[{} {}]: {}".format(self.CODE, self.ID or self.NAME, self.MESSAGE.format(x=x)))
+        super().__init__("[{} {}]: {}".format(
+            self.CODE,
+            self.ID or self.NAME,
+            str(self) or self.MESSAGE.format(x=x)
+        ))
 
         try:
             self.x = int(x)
