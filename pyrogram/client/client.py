@@ -189,12 +189,18 @@ class Client:
         self.dispatcher = Dispatcher(self, workers)
         self.update_handler = None
 
-    def on_message(self, group: int = 0):
+    def on(self, handler, group):
         def decorator(f):
-            self.add_handler(pyrogram.MessageHandler(f), group)
+            self.add_handler(handler(f), group)
             return f
 
         return decorator
+
+    def on_message(self, group: int = 0):
+        return self.on(pyrogram.MessageHandler, group)
+
+    def on_raw_update(self, group: int = 0):
+        return self.on(pyrogram.RawUpdateHandler, group)
 
     def add_handler(self, handler: Handler, group: int = 0):
         self.dispatcher.add_handler(handler, group)

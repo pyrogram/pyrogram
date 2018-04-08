@@ -26,7 +26,7 @@ import pyrogram
 from pyrogram.api import types
 from . import message_parser
 from ..handler import (
-    Handler, MessageHandler
+    Handler, MessageHandler, RawUpdateHandler
 )
 
 log = logging.getLogger(__name__)
@@ -79,23 +79,28 @@ class Dispatcher:
                 )
             )
 
-    def dispatch(self, update):
-        message = (update.message
-                   or update.channel_post
-                   or update.edited_message
-                   or update.edited_channel_post)
-
-        if message:
-            key = MessageHandler
-            value = message
+    def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
+        if is_raw:
+            key = RawUpdateHandler
+            value = update
         else:
-            return
+            message = (update.message
+                       or update.channel_post
+                       or update.edited_message
+                       or update.edited_channel_post)
+
+            if message:
+                key = MessageHandler
+                value = message
+            else:
+                return
 
         for group in self.handlers.values():
             handler = group.get(key, None)
 
             if handler is not None:
-                handler.callback(self.client, value)
+                args = (self, value, users, chats) if is_raw else (self.client, value)
+                handler.callback(*args)
 
     def update_worker(self):
         name = threading.current_thread().name
@@ -111,6 +116,8 @@ class Dispatcher:
                 users = {i.id: i for i in update[1]}
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
+
+                self.dispatch(update, users=users, chats=chats, is_raw=True)
 
                 if isinstance(update, Dispatcher.ALLOWED_UPDATES):
                     if isinstance(update.message, types.Message):

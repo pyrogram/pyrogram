@@ -18,3 +18,4 @@
 
 from .handler import Handler
 from .message_handler import MessageHandler
+from .raw_update_handler import RawUpdateHandler

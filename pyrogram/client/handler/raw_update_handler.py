@@ -16,22 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+from .handler import Handler
 
-__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
-    "\xe8",
-    "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
-)
-__license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.6.5"
 
-from .api.errors import Error
-from .api.types.pyrogram import *
-from .client import ChatAction
-from .client import Client
-from .client import ParseMode
-from .client.input_media_photo import InputMediaPhoto
-from .client.input_media_video import InputMediaVideo
-from .client.input_phone_contact import InputPhoneContact
-from .client import Emoji
-from .client.handler import MessageHandler, RawUpdateHandler
+class RawUpdateHandler(Handler):
+    def __init__(self, callback: callable):
+        super().__init__(callback)
