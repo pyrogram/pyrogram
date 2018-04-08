@@ -370,7 +370,7 @@ class Client:
             self.phone_code = (
                 input("Enter phone code: ") if self.phone_code is None
                 else self.phone_code if type(self.phone_code) is str
-                else self.phone_code()
+                else str(self.phone_code())
             )
 
             try:
