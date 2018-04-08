@@ -147,7 +147,7 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
-        self.api_id = int(api_id)
+        self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
         self.proxy = proxy
         self.test_mode = test_mode
