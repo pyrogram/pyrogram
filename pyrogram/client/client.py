@@ -132,7 +132,7 @@ class Client:
 
     def __init__(self,
                  session_name: str,
-                 api_id: int = None,
+                 api_id: int or str = None,
                  api_hash: str = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
@@ -144,7 +144,7 @@ class Client:
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
-        self.api_id = api_id
+        self.api_id = int(api_id)
         self.api_hash = api_hash
         self.proxy = proxy
         self.test_mode = test_mode
