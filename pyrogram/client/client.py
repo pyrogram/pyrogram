@@ -192,6 +192,7 @@ class Client:
     def on_message(self, group: int = 0):
         def decorator(f):
             self.add_handler(pyrogram.MessageHandler(f), group)
+            return f
 
         return decorator
 
