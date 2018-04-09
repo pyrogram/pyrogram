@@ -99,7 +99,14 @@ class Dispatcher:
             handler = group.get(key, None)
 
             if handler is not None:
-                args = (self, value, users, chats) if is_raw else (self.client, value)
+                if is_raw:
+                    args = (self, value, users, chats)
+                else:
+                    if not handler.check(value):
+                        continue
+
+                    args = (self.client, value)
+
                 handler.callback(*args)
 
     def update_worker(self):
