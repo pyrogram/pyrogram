@@ -20,5 +20,12 @@ from .handler import Handler
 
 
 class MessageHandler(Handler):
-    def __init__(self, callback: callable):
-        super().__init__(callback)
+    def __init__(self, callback: callable, filters=None):
+        super().__init__(callback, filters)
+
+    def check(self, message):
+        return (
+            self.filters(message)
+            if self.filters
+            else True
+        )
