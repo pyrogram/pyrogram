@@ -35,3 +35,4 @@ from .client.input_media_video import InputMediaVideo
 from .client.input_phone_contact import InputPhoneContact
 from .client import Emoji
 from .client.handler import MessageHandler, RawUpdateHandler
+from .client.filters import Filters
