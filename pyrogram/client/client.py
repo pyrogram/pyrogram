@@ -1214,7 +1214,9 @@ class Client:
 
             audio (``str``):
                 Audio file to send.
-                Pass a file path as string to send an audio file that exists on your local machine.
+                Pass a file_id as string to send an audio file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
+                pass a file path as string to upload a new audio file that exists on your local machine.
 
             caption (``str``, optional):
                 Audio caption, 0-200 characters.
@@ -1252,31 +1254,61 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio, progress=progress)
+
+        if os.path.exists(audio):
+            file = self.save_file(audio, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                file=file,
+                attributes=[
+                    types.DocumentAttributeAudio(
+                        duration=duration,
+                        performer=performer,
+                        title=title
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(audio))
+                ]
+            )
+        elif audio.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=audio
+            )
+        else:
+            try:
+                decoded = decode(audio)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 9:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    duration=duration,
-                                    performer=performer,
-                                    title=title
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(audio))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1286,7 +1318,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(audio, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_document(self,
                       chat_id: int or str,
