@@ -73,3 +73,17 @@ class Filters:
             "Regex", lambda _, m: bool(_.p.search(m.text or "")),
             p=re.compile(pattern, flags)
         )
+
+    @staticmethod
+    def user(user: int or str or list()):
+        return build(
+            "User",
+            lambda _, m: bool(m.from_user
+                              and (m.from_user.id in _.u
+                                   or m.from_user.username.lower() in _.u)),
+            u=(
+                {user.lower().strip("@") if type(user) is str else user}
+                if not isinstance(user, list)
+                else {i.lower().strip("@") if type(i) is str else i for i in user}
+            )
+        )
