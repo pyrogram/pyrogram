@@ -103,3 +103,33 @@ class Filters:
                 else {i.lower().strip("@") if type(i) is str else i for i in chat}
             )
         )
+
+    class _Service(Filter):
+        new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
+        left_chat_member = build("LeftChatMember", lambda _, m: bool(m.left_chat_member))
+        new_chat_title = build("NewChatTitle", lambda _, m: bool(m.new_chat_title))
+        new_chat_photo = build("NewChatPhoto", lambda _, m: bool(m.new_chat_photo))
+        delete_chat_photo = build("DeleteChatPhoto", lambda _, m: bool(m.delete_chat_photo))
+        group_chat_created = build("GroupChatCreated", lambda _, m: bool(m.group_chat_created))
+        supergroup_chat_created = build("SupergroupChatCreated", lambda _, m: bool(m.supergroup_chat_created))
+        channel_chat_created = build("ChannelChatCreated", lambda _, m: bool(m.channel_chat_created))
+        migrate_to_chat_id = build("MigrateToChatId", lambda _, m: bool(m.migrate_to_chat_id))
+        migrate_from_chat_id = build("MigrateFromChatId", lambda _, m: bool(m.migrate_from_chat_id))
+        pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
+
+        def __call__(self, message):
+            return bool(
+                self.new_chat_members(message)
+                or self.left_chat_member(message)
+                or self.new_chat_title(message)
+                or self.new_chat_photo(message)
+                or self.delete_chat_photo(message)
+                or self.group_chat_created(message)
+                or self.supergroup_chat_created(message)
+                or self.channel_chat_created(message)
+                or self.migrate_to_chat_id(message)
+                or self.migrate_from_chat_id(message)
+                or self.pinned_message(message)
+            )
+
+    service = _Service()
