@@ -41,9 +41,9 @@ class Filters:
                 and (m.text[1:].split()[0] in _.c)
             ),
             c=(
-                [command]
+                {command}
                 if not isinstance(command, list)
-                else command
+                else {c for c in command}
             )
         )
 
@@ -64,7 +64,7 @@ class Filters:
     venue = build("Venue", lambda _, m: bool(m.venue))
 
     private = build("Private", lambda _, m: bool(m.chat.type == "private"))
-    group = build("Group", lambda _, m: bool(m.chat.type in ("group", "supergroup")))
+    group = build("Group", lambda _, m: bool(m.chat.type in {"group", "supergroup"}))
     channel = build("Channel", lambda _, m: bool(m.chat.type == "channel"))
 
     @staticmethod
