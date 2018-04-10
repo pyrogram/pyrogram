@@ -410,7 +410,8 @@ def parse_message(
         video=video,
         video_note=video_note,
         sticker=sticker,
-        document=document
+        document=document,
+        views=message.views
     )
 
     if message.reply_to_msg_id and replies:
