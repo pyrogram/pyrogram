@@ -75,7 +75,7 @@ class Filters:
         )
 
     @staticmethod
-    def user(user: int or str or list()):
+    def user(user: int or str or list):
         return build(
             "User",
             lambda _, m: bool(m.from_user
