@@ -26,7 +26,7 @@ import pyrogram
 from pyrogram.api import types
 from .. import message_parser
 from ..handler import (
-    Handler, MessageHandler, RawUpdateHandler
+    Handler, RawUpdateHandler
 )
 
 log = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class Dispatcher:
         self.client = client
         self.workers = workers
         self.updates = Queue()
-        self.handlers = OrderedDict()
+        self.groups = OrderedDict()
 
     def start(self):
         for i in range(self.workers):
@@ -63,51 +63,33 @@ class Dispatcher:
             self.updates.put(None)
 
     def add_handler(self, handler: Handler, group: int):
-        if group not in self.handlers:
-            self.handlers[group] = {}
-            self.handlers = OrderedDict(sorted(self.handlers.items()))
+        if group not in self.groups:
+            self.groups[group] = []
+            self.groups = OrderedDict(sorted(self.groups.items()))
 
-        if type(handler) not in self.handlers[group]:
-            self.handlers[group][type(handler)] = handler
-        else:
-            raise ValueError(
-                "'{0}' is already registered in Group #{1}. "
-                "You can register a different handler in this group "
-                "or another '{0}' in a different group".format(
-                    type(handler).__name__,
-                    group
-                )
-            )
+        self.groups[group].append(handler)
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
-        if is_raw:
-            key = RawUpdateHandler
-            value = update
-        else:
-            message = (update.message
-                       or update.channel_post
-                       or update.edited_message
-                       or update.edited_channel_post)
-
-            if message:
-                key = MessageHandler
-                value = message
-            else:
-                return
-
-        for group in self.handlers.values():
-            handler = group.get(key, None)
-
-            if handler is not None:
+        for group in self.groups.values():
+            for handler in group:
                 if is_raw:
-                    args = (self, value, users, chats)
-                else:
-                    if not handler.check(value):
+                    if not isinstance(handler, RawUpdateHandler):
                         continue
 
-                    args = (self.client, value)
+                    args = (self.client, update, users, chats)
+                else:
+                    message = (update.message
+                               or update.channel_post
+                               or update.edited_message
+                               or update.edited_channel_post)
+
+                    if not handler.check(message):
+                        continue
+
+                    args = (self.client, message)
 
                 handler.callback(*args)
+                break
 
     def update_worker(self):
         name = threading.current_thread().name
