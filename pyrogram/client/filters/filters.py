@@ -80,10 +80,26 @@ class Filters:
             "User",
             lambda _, m: bool(m.from_user
                               and (m.from_user.id in _.u
-                                   or m.from_user.username.lower() in _.u)),
+                                   or (m.from_user.username
+                                       and m.from_user.username.lower() in _.u))),
             u=(
                 {user.lower().strip("@") if type(user) is str else user}
                 if not isinstance(user, list)
                 else {i.lower().strip("@") if type(i) is str else i for i in user}
+            )
+        )
+
+    @staticmethod
+    def chat(chat: int or str or list):
+        return build(
+            "Chat",
+            lambda _, m: bool(m.chat
+                              and (m.chat.id in _.c
+                                   or (m.chat.username
+                                       and m.chat.username.lower() in _.c))),
+            c=(
+                {chat.lower().strip("@") if type(chat) is str else chat}
+                if not isinstance(chat, list)
+                else {i.lower().strip("@") if type(i) is str else i for i in chat}
             )
         )
