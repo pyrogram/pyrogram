@@ -32,7 +32,7 @@ class Filters:
     text = build("Text", lambda _, m: bool(m.text and not m.text.startswith("/")))
 
     @staticmethod
-    def command(command: str or list = list()):
+    def command(command: str or list):
         return build(
             "Command",
             lambda _, m: bool(
