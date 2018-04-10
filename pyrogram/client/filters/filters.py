@@ -50,6 +50,7 @@ class Filters:
     reply = build("Reply", lambda _, m: bool(m.reply_to_message))
     forwarded = build("Forwarded", lambda _, m: bool(m.forward_date))
     caption = build("Caption", lambda _, m: bool(m.caption))
+    edited = build("Edited", lambda _, m: bool(m.edit_date))
 
     audio = build("Audio", lambda _, m: bool(m.audio))
     document = build("Document", lambda _, m: bool(m.document))
