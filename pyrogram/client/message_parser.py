@@ -69,7 +69,8 @@ def parse_user(user: types.User) -> pyrogram.User or None:
         first_name=user.first_name,
         last_name=user.last_name,
         username=user.username,
-        language_code=user.lang_code
+        language_code=user.lang_code,
+        phone_number=user.phone
     ) if user else None
 
 
