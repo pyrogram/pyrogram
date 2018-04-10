@@ -30,7 +30,23 @@ def build(name: str, func: callable, **kwargs) -> type:
 
 class Filters:
     text = build("Text", lambda _, m: bool(m.text and not m.text.startswith("/")))
-    command = build("Command", lambda _, m: bool(m.text and m.text.startswith("/")))
+
+    @staticmethod
+    def command(command: str or list = list()):
+        return build(
+            "Command",
+            lambda _, m: bool(
+                m.text
+                and m.text.startswith("/")
+                and (m.text[1:].split()[0] in _.c)
+            ),
+            c=(
+                [command]
+                if not isinstance(command, list)
+                else command
+            )
+        )
+
     reply = build("Reply", lambda _, m: bool(m.reply_to_message))
     forwarded = build("Forwarded", lambda _, m: bool(m.forward_date))
     caption = build("Caption", lambda _, m: bool(m.caption))
