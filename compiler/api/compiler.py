@@ -58,7 +58,7 @@ def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool
     elif t == "!X":
         return "Any method from :obj:`pyrogram.api.functions`"
     elif t.startswith("Vector"):
-        return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
+        return "List of " + get_docstring_arg_type(t.split("<", 1)[1][:-1], True, is_pyrogram_type)
     else:
         if is_pyrogram_type:
             t = "pyrogram." + t
@@ -274,7 +274,7 @@ def start():
         ) if c.args else "pass"
 
         docstring_args = []
-        docs = c.docs.split("|")[1:] if c.docs else None
+        # docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
