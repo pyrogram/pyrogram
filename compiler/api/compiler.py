@@ -282,23 +282,24 @@ def start():
             flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
-            if docs:
-                docstring_args.append(
-                    "{} ({}{}):\n            {}\n".format(
-                        arg_name,
-                        get_docstring_arg_type(arg_type, is_pyrogram_type=True),
-                        ", optional" if "Optional" in docs[i] else "",
-                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
-                    )
+            # if c.namespace == "pyrogram":
+            #     docstring_args.append(
+            #         "{} ({}{}):\n            {}\n".format(
+            #             arg_name,
+            #             get_docstring_arg_type(arg_type, is_pyrogram_type=True),
+            #             ", optional" if "Optional" in docs[i] else "",
+            #             re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
+            #         )
+            #     )
+            # else:
+
+            docstring_args.append(
+                "{}{}: {}".format(
+                    arg_name,
+                    " (optional)".format(flag_number) if is_optional else "",
+                    get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
                 )
-            else:
-                docstring_args.append(
-                    "{}: {}{}".format(
-                        arg_name,
-                        "``optional`` ".format(flag_number) if is_optional else "",
-                        get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
-                    )
-                )
+            )
 
         if docstring_args:
             docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
