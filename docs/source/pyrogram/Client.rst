@@ -14,7 +14,9 @@ Client
         start
         stop
         idle
-        set_update_handler
+        on_message
+        on_raw_update
+        add_handler
         send
         resolve_peer
         get_me
