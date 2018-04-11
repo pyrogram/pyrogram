@@ -25,9 +25,7 @@ from threading import Thread
 import pyrogram
 from pyrogram.api import types
 from .. import message_parser
-from ..handler import (
-    Handler, RawUpdateHandler
-)
+from ..handlers import RawUpdateHandler
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +60,7 @@ class Dispatcher:
         for _ in range(self.workers):
             self.updates.put(None)
 
-    def add_handler(self, handler: Handler, group: int):
+    def add_handler(self, handler, group: int):
         if group not in self.groups:
             self.groups[group] = []
             self.groups = OrderedDict(sorted(self.groups.items()))

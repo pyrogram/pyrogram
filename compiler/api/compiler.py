@@ -297,7 +297,7 @@ def start():
                     "{}: {}{}".format(
                         arg_name,
                         "``optional`` ".format(flag_number) if is_optional else "",
-                        get_docstring_arg_type(arg_type)
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
                     )
                 )
 

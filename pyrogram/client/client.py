@@ -51,7 +51,6 @@ from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
 from . import message_parser
 from .dispatcher import Dispatcher
-from .handler import Handler
 from .input_media import InputMedia
 from .style import Markdown, HTML
 from .utils import decode
@@ -204,6 +203,19 @@ class Client:
         self.update_handler = None
 
     def on_message(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        messages. This does the same thing as :meth:`add_handler` using the
+        MessageHandler.
+
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of messages to be passed
+                in your function.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
         def decorator(func):
             self.add_handler(pyrogram.MessageHandler(func, filters), group)
             return func
@@ -211,13 +223,35 @@ class Client:
         return decorator
 
     def on_raw_update(self, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        raw updates. This does the same thing as :meth:`add_handler` using the
+        RawUpdateHandler.
+
+        Args:
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
         def decorator(func):
             self.add_handler(pyrogram.RawUpdateHandler(func), group)
             return func
 
         return decorator
 
-    def add_handler(self, handler: Handler, group: int = 0):
+    def add_handler(self, handler, group: int = 0):
+        """Use this method to register an event handler.
+
+        You can register multiple handlers, but at most one handler within a group
+        will be used for a single event. To handle the same event more than once, register
+        your handler using a different group id (lower group id == higher priority).
+
+        Args:
+            handler (:obj:`Handler <pyrogram.handler.Handler>`):
+                The handler to be registered.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
         self.dispatcher.add_handler(handler, group)
 
     def start(self):
