@@ -32,8 +32,8 @@ class Connection:
         2: TCPIntermediate
     }
 
-    def __init__(self, ipv4: str, proxy: type, mode: int = 1):
-        self.address = (ipv4, 80)
+    def __init__(self, address: tuple, proxy: type, mode: int = 1):
+        self.address = address
         self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)
         self.lock = threading.Lock()
