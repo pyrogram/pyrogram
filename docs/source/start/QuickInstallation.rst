@@ -7,6 +7,12 @@ The most straightforward and recommended way to install or upgrade Pyrogram is b
 
     $ pip3 install --upgrade pyrogram
 
+or, with TgCrypto_ (recommended):
+
+.. code-block:: bash
+
+    $ pip3 install --upgrade pyrogram[tgcrypto]
+
 Bleeding Edge
 -------------
 

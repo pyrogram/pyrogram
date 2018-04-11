@@ -9,9 +9,9 @@ Basic Usage
 Simple API Access
 -----------------
 
-The easiest way to interact with the API is via the :class:`Client <pyrogram.Client>` class which exposes bot-like_
-methods. The purpose of this Client class is to make it even simpler to work with Telegram's API by abstracting the
-raw functions listed in the API scheme.
+The easiest way to interact with the Telegram API is via the :class:`Client <pyrogram.Client>` class,
+which exposes bot-like_ methods. The purpose of this Client class is to make it even simpler to work with the
+API by abstracting the raw functions listed in the scheme.
 
 The result is a much cleaner interface that allows you to:
 
@@ -25,10 +25,13 @@ The result is a much cleaner interface that allows you to:
 
     .. code-block:: python
 
-        client.send_message(
-            chat_id="me",
-            text="Hi there! I'm using Pyrogram"
-        )
+        client.send_message("me", "Hi there! I'm using Pyrogram")
+
+-   Upload a photo (with caption):
+
+    .. code-block:: python
+
+        client.send_photo("me", "/home/dan/perla.jpg", "Cute!")
 
 .. seealso:: For a complete list of the available methods have a look at the :class:`Client <pyrogram.Client>` class.
 
@@ -39,7 +42,7 @@ Using Raw Functions
 
 If you want **complete**, low-level access to the Telegram API you have to use the raw
 :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>` exposed by the ``pyrogram.api``
-package and call any Telegram API method you wish using the :meth:`send <pyrogram.Client.send>` method provided by
+package and call any Telegram API method you wish using the :meth:`send() <pyrogram.Client.send>` method provided by
 the Client class.
 
 Here some examples:

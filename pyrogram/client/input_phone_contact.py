@@ -22,16 +22,16 @@ from pyrogram.session.internals import MsgId
 
 class InputPhoneContact:
     """This object represents a Phone Contact to be added in your Telegram address book.
-    It is intended to be used with :meth:`pyrogram.Client.add_contacts`
+    It is intended to be used with :meth:`add_contacts() <pyrogram.Client.add_contacts>`
 
     Args:
-        phone (:obj:`str`):
+        phone (``str``):
             Contact's phone number
 
-        first_name (:obj:`str`):
+        first_name (``str``):
             Contact's first name
 
-        last_name (:obj:`str`, optional):
+        last_name (``str``, optional):
             Contact's last name
     """
 

@@ -29,8 +29,8 @@ def build(name: str, func: callable, **kwargs) -> type:
 
 
 class Filters:
-    """This class provides access to all the Filters available in Pyrogram.
-    It is intended to be used when adding an handler."""
+    """This class provides access to all Filters available in Pyrogram.
+    Filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`."""
 
     text = build("Text", lambda _, m: bool(m.text and not m.text.startswith("/")))
     """Filter text messages."""
@@ -48,34 +48,34 @@ class Filters:
     """Filter edited messages."""
 
     audio = build("Audio", lambda _, m: bool(m.audio))
-    """Filter messages that contain an :obj:`Audio <pyrogram.Audio>`."""
+    """Filter messages that contain :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` objects."""
 
     document = build("Document", lambda _, m: bool(m.document))
-    """Filter messages that contain a :obj:`Document <pyrogram.Document>`."""
+    """Filter messages that contain :obj:`Document <pyrogram.api.types.pyrogram.Document>` objects."""
 
     photo = build("Photo", lambda _, m: bool(m.photo))
-    """Filter messages that contain a :obj:`Photo <pyrogram.Photo>`."""
+    """Filter messages that contain :obj:`Photo <pyrogram.api.types.pyrogram.PhotoSize>` objects."""
 
     sticker = build("Sticker", lambda _, m: bool(m.sticker))
-    """Filter messages that contain a :obj:`Sticker <pyrogram.Sticker>`."""
+    """Filter messages that contain :obj:`Sticker <pyrogram.api.types.pyrogram.Sticker>` objects."""
 
     video = build("Video", lambda _, m: bool(m.video))
-    """Filter messages that contain a :obj:`Video <pyrogram.Video>`."""
+    """Filter messages that contain :obj:`Video <pyrogram.api.types.pyrogram.Video>` objects."""
 
     voice = build("Voice", lambda _, m: bool(m.voice))
-    """Filter messages that contain a :obj:`Voice <pyrogram.Voice>` note."""
+    """Filter messages that contain :obj:`Voice <pyrogram.api.types.pyrogram.Voice>` note objects."""
 
     video_note = build("Voice", lambda _, m: bool(m.video_note))
-    """Filter messages that contain a :obj:`VideoNote <pyrogram.VideoNote>`."""
+    """Filter messages that contain :obj:`VideoNote <pyrogram.api.types.pyrogram.VideoNote>` objects."""
 
     contact = build("Contact", lambda _, m: bool(m.contact))
-    """Filter messages that contain a :obj:`Contact <pyrogram.Contact>`."""
+    """Filter messages that contain :obj:`Contact <pyrogram.api.types.pyrogram.Contact>` objects."""
 
     location = build("Location", lambda _, m: bool(m.location))
-    """Filter messages that contain a :obj:`Location <pyrogram.Location>`."""
+    """Filter messages that contain :obj:`Location <pyrogram.api.types.pyrogram.Location>` objects."""
 
     venue = build("Venue", lambda _, m: bool(m.venue))
-    """Filter messages that contain a :obj:`Venue <pyrogram.Venue>`."""
+    """Filter messages that contain :obj:`Venue <pyrogram.api.types.pyrogram.Venue>` objects."""
 
     private = build("Private", lambda _, m: bool(m.chat.type == "private"))
     """Filter messages sent in private chats."""
@@ -166,6 +166,24 @@ class Filters:
             )
         )
 
+    service = build(
+        "Service",
+        lambda _, m: bool(
+            _.new_chat_members(m)
+            or _.left_chat_member(m)
+            or _.new_chat_title(m)
+            or _.new_chat_photo(m)
+            or _.delete_chat_photo(m)
+            or _.group_chat_created(m)
+            or _.supergroup_chat_created(m)
+            or _.channel_chat_created(m)
+            or _.migrate_to_chat_id(m)
+            or _.migrate_from_chat_id(m)
+            or _.pinned_m(m)
+        )
+    )
+    """Filter all service messages"""
+
     new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
     """Filter service messages for new chat members."""
 
@@ -198,21 +216,3 @@ class Filters:
 
     pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
-
-    service = build(
-        "Service",
-        lambda _, m: bool(
-            _.new_chat_members(m)
-            or _.left_chat_member(m)
-            or _.new_chat_title(m)
-            or _.new_chat_photo(m)
-            or _.delete_chat_photo(m)
-            or _.group_chat_created(m)
-            or _.supergroup_chat_created(m)
-            or _.channel_chat_created(m)
-            or _.migrate_to_chat_id(m)
-            or _.migrate_from_chat_id(m)
-            or _.pinned_m(m)
-        )
-    )
-    """Filter all service messages"""
