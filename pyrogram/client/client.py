@@ -36,6 +36,7 @@ from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -44,12 +45,15 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
+from . import message_parser
+from .dispatcher import Dispatcher
 from .input_media import InputMedia
 from .style import Markdown, HTML
+from .utils import decode
 
 log = logging.getLogger(__name__)
 
@@ -130,6 +134,18 @@ class Client:
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
 
+    MEDIA_TYPE_ID = {
+        0: "Thumbnail",
+        2: "Photo",
+        3: "Voice",
+        4: "Video",
+        5: "Document",
+        8: "Sticker",
+        9: "Audio",
+        10: "GIF",
+        13: "VideoNote"
+    }
+
     def __init__(self,
                  session_name: str,
                  api_id: int or str = None,
@@ -181,10 +197,62 @@ class Client:
         self.is_idle = None
 
         self.updates_queue = Queue()
-        self.update_queue = Queue()
+        self.download_queue = Queue()
+
+        self.dispatcher = Dispatcher(self, workers)
         self.update_handler = None
 
-        self.download_queue = Queue()
+    def on_message(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        messages. This does the same thing as :meth:`add_handler` using the
+        MessageHandler.
+
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of messages to be passed
+                in your function.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
+        def decorator(func):
+            self.add_handler(pyrogram.MessageHandler(func, filters), group)
+            return func
+
+        return decorator
+
+    def on_raw_update(self, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        raw updates. This does the same thing as :meth:`add_handler` using the
+        RawUpdateHandler.
+
+        Args:
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
+        def decorator(func):
+            self.add_handler(pyrogram.RawUpdateHandler(func), group)
+            return func
+
+        return decorator
+
+    def add_handler(self, handler, group: int = 0):
+        """Use this method to register an event handler.
+
+        You can register multiple handlers, but at most one handler within a group
+        will be used for a single event. To handle the same event more than once, register
+        your handler using a different group id (lower group id == higher priority).
+
+        Args:
+            handler (:obj:`Handler <pyrogram.handler.Handler>`):
+                The handler to be registered.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+        self.dispatcher.add_handler(handler, group)
 
     def start(self):
         """Use this method to start the Client after creating it.
@@ -232,11 +300,10 @@ class Client:
         for i in range(self.UPDATES_WORKERS):
             Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
 
-        for i in range(self.workers):
-            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
-
         for i in range(self.DOWNLOAD_WORKERS):
             Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
+
+        self.dispatcher.start()
 
         mimetypes.init()
 
@@ -253,11 +320,10 @@ class Client:
         for _ in range(self.UPDATES_WORKERS):
             self.updates_queue.put(None)
 
-        for _ in range(self.workers):
-            self.update_queue.put(None)
-
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
+
+        self.dispatcher.stop()
 
     def authorize_bot(self):
         try:
@@ -682,7 +748,7 @@ class Client:
                             if len(self.channels_pts[channel_id]) > 50:
                                 self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
 
-                        self.update_queue.put((update, updates.users, updates.chats))
+                        self.dispatcher.updates.put((update, updates.users, updates.chats))
                 elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = self.send(
                         functions.updates.GetDifference(
@@ -692,7 +758,7 @@ class Client:
                         )
                     )
 
-                    self.update_queue.put((
+                    self.dispatcher.updates.put((
                         types.UpdateNewMessage(
                             message=diff.new_messages[0],
                             pts=updates.pts,
@@ -702,30 +768,7 @@ class Client:
                         diff.chats
                     ))
                 elif isinstance(updates, types.UpdateShort):
-                    self.update_queue.put((updates.update, [], []))
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))
-
-    def update_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            update = self.update_queue.get()
-
-            if update is None:
-                break
-
-            try:
-                if self.update_handler:
-                    self.update_handler(
-                        self,
-                        update[0],
-                        {i.id: i for i in update[1]},
-                        {i.id: i for i in update[2]}
-                    )
+                    self.dispatcher.updates.put((updates.update, [], []))
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -751,47 +794,6 @@ class Client:
 
         while self.is_idle:
             time.sleep(1)
-
-    def set_update_handler(self, callback: callable):
-        """Use this method to set the update handler.
-
-        You must call this method *before* you *start()* the Client.
-
-        Args:
-            callback (``callable``):
-                A function that will be called when a new update is received from the server. It takes
-                *(client, update, users, chats)* as positional arguments (Look at the section below for
-                a detailed description).
-
-        Other Parameters:
-            client (:class:`Client <pyrogram.Client>`):
-                The Client itself, useful when you want to call other API methods inside the update handler.
-
-            update (``Update``):
-                The received update, which can be one of the many single Updates listed in the *updates*
-                field you see in the :obj:`Update <pyrogram.api.types.Update>` type.
-
-            users (``dict``):
-                Dictionary of all :obj:`User <pyrogram.api.types.User>` mentioned in the update.
-                You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
-                the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
-
-            chats (``dict``):
-                Dictionary of all :obj:`Chat <pyrogram.api.types.Chat>` and
-                :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
-                You can access extra info about the chat (such as *title*, *participants_count*, etc...)
-                by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
-
-        Note:
-            The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
-            They mean you have been blocked by the user or banned from the group/channel.
-
-            - :obj:`UserEmpty <pyrogram.api.types.UserEmpty>`
-            - :obj:`ChatEmpty <pyrogram.api.types.ChatEmpty>`
-            - :obj:`ChatForbidden <pyrogram.api.types.ChatForbidden>`
-            - :obj:`ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
-        """
-        self.update_handler = callback
 
     def send(self, data: Object):
         """Use this method to send Raw Function queries.
@@ -1122,7 +1124,9 @@ class Client:
 
             photo (``str``):
                 Photo to send.
-                Pass a file path as string to send a photo that exists on your local machine.
+                Pass a file_id as string to send a photo that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
+                pass a file path as string to upload a new photo that exists on your local machine.
 
             caption (``bool``, optional):
                 Photo caption, 0-200 characters.
@@ -1156,23 +1160,55 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo, progress=progress)
+
+        if os.path.exists(photo):
+            file = self.save_file(photo, progress=progress)
+            media = types.InputMediaUploadedPhoto(
+                file=file,
+                ttl_seconds=ttl_seconds
+            )
+        elif photo.startswith("http"):
+            media = types.InputMediaPhotoExternal(
+                url=photo,
+                ttl_seconds=ttl_seconds
+            )
+        else:
+            try:
+                decoded = decode(photo)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 2:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaPhoto(
+                    id=types.InputPhoto(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    ),
+                    ttl_seconds=ttl_seconds
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=file,
-                            ttl_seconds=ttl_seconds
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1182,7 +1218,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(photo, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_audio(self,
                    chat_id: int or str,
@@ -1208,7 +1249,9 @@ class Client:
 
             audio (``str``):
                 Audio file to send.
-                Pass a file path as string to send an audio file that exists on your local machine.
+                Pass a file_id as string to send an audio file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
+                pass a file path as string to upload a new audio file that exists on your local machine.
 
             caption (``str``, optional):
                 Audio caption, 0-200 characters.
@@ -1246,31 +1289,61 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio, progress=progress)
+
+        if os.path.exists(audio):
+            file = self.save_file(audio, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                file=file,
+                attributes=[
+                    types.DocumentAttributeAudio(
+                        duration=duration,
+                        performer=performer,
+                        title=title
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(audio))
+                ]
+            )
+        elif audio.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=audio
+            )
+        else:
+            try:
+                decoded = decode(audio)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 9:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    duration=duration,
-                                    performer=performer,
-                                    title=title
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(audio))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1280,7 +1353,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(audio, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_document(self,
                       chat_id: int or str,

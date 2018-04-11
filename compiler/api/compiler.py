@@ -25,7 +25,7 @@ DESTINATION = "pyrogram/api"
 NOTICE_PATH = "NOTICE"
 SECTION_RE = re.compile(r"---(\w+)---")
 LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
-COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);$", re.MULTILINE)
+COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);(?: // Docs: (.+))?$", re.MULTILINE)
 ARGS_RE = re.compile("[^{](\w+):([\w?!.<>]+)")
 FLAGS_RE = re.compile(r"flags\.(\d+)\?")
 FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
@@ -38,7 +38,7 @@ types_to_functions = {}
 constructors_to_functions = {}
 
 
-def get_docstring_arg_type(t: str, is_list: bool = False):
+def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool = False):
     if t in core_types:
         if t == "long":
             return "``int`` ``64-bit``"
@@ -60,11 +60,17 @@ def get_docstring_arg_type(t: str, is_list: bool = False):
     elif t.startswith("Vector"):
         return "List of " + get_docstring_arg_type(t.split("<")[1][:-1], is_list=True)
     else:
+        if is_pyrogram_type:
+            t = "pyrogram." + t
+
         t = types_to_constructors.get(t, [t])
         n = len(t) - 1
 
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
-            ":obj:`{0} <pyrogram.api.types.{0}>`".format(i)
+            ":obj:`{1} <pyrogram.api.types.{0}{1}>`".format(
+                "pyrogram." if is_pyrogram_type else "",
+                i.lstrip("pyrogram.")
+            )
             for i in t
         )
 
@@ -94,7 +100,15 @@ def get_references(t: str):
 
 
 class Combinator:
-    def __init__(self, section: str, namespace: str, name: str, id: str, args: list, has_flags: bool, return_type: str):
+    def __init__(self,
+                 section: str,
+                 namespace: str,
+                 name: str,
+                 id: str,
+                 args: list,
+                 has_flags: bool,
+                 return_type: str,
+                 docs: str):
         self.section = section
         self.namespace = namespace
         self.name = name
@@ -102,6 +116,7 @@ class Combinator:
         self.args = args
         self.has_flags = has_flags
         self.return_type = return_type
+        self.docs = docs
 
 
 def snek(s: str):
@@ -131,11 +146,15 @@ def start():
 
     with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
             open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
-            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
-        schema = (auth.read() + system.read() + api.read()).splitlines()
+            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api, \
+            open("{}/source/pyrogram.tl".format(HOME), encoding="utf-8") as pyrogram:
+        schema = (auth.read() + system.read() + api.read() + pyrogram.read()).splitlines()
 
-    with open("{}/template/class.txt".format(HOME), encoding="utf-8") as f:
-        template = f.read()
+    with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
+        mtproto_template = f.read()
+
+    with open("{}/template/pyrogram.txt".format(HOME), encoding="utf-8") as f:
+        pyrogram_template = f.read()
 
     with open(NOTICE_PATH, encoding="utf-8") as f:
         notice = []
@@ -165,9 +184,9 @@ def start():
 
         combinator = COMBINATOR_RE.match(line)
         if combinator:
-            name, id, return_type = combinator.groups()
+            name, id, return_type, docs = combinator.groups()
             namespace, name = name.split(".") if "." in name else ("", name)
-            args = ARGS_RE.findall(line)
+            args = ARGS_RE.findall(line.split(" //")[0])
 
             # Pingu!
             has_flags = not not FLAGS_RE_3.findall(line)
@@ -195,7 +214,8 @@ def start():
                     ".".join(
                         return_type.split(".")[:-1]
                         + [capit(return_type.split(".")[-1])]
-                    )
+                    ),
+                    docs
                 )
             )
 
@@ -254,6 +274,7 @@ def start():
         ) if c.args else "pass"
 
         docstring_args = []
+        docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
@@ -261,13 +282,23 @@ def start():
             flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
-            docstring_args.append(
-                "{}{}: {}".format(
-                    arg_name,
-                    " (optional)".format(flag_number) if is_optional else "",
-                    get_docstring_arg_type(arg_type)
+            if docs:
+                docstring_args.append(
+                    "{} ({}{}):\n            {}\n".format(
+                        arg_name,
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=True),
+                        ", optional" if "Optional" in docs[i] else "",
+                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
+                    )
                 )
-            )
+            else:
+                docstring_args.append(
+                    "{}: {}{}".format(
+                        arg_name,
+                        "``optional`` ".format(flag_number) if is_optional else "",
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
+                    )
+                )
 
         if docstring_args:
             docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
@@ -370,22 +401,38 @@ def start():
                     read_types += "\n        "
                     read_types += "{} = Object.read(b)\n        ".format(arg_name)
 
+        if c.docs:
+            description = c.docs.split("|")[0].split("§")[1]
+            docstring_args = description + "\n\n    " + docstring_args
+
         with open("{}/{}.py".format(path, snek(c.name)), "w", encoding="utf-8") as f:
-            f.write(
-                template.format(
-                    notice=notice,
-                    class_name=capit(c.name),
-                    docstring_args=docstring_args,
-                    object_id=c.id,
-                    arguments=arguments,
-                    fields=fields,
-                    read_flags=read_flags,
-                    read_types=read_types,
-                    write_flags=write_flags,
-                    write_types=write_types,
-                    return_arguments=", ".join([i[0] for i in sorted_args])
+            if c.docs:
+                f.write(
+                    pyrogram_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields
+                    )
                 )
-            )
+            else:
+                f.write(
+                    mtproto_template.format(
+                        notice=notice,
+                        class_name=capit(c.name),
+                        docstring_args=docstring_args,
+                        object_id=c.id,
+                        arguments=arguments,
+                        fields=fields,
+                        read_flags=read_flags,
+                        read_types=read_types,
+                        write_flags=write_flags,
+                        write_types=write_types,
+                        return_arguments=", ".join([i[0] for i in sorted_args])
+                    )
+                )
 
     with open("{}/all.py".format(DESTINATION), "w", encoding="utf-8") as f:
         f.write(notice + "\n\n")
