@@ -36,7 +36,7 @@ class MessageHandler(Handler):
         client (:obj:`Client <pyrogram.Client>`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        message (:obj:`Message <pyrogram.Message>`):
+        message (:obj:`Message <pyrogram.api.types.pyrogram.Message>`):
             The received message.
     """
 

@@ -246,7 +246,7 @@ class Client:
         your handler using a different group id (lower group id == higher priority).
 
         Args:
-            handler (:obj:`Handler <pyrogram.handler.Handler>`):
+            handler (``Handler``):
                 The handler to be registered.
 
             group (``int``, optional):
