@@ -33,7 +33,11 @@ class Error(Exception):
     MESSAGE = None
 
     def __init__(self, x: int or RpcError = None, query_type: type = None):
-        super().__init__("[{} {}]: {}".format(self.CODE, self.ID or self.NAME, self.MESSAGE.format(x=x)))
+        super().__init__("[{} {}]: {}".format(
+            self.CODE,
+            self.ID or self.NAME,
+            str(self) or self.MESSAGE.format(x=x)
+        ))
 
         try:
             self.x = int(x)
@@ -50,13 +54,13 @@ class Error(Exception):
         code = rpc_error.error_code
 
         if code not in exceptions:
-            raise UnknownError(rpc_error, query_type)
+            raise UnknownError(x=rpc_error, query_type=query_type)
 
         message = rpc_error.error_message
         id = re.sub(r"_\d+", "_X", message)
 
         if id not in exceptions[code]:
-            raise UnknownError(rpc_error, query_type)
+            raise UnknownError(x=rpc_error, query_type=query_type)
 
         x = re.search(r"_(\d+)", message)
         x = x.group(1) if x is not None else x
@@ -64,7 +68,7 @@ class Error(Exception):
         raise getattr(
             import_module("pyrogram.api.errors"),
             exceptions[code][id]
-        )(x)
+        )(x=x)
 
 
 class UnknownError(Error):

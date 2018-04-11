@@ -54,12 +54,6 @@ from .style import Markdown, HTML
 log = logging.getLogger(__name__)
 
 
-class APIKey:
-    def __init__(self, api_id: int, api_hash: str):
-        self.api_id = api_id
-        self.api_hash = api_hash
-
-
 class Proxy:
     def __init__(self, enabled: bool, hostname: str, port: int, username: str, password: str):
         self.enabled = enabled
@@ -81,10 +75,13 @@ class Client:
             For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
-        api_key (``tuple``, optional):
-            Your Telegram API Key as tuple: *(api_id, api_hash)*.
-            E.g.: *(12345, "0123456789abcdef0123456789abcdef")*. This is an alternative way to pass it if you
-            don't want to use the *config.ini* file.
+        api_id (``int``, optional):
+            The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
+            This is an alternative way to pass it if you don't want to use the *config.ini* file.
+
+        api_hash (``str``, optional):
+            The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
+            This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         proxy (``dict``, optional):
             Your SOCKS5 Proxy settings as dict,
@@ -110,13 +107,18 @@ class Client:
             Pass your Two-Step Verification password (if you have one) to avoid entering it
             manually. Only applicable for new sessions.
 
+        force_sms (``str``, optional):
+            Pass True to force Telegram sending the authorization code via SMS.
+            Only applicable for new sessions.
+
         first_name (``str``, optional):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
+            Only applicable for new sessions.
 
         last_name (``str``, optional):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
-            be an empty string: ""
+            be an empty string: "". Only applicable for new sessions.
 
         workers (``int``, optional):
             Thread pool size for handling incoming updates. Defaults to 4.
@@ -130,17 +132,20 @@ class Client:
 
     def __init__(self,
                  session_name: str,
-                 api_key: tuple or APIKey = None,
+                 api_id: int or str = None,
+                 api_hash: str = None,
                  proxy: dict or Proxy = None,
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: str or callable = None,
                  password: str = None,
+                 force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = 4):
         self.session_name = session_name
-        self.api_key = api_key
+        self.api_id = int(api_id) if api_id else None
+        self.api_hash = api_hash
         self.proxy = proxy
         self.test_mode = test_mode
 
@@ -149,6 +154,7 @@ class Client:
         self.phone_code = phone_code
         self.first_name = first_name
         self.last_name = last_name
+        self.force_sms = force_sms
 
         self.workers = workers
 
@@ -187,6 +193,9 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        if self.is_started:
+            raise ConnectionError("Client has already been started")
+
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
             self.session_name = self.session_name.split(":")[0]
@@ -199,7 +208,7 @@ class Client:
             self.test_mode,
             self.proxy,
             self.auth_key,
-            self.api_key.api_id,
+            self.api_id,
             client=self
         )
 
@@ -235,6 +244,9 @@ class Client:
         """Use this method to manually stop the Client.
         Requires no parameters.
         """
+        if not self.is_started:
+            raise ConnectionError("Client is already stopped")
+
         self.is_started = False
         self.session.stop()
 
@@ -252,8 +264,8 @@ class Client:
             r = self.send(
                 functions.auth.ImportBotAuthorization(
                     flags=0,
-                    api_id=self.api_key.api_id,
-                    api_hash=self.api_key.api_hash,
+                    api_id=self.api_id,
+                    api_hash=self.api_hash,
                     bot_auth_token=self.token
                 )
             )
@@ -268,7 +280,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.api_key.api_id,
+                self.api_id,
                 client=self
             )
 
@@ -301,8 +313,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
+                        self.api_id,
+                        self.api_hash
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -316,7 +328,7 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     self.auth_key,
-                    self.api_key.api_id,
+                    self.api_id,
                     client=self
                 )
                 self.session.start()
@@ -324,8 +336,8 @@ class Client:
                 r = self.send(
                     functions.auth.SendCode(
                         self.phone_number,
-                        self.api_key.api_id,
-                        self.api_key.api_hash
+                        self.api_id,
+                        self.api_hash
                     )
                 )
                 break
@@ -346,11 +358,19 @@ class Client:
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
 
+        if self.force_sms:
+            self.send(
+                functions.auth.ResendCode(
+                    phone_number=self.phone_number,
+                    phone_code_hash=phone_code_hash
+                )
+            )
+
         while True:
             self.phone_code = (
                 input("Enter phone code: ") if self.phone_code is None
                 else self.phone_code if type(self.phone_code) is str
-                else self.phone_code()
+                else str(self.phone_code())
             )
 
             try:
@@ -634,7 +654,7 @@ class Client:
                             if not isinstance(message, types.MessageEmpty):
                                 diff = self.send(
                                     functions.updates.GetChannelDifference(
-                                        channel=self.resolve_peer(update.message.to_id.channel_id),
+                                        channel=self.resolve_peer(int("-100" + str(update.message.to_id.channel_id))),
                                         filter=types.ChannelMessagesFilter(
                                             ranges=[types.MessageRange(
                                                 min_id=update.message.id,
@@ -787,32 +807,28 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if self.is_started:
-            r = self.session.send(data)
+        if not self.is_started:
+            raise ConnectionError("Client has not been started")
 
-            self.fetch_peers(getattr(r, "users", []))
-            self.fetch_peers(getattr(r, "chats", []))
+        r = self.session.send(data)
 
-            return r
-        else:
-            raise ConnectionError("client '{}' is not started".format(self.session_name))
+        self.fetch_peers(getattr(r, "users", []))
+        self.fetch_peers(getattr(r, "chats", []))
+
+        return r
 
     def load_config(self):
         parser = ConfigParser()
         parser.read("config.ini")
 
-        if self.api_key is not None:
-            self.api_key = APIKey(
-                api_id=int(self.api_key[0]),
-                api_hash=self.api_key[1]
-            )
-        elif parser.has_section("pyrogram"):
-            self.api_key = APIKey(
-                api_id=parser.getint("pyrogram", "api_id"),
-                api_hash=parser.get("pyrogram", "api_hash")
-            )
+        if self.api_id and self.api_hash:
+            pass
         else:
-            raise AttributeError("No API Key found")
+            if parser.has_section("pyrogram"):
+                self.api_id = parser.getint("pyrogram", "api_id")
+                self.api_hash = parser.get("pyrogram", "api_hash")
+            else:
+                raise AttributeError("No API Key found")
 
         if self.proxy is not None:
             self.proxy = Proxy(
@@ -899,6 +915,15 @@ class Client:
             offset_date = parse_dialogs(dialogs)
             log.info("Entities count: {}".format(len(self.peers_by_id)))
 
+        self.send(
+            functions.messages.GetDialogs(
+                0, 0, types.InputPeerEmpty(),
+                self.DIALOGS_AT_ONCE, True
+            )
+        )
+
+        log.info("Entities count: {}".format(len(self.peers_by_id)))
+
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
 
@@ -931,7 +956,7 @@ class Client:
             except (AttributeError, binascii.Error, struct.error):
                 pass
 
-            peer_id = peer_id.lower().strip("@+")
+            peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
 
             try:
                 int(peer_id)
@@ -2161,7 +2186,7 @@ class Client:
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_key.api_id)
+        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_id)
         session.start()
 
         try:
@@ -2244,7 +2269,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 Auth(dc_id, self.test_mode, self.proxy).create(),
-                self.api_key.api_id
+                self.api_id
             )
 
             session.start()
@@ -2261,7 +2286,7 @@ class Client:
                 self.test_mode,
                 self.proxy,
                 self.auth_key,
-                self.api_key.api_id
+                self.api_id
             )
 
             session.start()
@@ -2293,7 +2318,7 @@ class Client:
             )
 
             if isinstance(r, types.upload.File):
-                with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                with tempfile.NamedTemporaryFile("wb", delete=False) as f:
                     file_name = f.name
 
                     while True:
@@ -2325,14 +2350,14 @@ class Client:
                     self.test_mode,
                     self.proxy,
                     Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                    self.api_key.api_id,
+                    self.api_id,
                     is_cdn=True
                 )
 
                 cdn_session.start()
 
                 try:
-                    with tempfile.NamedTemporaryFile('wb', delete=False) as f:
+                    with tempfile.NamedTemporaryFile("wb", delete=False) as f:
                         file_name = f.name
 
                         while True:

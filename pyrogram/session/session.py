@@ -87,7 +87,7 @@ class Session:
                  test_mode: bool,
                  proxy: type,
                  auth_key: bytes,
-                 api_id: str,
+                 api_id: int,
                  is_cdn: bool = False,
                  client: pyrogram = None):
         if not Session.notice_displayed:
