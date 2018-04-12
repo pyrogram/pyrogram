@@ -11,7 +11,7 @@ Simple API Access
 
 The easiest way to interact with the Telegram API is via the :class:`Client <pyrogram.Client>` class,
 which exposes bot-like_ methods. The purpose of this Client class is to make it even simpler to work with the
-API by abstracting the raw functions listed in the scheme.
+API by abstracting the raw functions listed in the schema.
 
 The result is a much cleaner interface that allows you to:
 

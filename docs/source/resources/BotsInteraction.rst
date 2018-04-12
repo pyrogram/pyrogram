@@ -7,7 +7,7 @@ Inline Bots
 -----------
 
 -   If a bot accepts inline queries, you can call it by using
-    :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>` to get the list of its inline results
+    :meth:`get_inline_bot_results() <pyrogram.Client.get_inline_bot_results>` to get the list of its inline results
     for a query:
 
     .. code-block:: python
@@ -20,11 +20,11 @@ Inline Bots
         :align: center
         :figwidth: 60%
 
-        ``get_inline_bot_results`` is the equivalent action of writing ``@vid Fuzz Universe`` and getting the
+        ``get_inline_bot_results()`` is the equivalent action of writing ``@vid Fuzz Universe`` and getting the
         results list.
 
 -   After you retrieved the bot results, you can use
-    :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>` to send a chosen result to any chat:
+    :meth:`send_inline_bot_result() <pyrogram.Client.send_inline_bot_result>` to send a chosen result to any chat:
 
     .. code-block:: python
 
@@ -36,5 +36,5 @@ Inline Bots
         :align: center
         :figwidth: 60%
 
-        ``send_inline_bot_result`` is the equivalent action of choosing a result from the list and sending it
+        ``send_inline_bot_result()`` is the equivalent action of choosing a result from the list and sending it
         to a chat.
