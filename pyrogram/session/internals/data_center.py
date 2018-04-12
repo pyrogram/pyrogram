@@ -35,4 +35,4 @@ class DataCenter:
     }
 
     def __new__(cls, dc_id: int, test_mode: bool):
-        return cls.TEST[dc_id] if test_mode else cls.PROD[dc_id]
+        return (cls.TEST[dc_id], 80) if test_mode else (cls.PROD[dc_id], 443)
