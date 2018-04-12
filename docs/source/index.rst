@@ -35,6 +35,22 @@ Welcome to Pyrogram
         </a>
     </p>
 
+.. code-block:: python
+
+    from pyrogram import Client, Filters
+
+    app = Client("my_account")
+
+
+    @app.on_message(Filters.private)
+    def hello(client, message):
+        client.send_message(
+            message.chat.id, "Hello {}".format(message.from_user.first_name))
+
+
+    app.start()
+    app.idle()
+
 About
 -----
 
@@ -45,16 +61,6 @@ button at the end of each page. But first, here's a brief overview of what is th
 **Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
 custom Telegram applications in Python that interact with the MTProto API as both User and Bot.
 
-.. code-block:: python
-
-    from pyrogram import Client
-
-    client = Client("example")
-    client.start()
-
-    client.send_message("me", "Hi there! I'm using Pyrogram")
-
-    client.stop()
 
 Features
 --------
