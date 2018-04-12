@@ -61,7 +61,7 @@ class Session:
 
     INITIAL_SALT = 0x616e67656c696361
     NET_WORKERS = 1
-    WAIT_TIMEOUT = 30
+    WAIT_TIMEOUT = 15
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
@@ -308,7 +308,9 @@ class Session:
                 break
 
             try:
-                self._send(functions.PingDelayDisconnect(0, self.PING_INTERVAL + 15), False)
+                self._send(functions.PingDelayDisconnect(
+                    0, self.WAIT_TIMEOUT + 10
+                ), False)
             except (OSError, TimeoutError):
                 pass
 
@@ -338,7 +340,7 @@ class Session:
 
             try:
                 self.current_salt = self._send(functions.GetFutureSalts(1)).salts[0]
-            except (OSError, TimeoutError):
+            except (OSError, TimeoutError, Error):
                 self.connection.close()
                 break
 
@@ -395,12 +397,14 @@ class Session:
 
     def send(self, data: Object):
         for i in range(self.MAX_RETRIES):
-            self.is_connected.wait()
+            self.is_connected.wait(self.WAIT_TIMEOUT)
 
             try:
                 return self._send(data)
             except (OSError, TimeoutError):
-                (log.warning if i > 0 else log.info)("{}: {} Retrying {}".format(i, datetime.now(), type(data)))
+                (log.warning if i > 2 else log.info)(
+                    "{}: {} Retrying {}".format(i, datetime.now(), type(data))
+                )
                 continue
         else:
             return None
