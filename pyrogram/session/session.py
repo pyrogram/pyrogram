@@ -19,6 +19,7 @@
 import logging
 import platform
 import threading
+import time
 from datetime import timedelta, datetime
 from hashlib import sha1, sha256
 from io import BytesIO
@@ -314,7 +315,7 @@ class Session:
                 self._send(functions.PingDelayDisconnect(
                     0, self.WAIT_TIMEOUT + 10
                 ), False)
-            except (OSError, TimeoutError):
+            except (OSError, TimeoutError, Error):
                 pass
 
         log.debug("PingThread stopped")
@@ -408,6 +409,7 @@ class Session:
                 (log.warning if i > 2 else log.info)(
                     "{}: {} Retrying {}".format(i, datetime.now(), type(data))
                 )
+                time.sleep(1)
                 continue
         else:
             return None
