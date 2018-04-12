@@ -830,7 +830,10 @@ class Client:
                 self.api_id = parser.getint("pyrogram", "api_id")
                 self.api_hash = parser.get("pyrogram", "api_hash")
             else:
-                raise AttributeError("No API Key found")
+                raise AttributeError(
+                    "No API Key found. "
+                    "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
+                )
 
         if self.proxy is not None:
             self.proxy = Proxy(
