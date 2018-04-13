@@ -191,7 +191,9 @@ class Client:
         self.is_idle = None
 
         self.updates_queue = Queue()
+        self.updates_workers_list = []
         self.download_queue = Queue()
+        self.download_workers_list = []
 
         self.dispatcher = Dispatcher(self, workers)
         self.update_handler = None
@@ -301,10 +303,24 @@ class Client:
             self.send(functions.updates.GetState())
 
         for i in range(self.UPDATES_WORKERS):
-            Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
+            self.updates_workers_list.append(
+                Thread(
+                    target=self.updates_worker,
+                    name="UpdatesWorker#{}".format(i + 1)
+                )
+            )
+
+            self.updates_workers_list[-1].start()
 
         for i in range(self.DOWNLOAD_WORKERS):
-            Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
+            self.download_workers_list.append(
+                Thread(
+                    target=self.download_worker,
+                    name="DownloadWorker#{}".format(i + 1)
+                )
+            )
+
+            self.download_workers_list[-1].start()
 
         self.dispatcher.start()
 
@@ -318,16 +334,22 @@ class Client:
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
 
-        self.is_started = False
-        self.session.stop()
-
         for _ in range(self.UPDATES_WORKERS):
             self.updates_queue.put(None)
+
+        for i in self.updates_workers_list:
+            i.join()
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
 
+        for i in self.download_workers_list:
+            i.join()
+
         self.dispatcher.stop()
+
+        self.is_started = False
+        self.session.stop()
 
         Syncer.remove(self)
 

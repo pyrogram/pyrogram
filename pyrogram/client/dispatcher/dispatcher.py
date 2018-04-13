@@ -46,19 +46,27 @@ class Dispatcher:
     def __init__(self, client, workers):
         self.client = client
         self.workers = workers
+        self.workers_list = []
         self.updates = Queue()
         self.groups = OrderedDict()
 
     def start(self):
         for i in range(self.workers):
-            Thread(
-                target=self.update_worker,
-                name="UpdateWorker#{}".format(i + 1)
-            ).start()
+            self.workers_list.append(
+                Thread(
+                    target=self.update_worker,
+                    name="UpdateWorker#{}".format(i + 1)
+                )
+            )
+
+            self.workers_list[-1].start()
 
     def stop(self):
         for _ in range(self.workers):
             self.updates.put(None)
+
+        for i in self.workers_list:
+            i.join()
 
     def add_handler(self, handler, group: int):
         if group not in self.groups:
