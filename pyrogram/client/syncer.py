@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class Syncer:
-    INTERVAL = 2
+    INTERVAL = 20
 
     clients = {}
     thread = None
