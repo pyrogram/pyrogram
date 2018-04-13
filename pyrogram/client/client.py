@@ -50,12 +50,11 @@ from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
 from . import message_parser
-from .dispatcher import Dispatcher
 from . import utils
+from .dispatcher import Dispatcher
 from .input_media import InputMedia
 from .style import Markdown, HTML
 from .syncer import Syncer
-from .utils import decode
 
 log = logging.getLogger(__name__)
 
@@ -1182,7 +1181,7 @@ class Client:
             )
         else:
             try:
-                decoded = decode(photo)
+                decoded = utils.decode(photo)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
@@ -1318,7 +1317,7 @@ class Client:
             )
         else:
             try:
-                decoded = decode(audio)
+                decoded = utils.decode(audio)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
