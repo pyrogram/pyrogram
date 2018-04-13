@@ -122,7 +122,7 @@ class Client:
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
-    OFFLINE_SLEEP = 900
+    OFFLINE_SLEEP = 300
 
     def __init__(self,
                  session_name: str,
