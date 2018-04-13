@@ -122,6 +122,7 @@ class Client:
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
+    OFFLINE_SLEEP = 900
 
     def __init__(self,
                  session_name: str,
@@ -218,8 +219,14 @@ class Client:
             self.save_session()
 
         if self.token is None:
-            self.get_dialogs()
-            self.get_contacts()
+            now = time.time()
+
+            if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                self.get_dialogs()
+                self.get_contacts()
+            else:
+                self.send(functions.messages.GetPinnedDialogs())
+                self.get_dialogs_chunk(0)
         else:
             self.send(functions.updates.GetState())
 
@@ -845,23 +852,29 @@ class Client:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
-            self.date = int(time.time())
+            self.date = 0
             self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
-            self.date = s.get("date", int(time.time()))
+            self.date = s.get("date", 0)
 
             for k, v in s.get("peers_by_id", {}).items():
                 self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
 
             for k, v in s.get("peers_by_username", {}).items():
-                self.peers_by_username[k] = self.peers_by_id[v]
+                peer = self.peers_by_id.get(v, None)
+
+                if peer:
+                    self.peers_by_username[k] = peer
 
             for k, v in s.get("peers_by_phone", {}).items():
-                self.peers_by_phone[k] = self.peers_by_id[v]
+                peer = self.peers_by_id.get(v, None)
+
+                if peer:
+                    self.peers_by_phone[k] = peer
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
@@ -880,53 +893,34 @@ class Client:
                 indent=4
             )
 
-    def get_dialogs(self):
-        def parse_dialogs(d):
-            for m in reversed(d.messages):
-                if isinstance(m, types.MessageEmpty):
-                    continue
-                else:
-                    return m.date
-            else:
-                return 0
-
-        pinned_dialogs = self.send(functions.messages.GetPinnedDialogs())
-        parse_dialogs(pinned_dialogs)
-
-        dialogs = self.send(
+    def get_dialogs_chunk(self, offset_date):
+        r = self.send(
             functions.messages.GetDialogs(
-                0, 0, types.InputPeerEmpty(),
+                offset_date, 0, types.InputPeerEmpty(),
                 self.DIALOGS_AT_ONCE, True
             )
         )
+        log.info("Total peers: {}".format(len(self.peers_by_id)))
 
-        offset_date = parse_dialogs(dialogs)
-        log.info("Entities count: {}".format(len(self.peers_by_id)))
+        return r
+
+    def get_dialogs(self):
+        self.send(functions.messages.GetPinnedDialogs())
+
+        dialogs = self.get_dialogs_chunk(0)
+        offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
             try:
-                dialogs = self.send(
-                    functions.messages.GetDialogs(
-                        offset_date, 0, types.InputPeerEmpty(),
-                        self.DIALOGS_AT_ONCE, True
-                    )
-                )
+                dialogs = self.get_dialogs_chunk(offset_date)
             except FloodWait as e:
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
                 continue
 
-            offset_date = parse_dialogs(dialogs)
-            log.info("Entities count: {}".format(len(self.peers_by_id)))
+            offset_date = utils.get_offset_date(dialogs)
 
-        self.send(
-            functions.messages.GetDialogs(
-                0, 0, types.InputPeerEmpty(),
-                self.DIALOGS_AT_ONCE, True
-            )
-        )
-
-        log.info("Entities count: {}".format(len(self.peers_by_id)))
+        self.get_dialogs_chunk(0)
 
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
@@ -2850,7 +2844,7 @@ class Client:
                 continue
             else:
                 if isinstance(contacts, types.contacts.Contacts):
-                    log.info("Contacts count: {}".format(len(contacts.users)))
+                    log.info("Total contacts: {}".format(len(self.peers_by_phone)))
 
                 return contacts
 
