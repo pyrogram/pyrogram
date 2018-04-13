@@ -46,6 +46,9 @@ class Object:
     def __call__(self):
         pass
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 
 class Encoder(JSONEncoder):
     def default(self, o: Object):
