@@ -48,6 +48,7 @@ from pyrogram.api.errors import (
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
+from . import utils
 from .input_media import InputMedia
 from .style import Markdown, HTML
 
@@ -848,6 +849,15 @@ class Client:
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
             self.date = s.get("date", int(time.time()))
+
+            for k, v in s.get("peers_by_id", {}).items():
+                self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
+
+            for k, v in s.get("peers_by_username", {}).items():
+                self.peers_by_username[k] = self.peers_by_id[v]
+
+            for k, v in s.get("peers_by_phone", {}).items():
+                self.peers_by_phone[k] = self.peers_by_id[v]
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
