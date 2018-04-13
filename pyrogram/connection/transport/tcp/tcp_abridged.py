@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 
 class TCPAbridged(TCP):
-    def __init__(self, proxy: type):
+    def __init__(self, proxy: dict):
         super().__init__(proxy)
         self.is_first_packet = None
 

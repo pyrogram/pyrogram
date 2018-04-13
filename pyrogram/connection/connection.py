@@ -32,7 +32,7 @@ class Connection:
         2: TCPIntermediate
     }
 
-    def __init__(self, address: tuple, proxy: type, mode: int = 1):
+    def __init__(self, address: tuple, proxy: dict, mode: int = 1):
         self.address = address
         self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)

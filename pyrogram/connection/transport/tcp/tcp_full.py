@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class TCPFull(TCP):
-    def __init__(self, proxy: type):
+    def __init__(self, proxy: dict):
         super().__init__(proxy)
         self.seq_no = None
 

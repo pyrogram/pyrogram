@@ -54,15 +54,6 @@ from .style import Markdown, HTML
 log = logging.getLogger(__name__)
 
 
-class Proxy:
-    def __init__(self, enabled: bool, hostname: str, port: int, username: str, password: str):
-        self.enabled = enabled
-        self.hostname = hostname
-        self.port = port
-        self.username = username
-        self.password = password
-
-
 class Client:
     """This class represents a Client, the main mean for interacting with Telegram.
     It exposes bot-like methods for an easy access to the API as well as a simple way to
@@ -134,7 +125,7 @@ class Client:
                  session_name: str,
                  api_id: int or str = None,
                  api_hash: str = None,
-                 proxy: dict or Proxy = None,
+                 proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: str or callable = None,
@@ -830,22 +821,17 @@ class Client:
             else:
                 raise AttributeError("No API Key found")
 
-        if self.proxy is not None:
-            self.proxy = Proxy(
-                enabled=True,
-                hostname=self.proxy["hostname"],
-                port=int(self.proxy["port"]),
-                username=self.proxy.get("username", None),
-                password=self.proxy.get("password", None)
-            )
-        elif parser.has_section("proxy"):
-            self.proxy = Proxy(
-                enabled=parser.getboolean("proxy", "enabled"),
-                hostname=parser.get("proxy", "hostname"),
-                port=parser.getint("proxy", "port"),
-                username=parser.get("proxy", "username", fallback=None) or None,
-                password=parser.get("proxy", "password", fallback=None) or None
-            )
+        if self.proxy:
+            pass
+        else:
+            self.proxy = {}
+
+            if parser.has_section("proxy"):
+                self.proxy["enabled"] = parser.getboolean("proxy", "enabled")
+                self.proxy["hostname"] = parser.get("proxy", "hostname")
+                self.proxy["port"] = parser.getint("proxy", "port")
+                self.proxy["username"] = parser.get("proxy", "username", fallback=None) or None
+                self.proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
     def load_session(self, session_name):
         try:
