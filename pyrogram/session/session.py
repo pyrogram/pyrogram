@@ -86,7 +86,7 @@ class Session:
     def __init__(self,
                  dc_id: int,
                  test_mode: bool,
-                 proxy: type,
+                 proxy: dict,
                  auth_key: bytes,
                  api_id: int,
                  is_cdn: bool = False,

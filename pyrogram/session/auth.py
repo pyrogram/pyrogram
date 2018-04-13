@@ -46,7 +46,7 @@ class Auth:
         16
     )
 
-    def __init__(self, dc_id: int, test_mode: bool, proxy: type):
+    def __init__(self, dc_id: int, test_mode: bool, proxy: dict):
         self.dc_id = dc_id
         self.test_mode = test_mode
 

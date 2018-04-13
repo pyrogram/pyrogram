@@ -18,7 +18,6 @@
 
 import logging
 import socket
-from collections import namedtuple
 
 try:
     import socks
@@ -32,29 +31,25 @@ except ImportError as e:
 
 log = logging.getLogger(__name__)
 
-Proxy = namedtuple("Proxy", ["enabled", "hostname", "port", "username", "password"])
-
 
 class TCP(socks.socksocket):
-    def __init__(self, proxy: Proxy):
+    def __init__(self, proxy: dict):
         super().__init__()
         self.settimeout(10)
-        self.proxy_enabled = False
+        self.proxy_enabled = proxy.get("enabled", False)
 
-        if proxy and proxy.enabled:
-            self.proxy_enabled = True
-
+        if proxy and self.proxy_enabled:
             self.set_proxy(
                 proxy_type=socks.SOCKS5,
-                addr=proxy.hostname,
-                port=proxy.port,
-                username=proxy.username,
-                password=proxy.password
+                addr=proxy["hostname"],
+                port=proxy["port"],
+                username=proxy["username"],
+                password=proxy["password"]
             )
 
             log.info("Using proxy {}:{}".format(
-                proxy.hostname,
-                proxy.port
+                proxy["hostname"],
+                proxy["port"]
             ))
 
     def close(self):
