@@ -289,6 +289,9 @@ class Client:
             now = time.time()
 
             if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                self.peers_by_username = {}
+                self.peers_by_phone = {}
+
                 self.get_dialogs()
                 self.get_contacts()
             else:
@@ -534,9 +537,6 @@ class Client:
             if isinstance(entity, types.User):
                 user_id = entity.id
 
-                if user_id in self.peers_by_id:
-                    continue
-
                 access_hash = entity.access_hash
 
                 if access_hash is None:
@@ -562,9 +562,6 @@ class Client:
                 chat_id = entity.id
                 peer_id = -chat_id
 
-                if peer_id in self.peers_by_id:
-                    continue
-
                 input_peer = types.InputPeerChat(
                     chat_id=chat_id
                 )
@@ -574,9 +571,6 @@ class Client:
             if isinstance(entity, types.Channel):
                 channel_id = entity.id
                 peer_id = int("-100" + str(channel_id))
-
-                if peer_id in self.peers_by_id:
-                    continue
 
                 access_hash = entity.access_hash
 
