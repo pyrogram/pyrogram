@@ -888,15 +888,20 @@ class Client:
             )
 
     def get_dialogs_chunk(self, offset_date):
-        r = self.send(
-            functions.messages.GetDialogs(
-                offset_date, 0, types.InputPeerEmpty(),
-                self.DIALOGS_AT_ONCE, True
-            )
-        )
-        log.info("Total peers: {}".format(len(self.peers_by_id)))
-
-        return r
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.GetDialogs(
+                        offset_date, 0, types.InputPeerEmpty(),
+                        self.DIALOGS_AT_ONCE, True
+                    )
+                )
+            except FloodWait as e:
+                log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
+                time.sleep(e.x)
+            else:
+                log.info("Total peers: {}".format(len(self.peers_by_id)))
+                return r
 
     def get_dialogs(self):
         self.send(functions.messages.GetPinnedDialogs())
@@ -905,13 +910,7 @@ class Client:
         offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            try:
-                dialogs = self.get_dialogs_chunk(offset_date)
-            except FloodWait as e:
-                log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
-                time.sleep(e.x)
-                continue
-
+            dialogs = self.get_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
 
         self.get_dialogs_chunk(0)
