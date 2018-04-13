@@ -1,7 +1,7 @@
 Quick Installation
 ==================
 
-The most straightforward and recommended way to install or upgrade Pyrogram is by using **pip**:
+The easiest way to install and upgrade Pyrogram is by using **pip**:
 
 .. code-block:: bash
 
@@ -25,7 +25,7 @@ If you want the latest development version of the library, you can install it wi
 Verifying
 ---------
 
-To verify that Pyrogram is correctly installed, open a Python shell and try to import it.
+To verify that Pyrogram is correctly installed, open a Python shell and import it.
 If no error shows up you are good to go.
 
 .. code-block:: bash
