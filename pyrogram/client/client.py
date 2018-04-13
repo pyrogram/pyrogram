@@ -51,6 +51,7 @@ from pyrogram.session.internals import MsgId
 from . import utils
 from .input_media import InputMedia
 from .style import Markdown, HTML
+from .syncer import Syncer
 
 log = logging.getLogger(__name__)
 
@@ -232,6 +233,7 @@ class Client:
             Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
 
         mimetypes.init()
+        Syncer.add(self)
 
     def stop(self):
         """Use this method to manually stop the Client.
@@ -251,6 +253,8 @@ class Client:
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
+
+        Syncer.remove(self)
 
     def authorize_bot(self):
         try:
