@@ -154,6 +154,7 @@ class Client:
         self.dc_id = None
         self.auth_key = None
         self.user_id = None
+        self.date = None
 
         self.rnd_id = MsgId
 
@@ -839,12 +840,14 @@ class Client:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
+            self.date = int(time.time())
             self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
+            self.date = s.get("date", int(time.time()))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
@@ -857,6 +860,7 @@ class Client:
                     test_mode=self.test_mode,
                     auth_key=auth_key,
                     user_id=self.user_id,
+                    date=self.date
                 ),
                 f,
                 indent=4
