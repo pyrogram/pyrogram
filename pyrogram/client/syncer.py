@@ -74,15 +74,15 @@ class Syncer:
                 date=int(time.time()),
                 peers_by_id={
                     k: getattr(v, "access_hash", None)
-                    for k, v in client.peers_by_id.items()
+                    for k, v in client.peers_by_id.copy().items()
                 },
                 peers_by_username={
                     k: utils.get_peer_id(v)
-                    for k, v in client.peers_by_username.items()
+                    for k, v in client.peers_by_username.copy().items()
                 },
                 peers_by_phone={
                     k: utils.get_peer_id(v)
-                    for k, v in client.peers_by_phone.items()
+                    for k, v in client.peers_by_phone.copy().items()
                 }
             )
 
