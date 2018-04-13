@@ -192,7 +192,7 @@ class Client:
             self.session_name = self.session_name.split(":")[0]
 
         self.load_config()
-        self.load_session(self.session_name)
+        self.load_session()
 
         self.session = Session(
             self.dc_id,
@@ -833,9 +833,9 @@ class Client:
                 self.proxy["username"] = parser.get("proxy", "username", fallback=None) or None
                 self.proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
-    def load_session(self, session_name):
+    def load_session(self):
         try:
-            with open("{}.session".format(session_name), encoding="utf-8") as f:
+            with open("{}.session".format(self.session_name), encoding="utf-8") as f:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
