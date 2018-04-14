@@ -52,7 +52,8 @@ from pyrogram.session.internals import MsgId
 from . import message_parser
 from . import utils
 from .dispatcher import Dispatcher
-from .input_media import InputMedia
+from .input_media_photo import InputMediaPhoto
+from .input_media_video import InputMediaVideo
 from .style import Markdown, HTML
 from .syncer import Syncer
 
@@ -1980,6 +1981,8 @@ class Client:
                         return message_parser.parse_message(self, i.message, users, chats)
 
     # TODO: Add progress parameter
+    # TODO: Return new Message object
+    # TODO: Figure out how to send albums using URLs
     def send_media_group(self,
                          chat_id: int or str,
                          media: list,
@@ -1996,7 +1999,7 @@ class Client:
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             media (``list``):
-                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                A list containing either :obj:`pyrogram.InputMediaPhoto` or :obj:`pyrogram.InputMediaVideo` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, optional):
@@ -2009,66 +2012,104 @@ class Client:
         multi_media = []
 
         for i in media:
-            if isinstance(i, InputMedia.Photo):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
+            style = self.html if i.parse_mode.lower() == "html" else self.markdown
 
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=media
+            if isinstance(i, InputMediaPhoto):
+                if os.path.exists(i.media):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedPhoto(
+                                file=self.save_file(i.media)
+                            )
                         )
                     )
-                )
 
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaPhoto(
+                    media = types.InputMediaPhoto(
                         id=types.InputPhoto(
                             id=media.photo.id,
                             access_hash=media.photo.access_hash
                         )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
+                    )
+                else:
+                    try:
+                        decoded = utils.decode(i.media)
+                        fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                        unpacked = struct.unpack(fmt, decoded)
+                    except (AssertionError, binascii.Error, struct.error):
+                        raise FileIdInvalid from None
+                    else:
+                        if unpacked[0] != 2:
+                            media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
 
-                multi_media.append(single_media)
-            elif isinstance(i, InputMedia.Video):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
+                            if media_type:
+                                raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                            else:
+                                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
 
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            file=media,
-                            mime_type=mimetypes.types_map[".mp4"],
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming or None,
-                                    duration=i.duration,
-                                    w=i.width,
-                                    h=i.height
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(i.media))
-                            ]
+                        media = types.InputMediaPhoto(
+                            id=types.InputPhoto(
+                                id=unpacked[2],
+                                access_hash=unpacked[3]
+                            )
+                        )
+            elif isinstance(i, InputMediaVideo):
+                if os.path.exists(i.media):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedDocument(
+                                file=self.save_file(i.media),
+                                mime_type=mimetypes.types_map[".mp4"],
+                                attributes=[
+                                    types.DocumentAttributeVideo(
+                                        supports_streaming=i.supports_streaming or None,
+                                        duration=i.duration,
+                                        w=i.width,
+                                        h=i.height
+                                    ),
+                                    types.DocumentAttributeFilename(os.path.basename(i.media))
+                                ]
+                            )
                         )
                     )
-                )
 
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaDocument(
+                    media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=media.document.id,
                             access_hash=media.document.access_hash
                         )
-                    ),
+                    )
+                else:
+                    try:
+                        decoded = utils.decode(i.media)
+                        fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                        unpacked = struct.unpack(fmt, decoded)
+                    except (AssertionError, binascii.Error, struct.error):
+                        raise FileIdInvalid from None
+                    else:
+                        if unpacked[0] != 4:
+                            media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                            if media_type:
+                                raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                            else:
+                                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                        media = types.InputMediaDocument(
+                            id=types.InputDocument(
+                                id=unpacked[2],
+                                access_hash=unpacked[3]
+                            )
+                        )
+
+            multi_media.append(
+                types.InputSingleMedia(
+                    media=media,
                     random_id=self.rnd_id(),
                     **style.parse(i.caption)
                 )
-
-                multi_media.append(single_media)
+            )
 
         return self.send(
             functions.messages.SendMultiMedia(

@@ -23,13 +23,15 @@ class InputMediaPhoto:
 
     Args:
         media (:obj:`str`):
-            Photo file to send.
-            Pass a file path as string to send a photo that exists on your local machine.
+            Photo to send.
+            Pass a file_id as string to send a photo that exists on the Telegram servers or
+            pass a file path as string to upload a new photo that exists on your local machine.
+            Sending photo by a URL is currently unsupported.
 
-        caption (:obj:`str`):
+        caption (:obj:`str`, optional):
             Caption of the photo to be sent, 0-200 characters
 
-        parse_mode (:obj:`str`):
+        parse_mode (:obj:`str`, optional):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
             if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
             Defaults to Markdown.

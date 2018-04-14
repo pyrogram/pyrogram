@@ -23,8 +23,10 @@ class InputMediaVideo:
 
     Args:
         media (:obj:`str`):
-            Video file to send.
-            Pass a file path as string to send a video that exists on your local machine.
+            Video to send.
+            Pass a file_id as string to send a video that exists on the Telegram servers or
+            pass a file path as string to upload a new video that exists on your local machine.
+            Sending video by a URL is currently unsupported.
 
         caption (:obj:`str`, optional):
             Caption of the video to be sent, 0-200 characters
