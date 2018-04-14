@@ -25,7 +25,7 @@ from threading import Thread
 import pyrogram
 from pyrogram.api import types
 from .. import message_parser
-from ..handlers import RawUpdateHandler
+from ..handlers import RawUpdateHandler, MessageHandler
 
 log = logging.getLogger(__name__)
 
@@ -84,6 +84,9 @@ class Dispatcher:
 
                     args = (self.client, update, users, chats)
                 else:
+                    if not isinstance(handler, MessageHandler):
+                        continue
+
                     message = (update.message
                                or update.channel_post
                                or update.edited_message
