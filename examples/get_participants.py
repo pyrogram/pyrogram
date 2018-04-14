@@ -4,8 +4,8 @@ from pyrogram import Client
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FloodWait
 
-client = Client("example")
-client.start()
+app = Client("my_account")
+app.start()
 
 target = "username"  # Target channel/supergroup
 users = []  # List that will contain all the users of the target chat
@@ -14,9 +14,9 @@ offset = 0  # Offset starts at 0
 
 while True:
     try:
-        participants = client.send(
+        participants = app.send(
             functions.channels.GetParticipants(
-                channel=client.resolve_peer(target),
+                channel=app.resolve_peer(target),
                 filter=types.ChannelParticipantsSearch(""),  # Filter by empty string (search for all)
                 offset=offset,
                 limit=limit,
@@ -35,6 +35,6 @@ while True:
     users.extend(participants.users)
     offset += limit
 
-client.stop()
+app.stop()
 
 # Now the "users" list contains all the members of the target chat

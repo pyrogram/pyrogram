@@ -15,8 +15,8 @@ This can be further improved by also searching for non-ascii characters (e.g.: J
 as some user names may not contain ascii letters at all.
 """
 
-client = Client("example")
-client.start()
+app = Client("my_account")
+app.start()
 
 target = "username"  # Target channel/supergroup username or id
 users = {}  # To ensure uniqueness, users will be stored in a dictionary with user_id as key
@@ -31,9 +31,9 @@ for q in queries:
 
     while True:
         try:
-            participants = client.send(
+            participants = app.send(
                 functions.channels.GetParticipants(
-                    channel=client.resolve_peer(target),
+                    channel=app.resolve_peer(target),
                     filter=types.ChannelParticipantsSearch(q),
                     offset=offset,
                     limit=limit,
@@ -60,4 +60,4 @@ for q in queries:
 
         print("Total users: {}".format(len(users)))
 
-client.stop()
+app.stop()

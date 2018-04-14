@@ -1,5 +1,7 @@
 from pyrogram import Client
 
+"""This example demonstrates a simple API methods usage"""
+
 # Create a new Client
 app = Client("my_account")
 
