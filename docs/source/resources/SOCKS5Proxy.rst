@@ -32,7 +32,7 @@ Usage
 
        from pyrogram import Client
 
-       client = Client(
+       app = Client(
            session_name="example",
            proxy=dict(
                hostname="11.22.33.44",
@@ -42,7 +42,7 @@ Usage
            )
        )
 
-       client.start()
+       app.start()
 
        ...
 

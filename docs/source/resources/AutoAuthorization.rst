@@ -26,15 +26,15 @@ ask you to input the phone code manually.
         return code  # Must be string, e.g., "12345"
 
 
-    client = Client(
+    app = Client(
         session_name="example",
         phone_number="39**********",
         phone_code=phone_code_callback,
         password="password"  # (if you have one)
     )
 
-    client.start()
-    print(client.get_me())
+    app.start()
+    print(app.get_me())
 
 Sign Up
 -------
@@ -52,7 +52,7 @@ Telegram account in case the phone number you passed is not registered yet.
         return code  # Must be string, e.g., "12345"
 
 
-    client = Client(
+    app = Client(
         session_name="example",
         phone_number="39**********",
         phone_code=phone_code_callback,
@@ -60,5 +60,5 @@ Telegram account in case the phone number you passed is not registered yet.
         last_name=""  # Can be an empty string
     )
 
-    client.start()
-    print(client.get_me())
+    app.start()
+    print(app.get_me())

@@ -9,31 +9,29 @@ Basic Usage
 Simple API Access
 -----------------
 
-The easiest way to interact with the Telegram API is via the :class:`Client <pyrogram.Client>` class,
-which exposes bot-like_ methods. The purpose of this Client class is to make it even simpler to work with the
-API by abstracting the raw functions listed in the schema.
-
-The result is a much cleaner interface that allows you to:
+The easiest way to interact with the Telegram API is via the :class:`Client <pyrogram.Client>` class, which
+exposes bot-like_ methods:
 
 -   Get information about the authorized user:
 
     .. code-block:: python
 
-        print(client.get_me())
+        print(app.get_me())
 
 -   Send a message to yourself (Saved Messages):
 
     .. code-block:: python
 
-        client.send_message("me", "Hi there! I'm using Pyrogram")
+        app.send_message("me", "Hi there! I'm using Pyrogram")
 
--   Upload a photo (with caption):
+-   Upload a new photo (with caption):
 
     .. code-block:: python
 
-        client.send_photo("me", "/home/dan/perla.jpg", "Cute!")
+        app.send_photo("me", "/home/dan/perla.jpg", "Cute!")
 
-.. seealso:: For a complete list of the available methods have a look at the :class:`Client <pyrogram.Client>` class.
+.. seealso:: For a complete list of the available methods and an exhaustive description for each of them, have a look
+    at the :class:`Client <pyrogram.Client>` class.
 
 .. _using-raw-functions:
 
@@ -55,7 +53,7 @@ Here some examples:
 
         ...
 
-        client.send(
+        app.send(
             functions.account.UpdateProfile(
                 first_name="Dan", last_name="Tès",
                 about="Bio written from Pyrogram"
@@ -70,7 +68,7 @@ Here some examples:
 
         ...
 
-        client.send(
+        app.send(
             functions.account.SetPrivacy(
                 key=types.InputPrivacyKeyStatusTimestamp(),
                 rules=[types.InputPrivacyValueAllowContacts()]
@@ -85,13 +83,13 @@ Here some examples:
 
         ...
 
-        client.send(
+        app.send(
             functions.channels.InviteToChannel(
-                channel=client.resolve_peer(123456789),  # ID or Username
+                channel=app.resolve_peer(123456789),  # ID or Username
                 users=[  # The users you want to invite
-                    client.resolve_peer(23456789),  # By ID
-                    client.resolve_peer("username"),  # By username
-                    client.resolve_peer("393281234567"),  # By phone number
+                    app.resolve_peer(23456789),  # By ID
+                    app.resolve_peer("username"),  # By username
+                    app.resolve_peer("393281234567"),  # By phone number
                 ]
             )
         )

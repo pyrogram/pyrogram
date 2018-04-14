@@ -56,7 +56,7 @@ Examples
 
     .. code-block:: python
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
                 "**bold**, "
@@ -71,7 +71,7 @@ Examples
 
     .. code-block:: python
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
                 # Code block language is optional
@@ -88,7 +88,7 @@ Examples
 
         from pyrogram import ParseMode
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
                 "<b>bold</b>, <strong>bold</strong>, "

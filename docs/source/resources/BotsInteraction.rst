@@ -13,7 +13,7 @@ Inline Bots
     .. code-block:: python
 
         # Get bot results for "Fuzz Universe" from the inline bot @vid
-        bot_results = client.get_inline_bot_results("vid", "Fuzz Universe")
+        bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
 
     .. figure:: https://i.imgur.com/IAqLs54.png
         :width: 90%
@@ -29,7 +29,7 @@ Inline Bots
     .. code-block:: python
 
         # Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-        client.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
+        app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
 
     .. figure:: https://i.imgur.com/wwxr7B7.png
         :width: 90%

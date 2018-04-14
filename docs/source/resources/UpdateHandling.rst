@@ -54,7 +54,7 @@ Using Filters
 -------------
 
 For a finer grained control over what kind of messages will be allowed or not in your callback functions, you can use
-:class:`Filters <pyrogram.Filters>`. The next example will show you how to handler only messages
+:class:`Filters <pyrogram.Filters>`. The next example will show you how to handle only messages
 containing an :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` object:
 
 .. code-block:: python
@@ -97,7 +97,7 @@ Here are some examples:
         def my_handler(client, message):
             print(message)
 
--   Message is a **sticker** **and** is coming from a **channel** or a **private** chat.
+-   Message is a **sticker** **and** is coming from a **channel or** a **private** chat.
 
     .. code-block:: python
 
@@ -119,7 +119,7 @@ can also accept arguments:
         def my_handler(client, message):
             print(message)
 
--   Message is a **text** message matching the given regex pattern.
+-   Message is a **text** message matching the given **regex** pattern.
 
     .. code-block:: python
 
@@ -127,7 +127,7 @@ can also accept arguments:
         def my_handler(client, message):
             print(message)
 
-More handlers using different filters can be created as well:
+More handlers using different filters can also live together:
 
 .. code-block:: python
 
