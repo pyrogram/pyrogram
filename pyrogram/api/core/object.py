@@ -49,6 +49,9 @@ class Object:
     def __call__(self):
         pass
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 
 def remove_none(obj):
     if isinstance(obj, (list, tuple, set)):
