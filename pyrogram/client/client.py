@@ -2326,6 +2326,7 @@ class Client:
             )
         )
 
+    # TODO: Improvements for the new API
     def get_user_profile_photos(self,
                                 user_id: int or str,
                                 offset: int = 0,
@@ -2487,7 +2488,7 @@ class Client:
                 )
             )
 
-    # TODO: Remove redundant code
+    # TODO: Improvements for the new API
     def save_file(self,
                   path: str,
                   file_id: int = None,
@@ -2562,6 +2563,7 @@ class Client:
         finally:
             session.stop()
 
+    # TODO: Improvements for the new API
     def get_file(self,
                  dc_id: int,
                  id: int = None,
