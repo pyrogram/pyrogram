@@ -86,6 +86,39 @@ class Filters:
     channel = build("Channel", lambda _, m: bool(m.chat.type == "channel"))
     """Filter messages sent in channels."""
 
+    new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
+    """Filter service messages for new chat members."""
+
+    left_chat_member = build("LeftChatMember", lambda _, m: bool(m.left_chat_member))
+    """Filter service messages for members that left the chat."""
+
+    new_chat_title = build("NewChatTitle", lambda _, m: bool(m.new_chat_title))
+    """Filter service messages for new chat titles."""
+
+    new_chat_photo = build("NewChatPhoto", lambda _, m: bool(m.new_chat_photo))
+    """Filter service messages for new chat photos."""
+
+    delete_chat_photo = build("DeleteChatPhoto", lambda _, m: bool(m.delete_chat_photo))
+    """Filter service messages for deleted photos."""
+
+    group_chat_created = build("GroupChatCreated", lambda _, m: bool(m.group_chat_created))
+    """Filter service messages for group chat creations."""
+
+    supergroup_chat_created = build("SupergroupChatCreated", lambda _, m: bool(m.supergroup_chat_created))
+    """Filter service messages for supergroup chat creations."""
+
+    channel_chat_created = build("ChannelChatCreated", lambda _, m: bool(m.channel_chat_created))
+    """Filter service messages for channel chat creations."""
+
+    migrate_to_chat_id = build("MigrateToChatId", lambda _, m: bool(m.migrate_to_chat_id))
+    """Filter service messages that contain migrate_to_chat_id."""
+
+    migrate_from_chat_id = build("MigrateFromChatId", lambda _, m: bool(m.migrate_from_chat_id))
+    """Filter service messages that contain migrate_from_chat_id."""
+
+    pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
+    """Filter service messages for pinned messages."""
+
     @staticmethod
     def command(command: str or list):
         """Filter commands, i.e.: text messages starting with '/'.
@@ -169,50 +202,34 @@ class Filters:
     service = build(
         "Service",
         lambda _, m: bool(
-            _.new_chat_members(m)
-            or _.left_chat_member(m)
-            or _.new_chat_title(m)
-            or _.new_chat_photo(m)
-            or _.delete_chat_photo(m)
-            or _.group_chat_created(m)
-            or _.supergroup_chat_created(m)
-            or _.channel_chat_created(m)
-            or _.migrate_to_chat_id(m)
-            or _.migrate_from_chat_id(m)
-            or _.pinned_m(m)
+            Filters.new_chat_members(m)
+            or Filters.left_chat_member(m)
+            or Filters.new_chat_title(m)
+            or Filters.new_chat_photo(m)
+            or Filters.delete_chat_photo(m)
+            or Filters.group_chat_created(m)
+            or Filters.supergroup_chat_created(m)
+            or Filters.channel_chat_created(m)
+            or Filters.migrate_to_chat_id(m)
+            or Filters.migrate_from_chat_id(m)
+            or Filters.pinned_message(m)
         )
     )
-    """Filter all service messages"""
+    """Filter all service messages."""
 
-    new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
-    """Filter service messages for new chat members."""
-
-    left_chat_member = build("LeftChatMember", lambda _, m: bool(m.left_chat_member))
-    """Filter service messages for members that left the chat."""
-
-    new_chat_title = build("NewChatTitle", lambda _, m: bool(m.new_chat_title))
-    """Filter service messages for new chat titles."""
-
-    new_chat_photo = build("NewChatPhoto", lambda _, m: bool(m.new_chat_photo))
-    """Filter service messages for new chat photos."""
-
-    delete_chat_photo = build("DeleteChatPhoto", lambda _, m: bool(m.delete_chat_photo))
-    """Filter service messages for deleted photos."""
-
-    group_chat_created = build("GroupChatCreated", lambda _, m: bool(m.group_chat_created))
-    """Filter service messages for group chat creations."""
-
-    supergroup_chat_created = build("SupergroupChatCreated", lambda _, m: bool(m.supergroup_chat_created))
-    """Filter service messages for supergroup chat creations."""
-
-    channel_chat_created = build("ChannelChatCreated", lambda _, m: bool(m.channel_chat_created))
-    """Filter service messages for channel chat creations."""
-
-    migrate_to_chat_id = build("MigrateToChatId", lambda _, m: bool(m.migrate_to_chat_id))
-    """Filter service messages that contain migrate_to_chat_id."""
-
-    migrate_from_chat_id = build("MigrateFromChatId", lambda _, m: bool(m.migrate_from_chat_id))
-    """Filter service messages that contain migrate_from_chat_id."""
-
-    pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
-    """Filter service messages for pinned messages."""
+    media = build(
+        "Media",
+        lambda _, m: bool(
+            Filters.audio(m)
+            or Filters.document(m)
+            or Filters.photo(m)
+            or Filters.sticker(m)
+            or Filters.video(m)
+            or Filters.voice(m)
+            or Filters.video_note(m)
+            or Filters.contact(m)
+            or Filters.location(m)
+            or Filters.venue(m)
+        )
+    )
+    """Filter all media messages."""
