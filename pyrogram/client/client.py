@@ -1884,7 +1884,9 @@ class Client:
 
             video_note (``str``):
                 Video note to send.
-                Pass a file path as string to send a video note that exists on your local machine.
+                Pass a file_id as string to send a video note that exists on the Telegram servers, or
+                pass a file path as string to upload a new video note that exists on your local machine.
+                Sending video notes by a URL is currently unsupported.
 
             duration (``int``, optional):
                 Duration of sent video in seconds.
@@ -1911,40 +1913,71 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        file = self.save_file(video_note, progress=progress)
+        file = None
+
+        if os.path.exists(video_note):
+            file = self.save_file(video_note, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map[".mp4"],
+                file=file,
+                attributes=[
+                    types.DocumentAttributeVideo(
+                        round_message=True,
+                        duration=duration,
+                        w=length,
+                        h=length
+                    )
+                ]
+            )
+        else:
+            try:
+                decoded = utils.decode(video_note)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 13:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    round_message=True,
-                                    duration=duration,
-                                    w=length,
-                                    h=length
-                                )
-                            ]
-                        ),
-                        message="",
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        message=""
                     )
                 )
             except FilePartMissing as e:
                 self.save_file(video_note, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     # TODO: Add progress parameter
     def send_media_group(self,
