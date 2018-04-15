@@ -381,7 +381,9 @@ def parse_message(
                             duration=video_attributes.duration,
                             thumb=parse_thumb(doc.thumb),
                             mime_type=doc.mime_type,
-                            file_size=doc.size
+                            file_size=doc.size,
+                            file_name=file_name,
+                            date=doc.date
                         )
                 elif types.DocumentAttributeSticker in attributes:
                     image_size_attributes = attributes[types.DocumentAttributeImageSize]
