@@ -11,73 +11,74 @@ Registering an Handler
 We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will be in charge for handling
 :obj:`Message <pyrogram.api.types.pyrogram.Message>` objects.
 
-The easiest and nicest way to register a MessageHandler is by decorating your function with the
-:meth:`on_message() <pyrogram.Client.on_message>` decorator. Here's a full example that prints out the content
-of a message as soon as it arrives.
+-   The easiest and nicest way to register a MessageHandler is by decorating your function with the
+    :meth:`on_message() <pyrogram.Client.on_message>` decorator. Here's a full example that prints out the content
+    of a message as soon as it arrives.
 
-.. code-block:: python
+    .. code-block:: python
 
-    from pyrogram import Client
+        from pyrogram import Client
 
-    app = Client("my_account")
-
-
-    @app.on_message()
-    def my_handler(client, message):
-        print(message)
+        app = Client("my_account")
 
 
-    app.start()
-    app.idle()
-
-If you prefer not to use decorators, there is an alternative way for registering Handlers.
-This is useful, for example, if you want to keep your callback functions in a separate file.
-
-.. code-block:: python
-
-    from pyrogram import Client, MessageHandler
+        @app.on_message()
+        def my_handler(client, message):
+            print(message)
 
 
-    def my_handler(client, message):
-        print(message)
+        app.start()
+        app.idle()
+
+-   If you prefer not to use decorators, there is an alternative way for registering Handlers.
+    This is useful, for example, when you want to keep your callback functions in a separate file.
+
+    .. code-block:: python
+
+        from pyrogram import Client, MessageHandler
 
 
-    app = Client("my_account")
+        def my_handler(client, message):
+            print(message)
 
-    app.add_handler(MessageHandler(my_handler))
 
-    app.start()
-    app.idle()
+        app = Client("my_account")
 
+        app.add_handler(MessageHandler(my_handler))
+
+        app.start()
+        app.idle()
 
 Using Filters
 -------------
 
 For a finer grained control over what kind of messages will be allowed or not in your callback functions, you can use
-:class:`Filters <pyrogram.Filters>`. The next example will show you how to handle only messages
-containing an :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` object:
+:class:`Filters <pyrogram.Filters>`.
 
-.. code-block:: python
+-   This example will show you how to handle only messages containing an :obj:`Audio <pyrogram.api.types.pyrogram.Audio>`
+    object:
 
-    from pyrogram import Filters
+    .. code-block:: python
 
-
-    @app.on_message(Filters.audio)
-    def my_handler(client, message):
-        print(message)
-
-or, without decorators:
-
-.. code-block:: python
-
-    from pyrogram import Filters, Messagehandler
+        from pyrogram import Filters
 
 
-    def my_handler(client, message):
-        print(message)
+        @app.on_message(Filters.audio)
+        def my_handler(client, message):
+            print(message)
+
+-   or, without decorators:
+
+    .. code-block:: python
+
+        from pyrogram import Filters, Messagehandler
 
 
-    app.add_handler(MessageHandler(my_handler, Filters.audio))
+        def my_handler(client, message):
+            print(message)
+
+
+        app.add_handler(MessageHandler(my_handler, Filters.audio))
 
 Combining Filters
 -----------------
@@ -142,5 +143,5 @@ More handlers using different filters can also live together:
 
 
     @app.on_message(Filters.chat("PyrogramChat"))
-    def my_handler(client, message):
+    def from_pyrogramchat(client, message):
         print("New message in @PyrogramChat")

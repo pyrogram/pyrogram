@@ -10,7 +10,7 @@ Simple API Access
 -----------------
 
 The easiest way to interact with the Telegram API is via the :class:`Client <pyrogram.Client>` class, which
-exposes bot-like_ methods:
+exposes `Bot API-like`_ methods:
 
 -   Get information about the authorized user:
 
@@ -94,4 +94,4 @@ Here some examples:
             )
         )
 
-.. _bot-like: https://core.telegram.org/bots/api#available-methods
+.. _`Bot API-like`: https://core.telegram.org/bots/api#available-methods

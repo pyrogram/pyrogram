@@ -1,17 +1,17 @@
 Quick Installation
 ==================
 
-The easiest way to install and upgrade Pyrogram is by using **pip**:
+-   The easiest way to install and upgrade Pyrogram is by using **pip**:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    $ pip3 install --upgrade pyrogram
+        $ pip3 install --upgrade pyrogram
 
-or, with TgCrypto_ (recommended):
+-   or, with TgCrypto_ (recommended):
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    $ pip3 install --upgrade pyrogram[tgcrypto]
+        $ pip3 install --upgrade pyrogram[tgcrypto]
 
 Bleeding Edge
 -------------
@@ -32,6 +32,6 @@ If no error shows up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.6.5'
+    '0.7.0'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto

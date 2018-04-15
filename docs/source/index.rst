@@ -53,23 +53,23 @@ Welcome to Pyrogram
 
 Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the library.
 Contents are organized by topic and can be accessed from the sidebar, or by following them one by one using the Next
-button at the end of each page. But first, here's a brief overview of what is this all about:
+button at the end of each page. But first, here's a brief overview of what is this all about.
 
-Overview
---------
+About
+-----
 
-**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
+Pyrogram is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
 custom Telegram applications that interact with the MTProto API as both User and Bot.
 
-Awesomeness
------------
+Features
+--------
 
--   📦 **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
--   🚀 **High-level**: The low-level details of MTProto are automatically handled by the library.
--   ⚡️ **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   🔄 **Updated** to the latest Telegram MTProto API version, currently Layer 76.
--   📖 **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
--   🔋 **Full API**, allows to execute any advanced action an official client is able to do, and more.
+-   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
+-   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
+-   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
+-   **Updated** to the latest Telegram API version, currently Layer 76 running on MTProto 2.0.
+-   **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
+-   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
 To get started, press the Next button.
 
@@ -85,13 +85,13 @@ To get started, press the Next button.
     :hidden:
     :caption: Resources
 
-    resources/TextFormatting
     resources/UpdateHandling
-    resources/ErrorHandling
     resources/SOCKS5Proxy
-    resources/AutoAuthorization
     resources/TgCrypto
+    resources/AutoAuthorization
+    resources/TextFormatting
     resources/BotsInteraction
+    resources/ErrorHandling
 
 .. toctree::
     :hidden:
