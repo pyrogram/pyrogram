@@ -129,15 +129,15 @@ class Client:
     OFFLINE_SLEEP = 300
 
     MEDIA_TYPE_ID = {
-        0: "Thumbnail",
-        2: "Photo",
-        3: "Voice",
-        4: "Video",
-        5: "Document",
-        8: "Sticker",
-        9: "Audio",
-        10: "GIF",
-        13: "VideoNote"
+        0: "thumbnail",
+        2: "photo",
+        3: "voice",
+        4: "video",
+        5: "document",
+        8: "sticker",
+        9: "audio",
+        10: "gif",
+        13: "video_note"
     }
 
     def __init__(self,
@@ -618,73 +618,86 @@ class Client:
 
         while True:
             media = self.download_queue.get()
-            temp_file_path = ""
-            final_file_path = ""
 
             if media is None:
                 break
 
+            temp_file_path = ""
+            final_file_path = ""
+
             try:
                 media, file_name, done, progress, path = media
+
+                file_id = media.file_id
+                size = media.file_size
 
                 directory, file_name = os.path.split(file_name)
                 directory = directory or "downloads"
 
-                if isinstance(media, types.MessageMediaDocument):
-                    document = media.document
+                try:
+                    decoded = utils.decode(file_id)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    media_type = unpacked[0]
+                    dc_id = unpacked[1]
+                    id = unpacked[2]
+                    access_hash = unpacked[3]
+                    volume_id = None
+                    secret = None
+                    local_id = None
 
-                    if isinstance(document, types.Document):
-                        if not file_name:
-                            file_name = "doc_{}{}".format(
-                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                ".txt" if document.mime_type == "text/plain" else
-                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
-                            )
+                    if len(decoded) > 24:
+                        volume_id = unpacked[4]
+                        secret = unpacked[5]
+                        local_id = unpacked[6]
 
-                            for i in document.attributes:
-                                if isinstance(i, types.DocumentAttributeFilename):
-                                    file_name = i.file_name
-                                    break
-                                elif isinstance(i, types.DocumentAttributeSticker):
-                                    file_name = file_name.replace("doc", "sticker")
-                                elif isinstance(i, types.DocumentAttributeAudio):
-                                    file_name = file_name.replace("doc", "audio")
-                                elif isinstance(i, types.DocumentAttributeVideo):
-                                    file_name = file_name.replace("doc", "video")
-                                elif isinstance(i, types.DocumentAttributeAnimated):
-                                    file_name = file_name.replace("doc", "gif")
+                    media_type_str = Client.MEDIA_TYPE_ID.get(media_type, None)
 
-                        temp_file_path = self.get_file(
-                            dc_id=document.dc_id,
-                            id=document.id,
-                            access_hash=document.access_hash,
-                            version=document.version,
-                            size=document.size,
-                            progress=progress
-                        )
-                elif isinstance(media, (types.MessageMediaPhoto, types.Photo)):
-                    if isinstance(media, types.MessageMediaPhoto):
-                        photo = media.photo
+                    if media_type_str:
+                        log.info("The file_id belongs to a {}".format(media_type_str))
                     else:
-                        photo = media
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
 
-                    if isinstance(photo, types.Photo):
-                        if not file_name:
-                            file_name = "photo_{}_{}.jpg".format(
-                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                self.rnd_id()
-                            )
+                file_name = file_name or getattr(media, "file_name", None)
 
-                        photo_loc = photo.sizes[-1].location
+                if not file_name:
+                    if media_type == 3:
+                        extension = ".ogg"
+                    elif media_type in (4, 10, 13):
+                        extension = mimetypes.guess_extension(media.mime_type) or ".mp4"
+                    elif media_type == 5:
+                        extension = mimetypes.guess_extension(media.mime_type) or ".unknown"
+                    elif media_type == 8:
+                        extension = ".webp"
+                    elif media_type == 9:
+                        extension = mimetypes.guess_extension(media.mime_type) or ".mp3"
+                    elif media_type == 0:
+                        extension = ".jpg"
+                    elif media_type == 2:
+                        extension = ".jpg"
+                    else:
+                        continue
 
-                        temp_file_path = self.get_file(
-                            dc_id=photo_loc.dc_id,
-                            volume_id=photo_loc.volume_id,
-                            local_id=photo_loc.local_id,
-                            secret=photo_loc.secret,
-                            size=photo.sizes[-1].size,
-                            progress=progress
-                        )
+                    file_name = "{}_{}_{}{}".format(
+                        media_type_str,
+                        datetime.fromtimestamp(media.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                        self.rnd_id(),
+                        extension
+                    )
+
+                temp_file_path = self.get_file(
+                    dc_id=dc_id,
+                    id=id,
+                    access_hash=access_hash,
+                    volume_id=volume_id,
+                    local_id=local_id,
+                    secret=secret,
+                    size=size,
+                    progress=progress
+                )
 
                 if temp_file_path:
                     final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
@@ -3002,14 +3015,14 @@ class Client:
             return False
 
     def download_media(self,
-                       message: types.Message,
+                       message: pyrogram.Message,
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
         """Use this method to download the media from a Message.
 
         Args:
-            message (:obj:`Message <pyrogram.api.types.Message>`):
+            message (:obj:`Message <pyrogram.api.types.pyrogram.Message>`):
                 The Message containing the media.
 
             file_name (``str``, optional):
@@ -3039,24 +3052,45 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if isinstance(message, (types.Message, types.Photo)):
-            done = Event()
-            path = [None]
-
-            if isinstance(message, types.Message):
-                media = message.media
-            else:
-                media = message
-
-            if media is not None:
-                self.download_queue.put((media, file_name, done, progress, path))
+        if isinstance(message, pyrogram.Message):
+            if message.photo:
+                media = message.photo[-1]
+            elif message.audio:
+                media = message.audio
+            elif message.document:
+                media = message.document
+            elif message.video:
+                media = message.video
+            elif message.voice:
+                media = message.voice
+            elif message.video_note:
+                media = message.video_note
+            elif message.sticker:
+                media = message.sticker
             else:
                 return
+        elif isinstance(message, (
+                pyrogram.PhotoSize,
+                pyrogram.Audio,
+                pyrogram.Document,
+                pyrogram.Video,
+                pyrogram.Voice,
+                pyrogram.VideoNote,
+                pyrogram.Sticker
+        )):
+            media = message
+        else:
+            return
 
-            if block:
-                done.wait()
+        done = Event()
+        path = [None]
 
-            return path[0]
+        self.download_queue.put((media, file_name, done, progress, path))
+
+        if block:
+            done.wait()
+
+        return path[0]
 
     def download_photo(self,
                        photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
