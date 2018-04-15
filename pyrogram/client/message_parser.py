@@ -62,27 +62,6 @@ def parse_entities(entities: list, users: dict) -> list:
     return output_entities
 
 
-def parse_user(user: types.User) -> pyrogram.User or None:
-    return pyrogram.User(
-        id=user.id,
-        is_bot=user.bot,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        username=user.username,
-        language_code=user.lang_code,
-        phone_number=user.phone
-    ) if user else None
-
-
-def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Chat:
-    if isinstance(message.to_id, types.PeerUser):
-        return parse_user_chat(users[message.to_id.user_id if message.out else message.from_id])
-    elif isinstance(message.to_id, types.PeerChat):
-        return parse_chat_chat(chats[message.to_id.chat_id])
-    else:
-        return parse_channel_chat(chats[message.to_id.channel_id])
-
-
 def parse_chat_photo(photo):
     if not isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
         return None
@@ -110,6 +89,28 @@ def parse_chat_photo(photo):
             )
         )
     )
+
+
+def parse_user(user: types.User) -> pyrogram.User or None:
+    return pyrogram.User(
+        id=user.id,
+        is_bot=user.bot,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        username=user.username,
+        language_code=user.lang_code,
+        phone_number=user.phone,
+        photo=parse_chat_photo(user.photo)
+    ) if user else None
+
+
+def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Chat:
+    if isinstance(message.to_id, types.PeerUser):
+        return parse_user_chat(users[message.to_id.user_id if message.out else message.from_id])
+    elif isinstance(message.to_id, types.PeerChat):
+        return parse_chat_chat(chats[message.to_id.chat_id])
+    else:
+        return parse_channel_chat(chats[message.to_id.channel_id])
 
 
 def parse_user_chat(user: types.User) -> pyrogram.Chat:
