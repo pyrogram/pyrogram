@@ -409,6 +409,9 @@ def parse_message(
                         thumb=parse_thumb(doc.thumb),
                         # TODO: Emoji, set_name and mask_position
                         file_size=doc.size,
+                        mime_type=doc.mime_type,
+                        file_name=file_name,
+                        date=doc.date
                     )
                 else:
                     document = pyrogram.Document(
