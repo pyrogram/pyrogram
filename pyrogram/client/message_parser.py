@@ -343,7 +343,8 @@ def parse_message(
                         thumb=parse_thumb(doc.thumb),
                         file_name=file_name,
                         mime_type=doc.mime_type,
-                        file_size=doc.size
+                        file_size=doc.size,
+                        date=doc.date
                     )
                 elif types.DocumentAttributeVideo in attributes:
                     video_attributes = attributes[types.DocumentAttributeVideo]
@@ -415,7 +416,8 @@ def parse_message(
                         thumb=parse_thumb(doc.thumb),
                         file_name=file_name,
                         mime_type=doc.mime_type,
-                        file_size=doc.size
+                        file_size=doc.size,
+                        date=doc.date
                     )
         else:
             media = None
