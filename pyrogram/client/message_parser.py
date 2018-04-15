@@ -83,13 +83,43 @@ def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Cha
         return parse_channel_chat(chats[message.to_id.channel_id])
 
 
+def parse_chat_photo(photo):
+    if not isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
+        return None
+
+    if not isinstance(photo.photo_small, types.FileLocation):
+        return None
+
+    if not isinstance(photo.photo_big, types.FileLocation):
+        return None
+
+    loc_small = photo.photo_small
+    loc_big = photo.photo_big
+
+    return pyrogram.ChatPhoto(
+        small_file_id=encode(
+            pack(
+                "<iiqqqqi", 0, loc_small.dc_id, 0, 0, loc_small.volume_id,
+                loc_small.secret, loc_small.local_id
+            )
+        ),
+        big_file_id=encode(
+            pack(
+                "<iiqqqqi", 0, loc_big.dc_id, 0, 0, loc_big.volume_id,
+                loc_big.secret, loc_big.local_id
+            )
+        )
+    )
+
+
 def parse_user_chat(user: types.User) -> pyrogram.Chat:
     return pyrogram.Chat(
         id=user.id,
         type="private",
         username=user.username,
         first_name=user.first_name,
-        last_name=user.last_name
+        last_name=user.last_name,
+        photo=parse_chat_photo(user.photo)
     )
 
 
@@ -98,7 +128,8 @@ def parse_chat_chat(chat: types.Chat) -> pyrogram.Chat:
         id=-chat.id,
         type="group",
         title=chat.title,
-        all_members_are_administrators=not chat.admins_enabled
+        all_members_are_administrators=not chat.admins_enabled,
+        photo=parse_chat_photo(chat.photo)
     )
 
 
@@ -107,7 +138,8 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram.Chat:
         id=int("-100" + str(channel.id)),
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
-        username=channel.username
+        username=channel.username,
+        photo=parse_chat_photo(channel.photo)
     )
 
 
