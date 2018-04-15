@@ -307,7 +307,10 @@ def parse_message(
                             ),
                             duration=audio_attributes.duration,
                             mime_type=doc.mime_type,
-                            file_size=doc.size
+                            file_size=doc.size,
+                            thumb=parse_thumb(doc.thumb),
+                            file_name=file_name,
+                            date=doc.date
                         )
                     else:
                         audio = pyrogram.Audio(

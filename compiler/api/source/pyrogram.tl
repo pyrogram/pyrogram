@@ -11,7 +11,7 @@ pyrogram.photoSize#b0700005 flags:# file_id:string width:int height:int file_siz
 pyrogram.audio#b0700006 flags:# file_id:string thumb:flags.0?PhotoSize file_name:flags.1?string mime_type:flags.2?string file_size:flags.3?int date:flags.4?int duration:int performer:flags.5?string title:flags.6?string = pyrogram.Audio;
 pyrogram.document#b0700007 flags:# file_id:string thumb:flags.0?PhotoSize file_name:flags.1?string mime_type:flags.2?string file_size:flags.3?int date:flags.4?int = pyrogram.Document;
 pyrogram.video#b0700008 flags:# file_id:string thumb:flags.0?PhotoSize file_name:flags.1?string mime_type:flags.2?string file_size:flags.3?int date:flags.4?int width:int height:int duration:int = pyrogram.Video;
-pyrogram.voice#b0700009 flags:# file_id:string duration:int mime_type:flags.0?string file_size:flags.1?int = pyrogram.Voice;
+pyrogram.voice#b0700009 flags:# file_id:string thumb:flags.0?PhotoSize file_name:flags.1?string mime_type:flags.2?string file_size:flags.3?int date:flags.4?int duration:int = pyrogram.Voice;
 pyrogram.videoNote#b0700010 flags:# file_id:string length:int duration:int thumb:flags.0?PhotoSize file_size:flags.1?int = pyrogram.VideoNote;
 pyrogram.contact#b0700011 flags:# phone_number:string first_name:string last_name:flags.0?string user_id:flags.1?int = pyrogram.Contact;
 pyrogram.location#b0700012 longitude:double latitude:double = pyrogram.Location;
