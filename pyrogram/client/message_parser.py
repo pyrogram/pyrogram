@@ -285,6 +285,12 @@ def parse_message(
             if isinstance(doc, types.Document):
                 attributes = {type(i): i for i in doc.attributes}
 
+                file_name = getattr(
+                    attributes.get(
+                        types.DocumentAttributeFilename, None
+                    ), "file_name", None
+                )
+
                 if types.DocumentAttributeAudio in attributes:
                     audio_attributes = attributes[types.DocumentAttributeAudio]
 
@@ -318,7 +324,10 @@ def parse_message(
                             performer=audio_attributes.performer,
                             title=audio_attributes.title,
                             mime_type=doc.mime_type,
-                            file_size=doc.size
+                            file_size=doc.size,
+                            thumb=parse_thumb(doc.thumb),
+                            file_name=file_name,
+                            date=doc.date
                         )
                 elif types.DocumentAttributeAnimated in attributes:
                     document = pyrogram.Document(
@@ -332,11 +341,7 @@ def parse_message(
                             )
                         ),
                         thumb=parse_thumb(doc.thumb),
-                        file_name=getattr(
-                            attributes.get(
-                                types.DocumentAttributeFilename, None
-                            ), "file_name", None
-                        ),
+                        file_name=file_name,
                         mime_type=doc.mime_type,
                         file_size=doc.size
                     )
@@ -408,11 +413,7 @@ def parse_message(
                             )
                         ),
                         thumb=parse_thumb(doc.thumb),
-                        file_name=getattr(
-                            attributes.get(
-                                types.DocumentAttributeFilename, None
-                            ), "file_name", None
-                        ),
+                        file_name=file_name,
                         mime_type=doc.mime_type,
                         file_size=doc.size
                     )
