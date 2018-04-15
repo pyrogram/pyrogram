@@ -247,7 +247,8 @@ def parse_message(
                                 ),
                                 width=size.w,
                                 height=size.h,
-                                file_size=file_size
+                                file_size=file_size,
+                                date=photo.date
                             )
 
                             photo_sizes.append(photo_size)
@@ -532,7 +533,8 @@ def parse_message_service(
                             ),
                             width=size.w,
                             height=size.h,
-                            file_size=file_size
+                            file_size=file_size,
+                            date=photo.date
                         )
 
                         photo_sizes.append(photo_size)
