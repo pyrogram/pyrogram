@@ -19,7 +19,7 @@
 from struct import pack
 
 import pyrogram
-from pyrogram.api import types
+from pyrogram.api import types, functions
 from .utils import encode
 
 # TODO: Organize the code better?
@@ -171,6 +171,40 @@ def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.Pho
                 height=thumb.h,
                 file_size=file_size
             )
+
+
+def get_message_reply(client, chat_id: int or str, message_id: int):
+    peer = client.resolve_peer(chat_id)
+    message_id = [types.InputMessageReplyTo(message_id)]
+
+    if isinstance(peer, types.InputPeerChannel):
+        rpc = functions.channels.GetMessages(
+            channel=peer,
+            id=message_id
+        )
+    else:
+        rpc = functions.messages.GetMessages(
+            id=message_id
+        )
+
+    return client.send(rpc)
+
+
+def get_message_pinned(client, chat_id: int or str):
+    peer = client.resolve_peer(chat_id)
+    message_id = [types.InputMessagePinned()]
+
+    if isinstance(peer, types.InputPeerChannel):
+        rpc = functions.channels.GetMessages(
+            channel=peer,
+            id=message_id
+        )
+    else:
+        rpc = functions.messages.GetMessages(
+            id=message_id
+        )
+
+    return client.send(rpc)
 
 
 # TODO: Reorganize code, maybe split parts as well
@@ -465,7 +499,7 @@ def parse_message(
     )
 
     if message.reply_to_msg_id and replies:
-        reply_to_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
+        reply_to_message = get_message_reply(client, m.chat.id, message.id)
 
         message = reply_to_message.messages[0]
         users = {i.id: i for i in reply_to_message.users}
@@ -573,7 +607,7 @@ def parse_message_service(
     )
 
     if isinstance(action, types.MessageActionPinMessage):
-        pin_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
+        pin_message = get_message_pinned(client, m.chat.id)
 
         message = pin_message.messages[0]
         users = {i.id: i for i in pin_message.users}
