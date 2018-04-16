@@ -3022,8 +3022,9 @@ class Client:
         """Use this method to download the media from a Message.
 
         Args:
-            message (:obj:`Message <pyrogram.api.types.pyrogram.Message>`):
-                The Message containing the media.
+            message (:obj:`Message <pyrogram.api.types.pyrogram.Message>` | ``str``):
+                Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
+                the file id as string.
 
             file_name (``str``, optional):
                 A custom *file_name* to be used instead of the one provided by Telegram.
@@ -3038,6 +3039,7 @@ class Client:
             progress (``callable``):
                 Pass a callback function to view the download progress.
                 The function must accept two arguments (current, total).
+                Note that this will not work in case you are downloading a media using a *file_id*.
 
         Other Parameters:
             current (``int``):
@@ -3079,6 +3081,11 @@ class Client:
                 pyrogram.Sticker
         )):
             media = message
+        elif isinstance(message, str):
+            media = pyrogram.Document(
+                file_id=message,
+                file_size=0
+            )
         else:
             return
 
