@@ -19,7 +19,7 @@
 from struct import pack
 
 import pyrogram
-from pyrogram.api import types, functions
+from pyrogram.api import types
 from .utils import encode
 
 # TODO: Organize the code better?
@@ -171,40 +171,6 @@ def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.Pho
                 height=thumb.h,
                 file_size=file_size
             )
-
-
-def get_message_reply(client, chat_id: int or str, message_id: int):
-    peer = client.resolve_peer(chat_id)
-    message_id = [types.InputMessageReplyTo(message_id)]
-
-    if isinstance(peer, types.InputPeerChannel):
-        rpc = functions.channels.GetMessages(
-            channel=peer,
-            id=message_id
-        )
-    else:
-        rpc = functions.messages.GetMessages(
-            id=message_id
-        )
-
-    return client.send(rpc)
-
-
-def get_message_pinned(client, chat_id: int or str):
-    peer = client.resolve_peer(chat_id)
-    message_id = [types.InputMessagePinned()]
-
-    if isinstance(peer, types.InputPeerChannel):
-        rpc = functions.channels.GetMessages(
-            channel=peer,
-            id=message_id
-        )
-    else:
-        rpc = functions.messages.GetMessages(
-            id=message_id
-        )
-
-    return client.send(rpc)
 
 
 # TODO: Reorganize code, maybe split parts as well
@@ -499,16 +465,8 @@ def parse_message(
     )
 
     if message.reply_to_msg_id and replies:
-        reply_to_message = get_message_reply(client, m.chat.id, message.id)
-
-        message = reply_to_message.messages[0]
-        users = {i.id: i for i in reply_to_message.users}
-        chats = {i.id: i for i in reply_to_message.chats}
-
-        if isinstance(message, types.Message):
-            m.reply_to_message = parse_message(client, message, users, chats, replies - 1)
-        elif isinstance(message, types.MessageService):
-            m.reply_to_message = parse_message_service(client, message, users, chats)
+        m.reply_to_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
+        m.reply_to_message = m.reply_to_message[0] if m.reply_to_message else None
 
     return m
 
@@ -607,16 +565,7 @@ def parse_message_service(
     )
 
     if isinstance(action, types.MessageActionPinMessage):
-        pin_message = get_message_pinned(client, m.chat.id)
-
-        message = pin_message.messages[0]
-        users = {i.id: i for i in pin_message.users}
-        chats = {i.id: i for i in pin_message.chats}
-
-        if isinstance(message, types.Message):
-            m.pinned_message = parse_message(client, message, users, chats)
-        elif isinstance(message, types.MessageService):
-            # TODO: We can't pin a service message, can we?
-            m.pinned_message = parse_message_service(client, message, users, chats)
+        m.pinned_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
+        m.pinned_message = m.pinned_message[0] if m.pinned_message else None
 
     return m
