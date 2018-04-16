@@ -1,4 +1,4 @@
-\RawUpdateHandler
+RawUpdateHandler
 ================
 
 .. autoclass:: pyrogram.RawUpdateHandler
