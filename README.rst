@@ -1,158 +1,79 @@
 |header|
 
-Table of Contents
-=================
+Pyrogram
+========
 
--   `About`_
+.. code-block:: python
 
-    -   `Features`_
+    from pyrogram import Client, Filters
 
-    -   `Requirements`_
-
--   `Getting Started`_
-    
-    -   `Installation`_
-    
-    -   `Configuration`_
-    
-    -   `Usage`_
-
--   `Documentation`_
-
--   `Contribution`_
-
--   `Feedback`_
-
--   `License`_
+    app = Client("my_account")
 
 
-About
-=====
+    @app.on_message(Filters.private)
+    def hello(client, message):
+        client.send_message(
+            message.chat.id, "Hello {}".format(message.from_user.first_name))
+
+
+    app.start()
+    app.idle()
 
 **Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
-custom Telegram applications in Python that interact with the MTProto API as both User and Bot.
+custom Telegram applications that interact with the MTProto API as both User and Bot.
 
 Features
 --------
 
--   **Easy to setup**: Pyrogram can be easily installed using pip and requires very few lines of code to get started with.
-    
--   **Easy to use**: Pyrogram provides idiomatic, clean and readable Python code making the Telegram API simple to use.
-
--   **High-level**: Pyrogram automatically handles all the low-level details of communication with Telegram servers.
-
--   **Updated**: Pyrogram makes use of the latest Telegram MTProto API version, currently Layer 76.
-
--   **Fast**: Pyrogram critical parts are boosted up by `TgCrypto`_, a high-performance Crypto Library written in pure C.
-    
--   **Documented**: Pyrogram API methods are documented and resemble the well established Telegram Bot API,
-    thus offering a familiar look to Bot developers.
-
--   **Full API support**: Beside the simple Bot API-like methods, Pyrogram also provides an easy access to every single
-    Telegram MTProto API method allowing you to programmatically execute any action an official client is able to do, and more.
-
+-   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
+-   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
+-   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
+-   **Updated** to the latest Telegram API version, currently Layer 76 running on MTProto 2.0.
+-   **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
+-   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
 Requirements
 ------------
 
 -   Python 3.4 or higher.
+-   A `Telegram API key`_.
 
--   A Telegram API key.
-    
+Installing
+----------
+
+.. code:: shell
+
+    pip3 install pyrogram
 
 Getting Started
-===============
+---------------
 
-Installation
+-   The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.ml.
+-   Reading Examples_ in this repository is also a good way for learning how things work.
+-   Seeking extra help? Don't be shy and feel free to join our Community_!
+-   For other requests you can send me an Email_ or a Message_.
+
+Contributing
 ------------
-
--   You can install and upgrade Pyrogram using pip:
-
-    .. code:: shell
-
-        $ pip3 install --upgrade pyrogram
-
-Configuration
--------------
-
--   Create a new ``config.ini`` file at the root of your working directory, copy-paste
-    the following and replace the **api_id** and **api_hash** values with `your own`_:
-
-    .. code:: ini
-
-        [pyrogram]
-        api_id = 12345
-        api_hash = 0123456789abcdef0123456789abcdef
-
-Usage
------
-
--   And here is how Pyrogram looks like:
-
-    .. code:: python
-
-        from pyrogram import Client
-
-        client = Client("example")
-        client.start()
-
-        client.send_message("me", "Hi there! I'm using Pyrogram")
-
-        client.stop()
-    
-That's all you need for getting started with Pyrogram. For more detailed information,
-please refer to the Documentation_ and the Examples_ folder.
-
-
-Documentation
-=============
-
-- The entire Pyrogram documentation resides at https://docs.pyrogram.ml.
-
-
-Contribution
-============
 
 Pyrogram is brand new! **You are welcome to try it and help make it better** by either submitting pull
 requests or reporting issues/bugs as well as suggesting best practices, ideas, enhancements on both code
 and documentation. Any help is appreciated!
 
-
-Feedback
-========
-
-Means for getting in touch:
-
--   `Community`_
--   `GitHub`_
--   `Email`_
-
-
-License
-=======
+Copyright & License
+-------------------
 
 -   Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
-
--   Licensed under the terms of the
-    `GNU Lesser General Public License v3 or later (LGPLv3+)`_
-    
+-   Licensed under the terms of the `GNU Lesser General Public License v3 or later (LGPLv3+)`_
 
 .. _`Telegram`: https://telegram.org/
-
-.. _`your own`: https://docs.pyrogram.ml/start/ProjectSetup#api-keys
-
-.. _`Examples`: https://github.com/pyrogram/pyrogram/blob/master/examples/README.md
-
+.. _`Telegram API key`: https://docs.pyrogram.ml/start/ProjectSetup#api-keys
 .. _`Community`: https://t.me/PyrogramChat
-
-.. _`bot-like`: https://core.telegram.org/bots/api#available-methods
-
+.. _`Examples`: https://github.com/pyrogram/pyrogram/tree/master/examples
 .. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
-
 .. _`Email`: admin@pyrogram.ml
-
+.. _`Message`: https://t.me/haskell
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
-
 .. _`GNU Lesser General Public License v3 or later (LGPLv3+)`: COPYING.lesser
 
 .. |header| raw:: html
