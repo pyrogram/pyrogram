@@ -3314,7 +3314,7 @@ class Client:
                 A list of Message identifiers in the chat specified in *chat_id*.
 
         Returns:
-            List of the requested messages
+            On success, a list of the requested :obj:`Messages <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
