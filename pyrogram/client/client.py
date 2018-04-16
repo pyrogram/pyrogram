@@ -3332,4 +3332,21 @@ class Client:
                 id=message_ids
             )
 
-        return self.send(rpc)
+        r = self.send(rpc)
+
+        users = {i.id: i for i in r.users}
+        chats = {i.id: i for i in r.chats}
+
+        messages = []
+
+        for i in r.messages:
+            if isinstance(i, types.Message):
+                parser = message_parser.parse_message
+            elif isinstance(i, types.MessageService):
+                parser = message_parser.parse_message_service
+            else:
+                continue
+
+            messages.append(parser(self, i, users, chats))
+
+        return messages
