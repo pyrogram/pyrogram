@@ -2345,6 +2345,9 @@ class Client:
             progress (``int``, optional):
                 Progress of the upload process.
 
+        Returns:
+            On success, True is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
@@ -2420,12 +2423,15 @@ class Client:
             disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        return self.send(
+        r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
@@ -2433,6 +2439,13 @@ class Client:
                 **style.parse(text)
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def edit_message_caption(self,
                              chat_id: int or str,
