@@ -3099,49 +3099,6 @@ class Client:
 
         return path[0]
 
-    def download_photo(self,
-                       photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
-                       file_name: str = "",
-                       block: bool = True):
-        """Use this method to download a photo not contained inside a Message.
-        For example, a photo of a User or a Chat/Channel.
-
-        Args:
-            photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
-                The photo object.
-
-            file_name (``str``, optional):
-                A custom *file_name* to be used instead of the one provided by Telegram.
-                By default, all photos are downloaded in the *downloads* folder in your working directory.
-                You can also specify a path for downloading photos in a custom location: paths that end with "/"
-                are considered directories. All non-existent folders will be created automatically.
-
-            block (``bool``, optional):
-                Blocks the code execution until the photo has been downloaded.
-                Defaults to True.
-
-        Returns:
-            On success, the absolute path of the downloaded photo as string is returned, None otherwise.
-
-        Raises:
-            :class:`Error <pyrogram.Error>`
-        """
-        if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
-            photo = types.Photo(
-                id=0,
-                access_hash=0,
-                date=int(time.time()),
-                sizes=[types.PhotoSize(
-                    type="",
-                    location=photo.photo_big,
-                    w=0,
-                    h=0,
-                    size=0
-                )]
-            )
-
-        return self.download_media(photo, file_name, block)
-
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
 
