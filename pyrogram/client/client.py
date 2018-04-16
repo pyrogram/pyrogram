@@ -2162,12 +2162,12 @@ class Client:
                 If the message is a reply, ID of the original message
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
+        r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
@@ -2182,6 +2182,13 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def send_venue(self,
                    chat_id: int or str,
