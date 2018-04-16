@@ -534,7 +534,7 @@ def parse_message_service(
     if isinstance(action, types.MessageActionChatAddUser):
         new_chat_members = [parse_user(users[i]) for i in action.users]
     elif isinstance(action, types.MessageActionChatJoinedByLink):
-        new_chat_members = [parse_user(users[action.inviter_id])]
+        new_chat_members = [parse_user(users[message.from_id])]
     elif isinstance(action, types.MessageActionChatDeleteUser):
         left_chat_member = parse_user(users[action.user_id])
     elif isinstance(action, types.MessageActionChatEditTitle):
