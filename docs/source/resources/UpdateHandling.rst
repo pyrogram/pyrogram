@@ -3,7 +3,10 @@ Update Handling
 
 Updates are events that happen in your Telegram account (incoming messages, new channel posts, new members join, ...)
 and are handled by registering one or more callback functions with an Handler. There are multiple Handlers to choose
-from, one for each kind of update.
+from, one for each kind of update:
+
+-   `MessageHandler <../pyrogram/MessageHandler.html>`_
+-   `RawUpdateHandler <../pyrogram/RawUpdateHandler.html>`_
 
 Registering an Handler
 ----------------------
@@ -31,7 +34,7 @@ We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will
         app.idle()
 
 -   If you prefer not to use decorators, there is an alternative way for registering Handlers.
-    This is useful, for example, when you want to keep your callback functions in a separate file.
+    This is useful, for example, when you want to keep your callback functions in separate files.
 
     .. code-block:: python
 
@@ -55,8 +58,8 @@ Using Filters
 For a finer grained control over what kind of messages will be allowed or not in your callback functions, you can use
 :class:`Filters <pyrogram.Filters>`.
 
--   This example will show you how to handle only messages containing an :obj:`Audio <pyrogram.api.types.pyrogram.Audio>`
-    object:
+-   This example will show you how to **only** handle messages containing an
+    :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` object and filter out any other message:
 
     .. code-block:: python
 
@@ -71,7 +74,7 @@ For a finer grained control over what kind of messages will be allowed or not in
 
     .. code-block:: python
 
-        from pyrogram import Filters, Messagehandler
+        from pyrogram import Filters, MessageHandler
 
 
         def my_handler(client, message):
@@ -128,7 +131,7 @@ can also accept arguments:
         def my_handler(client, message):
             print(message)
 
-More handlers using different filters can also live together:
+More handlers using different filters can also live together.
 
 .. code-block:: python
 
@@ -145,3 +148,41 @@ More handlers using different filters can also live together:
     @app.on_message(Filters.chat("PyrogramChat"))
     def from_pyrogramchat(client, message):
         print("New message in @PyrogramChat")
+
+Handler Groups
+--------------
+
+If you register handlers with overlapping filters, only the first one is executed and any other handler will be ignored.
+
+In order to process the same message more than once, you can register your handler in a different group.
+Groups are identified by a number (number 0 being the default) and are sorted. This means that a lower group number has
+a higher priority.
+
+For example, in:
+
+.. code-block:: python
+
+    @app.on_message(Filters.text | Filters.sticker)
+    def text_or_sticker(client, message):
+        print("Text or Sticker")
+
+
+    @app.on_message(Filters.text)
+    def just_text(client, message):
+        print("Just Text")
+
+``just_text`` is never executed. To enable it, simply register the function using a different group:
+
+.. code-block:: python
+
+    @app.on_message(Filters.text, group=1)
+    def just_text(client, message):
+        print("Just Text")
+
+or, if you want ``just_text`` to be fired *before* ``text_or_sticker``:
+
+.. code-block:: python
+
+    @app.on_message(Filters.text, group=-1)
+    def just_text(client, message):
+        print("Just Text")
