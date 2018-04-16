@@ -2472,18 +2472,28 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        return self.send(
+        r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 **style.parse(caption)
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def delete_messages(self,
                         chat_id: int or str,
