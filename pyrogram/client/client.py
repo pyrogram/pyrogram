@@ -1189,7 +1189,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1318,7 +1318,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1439,7 +1439,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1545,7 +1545,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1682,7 +1682,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1810,7 +1810,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1927,7 +1927,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2162,7 +2162,7 @@ class Client:
                 If the message is a reply, ID of the original message
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2231,7 +2231,7 @@ class Client:
                 If the message is a reply, ID of the original message
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2297,7 +2297,7 @@ class Client:
                 If the message is a reply, ID of the original message.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2424,7 +2424,7 @@ class Client:
                 Disables link previews for links in this message.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2473,7 +2473,7 @@ class Client:
                 Defaults to Markdown.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -3314,7 +3314,7 @@ class Client:
                 A list of Message identifiers in the chat specified in *chat_id*.
 
         Returns:
-            On success, a list of the requested :obj:`Messages <pyrogram.Message>` is returned.
+            On success, a list of the requested :obj:`Messages <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
