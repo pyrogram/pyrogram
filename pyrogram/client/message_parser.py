@@ -266,8 +266,8 @@ def parse_message(
             contact = pyrogram.Contact(
                 phone_number=media.phone_number,
                 first_name=media.first_name,
-                last_name=media.last_name,
-                user_id=media.user_id
+                last_name=media.last_name or None,
+                user_id=media.user_id or None
             )
         elif isinstance(media, types.MessageMediaVenue):
             venue = pyrogram.Venue(
