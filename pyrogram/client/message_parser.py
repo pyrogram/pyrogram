@@ -19,7 +19,7 @@
 from struct import pack
 
 import pyrogram
-from pyrogram.api import types
+from pyrogram.api import types, functions
 from .utils import encode
 
 # TODO: Organize the code better?
@@ -393,6 +393,14 @@ def parse_message(
                         )
                 elif types.DocumentAttributeSticker in attributes:
                     image_size_attributes = attributes[types.DocumentAttributeImageSize]
+                    sticker_attribute = attributes[types.DocumentAttributeSticker]
+
+                    if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
+                        set_name = client.send(
+                            functions.messages.GetStickerSet(sticker_attribute.stickerset)
+                        ).set.short_name
+                    else:
+                        set_name = None
 
                     sticker = pyrogram.Sticker(
                         file_id=encode(
@@ -407,7 +415,9 @@ def parse_message(
                         width=image_size_attributes.w,
                         height=image_size_attributes.h,
                         thumb=parse_thumb(doc.thumb),
-                        # TODO: Emoji, set_name and mask_position
+                        # TODO: mask_position
+                        set_name=set_name,
+                        emoji=sticker_attribute.alt,
                         file_size=doc.size,
                         mime_type=doc.mime_type,
                         file_name=file_name,
