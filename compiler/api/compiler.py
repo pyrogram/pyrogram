@@ -69,7 +69,7 @@ def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
             ":obj:`{1} <pyrogram.api.types.{0}{1}>`".format(
                 "pyrogram." if is_pyrogram_type else "",
-                i.lstrip("pyrogram.")
+                i.replace("pyrogram.", "")
             )
             for i in t
         )
