@@ -20,6 +20,7 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types, functions
+from pyrogram.api.errors import StickersetInvalid
 from .utils import encode
 
 # TODO: Organize the code better?
@@ -396,9 +397,12 @@ def parse_message(
                     sticker_attribute = attributes[types.DocumentAttributeSticker]
 
                     if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
-                        set_name = client.send(
-                            functions.messages.GetStickerSet(sticker_attribute.stickerset)
-                        ).set.short_name
+                        try:
+                            set_name = client.send(
+                                functions.messages.GetStickerSet(sticker_attribute.stickerset)
+                            ).set.short_name
+                        except StickersetInvalid:
+                            set_name = None
                     else:
                         set_name = None
 
@@ -417,7 +421,7 @@ def parse_message(
                         thumb=parse_thumb(doc.thumb),
                         # TODO: mask_position
                         set_name=set_name,
-                        emoji=sticker_attribute.alt,
+                        emoji=sticker_attribute.alt or None,
                         file_size=doc.size,
                         mime_type=doc.mime_type,
                         file_name=file_name,
