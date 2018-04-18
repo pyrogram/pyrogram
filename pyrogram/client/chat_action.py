@@ -21,7 +21,7 @@ from pyrogram.api import types
 
 class ChatAction:
     """This class provides a convenient access to all Chat Actions available.
-    It is intended to be used with :obj:`pyrogram.Client.send_chat_action`.
+    Chat Actions are intended to be used with :meth:`send_chat_action() <pyrogram.Client.send_chat_action>`.
     """
 
     CANCEL = types.SendMessageCancelAction

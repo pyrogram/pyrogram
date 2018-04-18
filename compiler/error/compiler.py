@@ -21,9 +21,9 @@ import os
 import re
 import shutil
 
-home = "compiler/error"
-dest = "pyrogram/api/errors/exceptions"
-notice_path = "NOTICE"
+HOME = "compiler/error"
+DEST = "pyrogram/api/errors/exceptions"
+NOTICE_PATH = "NOTICE"
 
 
 def snek(s):
@@ -38,12 +38,12 @@ def caml(s):
 
 
 def start():
-    shutil.rmtree(dest, ignore_errors=True)
-    os.makedirs(dest)
+    shutil.rmtree(DEST, ignore_errors=True)
+    os.makedirs(DEST)
 
-    files = [i for i in os.listdir("{}/source".format(home))]
+    files = [i for i in os.listdir("{}/source".format(HOME))]
 
-    with open(notice_path, encoding="utf-8") as f:
+    with open(NOTICE_PATH, encoding="utf-8") as f:
         notice = []
 
         for line in f.readlines():
@@ -51,7 +51,7 @@ def start():
 
         notice = "\n".join(notice)
 
-    with open("{}/all.py".format(dest), "w", encoding="utf-8") as f_all:
+    with open("{}/all.py".format(DEST), "w", encoding="utf-8") as f_all:
         f_all.write(notice + "\n\n")
         f_all.write("count = {count}\n\n")
         f_all.write("exceptions = {\n")
@@ -63,7 +63,7 @@ def start():
 
             f_all.write("    {}: {{\n".format(code))
 
-            init = "{}/__init__.py".format(dest)
+            init = "{}/__init__.py".format(DEST)
 
             if not os.path.exists(init):
                 with open(init, "w", encoding="utf-8") as f_init:
@@ -72,8 +72,8 @@ def start():
             with open(init, "a", encoding="utf-8") as f_init:
                 f_init.write("from .{}_{} import *\n".format(name.lower(), code))
 
-            with open("{}/source/{}".format(home, i), encoding="utf-8") as f_csv, \
-                    open("{}/{}_{}.py".format(dest, name.lower(), code), "w", encoding="utf-8") as f_class:
+            with open("{}/source/{}".format(HOME, i), encoding="utf-8") as f_csv, \
+                    open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
                 reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)
@@ -98,10 +98,10 @@ def start():
 
                     sub_classes.append((sub_class, id, message))
 
-                with open("{}/template/class.txt".format(home), "r", encoding="utf-8") as f_class_template:
+                with open("{}/template/class.txt".format(HOME), "r", encoding="utf-8") as f_class_template:
                     class_template = f_class_template.read()
 
-                    with open("{}/template/sub_class.txt".format(home), "r", encoding="utf-8") as f_sub_class_template:
+                    with open("{}/template/sub_class.txt".format(HOME), "r", encoding="utf-8") as f_sub_class_template:
                         sub_class_template = f_sub_class_template.read()
 
                     class_template = class_template.format(
@@ -123,18 +123,18 @@ def start():
 
         f_all.write("}\n")
 
-    with open("{}/all.py".format(dest), encoding="utf-8") as f:
+    with open("{}/all.py".format(DEST), encoding="utf-8") as f:
         content = f.read()
 
-    with open("{}/all.py".format(dest), "w", encoding="utf-8") as f:
+    with open("{}/all.py".format(DEST), "w", encoding="utf-8") as f:
         f.write(re.sub("{count}", str(count), content))
 
     print("Compiling Errors: [100%]")
 
 
 if "__main__" == __name__:
-    home = "."
-    dest = "../../pyrogram/api/errors/exceptions"
-    notice_path = "../../NOTICE"
+    HOME = "."
+    DEST = "../../pyrogram/api/errors/exceptions"
+    NOTICE_PATH = "../../NOTICE"
 
     start()

@@ -32,7 +32,7 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
-from pyrogram.api.errors import Error
+from pyrogram.api.errors import Error, InternalServerError
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
 from .internals import MsgId, MsgFactory, DataCenter
@@ -399,17 +399,19 @@ class Session:
             else:
                 return result
 
-    def send(self, data: Object):
-        for i in range(self.MAX_RETRIES):
-            self.is_connected.wait(self.WAIT_TIMEOUT)
+    def send(self, data: Object, retries: int = MAX_RETRIES):
+        self.is_connected.wait(self.WAIT_TIMEOUT)
 
-            try:
-                return self._send(data)
-            except (OSError, TimeoutError):
-                (log.warning if i > 2 else log.info)(
-                    "{}: {} Retrying {}".format(i, datetime.now(), type(data))
-                )
-                time.sleep(1)
-                continue
-        else:
-            return None
+        try:
+            return self._send(data)
+        except (OSError, TimeoutError, InternalServerError) as e:
+            if retries == 0:
+                raise e from None
+
+            (log.warning if retries < 3 else log.info)(
+                "{}: {} Retrying {}".format(
+                    Session.MAX_RETRIES - retries,
+                    datetime.now(), type(data)))
+
+            time.sleep(0.5)
+            self.send(data, retries - 1)

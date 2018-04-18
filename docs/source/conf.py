@@ -36,11 +36,12 @@ from pyrogram import __version__
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary'
 ]
 
 # Don't show source files on docs
-html_show_sourcelink = False
+html_show_sourcelink = True
 
 # Order by source, not alphabetically
 autodoc_member_order = 'bysource'
@@ -84,41 +85,48 @@ language = None
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'tango'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
+html_title = "Pyrogram Documentation"
+
+# Overridden by template
+html_show_copyright = False
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
 
-html_theme_options = {
-    'collapse_navigation': False
-}
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'canonical_url': "https://docs.pyrogram.ml/",
+    'collapse_navigation': False,
+    'sticky_navigation': False,
+    'logo_only': True,
+    'display_version': True
+}
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_static/pyrogram.png'
+html_logo = '_images/logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs. This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = '_static/pyrogram.ico'
+html_favicon = '_images/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

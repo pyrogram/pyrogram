@@ -36,6 +36,7 @@ from queue import Queue
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -44,12 +45,15 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
+from . import message_parser
 from . import utils
-from .input_media import InputMedia
+from .dispatcher import Dispatcher
+from .input_media_photo import InputMediaPhoto
+from .input_media_video import InputMediaVideo
 from .style import Markdown, HTML
 from .syncer import Syncer
 
@@ -124,6 +128,18 @@ class Client:
     DOWNLOAD_WORKERS = 1
     OFFLINE_SLEEP = 300
 
+    MEDIA_TYPE_ID = {
+        0: "thumbnail",
+        2: "photo",
+        3: "voice",
+        4: "video",
+        5: "document",
+        8: "sticker",
+        9: "audio",
+        10: "gif",
+        13: "video_note"
+    }
+
     def __init__(self,
                  session_name: str,
                  api_id: int or str = None,
@@ -176,10 +192,64 @@ class Client:
         self.is_idle = None
 
         self.updates_queue = Queue()
-        self.update_queue = Queue()
+        self.updates_workers_list = []
+        self.download_queue = Queue()
+        self.download_workers_list = []
+
+        self.dispatcher = Dispatcher(self, workers)
         self.update_handler = None
 
-        self.download_queue = Queue()
+    def on_message(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        messages. This does the same thing as :meth:`add_handler` using the
+        MessageHandler.
+
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of messages to be passed
+                in your function.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
+        def decorator(func):
+            self.add_handler(pyrogram.MessageHandler(func, filters), group)
+            return func
+
+        return decorator
+
+    def on_raw_update(self, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        raw updates. This does the same thing as :meth:`add_handler` using the
+        RawUpdateHandler.
+
+        Args:
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
+        def decorator(func):
+            self.add_handler(pyrogram.RawUpdateHandler(func), group)
+            return func
+
+        return decorator
+
+    def add_handler(self, handler, group: int = 0):
+        """Use this method to register an event handler.
+
+        You can register multiple handlers, but at most one handler within a group
+        will be used for a single event. To handle the same event more than once, register
+        your handler using a different group id (lower group id == higher priority).
+
+        Args:
+            handler (``Handler``):
+                The handler to be registered.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+        self.dispatcher.add_handler(handler, group)
 
     def start(self):
         """Use this method to start the Client after creating it.
@@ -234,13 +304,26 @@ class Client:
             self.send(functions.updates.GetState())
 
         for i in range(self.UPDATES_WORKERS):
-            Thread(target=self.updates_worker, name="UpdatesWorker#{}".format(i + 1)).start()
+            self.updates_workers_list.append(
+                Thread(
+                    target=self.updates_worker,
+                    name="UpdatesWorker#{}".format(i + 1)
+                )
+            )
 
-        for i in range(self.workers):
-            Thread(target=self.update_worker, name="UpdateWorker#{}".format(i + 1)).start()
+            self.updates_workers_list[-1].start()
 
         for i in range(self.DOWNLOAD_WORKERS):
-            Thread(target=self.download_worker, name="DownloadWorker#{}".format(i + 1)).start()
+            self.download_workers_list.append(
+                Thread(
+                    target=self.download_worker,
+                    name="DownloadWorker#{}".format(i + 1)
+                )
+            )
+
+            self.download_workers_list[-1].start()
+
+        self.dispatcher.start()
 
         mimetypes.init()
         Syncer.add(self)
@@ -252,17 +335,22 @@ class Client:
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
 
-        self.is_started = False
-        self.session.stop()
-
         for _ in range(self.UPDATES_WORKERS):
             self.updates_queue.put(None)
 
-        for _ in range(self.workers):
-            self.update_queue.put(None)
+        for i in self.updates_workers_list:
+            i.join()
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
+
+        for i in self.download_workers_list:
+            i.join()
+
+        self.dispatcher.stop()
+
+        self.is_started = False
+        self.session.stop()
 
         Syncer.remove(self)
 
@@ -530,73 +618,86 @@ class Client:
 
         while True:
             media = self.download_queue.get()
-            temp_file_path = ""
-            final_file_path = ""
 
             if media is None:
                 break
 
+            temp_file_path = ""
+            final_file_path = ""
+
             try:
                 media, file_name, done, progress, path = media
+
+                file_id = media.file_id
+                size = media.file_size
 
                 directory, file_name = os.path.split(file_name)
                 directory = directory or "downloads"
 
-                if isinstance(media, types.MessageMediaDocument):
-                    document = media.document
+                try:
+                    decoded = utils.decode(file_id)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    media_type = unpacked[0]
+                    dc_id = unpacked[1]
+                    id = unpacked[2]
+                    access_hash = unpacked[3]
+                    volume_id = None
+                    secret = None
+                    local_id = None
 
-                    if isinstance(document, types.Document):
-                        if not file_name:
-                            file_name = "doc_{}{}".format(
-                                datetime.fromtimestamp(document.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                ".txt" if document.mime_type == "text/plain" else
-                                mimetypes.guess_extension(document.mime_type) if document.mime_type else ".unknown"
-                            )
+                    if len(decoded) > 24:
+                        volume_id = unpacked[4]
+                        secret = unpacked[5]
+                        local_id = unpacked[6]
 
-                            for i in document.attributes:
-                                if isinstance(i, types.DocumentAttributeFilename):
-                                    file_name = i.file_name
-                                    break
-                                elif isinstance(i, types.DocumentAttributeSticker):
-                                    file_name = file_name.replace("doc", "sticker")
-                                elif isinstance(i, types.DocumentAttributeAudio):
-                                    file_name = file_name.replace("doc", "audio")
-                                elif isinstance(i, types.DocumentAttributeVideo):
-                                    file_name = file_name.replace("doc", "video")
-                                elif isinstance(i, types.DocumentAttributeAnimated):
-                                    file_name = file_name.replace("doc", "gif")
+                    media_type_str = Client.MEDIA_TYPE_ID.get(media_type, None)
 
-                        temp_file_path = self.get_file(
-                            dc_id=document.dc_id,
-                            id=document.id,
-                            access_hash=document.access_hash,
-                            version=document.version,
-                            size=document.size,
-                            progress=progress
-                        )
-                elif isinstance(media, (types.MessageMediaPhoto, types.Photo)):
-                    if isinstance(media, types.MessageMediaPhoto):
-                        photo = media.photo
+                    if media_type_str:
+                        log.info("The file_id belongs to a {}".format(media_type_str))
                     else:
-                        photo = media
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
 
-                    if isinstance(photo, types.Photo):
-                        if not file_name:
-                            file_name = "photo_{}_{}.jpg".format(
-                                datetime.fromtimestamp(photo.date).strftime("%Y-%m-%d_%H-%M-%S"),
-                                self.rnd_id()
-                            )
+                file_name = file_name or getattr(media, "file_name", None)
 
-                        photo_loc = photo.sizes[-1].location
+                if not file_name:
+                    if media_type == 3:
+                        extension = ".ogg"
+                    elif media_type in (4, 10, 13):
+                        extension = mimetypes.guess_extension(media.mime_type) or ".mp4"
+                    elif media_type == 5:
+                        extension = mimetypes.guess_extension(media.mime_type) or ".unknown"
+                    elif media_type == 8:
+                        extension = ".webp"
+                    elif media_type == 9:
+                        extension = mimetypes.guess_extension(media.mime_type) or ".mp3"
+                    elif media_type == 0:
+                        extension = ".jpg"
+                    elif media_type == 2:
+                        extension = ".jpg"
+                    else:
+                        continue
 
-                        temp_file_path = self.get_file(
-                            dc_id=photo_loc.dc_id,
-                            volume_id=photo_loc.volume_id,
-                            local_id=photo_loc.local_id,
-                            secret=photo_loc.secret,
-                            size=photo.sizes[-1].size,
-                            progress=progress
-                        )
+                    file_name = "{}_{}_{}{}".format(
+                        media_type_str,
+                        datetime.fromtimestamp(media.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                        self.rnd_id(),
+                        extension
+                    )
+
+                temp_file_path = self.get_file(
+                    dc_id=dc_id,
+                    id=id,
+                    access_hash=access_hash,
+                    volume_id=volume_id,
+                    local_id=local_id,
+                    secret=secret,
+                    size=size,
+                    progress=progress
+                )
 
                 if temp_file_path:
                     final_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
@@ -680,7 +781,7 @@ class Client:
                             if len(self.channels_pts[channel_id]) > 50:
                                 self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
 
-                        self.update_queue.put((update, updates.users, updates.chats))
+                        self.dispatcher.updates.put((update, updates.users, updates.chats))
                 elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = self.send(
                         functions.updates.GetDifference(
@@ -690,7 +791,7 @@ class Client:
                         )
                     )
 
-                    self.update_queue.put((
+                    self.dispatcher.updates.put((
                         types.UpdateNewMessage(
                             message=diff.new_messages[0],
                             pts=updates.pts,
@@ -700,30 +801,7 @@ class Client:
                         diff.chats
                     ))
                 elif isinstance(updates, types.UpdateShort):
-                    self.update_queue.put((updates.update, [], []))
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))
-
-    def update_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
-
-        while True:
-            update = self.update_queue.get()
-
-            if update is None:
-                break
-
-            try:
-                if self.update_handler:
-                    self.update_handler(
-                        self,
-                        update[0],
-                        {i.id: i for i in update[1]},
-                        {i.id: i for i in update[2]}
-                    )
+                    self.dispatcher.updates.put((updates.update, [], []))
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -749,47 +827,6 @@ class Client:
 
         while self.is_idle:
             time.sleep(1)
-
-    def set_update_handler(self, callback: callable):
-        """Use this method to set the update handler.
-
-        You must call this method *before* you *start()* the Client.
-
-        Args:
-            callback (``callable``):
-                A function that will be called when a new update is received from the server. It takes
-                *(client, update, users, chats)* as positional arguments (Look at the section below for
-                a detailed description).
-
-        Other Parameters:
-            client (:class:`Client <pyrogram.Client>`):
-                The Client itself, useful when you want to call other API methods inside the update handler.
-
-            update (``Update``):
-                The received update, which can be one of the many single Updates listed in the *updates*
-                field you see in the :obj:`Update <pyrogram.api.types.Update>` type.
-
-            users (``dict``):
-                Dictionary of all :obj:`User <pyrogram.api.types.User>` mentioned in the update.
-                You can access extra info about the user (such as *first_name*, *last_name*, etc...) by using
-                the IDs you find in the *update* argument (e.g.: *users[1768841572]*).
-
-            chats (``dict``):
-                Dictionary of all :obj:`Chat <pyrogram.api.types.Chat>` and
-                :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
-                You can access extra info about the chat (such as *title*, *participants_count*, etc...)
-                by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
-
-        Note:
-            The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
-            They mean you have been blocked by the user or banned from the group/channel.
-
-            - :obj:`UserEmpty <pyrogram.api.types.UserEmpty>`
-            - :obj:`ChatEmpty <pyrogram.api.types.ChatEmpty>`
-            - :obj:`ChatForbidden <pyrogram.api.types.ChatForbidden>`
-            - :obj:`ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
-        """
-        self.update_handler = callback
 
     def send(self, data: Object):
         """Use this method to send Raw Function queries.
@@ -826,7 +863,10 @@ class Client:
                 self.api_id = parser.getint("pyrogram", "api_id")
                 self.api_hash = parser.get("pyrogram", "api_hash")
             else:
-                raise AttributeError("No API Key found")
+                raise AttributeError(
+                    "No API Key found. "
+                    "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
+                )
 
         if self.proxy:
             pass
@@ -1113,7 +1153,9 @@ class Client:
 
             photo (``str``):
                 Photo to send.
-                Pass a file path as string to send a photo that exists on your local machine.
+                Pass a file_id as string to send a photo that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
+                pass a file path as string to upload a new photo that exists on your local machine.
 
             caption (``bool``, optional):
                 Photo caption, 0-200 characters.
@@ -1147,23 +1189,55 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(photo, progress=progress)
+
+        if os.path.exists(photo):
+            file = self.save_file(photo, progress=progress)
+            media = types.InputMediaUploadedPhoto(
+                file=file,
+                ttl_seconds=ttl_seconds
+            )
+        elif photo.startswith("http"):
+            media = types.InputMediaPhotoExternal(
+                url=photo,
+                ttl_seconds=ttl_seconds
+            )
+        else:
+            try:
+                decoded = utils.decode(photo)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 2:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaPhoto(
+                    id=types.InputPhoto(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    ),
+                    ttl_seconds=ttl_seconds
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=file,
-                            ttl_seconds=ttl_seconds
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1173,7 +1247,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(photo, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_audio(self,
                    chat_id: int or str,
@@ -1199,7 +1278,9 @@ class Client:
 
             audio (``str``):
                 Audio file to send.
-                Pass a file path as string to send an audio file that exists on your local machine.
+                Pass a file_id as string to send an audio file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
+                pass a file path as string to upload a new audio file that exists on your local machine.
 
             caption (``str``, optional):
                 Audio caption, 0-200 characters.
@@ -1237,31 +1318,61 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(audio, progress=progress)
+
+        if os.path.exists(audio):
+            file = self.save_file(audio, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                file=file,
+                attributes=[
+                    types.DocumentAttributeAudio(
+                        duration=duration,
+                        performer=performer,
+                        title=title
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(audio))
+                ]
+            )
+        elif audio.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=audio
+            )
+        else:
+            try:
+                decoded = utils.decode(audio)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 9:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    duration=duration,
-                                    performer=performer,
-                                    title=title
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(audio))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1271,7 +1382,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(audio, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_document(self,
                       chat_id: int or str,
@@ -1292,7 +1408,9 @@ class Client:
 
             document (``str``):
                 File to send.
-                Pass a file path as string to send a file that exists on your local machine.
+                Pass a file_id as string to send a file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a file from the Internet, or
+                pass a file path as string to upload a new file that exists on your local machine.
 
             caption (``str``, optional):
                 Document caption, 0-200 characters.
@@ -1321,26 +1439,56 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(document, progress=progress)
+
+        if os.path.exists(document):
+            file = self.save_file(document, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
+                file=file,
+                attributes=[
+                    types.DocumentAttributeFilename(os.path.basename(document))
+                ]
+            )
+        elif document.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=document
+            )
+        else:
+            try:
+                decoded = utils.decode(document)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] not in (5, 10):
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(document))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1350,7 +1498,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(document, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_sticker(self,
                      chat_id: int or str,
@@ -1369,7 +1522,9 @@ class Client:
 
             sticker (``str``):
                 Sticker to send.
-                Pass a file path as string to send a sticker that exists on your local machine.
+                Pass a file_id as string to send a sticker that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
+                pass a file path as string to upload a new sticker that exists on your local machine.
 
             disable_notification (``bool``, optional):
                 Sends the message silently.
@@ -1390,25 +1545,55 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        file = self.save_file(sticker, progress=progress)
+        file = None
+
+        if os.path.exists(sticker):
+            file = self.save_file(sticker, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type="image/webp",
+                file=file,
+                attributes=[
+                    types.DocumentAttributeFilename(os.path.basename(sticker))
+                ]
+            )
+        elif sticker.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=sticker
+            )
+        else:
+            try:
+                decoded = utils.decode(sticker)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 8:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type="image/webp",
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(sticker))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1418,7 +1603,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(sticker, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_video(self,
                    chat_id: int or str,
@@ -1444,7 +1634,9 @@ class Client:
 
             video (``str``):
                 Video to send.
-                Pass a file path as string to send a video that exists on your local machine.
+                Pass a file_id as string to send a video that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a video from the Internet, or
+                pass a file path as string to upload a new video that exists on your local machine.
 
             caption (``str``, optional):
                 Video caption, 0-200 characters.
@@ -1490,34 +1682,64 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(video, progress=progress)
-        file_thumb = None if thumb is None else self.save_file(thumb)
+
+        if os.path.exists(video):
+            thumb = None if thumb is None else self.save_file(thumb)
+            file = self.save_file(video, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map[".mp4"],
+                file=file,
+                thumb=thumb,
+                attributes=[
+                    types.DocumentAttributeVideo(
+                        supports_streaming=supports_streaming or None,
+                        duration=duration,
+                        w=width,
+                        h=height
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(video))
+                ]
+            )
+        elif video.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=video
+            )
+        else:
+            try:
+                decoded = utils.decode(video)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 4:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
-                            file=file,
-                            thumb=file_thumb,
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    supports_streaming=supports_streaming or None,
-                                    duration=duration,
-                                    w=width,
-                                    h=height
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(video))
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1527,7 +1749,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(video, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_voice(self,
                    chat_id: int or str,
@@ -1549,7 +1776,9 @@ class Client:
 
             voice (``str``):
                 Audio file to send.
-                Pass a file path as string to send an audio file that exists on your local machine.
+                Pass a file_id as string to send an audio that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
+                pass a file path as string to upload a new audio that exists on your local machine.
 
             caption (``str``, optional):
                 Voice message caption, 0-200 characters.
@@ -1581,29 +1810,59 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        file = self.save_file(voice, progress=progress)
+
+        if os.path.exists(voice):
+            file = self.save_file(voice, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
+                file=file,
+                attributes=[
+                    types.DocumentAttributeAudio(
+                        voice=True,
+                        duration=duration
+                    )
+                ]
+            )
+        elif voice.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=voice
+            )
+        else:
+            try:
+                decoded = utils.decode(voice)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 3:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeAudio(
-                                    voice=True,
-                                    duration=duration
-                                )
-                            ]
-                        ),
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
@@ -1613,7 +1872,12 @@ class Client:
             except FilePartMissing as e:
                 self.save_file(voice, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     def send_video_note(self,
                         chat_id: int or str,
@@ -1634,7 +1898,9 @@ class Client:
 
             video_note (``str``):
                 Video note to send.
-                Pass a file path as string to send a video note that exists on your local machine.
+                Pass a file_id as string to send a video note that exists on the Telegram servers, or
+                pass a file path as string to upload a new video note that exists on your local machine.
+                Sending video notes by a URL is currently unsupported.
 
             duration (``int``, optional):
                 Duration of sent video in seconds.
@@ -1661,42 +1927,75 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        file = self.save_file(video_note, progress=progress)
+        file = None
+
+        if os.path.exists(video_note):
+            file = self.save_file(video_note, progress=progress)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map[".mp4"],
+                file=file,
+                attributes=[
+                    types.DocumentAttributeVideo(
+                        round_message=True,
+                        duration=duration,
+                        w=length,
+                        h=length
+                    )
+                ]
+            )
+        else:
+            try:
+                decoded = utils.decode(video_note)
+                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                unpacked = struct.unpack(fmt, decoded)
+            except (AssertionError, binascii.Error, struct.error):
+                raise FileIdInvalid from None
+            else:
+                if unpacked[0] != 13:
+                    media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                    if media_type:
+                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                    else:
+                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3]
+                    )
+                )
 
         while True:
             try:
                 r = self.send(
                     functions.messages.SendMedia(
                         peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
-                            file=file,
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    round_message=True,
-                                    duration=duration,
-                                    w=length,
-                                    h=length
-                                )
-                            ]
-                        ),
-                        message="",
+                        media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id()
+                        random_id=self.rnd_id(),
+                        message=""
                     )
                 )
             except FilePartMissing as e:
                 self.save_file(video_note, file_id=file.id, file_part=e.x)
             else:
-                return r
+                for i in r.updates:
+                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        users = {i.id: i for i in r.users}
+                        chats = {i.id: i for i in r.chats}
+
+                        return message_parser.parse_message(self, i.message, users, chats)
 
     # TODO: Add progress parameter
+    # TODO: Return new Message object
+    # TODO: Figure out how to send albums using URLs
     def send_media_group(self,
                          chat_id: int or str,
                          media: list,
@@ -1713,7 +2012,8 @@ class Client:
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             media (``list``):
-                A list containing either :obj:`pyrogram.InputMedia.Photo` or :obj:`pyrogram.InputMedia.Video` objects
+                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
+                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, optional):
@@ -1726,66 +2026,104 @@ class Client:
         multi_media = []
 
         for i in media:
-            if isinstance(i, InputMedia.Photo):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
+            style = self.html if i.parse_mode.lower() == "html" else self.markdown
 
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedPhoto(
-                            file=media
+            if isinstance(i, InputMediaPhoto):
+                if os.path.exists(i.media):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedPhoto(
+                                file=self.save_file(i.media)
+                            )
                         )
                     )
-                )
 
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaPhoto(
+                    media = types.InputMediaPhoto(
                         id=types.InputPhoto(
                             id=media.photo.id,
                             access_hash=media.photo.access_hash
                         )
-                    ),
-                    random_id=self.rnd_id(),
-                    **style.parse(i.caption)
-                )
+                    )
+                else:
+                    try:
+                        decoded = utils.decode(i.media)
+                        fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                        unpacked = struct.unpack(fmt, decoded)
+                    except (AssertionError, binascii.Error, struct.error):
+                        raise FileIdInvalid from None
+                    else:
+                        if unpacked[0] != 2:
+                            media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
 
-                multi_media.append(single_media)
-            elif isinstance(i, InputMedia.Video):
-                style = self.html if i.parse_mode.lower() == "html" else self.markdown
-                media = self.save_file(i.media)
+                            if media_type:
+                                raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                            else:
+                                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
 
-                media = self.send(
-                    functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=types.InputMediaUploadedDocument(
-                            file=media,
-                            mime_type=mimetypes.types_map[".mp4"],
-                            attributes=[
-                                types.DocumentAttributeVideo(
-                                    supports_streaming=i.supports_streaming or None,
-                                    duration=i.duration,
-                                    w=i.width,
-                                    h=i.height
-                                ),
-                                types.DocumentAttributeFilename(os.path.basename(i.media))
-                            ]
+                        media = types.InputMediaPhoto(
+                            id=types.InputPhoto(
+                                id=unpacked[2],
+                                access_hash=unpacked[3]
+                            )
+                        )
+            elif isinstance(i, InputMediaVideo):
+                if os.path.exists(i.media):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedDocument(
+                                file=self.save_file(i.media),
+                                mime_type=mimetypes.types_map[".mp4"],
+                                attributes=[
+                                    types.DocumentAttributeVideo(
+                                        supports_streaming=i.supports_streaming or None,
+                                        duration=i.duration,
+                                        w=i.width,
+                                        h=i.height
+                                    ),
+                                    types.DocumentAttributeFilename(os.path.basename(i.media))
+                                ]
+                            )
                         )
                     )
-                )
 
-                single_media = types.InputSingleMedia(
-                    media=types.InputMediaDocument(
+                    media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=media.document.id,
                             access_hash=media.document.access_hash
                         )
-                    ),
+                    )
+                else:
+                    try:
+                        decoded = utils.decode(i.media)
+                        fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                        unpacked = struct.unpack(fmt, decoded)
+                    except (AssertionError, binascii.Error, struct.error):
+                        raise FileIdInvalid from None
+                    else:
+                        if unpacked[0] != 4:
+                            media_type = Client.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                            if media_type:
+                                raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                            else:
+                                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                        media = types.InputMediaDocument(
+                            id=types.InputDocument(
+                                id=unpacked[2],
+                                access_hash=unpacked[3]
+                            )
+                        )
+
+            multi_media.append(
+                types.InputSingleMedia(
+                    media=media,
                     random_id=self.rnd_id(),
                     **style.parse(i.caption)
                 )
-
-                multi_media.append(single_media)
+            )
 
         return self.send(
             functions.messages.SendMultiMedia(
@@ -1825,12 +2163,12 @@ class Client:
                 If the message is a reply, ID of the original message
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
+        r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
@@ -1845,6 +2183,13 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def send_venue(self,
                    chat_id: int or str,
@@ -1887,12 +2232,12 @@ class Client:
                 If the message is a reply, ID of the original message
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
+        r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaVenue(
@@ -1913,11 +2258,18 @@ class Client:
             )
         )
 
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
+
     def send_contact(self,
                      chat_id: int or str,
                      phone_number: str,
                      first_name: str,
-                     last_name: str,
+                     last_name: str = "",
                      disable_notification: bool = None,
                      reply_to_message_id: int = None):
         """Use this method to send phone contacts.
@@ -1946,12 +2298,12 @@ class Client:
                 If the message is a reply, ID of the original message.
 
         Returns:
-             On success, the sent Message is returned.
+            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
+        r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaContact(
@@ -1965,6 +2317,13 @@ class Client:
                 random_id=self.rnd_id()
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def send_chat_action(self,
                          chat_id: int or str,
@@ -1987,6 +2346,9 @@ class Client:
             progress (``int``, optional):
                 Progress of the upload process.
 
+        Returns:
+            On success, True is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
@@ -2002,6 +2364,7 @@ class Client:
             )
         )
 
+    # TODO: Improvements for the new API
     def get_user_profile_photos(self,
                                 user_id: int or str,
                                 offset: int = 0,
@@ -2061,12 +2424,15 @@ class Client:
             disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        return self.send(
+        r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
@@ -2074,6 +2440,13 @@ class Client:
                 **style.parse(text)
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def edit_message_caption(self,
                              chat_id: int or str,
@@ -2100,18 +2473,28 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        return self.send(
+        r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 **style.parse(caption)
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return message_parser.parse_message(self, i.message, users, chats)
 
     def delete_messages(self,
                         chat_id: int or str,
@@ -2163,7 +2546,7 @@ class Client:
                 )
             )
 
-    # TODO: Remove redundant code
+    # TODO: Improvements for the new API
     def save_file(self,
                   path: str,
                   file_id: int = None,
@@ -2238,6 +2621,7 @@ class Client:
         finally:
             session.stop()
 
+    # TODO: Improvements for the new API
     def get_file(self,
                  dc_id: int,
                  id: int = None,
@@ -2676,15 +3060,16 @@ class Client:
             return False
 
     def download_media(self,
-                       message: types.Message,
+                       message: pyrogram.Message,
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
         """Use this method to download the media from a Message.
 
         Args:
-            message (:obj:`Message <pyrogram.api.types.Message>`):
-                The Message containing the media.
+            message (:obj:`Message <pyrogram.api.types.pyrogram.Message>` | ``str``):
+                Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
+                the file id as string.
 
             file_name (``str``, optional):
                 A custom *file_name* to be used instead of the one provided by Telegram.
@@ -2699,6 +3084,7 @@ class Client:
             progress (``callable``):
                 Pass a callback function to view the download progress.
                 The function must accept two arguments (current, total).
+                Note that this will not work in case you are downloading a media using a *file_id*.
 
         Other Parameters:
             current (``int``):
@@ -2713,67 +3099,51 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if isinstance(message, (types.Message, types.Photo)):
-            done = Event()
-            path = [None]
-
-            if isinstance(message, types.Message):
-                media = message.media
-            else:
-                media = message
-
-            if media is not None:
-                self.download_queue.put((media, file_name, done, progress, path))
+        if isinstance(message, pyrogram.Message):
+            if message.photo:
+                media = message.photo[-1]
+            elif message.audio:
+                media = message.audio
+            elif message.document:
+                media = message.document
+            elif message.video:
+                media = message.video
+            elif message.voice:
+                media = message.voice
+            elif message.video_note:
+                media = message.video_note
+            elif message.sticker:
+                media = message.sticker
             else:
                 return
-
-            if block:
-                done.wait()
-
-            return path[0]
-
-    def download_photo(self,
-                       photo: types.Photo or types.UserProfilePhoto or types.ChatPhoto,
-                       file_name: str = "",
-                       block: bool = True):
-        """Use this method to download a photo not contained inside a Message.
-        For example, a photo of a User or a Chat/Channel.
-
-        Args:
-            photo (:obj:`Photo <pyrogram.api.types.Photo>` | :obj:`UserProfilePhoto <pyrogram.api.types.UserProfilePhoto>` | :obj:`ChatPhoto <pyrogram.api.types.ChatPhoto>`):
-                The photo object.
-
-            file_name (``str``, optional):
-                A custom *file_name* to be used instead of the one provided by Telegram.
-                By default, all photos are downloaded in the *downloads* folder in your working directory.
-                You can also specify a path for downloading photos in a custom location: paths that end with "/"
-                are considered directories. All non-existent folders will be created automatically.
-
-            block (``bool``, optional):
-                Blocks the code execution until the photo has been downloaded.
-                Defaults to True.
-
-        Returns:
-            On success, the absolute path of the downloaded photo as string is returned, None otherwise.
-
-        Raises:
-            :class:`Error <pyrogram.Error>`
-        """
-        if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
-            photo = types.Photo(
-                id=0,
-                access_hash=0,
-                date=int(time.time()),
-                sizes=[types.PhotoSize(
-                    type="",
-                    location=photo.photo_big,
-                    w=0,
-                    h=0,
-                    size=0
-                )]
+        elif isinstance(message, (
+                pyrogram.PhotoSize,
+                pyrogram.Audio,
+                pyrogram.Document,
+                pyrogram.Video,
+                pyrogram.Voice,
+                pyrogram.VideoNote,
+                pyrogram.Sticker
+        )):
+            media = message
+        elif isinstance(message, str):
+            media = pyrogram.Document(
+                file_id=message,
+                file_size=0,
+                mime_type=""
             )
+        else:
+            return
 
-        return self.download_media(photo, file_name, block)
+        done = Event()
+        path = [None]
+
+        self.download_queue.put((media, file_name, done, progress, path))
+
+        if block:
+            done.wait()
+
+        return path[0]
 
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
@@ -2946,7 +3316,7 @@ class Client:
                 A list of Message identifiers in the chat specified in *chat_id*.
 
         Returns:
-            List of the requested messages
+            On success, a list of the requested :obj:`Messages <pyrogram.api.types.pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2964,4 +3334,21 @@ class Client:
                 id=message_ids
             )
 
-        return self.send(rpc)
+        r = self.send(rpc)
+
+        users = {i.id: i for i in r.users}
+        chats = {i.id: i for i in r.chats}
+
+        messages = []
+
+        for i in r.messages:
+            if isinstance(i, types.Message):
+                parser = message_parser.parse_message
+            elif isinstance(i, types.MessageService):
+                parser = message_parser.parse_message_service
+            else:
+                continue
+
+            messages.append(parser(self, i, users, chats))
+
+        return messages

@@ -18,8 +18,8 @@
 
 
 class ParseMode:
-    """This class provides a convenient access to parse modes.
-    It is intended to be used with any method that accepts the optional argument **parse_mode**
+    """This class provides a convenient access to Parse Modes.
+    Parse Modes are intended to be used with any method that accepts the optional argument **parse_mode**.
     """
 
     HTML = "html"

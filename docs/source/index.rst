@@ -3,16 +3,10 @@ Welcome to Pyrogram
 
 .. raw:: html
 
-    <p align="right">
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram/subscription" data-icon="octicon-eye" data-size="large" data-show-count="true" aria-label="Watch pyrogram/pyrogram on GitHub">Watch</a>
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
-        <a class="github-button" href="https://github.com/pyrogram/pyrogram/fork" data-icon="octicon-repo-forked" data-size="large" data-show-count="true" aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
-    </p>
-
     <div align="center">
-        <a href="https://pyrogram.ml">
-            <div><img src="https://pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
-            <div><img src="https://pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
+        <a href="https://docs.pyrogram.ml">
+            <div><img src="https://media.pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
+            <div><img src="https://media.pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
         </a>
     </div>
 
@@ -32,83 +26,72 @@ Welcome to Pyrogram
         </a>
         <br><br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://www.pyrogram.ml/images/scheme.svg"
+            <img src="https://media.pyrogram.ml/images/scheme.svg"
                 alt="Scheme Layer 75">
         </a>
-        <a href="https://core.telegram.org/mtproto">
-            <img src="https://www.pyrogram.ml/images/mtproto.svg"
-                alt="MTProto v2.0">
+        <a href="https://github.com/pyrogram/tgcrypto">
+            <img src="https://media.pyrogram.ml/images/tgcrypto.svg"
+                alt="TgCrypto">
         </a>
     </p>
+
+.. code-block:: python
+
+    from pyrogram import Client, Filters
+
+    app = Client("my_account")
+
+
+    @app.on_message(Filters.private)
+    def hello(client, message):
+        client.send_message(
+            message.chat.id, "Hello {}".format(message.from_user.first_name))
+
+
+    app.start()
+    app.idle()
+
+Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the library.
+Contents are organized by topic and can be accessed from the sidebar, or by following them one by one using the Next
+button at the end of each page. But first, here's a brief overview of what is this all about.
 
 About
 -----
 
-Pyrogram is a fully functional Telegram Client Library written from the ground up in Python.
-It offers **simple** and **complete** access to the Telegram Messenger API and is designed for Python developers
-keen on building custom Telegram applications.
+Pyrogram is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
+custom Telegram applications that interact with the MTProto API as both User and Bot.
 
 Features
 --------
 
--   **Easy to setup**: Pyrogram can be easily installed and upgraded using **pip**, requires
-    a minimal set of dependencies (which are also automatically managed) and very few lines
-    of code to get started with.
+-   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
+-   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
+-   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
+-   **Updated** to the latest Telegram API version, currently Layer 76 running on MTProto 2.0.
+-   **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
+-   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
--   **Easy to use**: Pyrogram provides idiomatic, developer-friendly, clean and readable
-    Python code (either generated or hand-written) making the Telegram API simple to use.
-
--   **High level**: Pyrogram automatically handles all the low-level details of
-    communication with the Telegram servers by implementing the
-    `MTProto Mobile Protocol v2.0`_ and the mechanisms needed for establishing
-    a reliable connection.
-
--   **Fast**: Pyrogram's speed is boosted up by `TgCrypto`_, a high-performance, easy-to-install
-    crypto library written in C.
-
--   **Updated**: Pyrogram makes use of the latest Telegram API version, currently `Layer 75`_.
-
--   **Documented**: Pyrogram API public methods are documented and resemble the well
-    established Telegram Bot API, thus offering a familiar look to Bot developers.
-
--   **Full API support**: Beside the simple, bot-like methods offered by the Pyrogram API,
-    the library also provides a complete, low-level access to every single Telegram API method.
-
-Preview
--------
-
-.. code-block:: python
-
-    from pyrogram import Client
-
-    client = Client("example")
-    client.start()
-
-    client.send_message("me", "Hi there! I'm using Pyrogram")
-    client.send_photo("me", "/home/dan/pic.jpg", "Nice photo!")
-
-    client.stop()
-
-To get started, press Next.
+To get started, press the Next button.
 
 .. toctree::
     :hidden:
     :caption: Getting Started
 
-    getting_started/QuickInstallation
-    getting_started/ProjectSetup
-    getting_started/BasicUsage
+    start/QuickInstallation
+    start/ProjectSetup
+    start/BasicUsage
 
 .. toctree::
     :hidden:
     :caption: Resources
 
-    resources/TextFormatting
     resources/UpdateHandling
-    resources/ErrorHandling
-    resources/ProxyServer
+    resources/SOCKS5Proxy
+    resources/TgCrypto
     resources/AutoAuthorization
-    resources/FastCrypto
+    resources/TextFormatting
+    resources/BotsInteraction
+    resources/ErrorHandling
 
 .. toctree::
     :hidden:
@@ -123,8 +106,6 @@ To get started, press Next.
     functions/index
     types/index
 
-.. _`MTProto Mobile Protocol v2.0`: https://core.telegram.org/mtproto
+.. _`Telegram`: https://telegram.org/
 
-.. _TgCrypto: https://docs.pyrogram.ml/resources/FastCrypto/
-
-.. _`Layer 75`: https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl
+.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto/

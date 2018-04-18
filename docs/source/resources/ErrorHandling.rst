@@ -29,8 +29,7 @@ Examples
     )
 
     try:
-        # Something
-        pass
+        ...
     except BadRequest:
         pass
     except Flood:
@@ -44,18 +43,18 @@ Examples
     except UnknownError:
         pass
 
-Exceptions may also contain some informative values which can be useful.
-e.g. :obj:`FloodWait <pyrogram.api.errors.exceptions.flood_420.FloodWait>` holds the amount of seconds you have to wait before you
-can try again. The value is always stored in the ``x`` field of the returned exception object:
+Exception objects may also contain some informative values.
+E.g.: :obj:`FloodWait <pyrogram.api.errors.exceptions.flood_420.FloodWait>` holds the amount of seconds you have to wait
+before you can try again. The value is always stored in the ``x`` field of the returned exception object:
 
 .. code-block:: python
 
+    import time
     from pyrogram.api.errors import FloodWait
 
     try:
-        # something
-        pass
+        ...
     except FloodWait as e:
-        print(e.x)
+        time.sleep(e.x)
 
 **TODO: Better explanation on how to deal with exceptions**

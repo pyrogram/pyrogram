@@ -8,8 +8,8 @@ Beside bold, italic, and pre-formatted code, **Pyrogram does also support inline
 Markdown Style
 --------------
 
-To use this mode, pass :obj:`pyrogram.ParseMode.MARKDOWN` or "markdown" in the *parse_mode* field when using
-:obj:`send_message <pyrogram.Client.send_message>`. Use the following syntax in your message:
+To use this mode, pass :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or "markdown" in the *parse_mode* field when using
+:obj:`send_message() <pyrogram.Client.send_message>`. Use the following syntax in your message:
 
 .. code::
 
@@ -30,8 +30,8 @@ To use this mode, pass :obj:`pyrogram.ParseMode.MARKDOWN` or "markdown" in the *
 HTML Style
 ----------
 
-To use this mode, pass :obj:`pyrogram.ParseMode.HTML` or "html" in the *parse_mode* field when using
-:obj:`send_message <pyrogram.Client.send_message>`. The following tags are currently supported:
+To use this mode, pass :obj:`HTML <pyrogram.ParseMode.HTML>` or "html" in the *parse_mode* field when using
+:obj:`send_message() <pyrogram.Client.send_message>`. The following tags are currently supported:
 
 .. code::
 
@@ -56,14 +56,14 @@ Examples
 
     .. code-block:: python
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
-                "**bold**\n"
-                "__italic__\n"
-                "[mention](tg://user?id=23122162)\n"
-                "[url](https://pyrogram.ml)\n"
-                "`code`\n"
+                "**bold**, "
+                "__italic__, "
+                "[mention](tg://user?id=23122162), "
+                "[url](https://pyrogram.ml), "
+                "`code`"
             )
         )
 
@@ -71,7 +71,7 @@ Examples
 
     .. code-block:: python
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
                 # Code block language is optional
@@ -88,15 +88,15 @@ Examples
 
         from pyrogram import ParseMode
 
-        client.send_message(
+        app.send_message(
             chat_id="me",
             text=(
-                "<b>bold</b>, <strong>bold</strong>\n"
-                "<i>italic</i>, <em>italic</em>\n"
-                "<a href=\"https://pyrogram.ml/\">inline URL</a>\n"
-                "<a href=\"tg://user?id=23122162\">inline mention of a user</a>\n"
-                "<code>inline fixed-width code</code>\n"
-                "<pre>pre-formatted fixed-width code block</pre>\n"
+                "<b>bold</b>, <strong>bold</strong>, "
+                "<i>italic</i>, <em>italic</em>, "
+                "<a href=\"https://pyrogram.ml/\">inline URL</a>, "
+                "<a href=\"tg://user?id=23122162\">inline mention of a user</a>, "
+                "<code>inline fixed-width code</code>, "
+                "<pre>pre-formatted fixed-width code block</pre>"
             ),
             parse_mode=ParseMode.HTML
         )

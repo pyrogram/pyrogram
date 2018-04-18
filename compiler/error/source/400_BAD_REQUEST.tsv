@@ -49,3 +49,14 @@ MULTI_MEDIA_TOO_LONG	The album contains more than 10 items
 USERNAME_OCCUPIED	The username is already in use
 BOT_INLINE_DISABLED	The inline feature of the bot is disabled
 INLINE_RESULT_EXPIRED	The inline bot query expired
+INVITE_HASH_INVALID	The invite link hash is invalid
+USER_ALREADY_PARTICIPANT	The user is already a participant of this chat
+TTL_MEDIA_INVALID	This kind of media does not support self-destruction
+MAX_ID_INVALID	The max_id parameter is invalid
+CHANNEL_INVALID	The channel parameter is invalid
+DC_ID_INVALID	The dc_id parameter is invalid
+LIMIT_INVALID	The limit parameter is invalid
+OFFSET_INVALID	The offset parameter is invalid
+EMAIL_INVALID	The email provided is invalid
+USER_IS_BOT	A bot cannot send messages to other bots or to itself
+WEBPAGE_CURL_FAILED	Telegram could not fetch the provided URL

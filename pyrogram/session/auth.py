@@ -262,7 +262,6 @@ class Auth:
                 else:
                     raise e
 
-                log.warning("Auth key creation failed. Let's try again: {}".format(repr(e)))
                 time.sleep(1)
                 continue
             else:

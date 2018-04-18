@@ -6,7 +6,7 @@ from ..error import Error
 class {super_class}(Error):
     {docstring}
     CODE = {code}
-    """:obj:`int`: Error Code"""
+    """``int``: Error Code"""
     NAME = __doc__
 
 

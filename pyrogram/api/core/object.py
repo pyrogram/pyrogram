@@ -37,6 +37,9 @@ class Object:
     def __str__(self) -> str:
         return dumps(self, cls=Encoder, indent=4)
 
+    def __bool__(self) -> bool:
+        return True
+
     def __eq__(self, other) -> bool:
         return self.__dict__ == other.__dict__
 
@@ -50,6 +53,15 @@ class Object:
         return getattr(self, item)
 
 
+def remove_none(obj):
+    if isinstance(obj, (list, tuple, set)):
+        return type(obj)(remove_none(x) for x in obj if x is not None)
+    elif isinstance(obj, dict):
+        return type(obj)((remove_none(k), remove_none(v)) for k, v in obj.items() if k is not None and v is not None)
+    else:
+        return obj
+
+
 class Encoder(JSONEncoder):
     def default(self, o: Object):
         try:
@@ -60,7 +72,10 @@ class Encoder(JSONEncoder):
             else:
                 return repr(o)
 
-        return OrderedDict(
-            [("_", objects.get(getattr(o, "ID", None), None))]
-            + [i for i in content.items()]
-        )
+        if "pyrogram" in objects.get(getattr(o, "ID", "")):
+            return remove_none(OrderedDict([i for i in content.items()]))
+        else:
+            return OrderedDict(
+                [("_", objects.get(getattr(o, "ID", None), None))]
+                + [i for i in content.items()]
+            )

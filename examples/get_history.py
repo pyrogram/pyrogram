@@ -4,8 +4,8 @@ from pyrogram import Client
 from pyrogram.api import functions
 from pyrogram.api.errors import FloodWait
 
-client = Client("example")
-client.start()
+app = Client("my_account")
+app.start()
 
 target = "me"  # "me" refers to your own chat (Saved Messages)
 history = []  # List that will contain all the messages of the target chat
@@ -14,9 +14,9 @@ offset = 0  # Offset starts at 0
 
 while True:
     try:
-        messages = client.send(
+        messages = app.send(
             functions.messages.GetHistory(
-                client.resolve_peer(target),
+                app.resolve_peer(target),
                 0, 0, offset, limit, 0, 0, 0
             )
         )
@@ -31,7 +31,7 @@ while True:
     history.extend(messages.messages)
     offset += limit
 
-client.stop()
+app.stop()
 
 # Now the "history" list contains all the messages sorted by date in
 # descending order (from the most recent to the oldest one)

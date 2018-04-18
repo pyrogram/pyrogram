@@ -6,8 +6,7 @@ from pyrogram.api.core import *
 
 
 class {class_name}(Object):
-    """
-    {docstring_args}
+    """{docstring_args}
     """
     ID = {object_id}
 
