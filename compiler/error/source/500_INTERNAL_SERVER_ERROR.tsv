@@ -1,4 +1,4 @@
 id	message
 AUTH_RESTART	User authorization has restarted
-RPC_CALL_FAIL	The method can't be called because Telegram is having internal problems. Please try again later
-RPC_MCGET_FAIL	The method can't be called because Telegram is having internal problems. Please try again later
+RPC_CALL_FAIL	Telegram is having internal problems. Please try again later
+RPC_MCGET_FAIL	Telegram is having internal problems. Please try again later
