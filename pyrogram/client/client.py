@@ -2012,7 +2012,8 @@ class Client:
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             media (``list``):
-                A list containing either :obj:`pyrogram.InputMediaPhoto` or :obj:`pyrogram.InputMediaVideo` objects
+                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
+                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, optional):
@@ -3128,7 +3129,8 @@ class Client:
         elif isinstance(message, str):
             media = pyrogram.Document(
                 file_id=message,
-                file_size=0
+                file_size=0,
+                mime_type=""
             )
         else:
             return

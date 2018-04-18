@@ -20,8 +20,9 @@ from .handler import Handler
 
 
 class MessageHandler(Handler):
-    """The Message handler class. It is used to handle text, media and service messages coming from
-    any chat (private, group, channel).
+    """The Message handler class. Used to handle text, media and service messages coming from
+    any chat (private, group, channel). It is intended to be used with
+    :meth:`add_handler() <pyrogram.Client.add_handler>`
 
     Args:
         callback (``callable``):
@@ -52,7 +53,8 @@ class MessageHandler(Handler):
 
 
 class RawUpdateHandler(Handler):
-    """The Raw Update handler class. It is used to handle raw updates.
+    """The Raw Update handler class. Used to handle raw updates. It is intended to be used with
+    :meth:`add_handler() <pyrogram.Client.add_handler>`
 
     Args:
         callback (``callable``):
