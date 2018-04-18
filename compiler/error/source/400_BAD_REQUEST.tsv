@@ -58,5 +58,3 @@ DC_ID_INVALID	The dc_id parameter is invalid
 LIMIT_INVALID	The limit parameter is invalid
 OFFSET_INVALID	The offset parameter is invalid
 EMAIL_INVALID	The email provided is invalid
-RPC_CALL_FAIL	The method can't be called because Telegram is having internal problems. Please try again later
-RPC_MCGET_FAIL	The method can't be called because Telegram is having internal problems. Please try again later
