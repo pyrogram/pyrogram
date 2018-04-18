@@ -58,3 +58,5 @@ DC_ID_INVALID	The dc_id parameter is invalid
 LIMIT_INVALID	The limit parameter is invalid
 OFFSET_INVALID	The offset parameter is invalid
 EMAIL_INVALID	The email provided is invalid
+USER_IS_BOT	A bot cannot send messages to other bots or to itself
+WEBPAGE_CURL_FAILED	Telegram could not fetch the provided URL
