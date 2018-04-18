@@ -1,7 +1,7 @@
 |header|
 
-Pyrogram
-========
+Pyrogram |twitter|
+==================
 
 .. code-block:: python
 
@@ -50,8 +50,8 @@ Getting Started
 
 -   The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.ml.
 -   Reading Examples_ in this repository is also a good way for learning how things work.
--   Seeking extra help? Don't be shy and feel free to join our Community_!
--   For other requests you can send me an Email_ or a Message_.
+-   Seeking extra help? Don't be shy, come join and ask our Community_!
+-   For other requests you can send an Email_ or a Message_.
 
 Contributing
 ------------
@@ -110,6 +110,9 @@ Copyright & License
                 alt="TgCrypto">
         </a>
     </p>
+
+.. |twitter| image:: https://media.pyrogram.ml/images/twitter.svg
+    :target: https://twitter.com/intent/tweet?text=Build%20custom%20Telegram%20applications%20with%20Pyrogram&url=https://github.com/pyrogram/pyrogram&hashtags=Telegram,MTProto,Python
 
 .. |logo| image:: https://pyrogram.ml/images/logo.png
     :target: https://pyrogram.ml
