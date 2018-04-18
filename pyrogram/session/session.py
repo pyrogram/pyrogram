@@ -414,4 +414,4 @@ class Session:
                     datetime.now(), type(data)))
 
             time.sleep(0.5)
-            self.send(data, retries - 1)
+            return self.send(data, retries - 1)
