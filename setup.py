@@ -22,6 +22,7 @@ from sys import argv
 from setuptools import setup, find_packages
 
 from compiler.api import compiler as api_compiler
+from compiler.docs import compiler as docs_compiler
 from compiler.error import compiler as error_compiler
 
 
@@ -32,6 +33,7 @@ def read(file: str) -> list:
 
 if len(argv) > 1 and argv[1] != "sdist":
     api_compiler.start()
+    docs_compiler.start()
     error_compiler.start()
 
 with open("pyrogram/__init__.py", encoding="utf-8") as f:
