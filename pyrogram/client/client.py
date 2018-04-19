@@ -152,7 +152,8 @@ class Client:
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
-                 workers: int = 4):
+                 workers: int = 4,
+                 workdir: str = "."):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
@@ -167,6 +168,7 @@ class Client:
         self.force_sms = force_sms
 
         self.workers = workers
+        self.workdir = workdir
 
         self.token = None
 
@@ -882,7 +884,7 @@ class Client:
 
     def load_session(self):
         try:
-            with open("{}.session".format(self.session_name), encoding="utf-8") as f:
+            with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
                 s = json.load(f)
         except FileNotFoundError:
             self.dc_id = 1
@@ -914,7 +916,9 @@ class Client:
         auth_key = base64.b64encode(self.auth_key).decode()
         auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
 
-        with open("{}.session".format(self.session_name), "w", encoding="utf-8") as f:
+        os.makedirs(self.workdir, exist_ok=True)
+
+        with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), "w", encoding="utf-8") as f:
             json.dump(
                 dict(
                     dc_id=self.dc_id,

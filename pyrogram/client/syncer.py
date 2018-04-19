@@ -23,6 +23,7 @@ import os
 import shutil
 import time
 from threading import Thread, Event, Lock
+
 from . import utils
 
 log = logging.getLogger(__name__)
@@ -80,6 +81,9 @@ class Syncer:
 
     @classmethod
     def sync(cls, client):
+        temporary = os.path.join(client.workdir, "{}.sync".format(client.session_name))
+        persistent = os.path.join(client.workdir, "{}.session".format(client.session_name))
+
         try:
             auth_key = base64.b64encode(client.auth_key).decode()
             auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
@@ -104,7 +108,9 @@ class Syncer:
                 }
             )
 
-            with open("{}.sync".format(client.session_name), "w", encoding="utf-8") as f:
+            os.makedirs(client.workdir, exist_ok=True)
+
+            with open(temporary, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4)
 
                 f.flush()
@@ -112,14 +118,10 @@ class Syncer:
         except Exception as e:
             log.critical(e, exc_info=True)
         else:
-            shutil.move(
-                "{}.sync".format(client.session_name),
-                "{}.session".format(client.session_name)
-            )
-
+            shutil.move(temporary, persistent)
             log.info("Synced {}".format(client.session_name))
         finally:
             try:
-                os.remove("{}.sync".format(client.session_name))
+                os.remove(temporary)
             except OSError:
                 pass
