@@ -13,8 +13,8 @@ app = Client("my_account")
 def welcome(client, message):
     new_members = ", ".join([
         "[{}](tg://user?id={})".format(i.first_name, i.id)
-        for i in message.new_chat_members]
-    )
+        for i in message.new_chat_members
+    ])
 
     text = "{} Welcome to [Pyrogram](https://docs.pyrogram.ml/)'s group chat {}!".format(
         Emoji.SPARKLES,
