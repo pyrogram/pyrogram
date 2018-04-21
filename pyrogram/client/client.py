@@ -810,7 +810,6 @@ class Client:
         log.debug("{} stopped".format(name))
 
     def signal_handler(self, *args):
-        self.stop()
         self.is_idle = False
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
@@ -829,6 +828,8 @@ class Client:
 
         while self.is_idle:
             time.sleep(1)
+
+        self.stop()
 
     def send(self, data: Object):
         """Use this method to send Raw Function queries.
