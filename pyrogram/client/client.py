@@ -119,6 +119,10 @@ class Client:
 
         workers (``int``, optional):
             Thread pool size for handling incoming updates. Defaults to 4.
+
+        workdir (``str``, optional):
+            Define a custom working directory. The working directory is the location in your filesystem
+            where Pyrogram will store your session files. Defaults to "." (current directory).
     """
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
