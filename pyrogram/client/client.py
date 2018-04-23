@@ -3336,7 +3336,7 @@ class Client:
 
     def get_messages(self,
                      chat_id: int or str,
-                     message_ids: list):
+                     message_ids: list or int):
         """Use this method to get messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -3347,16 +3347,21 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``list``):
-                A list of Message identifiers in the chat specified in *chat_id*.
+            message_ids (``list`` | ``int``):
+                A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
 
         Returns:
-            On success, a list of the requested :obj:`Messages <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success and in case *message_ids* was a list, the returned value will be a list of the requested
+            :obj:`Messages <pyrogram.api.types.pyrogram.Message>` even if a list contains just one element, otherwise if
+            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.api.types.pyrogram.Message>`
+            is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
+        is_list = isinstance(message_ids, list)
+        message_ids = message_ids if is_list else [message_ids]
         message_ids = [types.InputMessageID(i) for i in message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
@@ -3382,8 +3387,8 @@ class Client:
             elif isinstance(i, types.MessageService):
                 parser = message_parser.parse_message_service
             else:
-                continue
+                parser = message_parser.parse_message_empty
 
             messages.append(parser(self, i, users, chats))
 
-        return messages
+        return messages if is_list else messages[0]
