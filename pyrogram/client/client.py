@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import struct
+import sys
 import tempfile
 import threading
 import time
@@ -56,6 +57,9 @@ from .input_media_photo import InputMediaPhoto
 from .input_media_video import InputMediaVideo
 from .style import Markdown, HTML
 from .syncer import Syncer
+
+# Custom format for nice looking log lines
+LOG_FORMAT = "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
 
 log = logging.getLogger(__name__)
 
@@ -257,15 +261,31 @@ class Client:
         """
         self.dispatcher.add_handler(handler, group)
 
-    def start(self):
+    def start(self, debug: bool = False):
         """Use this method to start the Client after creating it.
         Requires no parameters.
+
+        Args:
+            debug (``bool``, optional):
+                Enable or disable debug mode. When enabled, extra logging
+                lines will be printed out on your console.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
+
+        logging.basicConfig(
+            format=LOG_FORMAT,
+            datefmt="%Y-%m-%d %H:%M:%S",
+            stream=sys.stdout
+        )
+
+        if debug:
+            logging.getLogger().setLevel(logging.INFO)
+        else:
+            logging.getLogger().setLevel(logging.WARNING)
 
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
