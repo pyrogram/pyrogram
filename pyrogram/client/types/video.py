@@ -1,0 +1,60 @@
+# Pyrogram - Telegram MTProto API Client Library for Python
+# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+#
+# This file is part of Pyrogram.
+#
+# Pyrogram is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pyrogram is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
+from pyrogram.api.core import Object
+
+
+class Video(Object):
+    """This object represents a video file.
+
+    Attributes:
+        ID: ``0xb0700008``
+
+    Args:
+        file_id (``str``):
+            Unique identifier for this file.
+
+        width (``int`` ``32-bit``):
+            Video width as defined by sender.
+
+        height (``int`` ``32-bit``):
+            Video height as defined by sender.
+
+        duration (``int`` ``32-bit``):
+            Duration of the video in seconds as defined by sender.
+
+        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+            Video thumbnail.
+
+        mime_type (``str``, optional):
+            Mime type of a file as defined by sender.
+
+        file_size (``int`` ``32-bit``, optional):
+            File size.
+
+    """
+    ID = 0xb0700008
+
+    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
+        self.file_id = file_id  # string
+        self.width = width  # int
+        self.height = height  # int
+        self.duration = duration  # int
+        self.thumb = thumb  # flags.0?PhotoSize
+        self.mime_type = mime_type  # flags.1?string
+        self.file_size = file_size  # flags.2?int
