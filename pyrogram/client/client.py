@@ -1122,7 +1122,7 @@ class Client:
     def forward_messages(self,
                          chat_id: int or str,
                          from_chat_id: int or str,
-                         message_ids: list,
+                         message_ids: list or int,
                          disable_notification: bool = None):
         """Use this method to forward messages of any kind.
 
@@ -1139,8 +1139,8 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``list``):
-                A list of Message identifiers in the chat specified in *from_chat_id*.
+            message_ids (``list`` | ``int``):
+                A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
 
             disable_notification (``bool``, optional):
                 Sends the message silently.
@@ -1152,6 +1152,12 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        message_ids = (
+            message_ids
+            if isinstance(message_ids, list)
+            else [message_ids]
+        )
+
         return self.send(
             functions.messages.ForwardMessages(
                 to_peer=self.resolve_peer(chat_id),
