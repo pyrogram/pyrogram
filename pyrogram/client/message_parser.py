@@ -479,8 +479,8 @@ def parse_message(
     )
 
     if message.reply_to_msg_id and replies:
-        m.reply_to_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
-        m.reply_to_message = m.reply_to_message[0] if m.reply_to_message else None
+        m.reply_to_message = client.get_messages(m.chat.id, message.reply_to_msg_id)
+        m.reply_to_message = m.reply_to_message
 
     return m
 
@@ -579,7 +579,20 @@ def parse_message_service(
     )
 
     if isinstance(action, types.MessageActionPinMessage):
-        m.pinned_message = client.get_messages(m.chat.id, [message.reply_to_msg_id])
-        m.pinned_message = m.pinned_message[0] if m.pinned_message else None
+        m.pinned_message = client.get_messages(m.chat.id, message.reply_to_msg_id)
+        m.pinned_message = m.pinned_message
 
     return m
+
+
+def parse_message_empty(
+        client,
+        message: types.MessageEmpty,
+        users: dict,
+        chats: dict
+) -> pyrogram.Message:
+    return pyrogram.Message(
+        message_id=message.id,
+        date=None,
+        chat=None
+    )
