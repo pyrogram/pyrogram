@@ -1147,18 +1147,18 @@ class Client:
                 Users will receive a notification with no sound.
 
         Returns:
-            On success, the sent Message is returned.
+            On success and in case *message_ids* was a list, the returned value will be a list of the forwarded
+            :obj:`Messages <pyrogram.api.types.pyrogram.Message>` even if a list contains just one element, otherwise if
+            *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.api.types.pyrogram.Message>`
+            is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        message_ids = (
-            message_ids
-            if isinstance(message_ids, list)
-            else [message_ids]
-        )
+        is_list = isinstance(message_ids, list)
+        message_ids = message_ids if is_list else [message_ids]
 
-        return self.send(
+        r = self.send(
             functions.messages.ForwardMessages(
                 to_peer=self.resolve_peer(chat_id),
                 from_peer=self.resolve_peer(from_chat_id),
@@ -1167,6 +1167,19 @@ class Client:
                 random_id=[self.rnd_id() for _ in message_ids]
             )
         )
+
+        messages = []
+
+        users = {i.id: i for i in r.users}
+        chats = {i.id: i for i in r.chats}
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                messages.append(
+                    message_parser.parse_message(self, i.message, users, chats)
+                )
+
+        return messages if is_list else messages[0]
 
     def send_photo(self,
                    chat_id: int or str,
