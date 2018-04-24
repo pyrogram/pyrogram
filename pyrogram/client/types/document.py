@@ -29,19 +29,19 @@ class Document(Object):
         file_id (``str``):
             Unique file identifier.
 
-        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Document thumbnail as defined by sender.
 
-        file_name (``str``, optional):
+        file_name (``str``, *optional*):
             Original filename as defined by sender.
 
-        mime_type (``str``, optional):
+        mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        date (``int``, optional):
+        date (``int``, *optional*):
             Date the document was sent in Unix time.
     """
     ID = 0xb0700007

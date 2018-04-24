@@ -29,28 +29,28 @@ class Video(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        width (``int`` ``32-bit``):
+        width (``int``):
             Video width as defined by sender.
 
-        height (``int`` ``32-bit``):
+        height (``int``):
             Video height as defined by sender.
 
-        duration (``int`` ``32-bit``):
+        duration (``int``):
             Duration of the video in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Video thumbnail.
 
-        file_name (``str``, optional):
+        file_name (``str``, *optional*):
             Video file name.
 
-        mime_type (``str``, optional):
+        mime_type (``str``, *optional*):
             Mime type of a file as defined by sender.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        date (``int``, optional):
+        date (``int``, *optional*):
             Date the video was sent in Unix time.
     """
     ID = 0xb0700008

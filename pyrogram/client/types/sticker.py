@@ -29,34 +29,34 @@ class Sticker(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        width (``int`` ``32-bit``):
+        width (``int``):
             Sticker width.
 
-        height (``int`` ``32-bit``):
+        height (``int``):
             Sticker height.
 
-        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Sticker thumbnail in the .webp or .jpg format.
 
-        file_name (``str``, optional):
+        file_name (``str``, *optional*):
             Sticker file name.
 
-        mime_type (``str``, optional):
+        mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        date (``int``, optional):
+        date (``int``, *optional*):
             Date the sticker was sent in Unix time.
 
-        emoji (``str``, optional):
+        emoji (``str``, *optional*):
             Emoji associated with the sticker.
 
-        set_name (``str``, optional):
+        set_name (``str``, *optional*):
             Name of the sticker set to which the sticker belongs.
 
-        mask_position (:obj:`MaskPosition <pyrogram.types.MaskPosition>`, optional):
+        mask_position (:obj:`MaskPosition <pyrogram.MaskPosition>`, *optional*):
             For mask stickers, the position where the mask should be placed.
     """
     ID = 0xb0700017

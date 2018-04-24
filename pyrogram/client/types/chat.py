@@ -26,7 +26,7 @@ class Chat(Object):
         ID: ``0xb0700002``
 
     Args:
-        id (``int`` ``32-bit``):
+        id (``int``):
             Unique identifier for this chat. This number may be greater than 32 bits and some programming
             languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits,
             so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
@@ -34,37 +34,37 @@ class Chat(Object):
         type (``str``):
             Type of chat, can be either "private", "group", "supergroup" or "channel".
 
-        title (``str``, optional):
+        title (``str``, *optional*):
             Title, for supergroups, channels and group chats.
 
-        username (``str``, optional):
+        username (``str``, *optional*):
             Username, for private chats, supergroups and channels if available.
 
-        first_name (``str``, optional):
+        first_name (``str``, *optional*):
             First name of the other party in a private chat.
 
-        last_name (``str``, optional):
+        last_name (``str``, *optional*):
             Last name of the other party in a private chat.
 
-        all_members_are_administrators (``bool``, optional):
+        all_members_are_administrators (``bool``, *optional*):
             True if a group has 'All Members Are Admins' enabled.
 
-        photo (:obj:`ChatPhoto <pyrogram.types.ChatPhoto>`, optional):
+        photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             Chat photo. Returned only in getChat.
 
-        description (``str``, optional):
+        description (``str``, *optional*):
             Description, for supergroups and channel chats. Returned only in getChat.
 
-        invite_link (``str``, optional):
+        invite_link (``str``, *optional*):
             Chat invite link, for supergroups and channel chats. Returned only in getChat.
 
-        pinned_message (:obj:`Message <pyrogram.types.Message>`, optional):
+        pinned_message (:obj:`Message <pyrogram.Message>`, *optional*):
             Pinned message, for supergroups and channel chats. Returned only in getChat.
 
-        sticker_set_name (``str``, optional):
+        sticker_set_name (``str``, *optional*):
             For supergroups, name of group sticker set. Returned only in getChat.
 
-        can_set_sticker_set (``bool``, optional):
+        can_set_sticker_set (``bool``, *optional*):
             True, if the bot can change the group sticker set. Returned only in getChat.
 
     """

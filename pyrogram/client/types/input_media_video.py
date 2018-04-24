@@ -22,30 +22,30 @@ class InputMediaVideo:
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
     Args:
-        media (:obj:`str`):
+        media (``str``):
             Video to send.
             Pass a file_id as string to send a video that exists on the Telegram servers or
             pass a file path as string to upload a new video that exists on your local machine.
             Sending video by a URL is currently unsupported.
 
-        caption (:obj:`str`, optional):
+        caption (``str``, *optional*):
             Caption of the video to be sent, 0-200 characters
 
-        parse_mode (:obj:`str`, optional):
+        parse_mode (``str``, *optional*):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
             if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
             Defaults to Markdown.
 
-        width (:obj:`int`, optional):
+        width (``int``, *optional*):
             Video width.
 
-        height (:obj:`int`, optional):
+        height (``int``, *optional*):
             Video height.
 
-        duration (:obj:`int`, optional):
+        duration (``int``, *optional*):
             Video duration.
 
-        supports_streaming (:obj:`bool`, optional):
+        supports_streaming (``bool``, *optional*):
             Pass True, if the uploaded video is suitable for streaming.
     """
 

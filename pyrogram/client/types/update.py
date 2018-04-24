@@ -27,33 +27,33 @@ class Update(Object):
         ID: ``0xb0700000``
 
     Args:
-        message (:obj:`Message <pyrogram.types.Message>`, optional):
+        message (:obj:`Message <pyrogram.Message>`, *optional*):
             New incoming message of any kind — text, photo, sticker, etc.
 
-        edited_message (:obj:`Message <pyrogram.types.Message>`, optional):
+        edited_message (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a message that is known to the bot and was edited.
 
-        channel_post (:obj:`Message <pyrogram.types.Message>`, optional):
+        channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
             New incoming channel post of any kind — text, photo, sticker, etc.
 
-        edited_channel_post (:obj:`Message <pyrogram.types.Message>`, optional):
+        edited_channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a channel post that is known to the bot and was edited.
 
-        inline_query (:obj:`InlineQuery <pyrogram.types.InlineQuery>`, optional):
+        inline_query (:obj:`InlineQuery <pyrogram.InlineQuery>`, *optional*):
             New incoming inline query.
 
-        chosen_inline_result (:obj:`ChosenInlineResult <pyrogram.types.ChosenInlineResult>`, optional):
+        chosen_inline_result (:obj:`ChosenInlineResult <pyrogram.ChosenInlineResult>`, *optional*):
             The result of an inline query that was chosen by a user and sent to their chat partner.
             Please see our documentation on the feedback collecting for details on how to enable these updates
             for your bot.
 
-        callback_query (:obj:`CallbackQuery <pyrogram.types.CallbackQuery>`, optional):
+        callback_query (:obj:`CallbackQuery <pyrogram.CallbackQuery>`, *optional*):
             New incoming callback query.
 
-        shipping_query (:obj:`ShippingQuery <pyrogram.types.ShippingQuery>`, optional):
+        shipping_query (:obj:`ShippingQuery <pyrogram.ShippingQuery>`, *optional*):
             New incoming shipping query. Only for invoices with flexible price.
 
-        pre_checkout_query (:obj:`PreCheckoutQuery <pyrogram.types.PreCheckoutQuery>`, optional):
+        pre_checkout_query (:obj:`PreCheckoutQuery <pyrogram.PreCheckoutQuery>`, *optional*):
             New incoming pre-checkout query. Contains full information about checkout.
 
     """

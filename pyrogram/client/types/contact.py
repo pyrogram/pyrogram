@@ -32,10 +32,10 @@ class Contact(Object):
         first_name (``str``):
             Contact's first name.
 
-        last_name (``str``, optional):
+        last_name (``str``, *optional*):
             Contact's last name.
 
-        user_id (``int`` ``32-bit``, optional):
+        user_id (``int``, *optional*):
             Contact's user identifier in Telegram.
     """
     ID = 0xb0700011

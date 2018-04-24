@@ -26,7 +26,7 @@ class Venue(Object):
         ID: ``0xb0700013``
 
     Args:
-        location (:obj:`Location <pyrogram.types.Location>`):
+        location (:obj:`Location <pyrogram.Location>`):
             Venue location.
 
         title (``str``):
@@ -35,7 +35,7 @@ class Venue(Object):
         address (``str``):
             Address of the venue.
 
-        foursquare_id (``str``, optional):
+        foursquare_id (``str``, *optional*):
             Foursquare identifier of the venue.
 
     """

@@ -591,8 +591,4 @@ def parse_message_empty(
         users: dict,
         chats: dict
 ) -> pyrogram_types.Message:
-    return pyrogram_types.Message(
-        message_id=message.id,
-        date=None,
-        chat=None
-    )
+    return pyrogram_types.Message(message_id=message.id)

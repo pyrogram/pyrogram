@@ -26,7 +26,7 @@ class User(Object):
         ID: ``0xb0700001``
 
     Args:
-        id (``int`` ``32-bit``):
+        id (``int``):
             Unique identifier for this user or bot.
 
         is_bot (``bool``):
@@ -35,19 +35,19 @@ class User(Object):
         first_name (``str``):
             User's or bot's first name.
 
-        last_name (``str``, optional):
+        last_name (``str``, *optional*):
             User's or bot's last name.
 
-        username (``str``, optional):
+        username (``str``, *optional*):
             User's or bot's username.
 
-        language_code (``str``, optional):
+        language_code (``str``, *optional*):
             IETF language tag of the user's language.
 
-        phone_number (``str``, optional):
+        phone_number (``str``, *optional*):
             User's or bot's phone number.
 
-        photo (obj:`ChatPhoto <pyrogram.types.ChatPhoto>`, optional):
+        photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             User's or bot's current profile photo.
     """
     ID = 0xb0700001

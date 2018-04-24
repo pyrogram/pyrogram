@@ -31,7 +31,7 @@ class InputPhoneContact:
         first_name (``str``):
             Contact's first name
 
-        last_name (``str``, optional):
+        last_name (``str``, *optional*):
             Contact's last name
     """
 

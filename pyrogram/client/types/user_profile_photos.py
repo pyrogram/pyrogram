@@ -26,10 +26,10 @@ class UserProfilePhotos(Object):
         ID: ``0xb0700014``
 
     Args:
-        total_count (``int`` ``32-bit``):
+        total_count (``int``):
             Total number of profile pictures the target user has.
 
-        photos (List of List of :obj:`PhotoSize <pyrogram.types.PhotoSize>`):
+        photos (List of List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
             Requested profile pictures (in up to 4 sizes each).
 
     """

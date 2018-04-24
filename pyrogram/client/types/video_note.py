@@ -29,28 +29,28 @@ class VideoNote(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        length (``int`` ``32-bit``):
+        length (``int``):
             Video width and height as defined by sender.
 
-        duration (``int`` ``32-bit``):
+        duration (``int``):
             Duration of the video in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Video thumbnail.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        file_name (``str``, optional):
+        file_name (``str``, *optional*):
             Video note file name.
 
-        mime_type (``str``, optional):
+        mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        date (``int``, optional):
+        date (``int``, *optional*):
             Date the video note was sent in Unix time.
     """
     ID = 0xb0700010

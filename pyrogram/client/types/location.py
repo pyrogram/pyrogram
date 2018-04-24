@@ -26,10 +26,10 @@ class Location(Object):
         ID: ``0xb0700012``
 
     Args:
-        longitude (``float`` ``64-bit``):
+        longitude (``float``):
             Longitude as defined by sender.
 
-        latitude (``float`` ``64-bit``):
+        latitude (``float``):
             Latitude as defined by sender.
     """
     ID = 0xb0700012

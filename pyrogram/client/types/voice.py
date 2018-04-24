@@ -29,22 +29,22 @@ class Voice(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        duration (``int`` ``32-bit``):
+        duration (``int``):
             Duration of the audio in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Voice thumbnail.
 
-        file_name (``str``, optional):
+        file_name (``str``, *optional*):
             Voice file name.
 
-        mime_type (``str``, optional):
+        mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
-        file_size (``int`` ``32-bit``, optional):
+        file_size (``int``, *optional*):
             File size.
 
-        date (``int``, optional):
+        date (``int``, *optional*):
             Date the voice was sent in Unix time.
     """
     ID = 0xb0700009

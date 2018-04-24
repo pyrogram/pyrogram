@@ -33,16 +33,16 @@ class MessageEntity(Object):
             code (monowidth string), pre (monowidth block), text_link (for clickable text URLs),
             text_mention (for users without usernames).
 
-        offset (``int`` ``32-bit``):
+        offset (``int``):
             Offset in UTF-16 code units to the start of the entity.
 
-        length (``int`` ``32-bit``):
+        length (``int``):
             Length of the entity in UTF-16 code units.
 
-        url (``str``, optional):
+        url (``str``, *optional*):
             For "text_link" only, url that will be opened after user taps on the text.
 
-        user (:obj:`User <pyrogram.types.User>`, optional):
+        user (:obj:`User <pyrogram.User>`, *optional*):
             For "text_mention" only, the mentioned user.
 
     """
