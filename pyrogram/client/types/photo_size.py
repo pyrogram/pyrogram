@@ -38,11 +38,14 @@ class PhotoSize(Object):
         file_size (``int`` ``32-bit``, optional):
             File size.
 
+        date (``int``, optional):
+            Date the photo was sent in Unix time
     """
     ID = 0xb0700005
 
-    def __init__(self, file_id, width, height, file_size=None):
+    def __init__(self, file_id, width, height, file_size=None, date=None):
         self.file_id = file_id  # string
         self.width = width  # int
         self.height = height  # int
         self.file_size = file_size  # flags.0?int
+        self.date = date
