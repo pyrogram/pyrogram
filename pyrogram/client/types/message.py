@@ -29,13 +29,13 @@ class Message(Object):
         message_id (``int`` ``32-bit``):
             Unique message identifier inside this chat.
 
-        date (``int`` ``32-bit``, optional):
+        date (``int`` ``32-bit``):
             Sender, empty for messages sent to channels.
 
         chat (:obj:`Chat <pyrogram.types.Chat>`):
             Date the message was sent in Unix time.
 
-        from_user (:obj:`User <pyrogram.types.User>`):
+        from_user (:obj:`User <pyrogram.types.User>`, optional):
             Conversation the message belongs to.
 
         forward_from (:obj:`User <pyrogram.types.User>`, optional):
@@ -54,7 +54,8 @@ class Message(Object):
             For forwarded messages, date the original message was sent in Unix time.
 
         reply_to_message (:obj:`Message <pyrogram.types.Message>`, optional):
-            For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
+            For replies, the original message. Note that the Message object in this field will not contain
+            further reply_to_message fields even if it itself is a reply.
 
         edit_date (``int`` ``32-bit``, optional):
             Date the message was last edited in Unix time.
@@ -72,7 +73,8 @@ class Message(Object):
             For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
 
         caption_entities (List of :obj:`MessageEntity <pyrogram.types.MessageEntity>`, optional):
-            For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption.
+            For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear
+            in the caption.
 
         audio (:obj:`Audio <pyrogram.types.Audio>`, optional):
             Message is an audio file, information about the file.
@@ -111,7 +113,8 @@ class Message(Object):
             Message is a venue, information about the venue.
 
         new_chat_members (List of :obj:`User <pyrogram.types.User>`, optional):
-            New members that were added to the group or supergroup and information about them (the bot itself may be one of these members).
+            New members that were added to the group or supergroup and information about them
+            (the bot itself may be one of these members).
 
         left_chat_member (:obj:`User <pyrogram.types.User>`, optional):
             A member was removed from the group, information about them (this member may be the bot itself).
@@ -129,19 +132,33 @@ class Message(Object):
             Service message: the group has been created.
 
         supergroup_chat_created (``bool``, optional):
-            Service message: the supergroup has been created. This field can't be received in a message coming through updates, because bot can't be a member of a supergroup when it is created. It can only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
+            Service message: the supergroup has been created.
+            This field can't be received in a message coming through updates, because bot can't be a member of a
+            supergroup when it is created. It can only be found in reply_to_message if someone replies to a very
+            first message in a directly created supergroup.
 
         channel_chat_created (``bool``, optional):
-            Service message: the channel has been created. This field can't be received in a message coming through updates, because bot can't be a member of a channel when it is created. It can only be found in reply_to_message if someone replies to a very first message in a channel.
+            Service message: the channel has been created.
+            This field can't be received in a message coming through updates, because bot can't be a member of a
+            channel when it is created. It can only be found in reply_to_message if someone replies to a very
+            first message in a channel.
 
         migrate_to_chat_id (``int`` ``32-bit``, optional):
-            The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+            The group has been migrated to a supergroup with the specified identifier.
+            This number may be greater than 32 bits and some programming languages may have difficulty/silent defects
+            in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float
+            type are safe for storing this identifier.
 
         migrate_from_chat_id (``int`` ``32-bit``, optional):
-            The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+            The supergroup has been migrated from a group with the specified identifier.
+            This number may be greater than 32 bits and some programming languages may have difficulty/silent defects
+            in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float
+            type are safe for storing this identifier.
 
         pinned_message (:obj:`Message <pyrogram.types.Message>`, optional):
-            Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
+            Specified message was pinned.
+            Note that the Message object in this field will not contain further reply_to_message fields even if it
+            is itself a reply.
 
         invoice (:obj:`Invoice <pyrogram.types.Invoice>`, optional):
             Message is an invoice for a payment, information about the invoice. More about payments.
@@ -152,14 +169,65 @@ class Message(Object):
         connected_website (``str``, optional):
             The domain name of the website on which the user has logged in. More about Telegram Login.
 
+        views (``int``, optional):
+            Channel post views.
+
+        via_bot (:obj:`User <pyrogram.types.User>`):
+            Via bot.
     """
     ID = 0xb0700003
 
-    def __init__(self, message_id, date, chat, from_user=None, forward_from=None, forward_from_chat=None, forward_from_message_id=None, forward_signature=None, forward_date=None, reply_to_message=None, edit_date=None, media_group_id=None, author_signature=None, text=None, entities=None, caption_entities=None, audio=None, document=None, game=None, photo=None, sticker=None, video=None, voice=None, video_note=None, caption=None, contact=None, location=None, venue=None, new_chat_members=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None, invoice=None, successful_payment=None, connected_website=None):
+    def __init__(
+            self,
+            message_id: int,
+            date: int,
+            chat,
+            from_user=None,
+            forward_from=None,
+            forward_from_chat=None,
+            forward_from_message_id: int = None,
+            forward_signature: str = None,
+            forward_date: int = None,
+            reply_to_message=None,
+            edit_date: int = None,
+            media_group_id: str = None,
+            author_signature: str = None,
+            text: str = None,
+            entities: list = None,
+            caption_entities: list = None,
+            audio=None,
+            document=None,
+            game=None,
+            photo=None,
+            sticker=None,
+            video=None,
+            voice=None,
+            video_note=None,
+            caption: str = None,
+            contact=None,
+            location=None,
+            venue=None,
+            new_chat_members: list = None,
+            left_chat_member=None,
+            new_chat_title: str = None,
+            new_chat_photo=None,
+            delete_chat_photo: bool = None,
+            group_chat_created: bool = None,
+            supergroup_chat_created: bool = None,
+            channel_chat_created: bool = None,
+            migrate_to_chat_id: int = None,
+            migrate_from_chat_id: int = None,
+            pinned_message=None,
+            invoice=None,
+            successful_payment=None,
+            connected_website=None,
+            views: int = None,
+            via_bot=None
+    ):
         self.message_id = message_id  # int
-        self.from_user = from_user  # flags.0?User
         self.date = date  # int
         self.chat = chat  # Chat
+        self.from_user = from_user  # flags.0?User
         self.forward_from = forward_from  # flags.1?User
         self.forward_from_chat = forward_from_chat  # flags.2?Chat
         self.forward_from_message_id = forward_from_message_id  # flags.3?int
@@ -198,3 +266,5 @@ class Message(Object):
         self.invoice = invoice  # flags.36?Invoice
         self.successful_payment = successful_payment  # flags.37?SuccessfulPayment
         self.connected_website = connected_website  # flags.38?string
+        self.views = views  # flags.39?int
+        self.via_bot = via_bot  # flags.40?User
