@@ -37,11 +37,10 @@ class Contact(Object):
 
         user_id (``int`` ``32-bit``, optional):
             Contact's user identifier in Telegram.
-
     """
     ID = 0xb0700011
 
-    def __init__(self, phone_number, first_name, last_name=None, user_id=None):
+    def __init__(self, phone_number: str, first_name: str, last_name: str = None, user_id=None):
         self.phone_number = phone_number  # string
         self.first_name = first_name  # string
         self.last_name = last_name  # flags.0?string
