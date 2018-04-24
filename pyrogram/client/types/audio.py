@@ -32,11 +32,11 @@ class Audio(Object):
         duration (``int`` ``32-bit``):
             Duration of the audio in seconds as defined by sender.
 
-        performer (``str``, optional):
-            Performer of the audio as defined by sender or by audio tags.
+        thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
+            Audio thumbnail.
 
-        title (``str``, optional):
-            Title of the audio as defined by sender or by audio tags.
+        file_name (``str``, optional):
+            Audio file name.
 
         mime_type (``str``, optional):
             MIME type of the file as defined by sender.
@@ -44,13 +44,35 @@ class Audio(Object):
         file_size (``int`` ``32-bit``, optional):
             File size.
 
+        date (``int``, optional):
+            Date the audio was sent in Unix time.
+
+        performer (``str``, optional):
+            Performer of the audio as defined by sender or by audio tags.
+
+        title (``str``, optional):
+            Title of the audio as defined by sender or by audio tags.
     """
     ID = 0xb0700006
 
-    def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
+    def __init__(
+            self,
+            file_id: str,
+            duration: int,
+            thumb=None,
+            file_name: str = None,
+            mime_type: str = None,
+            file_size: int = None,
+            date: int = None,
+            performer: str = None,
+            title: str = None
+    ):
         self.file_id = file_id  # string
-        self.duration = duration  # int
-        self.performer = performer  # flags.0?string
-        self.title = title  # flags.1?string
+        self.thumb = thumb  # flags.0?PhotoSize
+        self.file_name = file_name  # flags.1?string
         self.mime_type = mime_type  # flags.2?string
         self.file_size = file_size  # flags.3?int
+        self.date = date  # flags.4?int
+        self.duration = duration  # int
+        self.performer = performer  # flags.5?string
+        self.title = title  # flags.6?string
