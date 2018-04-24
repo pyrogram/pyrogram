@@ -35,6 +35,6 @@ class UserProfilePhotos(Object):
     """
     ID = 0xb0700014
 
-    def __init__(self, total_count, photos):
+    def __init__(self, total_count: int, photos: list):
         self.total_count = total_count  # int
         self.photos = photos  # Vector<Vector<PhotoSize>>
