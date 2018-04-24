@@ -31,10 +31,9 @@ class Location(Object):
 
         latitude (``float`` ``64-bit``):
             Latitude as defined by sender.
-
     """
     ID = 0xb0700012
 
-    def __init__(self, longitude, latitude):
+    def __init__(self, longitude: float, latitude: float):
         self.longitude = longitude  # double
         self.latitude = latitude  # double
