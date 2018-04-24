@@ -20,14 +20,18 @@ from pyrogram.api.core import Object
 
 
 class MessageEntity(Object):
-    """This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
+    """This object represents one special entity in a text message.
+    For example, hashtags, usernames, URLs, etc.
 
     Attributes:
         ID: ``0xb0700004``
 
     Args:
         type (``str``):
-            Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames).
+            Type of the entity.
+            Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text),
+            code (monowidth string), pre (monowidth block), text_link (for clickable text URLs),
+            text_mention (for users without usernames).
 
         offset (``int`` ``32-bit``):
             Offset in UTF-16 code units to the start of the entity.
@@ -44,7 +48,7 @@ class MessageEntity(Object):
     """
     ID = 0xb0700004
 
-    def __init__(self, type, offset, length, url=None, user=None):
+    def __init__(self, type: str, offset: int, length: int, url: str = None, user=None):
         self.type = type  # string
         self.offset = offset  # int
         self.length = length  # int
