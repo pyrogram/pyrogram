@@ -30,7 +30,8 @@ class ChatMember(Object):
             Information about the user.
 
         status (``str``):
-            The member's status in the chat. Can be "creator", "administrator", "member", "restricted", "left" or "kicked".
+            The member's status in the chat. Can be "creator", "administrator", "member", "restricted",
+            "left" or "kicked".
 
         until_date (``int`` ``32-bit``, optional):
             Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
@@ -45,7 +46,8 @@ class ChatMember(Object):
             Administrators only. True, if the administrator can post in the channel, channels only.
 
         can_edit_messages (``bool``, optional):
-            Administrators only. True, if the administrator can edit messages of other users and can pin messages, channels only.
+            Administrators only. True, if the administrator can edit messages of other users and can pin messages,
+            channels only.
 
         can_delete_messages (``bool``, optional):
             Administrators only. True, if the administrator can delete messages of other users.
@@ -60,16 +62,20 @@ class ChatMember(Object):
             Administrators only. True, if the administrator can pin messages, supergroups only.
 
         can_promote_members (``bool``, optional):
-            Administrators only. True, if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
+            Administrators only. True, if the administrator can add new administrators with a subset of his
+            own privileges or demote administrators that he has promoted, directly or indirectly (promoted by
+            administrators that were appointed by the user).
 
         can_send_messages (``bool``, optional):
             Restricted only. True, if the user can send text messages, contacts, locations and venues.
 
         can_send_media_messages (``bool``, optional):
-            Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
+            Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes,
+            implies can_send_messages.
 
         can_send_other_messages (``bool``, optional):
-            Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages.
+            Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies
+            can_send_media_messages.
 
         can_add_web_page_previews (``bool``, optional):
             Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
@@ -77,7 +83,25 @@ class ChatMember(Object):
     """
     ID = 0xb0700016
 
-    def __init__(self, user, status, until_date=None, can_be_edited=None, can_change_info=None, can_post_messages=None, can_edit_messages=None, can_delete_messages=None, can_invite_users=None, can_restrict_members=None, can_pin_messages=None, can_promote_members=None, can_send_messages=None, can_send_media_messages=None, can_send_other_messages=None, can_add_web_page_previews=None):
+    def __init__(
+            self,
+            user,
+            status: str,
+            until_date: int = None,
+            can_be_edited: bool = None,
+            can_change_info: bool = None,
+            can_post_messages: bool = None,
+            can_edit_messages: bool = None,
+            can_delete_messages: bool = None,
+            can_invite_users: bool = None,
+            can_restrict_members: bool = None,
+            can_pin_messages: bool = None,
+            can_promote_members: bool = None,
+            can_send_messages: bool = None,
+            can_send_media_messages: bool = None,
+            can_send_other_messages: bool = None,
+            can_add_web_page_previews: bool = None
+    ):
         self.user = user  # User
         self.status = status  # string
         self.until_date = until_date  # flags.0?int
