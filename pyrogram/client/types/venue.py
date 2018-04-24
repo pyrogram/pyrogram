@@ -41,7 +41,7 @@ class Venue(Object):
     """
     ID = 0xb0700013
 
-    def __init__(self, location, title, address, foursquare_id=None):
+    def __init__(self, location, title: str, address: str, foursquare_id: str = None):
         self.location = location  # Location
         self.title = title  # string
         self.address = address  # string
