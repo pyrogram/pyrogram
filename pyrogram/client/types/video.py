@@ -41,20 +41,38 @@ class Video(Object):
         thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
             Video thumbnail.
 
+        file_name (``str``, optional):
+            Video file name.
+
         mime_type (``str``, optional):
             Mime type of a file as defined by sender.
 
         file_size (``int`` ``32-bit``, optional):
             File size.
 
+        date (``int``, optional):
+            Date the video was sent in Unix time.
     """
     ID = 0xb0700008
 
-    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
+    def __init__(
+            self,
+            file_id: str,
+            width: int,
+            height: int,
+            duration: int,
+            thumb=None,
+            file_name: str = None,
+            mime_type: str = None,
+            file_size: int = None,
+            date: int = None
+    ):
         self.file_id = file_id  # string
+        self.thumb = thumb  # flags.0?PhotoSize
+        self.file_name = file_name  # flags.1?string
+        self.mime_type = mime_type  # flags.2?string
+        self.file_size = file_size  # flags.3?int
+        self.date = date  # flags.4?int
         self.width = width  # int
         self.height = height  # int
         self.duration = duration  # int
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.mime_type = mime_type  # flags.1?string
-        self.file_size = file_size  # flags.2?int
