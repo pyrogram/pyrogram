@@ -138,7 +138,6 @@ class Dispatcher:
 
                 self.dispatch(
                     pyrogram.Update(
-                        update_id=0,
                         message=((message if message.chat.type != "channel"
                                   else None) if not is_edited_message
                                  else None),

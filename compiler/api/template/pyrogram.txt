@@ -2,6 +2,7 @@
 
 from pyrogram.api.core import Object
 
+
 class {class_name}(Object):
     """{docstring_args}
     """

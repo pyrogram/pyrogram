@@ -18,10 +18,10 @@
 
 from struct import pack
 
-import pyrogram
-from pyrogram.api import types, functions
-from pyrogram.api.errors import StickersetInvalid
+from . import types as pyrogram_types
 from .utils import encode
+from ..api import types, functions
+from ..api.errors import StickersetInvalid
 
 # TODO: Organize the code better?
 
@@ -47,7 +47,7 @@ def parse_entities(entities: list, users: dict) -> list:
         entity_type = ENTITIES.get(entity.ID, None)
 
         if entity_type:
-            output_entities.append(pyrogram.MessageEntity(
+            output_entities.append(pyrogram_types.MessageEntity(
                 type=entity_type,
                 offset=entity.offset,
                 length=entity.length,
@@ -76,7 +76,7 @@ def parse_chat_photo(photo):
     loc_small = photo.photo_small
     loc_big = photo.photo_big
 
-    return pyrogram.ChatPhoto(
+    return pyrogram_types.ChatPhoto(
         small_file_id=encode(
             pack(
                 "<iiqqqqi", 0, loc_small.dc_id, 0, 0, loc_small.volume_id,
@@ -92,8 +92,8 @@ def parse_chat_photo(photo):
     )
 
 
-def parse_user(user: types.User) -> pyrogram.User or None:
-    return pyrogram.User(
+def parse_user(user: types.User) -> pyrogram_types.User or None:
+    return pyrogram_types.User(
         id=user.id,
         is_bot=user.bot,
         first_name=user.first_name,
@@ -105,7 +105,7 @@ def parse_user(user: types.User) -> pyrogram.User or None:
     ) if user else None
 
 
-def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Chat:
+def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram_types.Chat:
     if isinstance(message.to_id, types.PeerUser):
         return parse_user_chat(users[message.to_id.user_id if message.out else message.from_id])
     elif isinstance(message.to_id, types.PeerChat):
@@ -114,8 +114,8 @@ def parse_chat(message: types.Message, users: dict, chats: dict) -> pyrogram.Cha
         return parse_channel_chat(chats[message.to_id.channel_id])
 
 
-def parse_user_chat(user: types.User) -> pyrogram.Chat:
-    return pyrogram.Chat(
+def parse_user_chat(user: types.User) -> pyrogram_types.Chat:
+    return pyrogram_types.Chat(
         id=user.id,
         type="private",
         username=user.username,
@@ -125,8 +125,8 @@ def parse_user_chat(user: types.User) -> pyrogram.Chat:
     )
 
 
-def parse_chat_chat(chat: types.Chat) -> pyrogram.Chat:
-    return pyrogram.Chat(
+def parse_chat_chat(chat: types.Chat) -> pyrogram_types.Chat:
+    return pyrogram_types.Chat(
         id=-chat.id,
         type="group",
         title=chat.title,
@@ -135,8 +135,8 @@ def parse_chat_chat(chat: types.Chat) -> pyrogram.Chat:
     )
 
 
-def parse_channel_chat(channel: types.Channel) -> pyrogram.Chat:
-    return pyrogram.Chat(
+def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
+    return pyrogram_types.Chat(
         id=int("-100" + str(channel.id)),
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
@@ -145,7 +145,7 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram.Chat:
     )
 
 
-def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.PhotoSize or None:
+def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram_types.PhotoSize or None:
     if isinstance(thumb, (types.PhotoSize, types.PhotoCachedSize)):
         loc = thumb.location
 
@@ -155,7 +155,7 @@ def parse_thumb(thumb: types.PhotoSize or types.PhotoCachedSize) -> pyrogram.Pho
             file_size = len(thumb.bytes)
 
         if isinstance(loc, types.FileLocation):
-            return pyrogram.PhotoSize(
+            return pyrogram_types.PhotoSize(
                 file_id=encode(
                     pack(
                         "<iiqqqqi",
@@ -181,7 +181,7 @@ def parse_message(
         users: dict,
         chats: dict,
         replies: int = 1
-) -> pyrogram.Message:
+) -> pyrogram_types.Message:
     entities = parse_entities(message.entities, users)
 
     forward_from = None
@@ -233,7 +233,7 @@ def parse_message(
                             file_size = len(size.bytes)
 
                         if isinstance(loc, types.FileLocation):
-                            photo_size = pyrogram.PhotoSize(
+                            photo_size = pyrogram_types.PhotoSize(
                                 file_id=encode(
                                     pack(
                                         "<iiqqqqi",
@@ -259,20 +259,20 @@ def parse_message(
             geo_point = media.geo
 
             if isinstance(geo_point, types.GeoPoint):
-                location = pyrogram.Location(
+                location = pyrogram_types.Location(
                     longitude=geo_point.long,
                     latitude=geo_point.lat
                 )
         elif isinstance(media, types.MessageMediaContact):
-            contact = pyrogram.Contact(
+            contact = pyrogram_types.Contact(
                 phone_number=media.phone_number,
                 first_name=media.first_name,
                 last_name=media.last_name or None,
                 user_id=media.user_id or None
             )
         elif isinstance(media, types.MessageMediaVenue):
-            venue = pyrogram.Venue(
-                location=pyrogram.Location(
+            venue = pyrogram_types.Venue(
+                location=pyrogram_types.Location(
                     longitude=media.geo.long,
                     latitude=media.geo.lat
                 ),
@@ -296,7 +296,7 @@ def parse_message(
                     audio_attributes = attributes[types.DocumentAttributeAudio]
 
                     if audio_attributes.voice:
-                        voice = pyrogram.Voice(
+                        voice = pyrogram_types.Voice(
                             file_id=encode(
                                 pack(
                                     "<iiqq",
@@ -314,7 +314,7 @@ def parse_message(
                             date=doc.date
                         )
                     else:
-                        audio = pyrogram.Audio(
+                        audio = pyrogram_types.Audio(
                             file_id=encode(
                                 pack(
                                     "<iiqq",
@@ -334,7 +334,7 @@ def parse_message(
                             date=doc.date
                         )
                 elif types.DocumentAttributeAnimated in attributes:
-                    document = pyrogram.Document(
+                    document = pyrogram_types.Document(
                         file_id=encode(
                             pack(
                                 "<iiqq",
@@ -354,7 +354,7 @@ def parse_message(
                     video_attributes = attributes[types.DocumentAttributeVideo]
 
                     if video_attributes.round_message:
-                        video_note = pyrogram.VideoNote(
+                        video_note = pyrogram_types.VideoNote(
                             file_id=encode(
                                 pack(
                                     "<iiqq",
@@ -373,7 +373,7 @@ def parse_message(
                             date=doc.date
                         )
                     else:
-                        video = pyrogram.Video(
+                        video = pyrogram_types.Video(
                             file_id=encode(
                                 pack(
                                     "<iiqq",
@@ -406,7 +406,7 @@ def parse_message(
                     else:
                         set_name = None
 
-                    sticker = pyrogram.Sticker(
+                    sticker = pyrogram_types.Sticker(
                         file_id=encode(
                             pack(
                                 "<iiqq",
@@ -428,7 +428,7 @@ def parse_message(
                         date=doc.date
                     )
                 else:
-                    document = pyrogram.Document(
+                    document = pyrogram_types.Document(
                         file_id=encode(
                             pack(
                                 "<iiqq",
@@ -447,7 +447,7 @@ def parse_message(
         else:
             media = None
 
-    m = pyrogram.Message(
+    m = pyrogram_types.Message(
         message_id=message.id,
         date=message.date,
         chat=parse_chat(message, users, chats),
@@ -490,7 +490,7 @@ def parse_message_service(
         message: types.MessageService,
         users: dict,
         chats: dict
-) -> pyrogram.Message:
+) -> pyrogram_types.Message:
     action = message.action
 
     new_chat_members = None
@@ -538,7 +538,7 @@ def parse_message_service(
                         file_size = len(size.bytes)
 
                     if isinstance(loc, types.FileLocation):
-                        photo_size = pyrogram.PhotoSize(
+                        photo_size = pyrogram_types.PhotoSize(
                             file_id=encode(
                                 pack(
                                     "<iiqqqqi",
@@ -561,7 +561,7 @@ def parse_message_service(
 
             new_chat_photo = photo_sizes
 
-    m = pyrogram.Message(
+    m = pyrogram_types.Message(
         message_id=message.id,
         date=message.date,
         chat=parse_chat(message, users, chats),
@@ -590,8 +590,8 @@ def parse_message_empty(
         message: types.MessageEmpty,
         users: dict,
         chats: dict
-) -> pyrogram.Message:
-    return pyrogram.Message(
+) -> pyrogram_types.Message:
+    return pyrogram_types.Message(
         message_id=message.id,
         date=None,
         chat=None

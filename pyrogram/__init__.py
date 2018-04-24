@@ -26,13 +26,8 @@ __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.7.1"
 
 from .api.errors import Error
-from .api.types.pyrogram import *
-from .client import ChatAction
-from .client import Client
-from .client import ParseMode
-from .client.input_media_photo import InputMediaPhoto
-from .client.input_media_video import InputMediaVideo
-from .client.input_phone_contact import InputPhoneContact
-from .client import Emoji
-from .client.handlers import MessageHandler, RawUpdateHandler
-from .client.filters import Filters
+from .client.types import *
+from .client import (
+    Client, ChatAction, ParseMode, Emoji,
+    MessageHandler, RawUpdateHandler, Filters
+)

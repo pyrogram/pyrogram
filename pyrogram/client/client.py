@@ -51,10 +51,9 @@ from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
 from . import message_parser
+from . import types as pyrogram_types
 from . import utils
 from .dispatcher import Dispatcher
-from .input_media_photo import InputMediaPhoto
-from .input_media_video import InputMediaVideo
 from .style import Markdown, HTML
 from .syncer import Syncer
 
@@ -2076,7 +2075,7 @@ class Client:
         for i in media:
             style = self.html if i.parse_mode.lower() == "html" else self.markdown
 
-            if isinstance(i, InputMediaPhoto):
+            if isinstance(i, pyrogram_types.InputMediaPhoto):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
@@ -2115,7 +2114,7 @@ class Client:
                                 access_hash=unpacked[3]
                             )
                         )
-            elif isinstance(i, InputMediaVideo):
+            elif isinstance(i, pyrogram_types.InputMediaVideo):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
@@ -3108,7 +3107,7 @@ class Client:
             return False
 
     def download_media(self,
-                       message: pyrogram.Message,
+                       message: pyrogram_types.Message,
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
@@ -3147,7 +3146,7 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if isinstance(message, pyrogram.Message):
+        if isinstance(message, pyrogram_types.Message):
             if message.photo:
                 media = message.photo[-1]
             elif message.audio:
@@ -3165,17 +3164,17 @@ class Client:
             else:
                 return
         elif isinstance(message, (
-                pyrogram.PhotoSize,
-                pyrogram.Audio,
-                pyrogram.Document,
-                pyrogram.Video,
-                pyrogram.Voice,
-                pyrogram.VideoNote,
-                pyrogram.Sticker
+                pyrogram_types.PhotoSize,
+                pyrogram_types.Audio,
+                pyrogram_types.Document,
+                pyrogram_types.Video,
+                pyrogram_types.Voice,
+                pyrogram_types.VideoNote,
+                pyrogram_types.Sticker
         )):
             media = message
         elif isinstance(message, str):
-            media = pyrogram.Document(
+            media = pyrogram_types.Document(
                 file_id=message,
                 file_size=0,
                 mime_type=""

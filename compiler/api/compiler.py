@@ -67,8 +67,8 @@ def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool
         n = len(t) - 1
 
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
-            ":obj:`{1} <pyrogram.api.types.{0}{1}>`".format(
-                "pyrogram." if is_pyrogram_type else "",
+            ":obj:`{1} <{0}.{1}>`".format(
+                "pyrogram.types" if is_pyrogram_type else "pyrogram.api.types",
                 i.replace("pyrogram.", "")
             )
             for i in t
@@ -274,7 +274,7 @@ def start():
         ) if c.args else "pass"
 
         docstring_args = []
-        # docs = c.docs.split("|")[1:] if c.docs else None
+        docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
@@ -282,24 +282,23 @@ def start():
             flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
-            # if c.namespace == "pyrogram":
-            #     docstring_args.append(
-            #         "{} ({}{}):\n            {}\n".format(
-            #             arg_name,
-            #             get_docstring_arg_type(arg_type, is_pyrogram_type=True),
-            #             ", optional" if "Optional" in docs[i] else "",
-            #             re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
-            #         )
-            #     )
-            # else:
-
-            docstring_args.append(
-                "{}{}: {}".format(
-                    arg_name,
-                    " (optional)".format(flag_number) if is_optional else "",
-                    get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
+            if docs:
+                docstring_args.append(
+                    "{} ({}{}):\n            {}\n".format(
+                        arg_name,
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=True),
+                        ", optional" if "Optional" in docs[i] else "",
+                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
+                    )
                 )
-            )
+            else:
+                docstring_args.append(
+                    "{}{}: {}".format(
+                        arg_name,
+                        " (optional)".format(flag_number) if is_optional else "",
+                        get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
+                    )
+                )
 
         if docstring_args:
             docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
@@ -442,17 +441,36 @@ def start():
 
         for c in combinators:
             path = ".".join(filter(None, [c.section, c.namespace, capit(c.name)]))
-            f.write("\n    {}: \"{}\",".format(c.id, path))
+            f.write("\n    {}: \"pyrogram.api.{}\",".format(c.id, path))
 
-        f.write("\n    0xbc799737: \"core.BoolFalse\",")
-        f.write("\n    0x997275b5: \"core.BoolTrue\",")
-        f.write("\n    0x56730bcc: \"core.Null\",")
-        f.write("\n    0x1cb5c415: \"core.Vector\",")
-        f.write("\n    0x73f1f8dc: \"core.MsgContainer\",")
-        f.write("\n    0xae500895: \"core.FutureSalts\",")
-        f.write("\n    0x0949d9dc: \"core.FutureSalt\",")
-        f.write("\n    0x3072cfa1: \"core.GzipPacked\",")
-        f.write("\n    0x5bb8e511: \"core.Message\"")
+        f.write("\n    0xbc799737: \"pyrogram.api.core.BoolFalse\",")
+        f.write("\n    0x997275b5: \"pyrogram.api.core.BoolTrue\",")
+        f.write("\n    0x56730bcc: \"pyrogram.api.core.Null\",")
+        f.write("\n    0x1cb5c415: \"pyrogram.api.core.Vector\",")
+        f.write("\n    0x73f1f8dc: \"pyrogram.api.core.MsgContainer\",")
+        f.write("\n    0xae500895: \"pyrogram.api.core.FutureSalts\",")
+        f.write("\n    0x0949d9dc: \"pyrogram.api.core.FutureSalt\",")
+        f.write("\n    0x3072cfa1: \"pyrogram.api.core.GzipPacked\",")
+        f.write("\n    0x5bb8e511: \"pyrogram.api.core.Message\",")
+
+        f.write("\n    0xb0700000: \"pyrogram.client.types.Update\",")
+        f.write("\n    0xb0700001: \"pyrogram.client.types.User\",")
+        f.write("\n    0xb0700002: \"pyrogram.client.types.Chat\",")
+        f.write("\n    0xb0700003: \"pyrogram.client.types.Message\",")
+        f.write("\n    0xb0700004: \"pyrogram.client.types.MessageEntity\",")
+        f.write("\n    0xb0700005: \"pyrogram.client.types.PhotoSize\",")
+        f.write("\n    0xb0700006: \"pyrogram.client.types.Audio\",")
+        f.write("\n    0xb0700007: \"pyrogram.client.types.Document\",")
+        f.write("\n    0xb0700008: \"pyrogram.client.types.Video\",")
+        f.write("\n    0xb0700009: \"pyrogram.client.types.Voice\",")
+        f.write("\n    0xb0700010: \"pyrogram.client.types.VideoNote\",")
+        f.write("\n    0xb0700011: \"pyrogram.client.types.Contact\",")
+        f.write("\n    0xb0700012: \"pyrogram.client.types.Location\",")
+        f.write("\n    0xb0700013: \"pyrogram.client.types.Venue\",")
+        f.write("\n    0xb0700014: \"pyrogram.client.types.UserProfilePhotos\",")
+        f.write("\n    0xb0700015: \"pyrogram.client.types.ChatPhoto\",")
+        f.write("\n    0xb0700016: \"pyrogram.client.types.ChatMember\",")
+        f.write("\n    0xb0700017: \"pyrogram.client.types.Sticker\"")
 
         f.write("\n}\n")
 

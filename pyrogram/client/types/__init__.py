@@ -16,21 +16,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .update import Update
-from .user import User
+from .audio import Audio
 from .chat import Chat
+from .chat_member import ChatMember
+from .chat_photo import ChatPhoto
+from .contact import Contact
+from .document import Document
+from .input_media_photo import InputMediaPhoto
+from .input_media_video import InputMediaVideo
+from .input_phone_contact import InputPhoneContact
+from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
 from .photo_size import PhotoSize
-from .audio import Audio
-from .document import Document
-from .video import Video
-from .voice import Voice
-from .video_note import VideoNote
-from .contact import Contact
-from .location import Location
-from .venue import Venue
-from .user_profile_photos import UserProfilePhotos
-from .chat_photo import ChatPhoto
-from .chat_member import ChatMember
 from .sticker import Sticker
+from .update import Update
+from .user import User
+from .user_profile_photos import UserProfilePhotos
+from .venue import Venue
+from .video import Video
+from .video_note import VideoNote
+from .voice import Voice
