@@ -38,6 +38,18 @@ class Sticker(Object):
         thumb (:obj:`PhotoSize <pyrogram.types.PhotoSize>`, optional):
             Sticker thumbnail in the .webp or .jpg format.
 
+        file_name (``str``, optional):
+            Sticker file name.
+
+        mime_type (``str``, optional):
+            MIME type of the file as defined by sender.
+
+        file_size (``int`` ``32-bit``, optional):
+            File size.
+
+        date (``int``, optional):
+            Date the sticker was sent in Unix time.
+
         emoji (``str``, optional):
             Emoji associated with the sticker.
 
@@ -46,19 +58,31 @@ class Sticker(Object):
 
         mask_position (:obj:`MaskPosition <pyrogram.types.MaskPosition>`, optional):
             For mask stickers, the position where the mask should be placed.
-
-        file_size (``int`` ``32-bit``, optional):
-            File size.
-
     """
     ID = 0xb0700017
 
-    def __init__(self, file_id, width, height, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None):
+    def __init__(
+            self,
+            file_id: str,
+            width: int,
+            height: int,
+            thumb=None,
+            file_name: str = None,
+            mime_type: str = None,
+            file_size: int = None,
+            date: int = None,
+            emoji: str = None,
+            set_name: str = None,
+            mask_position=None
+    ):
         self.file_id = file_id  # string
+        self.thumb = thumb  # flags.0?PhotoSize
+        self.file_name = file_name  # flags.1?string
+        self.mime_type = mime_type  # flags.2?string
+        self.file_size = file_size  # flags.3?int
+        self.date = date  # flags.4?int
         self.width = width  # int
         self.height = height  # int
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.emoji = emoji  # flags.1?string
-        self.set_name = set_name  # flags.2?string
-        self.mask_position = mask_position  # flags.3?MaskPosition
-        self.file_size = file_size  # flags.4?int
+        self.emoji = emoji  # flags.5?string
+        self.set_name = set_name  # flags.6?string
+        self.mask_position = mask_position  # flags.7?MaskPosition
