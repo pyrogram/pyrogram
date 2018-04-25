@@ -72,7 +72,7 @@ class Encoder(JSONEncoder):
             else:
                 return repr(o)
 
-        if "pyrogram" in objects.get(getattr(o, "ID", "")):
+        if objects.get(getattr(o, "ID", "")).startswith("pyrogram.client"):
             return remove_none(OrderedDict([i for i in content.items()]))
         else:
             return OrderedDict(
