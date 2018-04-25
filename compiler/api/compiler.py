@@ -99,6 +99,32 @@ def get_references(t: str):
     return t
 
 
+def get_argument_type(arg):
+    is_flag = FLAGS_RE.match(arg[1])
+    name, t = arg
+
+    if is_flag:
+        t = t.split("?")[1]
+
+    if t in core_types:
+        if t == "long" or "int" in t:
+            t = ": int"
+        elif t == "double":
+            t = ": float"
+        elif t == "string":
+            t = ": str"
+        else:
+            t = ": {}".format(t.lower())
+    elif t == "true":
+        t = ": bool"
+    elif t.startswith("Vector"):
+        t = ": list"
+    else:
+        return name + ("=None" if is_flag else "")
+
+    return name + t + (" = None" if is_flag else "")
+
+
 class Combinator:
     def __init__(self,
                  section: str,
@@ -263,10 +289,7 @@ def start():
         sorted_args = sort_args(c.args)
 
         arguments = ", " + ", ".join(
-            ["{}{}".format(
-                i[0],
-                "=None" if FLAGS_RE.match(i[1]) else ""
-            ) for i in sorted_args]
+            [get_argument_type(i) for i in sorted_args]
         ) if c.args else ""
 
         fields = "\n        ".join(
