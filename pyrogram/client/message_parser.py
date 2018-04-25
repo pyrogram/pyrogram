@@ -475,7 +475,8 @@ def parse_message(
         sticker=sticker,
         document=document,
         views=message.views,
-        via_bot=parse_user(users.get(message.via_bot_id, None))
+        via_bot=parse_user(users.get(message.via_bot_id, None)),
+        outgoing=message.out
     )
 
     if message.reply_to_msg_id and replies:

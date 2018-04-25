@@ -176,6 +176,12 @@ class Message(Object):
 
         via_bot (:obj:`User <pyrogram.User>`):
             Via bot.
+            
+        outgoing (``bool``):
+            Whether the message is incoming or outgoing.
+            Messages received from other chats are incoming (*outgoing* is False).
+            Messages sent from yourself to other chats are outgoing (*outgoing* is True).
+            An exception is made for your own personal chat; messages sent there will be incoming.
 
         matches (``list``):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
@@ -233,6 +239,7 @@ class Message(Object):
             connected_website=None,
             views: int = None,
             via_bot=None,
+            outgoing: bool = None,
             matches: list = None,
             command: list = None
     ):
@@ -280,5 +287,6 @@ class Message(Object):
         self.connected_website = connected_website  # flags.38?string
         self.views = views  # flags.39?int
         self.via_bot = via_bot  # flags.40?User
+        self.outgoing = outgoing
         self.matches = matches
         self.command = command
