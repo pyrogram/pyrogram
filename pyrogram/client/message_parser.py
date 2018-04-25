@@ -393,7 +393,7 @@ def parse_message(
                             date=doc.date
                         )
                 elif types.DocumentAttributeSticker in attributes:
-                    image_size_attributes = attributes[types.DocumentAttributeImageSize]
+                    image_size_attributes = attributes.get(types.DocumentAttributeImageSize, None)
                     sticker_attribute = attributes[types.DocumentAttributeSticker]
 
                     if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
@@ -416,8 +416,8 @@ def parse_message(
                                 doc.access_hash
                             )
                         ),
-                        width=image_size_attributes.w,
-                        height=image_size_attributes.h,
+                        width=image_size_attributes.w if image_size_attributes else 0,
+                        height=image_size_attributes.h if image_size_attributes else 0,
                         thumb=parse_thumb(doc.thumb),
                         # TODO: mask_position
                         set_name=set_name,
