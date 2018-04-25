@@ -20,6 +20,8 @@ from pyrogram.api.core import Object
 
 
 class Voice(Object):
+    ID = 0xb0700009
+
     """This object represents a voice note.
 
     Attributes:
@@ -47,7 +49,6 @@ class Voice(Object):
         date (``int``, *optional*):
             Date the voice was sent in Unix time.
     """
-    ID = 0xb0700009
 
     def __init__(
             self,

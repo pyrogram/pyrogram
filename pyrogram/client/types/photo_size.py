@@ -20,6 +20,8 @@ from pyrogram.api.core import Object
 
 
 class PhotoSize(Object):
+    ID = 0xb0700005
+
     """This object represents one size of a photo or a file / sticker thumbnail.
 
     Attributes:
@@ -41,7 +43,6 @@ class PhotoSize(Object):
         date (``int``, *optional*):
             Date the photo was sent in Unix time
     """
-    ID = 0xb0700005
 
     def __init__(self, file_id, width, height, file_size=None, date=None):
         self.file_id = file_id  # string

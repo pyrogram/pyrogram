@@ -20,6 +20,8 @@ from pyrogram.api.core import Object
 
 
 class Update(Object):
+    ID = 0xb0700000
+
     """This object represents an incoming update.
     At most one of the optional parameters can be present in any given update.
 
@@ -57,7 +59,6 @@ class Update(Object):
             New incoming pre-checkout query. Contains full information about checkout.
 
     """
-    ID = 0xb0700000
 
     def __init__(
             self,
