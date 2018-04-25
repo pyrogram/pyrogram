@@ -32,6 +32,12 @@ class Filters:
     """This class provides access to all Filters available in Pyrogram.
     Filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`."""
 
+    incoming = build("Incoming", lambda _, m: not m.outgoing)
+    """Filter incoming messages."""
+
+    outgoing = build("Outgoing", lambda _, m: m.outgoing)
+    """Filter outgoing messages."""
+
     text = build("Text", lambda _, m: bool(m.text and not m.text.startswith("/")))
     """Filter text messages."""
 
