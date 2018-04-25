@@ -174,6 +174,10 @@ class Message(Object):
 
         via_bot (:obj:`User <pyrogram.User>`):
             Via bot.
+
+        matches (``list``):
+            A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
+            the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
     """
     ID = 0xb0700003
 
@@ -181,7 +185,7 @@ class Message(Object):
             self,
             message_id: int,
             date: int = None,
-            chat = None,
+            chat=None,
             from_user=None,
             forward_from=None,
             forward_from_chat=None,
@@ -222,7 +226,8 @@ class Message(Object):
             successful_payment=None,
             connected_website=None,
             views: int = None,
-            via_bot=None
+            via_bot=None,
+            matches: list = None
     ):
         self.message_id = message_id  # int
         self.date = date  # int
@@ -268,3 +273,4 @@ class Message(Object):
         self.connected_website = connected_website  # flags.38?string
         self.views = views  # flags.39?int
         self.via_bot = via_bot  # flags.40?User
+        self.matches = matches

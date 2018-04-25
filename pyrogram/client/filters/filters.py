@@ -147,15 +147,19 @@ class Filters:
 
         Args:
             pattern (``str``):
-                The RegEx pattern.
+                The RegEx pattern as string, it will be applied to the text of a message. When a pattern matches,
+                all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_
+                are stored in the *matches* field of the :class:`Message <pyrogram.Message>` itself.
 
             flags (``int``, optional):
                 RegEx flags.
         """
-        return build(
-            "Regex", lambda _, m: bool(_.p.search(m.text or "")),
-            p=re.compile(pattern, flags)
-        )
+
+        def f(_, m):
+            m.matches = [i for i in _.p.finditer(m.text or "")]
+            return bool(m.matches)
+
+        return build("Regex", f, p=re.compile(pattern, flags))
 
     @staticmethod
     def user(user: int or str or list):
