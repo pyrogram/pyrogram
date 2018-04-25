@@ -120,25 +120,35 @@ class Filters:
     """Filter service messages for pinned messages."""
 
     @staticmethod
-    def command(command: str or list):
-        """Filter commands, i.e.: text messages starting with '/'.
+    def command(command: str or list, prefix: str = "/", separator: str = " "):
+        """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
         Args:
             command (``str`` | ``list``):
-                The command or list of commands as strings the filter should look for.
+                The command or list of commands as string the filter should look for.
+                Examples: "start", ["start", "help", "settings"]. When a message text containing
+                a command arrives, the command itself and its arguments will be stored in the *command*
+                field of the :class:`Message <pyrogram.Message>`.
+
+            prefix (``str``):
+                The command prefix. Defaults to "/".
+                Examples: /start, .help, !settings.
+
+            separator (``str``):
+                The command arguments separator. Defaults to " " (white space).
+                Examples: /start first second, /start-first-second, /start.first.second.
         """
+
+        def f(_, m):
+            if m.text and m.text.startswith(_.p):
+                c = m.text[1:].split(_.s)[0]
+                m.command = ([c] + m.text.split(_.s)[1:]) if c in _.c else None
+
+            return bool(m.command)
+
         return build(
-            "Command",
-            lambda _, m: bool(
-                m.text
-                and m.text.startswith("/")
-                and (m.text[1:].split()[0] in _.c)
-            ),
-            c=(
-                {command}
-                if not isinstance(command, list)
-                else {c for c in command}
-            )
+            "Command", f, c={command} if not isinstance(command, list) else {c for c in command},
+            p=prefix, s=separator
         )
 
     @staticmethod

@@ -178,6 +178,11 @@ class Message(Object):
         matches (``list``):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
+
+        command (``list``):
+            A list containing the command and its arguments, if any.
+            E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
+            Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
     """
     ID = 0xb0700003
 
@@ -227,7 +232,8 @@ class Message(Object):
             connected_website=None,
             views: int = None,
             via_bot=None,
-            matches: list = None
+            matches: list = None,
+            command: list = None
     ):
         self.message_id = message_id  # int
         self.date = date  # int
@@ -274,3 +280,4 @@ class Message(Object):
         self.views = views  # flags.39?int
         self.via_bot = via_bot  # flags.40?User
         self.matches = matches
+        self.command = command
