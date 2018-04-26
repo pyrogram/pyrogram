@@ -476,7 +476,8 @@ def parse_message(
         document=document,
         views=message.views,
         via_bot=parse_user(users.get(message.via_bot_id, None)),
-        outgoing=message.out
+        outgoing=message.out,
+        client=client
     )
 
     if message.reply_to_msg_id and replies:
@@ -575,7 +576,8 @@ def parse_message_service(
         migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
         migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
         group_chat_created=group_chat_created,
-        channel_chat_created=channel_chat_created
+        channel_chat_created=channel_chat_created,
+        client=client
         # TODO: supergroup_chat_created
     )
 
@@ -590,4 +592,4 @@ def parse_message_empty(
         client,
         message: types.MessageEmpty
 ) -> pyrogram_types.Message:
-    return pyrogram_types.Message(message_id=message.id)
+    return pyrogram_types.Message(message_id=message.id, client=client)

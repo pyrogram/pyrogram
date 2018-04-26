@@ -30,6 +30,9 @@ class Message(Object):
     Args:
         message_id (``int``):
             Unique message identifier inside this chat.
+            
+        client (:obj:`Client <pyrogram.Client>`, *optional*):
+            The client instance this message is bound to.
 
         date (``int``, *optional*):
             Date the message was sent in Unix time.
@@ -177,17 +180,17 @@ class Message(Object):
         via_bot (:obj:`User <pyrogram.User>`):
             Via bot.
             
-        outgoing (``bool``):
+        outgoing (``bool``, *optional*):
             Whether the message is incoming or outgoing.
             Messages received from other chats are incoming (*outgoing* is False).
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
-        matches (``list``):
+        matches (``list``, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
 
-        command (``list``):
+        command (``list``, *optional*):
             A list containing the command and its arguments, if any.
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
@@ -196,6 +199,7 @@ class Message(Object):
     def __init__(
             self,
             message_id: int,
+            client=None,
             date: int = None,
             chat=None,
             from_user=None,
@@ -244,6 +248,7 @@ class Message(Object):
             command: list = None
     ):
         self.message_id = message_id  # int
+        self.client = client
         self.date = date  # int
         self.chat = chat  # Chat
         self.from_user = from_user  # flags.0?User
