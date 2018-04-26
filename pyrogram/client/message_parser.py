@@ -140,8 +140,8 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         id=int("-100" + str(channel.id)),
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
-        username=channel.username,
-        photo=parse_chat_photo(channel.photo)
+        username=getattr(channel, "username", None),
+        photo=parse_chat_photo(getattr(channel, "photo", None))
     )
 
 
