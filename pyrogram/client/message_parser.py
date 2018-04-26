@@ -480,7 +480,7 @@ def parse_message(
     )
 
     if message.reply_to_msg_id and replies:
-        m.reply_to_message = client.get_messages(m.chat.id, message.reply_to_msg_id)
+        m.reply_to_message = client.get_messages(m.chat.id, message.reply_to_msg_id, replies=replies - 1)
         m.reply_to_message = m.reply_to_message
 
     return m
@@ -588,8 +588,6 @@ def parse_message_service(
 
 def parse_message_empty(
         client,
-        message: types.MessageEmpty,
-        users: dict,
-        chats: dict
+        message: types.MessageEmpty
 ) -> pyrogram_types.Message:
     return pyrogram_types.Message(message_id=message.id)

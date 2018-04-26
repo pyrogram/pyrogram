@@ -3348,7 +3348,8 @@ class Client:
 
     def get_messages(self,
                      chat_id: int or str,
-                     message_ids: list or int):
+                     message_ids: list or int,
+                     replies: int = 1):
         """Use this method to get messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -3361,6 +3362,9 @@ class Client:
 
             message_ids (``list`` | ``int``):
                 A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
+
+            replies (``int``, optional):
+                The number of replies to get for each message. Defaults to 1.
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the requested
@@ -3395,12 +3399,23 @@ class Client:
 
         for i in r.messages:
             if isinstance(i, types.Message):
-                parser = message_parser.parse_message
+                messages.append(
+                    message_parser.parse_message(
+                        self, i, users, chats,
+                        replies=replies
+                    )
+                )
             elif isinstance(i, types.MessageService):
-                parser = message_parser.parse_message_service
+                messages.append(
+                    message_parser.parse_message_service(
+                        self, i, users, chats
+                    )
+                )
             else:
-                parser = message_parser.parse_message_empty
-
-            messages.append(parser(self, i, users, chats))
+                messages.append(
+                    message_parser.parse_message_empty(
+                        self, i
+                    )
+                )
 
         return messages if is_list else messages[0]
