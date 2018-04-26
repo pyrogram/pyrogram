@@ -482,7 +482,6 @@ def parse_message(
 
     if message.reply_to_msg_id and replies:
         m.reply_to_message = client.get_messages(m.chat.id, message.reply_to_msg_id, replies=replies - 1)
-        m.reply_to_message = m.reply_to_message
 
     return m
 
@@ -582,8 +581,7 @@ def parse_message_service(
     )
 
     if isinstance(action, types.MessageActionPinMessage):
-        m.pinned_message = client.get_messages(m.chat.id, message.reply_to_msg_id)
-        m.pinned_message = m.pinned_message
+        m.pinned_message = client.get_messages(m.chat.id, message.reply_to_msg_id, replies=0)
 
     return m
 
