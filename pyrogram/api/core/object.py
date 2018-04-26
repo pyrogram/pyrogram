@@ -72,10 +72,15 @@ class Encoder(JSONEncoder):
             else:
                 return repr(o)
 
-        if objects.get(getattr(o, "ID", "")).startswith("pyrogram.client"):
-            return remove_none(OrderedDict([i for i in content.items()]))
+        o = objects.get(getattr(o, "ID", None), None)
+
+        if o is not None:
+            if o.startswith("pyrogram.client"):
+                r = remove_none(OrderedDict([i for i in content.items()]))
+                r.pop("client", None)
+
+                return r
+            else:
+                return OrderedDict([("_", o)] + [i for i in content.items()])
         else:
-            return OrderedDict(
-                [("_", objects.get(getattr(o, "ID", None), None))]
-                + [i for i in content.items()]
-            )
+            return None
