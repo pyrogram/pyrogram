@@ -25,3 +25,9 @@ Types
     InputMediaVideo
     InputPhoneContact
     Sticker
+    reply_markup/ForceReply
+    reply_markup/InlineKeyboardButton
+    reply_markup/InlineKeyboardMarkup
+    reply_markup/KeyboardButton
+    reply_markup/ReplyKeyboardMarkup
+    reply_markup/ReplyKeyboardRemove

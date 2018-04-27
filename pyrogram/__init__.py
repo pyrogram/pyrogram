@@ -26,7 +26,16 @@ __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __version__ = "0.7.1"
 
 from .api.errors import Error
-from .client.types import *
+from .client.types import (
+    Audio, Chat, ChatMember, ChatPhoto, Contact, Document, InputMediaPhoto,
+    InputMediaVideo, InputPhoneContact, Location, Message, MessageEntity,
+    PhotoSize, Sticker, Update, User, UserProfilePhotos, Venue, Video,
+    VideoNote, Voice
+)
+from .client.types.reply_markup import (
+    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+)
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, RawUpdateHandler, Filters
