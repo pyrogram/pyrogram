@@ -895,7 +895,9 @@ class Client:
                 )
 
         if self.proxy:
-            pass
+            self.proxy["enabled"] = True
+            self.proxy["username"] = self.proxy.get("username", None)
+            self.proxy["password"] = self.proxy.get("password", None)
         else:
             self.proxy = {}
 
