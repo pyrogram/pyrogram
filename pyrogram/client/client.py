@@ -2603,7 +2603,7 @@ class Client:
                   progress: callable = None):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
-        file_total_parts = math.ceil(file_size / part_size)
+        file_total_parts = int(math.ceil(file_size / part_size))
         is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False
         file_id = file_id or self.rnd_id()
