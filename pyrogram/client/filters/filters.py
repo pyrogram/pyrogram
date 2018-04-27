@@ -125,6 +125,8 @@ class Filters:
     pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
+    # TODO: Add filters for reply markups
+
     @staticmethod
     def command(command: str or list, prefix: str = "/", separator: str = " "):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
