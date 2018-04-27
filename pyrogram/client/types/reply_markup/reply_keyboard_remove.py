@@ -44,6 +44,12 @@ class ReplyKeyboardRemove(Object):
     def __init__(self, selective: bool = None):
         self.selective = selective
 
+    @staticmethod
+    def read(o, *args):
+        return ReplyKeyboardRemove(
+            selective=o.selective
+        )
+
     def write(self):
         return ReplyKeyboardHide(
             selective=self.selective or None

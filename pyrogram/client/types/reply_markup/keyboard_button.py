@@ -51,6 +51,23 @@ class KeyboardButton(Object):
         self.request_contact = request_contact
         self.request_location = request_location
 
+    @staticmethod
+    def read(b, *args):
+        if isinstance(b, RawKeyboardButton):
+            return b.text
+
+        if isinstance(b, KeyboardButtonRequestPhone):
+            return KeyboardButton(
+                text=b.text,
+                request_contact=True
+            )
+
+        if isinstance(b, KeyboardButtonRequestGeoLocation):
+            return KeyboardButton(
+                text=b.text,
+                request_location=True
+            )
+
     def write(self):
         # TODO: Enforce optional args mutual exclusiveness
 

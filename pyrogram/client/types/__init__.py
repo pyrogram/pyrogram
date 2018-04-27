@@ -29,6 +29,10 @@ from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
 from .photo_size import PhotoSize
+from .reply_markup import (
+    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+)
 from .sticker import Sticker
 from .update import Update
 from .user import User

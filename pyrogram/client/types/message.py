@@ -245,7 +245,8 @@ class Message(Object):
             via_bot=None,
             outgoing: bool = None,
             matches: list = None,
-            command: list = None
+            command: list = None,
+            reply_markup=None,
     ):
         self.message_id = message_id  # int
         self.client = client
@@ -294,4 +295,5 @@ class Message(Object):
         self.via_bot = via_bot  # flags.40?User
         self.outgoing = outgoing
         self.matches = matches
-        self.command = command
+        self.command = command,
+        self.reply_markup = reply_markup

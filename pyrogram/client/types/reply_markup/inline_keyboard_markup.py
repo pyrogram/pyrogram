@@ -19,6 +19,7 @@
 from pyrogram.api.core import Object
 
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
+from . import InlineKeyboardButton
 
 
 class InlineKeyboardMarkup(Object):
@@ -36,6 +37,22 @@ class InlineKeyboardMarkup(Object):
 
     def __init__(self, inline_keyboard: list):
         self.inline_keyboard = inline_keyboard
+
+    @staticmethod
+    def read(kb, *args):
+        inline_keyboard = []
+
+        for i in kb.rows:
+            row = []
+
+            for j in i.buttons:
+                row.append(InlineKeyboardButton.read(j))
+
+            inline_keyboard.append(row)
+
+        return InlineKeyboardMarkup(
+            inline_keyboard=inline_keyboard
+        )
 
     def write(self):
         return ReplyInlineMarkup(

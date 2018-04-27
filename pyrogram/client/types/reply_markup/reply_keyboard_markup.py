@@ -18,8 +18,10 @@
 
 from pyrogram.api.core import Object
 
-from pyrogram.api.types import KeyboardButtonRow, KeyboardButton
+from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
+
+from . import KeyboardButton
 
 
 class ReplyKeyboardMarkup(Object):
@@ -63,6 +65,26 @@ class ReplyKeyboardMarkup(Object):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
+
+    @staticmethod
+    def read(kb, *args):
+        print(kb)
+        keyboard = []
+
+        for i in kb.rows:
+            row = []
+
+            for j in i.buttons:
+                row.append(KeyboardButton.read(j))
+
+            keyboard.append(row)
+
+        return ReplyKeyboardMarkup(
+            keyboard=keyboard,
+            resize_keyboard=kb.resize,
+            one_time_keyboard=kb.single_use,
+            selective=kb.selective
+        )
 
     def write(self):
         return RawReplyKeyboardMarkup(

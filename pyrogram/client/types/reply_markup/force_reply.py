@@ -41,6 +41,12 @@ class ForceReply(Object):
     def __init__(self, selective: bool = None):
         self.selective = selective
 
+    @staticmethod
+    def read(o, *args):
+        return ForceReply(
+            selective=o.selective
+        )
+
     def write(self):
         return ReplyKeyboardForceReply(
             single_use=True,

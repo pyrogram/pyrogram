@@ -447,6 +447,20 @@ def parse_message(
         else:
             media = None
 
+    reply_markup = message.reply_markup
+
+    if reply_markup:
+        if isinstance(reply_markup, types.ReplyKeyboardForceReply):
+            reply_markup = pyrogram_types.ForceReply.read(reply_markup)
+        elif isinstance(reply_markup, types.ReplyKeyboardMarkup):
+            reply_markup = pyrogram_types.ReplyKeyboardMarkup.read(reply_markup)
+        elif isinstance(reply_markup, types.ReplyInlineMarkup):
+            reply_markup = pyrogram_types.InlineKeyboardMarkup.read(reply_markup)
+        elif isinstance(reply_markup, types.ReplyKeyboardHide):
+            reply_markup = pyrogram_types.ReplyKeyboardRemove.read(reply_markup)
+        else:
+            reply_markup = None
+
     m = pyrogram_types.Message(
         message_id=message.id,
         date=message.date,
@@ -477,7 +491,8 @@ def parse_message(
         views=message.views,
         via_bot=parse_user(users.get(message.via_bot_id, None)),
         outgoing=message.out,
-        client=client
+        client=client,
+        reply_markup=reply_markup
     )
 
     if message.reply_to_msg_id and replies:

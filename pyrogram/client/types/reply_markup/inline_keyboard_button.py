@@ -83,6 +83,32 @@ class InlineKeyboardButton(Object):
         self.callback_game = callback_game
         self.pay = pay
 
+    @staticmethod
+    def read(b, *args):
+        if isinstance(b, KeyboardButtonUrl):
+            return InlineKeyboardButton(
+                text=b.text,
+                url=b.url
+            )
+        
+        if isinstance(b, KeyboardButtonCallback):
+            return InlineKeyboardButton(
+                text=b.text,
+                callback_data=b.data.decode()
+            )
+        
+        if isinstance(b, KeyboardButtonSwitchInline):
+            if b.same_peer:
+                return InlineKeyboardButton(
+                    text=b.text,
+                    switch_inline_query_current_chat=b.query
+                )
+            else:
+                return InlineKeyboardButton(
+                    text=b.text,
+                    switch_inline_query=b.query
+                )
+
     def write(self):
         if self.url:
             return KeyboardButtonUrl(self.text, self.url)
