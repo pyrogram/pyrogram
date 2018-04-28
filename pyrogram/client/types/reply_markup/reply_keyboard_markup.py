@@ -68,7 +68,6 @@ class ReplyKeyboardMarkup(Object):
 
     @staticmethod
     def read(kb, *args):
-        print(kb)
         keyboard = []
 
         for i in kb.rows:
@@ -89,7 +88,7 @@ class ReplyKeyboardMarkup(Object):
     def write(self):
         return RawReplyKeyboardMarkup(
             rows=[KeyboardButtonRow(
-                [KeyboardButton(j)
+                [KeyboardButton(j).write()
                  if isinstance(j, str) else j.write()
                  for j in i]
             ) for i in self.keyboard],
