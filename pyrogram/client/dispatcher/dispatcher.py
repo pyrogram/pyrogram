@@ -25,23 +25,23 @@ from threading import Thread
 import pyrogram
 from pyrogram.api import types
 from .. import utils
-from ..handlers import RawUpdateHandler, MessageHandler
+from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
 
 log = logging.getLogger(__name__)
 
 
 class Dispatcher:
-    MESSAGE_UPDATES = (
+    NEW_MESSAGE_UPDATES = (
         types.UpdateNewMessage,
         types.UpdateNewChannelMessage
     )
 
-    EDIT_UPDATES = (
+    EDIT_MESSAGE_UPDATES = (
         types.UpdateEditMessage,
         types.UpdateEditChannelMessage
     )
 
-    ALLOWED_UPDATES = MESSAGE_UPDATES + EDIT_UPDATES
+    MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
 
     def __init__(self, client, workers):
         self.client = client
@@ -84,18 +84,25 @@ class Dispatcher:
 
                     args = (self.client, update, users, chats)
                 else:
-                    if not isinstance(handler, MessageHandler):
-                        continue
-
                     message = (update.message
                                or update.channel_post
                                or update.edited_message
                                or update.edited_channel_post)
 
-                    if not handler.check(message):
-                        continue
+                    callback_query = update.callback_query
 
-                    args = (self.client, message)
+                    if message and isinstance(handler, MessageHandler):
+                        if not handler.check(message):
+                            continue
+
+                        args = (self.client, message)
+                    elif callback_query and isinstance(handler, CallbackQueryHandler):
+                        if not handler.check(callback_query):
+                            continue
+
+                        args = (self.client, callback_query)
+                    else:
+                        continue
 
                 handler.callback(*args)
                 break
@@ -117,7 +124,7 @@ class Dispatcher:
 
                 self.dispatch(update, users=users, chats=chats, is_raw=True)
 
-                if isinstance(update, Dispatcher.ALLOWED_UPDATES):
+                if isinstance(update, Dispatcher.MESSAGE_UPDATES):
                     if isinstance(update.message, types.Message):
                         parser = utils.parse_message
                     elif isinstance(update.message, types.MessageService):
@@ -131,27 +138,35 @@ class Dispatcher:
                         users,
                         chats
                     )
+
+                    is_edited_message = isinstance(update, Dispatcher.EDIT_MESSAGE_UPDATES)
+
+                    self.dispatch(
+                        pyrogram.Update(
+                            message=((message if message.chat.type != "channel"
+                                      else None) if not is_edited_message
+                                     else None),
+                            edited_message=((message if message.chat.type != "channel"
+                                             else None) if is_edited_message
+                                            else None),
+                            channel_post=((message if message.chat.type == "channel"
+                                           else None) if not is_edited_message
+                                          else None),
+                            edited_channel_post=((message if message.chat.type == "channel"
+                                                  else None) if is_edited_message
+                                                 else None)
+                        )
+                    )
+                elif isinstance(update, types.UpdateBotCallbackQuery):
+                    self.dispatch(
+                        pyrogram.Update(
+                            callback_query=utils.parse_callback_query(
+                                self.client, update, users, chats
+                            )
+                        )
+                    )
                 else:
                     continue
-
-                is_edited_message = isinstance(update, Dispatcher.EDIT_UPDATES)
-
-                self.dispatch(
-                    pyrogram.Update(
-                        message=((message if message.chat.type != "channel"
-                                  else None) if not is_edited_message
-                                 else None),
-                        edited_message=((message if message.chat.type != "channel"
-                                         else None) if is_edited_message
-                                        else None),
-                        channel_post=((message if message.chat.type == "channel"
-                                       else None) if not is_edited_message
-                                      else None),
-                        edited_channel_post=((message if message.chat.type == "channel"
-                                              else None) if is_edited_message
-                                             else None)
-                    )
-                )
             except Exception as e:
                 log.error(e, exc_info=True)
 

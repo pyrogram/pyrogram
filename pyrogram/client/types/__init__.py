@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .audio import Audio
+from .callback_query import CallbackQuery
 from .chat import Chat
 from .chat_member import ChatMember
 from .chat_photo import ChatPhoto

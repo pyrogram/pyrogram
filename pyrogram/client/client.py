@@ -227,6 +227,13 @@ class Client:
 
         return decorator
 
+    def on_callback_query(self, filters=None, group: int = 0):
+        def decorator(func):
+            self.add_handler(pyrogram.CallbackQueryHandler(func, filters), group)
+            return func
+
+        return decorator
+
     def on_raw_update(self, group: int = 0):
         """Use this decorator to automatically register a function for handling
         raw updates. This does the same thing as :meth:`add_handler` using the
@@ -3525,3 +3532,19 @@ class Client:
                 )
 
         return messages if is_list else messages[0]
+
+    def answer_callback_cuery(self,
+                              callback_query_id: str,
+                              text: str = None,
+                              show_alert: bool = None,
+                              url: str = None,
+                              cache_time: int = 0):
+        return self.send(
+            functions.messages.SetBotCallbackAnswer(
+                query_id=int(callback_query_id),
+                cache_time=cache_time,
+                alert=show_alert,
+                message=text,
+                url=url
+            )
+        )

@@ -52,6 +52,18 @@ class MessageHandler(Handler):
         )
 
 
+class CallbackQueryHandler(Handler):
+    def __init__(self, callback: callable, filters=None):
+        super().__init__(callback, filters)
+
+    def check(self, callback_query):
+        return (
+            self.filters(callback_query)
+            if self.filters
+            else True
+        )
+
+
 class RawUpdateHandler(Handler):
     """The Raw Update handler class. Used to handle raw updates. It is intended to be used with
     :meth:`add_handler() <pyrogram.Client.add_handler>`

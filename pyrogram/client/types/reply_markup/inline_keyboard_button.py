@@ -34,11 +34,11 @@ class InlineKeyboardButton(Object):
         text (``str``):
             Label text on the button.
 
-        url (``str``, optional):
-            HTTP url to be opened when button is pressed.
-
         callback_data (``str``, optional):
             Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes.
+
+        url (``str``, optional):
+            HTTP url to be opened when button is pressed.
 
         switch_inline_query (``str``, optional):
             If set, pressing the button will prompt the user to select one of their chats, open that chat and insert
@@ -68,8 +68,8 @@ class InlineKeyboardButton(Object):
     def __init__(
             self,
             text: str,
-            url: str = None,
             callback_data: str = None,
+            url: str = None,
             switch_inline_query: str = None,
             switch_inline_query_current_chat: str = None,
             callback_game=None,
@@ -90,13 +90,13 @@ class InlineKeyboardButton(Object):
                 text=b.text,
                 url=b.url
             )
-        
+
         if isinstance(b, KeyboardButtonCallback):
             return InlineKeyboardButton(
                 text=b.text,
                 callback_data=b.data.decode()
             )
-        
+
         if isinstance(b, KeyboardButtonSwitchInline):
             if b.same_peer:
                 return InlineKeyboardButton(
@@ -110,11 +110,11 @@ class InlineKeyboardButton(Object):
                 )
 
     def write(self):
-        if self.url:
-            return KeyboardButtonUrl(self.text, self.url)
-
         if self.callback_data:
             return KeyboardButtonCallback(self.text, self.callback_data.encode())
+
+        if self.url:
+            return KeyboardButtonUrl(self.text, self.url)
 
         if self.switch_inline_query:
             return KeyboardButtonSwitchInline(self.text, self.switch_inline_query)

@@ -500,7 +500,9 @@ def start():
         f.write("\n    0xb0700020: \"pyrogram.client.types.reply_markup.InlineKeyboardMarkup\",")
         f.write("\n    0xb0700021: \"pyrogram.client.types.reply_markup.KeyboardButton\",")
         f.write("\n    0xb0700022: \"pyrogram.client.types.reply_markup.ReplyKeyboardMarkup\",")
-        f.write("\n    0xb0700023: \"pyrogram.client.types.reply_markup.ReplyKeyboardRemove\"")
+        f.write("\n    0xb0700023: \"pyrogram.client.types.reply_markup.ReplyKeyboardRemove\",")
+
+        f.write("\n    0xb0700024: \"pyrogram.client.types.CallbackQuery\"")
 
         f.write("\n}\n")
 

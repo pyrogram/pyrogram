@@ -20,5 +20,5 @@ from .chat_action import ChatAction
 from .client import Client
 from .emoji import Emoji
 from .filters import Filters
-from .handlers import MessageHandler, RawUpdateHandler
+from .handlers import MessageHandler, CallbackQueryHandler, RawUpdateHandler
 from .parse_mode import ParseMode
