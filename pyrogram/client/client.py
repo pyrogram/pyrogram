@@ -3418,6 +3418,40 @@ class Client:
             )
         )
 
+    def get_users(self, user_ids: list or int or str):
+        """Use this method to get information about a user.
+        You can retrieve up to 200 users at once.
+
+        Args:
+            user_ids (``list`` | ``int`` | ``str``):
+                A list of User identifiers (id or username) or a single user id/username.
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+        Returns:
+            On success and in case *user_ids* was a list, the returned value will be a list of the requested
+            :obj:`Users <User>` even if a list contains just one element, otherwise if
+            *user_ids* was an integer, the single requested :obj:`User` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        is_list = isinstance(user_ids, list)
+        user_ids = user_ids if is_list else [user_ids]
+        user_ids = [self.resolve_peer(i) for i in user_ids]
+
+        r = self.send(
+            functions.users.GetUsers(
+                id=user_ids
+            )
+        )
+
+        users = []
+
+        for i in r:
+            users.append(utils.parse_user(i))
+
+        return users if is_list else users[0]
+
     def get_messages(self,
                      chat_id: int or str,
                      message_ids: list or int,
