@@ -50,7 +50,6 @@ from pyrogram.api.errors import (
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
-from . import message_parser
 from . import types as pyrogram_types
 from . import utils
 from .dispatcher import Dispatcher
@@ -1177,7 +1176,7 @@ class Client:
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    message_parser.parse_message(self, i.message, users, chats)
+                    utils.parse_message(self, i.message, users, chats)
                 )
 
         return messages if is_list else messages[0]
@@ -1301,7 +1300,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_audio(self,
                    chat_id: int or str,
@@ -1436,7 +1435,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_document(self,
                       chat_id: int or str,
@@ -1552,7 +1551,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_sticker(self,
                      chat_id: int or str,
@@ -1657,7 +1656,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_video(self,
                    chat_id: int or str,
@@ -1803,7 +1802,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_voice(self,
                    chat_id: int or str,
@@ -1926,7 +1925,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     def send_video_note(self,
                         chat_id: int or str,
@@ -2040,7 +2039,7 @@ class Client:
                         users = {i.id: i for i in r.users}
                         chats = {i.id: i for i in r.chats}
 
-                        return message_parser.parse_message(self, i.message, users, chats)
+                        return utils.parse_message(self, i.message, users, chats)
 
     # TODO: Add progress parameter
     # TODO: Return new Message object
@@ -2238,7 +2237,7 @@ class Client:
                 users = {i.id: i for i in r.users}
                 chats = {i.id: i for i in r.chats}
 
-                return message_parser.parse_message(self, i.message, users, chats)
+                return utils.parse_message(self, i.message, users, chats)
 
     def send_venue(self,
                    chat_id: int or str,
@@ -2312,7 +2311,7 @@ class Client:
                 users = {i.id: i for i in r.users}
                 chats = {i.id: i for i in r.chats}
 
-                return message_parser.parse_message(self, i.message, users, chats)
+                return utils.parse_message(self, i.message, users, chats)
 
     def send_contact(self,
                      chat_id: int or str,
@@ -2372,7 +2371,7 @@ class Client:
                 users = {i.id: i for i in r.users}
                 chats = {i.id: i for i in r.chats}
 
-                return message_parser.parse_message(self, i.message, users, chats)
+                return utils.parse_message(self, i.message, users, chats)
 
     def send_chat_action(self,
                          chat_id: int or str,
@@ -2500,7 +2499,7 @@ class Client:
                 users = {i.id: i for i in r.users}
                 chats = {i.id: i for i in r.chats}
 
-                return message_parser.parse_message(self, i.message, users, chats)
+                return utils.parse_message(self, i.message, users, chats)
 
     def edit_message_caption(self,
                              chat_id: int or str,
@@ -2548,7 +2547,7 @@ class Client:
                 users = {i.id: i for i in r.users}
                 chats = {i.id: i for i in r.chats}
 
-                return message_parser.parse_message(self, i.message, users, chats)
+                return utils.parse_message(self, i.message, users, chats)
 
     def delete_messages(self,
                         chat_id: int or str,
@@ -3407,20 +3406,20 @@ class Client:
         for i in r.messages:
             if isinstance(i, types.Message):
                 messages.append(
-                    message_parser.parse_message(
+                    utils.parse_message(
                         self, i, users, chats,
                         replies=replies
                     )
                 )
             elif isinstance(i, types.MessageService):
                 messages.append(
-                    message_parser.parse_message_service(
+                    utils.parse_message_service(
                         self, i, users, chats
                     )
                 )
             else:
                 messages.append(
-                    message_parser.parse_message_empty(
+                    utils.parse_message_empty(
                         self, i
                     )
                 )
