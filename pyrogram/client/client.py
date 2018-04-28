@@ -2432,15 +2432,20 @@ class Client:
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
 
+        Returns:
+            On success, :obj:`UserProfilePhotos` is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
-            functions.photos.GetUserPhotos(
-                user_id=self.resolve_peer(user_id),
-                offset=offset,
-                max_id=0,
-                limit=limit
+        return utils.parse_photos(
+            self.send(
+                functions.photos.GetUserPhotos(
+                    user_id=self.resolve_peer(user_id),
+                    offset=offset,
+                    max_id=0,
+                    limit=limit
+                )
             )
         )
 

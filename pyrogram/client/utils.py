@@ -17,8 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from base64 import b64decode, b64encode
+from struct import pack
 
 from pyrogram.api import types
+from pyrogram.client import types as pyrogram_types
 
 
 def get_peer_id(input_peer) -> int:
@@ -46,6 +48,58 @@ def get_offset_date(dialogs):
             return m.date
     else:
         return 0
+
+
+def parse_photos(photos):
+    if isinstance(photos, types.photos.Photos):
+        total_count = len(photos.photos)
+    else:
+        total_count = photos.count
+
+    user_profile_photos = []
+
+    for photo in photos.photos:
+        if isinstance(photo, types.Photo):
+            sizes = photo.sizes
+            photo_sizes = []
+
+            for size in sizes:
+                if isinstance(size, (types.PhotoSize, types.PhotoCachedSize)):
+                    loc = size.location
+
+                    if isinstance(size, types.PhotoSize):
+                        file_size = size.size
+                    else:
+                        file_size = len(size.bytes)
+
+                    if isinstance(loc, types.FileLocation):
+                        photo_size = pyrogram_types.PhotoSize(
+                            file_id=encode(
+                                pack(
+                                    "<iiqqqqi",
+                                    2,
+                                    loc.dc_id,
+                                    photo.id,
+                                    photo.access_hash,
+                                    loc.volume_id,
+                                    loc.secret,
+                                    loc.local_id
+                                )
+                            ),
+                            width=size.w,
+                            height=size.h,
+                            file_size=file_size,
+                            date=photo.date
+                        )
+
+                        photo_sizes.append(photo_size)
+
+            user_profile_photos.append(photo_sizes)
+
+    return pyrogram_types.UserProfilePhotos(
+        total_count=total_count,
+        photos=user_profile_photos
+    )
 
 
 def decode(s: str) -> bytes:
