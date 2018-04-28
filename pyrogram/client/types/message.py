@@ -297,5 +297,5 @@ class Message(Object):
         self.via_bot = via_bot  # flags.40?User
         self.outgoing = outgoing
         self.matches = matches
-        self.command = command,
+        self.command = command
         self.reply_markup = reply_markup
