@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class ChatMember(Object):
-    ID = 0xb0700016
-
     """This object contains information about one member of a chat.
 
     Attributes:
@@ -81,8 +79,9 @@ class ChatMember(Object):
 
         can_add_web_page_previews (``bool``, *optional*):
             Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
-
     """
+
+    ID = 0xb0700016
 
     def __init__(
             self,

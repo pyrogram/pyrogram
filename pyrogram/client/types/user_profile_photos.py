@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class UserProfilePhotos(Object):
-    ID = 0xb0700014
-
     """This object represent a user's profile pictures.
 
     Attributes:
@@ -33,8 +31,9 @@ class UserProfilePhotos(Object):
 
         photos (List of List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
             Requested profile pictures (in up to 4 sizes each).
-
     """
+
+    ID = 0xb0700014
 
     def __init__(self, total_count: int, photos: list):
         self.total_count = total_count  # int

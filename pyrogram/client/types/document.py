@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Document(Object):
-    ID = 0xb0700007
-
     """This object represents a general file (as opposed to photos, voice messages and audio files).
 
     Attributes:
@@ -46,6 +44,8 @@ class Document(Object):
         date (``int``, *optional*):
             Date the document was sent in Unix time.
     """
+
+    ID = 0xb0700007
 
     def __init__(
             self,

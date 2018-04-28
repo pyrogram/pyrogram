@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Chat(Object):
-    ID = 0xb0700002
-
     """This object represents a chat.
 
     Attributes:
@@ -68,8 +66,9 @@ class Chat(Object):
 
         can_set_sticker_set (``bool``, *optional*):
             True, if the bot can change the group sticker set. Returned only in getChat.
-
     """
+
+    ID = 0xb0700002
 
     def __init__(
             self,

@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class MessageEntity(Object):
-    ID = 0xb0700004
-
     """This object represents one special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
@@ -46,8 +44,9 @@ class MessageEntity(Object):
 
         user (:obj:`User <pyrogram.User>`, *optional*):
             For "text_mention" only, the mentioned user.
-
     """
+
+    ID = 0xb0700004
 
     def __init__(self, type: str, offset: int, length: int, url: str = None, user=None):
         self.type = type  # string

@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Video(Object):
-    ID = 0xb0700008
-
     """This object represents a video file.
 
     Attributes:
@@ -55,6 +53,8 @@ class Video(Object):
         date (``int``, *optional*):
             Date the video was sent in Unix time.
     """
+
+    ID = 0xb0700008
 
     def __init__(
             self,

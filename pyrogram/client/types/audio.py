@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Audio(Object):
-    ID = 0xb0700006
-
     """This object represents an audio file to be treated as music by the Telegram clients.
 
     Attributes:
@@ -55,6 +53,8 @@ class Audio(Object):
         title (``str``, *optional*):
             Title of the audio as defined by sender or by audio tags.
     """
+
+    ID = 0xb0700006
 
     def __init__(
             self,

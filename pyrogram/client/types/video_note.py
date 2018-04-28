@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class VideoNote(Object):
-    ID = 0xb0700010
-
     """This object represents a video message (available in Telegram apps as of v.4.0).
 
     Attributes:
@@ -55,6 +53,8 @@ class VideoNote(Object):
         date (``int``, *optional*):
             Date the video note was sent in Unix time.
     """
+
+    ID = 0xb0700010
 
     def __init__(
             self,

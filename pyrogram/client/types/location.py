@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Location(Object):
-    ID = 0xb0700012
-
     """This object represents a point on the map.
 
     Attributes:
@@ -34,6 +32,8 @@ class Location(Object):
         latitude (``float``):
             Latitude as defined by sender.
     """
+
+    ID = 0xb0700012
 
     def __init__(self, longitude: float, latitude: float):
         self.longitude = longitude  # double

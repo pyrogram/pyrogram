@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Venue(Object):
-    ID = 0xb0700013
-
     """This object represents a venue.
 
     Attributes:
@@ -41,6 +39,8 @@ class Venue(Object):
             Foursquare identifier of the venue.
 
     """
+
+    ID = 0xb0700013
 
     def __init__(self, location, title: str, address: str, foursquare_id: str = None):
         self.location = location  # Location

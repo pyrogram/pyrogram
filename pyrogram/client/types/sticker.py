@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Sticker(Object):
-    ID = 0xb0700017
-
     """This object represents a sticker.
 
     Attributes:
@@ -61,6 +59,8 @@ class Sticker(Object):
         mask_position (:obj:`MaskPosition <pyrogram.MaskPosition>`, *optional*):
             For mask stickers, the position where the mask should be placed.
     """
+
+    ID = 0xb0700017
 
     def __init__(
             self,

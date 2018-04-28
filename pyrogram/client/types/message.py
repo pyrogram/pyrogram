@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Message(Object):
-    ID = 0xb0700003
-
     """This object represents a message.
 
     Attributes:
@@ -195,6 +193,10 @@ class Message(Object):
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
     """
+
+    # TODO: Document missing arguments
+
+    ID = 0xb0700003
 
     def __init__(
             self,

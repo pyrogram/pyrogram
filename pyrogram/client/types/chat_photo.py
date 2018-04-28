@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class ChatPhoto(Object):
-    ID = 0xb0700015
-
     """This object represents a chat photo.
 
     Attributes:
@@ -33,8 +31,9 @@ class ChatPhoto(Object):
 
         big_file_id (``str``):
             Unique file identifier of big (640x640) chat photo. This file_id can be used only for photo download.
-
     """
+
+    ID = 0xb0700015
 
     def __init__(self, small_file_id: str, big_file_id: str):
         self.small_file_id = small_file_id  # string

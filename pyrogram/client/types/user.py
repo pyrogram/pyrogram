@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class User(Object):
-    ID = 0xb0700001
-
     """This object represents a Telegram user or bot.
 
     Attributes:
@@ -52,6 +50,8 @@ class User(Object):
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             User's or bot's current profile photo.
     """
+
+    ID = 0xb0700001
 
     def __init__(
             self,

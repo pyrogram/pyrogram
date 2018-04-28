@@ -20,8 +20,6 @@ from pyrogram.api.core import Object
 
 
 class Contact(Object):
-    ID = 0xb0700011
-
     """This object represents a phone contact.
 
     Attributes:
@@ -40,6 +38,8 @@ class Contact(Object):
         user_id (``int``, *optional*):
             Contact's user identifier in Telegram.
     """
+
+    ID = 0xb0700011
 
     def __init__(self, phone_number: str, first_name: str, last_name: str = None, user_id=None):
         self.phone_number = phone_number  # string
