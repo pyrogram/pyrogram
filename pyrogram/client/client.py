@@ -1072,7 +1072,8 @@ class Client:
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
-                     reply_to_message_id: int = None):
+                     reply_to_message_id: int = None,
+                     reply_markup=None):
         """Use this method to send text messages.
 
         Args:
@@ -1100,6 +1101,10 @@ class Client:
             reply_to_message_id (``bool``, optional):
                 If the message is a reply, ID of the original message.
 
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1115,6 +1120,7 @@ class Client:
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
+                reply_markup=reply_markup.write() if reply_markup else None,
                 **style.parse(text)
             )
         )
@@ -1189,6 +1195,7 @@ class Client:
                    ttl_seconds: int = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
+                   reply_markup=None,
                    progress: callable = None):
         """Use this method to send photos.
 
@@ -1224,6 +1231,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1289,6 +1300,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         **style.parse(caption)
                     )
                 )
@@ -1312,6 +1324,7 @@ class Client:
                    title: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
+                   reply_markup=None,
                    progress: callable = None):
         """Use this method to send audio files.
 
@@ -1353,6 +1366,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1424,6 +1441,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         **style.parse(caption)
                     )
                 )
@@ -1444,6 +1462,7 @@ class Client:
                       parse_mode: str = "",
                       disable_notification: bool = None,
                       reply_to_message_id: int = None,
+                      reply_markup=None,
                       progress: callable = None):
         """Use this method to send general files.
 
@@ -1474,6 +1493,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1540,6 +1563,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         **style.parse(caption)
                     )
                 )
@@ -1558,6 +1582,7 @@ class Client:
                      sticker: str,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
+                     reply_markup=None,
                      progress: callable = None):
         """Use this method to send .webp stickers.
 
@@ -1580,6 +1605,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1645,6 +1674,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         message=""
                     )
                 )
@@ -1670,6 +1700,7 @@ class Client:
                    supports_streaming: bool = True,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
+                   reply_markup=None,
                    progress: callable = None):
         """Use this method to send video files.
 
@@ -1717,6 +1748,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1791,6 +1826,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         **style.parse(caption)
                     )
                 )
@@ -1812,6 +1848,7 @@ class Client:
                    duration: int = 0,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
+                   reply_markup=None,
                    progress: callable = None):
         """Use this method to send audio files.
 
@@ -1845,6 +1882,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -1914,6 +1955,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         **style.parse(caption)
                     )
                 )
@@ -1934,6 +1976,7 @@ class Client:
                         length: int = 1,
                         disable_notification: bool = None,
                         reply_to_message_id: int = None,
+                        reply_markup=None,
                         progress: callable = None):
         """Use this method to send video messages.
 
@@ -1962,6 +2005,10 @@ class Client:
 
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
@@ -2028,6 +2075,7 @@ class Client:
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
+                        reply_markup=reply_markup.write() if reply_markup else None,
                         message=""
                     )
                 )
@@ -2187,7 +2235,8 @@ class Client:
                       latitude: float,
                       longitude: float,
                       disable_notification: bool = None,
-                      reply_to_message_id: int = None):
+                      reply_to_message_id: int = None,
+                      reply_markup=None):
         """Use this method to send points on the map.
 
         Args:
@@ -2210,6 +2259,10 @@ class Client:
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
         Returns:
             On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
@@ -2228,7 +2281,8 @@ class Client:
                 message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
+                random_id=self.rnd_id(),
+                reply_markup=reply_markup.write() if reply_markup else None
             )
         )
 
@@ -2247,7 +2301,8 @@ class Client:
                    address: str,
                    foursquare_id: str = "",
                    disable_notification: bool = None,
-                   reply_to_message_id: int = None):
+                   reply_to_message_id: int = None,
+                   reply_markup=None):
         """Use this method to send information about a venue.
 
         Args:
@@ -2279,6 +2334,10 @@ class Client:
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message
 
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
         Returns:
             On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
@@ -2302,7 +2361,8 @@ class Client:
                 message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
+                random_id=self.rnd_id(),
+                reply_markup=reply_markup.write() if reply_markup else None
             )
         )
 
@@ -2319,7 +2379,8 @@ class Client:
                      first_name: str,
                      last_name: str = "",
                      disable_notification: bool = None,
-                     reply_to_message_id: int = None):
+                     reply_to_message_id: int = None,
+                     reply_markup=None):
         """Use this method to send phone contacts.
 
         Args:
@@ -2345,6 +2406,10 @@ class Client:
             reply_to_message_id (``int``, optional):
                 If the message is a reply, ID of the original message.
 
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
         Returns:
             On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
@@ -2362,7 +2427,8 @@ class Client:
                 message="",
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
-                random_id=self.rnd_id()
+                random_id=self.rnd_id(),
+                reply_markup=reply_markup.write() if reply_markup else None
             )
         )
 
