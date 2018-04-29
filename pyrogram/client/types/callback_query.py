@@ -59,7 +59,6 @@ class CallbackQuery(Object):
             self,
             id: str,
             from_user,
-            chat,
             chat_instance: str,
             message=None,
             inline_message_id: str = None,
@@ -68,7 +67,6 @@ class CallbackQuery(Object):
     ):
         self.id = id  # string
         self.from_user = from_user  # User
-        self.chat = chat
         self.message = message  # flags.0?Message
         self.inline_message_id = inline_message_id  # flags.1?string
         self.chat_instance = chat_instance  # string

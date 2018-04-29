@@ -161,7 +161,7 @@ class Dispatcher:
                     self.dispatch(
                         pyrogram.Update(
                             callback_query=utils.parse_callback_query(
-                                self.client, update, users, chats
+                                self.client, update, users
                             )
                         )
                     )

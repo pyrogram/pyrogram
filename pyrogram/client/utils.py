@@ -723,19 +723,20 @@ def parse_photos(photos):
     )
 
 
-def parse_callback_query(client, callback_query, users, chats):
-    if isinstance(callback_query.peer, types.PeerUser):
-        chat = parse_user_chat(users[callback_query.peer.user_id])
-    elif isinstance(callback_query.peer, types.PeerChat):
-        chat = parse_chat_chat(chats[callback_query.peer.chat_id])
+def parse_callback_query(client, callback_query, users):
+    peer = callback_query.peer
+
+    if isinstance(peer, types.PeerUser):
+        peer_id = peer.user_id
+    elif isinstance(peer, types.PeerChat):
+        peer_id = -peer.chat_id
     else:
-        chat = parse_channel_chat(chats[callback_query.peer.channel_id])
+        peer_id = int("-100" + str(peer.channel_id))
 
     return pyrogram_types.CallbackQuery(
         id=callback_query.query_id,
         from_user=parse_user(users[callback_query.user_id]),
-        chat=chat,
-        message=client.get_messages(chat.id, callback_query.msg_id),
+        message=client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
         game_short_name=callback_query.game_short_name
