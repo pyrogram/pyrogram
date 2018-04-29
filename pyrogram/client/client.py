@@ -245,7 +245,7 @@ class Client:
         return decorator
 
     def add_handler(self, handler, group: int = 0):
-        """Use this method to register an event handler.
+        """Use this method to register an update handler.
 
         You can register multiple handlers, but at most one handler within a group
         will be used for a single event. To handle the same event more than once, register
@@ -259,6 +259,22 @@ class Client:
                 The group identifier, defaults to 0.
         """
         self.dispatcher.add_handler(handler, group)
+
+    def remove_handler(self, handler, group: int = 0):
+        """Removes a previously-added update handler.
+
+        Make sure to provide the right group that the handler was added in. You can use
+        the return value of the ``add_handler`` method, a tuple of (handler, group), and
+        pass it directly.
+
+        Args:
+            handler (``Handler``):
+                The handler to be removed.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+        self.dispatcher.remove_handler(handler, group)
 
     def start(self, debug: bool = False):
         """Use this method to start the Client after creating it.
