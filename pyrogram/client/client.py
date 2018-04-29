@@ -228,6 +228,19 @@ class Client:
         return decorator
 
     def on_callback_query(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        callback queries. This does the same thing as :meth:`add_handler` using the
+        CallbackQueryHandler.
+
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of callback queries to be passed
+                in your function.
+
+            group (``int``, optional):
+                The group identifier, defaults to 0.
+        """
+
         def decorator(func):
             self.add_handler(pyrogram.CallbackQueryHandler(func, filters), group)
             return func
