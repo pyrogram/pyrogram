@@ -37,7 +37,7 @@ class MessageHandler(Handler):
         client (:obj:`Client <pyrogram.Client>`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        message (:obj:`Message <pyrogram.api.types.pyrogram.Message>`):
+        message (:obj:`Message <pyrogram.Message>`):
             The received message.
     """
 
@@ -53,6 +53,26 @@ class MessageHandler(Handler):
 
 
 class CallbackQueryHandler(Handler):
+    """The CallbackQuery handler class. Used to handle callback queries coming from inline buttons.
+    It is intended to be used with :meth:`add_handler() <pyrogram.Client.add_handler>`
+
+    Args:
+        callback (``callable``):
+            Pass a function that will be called when a new CallbackQuery arrives. It takes *(client, callback_query)*
+            as positional arguments (look at the section below for a detailed description).
+
+        filters (:obj:`Filters <pyrogram.Filters>`):
+            Pass one or more filters to allow only a subset of callback queries to be passed
+            in your callback function.
+
+    Other parameters:
+        client (:obj:`Client <pyrogram.Client>`):
+            The Client itself, useful when you want to call other API methods inside the message handler.
+
+        callback_query (:obj:`CallbackQuery <pyrogram.CallbackQuery>`):
+            The received callback query.
+    """
+
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
 

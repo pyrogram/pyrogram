@@ -9,8 +9,7 @@ after the well established `Telegram Bot API`_ methods, thus offering a familiar
 .. toctree::
     Client
     types/index
-    MessageHandler
-    RawUpdateHandler
+    handlers/index
     Filters
     ChatAction
     ParseMode

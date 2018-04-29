@@ -31,3 +31,4 @@ Types
     reply_markup/KeyboardButton
     reply_markup/ReplyKeyboardMarkup
     reply_markup/ReplyKeyboardRemove
+    CallbackQuery

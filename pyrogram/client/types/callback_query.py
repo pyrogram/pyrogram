@@ -32,14 +32,14 @@ class CallbackQuery(Object):
         id (``str``):
             Unique identifier for this query.
 
-        from_user (:obj:`User <pyrogram.types.User>`):
+        from_user (:obj:`User <pyrogram.User>`):
             Sender.
 
         chat_instance (``str``, optional):
             Message with the callback button that originated the query. Note that message content and message date will
             not be available if the message is too old.
 
-        message (:obj:`Message <pyrogram.types.Message>`, optional):
+        message (:obj:`Message <pyrogram.Message>`, optional):
             Identifier of the message sent via the bot in inline mode, that originated the query.
 
         inline_message_id (``str``):
