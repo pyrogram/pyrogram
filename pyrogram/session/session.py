@@ -120,6 +120,8 @@ class Session:
         self.next_salt_thread = None
         self.next_salt_thread_event = Event()
 
+        self.net_worker_list = []
+
         self.is_connected = Event()
 
     def start(self):
@@ -128,7 +130,14 @@ class Session:
                 self.connection.connect()
 
                 for i in range(self.NET_WORKERS):
-                    Thread(target=self.net_worker, name="NetWorker#{}".format(i + 1)).start()
+                    self.net_worker_list.append(
+                        Thread(
+                            target=self.net_worker,
+                            name="NetWorker#{}".format(i + 1)
+                        )
+                    )
+
+                    self.net_worker_list[-1].start()
 
                 Thread(target=self.recv, name="RecvThread").start()
 
@@ -189,6 +198,11 @@ class Session:
 
         for i in range(self.NET_WORKERS):
             self.recv_queue.put(None)
+
+        for i in self.net_worker_list:
+            i.join()
+
+        self.net_worker_list.clear()
 
         for i in self.results.values():
             i.event.set()
