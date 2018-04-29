@@ -3533,7 +3533,7 @@ class Client:
 
         return messages if is_list else messages[0]
 
-    def answer_callback_cuery(self,
+    def answer_callback_query(self,
                               callback_query_id: str,
                               text: str = None,
                               show_alert: bool = None,
