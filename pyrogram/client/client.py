@@ -2526,7 +2526,8 @@ class Client:
                           message_id: int,
                           text: str,
                           parse_mode: str = "",
-                          disable_web_page_preview: bool = None):
+                          disable_web_page_preview: bool = None,
+                          reply_markup=None):
         """Use this method to edit text messages.
 
         Args:
@@ -2550,6 +2551,9 @@ class Client:
             disable_web_page_preview (``bool``, optional):
                 Disables link previews for links in this message.
 
+            reply_markup (:obj:`InlineKeyboardMarkup`):
+                An InlineKeyboardMarkup object.
+
         Returns:
             On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
@@ -2563,6 +2567,7 @@ class Client:
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
+                reply_markup=reply_markup.write() if reply_markup else None,
                 **style.parse(text)
             )
         )
@@ -2578,7 +2583,8 @@ class Client:
                              chat_id: int or str,
                              message_id: int,
                              caption: str,
-                             parse_mode: str = ""):
+                             parse_mode: str = "",
+                             reply_markup=None):
         """Use this method to edit captions of messages.
 
         Args:
@@ -2599,6 +2605,9 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
+            reply_markup (:obj:`InlineKeyboardMarkup`):
+                An InlineKeyboardMarkup object.
+
         Returns:
             On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
 
@@ -2611,6 +2620,7 @@ class Client:
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
+                reply_markup=reply_markup.write() if reply_markup else None,
                 **style.parse(caption)
             )
         )
