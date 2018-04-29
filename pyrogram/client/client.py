@@ -2624,8 +2624,8 @@ class Client:
 
     def delete_messages(self,
                         chat_id: int or str,
-                        message_ids: list,
-                        revoke: bool = None):
+                        message_ids: list or int,
+                        revoke: bool = True):
         """Use this method to delete messages, including service messages, with the following limitations:
 
         - A message can only be deleted if it was sent less than 48 hours ago.
@@ -2641,36 +2641,40 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``list``):
-                List of identifiers of the messages to delete.
+            message_ids (``list`` | ``int``):
+                A list of Message identifiers to delete or a single message id.
 
             revoke (``bool``, optional):
                 Deletes messages on both parts.
                 This is only for private cloud chats and normal groups, messages on
                 channels and supergroups are always revoked (i.e.: deleted for everyone).
+                Defaults to True.
+
+        Returns:
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
+        message_ids = message_ids if isinstance(message_ids, list) else [message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            return self.send(
+            self.send(
                 functions.channels.DeleteMessages(
                     channel=peer,
                     id=message_ids
                 )
             )
         else:
-            # TODO: Maybe "revoke" is superfluous.
-            # If I want to delete a message, chances are I want it to
-            # be deleted even from the other side
-            return self.send(
+            self.send(
                 functions.messages.DeleteMessages(
                     id=message_ids,
                     revoke=revoke or None
                 )
             )
+
+        return True
 
     # TODO: Improvements for the new API
     def save_file(self,
