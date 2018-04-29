@@ -2485,7 +2485,6 @@ class Client:
             )
         )
 
-    # TODO: Improvements for the new API
     def get_user_profile_photos(self,
                                 user_id: int or str,
                                 offset: int = 0,
@@ -2505,7 +2504,7 @@ class Client:
                 Values between 1—100 are accepted. Defaults to 100.
 
         Returns:
-            On success, :obj:`UserProfilePhotos` is returned.
+            On success, a :obj:`UserProfilePhotos` object is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -3599,7 +3598,7 @@ class Client:
             functions.messages.SetBotCallbackAnswer(
                 query_id=int(callback_query_id),
                 cache_time=cache_time,
-                alert=show_alert,
+                alert=show_alert or None,
                 message=text,
                 url=url
             )
