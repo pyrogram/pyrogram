@@ -1174,8 +1174,8 @@ class Client:
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the forwarded
-            :obj:`Messages <pyrogram.api.types.pyrogram.Message>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.api.types.pyrogram.Message>`
+            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
+            *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
             is returned.
 
         Raises:
@@ -1268,7 +1268,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1403,7 +1403,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1530,7 +1530,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1642,7 +1642,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1785,7 +1785,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1919,7 +1919,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2042,7 +2042,7 @@ class Client:
                 The size of the file.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2284,7 +2284,7 @@ class Client:
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2359,7 +2359,7 @@ class Client:
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2431,7 +2431,7 @@ class Client:
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2567,7 +2567,7 @@ class Client:
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2621,7 +2621,7 @@ class Client:
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -2665,7 +2665,7 @@ class Client:
 
         Returns:
             On success, if edited message is sent by the bot, the edited
-            :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned, otherwise True is returned.
+            :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -3261,7 +3261,7 @@ class Client:
         """Use this method to download the media from a Message.
 
         Args:
-            message (:obj:`Message <pyrogram.api.types.pyrogram.Message>` | ``str``):
+            message (:obj:`Message <pyrogram.Message>` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
                 the file id as string.
 
@@ -3549,8 +3549,8 @@ class Client:
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.api.types.pyrogram.Message>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.api.types.pyrogram.Message>`
+            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
+            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
             is returned.
 
         Raises:

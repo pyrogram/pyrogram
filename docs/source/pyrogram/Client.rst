@@ -15,6 +15,7 @@ Client
         stop
         idle
         on_message
+        on_callback_query
         on_raw_update
         add_handler
         send
@@ -25,6 +26,7 @@ Client
         send_photo
         send_audio
         send_document
+        send_sticker
         send_video
         send_voice
         send_video_note
@@ -33,11 +35,11 @@ Client
         send_venue
         send_contact
         send_chat_action
-        send_sticker
         download_media
         get_user_profile_photos
         edit_message_text
         edit_message_caption
+        edit_message_reply_markup
         delete_messages
         join_chat
         leave_chat
@@ -49,4 +51,6 @@ Client
         delete_contacts
         get_inline_bot_results
         send_inline_bot_result
+        get_users
         get_messages
+        answer_callback_query
