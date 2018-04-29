@@ -2632,6 +2632,48 @@ class Client:
 
                 return utils.parse_message(self, i.message, users, chats)
 
+    def edit_message_reply_markup(self,
+                                  chat_id: int or str,
+                                  message_id: int,
+                                  reply_markup=None):
+        """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            message_id (``int``):
+                Message identifier in the chat specified in chat_id.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, if edited message is sent by the bot, the edited
+            :obj:`Message <pyrogram.api.types.pyrogram.Message>` is returned, otherwise True is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+
+        r = self.send(
+            functions.messages.EditMessage(
+                peer=self.resolve_peer(chat_id),
+                id=message_id,
+                reply_markup=reply_markup.write() if reply_markup else None
+            )
+        )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return utils.parse_message(self, i.message, users, chats)
+
     def delete_messages(self,
                         chat_id: int or str,
                         message_ids: list or int,
