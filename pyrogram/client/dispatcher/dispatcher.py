@@ -68,6 +68,8 @@ class Dispatcher:
         for i in self.workers_list:
             i.join()
 
+        self.workers_list.clear()
+
     def add_handler(self, handler, group: int):
         if group not in self.groups:
             self.groups[group] = []

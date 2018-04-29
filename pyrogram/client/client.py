@@ -385,11 +385,15 @@ class Client:
         for i in self.updates_workers_list:
             i.join()
 
+        self.updates_workers_list.clear()
+
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
 
         for i in self.download_workers_list:
             i.join()
+
+        self.download_workers_list.clear()
 
         self.dispatcher.stop()
 
