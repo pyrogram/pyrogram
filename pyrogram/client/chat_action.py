@@ -68,10 +68,10 @@ class ChatAction(Enum):
 
     @staticmethod
     def from_string(action: str) -> "ChatAction":
-        for a in iter(ChatAction):
+        for a in ChatAction:
             if a.name.lower() == action.lower():
                 return a
 
         raise ValueError("Invalid ChatAction: '{}'. Possible types are {}".format(
-            action, [x.name.lower() for x in iter(ChatAction)]
+            action, [x.name.lower() for x in ChatAction]
         ))
