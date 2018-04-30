@@ -860,15 +860,18 @@ class Client:
                         )
                     )
 
-                    self.dispatcher.updates.put((
-                        types.UpdateNewMessage(
-                            message=diff.new_messages[0],
-                            pts=updates.pts,
-                            pts_count=updates.pts_count
-                        ),
-                        diff.users,
-                        diff.chats
-                    ))
+                    if diff.new_messages:
+                        self.dispatcher.updates.put((
+                            types.UpdateNewMessage(
+                                message=diff.new_messages[0],
+                                pts=updates.pts,
+                                pts_count=updates.pts_count
+                            ),
+                            diff.users,
+                            diff.chats
+                        ))
+                    else:
+                        self.dispatcher.updates.put((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates.put((updates.update, [], []))
             except Exception as e:
