@@ -38,9 +38,9 @@ from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
 import pyrogram
-from pyrogram import ChatAction
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
+from pyrogram.client import ChatAction
 from pyrogram.api.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
