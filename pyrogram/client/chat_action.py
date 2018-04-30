@@ -21,7 +21,7 @@ from pyrogram.api import types
 
 
 class ChatAction(Enum):
-    """This enumeration class provides a convenient access to all Chat Actions available.
+    """This enumeration provides a convenient access to all Chat Actions available.
     Chat Actions are intended to be used with
     :meth:`send_chat_action() <pyrogram.Client.send_chat_action>`.
     """
