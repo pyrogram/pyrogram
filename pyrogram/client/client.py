@@ -3569,7 +3569,7 @@ class Client:
 
     def get_messages(self,
                      chat_id: int or str,
-                     message_ids: list or int,
+                     message_ids,
                      replies: int = 1):
         """Use this method to get messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
@@ -3581,8 +3581,9 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``list`` | ``int``):
+            message_ids (``iterable``):
                 A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
+                Iterators and Generators are also accepted.
 
             replies (``int``, optional):
                 The number of replies to get for each message. Defaults to 1.
@@ -3597,8 +3598,8 @@ class Client:
             :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
-        is_list = isinstance(message_ids, list)
-        message_ids = message_ids if is_list else [message_ids]
+        is_iterable = not isinstance(message_ids, int)
+        message_ids = list(message_ids) if is_iterable else [message_ids]
         message_ids = [types.InputMessageID(i) for i in message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
@@ -3639,7 +3640,7 @@ class Client:
                     )
                 )
 
-        return messages if is_list else messages[0]
+        return messages if is_iterable else messages[0]
 
     def answer_callback_query(self,
                               callback_query_id: str,
