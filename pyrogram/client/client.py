@@ -3400,7 +3400,7 @@ class Client:
             return False
 
     def download_media(self,
-                       message: pyrogram_types.Message,
+                       message: pyrogram_types.Message or str,
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None):
