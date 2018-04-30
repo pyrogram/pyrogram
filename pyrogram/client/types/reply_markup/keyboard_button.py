@@ -35,11 +35,11 @@ class KeyboardButton(Object):
             Text of the button. If none of the optional fields are used, it will be sent as a message when
             the button is pressed.
 
-        request_contact (``bool``, optional):
+        request_contact (``bool``, *optional*):
             If True, the user's phone number will be sent as a contact when the button is pressed.
             Available in private chats only.
 
-        request_location (``bool``, optional):
+        request_location (``bool``, *optional*):
             If True, the user's current location will be sent when the button is pressed.
             Available in private chats only.
     """

@@ -74,55 +74,55 @@ class Client:
             For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
-        api_id (``int``, optional):
+        api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
-        api_hash (``str``, optional):
+        api_hash (``str``, *optional*):
             The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
-        proxy (``dict``, optional):
+        proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
             *username* and *password* can be omitted if your proxy doesn't require authorization.
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
-        test_mode (``bool``, optional):
+        test_mode (``bool``, *optional*):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
-        phone_number (``str``, optional):
+        phone_number (``str``, *optional*):
             Pass your phone number (with your Country Code prefix included) to avoid
             entering it manually. Only applicable for new sessions.
 
-        phone_code (``str`` | ``callable``, optional):
+        phone_code (``str`` | ``callable``, *optional*):
             Pass the phone code as string (for test numbers only), or pass a callback function
             which must return the correct phone code as string (e.g., "12345").
             Only applicable for new sessions.
 
-        password (``str``, optional):
+        password (``str``, *optional*):
             Pass your Two-Step Verification password (if you have one) to avoid entering it
             manually. Only applicable for new sessions.
 
-        force_sms (``str``, optional):
+        force_sms (``str``, *optional*):
             Pass True to force Telegram sending the authorization code via SMS.
             Only applicable for new sessions.
 
-        first_name (``str``, optional):
+        first_name (``str``, *optional*):
             Pass a First Name to avoid entering it manually. It will be used to automatically
             create a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
-        last_name (``str``, optional):
+        last_name (``str``, *optional*):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: "". Only applicable for new sessions.
 
-        workers (``int``, optional):
+        workers (``int``, *optional*):
             Thread pool size for handling incoming updates. Defaults to 4.
 
-        workdir (``str``, optional):
+        workdir (``str``, *optional*):
             Define a custom working directory. The working directory is the location in your filesystem
             where Pyrogram will store your session files. Defaults to "." (current directory).
     """
@@ -217,7 +217,7 @@ class Client:
                 Pass one or more filters to allow only a subset of messages to be passed
                 in your function.
 
-            group (``int``, optional):
+            group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
 
@@ -237,7 +237,7 @@ class Client:
                 Pass one or more filters to allow only a subset of callback queries to be passed
                 in your function.
 
-            group (``int``, optional):
+            group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
 
@@ -253,7 +253,7 @@ class Client:
         RawUpdateHandler.
 
         Args:
-            group (``int``, optional):
+            group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
 
@@ -274,7 +274,7 @@ class Client:
             handler (``Handler``):
                 The handler to be registered.
 
-            group (``int``, optional):
+            group (``int``, *optional*):
                 The group identifier, defaults to 0.
 
         Returns:
@@ -295,7 +295,7 @@ class Client:
             handler (``Handler``):
                 The handler to be removed.
 
-            group (``int``, optional):
+            group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
         self.dispatcher.remove_handler(handler, group)
@@ -305,7 +305,7 @@ class Client:
         Requires no parameters.
 
         Args:
-            debug (``bool``, optional):
+            debug (``bool``, *optional*):
                 Enable or disable debug mode. When enabled, extra logging
                 lines will be printed out on your console.
 
@@ -887,7 +887,7 @@ class Client:
         then gently stop the Client by closing the underlying connection.
 
         Args:
-            stop_signals (``tuple``, optional):
+            stop_signals (``tuple``, *optional*):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
@@ -1139,17 +1139,17 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (``bool``, optional):
+            disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``bool``, optional):
+            reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1212,7 +1212,7 @@ class Client:
                 A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
                 Iterators and Generators are also accepted.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
@@ -1277,7 +1277,7 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
                 pass a file path as string to upload a new photo that exists on your local machine.
 
-            caption (``bool``, optional):
+            caption (``bool``, *optional*):
                 Photo caption, 0-200 characters.
 
             parse_mode (``str``):
@@ -1285,19 +1285,19 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            ttl_seconds (``int``, optional):
+            ttl_seconds (``int``, *optional*):
                 Self-Destruct Timer.
                 If you set a timer, the photo will self-destruct in *ttl_seconds*
                 seconds after it was viewed.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1421,7 +1421,7 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
                 pass a file path as string to upload a new audio file that exists on your local machine.
 
-            caption (``str``, optional):
+            caption (``str``, *optional*):
                 Audio caption, 0-200 characters.
 
             parse_mode (``str``):
@@ -1429,23 +1429,23 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (``int``, optional):
+            duration (``int``, *optional*):
                 Duration of the audio in seconds.
 
-            performer (``str``, optional):
+            performer (``str``, *optional*):
                 Performer.
 
-            title (``str``, optional):
+            title (``str``, *optional*):
                 Track name.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1570,7 +1570,7 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
 
-            caption (``str``, optional):
+            caption (``str``, *optional*):
                 Document caption, 0-200 characters.
 
             parse_mode (``str``):
@@ -1578,14 +1578,14 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1703,14 +1703,14 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
                 pass a file path as string to upload a new sticker that exists on your local machine.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1834,7 +1834,7 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get a video from the Internet, or
                 pass a file path as string to upload a new video that exists on your local machine.
 
-            caption (``str``, optional):
+            caption (``str``, *optional*):
                 Video caption, 0-200 characters.
 
             parse_mode (``str``):
@@ -1842,31 +1842,31 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (``int``, optional):
+            duration (``int``, *optional*):
                 Duration of sent video in seconds.
 
-            width (``int``, optional):
+            width (``int``, *optional*):
                 Video width.
 
-            height (``int``, optional):
+            height (``int``, *optional*):
                 Video height.
 
-            thumb (``str``, optional):
+            thumb (``str``, *optional*):
                 Video thumbnail.
                 Pass a file path as string to send an image that exists on your local machine.
                 Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
-            supports_streaming (``bool``, optional):
+            supports_streaming (``bool``, *optional*):
                 Pass True, if the uploaded video is suitable for streaming.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -1995,7 +1995,7 @@ class Client:
                 pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
                 pass a file path as string to upload a new audio that exists on your local machine.
 
-            caption (``str``, optional):
+            caption (``str``, *optional*):
                 Voice message caption, 0-200 characters.
 
             parse_mode (``str``):
@@ -2003,17 +2003,17 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            duration (``int``, optional):
+            duration (``int``, *optional*):
                 Duration of the voice message in seconds.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -2136,20 +2136,20 @@ class Client:
                 pass a file path as string to upload a new video note that exists on your local machine.
                 Sending video notes by a URL is currently unsupported.
 
-            duration (``int``, optional):
+            duration (``int``, *optional*):
                 Duration of sent video in seconds.
 
-            length (``int``, optional):
+            length (``int``, *optional*):
                 Video width and height.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -2267,11 +2267,11 @@ class Client:
                 :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
                 describing photos and videos to be sent, must include 2–10 items.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
         """
         multi_media = []
@@ -2407,14 +2407,14 @@ class Client:
             longitude (``float``):
                 Longitude of the location.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -2479,17 +2479,17 @@ class Client:
             address (``str``):
                 Address of the venue.
 
-            foursquare_id (``str``, optional):
+            foursquare_id (``str``, *optional*):
                 Foursquare identifier of the venue.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -2554,14 +2554,14 @@ class Client:
             last_name (``str``):
                 Contact's last name.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``int``, optional):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, optional):
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
@@ -2612,7 +2612,7 @@ class Client:
                 Choose one from the :class:`ChatAction <pyrogram.ChatAction>` class,
                 depending on what the user is about to receive.
 
-            progress (``int``, optional):
+            progress (``int``, *optional*):
                 Progress of the upload process.
 
         Returns:
@@ -2643,11 +2643,11 @@ class Client:
             user_id (``int`` | ``str``):
                 Unique identifier of the target user.
 
-            offset (``int``, optional):
+            offset (``int``, *optional*):
                 Sequential number of the first photo to be returned.
                 By default, all photos are returned.
 
-            limit (``int``, optional):
+            limit (``int``, *optional*):
                 Limits the number of photos to be retrieved.
                 Values between 1—100 are accepted. Defaults to 100.
 
@@ -2695,7 +2695,7 @@ class Client:
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
 
-            disable_web_page_preview (``bool``, optional):
+            disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
 
             reply_markup (:obj:`InlineKeyboardMarkup`):
@@ -2844,7 +2844,7 @@ class Client:
                 A list of Message identifiers to delete or a single message id.
                 Iterators and Generators are also accepted.
 
-            revoke (``bool``, optional):
+            revoke (``bool``, *optional*):
                 Deletes messages on both parts.
                 This is only for private cloud chats and normal groups, messages on
                 channels and supergroups are always revoked (i.e.: deleted for everyone).
@@ -3184,7 +3184,7 @@ class Client:
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            delete (``bool``, optional):
+            delete (``bool``, *optional*):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
@@ -3287,10 +3287,10 @@ class Client:
             password (``str``):
                 Your password.
 
-            hint (``str``, optional):
+            hint (``str``, *optional*):
                 A password hint.
 
-            email (``str``, optional):
+            email (``str``, *optional*):
                 Recovery e-mail.
 
         Returns:
@@ -3329,7 +3329,7 @@ class Client:
             new_password (``str``):
                 Your new password.
 
-            new_hint (``str``, optional):
+            new_hint (``str``, *optional*):
                 A new password hint.
 
         Returns:
@@ -3402,13 +3402,13 @@ class Client:
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
                 the file id as string.
 
-            file_name (``str``, optional):
+            file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
 
-            block (``bool``, optional):
+            block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
@@ -3561,7 +3561,7 @@ class Client:
             offset (``str``):
                 Offset of the results to be returned.
 
-            location (``tuple``, optional):
+            location (``tuple``, *optional*):
                 Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
                 Useful for location-based results only.
 
@@ -3606,11 +3606,11 @@ class Client:
             result_id (``str``):
                 Unique identifier for the result that was chosen.
 
-            disable_notification (``bool``, optional):
+            disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``bool``, optional):
+            reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
         Returns:
@@ -3683,7 +3683,7 @@ class Client:
                 A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
                 Iterators and Generators are also accepted.
 
-            replies (``int``, optional):
+            replies (``int``, *optional*):
                 The number of replies to get for each message. Defaults to 1.
 
         Returns:

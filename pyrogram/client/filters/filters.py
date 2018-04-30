@@ -169,7 +169,7 @@ class Filters:
                 all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_
                 are stored in the *matches* field of the :class:`Message <pyrogram.Message>` itself.
 
-            flags (``int``, optional):
+            flags (``int``, *optional*):
                 RegEx flags.
         """
 
