@@ -2729,7 +2729,7 @@ class Client:
 
     def delete_messages(self,
                         chat_id: int or str,
-                        message_ids: list or int,
+                        message_ids,
                         revoke: bool = True):
         """Use this method to delete messages, including service messages, with the following limitations:
 
@@ -2746,8 +2746,9 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``list`` | ``int``):
+            message_ids (``iterable``):
                 A list of Message identifiers to delete or a single message id.
+                Iterators and Generators are also accepted.
 
             revoke (``bool``, optional):
                 Deletes messages on both parts.
@@ -2762,7 +2763,7 @@ class Client:
             :class:`Error <pyrogram.Error>`
         """
         peer = self.resolve_peer(chat_id)
-        message_ids = message_ids if isinstance(message_ids, list) else [message_ids]
+        message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
             self.send(
