@@ -1257,7 +1257,8 @@ class Client:
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
-                   progress: callable = None):
+                   progress: callable = None,
+                   progress_args: tuple = ()):
         """Use this method to send photos.
 
         Args:
@@ -1299,14 +1300,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1318,7 +1331,7 @@ class Client:
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(photo):
-            file = self.save_file(photo, progress=progress)
+            file = self.save_file(photo, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedPhoto(
                 file=file,
                 ttl_seconds=ttl_seconds
@@ -1386,7 +1399,8 @@ class Client:
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
-                   progress: callable = None):
+                   progress: callable = None,
+                   progress_args: tuple = ()):
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice` method instead.
@@ -1434,14 +1448,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1453,7 +1479,7 @@ class Client:
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(audio):
-            file = self.save_file(audio, progress=progress)
+            file = self.save_file(audio, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                 file=file,
@@ -1524,7 +1550,8 @@ class Client:
                       disable_notification: bool = None,
                       reply_to_message_id: int = None,
                       reply_markup=None,
-                      progress: callable = None):
+                      progress: callable = None,
+                      progress_args: tuple = ()):
         """Use this method to send general files.
 
         Args:
@@ -1561,14 +1588,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1580,7 +1619,7 @@ class Client:
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(document):
-            file = self.save_file(document, progress=progress)
+            file = self.save_file(document, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
                 file=file,
@@ -1644,7 +1683,8 @@ class Client:
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
                      reply_markup=None,
-                     progress: callable = None):
+                     progress: callable = None,
+                     progress_args: tuple = ()):
         """Use this method to send .webp stickers.
 
         Args:
@@ -1673,14 +1713,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1691,7 +1743,7 @@ class Client:
         file = None
 
         if os.path.exists(sticker):
-            file = self.save_file(sticker, progress=progress)
+            file = self.save_file(sticker, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type="image/webp",
                 file=file,
@@ -1762,7 +1814,8 @@ class Client:
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
-                   progress: callable = None):
+                   progress: callable = None,
+                   progress_args: tuple = ()):
         """Use this method to send video files.
 
         Args:
@@ -1816,14 +1869,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1836,7 +1901,7 @@ class Client:
 
         if os.path.exists(video):
             thumb = None if thumb is None else self.save_file(thumb)
-            file = self.save_file(video, progress=progress)
+            file = self.save_file(video, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
@@ -1910,7 +1975,8 @@ class Client:
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
-                   progress: callable = None):
+                   progress: callable = None,
+                   progress_args: tuple = ()):
         """Use this method to send audio files.
 
         Args:
@@ -1950,14 +2016,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -1969,7 +2047,7 @@ class Client:
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(voice):
-            file = self.save_file(voice, progress=progress)
+            file = self.save_file(voice, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
                 file=file,
@@ -2038,7 +2116,8 @@ class Client:
                         disable_notification: bool = None,
                         reply_to_message_id: int = None,
                         reply_markup=None,
-                        progress: callable = None):
+                        progress: callable = None,
+                        progress_args: tuple = ()):
         """Use this method to send video messages.
 
         Args:
@@ -2073,14 +2152,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the upload progress.
-                The function must accept two arguments (current, total).
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes uploaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
@@ -2091,7 +2182,7 @@ class Client:
         file = None
 
         if os.path.exists(video_note):
-            file = self.save_file(video_note, progress=progress)
+            file = self.save_file(video_note, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
@@ -2787,7 +2878,8 @@ class Client:
                   path: str,
                   file_id: int = None,
                   file_part: int = 0,
-                  progress: callable = None):
+                  progress: callable = None,
+                  progress_args: tuple = ()):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = int(math.ceil(file_size / part_size))
@@ -2836,7 +2928,7 @@ class Client:
                     file_part += 1
 
                     if progress:
-                        progress(min(file_part * part_size, file_size), file_size)
+                        progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
         except Exception as e:
             log.error(e, exc_info=True)
         else:
