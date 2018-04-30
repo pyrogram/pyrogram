@@ -262,7 +262,7 @@ class Client:
             return func
 
         return decorator
-    
+
     # TODO: Maybe make add_handler return (handler, group)?
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
@@ -1154,7 +1154,7 @@ class Client:
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        return self.send(
+        r = self.send(
             functions.messages.SendMessage(
                 peer=self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
@@ -1165,6 +1165,21 @@ class Client:
                 **style.parse(text)
             )
         )
+
+        if isinstance(r, types.UpdateShortSentMessage):
+            return pyrogram_types.Message(
+                message_id=r.id,
+                date=r.date,
+                outgoing=r.out,
+                entities=utils.parse_entities(r.entities, {}) or None
+            )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                users = {i.id: i for i in r.users}
+                chats = {i.id: i for i in r.chats}
+
+                return utils.parse_message(self, i.message, users, chats)
 
     def forward_messages(self,
                          chat_id: int or str,
