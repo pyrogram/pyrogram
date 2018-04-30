@@ -15,12 +15,13 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+from enum import Enum
 
 from pyrogram.api import types
 
 
-class ChatAction:
-    """This class provides a convenient access to all Chat Actions available.
+class ChatAction(Enum):
+    """This enumeration provides a convenient access to all Chat Actions available.
     Chat Actions are intended to be used with :meth:`send_chat_action() <pyrogram.Client.send_chat_action>`.
     """
 

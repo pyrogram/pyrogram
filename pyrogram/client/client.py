@@ -38,6 +38,7 @@ from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Event, Thread
 
 import pyrogram
+from pyrogram import ChatAction
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
 from pyrogram.api.errors import (
@@ -2502,7 +2503,7 @@ class Client:
 
     def send_chat_action(self,
                          chat_id: int or str,
-                         action: callable,
+                         action: ChatAction,
                          progress: int = 0):
         """Use this method when you need to tell the other party that something is happening on your side.
 
@@ -2527,6 +2528,9 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        # Resolve Enum type
+        action = action.value if isinstance(action, ChatAction) else action
+
         if "Upload" in action.__name__:
             action = action(progress)
         else:
