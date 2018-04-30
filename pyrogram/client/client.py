@@ -40,7 +40,6 @@ from threading import Event, Thread
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
-from pyrogram.client import ChatAction
 from pyrogram.api.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
@@ -52,7 +51,7 @@ from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
 from . import types as pyrogram_types
-from . import utils
+from . import utils, ChatAction
 from .dispatcher import Dispatcher
 from .style import Markdown, HTML
 from .syncer import Syncer
@@ -2518,7 +2517,7 @@ class Client:
                 Type of action to broadcast.
                 Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
                 depending on what the user is about to receive.
-                You can also provide a string (e.g. "typing").
+                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
 
             progress (``int``, optional):
                 Progress of the upload process.
