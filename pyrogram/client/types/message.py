@@ -192,9 +192,11 @@ class Message(Object):
             A list containing the command and its arguments, if any.
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
-    """
 
-    # TODO: Document missing arguments
+        reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+            Additional interface options. An object for an inline keyboard, custom reply keyboard,
+            instructions to remove reply keyboard or to force a reply from the user.
+    """
 
     ID = 0xb0700003
 
