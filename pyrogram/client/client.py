@@ -263,7 +263,6 @@ class Client:
 
         return decorator
 
-    # TODO: Maybe make add_handler return (handler, group)?
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
 
@@ -277,8 +276,13 @@ class Client:
 
             group (``int``, optional):
                 The group identifier, defaults to 0.
+
+        Returns:
+            A tuple of (handler, group)
         """
         self.dispatcher.add_handler(handler, group)
+
+        return handler, group
 
     def remove_handler(self, handler, group: int = 0):
         """Removes a previously-added update handler.
