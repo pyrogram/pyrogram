@@ -51,7 +51,7 @@ from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
 from . import types as pyrogram_types
-from . import utils
+from . import utils, ChatAction
 from .dispatcher import Dispatcher
 from .style import Markdown, HTML
 from .syncer import Syncer
@@ -2596,7 +2596,7 @@ class Client:
 
     def send_chat_action(self,
                          chat_id: int or str,
-                         action: callable,
+                         action: ChatAction or str,
                          progress: int = 0):
         """Use this method when you need to tell the other party that something is happening on your side.
 
@@ -2607,10 +2607,11 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            action (``callable``):
+            action (``ChatAction`` | ``str``):
                 Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` class,
+                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
                 depending on what the user is about to receive.
+                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
 
             progress (``int``, *optional*):
                 Progress of the upload process.
@@ -2620,7 +2621,15 @@ class Client:
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            :class:`ValueError`: If the provided string is not a valid ChatAction
         """
+
+        # Resolve Enum type
+        if isinstance(action, str):
+            action = ChatAction.from_string(action).value
+        elif isinstance(action, ChatAction):
+            action = action.value
+
         if "Upload" in action.__name__:
             action = action(progress)
         else:
