@@ -3533,14 +3533,15 @@ class Client:
             )
         )
 
-    def get_users(self, user_ids: list or int or str):
+    def get_users(self, user_ids):
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
         Args:
-            user_ids (``list`` | ``int`` | ``str``):
+            user_ids (``iterable``):
                 A list of User identifiers (id or username) or a single user id/username.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
+                Iterators and Generators are also accepted.
 
         Returns:
             On success and in case *user_ids* was a list, the returned value will be a list of the requested
@@ -3550,8 +3551,8 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        is_list = isinstance(user_ids, list)
-        user_ids = user_ids if is_list else [user_ids]
+        is_iterable = not isinstance(user_ids, (int, str))
+        user_ids = list(user_ids) if is_iterable else [user_ids]
         user_ids = [self.resolve_peer(i) for i in user_ids]
 
         r = self.send(
@@ -3565,7 +3566,7 @@ class Client:
         for i in r:
             users.append(utils.parse_user(i))
 
-        return users if is_list else users[0]
+        return users if is_iterable else users[0]
 
     def get_messages(self,
                      chat_id: int or str,
