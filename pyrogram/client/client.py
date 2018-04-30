@@ -2514,10 +2514,11 @@ class Client:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            action (``callable``):
+            action (``ChatAction`` | ``str``):
                 Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` class,
+                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
                 depending on what the user is about to receive.
+                You can also provide a string (e.g. "typing").
 
             progress (``int``, optional):
                 Progress of the upload process.
@@ -2527,6 +2528,7 @@ class Client:
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            :class:`ValueError`: If the provided string is not a valid ChatAction
         """
 
         # Resolve Enum type
