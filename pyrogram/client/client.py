@@ -2503,7 +2503,7 @@ class Client:
 
     def send_chat_action(self,
                          chat_id: int or str,
-                         action: ChatAction,
+                         action: ChatAction or str,
                          progress: int = 0):
         """Use this method when you need to tell the other party that something is happening on your side.
 
@@ -2528,8 +2528,12 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+
         # Resolve Enum type
-        action = action.value if isinstance(action, ChatAction) else action
+        if isinstance(action, str):
+            action = ChatAction.from_string(action).value
+        elif isinstance(action, ChatAction):
+            action = action.value
 
         if "Upload" in action.__name__:
             action = action(progress)

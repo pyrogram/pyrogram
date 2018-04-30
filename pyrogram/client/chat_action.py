@@ -21,8 +21,9 @@ from pyrogram.api import types
 
 
 class ChatAction(Enum):
-    """This enumeration provides a convenient access to all Chat Actions available.
-    Chat Actions are intended to be used with :meth:`send_chat_action() <pyrogram.Client.send_chat_action>`.
+    """This enumeration class provides a convenient access to all Chat Actions available.
+    Chat Actions are intended to be used with
+    :meth:`send_chat_action() <pyrogram.Client.send_chat_action>`.
     """
 
     CANCEL = types.SendMessageCancelAction
@@ -63,3 +64,12 @@ class ChatAction(Enum):
 
     UPLOAD_VIDEO_NOTE = types.SendMessageUploadRoundAction
     """User is uploading a round video note."""
+
+    @classmethod
+    def from_string(cls, action: str) -> 'ChatAction':
+        for a in iter(ChatAction):
+            if a.name.lower() == action.lower():
+                return a
+        raise ValueError("Invalid ChatAction: '{}'. Possible types are {}".format(
+            action, [x.name.lower() for x in iter(ChatAction)]
+        ))
