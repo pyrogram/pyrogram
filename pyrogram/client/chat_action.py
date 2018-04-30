@@ -66,8 +66,8 @@ class ChatAction(Enum):
     UPLOAD_VIDEO_NOTE = types.SendMessageUploadRoundAction
     """User is uploading a round video note."""
 
-    @classmethod
-    def from_string(cls, action: str) -> "ChatAction":
+    @staticmethod
+    def from_string(action: str) -> "ChatAction":
         for a in iter(ChatAction):
             if a.name.lower() == action.lower():
                 return a
