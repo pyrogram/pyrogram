@@ -18,6 +18,7 @@ Client
         on_callback_query
         on_raw_update
         add_handler
+        remove_handler
         send
         resolve_peer
         get_me
