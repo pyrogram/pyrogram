@@ -2988,13 +2988,17 @@ class Client:
             )
 
             session.start()
-
-            session.send(
-                functions.auth.ImportAuthorization(
-                    id=exported_auth.id,
-                    bytes=exported_auth.bytes
+            try:
+                session.send(
+                    functions.auth.ImportAuthorization(
+                        id=exported_auth.id,
+                        bytes=exported_auth.bytes
+                    )
                 )
-            )
+            except Exception as e:
+                session.stop()
+                raise e
+
         else:
             session = Session(
                 dc_id,
