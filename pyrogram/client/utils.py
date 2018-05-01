@@ -23,6 +23,8 @@ from pyrogram.client import types as pyrogram_types
 from ..api import types, functions
 from ..api.errors import StickersetInvalid
 
+from weakref import ref
+
 # TODO: Organize the code better?
 
 ENTITIES = {
@@ -527,7 +529,7 @@ def parse_message(
         views=message.views,
         via_bot=parse_user(users.get(message.via_bot_id, None)),
         outgoing=message.out,
-        client=client,
+        client=ref(client),
         reply_markup=reply_markup
     )
 
@@ -627,7 +629,7 @@ def parse_message_service(
         migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
         group_chat_created=group_chat_created,
         channel_chat_created=channel_chat_created,
-        client=client
+        client=ref(client)
         # TODO: supergroup_chat_created
     )
 
@@ -641,7 +643,7 @@ def parse_message_empty(
         client,
         message: types.MessageEmpty
 ) -> pyrogram_types.Message:
-    return pyrogram_types.Message(message_id=message.id, client=client)
+    return pyrogram_types.Message(message_id=message.id, client=ref(client))
 
 
 def get_peer_id(input_peer) -> int:
