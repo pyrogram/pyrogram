@@ -423,6 +423,8 @@ class Client:
         for i in self.media_sessions.values():
             i.stop()
 
+        self.media_sessions.clear()
+
         self.is_started = False
         self.session.stop()
 
@@ -2992,9 +2994,9 @@ class Client:
                         self.api_id
                     )
 
-                    self.media_sessions[dc_id] = session
-
                     session.start()
+
+                    self.media_sessions[dc_id] = session
 
                     session.send(
                         functions.auth.ImportAuthorization(
@@ -3011,9 +3013,9 @@ class Client:
                         self.api_id
                     )
 
-                    self.media_sessions[dc_id] = session
-
                     session.start()
+
+                    self.media_sessions[dc_id] = session
 
         if volume_id:  # Photos are accessed by volume_id, local_id, secret
             location = types.InputFileLocation(
@@ -3082,9 +3084,9 @@ class Client:
                             is_cdn=True
                         )
 
-                        self.media_sessions[r.dc_id] = cdn_session
-
                         cdn_session.start()
+
+                        self.media_sessions[r.dc_id] = cdn_session
 
                 try:
                     with tempfile.NamedTemporaryFile("wb", delete=False) as f:
