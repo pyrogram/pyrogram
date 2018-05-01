@@ -2992,6 +2992,8 @@ class Client:
                         self.api_id
                     )
 
+                    self.media_sessions[dc_id] = session
+
                     session.start()
 
                     session.send(
@@ -3009,9 +3011,9 @@ class Client:
                         self.api_id
                     )
 
-                    session.start()
+                    self.media_sessions[dc_id] = session
 
-                self.media_sessions[dc_id] = session
+                    session.start()
 
         if volume_id:  # Photos are accessed by volume_id, local_id, secret
             location = types.InputFileLocation(
@@ -3080,9 +3082,9 @@ class Client:
                             is_cdn=True
                         )
 
-                        cdn_session.start()
-
                         self.media_sessions[r.dc_id] = cdn_session
+
+                        cdn_session.start()
 
                 try:
                     with tempfile.NamedTemporaryFile("wb", delete=False) as f:
