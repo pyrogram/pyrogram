@@ -72,11 +72,12 @@ class Encoder(JSONEncoder):
             else:
                 return repr(o)
 
+        name = o.__class__.__name__
         o = objects.get(getattr(o, "ID", None), None)
 
         if o is not None:
             if o.startswith("pyrogram.client"):
-                r = remove_none(OrderedDict([("_", o.split(".")[-1])] + [i for i in content.items()]))
+                r = remove_none(OrderedDict([("_", name)] + [i for i in content.items()]))
                 r.pop("client", None)
 
                 return r
