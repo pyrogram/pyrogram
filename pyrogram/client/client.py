@@ -205,7 +205,6 @@ class Client:
         self.download_workers_list = []
 
         self.dispatcher = Dispatcher(self, workers)
-        self.update_handler = None
 
     def on_message(self, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
