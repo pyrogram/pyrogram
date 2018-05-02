@@ -38,7 +38,7 @@ class Filters:
     outgoing = build("Outgoing", lambda _, m: m.outgoing)
     """Filter outgoing messages."""
 
-    text = build("Text", lambda _, m: bool(m.text and not m.text.startswith("/")))
+    text = build("Text", lambda _, m: bool(m.text))
     """Filter text messages."""
 
     reply = build("Reply", lambda _, m: bool(m.reply_to_message))

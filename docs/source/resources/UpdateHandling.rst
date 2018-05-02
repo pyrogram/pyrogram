@@ -5,14 +5,15 @@ Updates are events that happen in your Telegram account (incoming messages, new 
 and are handled by registering one or more callback functions with an Handler. There are multiple Handlers to choose
 from, one for each kind of update:
 
--   `MessageHandler <../pyrogram/MessageHandler.html>`_
--   `RawUpdateHandler <../pyrogram/RawUpdateHandler.html>`_
+-   `MessageHandler <../pyrogram/handlers/MessageHandler.html>`_
+-   `CallbackQueryHandler <../pyrogram/handlers/CallbackQueryHandler.html>`_
+-   `RawUpdateHandler <../pyrogram/handlers/RawUpdateHandler.html>`_
 
 Registering an Handler
 ----------------------
 
 We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will be in charge for handling
-:obj:`Message <pyrogram.api.types.pyrogram.Message>` objects.
+:obj:`Message <pyrogram.Message>` objects.
 
 -   The easiest and nicest way to register a MessageHandler is by decorating your function with the
     :meth:`on_message() <pyrogram.Client.on_message>` decorator. Here's a full example that prints out the content
@@ -59,7 +60,7 @@ For a finer grained control over what kind of messages will be allowed or not in
 :class:`Filters <pyrogram.Filters>`.
 
 -   This example will show you how to **only** handle messages containing an
-    :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` object and filter out any other message:
+    :obj:`Audio <pyrogram.Audio>` object and filter out any other message:
 
     .. code-block:: python
 
