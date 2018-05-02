@@ -316,15 +316,6 @@ class Client:
         if self.is_started:
             raise ConnectionError("Client has already been started")
 
-        logging.basicConfig(
-            format=LOG_FORMAT,
-            datefmt="%Y-%m-%d %H:%M:%S",
-            stream=sys.stdout
-        )
-
-        if debug:
-            logging.getLogger().setLevel(logging.INFO)
-
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
             self.session_name = self.session_name.split(":")[0]
