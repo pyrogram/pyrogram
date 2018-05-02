@@ -324,8 +324,6 @@ class Client:
 
         if debug:
             logging.getLogger().setLevel(logging.INFO)
-        else:
-            logging.getLogger().setLevel(logging.WARNING)
 
         if self.BOT_TOKEN_RE.match(self.session_name):
             self.token = self.session_name
