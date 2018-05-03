@@ -18,12 +18,11 @@
 
 from base64 import b64decode, b64encode
 from struct import pack
+from weakref import proxy
 
 from pyrogram.client import types as pyrogram_types
 from ..api import types, functions
 from ..api.errors import StickersetInvalid
-
-from weakref import ref
 
 # TODO: Organize the code better?
 
@@ -529,7 +528,7 @@ def parse_message(
         views=message.views,
         via_bot=parse_user(users.get(message.via_bot_id, None)),
         outgoing=message.out,
-        client=ref(client),
+        client=proxy(client),
         reply_markup=reply_markup
     )
 
@@ -629,7 +628,7 @@ def parse_message_service(
         migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
         group_chat_created=group_chat_created,
         channel_chat_created=channel_chat_created,
-        client=ref(client)
+        client=proxy(client)
         # TODO: supergroup_chat_created
     )
 
@@ -643,7 +642,7 @@ def parse_message_empty(
         client,
         message: types.MessageEmpty
 ) -> pyrogram_types.Message:
-    return pyrogram_types.Message(message_id=message.id, client=ref(client))
+    return pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
 
 def get_peer_id(input_peer) -> int:
