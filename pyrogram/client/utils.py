@@ -127,12 +127,17 @@ def parse_user_chat(user: types.User) -> pyrogram_types.Chat:
 
 
 def parse_chat_chat(chat: types.Chat) -> pyrogram_types.Chat:
+    admins_enabled = getattr(chat, "admins_enabled", None)
+
+    if admins_enabled is not None:
+        admins_enabled = not admins_enabled
+
     return pyrogram_types.Chat(
         id=-chat.id,
         type="group",
         title=chat.title,
-        all_members_are_administrators=not chat.admins_enabled,
-        photo=parse_chat_photo(chat.photo)
+        all_members_are_administrators=admins_enabled,
+        photo=parse_chat_photo(getattr(chat, "photo", None))
     )
 
 
