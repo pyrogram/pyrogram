@@ -26,7 +26,6 @@ import os
 import re
 import shutil
 import struct
-import sys
 import tempfile
 import threading
 import time
