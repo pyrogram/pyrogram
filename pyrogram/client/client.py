@@ -135,6 +135,7 @@ class Client:
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",
+        1: "thumbnail",
         2: "photo",
         3: "voice",
         4: "video",
@@ -734,9 +735,7 @@ class Client:
                         extension = ".webp"
                     elif media_type == 9:
                         extension = mimetypes.guess_extension(media.mime_type) or ".mp3"
-                    elif media_type == 0:
-                        extension = ".jpg"
-                    elif media_type == 2:
+                    elif media_type in (0, 1, 2):
                         extension = ".jpg"
                     else:
                         continue
