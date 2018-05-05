@@ -3794,3 +3794,18 @@ class Client:
                 url=url
             )
         )
+
+    def get_chat(self, chat_id: int or str):
+        # TODO: Add docstrings
+        peer = self.resolve_peer(chat_id)
+
+        if isinstance(peer, types.InputPeerChannel):
+            r = self.send(functions.channels.GetFullChannel(peer))
+        elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
+            r = self.send(functions.users.GetFullUser(peer))
+        else:
+            r = self.send(functions.messages.GetFullChat(peer.chat_id))
+
+        return utils.parse_chat_full(self, r)
+
+

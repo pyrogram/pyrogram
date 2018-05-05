@@ -749,3 +749,39 @@ def parse_callback_query(client, callback_query, users):
         game_short_name=callback_query.game_short_name
         # TODO: add inline_message_id
     )
+
+
+def parse_chat_full(
+        client,
+        chat_full: types.messages.ChatFull or types.UserFull
+) -> pyrogram_types.Chat:
+    if isinstance(chat_full, types.UserFull):
+        chat = parse_user_chat(chat_full.user)
+        chat.description = chat_full.about
+    else:
+        full_chat = chat_full.full_chat
+        chat = None
+
+        for i in chat_full.chats:
+            if full_chat.id == i.id:
+                chat = i
+
+        if isinstance(full_chat, types.ChatFull):
+            chat = parse_chat_chat(chat)
+        else:
+            chat = parse_channel_chat(chat)
+            chat.description = full_chat.about or None
+            # TODO: Add StickerSet type
+            chat.can_set_sticker_set = full_chat.can_set_stickers
+            chat.sticker_set_name = full_chat.stickerset
+
+            if full_chat.pinned_msg_id:
+                chat.pinned_message = client.get_messages(
+                    int("-100" + str(full_chat.id)),
+                    full_chat.pinned_msg_id
+                )
+
+        if isinstance(full_chat.exported_invite, types.ChatInviteExported):
+            chat.invite_link = full_chat.exported_invite.link
+
+    return chat
