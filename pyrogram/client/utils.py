@@ -80,13 +80,13 @@ def parse_chat_photo(photo):
     return pyrogram_types.ChatPhoto(
         small_file_id=encode(
             pack(
-                "<iiqqqqi", 0, loc_small.dc_id, 0, 0, loc_small.volume_id,
+                "<iiqqqqi", 1, loc_small.dc_id, 0, 0, loc_small.volume_id,
                 loc_small.secret, loc_small.local_id
             )
         ),
         big_file_id=encode(
             pack(
-                "<iiqqqqi", 0, loc_big.dc_id, 0, 0, loc_big.volume_id,
+                "<iiqqqqi", 1, loc_big.dc_id, 0, 0, loc_big.volume_id,
                 loc_big.secret, loc_big.local_id
             )
         )
