@@ -45,7 +45,7 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FilePartMissing,
     ChatAdminRequired, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, UnknownError)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from pyrogram.session.internals import MsgId
@@ -3586,18 +3586,27 @@ class Client:
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
-            functions.messages.GetInlineBotResults(
-                bot=self.resolve_peer(bot),
-                peer=types.InputPeerSelf(),
-                query=query,
-                offset=offset,
-                geo_point=types.InputGeoPoint(
-                    lat=location[0],
-                    long=location[1]
-                ) if location else None
+        # TODO: Split location parameter into lat and long
+
+        try:
+            return self.send(
+                functions.messages.GetInlineBotResults(
+                    bot=self.resolve_peer(bot),
+                    peer=types.InputPeerSelf(),
+                    query=query,
+                    offset=offset,
+                    geo_point=types.InputGeoPoint(
+                        lat=location[0],
+                        long=location[1]
+                    ) if location else None
+                )
             )
-        )
+        except UnknownError as e:
+            # TODO: Add this -503 Timeout error into the Error DB
+            if e.x.error_code == -503 and e.x.error_message == "Timeout":
+                raise TimeoutError("The inline bot didn't answer in time") from None
+            else:
+                raise e
 
     def send_inline_bot_result(self,
                                chat_id: int or str,
@@ -3807,5 +3816,3 @@ class Client:
             r = self.send(functions.messages.GetFullChat(peer.chat_id))
 
         return utils.parse_chat_full(self, r)
-
-
