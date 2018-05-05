@@ -74,19 +74,20 @@ def parse_chat_photo(photo):
     if not isinstance(photo.photo_big, types.FileLocation):
         return None
 
+    photo_id = getattr(photo, "photo_id", 0)
     loc_small = photo.photo_small
     loc_big = photo.photo_big
 
     return pyrogram_types.ChatPhoto(
         small_file_id=encode(
             pack(
-                "<iiqqqqi", 1, loc_small.dc_id, 0, 0, loc_small.volume_id,
+                "<iiqqqqi", 1, loc_small.dc_id, photo_id, 0, loc_small.volume_id,
                 loc_small.secret, loc_small.local_id
             )
         ),
         big_file_id=encode(
             pack(
-                "<iiqqqqi", 1, loc_big.dc_id, 0, 0, loc_big.volume_id,
+                "<iiqqqqi", 1, loc_big.dc_id, photo_id, 0, loc_big.volume_id,
                 loc_big.secret, loc_big.local_id
             )
         )
