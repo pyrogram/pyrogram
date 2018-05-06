@@ -1,5 +1,7 @@
 from pyrogram import Client
 
+"""This example shows how to query an inline bot"""
+
 # Create a new Client
 app = Client("my_account")
 

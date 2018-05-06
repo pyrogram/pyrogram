@@ -5,8 +5,7 @@ from pyrogram import Client
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FloodWait
 
-"""
-This is an improved version of get_participants.py
+"""This is an improved version of get_participants.py
 
 Since Telegram will return at most 10.000 users for a single query, this script
 repeats the search using numbers ("0" to "9") and all the available ascii letters ("a" to "z").
@@ -18,7 +17,7 @@ as some user names may not contain ascii letters at all.
 app = Client("my_account")
 app.start()
 
-target = "username"  # Target channel/supergroup username or id
+target = "pyrogramchat"  # Target channel/supergroup username or id
 users = {}  # To ensure uniqueness, users will be stored in a dictionary with user_id as key
 limit = 200  # Amount of users to retrieve for each API call (200 is the maximum)
 

@@ -4,6 +4,8 @@ from pyrogram import Client
 from pyrogram.api import functions
 from pyrogram.api.errors import FloodWait
 
+"""This example shows how to retrieve the full message history of a chat"""
+
 app = Client("my_account")
 app.start()
 

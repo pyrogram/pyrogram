@@ -4,10 +4,15 @@ from pyrogram import Client
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FloodWait
 
+"""This simple GetParticipants method usage shows you how to get the first 10.000 users of a chat.
+
+Refer to get_participants2.py for more than 10.000 users.
+"""
+
 app = Client("my_account")
 app.start()
 
-target = "username"  # Target channel/supergroup
+target = "pyrogramchat"  # Target channel/supergroup
 users = []  # List that will contain all the users of the target chat
 limit = 200  # Amount of users to retrieve for each API call
 offset = 0  # Offset starts at 0
