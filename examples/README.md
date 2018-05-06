@@ -15,4 +15,5 @@ you can simply copy-paste and run, the only things you have to change are your s
 - [**get_participants2.py**](get_participants2.py)
 - [**query_inline_bots.py**](query_inline_bots.py)
 - [**send_bot_keyboards.py**](send_bot_keyboards.py)
+- [**callback_query_handler.py**](callback_query_handler.py)
 - [**raw_update_handler.py**](raw_update_handler.py)
