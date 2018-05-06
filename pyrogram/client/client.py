@@ -689,7 +689,7 @@ class Client:
             final_file_path = ""
 
             try:
-                media, file_name, done, progress, path = media
+                media, file_name, done, progress, progress_args, path = media
 
                 file_id = media.file_id
                 size = media.file_size
@@ -755,7 +755,8 @@ class Client:
                     local_id=local_id,
                     secret=secret,
                     size=size,
-                    progress=progress
+                    progress=progress,
+                    progress_args=progress_args
                 )
 
                 if temp_file_path:
@@ -2961,7 +2962,8 @@ class Client:
                  secret: int = None,
                  version: int = 0,
                  size: int = None,
-                 progress: callable = None) -> str:
+                 progress: callable = None,
+                 progress_args: tuple = None) -> str:
         with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
@@ -3047,7 +3049,7 @@ class Client:
                         offset += limit
 
                         if progress:
-                            progress(min(offset, size), size)
+                            progress(self, min(offset, size), size, *progress_args)
 
                         r = session.send(
                             functions.upload.GetFile(
@@ -3130,7 +3132,7 @@ class Client:
                             offset += limit
 
                             if progress:
-                                progress(min(offset, size), size)
+                                progress(self, min(offset, size), size, *progress_args)
 
                             if len(chunk) < limit:
                                 break
@@ -3409,7 +3411,8 @@ class Client:
                        message: pyrogram_types.Message or str,
                        file_name: str = "",
                        block: bool = True,
-                       progress: callable = None):
+                       progress: callable = None,
+                       progress_args: tuple = None):
         """Use this method to download the media from a Message.
 
         Args:
@@ -3429,15 +3432,26 @@ class Client:
 
             progress (``callable``):
                 Pass a callback function to view the download progress.
-                The function must accept two arguments (current, total).
-                Note that this will not work in case you are downloading a media using a *file_id*.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
             current (``int``):
                 The amount of bytes downloaded so far.
 
             total (``int``):
                 The size of the file.
+
+            *args (``tuple``):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
@@ -3484,7 +3498,7 @@ class Client:
         done = Event()
         path = [None]
 
-        self.download_queue.put((media, file_name, done, progress, path))
+        self.download_queue.put((media, file_name, done, progress, progress_args, path))
 
         if block:
             done.wait()
