@@ -13,5 +13,6 @@ you can simply copy-paste and run, the only things you have to change are your s
 - [**get_history.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/get_history.py)
 - [**get_participants.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/get_participants.py)
 - [**get_participants2.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/get_participants2.py)
-- [**inline_bots.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/inline_bots.py)
+- [**query_inline_bots.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/query_inline_bots.py)
+- [**send_bot_keyboards.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/send_bot_keyboards.py)
 - [**raw_update_handler.py**](https://github.com/pyrogram/pyrogram/blob/master/examples/raw_update_handler.py)
