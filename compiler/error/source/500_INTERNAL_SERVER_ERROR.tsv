@@ -3,3 +3,4 @@ AUTH_RESTART	User authorization has restarted
 RPC_CALL_FAIL	Telegram is having internal problems. Please try again later
 RPC_MCGET_FAIL	Telegram is having internal problems. Please try again later
 PERSISTENT_TIMESTAMP_OUTDATED	Telegram is having internal problems. Please try again later
+HISTORY_GET_FAILED	Telegram is having internal problems. Please try again later
