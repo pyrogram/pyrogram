@@ -17,15 +17,16 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from abc import ABC, abstractmethod
 from queue import Queue
 from threading import Lock
 
-from ..style import Markdown, HTML
+from ..style import HTML, Markdown
 from ...api.core import Object
 from ...session.internals import MsgId
 
 
-class BaseClient:
+class BaseClient(ABC):
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
@@ -75,15 +76,16 @@ class BaseClient:
         self.download_queue = Queue()
         self.download_workers_list = []
 
-    def send(self, data: Object):
-        pass
+    @abstractmethod
+    def send(self, data: Object): pass
 
-    def resolve_peer(self, peer_id: int or str):
-        pass
+    @abstractmethod
+    def resolve_peer(self, peer_id: int or str): pass
 
-    def add_handler(self, handler, group: int = 0) -> tuple:
-        pass
+    @abstractmethod
+    def add_handler(self, handler, group: int = 0) -> tuple: pass
 
+    @abstractmethod
     def save_file(
             self,
             path: str,

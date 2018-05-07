@@ -21,7 +21,9 @@ from pyrogram.client import types as pyrogram_types
 from ....ext import utils, BaseClient
 
 
-class SendMessage(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendMessage:
     def send_message(self,
                      chat_id: int or str,
                      text: str,

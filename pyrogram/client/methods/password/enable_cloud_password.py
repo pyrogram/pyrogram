@@ -23,7 +23,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class EnableCloudPassword(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class EnableCloudPassword:
     def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
         """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 

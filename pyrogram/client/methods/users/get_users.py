@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ...ext import BaseClient, utils
 
 
-class GetUsers(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetUsers:
     def get_users(self, user_ids):
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.

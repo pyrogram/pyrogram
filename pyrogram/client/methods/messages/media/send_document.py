@@ -26,7 +26,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendDocument(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendDocument:
     def send_document(self,
                       chat_id: int or str,
                       document: str,

@@ -26,7 +26,9 @@ from ...ext import BaseClient
 log = logging.getLogger(__name__)
 
 
-class GetContacts(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetContacts:
     def get_contacts(self, _hash: int = 0):
         while True:
             try:

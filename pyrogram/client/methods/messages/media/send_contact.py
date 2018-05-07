@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient, utils
 
 
-class SendContact(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendContact:
     def send_contact(self,
                      chat_id: int or str,
                      phone_number: str,

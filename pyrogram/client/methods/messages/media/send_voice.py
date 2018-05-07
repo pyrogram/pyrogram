@@ -26,7 +26,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendVoice(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendVoice:
     def send_voice(self,
                    chat_id: int or str,
                    voice: str,

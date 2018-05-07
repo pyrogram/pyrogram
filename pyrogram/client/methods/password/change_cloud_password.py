@@ -23,7 +23,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class ChangeCloudPassword(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class ChangeCloudPassword:
     def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 

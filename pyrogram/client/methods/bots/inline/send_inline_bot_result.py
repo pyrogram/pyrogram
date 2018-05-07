@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ....ext import BaseClient
 
 
-class SendInlineBotResult(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendInlineBotResult:
     def send_inline_bot_result(self,
                                chat_id: int or str,
                                query_id: int,

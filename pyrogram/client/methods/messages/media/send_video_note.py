@@ -26,7 +26,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendVideoNote(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendVideoNote:
     def send_video_note(self,
                         chat_id: int or str,
                         video_note: str,

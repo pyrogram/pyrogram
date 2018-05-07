@@ -27,7 +27,9 @@ from pyrogram.client import types as pyrogram_types
 from ....ext import BaseClient, utils
 
 
-class SendMediaGroup(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendMediaGroup:
     # TODO: Add progress parameter
     # TODO: Return new Message object
     # TODO: Figure out how to send albums using URLs

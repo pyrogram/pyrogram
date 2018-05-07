@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class ExportChatInviteLink(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class ExportChatInviteLink:
     def export_chat_invite_link(self, chat_id: int or str):
         """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
 

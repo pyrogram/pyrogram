@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient, utils
 
 
-class EditMessageCaption(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class EditMessageCaption:
     def edit_message_caption(self,
                              chat_id: int or str,
                              message_id: int,

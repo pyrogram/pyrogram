@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient, utils
 
 
-class GetMessages(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetMessages:
     def get_messages(self,
                      chat_id: int or str,
                      message_ids,

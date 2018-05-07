@@ -22,7 +22,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class RemoveCloudPassword(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class RemoveCloudPassword:
     def remove_cloud_password(self, password: str):
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 

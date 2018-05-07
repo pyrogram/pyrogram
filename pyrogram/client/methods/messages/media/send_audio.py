@@ -26,7 +26,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendAudio(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendAudio:
     def send_audio(self,
                    chat_id: int or str,
                    audio: str,

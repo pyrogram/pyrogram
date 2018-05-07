@@ -21,7 +21,9 @@ from pyrogram.api.errors import UnknownError
 from ....ext import BaseClient
 
 
-class GetInlineBotResults(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetInlineBotResults:
     def get_inline_bot_results(self,
                                bot: int or str,
                                query: str,

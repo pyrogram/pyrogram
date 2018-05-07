@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient
 
 
-class DeleteMessages(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class DeleteMessages:
     def delete_messages(self,
                         chat_id: int or str,
                         message_ids,

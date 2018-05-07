@@ -25,7 +25,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendSticker(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendSticker:
     def send_sticker(self,
                      chat_id: int or str,
                      sticker: str,

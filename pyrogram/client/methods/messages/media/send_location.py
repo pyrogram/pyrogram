@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient, utils
 
 
-class SendLocation(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendLocation:
     def send_location(self,
                       chat_id: int or str,
                       latitude: float,

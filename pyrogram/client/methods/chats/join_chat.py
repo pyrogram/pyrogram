@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class JoinChat(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class JoinChat:
     def join_chat(self, chat_id: str):
         """Use this method to join a group chat or channel.
 

@@ -25,7 +25,9 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from ....ext import BaseClient, utils
 
 
-class SendPhoto(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendPhoto:
     def send_photo(self,
                    chat_id: int or str,
                    photo: str,

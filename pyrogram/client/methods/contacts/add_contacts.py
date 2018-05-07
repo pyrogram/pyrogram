@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class AddContacts(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class AddContacts:
     def add_contacts(self, contacts: list):
         """Use this method to add contacts to your Telegram address book.
 
@@ -32,7 +34,7 @@ class AddContacts(BaseClient):
             On success, the added contacts are returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :lass:`Error <pyrogram.Error>`
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(

@@ -20,7 +20,9 @@ import pyrogram
 from ...ext import BaseClient
 
 
-class OnMessage(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class OnMessage:
     def on_message(self, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         messages. This does the same thing as :meth:`add_handler` using the

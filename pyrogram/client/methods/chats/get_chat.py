@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient, utils
 
 
-class GetChat(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetChat:
     def get_chat(self, chat_id: int or str):
         # TODO: Add docstrings
         peer = self.resolve_peer(chat_id)

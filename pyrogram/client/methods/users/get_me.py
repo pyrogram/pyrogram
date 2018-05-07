@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient, utils
 
 
-class GetMe(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetMe:
     def get_me(self):
         """A simple method for testing your authorization. Requires no parameters.
 

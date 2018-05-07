@@ -21,7 +21,9 @@ from pyrogram.api.errors import PeerIdInvalid
 from ...ext import BaseClient
 
 
-class DeleteContacts(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class DeleteContacts:
     def delete_contacts(self, ids: list):
         """Use this method to delete contacts from your Telegram address book
 

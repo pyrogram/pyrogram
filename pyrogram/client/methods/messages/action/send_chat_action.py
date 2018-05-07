@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ....ext import BaseClient, ChatAction
 
 
-class SendChatAction(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class SendChatAction:
     def send_chat_action(self,
                          chat_id: int or str,
                          action: ChatAction or str,

@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ...ext import BaseClient, utils
 
 
-class GetUserProfilePhotos(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class GetUserProfilePhotos:
     def get_user_profile_photos(self,
                                 user_id: int or str,
                                 offset: int = 0,

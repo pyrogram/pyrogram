@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient, utils
 
 
-class ForwardMessages(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class ForwardMessages:
     def forward_messages(self,
                          chat_id: int or str,
                          from_chat_id: int or str,

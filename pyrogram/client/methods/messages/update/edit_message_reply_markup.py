@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ....ext import BaseClient, utils
 
 
-class EditMessageReplyMarkup(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class EditMessageReplyMarkup:
     def edit_message_reply_markup(self,
                                   chat_id: int or str,
                                   message_id: int,

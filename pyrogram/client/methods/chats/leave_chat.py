@@ -20,7 +20,9 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class LeaveChat(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class LeaveChat:
     def leave_chat(self, chat_id: int or str, delete: bool = False):
         """Use this method to leave a group chat or channel.
 

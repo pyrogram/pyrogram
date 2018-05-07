@@ -20,7 +20,9 @@ from pyrogram.api import functions
 from ....ext import BaseClient
 
 
-class AnswerCallbackQuery(BaseClient):
+# noinspection PyUnresolvedReferences
+@BaseClient.register
+class AnswerCallbackQuery:
     def answer_callback_query(self,
                               callback_query_id: str,
                               text: str = None,
