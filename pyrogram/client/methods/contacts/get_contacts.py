@@ -16,20 +16,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+import logging
+import time
 
-"""This example shows how to query an inline bot"""
+from pyrogram.api import functions, types
+from pyrogram.api.errors import FloodWait
+from ...ext import BaseClient
 
-# Create a new Client
-app = Client("my_account")
+log = logging.getLogger(__name__)
 
-# Start the Client
-app.start()
 
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
+class GetContacts(BaseClient):
+    def get_contacts(self, _hash: int = 0):
+        while True:
+            try:
+                contacts = self.send(functions.contacts.GetContacts(_hash))
+            except FloodWait as e:
+                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
+                time.sleep(e.x)
+                continue
+            else:
+                if isinstance(contacts, types.contacts.Contacts):
+                    log.info("Total contacts: {}".format(len(self.peers_by_phone)))
 
-# Stop the client
-app.stop()
+                return contacts

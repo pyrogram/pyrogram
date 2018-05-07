@@ -16,20 +16,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+from pyrogram.api import functions, types
+from ...ext import BaseClient
 
-"""This example shows how to query an inline bot"""
 
-# Create a new Client
-app = Client("my_account")
+class GetMe(BaseClient):
+    def get_me(self):
+        """A simple method for testing the user authorization. Requires no parameters.
 
-# Start the Client
-app.start()
+        Returns:
+            Full information about the user in form of a :obj:`UserFull <pyrogram.api.types.UserFull>` object.
 
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
-
-# Stop the client
-app.stop()
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        return self.send(
+            functions.users.GetFullUser(
+                types.InputPeerSelf()
+            )
+        )

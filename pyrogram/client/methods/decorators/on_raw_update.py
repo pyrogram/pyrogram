@@ -16,20 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+import pyrogram
+from ...ext import BaseClient
 
-"""This example shows how to query an inline bot"""
 
-# Create a new Client
-app = Client("my_account")
+class OnRawUpdate(BaseClient):
+    def on_raw_update(self, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        raw updates. This does the same thing as :meth:`add_handler` using the
+        RawUpdateHandler.
 
-# Start the Client
-app.start()
+        Args:
+            group (``int``, *optional*):
+                The group identifier, defaults to 0.
+        """
 
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
+        def decorator(func):
+            self.add_handler(pyrogram.RawUpdateHandler(func), group)
+            return func
 
-# Stop the client
-app.stop()
+        return decorator

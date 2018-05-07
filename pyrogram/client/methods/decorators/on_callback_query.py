@@ -16,20 +16,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+import pyrogram
+from ...ext import BaseClient
 
-"""This example shows how to query an inline bot"""
 
-# Create a new Client
-app = Client("my_account")
+class OnCallbackQuery(BaseClient):
+    def on_callback_query(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        callback queries. This does the same thing as :meth:`add_handler` using the
+        CallbackQueryHandler.
 
-# Start the Client
-app.start()
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of callback queries to be passed
+                in your function.
 
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
+            group (``int``, *optional*):
+                The group identifier, defaults to 0.
+        """
 
-# Stop the client
-app.stop()
+        def decorator(func):
+            self.add_handler(pyrogram.CallbackQueryHandler(func, filters), group)
+            return func
+
+        return decorator

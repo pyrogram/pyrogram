@@ -16,20 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+from .answer_callback_query import AnswerCallbackQuery
 
-"""This example shows how to query an inline bot"""
 
-# Create a new Client
-app = Client("my_account")
-
-# Start the Client
-app.start()
-
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
-
-# Stop the client
-app.stop()
+class CallbackQuery(
+    AnswerCallbackQuery
+):
+    pass

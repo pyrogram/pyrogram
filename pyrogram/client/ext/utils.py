@@ -21,8 +21,8 @@ from struct import pack
 from weakref import proxy
 
 from pyrogram.client import types as pyrogram_types
-from ..api import types, functions
-from ..api.errors import StickersetInvalid
+from ...api import types, functions
+from ...api.errors import StickersetInvalid
 
 # TODO: Organize the code better?
 

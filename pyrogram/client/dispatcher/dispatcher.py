@@ -24,7 +24,7 @@ from threading import Thread
 
 import pyrogram
 from pyrogram.api import types
-from .. import utils
+from ..ext import utils
 from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
 
 log = logging.getLogger(__name__)

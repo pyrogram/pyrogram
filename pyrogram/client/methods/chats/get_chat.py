@@ -16,20 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import Client
+from pyrogram.api import functions, types
+from ...ext import BaseClient, utils
 
-"""This example shows how to query an inline bot"""
 
-# Create a new Client
-app = Client("my_account")
+class GetChat(BaseClient):
+    def get_chat(self, chat_id: int or str):
+        # TODO: Add docstrings
+        peer = self.resolve_peer(chat_id)
 
-# Start the Client
-app.start()
+        if isinstance(peer, types.InputPeerChannel):
+            r = self.send(functions.channels.GetFullChannel(peer))
+        elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
+            r = self.send(functions.users.GetFullUser(peer))
+        else:
+            r = self.send(functions.messages.GetFullChat(peer.chat_id))
 
-# Get bot results for "Fuzz Universe" from the inline bot @vid
-bot_results = app.get_inline_bot_results("vid", "Fuzz Universe")
-# Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
-
-# Stop the client
-app.stop()
+        return utils.parse_chat_full(self, r)
