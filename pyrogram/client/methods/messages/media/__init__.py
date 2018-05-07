@@ -22,6 +22,7 @@ from .send_document import SendDocument
 from .send_media_group import SendMediaGroup
 from .send_photo import SendPhoto
 from .send_sticker import SendSticker
+from .send_location import SendLocation
 from .send_venue import SendVenue
 from .send_video import SendVideo
 from .send_video_note import SendVideoNote
@@ -31,6 +32,7 @@ from .send_voice import SendVoice
 class Media(
     SendContact,
     SendVenue,
+    SendLocation,
     SendMediaGroup,
     SendVideoNote,
     SendVoice,

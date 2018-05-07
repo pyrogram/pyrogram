@@ -4,6 +4,7 @@ Client
 .. currentmodule:::: pyrogram.Client
 
 .. autoclass:: pyrogram.Client
+    :inherited-members:
     :members:
 
     **Available methods**

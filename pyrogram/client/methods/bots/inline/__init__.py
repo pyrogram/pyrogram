@@ -17,11 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .get_inline_bot_results import GetInlineBotResults
-from .send_inline_bot_results import SendInlineBotResults
+from .send_inline_bot_result import SendInlineBotResult
 
 
 class Inline(
-    SendInlineBotResults,
+    SendInlineBotResult,
     GetInlineBotResults
 ):
     pass

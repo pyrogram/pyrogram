@@ -20,7 +20,7 @@ from pyrogram.api import functions
 from ....ext import BaseClient
 
 
-class SendInlineBotResults(BaseClient):
+class SendInlineBotResult(BaseClient):
     def send_inline_bot_result(self,
                                chat_id: int or str,
                                query_id: int,
