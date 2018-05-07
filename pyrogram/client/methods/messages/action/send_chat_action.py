@@ -48,7 +48,7 @@ class SendChatAction(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>`
-            :class:`ValueError`: If the provided string is not a valid ChatAction
+            ``ValueError``: If the provided string is not a valid ChatAction
         """
 
         # Resolve Enum type
