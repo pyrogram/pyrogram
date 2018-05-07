@@ -17,21 +17,23 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 
 class GetMe(BaseClient):
     def get_me(self):
-        """A simple method for testing the user authorization. Requires no parameters.
+        """A simple method for testing your authorization. Requires no parameters.
 
         Returns:
-            Full information about the user in form of a :obj:`UserFull <pyrogram.api.types.UserFull>` object.
+            Basic information about the user or bot in form of a :obj:`User` object
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.send(
-            functions.users.GetFullUser(
-                types.InputPeerSelf()
-            )
+        return utils.parse_user(
+            self.send(
+                functions.users.GetFullUser(
+                    types.InputPeerSelf()
+                )
+            ).user
         )
