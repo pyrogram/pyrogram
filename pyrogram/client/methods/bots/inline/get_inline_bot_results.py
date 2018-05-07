@@ -50,6 +50,7 @@ class GetInlineBotResults(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            ``TimeoutError``: If the bot fails to answer within 10 seconds
         """
         # TODO: Split location parameter into lat and long
 
