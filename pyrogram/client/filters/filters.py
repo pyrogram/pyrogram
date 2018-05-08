@@ -32,6 +32,9 @@ class Filters:
     """This class provides access to all Filters available in Pyrogram.
     Filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`."""
 
+    bot = build("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
+    """Filter messages coming from bots"""
+
     incoming = build("Incoming", lambda _, m: not m.outgoing)
     """Filter incoming messages."""
 
