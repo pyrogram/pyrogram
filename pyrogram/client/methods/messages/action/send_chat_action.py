@@ -34,7 +34,7 @@ class SendChatAction(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            action (``ChatAction`` | ``str``):
+            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
                 Type of action to broadcast.
                 Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
                 depending on what the user is about to receive.
@@ -42,6 +42,7 @@ class SendChatAction(BaseClient):
 
             progress (``int``, *optional*):
                 Progress of the upload process.
+                Currently useless because official clients don't seem to be handling this.
 
         Returns:
             On success, True is returned.
