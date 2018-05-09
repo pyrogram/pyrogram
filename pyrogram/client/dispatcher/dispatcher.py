@@ -138,6 +138,9 @@ class Dispatcher:
                 self.dispatch(update, users=users, chats=chats, is_raw=True)
 
                 if isinstance(update, Dispatcher.MESSAGE_UPDATES):
+                    if isinstance(update.message, types.MessageEmpty):
+                        continue
+
                     message = utils.parse_messages(
                         self.client,
                         update.message,
