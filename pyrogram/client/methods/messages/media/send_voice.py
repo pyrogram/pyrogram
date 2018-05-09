@@ -56,7 +56,7 @@ class SendVoice(BaseClient):
             caption (``str``, *optional*):
                 Voice message caption, 0-200 characters.
 
-            parse_mode (``str``):
+            parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
@@ -75,12 +75,12 @@ class SendVoice(BaseClient):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``):
+            progress (``callable``, *optional*):
                 Pass a callback function to view the upload progress.
                 The function must take *(client, current, total, \*args)* as positional arguments (look at the section
                 below for a detailed description).
 
-            progress_args (``tuple``):
+            progress_args (``tuple``, *optional*):
                 Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
