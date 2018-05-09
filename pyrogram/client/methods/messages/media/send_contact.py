@@ -44,7 +44,7 @@ class SendContact(BaseClient):
             first_name (``str``):
                 Contact's first name.
 
-            last_name (``str``):
+            last_name (``str``, *optional*):
                 Contact's last name.
 
             disable_notification (``bool``, *optional*):
