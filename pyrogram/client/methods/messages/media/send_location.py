@@ -79,7 +79,8 @@ class SendLocation(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                users = {i.id: i for i in r.users}
-                chats = {i.id: i for i in r.chats}
-
-                return utils.parse_message(self, i.message, users, chats)
+                return utils.parse_messages(
+                    self, i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats}
+                )

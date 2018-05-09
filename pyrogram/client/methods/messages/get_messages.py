@@ -68,30 +68,11 @@ class GetMessages(BaseClient):
 
         r = self.send(rpc)
 
-        users = {i.id: i for i in r.users}
-        chats = {i.id: i for i in r.chats}
-
-        messages = []
-
-        for i in r.messages:
-            if isinstance(i, types.Message):
-                messages.append(
-                    utils.parse_message(
-                        self, i, users, chats,
-                        replies=replies
-                    )
-                )
-            elif isinstance(i, types.MessageService):
-                messages.append(
-                    utils.parse_message_service(
-                        self, i, users, chats
-                    )
-                )
-            else:
-                messages.append(
-                    utils.parse_message_empty(
-                        self, i
-                    )
-                )
+        messages = utils.parse_messages(
+            self, r.messages,
+            {i.id: i for i in r.users},
+            {i.id: i for i in r.chats},
+            replies=replies
+        )
 
         return messages if is_iterable else messages[0]

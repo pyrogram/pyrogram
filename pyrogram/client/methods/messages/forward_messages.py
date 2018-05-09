@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient, utils
+from ...ext import BaseClient, utils
 
 
 class ForwardMessages(BaseClient):
@@ -79,7 +79,10 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    utils.parse_message(self, i.message, users, chats)
+                    utils.parse_messages(
+                        self, i.message,
+                        users, chats
+                    )
                 )
 
         return messages if is_iterable else messages[0]
