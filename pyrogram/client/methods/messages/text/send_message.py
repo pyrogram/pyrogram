@@ -42,7 +42,7 @@ class SendMessage(BaseClient):
             text (``str``):
                 Text of the message to be sent.
 
-            parse_mode (``str``):
+            parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
@@ -54,7 +54,7 @@ class SendMessage(BaseClient):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            reply_to_message_id (``bool``, *optional*):
+            reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):

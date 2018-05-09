@@ -37,7 +37,7 @@ class EditMessageReplyMarkup(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            reply_markup (:obj:`InlineKeyboardMarkup`):
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:

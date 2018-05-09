@@ -40,7 +40,7 @@ class GetMessages(BaseClient):
                 Iterators and Generators are also accepted.
 
             replies (``int``, *optional*):
-                The number of replies to get for each message. Defaults to 1.
+                The number of subsequent replies to get for each message. Defaults to 1.
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the requested

@@ -42,12 +42,12 @@ class EditMessageCaption(BaseClient):
             caption (``str``):
                 New caption of the message.
 
-            parse_mode (``str``):
+            parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            reply_markup (:obj:`InlineKeyboardMarkup`):
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:

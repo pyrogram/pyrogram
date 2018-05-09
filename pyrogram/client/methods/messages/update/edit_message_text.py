@@ -43,7 +43,7 @@ class EditMessageText(BaseClient):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``):
+            parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
@@ -51,7 +51,7 @@ class EditMessageText(BaseClient):
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
 
-            reply_markup (:obj:`InlineKeyboardMarkup`):
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
