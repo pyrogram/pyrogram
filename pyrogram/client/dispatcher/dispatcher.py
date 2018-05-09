@@ -24,7 +24,7 @@ from threading import Thread
 
 import pyrogram
 from pyrogram.api import types
-from .. import utils
+from ..ext import utils
 from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
 
 log = logging.getLogger(__name__)
@@ -138,14 +138,7 @@ class Dispatcher:
                 self.dispatch(update, users=users, chats=chats, is_raw=True)
 
                 if isinstance(update, Dispatcher.MESSAGE_UPDATES):
-                    if isinstance(update.message, types.Message):
-                        parser = utils.parse_message
-                    elif isinstance(update.message, types.MessageService):
-                        parser = utils.parse_message_service
-                    else:
-                        continue
-
-                    message = parser(
+                    message = utils.parse_messages(
                         self.client,
                         update.message,
                         users,
