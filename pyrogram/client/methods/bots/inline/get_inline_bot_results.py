@@ -26,7 +26,8 @@ class GetInlineBotResults(BaseClient):
                                bot: int or str,
                                query: str,
                                offset: str = "",
-                               location: tuple = None):
+                               latitude: float = None,
+                               longitude: float = None):
         """Use this method to get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
@@ -38,11 +39,15 @@ class GetInlineBotResults(BaseClient):
             query (``str``):
                 Text of the query (up to 512 characters).
 
-            offset (``str``):
+            offset (``str``, *optional*):
                 Offset of the results to be returned.
 
-            location (``tuple``, *optional*):
-                Your location in tuple format (latitude, longitude), e.g.: (51.500729, -0.124583).
+            latitude (``float``, *optional*):
+                Latitude of the location.
+                Useful for location-based results only.
+
+            longitude (``float``, *optional*):
+                Longitude of the location.
                 Useful for location-based results only.
 
         Returns:
@@ -52,7 +57,7 @@ class GetInlineBotResults(BaseClient):
             :class:`Error <pyrogram.Error>`
             ``TimeoutError``: If the bot fails to answer within 10 seconds
         """
-        # TODO: Split location parameter into lat and long
+        # TODO: Don't return the raw type
 
         try:
             return self.send(
@@ -62,9 +67,9 @@ class GetInlineBotResults(BaseClient):
                     query=query,
                     offset=offset,
                     geo_point=types.InputGeoPoint(
-                        lat=location[0],
-                        long=location[1]
-                    ) if location else None
+                        lat=latitude,
+                        long=longitude
+                    ) if (latitude is not None and longitude is not None) else None
                 )
             )
         except UnknownError as e:
