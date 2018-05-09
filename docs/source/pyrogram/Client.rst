@@ -50,9 +50,12 @@ Client
         change_cloud_password
         remove_cloud_password
         add_contacts
+        get_contacts
         delete_contacts
         get_inline_bot_results
         send_inline_bot_result
-        get_users
-        get_messages
         answer_callback_query
+        get_users
+        get_chat
+        get_messages
+        get_history

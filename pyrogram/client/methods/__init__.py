@@ -20,6 +20,7 @@ from .bots import Bots
 from .chats import Chats
 from .contacts import Contacts
 from .decorators import Decorators
+from .download_media import DownloadMedia
 from .messages import Messages
 from .password import Password
 from .users import Users
@@ -31,6 +32,7 @@ class Methods(
     Password,
     Chats,
     Users,
+    DownloadMedia,
     Messages,
     Decorators
 ):
