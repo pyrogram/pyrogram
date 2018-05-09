@@ -93,3 +93,11 @@ class BaseClient:
             progress_args: tuple = ()
     ):
         pass
+
+    def get_messages(
+            self,
+            chat_id: int or str,
+            message_ids,
+            replies: int = 1
+    ):
+        pass

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import functions, types
+from pyrogram.api import functions
 from ...ext import BaseClient, utils
 
 
@@ -69,17 +69,28 @@ class GetHistory(BaseClient):
         users = {i.id: i for i in r.users}
         chats = {i.id: i for i in r.chats}
 
-        reply_to_messages = {i.reply_to_msg_id: None for i in r.messages if i.reply_to_msg_id}
+        reply_to_messages = {
+            i.reply_to_msg_id: None
+            for i in r.messages
+            if i.reply_to_msg_id
+        }
 
         if reply_to_messages:
-            temp = self.get_messages(chat_id, reply_to_messages.keys(), replies=0)
+            temp = self.get_messages(
+                chat_id, reply_to_messages,
+                replies=0
+            )
 
             assert len(temp) == len(reply_to_messages)
 
             for i in range(len(temp)):
                 reply_to_messages[temp[i].message_id] = temp[i]
 
-        messages = utils.parse_messages(self, r.messages, users, chats, replies=0)
+        messages = utils.parse_messages(
+            self, r.messages,
+            users, chats,
+            replies=0
+        )
 
         assert len(messages) == len(r.messages)
 
