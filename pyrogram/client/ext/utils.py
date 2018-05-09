@@ -16,13 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from base64 import b64decode, b64encode
 from struct import pack
 from weakref import proxy
 
+from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
 from ...api.errors import StickersetInvalid
+
+log = logging.getLogger(__name__)
 
 # TODO: Organize the code better?
 
@@ -545,7 +550,18 @@ def parse_messages(
             )
 
             if message.reply_to_msg_id and replies:
-                m.reply_to_message = client.get_messages(m.chat.id, message.reply_to_msg_id, replies=replies - 1)
+                while True:
+                    try:
+                        m.reply_to_message = client.get_messages(
+                            m.chat.id, message.reply_to_msg_id,
+                            replies=replies - 1
+                        )
+                    except FloodWait as e:
+                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
+                        time.sleep(e.x)
+                        continue
+                    else:
+                        break
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -636,7 +652,18 @@ def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                m.pinned_message = client.get_messages(m.chat.id, message.reply_to_msg_id, replies=0)
+                while True:
+                    try:
+                        m.pinned_message = client.get_messages(
+                            m.chat.id, message.reply_to_msg_id,
+                            replies=0
+                        )
+                    except FloodWait as e:
+                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
+                        time.sleep(e.x)
+                        continue
+                    else:
+                        break
         else:
             m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
