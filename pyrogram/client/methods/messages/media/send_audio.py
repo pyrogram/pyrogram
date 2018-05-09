@@ -42,7 +42,7 @@ class SendAudio(BaseClient):
                    progress_args: tuple = ()):
         """Use this method to send audio files.
 
-        For sending voice messages, use the :obj:`send_voice` method instead.
+        For sending voice messages, use the :obj:`send_voice()` method instead.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -60,7 +60,7 @@ class SendAudio(BaseClient):
             caption (``str``, *optional*):
                 Audio caption, 0-200 characters.
 
-            parse_mode (``str``):
+            parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
@@ -85,12 +85,12 @@ class SendAudio(BaseClient):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``):
+            progress (``callable``, *optional*):
                 Pass a callback function to view the upload progress.
                 The function must take *(client, current, total, \*args)* as positional arguments (look at the section
                 below for a detailed description).
 
-            progress_args (``tuple``):
+            progress_args (``tuple``, *optional*):
                 Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
