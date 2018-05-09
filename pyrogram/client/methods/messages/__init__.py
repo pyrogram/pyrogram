@@ -17,17 +17,21 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .action import Action
+from .forward_messages import ForwardMessages
+from .get_history import GetHistory
 from .get_messages import GetMessages
 from .media import Media
-from .text import Text
+from .send_message import SendMessage
 from .update import Update
 
 
 class Messages(
+    GetHistory,
     GetMessages,
     Action,
     Media,
     Update,
-    Text
+    ForwardMessages,
+    SendMessage
 ):
     pass
