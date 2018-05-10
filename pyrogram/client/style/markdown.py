@@ -36,7 +36,7 @@ class Markdown:
     CODE_DELIMITER = "`"
     PRE_DELIMITER = "```"
 
-    MARKDOWN_RE = re.compile(r"```([\w\W]*)(?:\n|)```|\[(.+?)\]\((.+?)\)|({d})(.+?)\4".format(
+    MARKDOWN_RE = re.compile(r"```([\w\W]*)(?:\n|)```|\[([^[]+?)\]\(([^(]+?)\)|({d})(.+?)\4".format(
         d="|".join(
             ["".join(i) for i in [
                 ["\{}".format(j) for j in i]
