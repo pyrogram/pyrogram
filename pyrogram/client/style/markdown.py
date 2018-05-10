@@ -36,7 +36,7 @@ class Markdown:
     CODE_DELIMITER = "`"
     PRE_DELIMITER = "```"
 
-    MARKDOWN_RE = re.compile(r"```([\w ]*)\n([\w\W]*)(?:\n|)```|\[(.+?)\]\((.+?)\)|({d})(.+?)\5".format(
+    MARKDOWN_RE = re.compile(r"```([\w\W]*)(?:\n|)```|\[(.+?)\]\((.+?)\)|({d})(.+?)\4".format(
         d="|".join(
             ["".join(i) for i in [
                 ["\{}".format(j) for j in i]
@@ -61,12 +61,12 @@ class Markdown:
 
         for match in self.MARKDOWN_RE.finditer(message):
             start = match.start() - offset
-            lang, pre, text, url, style, body = match.groups()
+            pre, text, url, style, body = match.groups()
 
             if pre:
-                body = pre = pre.strip()
-                entity = Pre(start, len(pre), lang.strip() or "")
-                offset += len(lang) + len(self.PRE_DELIMITER) * 2
+                body = pre
+                entity = Pre(start, len(pre), "")
+                offset += len(self.PRE_DELIMITER) * 2
             elif url:
                 mention = self.MENTION_RE.match(url)
 
@@ -91,8 +91,6 @@ class Markdown:
                     entity = Italic(start, len(body))
                 elif style == self.CODE_DELIMITER:
                     entity = Code(start, len(body))
-                elif style == self.PRE_DELIMITER:
-                    entity = Pre(start, len(body), "")
                 else:
                     continue
 
@@ -105,3 +103,43 @@ class Markdown:
             message=utils.remove_surrogates(message),
             entities=entities
         )
+
+    def unparse(self, message: str, entities: list):
+        offset = 0
+
+        for entity in entities:
+            start = entity.offset + offset
+            type = entity.type
+            url = entity.url
+            user = entity.user
+            sub = message[start: start + entity.length]
+
+            if type == "bold":
+                style = self.BOLD_DELIMITER
+            elif type == "italic":
+                style = self.ITALIC_DELIMITER
+            elif type == "code":
+                style = self.CODE_DELIMITER
+            elif type == "pre":
+                style = self.PRE_DELIMITER
+            elif type == "text_link":
+                message = message[:start] + message[start:].replace(
+                    sub, "[{}]({})".format(sub, url), 1
+                )
+                offset += 4 + len(url)
+                continue
+            elif type == "text_mention":
+                message = message[:start] + message[start:].replace(
+                    sub, "[{}](tg://user?id={})".format(sub, user.id), 1
+                )
+                offset += 17 + len(str(user.id))
+                continue
+            else:
+                continue
+
+            message = message[:start] + message[start:].replace(
+                sub, "{0}{1}{0}".format(style, sub), 1
+            )
+            offset += len(style) * 2
+
+        return message
