@@ -105,6 +105,7 @@ class Markdown:
         )
 
     def unparse(self, message: str, entities: list):
+        message = utils.add_surrogates(message).strip()
         offset = 0
 
         for entity in entities:
@@ -139,4 +140,4 @@ class Markdown:
             message = message[:start] + message[start:].replace(
                 sub, "{0}{1}{0}".format(style, sub), 1)
 
-        return message
+        return utils.remove_surrogates(message)
