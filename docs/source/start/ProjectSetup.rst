@@ -40,7 +40,7 @@ There are two ways to configure a Pyrogram application project, and you can choo
 
         app = Client(
             session_name="my_account",
-            api_id=12345
+            api_id=12345,
             api_hash="0123456789abcdef0123456789abcdef"
         )
 
