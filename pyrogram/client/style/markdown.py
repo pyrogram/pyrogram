@@ -123,23 +123,20 @@ class Markdown:
             elif type == "pre":
                 style = self.PRE_DELIMITER
             elif type == "text_link":
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}]({})".format(sub, url), 1
-                )
                 offset += 4 + len(url)
+                message = message[:start] + message[start:].replace(
+                    sub, "[{}]({})".format(sub, url), 1)
                 continue
             elif type == "text_mention":
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}](tg://user?id={})".format(sub, user.id), 1
-                )
                 offset += 17 + len(str(user.id))
+                message = message[:start] + message[start:].replace(
+                    sub, "[{}](tg://user?id={})".format(sub, user.id), 1)
                 continue
             else:
                 continue
 
-            message = message[:start] + message[start:].replace(
-                sub, "{0}{1}{0}".format(style, sub), 1
-            )
             offset += len(style) * 2
+            message = message[:start] + message[start:].replace(
+                sub, "{0}{1}{0}".format(style, sub), 1)
 
         return message
