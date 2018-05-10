@@ -29,7 +29,25 @@ from ...api.errors import StickersetInvalid
 
 log = logging.getLogger(__name__)
 
+
 # TODO: Organize the code better?
+
+
+class Str(str):
+    def __init__(self, value):
+        super().__init__()
+
+        self._value = value
+        self._markdown = None
+
+    @property
+    def markdown(self):
+        return self._markdown
+
+    @markdown.setter
+    def markdown(self, value):
+        self._markdown = value
+
 
 ENTITIES = {
     types.MessageEntityMention.ID: "mention",
@@ -520,8 +538,8 @@ def parse_messages(
                 date=message.date,
                 chat=parse_chat(message, users, chats),
                 from_user=parse_user(users.get(message.from_id, None)),
-                text=message.message or None if media is None else None,
-                caption=message.message or None if media is not None else None,
+                text=Str(message.message) or None if media is None else None,
+                caption=Str(message.message) or None if media is not None else None,
                 entities=entities or None if media is None else None,
                 caption_entities=entities or None if media is not None else None,
                 author_signature=message.post_author,
@@ -548,6 +566,12 @@ def parse_messages(
                 client=proxy(client),
                 reply_markup=reply_markup
             )
+
+            if m.text:
+                m.text.markdown = client.markdown.unparse(m.text, m.entities or [])
+
+            if m.caption:
+                m.caption.markdown = client.markdown.unparse(m.caption, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
                 while True:
