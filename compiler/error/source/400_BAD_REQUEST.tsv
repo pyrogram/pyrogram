@@ -62,3 +62,4 @@ USER_IS_BOT	A bot cannot send messages to other bots or to itself
 WEBPAGE_CURL_FAILED	Telegram could not fetch the provided URL
 STICKERSET_INVALID	The requested sticker set is invalid
 PEER_FLOOD	The method can't be used because your account is limited
+MEDIA_CAPTION_TOO_LONG	The media caption is longer than 200 characters
