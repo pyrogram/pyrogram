@@ -32,12 +32,9 @@ log = logging.getLogger(__name__)
 
 # TODO: Organize the code better?
 
-
 class Str(str):
     def __init__(self, value):
-        super().__init__()
-
-        self._value = value
+        str.__init__(value)
         self._markdown = None
 
     @property
