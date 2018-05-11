@@ -253,7 +253,7 @@ def parse_messages(
         users: dict,
         chats: dict,
         replies: int = 1
-) -> pyrogram_types.Message:
+) -> pyrogram_types.Message or list:
     is_list = isinstance(messages, list)
     messages = messages if is_list else [messages]
     parsed_messages = []

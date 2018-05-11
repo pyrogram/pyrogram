@@ -495,6 +495,7 @@ def start():
         f.write("\n    0xb0700016: \"pyrogram.client.types.ChatMember\",")
         f.write("\n    0xb0700017: \"pyrogram.client.types.Sticker\",")
         f.write("\n    0xb0700025: \"pyrogram.client.types.GIF\",")
+        f.write("\n    0xb0700026: \"pyrogram.client.types.Messages\",")
 
         f.write("\n    0xb0700018: \"pyrogram.client.types.reply_markup.ForceReply\",")
         f.write("\n    0xb0700019: \"pyrogram.client.types.reply_markup.InlineKeyboardButton\",")

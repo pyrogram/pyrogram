@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions
 from ...ext import BaseClient, utils
 
@@ -51,6 +52,12 @@ class GetHistory(BaseClient):
 
             offset_date (``int``, *optional*):
                 Pass a date in Unix time as offset to retrieve only older messages starting from that date.
+
+        Returns:
+            On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
         """
 
         r = self.send(
@@ -98,4 +105,7 @@ class GetHistory(BaseClient):
             if r.messages[i].reply_to_msg_id:
                 messages[i].reply_to_message = reply_to_messages[r.messages[i].reply_to_msg_id]
 
-        return messages
+        return pyrogram.Messages(
+            total_count=r.count,
+            messages=messages
+        )
