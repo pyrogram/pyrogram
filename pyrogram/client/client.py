@@ -33,7 +33,7 @@ from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
 from signal import signal, SIGINT, SIGTERM, SIGABRT
-from threading import Event, Thread
+from threading import Thread
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -45,7 +45,6 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid)
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
-from . import types as pyrogram_types
 from .dispatcher import Dispatcher
 from .ext import utils, Syncer, BaseClient
 from .methods import Methods
@@ -1258,4 +1257,3 @@ class Client(Methods, BaseClient):
         finally:
             pass  # Don't stop sessions, they are now cached and kept online
             # session.stop() TODO: Remove this branch
-
