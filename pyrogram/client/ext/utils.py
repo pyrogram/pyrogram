@@ -36,6 +36,7 @@ class Str(str):
     def __init__(self, value):
         str.__init__(value)
         self._markdown = None
+        self._html = None
 
     @property
     def markdown(self):
@@ -44,6 +45,14 @@ class Str(str):
     @markdown.setter
     def markdown(self, value):
         self._markdown = value
+
+    @property
+    def html(self):
+        return self._html
+
+    @html.setter
+    def html(self, value):
+        self._html = value
 
 
 ENTITIES = {
@@ -572,10 +581,16 @@ def parse_messages(
             )
 
             if m.text:
-                m.text.markdown = client.markdown.unparse(m.text, m.entities or [])
+                args = (m.text, m.entities or [])
+
+                m.text.markdown = client.markdown.unparse(*args)
+                m.text.html = client.html.unparse(*args)
 
             if m.caption:
-                m.caption.markdown = client.markdown.unparse(m.caption, m.caption_entities or [])
+                args = (m.caption, m.caption_entities or [])
+
+                m.caption.markdown = client.markdown.unparse(*args)
+                m.caption.html = client.html.unparse(*args)
 
             if message.reply_to_msg_id and replies:
                 while True:
