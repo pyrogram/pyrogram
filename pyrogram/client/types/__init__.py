@@ -23,6 +23,7 @@ from .chat_member import ChatMember
 from .chat_photo import ChatPhoto
 from .contact import Contact
 from .document import Document
+from .gif import GIF
 from .input_media_photo import InputMediaPhoto
 from .input_media_video import InputMediaVideo
 from .input_phone_contact import InputPhoneContact

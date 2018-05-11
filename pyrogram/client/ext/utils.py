@@ -277,6 +277,7 @@ def parse_messages(
             venue = None
             audio = None
             voice = None
+            gif = None
             video = None
             video_note = None
             sticker = None
@@ -403,7 +404,9 @@ def parse_messages(
                                     date=doc.date
                                 )
                         elif types.DocumentAttributeAnimated in attributes:
-                            document = pyrogram_types.Document(
+                            video_attributes = attributes[types.DocumentAttributeVideo]
+
+                            gif = pyrogram_types.GIF(
                                 file_id=encode(
                                     pack(
                                         "<iiqq",
@@ -413,10 +416,13 @@ def parse_messages(
                                         doc.access_hash
                                     )
                                 ),
+                                width=video_attributes.w,
+                                height=video_attributes.h,
+                                duration=video_attributes.duration,
                                 thumb=parse_thumb(doc.thumb),
-                                file_name=file_name,
                                 mime_type=doc.mime_type,
                                 file_size=doc.size,
+                                file_name=file_name,
                                 date=doc.date
                             )
                         elif types.DocumentAttributeVideo in attributes:
@@ -553,6 +559,7 @@ def parse_messages(
                 venue=venue,
                 audio=audio,
                 voice=voice,
+                gif=gif,
                 video=video,
                 video_note=video_note,
                 sticker=sticker,

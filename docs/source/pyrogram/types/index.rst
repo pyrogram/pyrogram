@@ -12,6 +12,7 @@ Types
     PhotoSize
     Audio
     Document
+    GIF
     Video
     Voice
     VideoNote

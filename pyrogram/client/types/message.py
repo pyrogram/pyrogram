@@ -94,6 +94,9 @@ class Message(Object):
         sticker (:obj:`Sticker <pyrogram.Sticker>`, *optional*):
             Message is a sticker, information about the sticker.
 
+        gif (:obj:`Video <pyrogram.Video>`, *optional*):
+            Message is a GIF, information about the GIF.
+
         video (:obj:`Video <pyrogram.Video>`, *optional*):
             Message is a video, information about the video.
 
@@ -224,6 +227,7 @@ class Message(Object):
             game=None,
             photo=None,
             sticker=None,
+            gif=None,
             video=None,
             voice=None,
             video_note=None,
@@ -274,6 +278,7 @@ class Message(Object):
         self.game = game  # flags.15?Game
         self.photo = photo  # flags.16?Vector<PhotoSize>
         self.sticker = sticker  # flags.17?Sticker
+        self.gif = gif
         self.video = video  # flags.18?Video
         self.voice = voice  # flags.19?Voice
         self.video_note = video_note  # flags.20?VideoNote
