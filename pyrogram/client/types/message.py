@@ -71,6 +71,9 @@ class Message(Object):
 
         text (``str``, *optional*):
             For text messages, the actual UTF-8 text of the message, 0-4096 characters.
+            If the message contains entities (bold, italic, ...) you can access *text.markdown* or
+            *text.html* to get the marked up message text. In case there is no entity, the fields
+            will contain the same text as *text*.
 
         entities (List of :obj:`MessageEntity <pyrogram.MessageEntity>`, *optional*):
             For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
@@ -108,6 +111,9 @@ class Message(Object):
 
         caption (``str``, *optional*):
             Caption for the audio, document, photo, video or voice, 0-200 characters.
+            If the message contains caption entities (bold, italic, ...) you can access *caption.markdown* or
+            *caption.html* to get the marked up caption text. In case there is no caption entity, the fields
+            will contain the same text as *caption*.
 
         contact (:obj:`Contact <pyrogram.Contact>`, *optional*):
             Message is a shared contact, information about the contact.
