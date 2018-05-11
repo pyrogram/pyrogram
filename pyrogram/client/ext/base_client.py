@@ -35,7 +35,7 @@ class BaseClient:
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",
-        1: "thumbnail",
+        1: "chat_photo",
         2: "photo",
         3: "voice",
         4: "video",
