@@ -118,6 +118,9 @@ class Client(Methods, BaseClient):
         workdir (``str``, *optional*):
             Define a custom working directory. The working directory is the location in your filesystem
             where Pyrogram will store your session files. Defaults to "." (current directory).
+
+        config_file (``str``, *optional*):
+            Path of the configuration file. Defaults to ./config.ini
     """
 
     def __init__(self,
@@ -133,7 +136,8 @@ class Client(Methods, BaseClient):
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = 4,
-                 workdir: str = "."):
+                 workdir: str = ".",
+                 config_file: str = "./config.ini"):
         super().__init__()
 
         self.session_name = session_name
@@ -149,6 +153,7 @@ class Client(Methods, BaseClient):
         self.last_name = last_name
         self.workers = workers
         self.workdir = workdir
+        self.config_file = config_file
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -806,7 +811,7 @@ class Client(Methods, BaseClient):
 
     def load_config(self):
         parser = ConfigParser()
-        parser.read("config.ini")
+        parser.read(self.config_file)
 
         if self.api_id and self.api_hash:
             pass
