@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class UserProfilePhotos(Object):
-    """This object represent a user's profile pictures.
+    """This object represents a user's profile pictures.
 
     Args:
         total_count (``int``):

@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class Messages(Object):
-    """This object represent a chat's messages.
+    """This object represents a chat's messages.
 
     Args:
         total_count (``int``):
