@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class UserProfilePhotos(Object):
     """This object represent a user's profile pictures.
 
-    Attributes:
-        ID: ``0xb0700014``
-
     Args:
         total_count (``int``):
             Total number of profile pictures the target user has.

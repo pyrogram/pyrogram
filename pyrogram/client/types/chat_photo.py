@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class ChatPhoto(Object):
     """This object represents a chat photo.
 
-    Attributes:
-        ID: ``0xb0700015``
-
     Args:
         small_file_id (``str``):
             Unique file identifier of small (160x160) chat photo. This file_id can be used only for photo download.

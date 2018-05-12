@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class ChatMember(Object):
     """This object contains information about one member of a chat.
 
-    Attributes:
-        ID: ``0xb0700016``
-
     Args:
         user (:obj:`User <pyrogram.User>`):
             Information about the user.

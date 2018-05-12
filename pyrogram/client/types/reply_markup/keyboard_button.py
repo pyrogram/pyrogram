@@ -27,9 +27,6 @@ class KeyboardButton(Object):
     For simple text buttons String can be used instead of this object to specify text of the button.
     Optional fields are mutually exclusive.
 
-    Attributes:
-        ID: ``0xb0700021``
-
     Args:
         text (``str``):
             Text of the button. If none of the optional fields are used, it will be sent as a message when

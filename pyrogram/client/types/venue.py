@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Venue(Object):
     """This object represents a venue.
 
-    Attributes:
-        ID: ``0xb0700013``
-
     Args:
         location (:obj:`Location <pyrogram.Location>`):
             Venue location.

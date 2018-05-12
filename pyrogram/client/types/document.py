@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Document(Object):
     """This object represents a general file (as opposed to photos, voice messages and audio files).
 
-    Attributes:
-        ID: ``0xb0700007``
-
     Args:
         file_id (``str``):
             Unique file identifier.

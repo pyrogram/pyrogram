@@ -25,9 +25,6 @@ from . import InlineKeyboardButton
 class InlineKeyboardMarkup(Object):
     """This object represents an inline keyboard that appears right next to the message it belongs to.
 
-    Attributes:
-        ID: ``0xb0700020``
-
     Args:
         inline_keyboard (List of List of :obj:`InlineKeyboardButton <pyrogram.InlineKeyboardButton>`):
             Array of button rows, each represented by an Array of InlineKeyboardButton objects.

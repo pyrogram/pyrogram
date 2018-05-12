@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Audio(Object):
     """This object represents an audio file to be treated as music by the Telegram clients.
 
-    Attributes:
-        ID: ``0xb0700006``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

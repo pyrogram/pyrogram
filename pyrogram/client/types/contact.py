@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Contact(Object):
     """This object represents a phone contact.
 
-    Attributes:
-        ID: ``0xb0700011``
-
     Args:
         phone_number (``str``):
             Contact's phone number.

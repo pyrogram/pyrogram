@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class VideoNote(Object):
     """This object represents a video message (available in Telegram apps as of v.4.0).
 
-    Attributes:
-        ID: ``0xb0700010``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

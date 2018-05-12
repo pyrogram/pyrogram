@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Sticker(Object):
     """This object represents a sticker.
 
-    Attributes:
-        ID: ``0xb0700017``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

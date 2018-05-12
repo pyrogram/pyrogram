@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Video(Object):
     """This object represents a video file.
 
-    Attributes:
-        ID: ``0xb0700008``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

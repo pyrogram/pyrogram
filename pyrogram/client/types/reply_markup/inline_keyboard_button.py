@@ -27,9 +27,6 @@ from pyrogram.api.types import (
 class InlineKeyboardButton(Object):
     """This object represents one button of an inline keyboard. You must use exactly one of the optional fields.
 
-    Attributes:
-        ID: ``0xb0700019``
-
     Args:
         text (``str``):
             Label text on the button.

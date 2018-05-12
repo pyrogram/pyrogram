@@ -23,9 +23,6 @@ class Update(Object):
     """This object represents an incoming update.
     At most one of the optional parameters can be present in any given update.
 
-    Attributes:
-        ID: ``0xb0700000``
-
     Args:
         message (:obj:`Message <pyrogram.Message>`, *optional*):
             New incoming message of any kind — text, photo, sticker, etc.

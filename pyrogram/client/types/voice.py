@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Voice(Object):
     """This object represents a voice note.
 
-    Attributes:
-        ID: ``0xb0700009``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

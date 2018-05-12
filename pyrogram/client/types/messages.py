@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Messages(Object):
     """This object represent a chat's messages.
 
-    Attributes:
-        ID: ``0xb0700026``
-
     Args:
         total_count (``int``):
             Total number of messages the target chat has.

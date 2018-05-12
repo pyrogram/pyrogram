@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Chat(Object):
     """This object represents a chat.
 
-    Attributes:
-        ID: ``0xb0700002``
-
     Args:
         id (``int``):
             Unique identifier for this chat. This number may be greater than 32 bits and some programming

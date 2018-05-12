@@ -27,9 +27,6 @@ from . import KeyboardButton
 class ReplyKeyboardMarkup(Object):
     """This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
 
-    Attributes:
-        ID: ``0xb0700022``
-
     Args:
         keyboard (List of List of :obj:`KeyboardButton <pyrogram.KeyboardButton>`):
             Array of button rows, each represented by an Array of KeyboardButton objects.

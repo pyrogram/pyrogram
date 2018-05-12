@@ -26,9 +26,6 @@ class ReplyKeyboardRemove(Object):
     by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a
     button (see ReplyKeyboardMarkup).
 
-    Attributes:
-        ID: ``0xb0700023``
-
     Args:
         selective (``bool``, *optional*):
             Use this parameter if you want to remove the keyboard for specific users only. Targets:

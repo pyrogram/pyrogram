@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class GIF(Object):
     """This object represents a GIF file.
 
-    Attributes:
-        ID: ``0xb0700025``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.

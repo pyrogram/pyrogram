@@ -23,9 +23,6 @@ class MessageEntity(Object):
     """This object represents one special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
-    Attributes:
-        ID: ``0xb0700004``
-
     Args:
         type (``str``):
             Type of the entity.

@@ -25,9 +25,6 @@ class CallbackQuery(Object):
     will be present. If the button was attached to a message sent via the bot (in inline mode),
     the field inline_message_id will be present. Exactly one of the fields data or game_short_name will be present.
 
-    Attributes:
-        ID: ``0xb0700024``
-
     Args:
         id (``str``):
             Unique identifier for this query.

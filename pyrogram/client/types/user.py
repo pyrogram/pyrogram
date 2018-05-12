@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class User(Object):
     """This object represents a Telegram user or bot.
 
-    Attributes:
-        ID: ``0xb0700001``
-
     Args:
         id (``int``):
             Unique identifier for this user or bot.

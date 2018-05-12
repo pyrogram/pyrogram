@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class Location(Object):
     """This object represents a point on the map.
 
-    Attributes:
-        ID: ``0xb0700012``
-
     Args:
         longitude (``float``):
             Longitude as defined by sender.

@@ -22,9 +22,6 @@ from pyrogram.api.core import Object
 class PhotoSize(Object):
     """This object represents one size of a photo or a file / sticker thumbnail.
 
-    Attributes:
-        ID: ``0xb0700005``
-
     Args:
         file_id (``str``):
             Unique identifier for this file.
