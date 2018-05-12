@@ -79,7 +79,7 @@ class SendSticker(BaseClient):
             total (``int``):
                 The size of the file.
 
-            *args (``tuple``):
+            *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
