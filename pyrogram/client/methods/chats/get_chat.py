@@ -22,7 +22,15 @@ from ...ext import BaseClient, utils
 
 class GetChat(BaseClient):
     def get_chat(self, chat_id: int or str):
-        # TODO: Add docstrings
+        """Use this method to get up to date information about the chat (current name of the user for
+        one-on-one conversations, current username of a user, group or channel, etc.)
+
+        Returns:
+            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
