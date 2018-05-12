@@ -27,10 +27,20 @@ log = logging.getLogger(__name__)
 
 
 class GetContacts(BaseClient):
-    def get_contacts(self, _hash: int = 0):
+    def get_contacts(self):
+        """Use this method to get contacts from your Telegram address book
+
+        Requires no parameters.
+
+        Returns:
+            On success, the user's contacts are returned
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
         while True:
             try:
-                contacts = self.send(functions.contacts.GetContacts(_hash))
+                contacts = self.send(functions.contacts.GetContacts(0))
             except FloodWait as e:
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
