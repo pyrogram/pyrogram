@@ -4,7 +4,6 @@ Types
 =====
 
 .. toctree::
-    Update
     User
     Chat
     Message
