@@ -106,6 +106,6 @@ class GetHistory(BaseClient):
                 messages[i].reply_to_message = reply_to_messages[r.messages[i].reply_to_msg_id]
 
         return pyrogram.Messages(
-            total_count=r.count,
+            total_count=getattr(r, "count", len(r.messages)),
             messages=messages
         )
