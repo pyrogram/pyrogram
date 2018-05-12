@@ -36,7 +36,7 @@ class Markdown:
     CODE_DELIMITER = "`"
     PRE_DELIMITER = "```"
 
-    MARKDOWN_RE = re.compile(r"```([\w\W]*)(?:\n|)```|\[([^[]+?)\]\(([^(]+?)\)|({d})(.+?)\4".format(
+    MARKDOWN_RE = re.compile(r"({d})([\w\W]*?)\1|\[([^[]+?)\]\(([^(]+?)\)".format(
         d="|".join(
             ["".join(i) for i in [
                 ["\{}".format(j) for j in i]
@@ -55,19 +55,15 @@ class Markdown:
         self.peers_by_id = peers_by_id
 
     def parse(self, message: str):
-        entities = []
         message = utils.add_surrogates(message).strip()
+        entities = []
         offset = 0
 
         for match in self.MARKDOWN_RE.finditer(message):
             start = match.start() - offset
-            pre, text, url, style, body = match.groups()
+            style, body, text, url = match.groups()
 
-            if pre:
-                body = pre
-                entity = Pre(start, len(pre), "")
-                offset += len(self.PRE_DELIMITER) * 2
-            elif url:
+            if url:
                 mention = self.MENTION_RE.match(url)
 
                 if mention:
@@ -91,6 +87,8 @@ class Markdown:
                     entity = Italic(start, len(body))
                 elif style == self.CODE_DELIMITER:
                     entity = Code(start, len(body))
+                elif style == self.PRE_DELIMITER:
+                    entity = Pre(start, len(body), "")
                 else:
                     continue
 
