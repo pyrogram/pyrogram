@@ -33,6 +33,8 @@ log = logging.getLogger(__name__)
 # TODO: Organize the code better?
 
 class Str(str):
+    __slots__ = "_client", "_entities"
+
     def __init__(self, *args):
         super().__init__()
         self._client = None
