@@ -33,26 +33,26 @@ log = logging.getLogger(__name__)
 # TODO: Organize the code better?
 
 class Str(str):
-    def __init__(self, value):
-        str.__init__(value)
-        self._markdown = None
-        self._html = None
+    def __init__(self, text):
+        str.__init__(text)
+        self._client = None
+        self._entities = None
+
+    def init(self, client, entities):
+        self._client = client
+        self._entities = entities
+
+    @property
+    def text(self):
+        return self
 
     @property
     def markdown(self):
-        return self._markdown
-
-    @markdown.setter
-    def markdown(self, value):
-        self._markdown = value
+        return self._client.markdown.unparse(self, self._entities)
 
     @property
     def html(self):
-        return self._html
-
-    @html.setter
-    def html(self, value):
-        self._html = value
+        return self._client.html.unparse(self, self._entities)
 
 
 ENTITIES = {
@@ -580,17 +580,25 @@ def parse_messages(
                 reply_markup=reply_markup
             )
 
-            if m.text:
-                args = (m.text, m.entities or [])
+            # TODO: lazily evaluate html and markdown?
 
-                m.text.markdown = client.markdown.unparse(*args)
-                m.text.html = client.html.unparse(*args)
+            if m.text:
+                m.text.init(m.client, m.entities or [])
 
             if m.caption:
-                args = (m.caption, m.caption_entities or [])
+                m.caption.init(m.client, m.caption_entities or [])
 
-                m.caption.markdown = client.markdown.unparse(*args)
-                m.caption.html = client.html.unparse(*args)
+            # if m.text:
+            #     args = (m.text, m.entities or [])
+            #
+            #     m.text.markdown = client.markdown.unparse(*args)
+            #     m.text.html = client.html.unparse(*args)
+            #
+            # if m.caption:
+            #     args = (m.caption, m.caption_entities or [])
+            #
+            #     m.caption.markdown = client.markdown.unparse(*args)
+            #     m.caption.html = client.html.unparse(*args)
 
             if message.reply_to_msg_id and replies:
                 while True:
