@@ -90,6 +90,8 @@ class DownloadMedia(BaseClient):
                 media = message.video_note
             elif message.sticker:
                 media = message.sticker
+            elif message.gif:
+                media = message.gif
             else:
                 return
         elif isinstance(message, (
@@ -99,7 +101,8 @@ class DownloadMedia(BaseClient):
                 pyrogram_types.Video,
                 pyrogram_types.Voice,
                 pyrogram_types.VideoNote,
-                pyrogram_types.Sticker
+                pyrogram_types.Sticker,
+                pyrogram_types.GIF
         )):
             media = message
         elif isinstance(message, str):
