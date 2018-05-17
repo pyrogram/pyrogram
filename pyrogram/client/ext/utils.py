@@ -582,25 +582,11 @@ def parse_messages(
                 reply_markup=reply_markup
             )
 
-            # TODO: lazily evaluate html and markdown?
-
             if m.text:
                 m.text.init(m.client, m.entities or [])
 
             if m.caption:
                 m.caption.init(m.client, m.caption_entities or [])
-
-            # if m.text:
-            #     args = (m.text, m.entities or [])
-            #
-            #     m.text.markdown = client.markdown.unparse(*args)
-            #     m.text.html = client.html.unparse(*args)
-            #
-            # if m.caption:
-            #     args = (m.caption, m.caption_entities or [])
-            #
-            #     m.caption.markdown = client.markdown.unparse(*args)
-            #     m.caption.html = client.html.unparse(*args)
 
             if message.reply_to_msg_id and replies:
                 while True:
