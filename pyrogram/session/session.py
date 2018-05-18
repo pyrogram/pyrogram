@@ -222,14 +222,14 @@ class Session:
         msg_key = msg_key_large[8:24]
         aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
 
-        return self.auth_key_id + msg_key + AES.ige_encrypt(data + padding, aes_key, aes_iv)
+        return self.auth_key_id + msg_key + AES.ige256_encrypt(data + padding, aes_key, aes_iv)
 
     def unpack(self, b: BytesIO) -> Message:
         assert b.read(8) == self.auth_key_id, b.getvalue()
 
         msg_key = b.read(16)
         aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
-        data = BytesIO(AES.ige_decrypt(b.read(), aes_key, aes_iv))
+        data = BytesIO(AES.ige256_decrypt(b.read(), aes_key, aes_iv))
         data.read(8)
 
         # https://core.telegram.org/mtproto/security_guidelines#checking-session-id

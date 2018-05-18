@@ -38,30 +38,31 @@ else:
 # TODO: Ugly IFs
 class AES:
     @classmethod
-    def ige_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
+    def ige256_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
         if is_fast:
-            return tgcrypto.ige_encrypt(data, key, iv)
+            return tgcrypto.ige256_encrypt(data, key, iv)
         else:
             return cls.ige(data, key, iv, True)
 
     @classmethod
-    def ige_decrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
+    def ige256_decrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
         if is_fast:
-            return tgcrypto.ige_decrypt(data, key, iv)
+            return tgcrypto.ige256_decrypt(data, key, iv)
         else:
             return cls.ige(data, key, iv, False)
 
     @staticmethod
-    def ctr_decrypt(data: bytes, key: bytes, iv: bytes, offset: int) -> bytes:
-        replace = int.to_bytes(offset // 16, 4, "big")
-        iv = iv[:-4] + replace
-
+    def ctr256_encrypt(data: bytes, key: bytes, iv: bytes, state: bytes) -> bytes:
         if is_fast:
-            return tgcrypto.ctr_decrypt(data, key, iv)
+            return tgcrypto.ctr256_decrypt(data, key, iv, state)
         else:
             ctr = pyaes.AESModeOfOperationCTR(key)
             ctr._counter._counter = list(iv)
             return ctr.decrypt(data)
+
+    @staticmethod
+    def ctr256_decrypt(data: bytes, key: bytes, iv: bytes, state: bytes) -> bytes:
+        return AES.ctr256_encrypt(data, key, iv, state)
 
     @staticmethod
     def xor(a: bytes, b: bytes) -> bytes:
