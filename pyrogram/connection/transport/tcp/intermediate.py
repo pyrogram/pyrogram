@@ -17,42 +17,30 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from struct import pack, unpack
 
-from .tcp import TCP
+from .abridged import TCP
 
 log = logging.getLogger(__name__)
 
 
-class TCPAbridged(TCP):
+class Intermediate(TCP):
     def __init__(self, proxy: dict):
         super().__init__(proxy)
 
     def connect(self, address: tuple):
         super().connect(address)
-        super().sendall(b"\xef")
+        super().sendall(b"\xee" * 4)
 
         log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
-        length = len(data) // 4
-
-        super().sendall(
-            (bytes([length])
-             if length <= 126
-             else b"\x7f" + length.to_bytes(3, "little"))
-            + data
-        )
+        super().sendall(pack("<i", len(data)) + data)
 
     def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(1)
+        length = super().recvall(4)
 
         if length is None:
             return None
 
-        if length == b"\x7f":
-            length = super().recvall(3)
-
-            if length is None:
-                return None
-
-        return super().recvall(int.from_bytes(length, "little") * 4)
+        return super().recvall(unpack("<i", length)[0])
