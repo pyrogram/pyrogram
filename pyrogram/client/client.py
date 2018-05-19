@@ -1213,11 +1213,13 @@ class Client(Methods, BaseClient):
                             chunk = r2.bytes
 
                             # https://core.telegram.org/cdn#decrypting-files
-                            decrypted_chunk = AES.ctr_decrypt(
+                            decrypted_chunk = AES.ctr256_decrypt(
                                 chunk,
                                 r.encryption_key,
-                                r.encryption_iv,
-                                offset
+                                bytearray(
+                                    r.encryption_iv[:-4]
+                                    + (offset // 16).to_bytes(4, "big")
+                                )
                             )
 
                             hashes = session.send(
