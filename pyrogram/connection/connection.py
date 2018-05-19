@@ -27,15 +27,15 @@ log = logging.getLogger(__name__)
 
 class Connection:
     MODES = {
-        0: Full,
-        1: Abridged,
-        2: Intermediate
+        0: TCPFull,
+        1: TCPAbridged,
+        2: TCPIntermediate
     }
 
     def __init__(self, address: tuple, proxy: dict, mode: int = 1):
         self.address = address
         self.proxy = proxy
-        self.mode = self.MODES.get(mode, Abridged)
+        self.mode = self.MODES.get(mode, TCPAbridged)
         self.lock = threading.Lock()
         self.connection = None
 
