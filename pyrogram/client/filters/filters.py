@@ -253,6 +253,7 @@ class Filters:
             or Filters.photo(m)
             or Filters.sticker(m)
             or Filters.video(m)
+            or Filters.gif(m)
             or Filters.voice(m)
             or Filters.video_note(m)
             or Filters.contact(m)
