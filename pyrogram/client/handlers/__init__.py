@@ -16,4 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .handlers import MessageHandler, CallbackQueryHandler, RawUpdateHandler
+from .callback_query_handler import CallbackQueryHandler
+from .message_handler import MessageHandler
+from .raw_update_handler import RawUpdateHandler
