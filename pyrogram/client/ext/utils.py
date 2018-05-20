@@ -415,7 +415,7 @@ def parse_messages(
                                     date=doc.date
                                 )
                         elif types.DocumentAttributeAnimated in attributes:
-                            video_attributes = attributes[types.DocumentAttributeVideo]
+                            video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
                             gif = pyrogram_types.GIF(
                                 file_id=encode(
@@ -427,9 +427,9 @@ def parse_messages(
                                         doc.access_hash
                                     )
                                 ),
-                                width=video_attributes.w,
-                                height=video_attributes.h,
-                                duration=video_attributes.duration,
+                                width=getattr(video_attributes, "w", 0),
+                                height=getattr(video_attributes, "h", 0),
+                                duration=getattr(video_attributes, "duration", 0),
                                 thumb=parse_thumb(doc.thumb),
                                 mime_type=doc.mime_type,
                                 file_size=doc.size,
