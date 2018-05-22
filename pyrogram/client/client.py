@@ -399,8 +399,11 @@ class Client(Methods, BaseClient):
                     print(e.MESSAGE)
                     self.phone_number = None
             except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
+                if phone_number_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
@@ -493,16 +496,22 @@ class Client(Methods, BaseClient):
                             print(e.MESSAGE)
                             self.password = None
                     except FloodWait as e:
-                        print(e.MESSAGE.format(x=e.x))
-                        time.sleep(e.x)
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE.format(x=e.x))
+                            time.sleep(e.x)
                     except Exception as e:
                         log.error(e, exc_info=True)
                     else:
                         break
                 break
             except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
+                if phone_code_invalid_raises or first_name_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
