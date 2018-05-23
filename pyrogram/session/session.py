@@ -207,6 +207,12 @@ class Session:
         for i in self.results.values():
             i.event.set()
 
+        if self.client and callable(self.client.disconnect_handler):
+            try:
+                self.client.disconnect_handler(self.client)
+            except Exception as e:
+                log.error(e, exc_info=True)
+
         log.debug("Session stopped")
 
     def restart(self):

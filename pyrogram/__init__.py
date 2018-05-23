@@ -39,5 +39,5 @@ from .client.types.reply_markup import (
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, CallbackQueryHandler, RawUpdateHandler,
-    Filters
+    DisconnectHandler, Filters
 )

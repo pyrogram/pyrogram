@@ -75,6 +75,8 @@ class BaseClient:
         self.download_queue = Queue()
         self.download_workers_list = []
 
+        self.disconnect_handler = None
+
     def send(self, data: Object):
         pass
 

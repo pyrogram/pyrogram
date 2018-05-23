@@ -17,5 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .callback_query_handler import CallbackQueryHandler
+from .disconnect_handler import DisconnectHandler
 from .message_handler import MessageHandler
 from .raw_update_handler import RawUpdateHandler

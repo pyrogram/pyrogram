@@ -43,6 +43,7 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, FileIdInvalid)
+from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -290,7 +291,10 @@ class Client(Methods, BaseClient):
         Returns:
             A tuple of (handler, group)
         """
-        self.dispatcher.add_handler(handler, group)
+        if isinstance(handler, DisconnectHandler):
+            self.disconnect_handler = handler.callback
+        else:
+            self.dispatcher.add_handler(handler, group)
 
         return handler, group
 
@@ -308,7 +312,10 @@ class Client(Methods, BaseClient):
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
-        self.dispatcher.remove_handler(handler, group)
+        if isinstance(handler, DisconnectHandler):
+            self.disconnect_handler = None
+        else:
+            self.dispatcher.remove_handler(handler, group)
 
     def authorize_bot(self):
         try:

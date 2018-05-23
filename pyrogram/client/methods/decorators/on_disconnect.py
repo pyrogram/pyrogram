@@ -16,10 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .client import Client
-from .ext import BaseClient, ChatAction, Emoji, ParseMode
-from .filters import Filters
-from .handlers import (
-    MessageHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler
-)
+import pyrogram
+from ...ext import BaseClient
+
+
+class OnDisconnect(BaseClient):
+    def on_disconnect(self):
+        # TODO: Documentation
+        def decorator(func):
+            self.add_handler(pyrogram.DisconnectHandler(func))
+            return func
+
+        return decorator
