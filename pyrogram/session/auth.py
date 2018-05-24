@@ -49,8 +49,9 @@ class Auth:
     def __init__(self, dc_id: int, test_mode: bool, proxy: dict):
         self.dc_id = dc_id
         self.test_mode = test_mode
+        self.proxy = proxy
 
-        self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
+        self.connection = None
 
     @staticmethod
     def pack(data: Object) -> bytes:
@@ -83,6 +84,8 @@ class Auth:
         # The server may close the connection at any time, causing the auth key creation to fail.
         # If that happens, just try again up to MAX_RETRIES times.
         while True:
+            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))
 

@@ -96,10 +96,14 @@ class Session:
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
-        self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
+        self.dc_id = dc_id
+        self.test_mode = test_mode
+        self.proxy = proxy
         self.api_id = api_id
         self.is_cdn = is_cdn
         self.client = client
+
+        self.connection = None
 
         self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
@@ -126,6 +130,8 @@ class Session:
 
     def start(self):
         while True:
+            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+
             try:
                 self.connection.connect()
 

@@ -843,8 +843,6 @@ class Client(Methods, BaseClient):
 
         if self.proxy:
             self.proxy["enabled"] = True
-            self.proxy["username"] = self.proxy.get("username", None)
-            self.proxy["password"] = self.proxy.get("password", None)
         else:
             self.proxy = {}
 
