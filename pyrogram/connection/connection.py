@@ -26,6 +26,8 @@ log = logging.getLogger(__name__)
 
 
 class Connection:
+    MAX_RETRIES = 5
+
     MODES = {
         0: TCPFull,
         1: TCPAbridged,
@@ -40,7 +42,7 @@ class Connection:
         self.connection = None
 
     def connect(self):
-        while True:
+        for i in range(Connection.MAX_RETRIES):
             self.connection = self.mode(self.proxy)
 
             try:
@@ -51,6 +53,8 @@ class Connection:
                 time.sleep(1)
             else:
                 break
+        else:
+            raise TimeoutError
 
     def close(self):
         self.connection.close()
