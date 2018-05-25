@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class Connection:
-    MAX_RETRIES = 5
+    MAX_RETRIES = 3
 
     MODES = {
         0: TCPFull,
