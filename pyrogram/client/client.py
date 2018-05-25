@@ -144,7 +144,8 @@ class Client(Methods, BaseClient):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
-        self.proxy = proxy
+        # TODO: Make code consistent, use underscore for private/protected fields
+        self._proxy = proxy
         self.test_mode = test_mode
         self.phone_number = phone_number
         self.phone_code = phone_code
@@ -157,6 +158,15 @@ class Client(Methods, BaseClient):
         self.config_file = config_file
 
         self.dispatcher = Dispatcher(self, workers)
+
+    @property
+    def proxy(self):
+        return self._proxy
+
+    @proxy.setter
+    def proxy(self, value):
+        self._proxy["enabled"] = True
+        self._proxy.update(value)
 
     def start(self, debug: bool = False):
         """Use this method to start the Client after creating it.
@@ -183,7 +193,7 @@ class Client(Methods, BaseClient):
         self.session = Session(
             self.dc_id,
             self.test_mode,
-            self.proxy,
+            self._proxy,
             self.auth_key,
             self.api_id,
             client=self
@@ -331,12 +341,12 @@ class Client(Methods, BaseClient):
             self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
             self.session = Session(
                 self.dc_id,
                 self.test_mode,
-                self.proxy,
+                self._proxy,
                 self.auth_key,
                 self.api_id,
                 client=self
@@ -379,12 +389,12 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
                 self.session = Session(
                     self.dc_id,
                     self.test_mode,
-                    self.proxy,
+                    self._proxy,
                     self.auth_key,
                     self.api_id,
                     client=self
@@ -841,17 +851,17 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        if self.proxy:
-            self.proxy["enabled"] = True
+        if self._proxy:
+            self._proxy["enabled"] = True
         else:
-            self.proxy = {}
+            self._proxy = {}
 
             if parser.has_section("proxy"):
-                self.proxy["enabled"] = parser.getboolean("proxy", "enabled")
-                self.proxy["hostname"] = parser.get("proxy", "hostname")
-                self.proxy["port"] = parser.getint("proxy", "port")
-                self.proxy["username"] = parser.get("proxy", "username", fallback=None) or None
-                self.proxy["password"] = parser.get("proxy", "password", fallback=None) or None
+                self._proxy["enabled"] = parser.getboolean("proxy", "enabled")
+                self._proxy["hostname"] = parser.get("proxy", "hostname")
+                self._proxy["port"] = parser.getint("proxy", "port")
+                self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
+                self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
     def load_session(self):
         try:
@@ -860,7 +870,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -1012,7 +1022,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_id)
+        session = Session(self.dc_id, self.test_mode, self._proxy, self.auth_key, self.api_id)
         session.start()
 
         try:
@@ -1099,8 +1109,8 @@ class Client(Methods, BaseClient):
                     session = Session(
                         dc_id,
                         self.test_mode,
-                        self.proxy,
-                        Auth(dc_id, self.test_mode, self.proxy).create(),
+                        self._proxy,
+                        Auth(dc_id, self.test_mode, self._proxy).create(),
                         self.api_id
                     )
 
@@ -1118,7 +1128,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         dc_id,
                         self.test_mode,
-                        self.proxy,
+                        self._proxy,
                         self.auth_key,
                         self.api_id
                     )
@@ -1188,8 +1198,8 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             r.dc_id,
                             self.test_mode,
-                            self.proxy,
-                            Auth(r.dc_id, self.test_mode, self.proxy).create(),
+                            self._proxy,
+                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
                             self.api_id,
                             is_cdn=True
                         )
