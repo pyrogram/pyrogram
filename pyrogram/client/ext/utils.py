@@ -22,6 +22,7 @@ from base64 import b64decode, b64encode
 from struct import pack
 from weakref import proxy
 
+from pyrogram.api.core import Message
 from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
@@ -33,26 +34,30 @@ log = logging.getLogger(__name__)
 # TODO: Organize the code better?
 
 class Str(str):
-    def __init__(self, value):
-        str.__init__(value)
-        self._markdown = None
-        self._html = None
+    def __init__(self, text, client, entities):
+        str.__init__(text)
+        self._client = client
+        self._entities = entities
+
+    @classmethod
+    def from_message(cls, message):
+        s = Str(message.text)
+        s._client = message._client
+        s._entities = message._entities
+        return s
+
+    @property
+    def text(self):
+        return self
 
     @property
     def markdown(self):
-        return self._markdown
-
-    @markdown.setter
-    def markdown(self, value):
-        self._markdown = value
+        return self._client.markdown.unparse(self, self._entities)
 
     @property
     def html(self):
-        return self._html
+        return self._client.html.unparse(self, self._entities)
 
-    @html.setter
-    def html(self, value):
-        self._html = value
 
 
 ENTITIES = {

@@ -25,42 +25,10 @@ from threading import Thread
 import pyrogram
 from pyrogram.api import types
 from ..ext import utils
-from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
+from ..handlers import CallbackQueryHandler, MessageHandler, RawUpdateHandler
 
 log = logging.getLogger(__name__)
 
-class MyCuteLittlePseudoSemaphore:
-    """This class implements semaphore objects.
-
-    Semaphores manage a counter representing the number of release() calls minus
-    the number of acquire() calls, plus an initial value. The acquire() method
-    blocks if necessary until it can return without making the counter
-    negative. If not given, value defaults to 1.
-
-    """
-
-    # After Tim Peters' semaphore class, but not quite the same (no maximum)
-
-    def __init__(self):
-        self._lock_requested = threading.Event()
-        self._cond = threading.Condition(threading.Lock())
-        self._value = 0
-
-    def acquire(self):
-        if self._lock_requested.is_set():
-            # TODO: wait for something
-            pass
-        self._value += 1
-
-    __enter__ = acquire
-
-    def release(self):
-        with self._cond:
-            self._value += 1
-            self._cond.notify()
-
-    def __exit__(self, t, v, tb):
-        self.release()
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
