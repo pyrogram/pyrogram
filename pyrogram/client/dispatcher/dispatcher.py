@@ -50,8 +50,6 @@ class Dispatcher:
         self.updates = Queue()
         self.groups = OrderedDict()
 
-        self._handler_lock = threading.Lock()
-
     def start(self):
         for i in range(self.workers):
             self.workers_list.append(
@@ -73,52 +71,49 @@ class Dispatcher:
         self.workers_list.clear()
 
     def add_handler(self, handler, group: int):
-        with self._handler_lock:
-            if group not in self.groups:
-                self.groups[group] = []
-                self.groups = OrderedDict(sorted(self.groups.items()))
+        if group not in self.groups:
+            self.groups[group] = []
+            self.groups = OrderedDict(sorted(self.groups.items()))
 
-            self.groups[group].append(handler)
+        self.groups[group].append(handler)
 
     def remove_handler(self, handler, group: int):
-        with self._handler_lock:
-            if group not in self.groups:
-                raise ValueError("Group {} does not exist. "
-                                 "Handler was not removed.".format(group))
-            self.groups[group].remove(handler)
+        if group not in self.groups:
+            raise ValueError("Group {} does not exist. "
+                             "Handler was not removed.".format(group))
+        self.groups[group].remove(handler)
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
-        with self._handler_lock:
-            for group in self.groups.values():
-                for handler in group:
-                    if is_raw:
-                        if not isinstance(handler, RawUpdateHandler):
+        for group in self.groups.values():
+            for handler in group:
+                if is_raw:
+                    if not isinstance(handler, RawUpdateHandler):
+                        continue
+
+                    args = (self.client, update, users, chats)
+                else:
+                    message = (update.message
+                               or update.channel_post
+                               or update.edited_message
+                               or update.edited_channel_post)
+
+                    callback_query = update.callback_query
+
+                    if message and isinstance(handler, MessageHandler):
+                        if not handler.check(message):
                             continue
 
-                        args = (self.client, update, users, chats)
+                        args = (self.client, message)
+                    elif callback_query and isinstance(handler, CallbackQueryHandler):
+                        if not handler.check(callback_query):
+                            continue
+
+                        args = (self.client, callback_query)
                     else:
-                        message = (update.message
-                                   or update.channel_post
-                                   or update.edited_message
-                                   or update.edited_channel_post)
+                        continue
 
-                        callback_query = update.callback_query
-
-                        if message and isinstance(handler, MessageHandler):
-                            if not handler.check(message):
-                                continue
-
-                            args = (self.client, message)
-                        elif callback_query and isinstance(handler, CallbackQueryHandler):
-                            if not handler.check(callback_query):
-                                continue
-
-                            args = (self.client, callback_query)
-                        else:
-                            continue
-
-                    handler.callback(*args)
-                    break
+                handler.callback(*args)
+                break
 
     def update_worker(self):
         name = threading.current_thread().name
