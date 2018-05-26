@@ -73,22 +73,30 @@ class Dispatcher:
         self.workers_list.clear()
 
     def add_handler(self, handler, group: int):
-        with self._handler_lock:
+        self._handler_lock.acquire(blocking=True)
+        try:
             if group not in self.groups:
                 self.groups[group] = []
                 self.groups = OrderedDict(sorted(self.groups.items()))
 
             self.groups[group].append(handler)
+        finally:
+            self._handler_lock.release()
 
     def remove_handler(self, handler, group: int):
-        with self._handler_lock:
+        self._handler_lock.acquire(blocking=True)
+        try:
             if group not in self.groups:
                 raise ValueError("Group {} does not exist. "
                                  "Handler was not removed.".format(group))
             self.groups[group].remove(handler)
+        finally:
+            self._handler_lock.release()
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
-        with self._handler_lock:
+        if self._handler_lock.locked():
+            self._handler_lock.acquire(blocking=True)
+        try:
             for group in self.groups.values():
                 for handler in group:
                     if is_raw:
@@ -119,6 +127,8 @@ class Dispatcher:
 
                     handler.callback(*args)
                     break
+        finally:
+            self._handler_lock.release()
 
     def update_worker(self):
         name = threading.current_thread().name
