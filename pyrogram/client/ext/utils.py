@@ -22,7 +22,6 @@ from base64 import b64decode, b64encode
 from struct import pack
 from weakref import proxy
 
-from pyrogram.api.core import Message
 from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
@@ -34,17 +33,16 @@ log = logging.getLogger(__name__)
 # TODO: Organize the code better?
 
 class Str(str):
-    def __init__(self, text, client, entities):
-        str.__init__(text)
+    __slots__ = "_client", "_entities"
+
+    def __init__(self, *args):
+        super().__init__()
+        self._client = None
+        self._entities = None
+
+    def init(self, client, entities):
         self._client = client
         self._entities = entities
-
-    @classmethod
-    def from_message(cls, message):
-        s = Str(message.text)
-        s._client = message._client
-        s._entities = message._entities
-        return s
 
     @property
     def text(self):
@@ -57,7 +55,6 @@ class Str(str):
     @property
     def html(self):
         return self._client.html.unparse(self, self._entities)
-
 
 
 ENTITIES = {
@@ -418,7 +415,7 @@ def parse_messages(
                                     date=doc.date
                                 )
                         elif types.DocumentAttributeAnimated in attributes:
-                            video_attributes = attributes[types.DocumentAttributeVideo]
+                            video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
                             gif = pyrogram_types.GIF(
                                 file_id=encode(
@@ -430,9 +427,9 @@ def parse_messages(
                                         doc.access_hash
                                     )
                                 ),
-                                width=video_attributes.w,
-                                height=video_attributes.h,
-                                duration=video_attributes.duration,
+                                width=getattr(video_attributes, "w", 0),
+                                height=getattr(video_attributes, "h", 0),
+                                duration=getattr(video_attributes, "duration", 0),
                                 thumb=parse_thumb(doc.thumb),
                                 mime_type=doc.mime_type,
                                 file_size=doc.size,
@@ -586,16 +583,10 @@ def parse_messages(
             )
 
             if m.text:
-                args = (m.text, m.entities or [])
-
-                m.text.markdown = client.markdown.unparse(*args)
-                m.text.html = client.html.unparse(*args)
+                m.text.init(m.client, m.entities or [])
 
             if m.caption:
-                args = (m.caption, m.caption_entities or [])
-
-                m.caption.markdown = client.markdown.unparse(*args)
-                m.caption.html = client.html.unparse(*args)
+                m.caption.init(m.client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
                 while True:
