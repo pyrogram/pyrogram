@@ -29,6 +29,38 @@ from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
 
 log = logging.getLogger(__name__)
 
+class MyCuteLittlePseudoSemaphore:
+    """This class implements semaphore objects.
+
+    Semaphores manage a counter representing the number of release() calls minus
+    the number of acquire() calls, plus an initial value. The acquire() method
+    blocks if necessary until it can return without making the counter
+    negative. If not given, value defaults to 1.
+
+    """
+
+    # After Tim Peters' semaphore class, but not quite the same (no maximum)
+
+    def __init__(self):
+        self._lock_requested = threading.Event()
+        self._cond = threading.Condition(threading.Lock())
+        self._value = 0
+
+    def acquire(self):
+        if self._lock_requested.is_set():
+            # TODO: wait for something
+            pass
+        self._value += 1
+
+    __enter__ = acquire
+
+    def release(self):
+        with self._cond:
+            self._value += 1
+            self._cond.notify()
+
+    def __exit__(self, t, v, tb):
+        self.release()
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
@@ -50,7 +82,9 @@ class Dispatcher:
         self.updates = Queue()
         self.groups = OrderedDict()
 
-        self._handler_lock = threading.Lock()
+        self._dispatching_blocked = threading.Event()
+        self._handler_modification_lock = threading.Condition()
+        self._dispatch_counter = 0
 
     def start(self):
         for i in range(self.workers):
@@ -73,7 +107,9 @@ class Dispatcher:
         self.workers_list.clear()
 
     def add_handler(self, handler, group: int):
-        self._handler_lock.acquire(blocking=True)
+        self._dispatching_blocked.set()
+        while self._dispatch_counter != 0:
+            pass
         try:
             if group not in self.groups:
                 self.groups[group] = []
@@ -81,21 +117,23 @@ class Dispatcher:
 
             self.groups[group].append(handler)
         finally:
-            self._handler_lock.release()
+            self._dispatching_blocked.clear()
 
     def remove_handler(self, handler, group: int):
-        self._handler_lock.acquire(blocking=True)
+        self._dispatching_blocked.set()
+        while self._dispatch_counter != 0:
+            pass
         try:
             if group not in self.groups:
                 raise ValueError("Group {} does not exist. "
                                  "Handler was not removed.".format(group))
             self.groups[group].remove(handler)
         finally:
-            self._handler_lock.release()
+            self._dispatching_blocked.clear()
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
-        if self._handler_lock.locked():
-            self._handler_lock.acquire(blocking=True)
+        self._dispatching_blocked.wait()
+        self._dispatch_counter += 1
         try:
             for group in self.groups.values():
                 for handler in group:
@@ -128,7 +166,7 @@ class Dispatcher:
                     handler.callback(*args)
                     break
         finally:
-            self._handler_lock.release()
+            self._dispatch_counter -= 1
 
     def update_worker(self):
         name = threading.current_thread().name
