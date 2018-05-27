@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .empty import Empty
-from .html import HTML
-from .markdown import Markdown
+
+class Empty:
+    @staticmethod
+    def parse(text):
+        return dict(
+            message=text,
+            entities=[]
+        )
