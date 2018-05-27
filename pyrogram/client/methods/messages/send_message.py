@@ -19,6 +19,7 @@
 from pyrogram.api import functions, types
 from pyrogram.client import types as pyrogram_types
 from ...ext import utils, BaseClient
+from ...style import Empty
 
 
 class SendMessage(BaseClient):
@@ -67,7 +68,13 @@ class SendMessage(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        style = self.html if parse_mode.lower() == "html" else self.markdown
+        parse_mode = parse_mode.lower()
+
+        style = (
+            Empty if parse_mode == "empty"
+            else self.html if parse_mode == "html"
+            else self.markdown
+        )
 
         r = self.send(
             functions.messages.SendMessage(
