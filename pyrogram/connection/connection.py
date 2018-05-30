@@ -32,7 +32,8 @@ class Connection:
         0: TCPFull,
         1: TCPAbridged,
         2: TCPIntermediate,
-        3: TCPAbridgedO
+        3: TCPAbridgedO,
+        4: TCPIntermediateO
     }
 
     def __init__(self, address: tuple, proxy: dict, mode: int = 1):
