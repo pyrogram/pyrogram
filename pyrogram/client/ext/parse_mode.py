@@ -27,6 +27,3 @@ class ParseMode:
 
     MARKDOWN = "markdown"
     """Set the parse mode to Markdown style"""
-
-    EMPTY = "empty"
-    """Disable the parse mode"""
