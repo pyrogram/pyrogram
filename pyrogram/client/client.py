@@ -1272,9 +1272,6 @@ class Client(Methods, BaseClient):
                                 break
                 except Exception as e:
                     raise e
-                finally:
-                    pass  # Don't stop sessions, they are now cached and kept online
-                    # cdn_session.stop()  TODO: Remove this branch
         except Exception as e:
             log.error(e, exc_info=True)
 
@@ -1286,6 +1283,3 @@ class Client(Methods, BaseClient):
             return ""
         else:
             return file_name
-        finally:
-            pass  # Don't stop sessions, they are now cached and kept online
-            # session.stop() TODO: Remove this branch
