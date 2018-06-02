@@ -1008,7 +1008,6 @@ class Client(Methods, BaseClient):
                 except (KeyError, ValueError):
                     raise PeerIdInvalid
 
-    # TODO: Improvements for the new API
     def save_file(self,
                   path: str,
                   file_id: int = None,
@@ -1084,7 +1083,6 @@ class Client(Methods, BaseClient):
         finally:
             session.stop()
 
-    # TODO: Improvements for the new API
     def get_file(self,
                  dc_id: int,
                  id: int = None,

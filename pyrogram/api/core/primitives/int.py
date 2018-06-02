@@ -35,8 +35,6 @@ class Int(Object):
 class Long(Int):
     SIZE = 8
 
-    # TODO: PyCharm can't infer types when overriding parent's __new__ and is showing unnecessary warnings.
-    # Add this to shut warnings down
     def __new__(cls, *args):
         return super().__new__(cls, *args)
 
