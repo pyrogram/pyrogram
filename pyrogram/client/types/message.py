@@ -318,9 +318,20 @@ class Message(Object):
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None):
-        """Use this method as a shortcut for::
+        """Use this method as a shortcut for:
 
-            app.send_message(message.chat.id, ...)
+        .. code-block:: python
+
+            client.send_message(
+                chat_id=message.chat.id,
+                text="hello",
+                reply_to_message_id=message.message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_text("hello", quote=True)
 
         Args:
             text (``str``):
