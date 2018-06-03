@@ -371,3 +371,45 @@ class Message(Object):
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup
         )
+
+    def forward(self,
+                chat_id: int or str,
+                disable_notification: bool = None):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.forward_messages(
+                chat_id=chat_id,
+                from_chat_id=message.chat.id,
+                message_ids=message.message_id,
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.forward(chat_id)
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+        Returns:
+            On success, the forwarded Message is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        return self.client.forward_messages(
+            chat_id=chat_id,
+            from_chat_id=self.chat.id,
+            message_ids=self.message_id,
+            disable_notification=disable_notification
+        )
