@@ -424,3 +424,39 @@ class Message(Object):
             message_ids=self.message_id,
             disable_notification=disable_notification
         )
+
+    def delete(self, revoke: bool = True):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.delete_messages(
+                chat_id=chat_id,
+                message_ids=message.message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.delete()
+
+        Args:
+            revoke (``bool``, *optional*):
+                Deletes messages on both parts.
+                This is only for private cloud chats and normal groups, messages on
+                channels and supergroups are always revoked (i.e.: deleted for everyone).
+                Defaults to True.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        self.client.delete_messages(
+            chat_id=self.chat.id,
+            message_ids=self.message_id,
+            revoke=revoke
+        )
+
+        return True
