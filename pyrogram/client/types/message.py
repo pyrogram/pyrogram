@@ -309,3 +309,65 @@ class Message(Object):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+
+    def reply_text(self,
+                   text: str,
+                   quote: bool = None,
+                   parse_mode: str = "",
+                   disable_web_page_preview: bool = None,
+                   disable_notification: bool = None,
+                   reply_to_message_id: int = None,
+                   reply_markup=None):
+        """Use this method as a shortcut for::
+
+            app.send_message(message.chat.id, ...)
+
+        Args:
+            text (``str``):
+                Text of the message to be sent.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return self.client.send_message(
+            chat_id=self.chat.id,
+            text=text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
