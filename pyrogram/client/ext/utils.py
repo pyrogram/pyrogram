@@ -583,10 +583,10 @@ def parse_messages(
             )
 
             if m.text:
-                m.text.init(m.client, m.entities or [])
+                m.text.init(m._client, m.entities or [])
 
             if m.caption:
-                m.caption.init(m.client, m.caption_entities or [])
+                m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
                 while True:

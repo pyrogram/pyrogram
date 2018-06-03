@@ -260,7 +260,7 @@ class Message(Object):
             reply_markup=None,
     ):
         self.message_id = message_id  # int
-        self.client = client
+        self._client = client
         self.date = date  # int
         self.chat = chat  # Chat
         self.from_user = from_user  # flags.0?User
@@ -373,7 +373,7 @@ class Message(Object):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self.client.send_message(
+        return self._client.send_message(
             chat_id=self.chat.id,
             text=text,
             parse_mode=parse_mode,
@@ -418,7 +418,7 @@ class Message(Object):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self.client.forward_messages(
+        return self._client.forward_messages(
             chat_id=chat_id,
             from_chat_id=self.chat.id,
             message_ids=self.message_id,
@@ -453,7 +453,7 @@ class Message(Object):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        self.client.delete_messages(
+        self._client.delete_messages(
             chat_id=self.chat.id,
             message_ids=self.message_id,
             revoke=revoke
