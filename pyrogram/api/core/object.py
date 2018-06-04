@@ -77,11 +77,14 @@ class Encoder(JSONEncoder):
 
         if o is not None:
             if o.startswith("pyrogram.client"):
-                r = remove_none(OrderedDict([("_", name)] + [i for i in content.items()]))
+                r = remove_none(OrderedDict([("_", "pyrogram:" + name)] + [i for i in content.items()]))
                 r.pop("_client", None)
 
                 return r
             else:
-                return OrderedDict([("_", o)] + [i for i in content.items()])
+                return OrderedDict(
+                    [("_", o.replace("pyrogram.api.types.", "telegram:"))]
+                    + [i for i in content.items()]
+                )
         else:
             return None
