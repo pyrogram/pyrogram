@@ -155,8 +155,9 @@ class Filters:
 
         def f(_, m):
             if m.text and m.text.startswith(_.p):
-                c = m.text[1:].split(_.s)[0]
-                m.command = ([c] + m.text.split(_.s)[1:]) if c in _.c else None
+                t = m.text.split(_.s)
+                c, a = t[0][len(_.p):], t[1:]
+                m.command = ([c] + a) if c in _.c else None
 
             return bool(m.command)
 
