@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+SPHINXBUILD   = ~/PycharmProjects/pyrogram/venv/bin/sphinx-build
 SPHINXPROJ    = Pyrogram
 SOURCEDIR     = source
 BUILDDIR      = build
