@@ -49,6 +49,10 @@ Client
         enable_cloud_password
         change_cloud_password
         remove_cloud_password
+        kick_chat_member
+        unban_chat_member
+        restrict_chat_member
+        promote_chat_member
         add_contacts
         get_contacts
         delete_contacts
