@@ -134,7 +134,10 @@ class Filters:
     # TODO: Add filters for reply markups
 
     @staticmethod
-    def command(command: str or list, prefix: str = "/", separator: str = " "):
+    def command(command: str or list,
+                prefix: str = "/",
+                separator: str = " ",
+                case_sensitive: bool = False):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
         Args:
@@ -144,26 +147,40 @@ class Filters:
                 a command arrives, the command itself and its arguments will be stored in the *command*
                 field of the :class:`Message <pyrogram.Message>`.
 
-            prefix (``str``):
-                The command prefix. Defaults to "/".
+            prefix (``str``, *optional*):
+                The command prefix. Defaults to "/" (slash).
                 Examples: /start, .help, !settings.
 
-            separator (``str``):
+            separator (``str``, *optional*):
                 The command arguments separator. Defaults to " " (white space).
                 Examples: /start first second, /start-first-second, /start.first.second.
+
+            case_sensitive (``bool``, *optional*):
+                Pass True if you want your command(s) to be case sensitive. Defaults to False.
+                Examples: when True, command="Start" would trigger /Start but not /start.
         """
 
         def f(_, m):
             if m.text and m.text.startswith(_.p):
                 t = m.text.split(_.s)
                 c, a = t[0][len(_.p):], t[1:]
+                c = c if _.cs else c.lower()
                 m.command = ([c] + a) if c in _.c else None
 
             return bool(m.command)
 
         return build(
-            "Command", f, c={command} if not isinstance(command, list) else {c for c in command},
-            p=prefix, s=separator
+            "Command",
+            f,
+            c={command if case_sensitive
+               else command.lower()}
+            if not isinstance(command, list)
+            else {c if case_sensitive
+                  else c.lower()
+                  for c in command},
+            p=prefix,
+            s=separator,
+            cs=case_sensitive
         )
 
     @staticmethod
