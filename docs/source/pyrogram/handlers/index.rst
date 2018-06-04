@@ -7,3 +7,4 @@ Handlers
     MessageHandler
     CallbackQueryHandler
     RawUpdateHandler
+    DisconnectHandler
