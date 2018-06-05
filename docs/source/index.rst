@@ -75,11 +75,11 @@ To get started, press the Next button.
 
 .. toctree::
     :hidden:
-    :caption: Getting Started
+    :caption: Quick Start
 
-    start/QuickInstallation
-    start/ProjectSetup
-    start/BasicUsage
+    start/Installation
+    start/Setup
+    start/Usage
 
 .. toctree::
     :hidden:
@@ -107,5 +107,4 @@ To get started, press the Next button.
     types/index
 
 .. _`Telegram`: https://telegram.org/
-
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto/
