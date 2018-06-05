@@ -7,6 +7,8 @@ Client
     :inherited-members:
     :members:
 
+    .. _available-methods:
+
     **Available methods**
 
     .. autosummary::
