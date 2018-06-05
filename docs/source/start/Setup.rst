@@ -1,8 +1,9 @@
-Project Setup
-=============
+Setup
+=====
 
-This section provides all the information you need to setup your project with Pyrogram.
-There are a few steps you have to follow before you can actually use the library to make API calls.
+Once you successfully installed_ Pyrogram, you will have to follow a few steps before you can actually use
+the library to make API calls. This section provides all the information you need in order to set up a project
+with Pyrogram.
 
 API Keys
 --------
@@ -45,7 +46,7 @@ There are two ways to configure a Pyrogram application project, and you can choo
         )
 
 .. note:: The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
-    and *api_hash* parameters usage.
+and *api_hash* parameters usage.
 
 User Authorization
 ------------------
@@ -75,14 +76,14 @@ After successfully authorizing yourself, a new file called ``my_account.session`
 Pyrogram executing API calls with your identity. This file will be loaded again when you restart your app,
 and as long as you keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
-.. important:: Your *.session file(s) must be kept secret.
+.. important:: Your ``*.session`` file(s) must be kept secret.
 
 Bot Authorization
 -----------------
 
 Being written entirely from the ground up, Pyrogram is also able to authorize Bots.
-Bots are a special kind of users which also make use of MTProto. This means that you can use Pyrogram to
-execute API calls with a Bot identity.
+Bots are a special kind of users which also make use of MTProto, the underlying Telegram protocol.
+This means that you can use Pyrogram to execute API calls with a Bot identity.
 
 Instead of phone numbers, Bots are authorized via their tokens which are created by BotFather_:
 
@@ -96,5 +97,6 @@ Instead of phone numbers, Bots are authorized via their tokens which are created
 That's all, no further action is needed. The session file will be named after the Bot user_id, which is
 ``123456.session`` for the example above.
 
+.. _installed: Installation.html
 .. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 .. _BotFather: https://t.me/botfather
