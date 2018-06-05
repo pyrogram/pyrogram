@@ -34,5 +34,6 @@ class DisconnectHandler(Handler):
             The Client itself. Useful, for example, when you want to change the proxy before a new connection
             is established.
     """
+
     def __init__(self, callback: callable):
         super().__init__(callback)
