@@ -169,6 +169,14 @@ class Dispatcher:
                             )
                         )
                     )
+                elif isinstance(update, types.UpdateInlineBotCallbackQuery):
+                    self.dispatch(
+                        pyrogram.Update(
+                            callback_query=utils.parse_inline_callback_query(
+                                update, users
+                            )
+                        )
+                    )
                 else:
                     continue
             except Exception as e:
