@@ -801,7 +801,7 @@ def parse_callback_query(client, callback_query, users):
         peer_id = int("-100" + str(peer.channel_id))
 
     return pyrogram_types.CallbackQuery(
-        id=callback_query.query_id,
+        id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
         message=client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
