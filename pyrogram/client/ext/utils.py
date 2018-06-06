@@ -810,6 +810,24 @@ def parse_callback_query(client, callback_query, users):
     )
 
 
+def parse_inline_callback_query(callback_query, users):
+    return pyrogram_types.CallbackQuery(
+        id=str(callback_query.query_id),
+        from_user=parse_user(users[callback_query.user_id]),
+        chat_instance=str(callback_query.chat_instance),
+        inline_message_id=b64encode(
+            pack(
+                "<iqq",
+                callback_query.msg_id.dc_id,
+                callback_query.msg_id.id,
+                callback_query.msg_id.access_hash
+            ),
+            b"-_"
+        ).decode().rstrip("="),
+        game_short_name=callback_query.game_short_name
+    )
+
+
 def parse_chat_full(
         client,
         chat_full: types.messages.ChatFull or types.UserFull
