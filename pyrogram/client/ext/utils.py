@@ -807,7 +807,6 @@ def parse_callback_query(client, callback_query, users):
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
         game_short_name=callback_query.game_short_name
-        # TODO: add inline_message_id
     )
 
 
