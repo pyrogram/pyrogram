@@ -35,9 +35,6 @@ class VideoNote(Object):
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Video thumbnail.
 
-        file_size (``int``, *optional*):
-            File size.
-
         file_name (``str``, *optional*):
             Video note file name.
 
