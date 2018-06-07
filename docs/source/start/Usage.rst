@@ -11,7 +11,7 @@ The easiest and recommended way to interact with Telegram is via the high-level 
 named after the `Telegram Bot API`_.
 
 .. hint:: If you can't find a method you want to use, chances are it's not implemented yet. In this case, you must use
-    the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you're in trouble or want to propose a
+    the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you're stuck or want to propose a
     new method!
 
 Examples:
