@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import threading
-import time
 
 from .transport import *
 
@@ -36,23 +35,23 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, address: tuple, proxy: dict, mode: int = 1):
+    def __init__(self, address: tuple, proxy: dict, mode: int = 2):
         self.address = address
         self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)
-        self.lock = threading.Lock()
+
         self.connection = None
 
-    def connect(self):
+    async def connect(self):
         for i in range(Connection.MAX_RETRIES):
             self.connection = self.mode(self.proxy)
 
             try:
                 log.info("Connecting...")
-                self.connection.connect(self.address)
+                await self.connection.connect(self.address)
             except OSError:
                 self.connection.close()
-                time.sleep(1)
+                await asyncio.sleep(1)
             else:
                 break
         else:
@@ -62,9 +61,8 @@ class Connection:
         self.connection.close()
         log.info("Disconnected")
 
-    def send(self, data: bytes):
-        with self.lock:
-            self.connection.sendall(data)
+    async def send(self, data: bytes):
+        await self.connection.send(data)
 
-    def recv(self) -> bytes or None:
-        return self.connection.recvall()
+    async def recv(self) -> bytes or None:
+        return await self.connection.recv()
