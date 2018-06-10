@@ -40,7 +40,7 @@ class Connection:
         self.proxy = proxy
         self.mode = self.MODES.get(mode, TCPAbridged)
 
-        self.connection = None
+        self.connection = None  # type: TCP
 
     async def connect(self):
         for i in range(Connection.MAX_RETRIES):
