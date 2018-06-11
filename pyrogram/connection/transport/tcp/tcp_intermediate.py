@@ -28,19 +28,23 @@ class TCPIntermediate(TCP):
     def __init__(self, proxy: dict):
         super().__init__(proxy)
 
-    def connect(self, address: tuple):
-        super().connect(address)
-        super().sendall(b"\xee" * 4)
+    async def connect(self, address: tuple):
+        await super().connect(address)
+        await super().send(b"\xee" * 4)
 
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
+        log.info("Connected{}!".format(
+            " with proxy"
+            if self.proxy_enabled
+            else ""
+        ))
 
-    def sendall(self, data: bytes, *args):
-        super().sendall(pack("<i", len(data)) + data)
+    async def send(self, data: bytes, *args):
+        await super().send(pack("<i", len(data)) + data)
 
-    def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(4)
+    async def recv(self, length: int = 0) -> bytes or None:
+        length = await super().recv(4)
 
         if length is None:
             return None
 
-        return super().recvall(unpack("<i", length)[0])
+        return await super().recv(unpack("<i", length)[0])
