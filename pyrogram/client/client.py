@@ -1051,7 +1051,7 @@ class Client(Methods, BaseClient):
                             bytes=chunk
                         )
 
-                    assert self.send(rpc), "Couldn't upload file"
+                    assert session.send(rpc), "Couldn't upload file"
 
                     if is_missing_part:
                         return
