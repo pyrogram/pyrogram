@@ -324,7 +324,7 @@ class Session:
                 break
 
             try:
-                self._send(functions.PingDelayDisconnect(
+                await self._send(functions.PingDelayDisconnect(
                     0, self.WAIT_TIMEOUT + 10
                 ), False)
             except (OSError, TimeoutError, Error):
