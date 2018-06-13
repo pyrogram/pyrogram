@@ -207,9 +207,9 @@ class Session:
 
         log.debug("Session stopped")
 
-    def restart(self):
-        self.stop()
-        self.start()
+    async def restart(self):
+        await self.stop()
+        await self.start()
 
     def pack(self, message: Message):
         data = Long(self.current_salt.salt) + self.session_id + message.write()
