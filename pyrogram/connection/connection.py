@@ -53,7 +53,8 @@ class Connection:
             try:
                 log.info("Connecting...")
                 self.connection.connect(self.address)
-            except OSError:
+            except OSError as e:
+                log.warning(e)  # TODO: Remove
                 self.connection.close()
                 time.sleep(1)
             else:
