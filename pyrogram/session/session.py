@@ -35,7 +35,7 @@ from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, I
 from pyrogram.api.errors import Error, InternalServerError
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
-from .internals import MsgId, MsgFactory, DataCenter
+from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
@@ -86,6 +86,7 @@ class Session:
     def __init__(self,
                  dc_id: int,
                  test_mode: bool,
+                 ipv6: bool,
                  proxy: dict,
                  auth_key: bytes,
                  api_id: int,
@@ -98,6 +99,7 @@ class Session:
 
         self.dc_id = dc_id
         self.test_mode = test_mode
+        self.ipv6 = ipv6
         self.proxy = proxy
         self.api_id = api_id
         self.is_cdn = is_cdn
@@ -130,7 +132,7 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+            self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
                 self.connection.connect()
