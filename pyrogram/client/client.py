@@ -129,6 +129,7 @@ class Client(Methods, BaseClient):
                  session_name: str,
                  api_id: int or str = None,
                  api_hash: str = None,
+                 ipv6: bool = False,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -145,6 +146,7 @@ class Client(Methods, BaseClient):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
+        self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -194,6 +196,7 @@ class Client(Methods, BaseClient):
         self.session = Session(
             self.dc_id,
             self.test_mode,
+            self.ipv6,
             self._proxy,
             self.auth_key,
             self.api_id,
@@ -342,11 +345,12 @@ class Client(Methods, BaseClient):
             self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
             self.session = Session(
                 self.dc_id,
                 self.test_mode,
+                self.ipv6,
                 self._proxy,
                 self.auth_key,
                 self.api_id,
@@ -390,11 +394,12 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
                 self.session = Session(
                     self.dc_id,
                     self.test_mode,
+                    self.ipv6,
                     self._proxy,
                     self.auth_key,
                     self.api_id,
@@ -871,7 +876,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -1022,7 +1027,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self._proxy, self.auth_key, self.api_id)
+        session = Session(self.dc_id, self.test_mode, self.ipv6, self._proxy, self.auth_key, self.api_id)
         session.start()
 
         try:
@@ -1108,8 +1113,9 @@ class Client(Methods, BaseClient):
                     session = Session(
                         dc_id,
                         self.test_mode,
+                        self.ipv6,
                         self._proxy,
-                        Auth(dc_id, self.test_mode, self._proxy).create(),
+                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                         self.api_id
                     )
 
@@ -1127,6 +1133,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         dc_id,
                         self.test_mode,
+                        self.ipv6,
                         self._proxy,
                         self.auth_key,
                         self.api_id
@@ -1197,8 +1204,9 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             r.dc_id,
                             self.test_mode,
+                            self.ipv6,
                             self._proxy,
-                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                             self.api_id,
                             is_cdn=True
                         )
