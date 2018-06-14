@@ -289,9 +289,11 @@ class Session:
                 break
 
             try:
-                await self._send(functions.PingDelayDisconnect(
-                    0, self.WAIT_TIMEOUT + 10
-                ), False)
+                await self._send(
+                    functions.PingDelayDisconnect(
+                        0, self.WAIT_TIMEOUT + 10
+                    ), False
+                )
             except (OSError, TimeoutError, Error):
                 pass
 
