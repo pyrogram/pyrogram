@@ -25,9 +25,9 @@ from io import BytesIO
 
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
-from pyrogram.api import functions, types, core
+from pyrogram.api import functions, types
 from pyrogram.api.all import layer
-from pyrogram.api.core import Object, MsgContainer, Long, FutureSalt, Int
+from pyrogram.api.core import Object, MsgContainer, Int, Long, FutureSalt, FutureSalts
 from pyrogram.api.errors import Error, InternalServerError
 from pyrogram.connection import Connection
 from pyrogram.crypto import MTProto
@@ -251,7 +251,7 @@ class Session:
 
                     if isinstance(msg.body, (types.BadMsgNotification, types.BadServerSalt)):
                         msg_id = msg.body.bad_msg_id
-                    elif isinstance(msg.body, (core.FutureSalts, types.RpcResult)):
+                    elif isinstance(msg.body, (FutureSalts, types.RpcResult)):
                         msg_id = msg.body.req_msg_id
                     elif isinstance(msg.body, types.Pong):
                         msg_id = msg.body.msg_id
