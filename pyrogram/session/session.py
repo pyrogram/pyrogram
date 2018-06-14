@@ -286,8 +286,7 @@ class Session:
                 await asyncio.wait_for(self.ping_task_event.wait(), self.PING_INTERVAL)
             except asyncio.TimeoutError:
                 pass
-
-            if self.ping_task_event.is_set():
+            else:
                 break
 
             try:
@@ -320,8 +319,7 @@ class Session:
                 await asyncio.wait_for(self.next_salt_task_event.wait(), dt)
             except asyncio.TimeoutError:
                 pass
-
-            if self.next_salt_task_event.is_set():
+            else:
                 break
 
             try:
