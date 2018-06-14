@@ -18,5 +18,6 @@
 
 from .aes import AES
 from .kdf import KDF
+from .mtproto import MTProto
 from .prime import Prime
 from .rsa import RSA
