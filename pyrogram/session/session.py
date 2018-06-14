@@ -209,8 +209,7 @@ class Session:
         self.start()
 
     async def net_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        log.info("NetWorkerTask started")
 
         while True:
             packet = await self.recv_queue.get()
@@ -277,10 +276,10 @@ class Session:
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        log.info("NetWorkerTask stopped")
 
     async def ping(self):
-        log.debug("Ping Task started")
+        log.info("PingTask started")
 
         while True:
             try:
@@ -298,10 +297,10 @@ class Session:
             except (OSError, TimeoutError, Error):
                 pass
 
-        log.debug("Ping Task stopped")
+        log.info("PingTask stopped")
 
     async def next_salt(self):
-        log.debug("NextSaltThread started")
+        log.info("NextSaltTask started")
 
         while True:
             now = datetime.now()
@@ -331,10 +330,10 @@ class Session:
                 self.connection.close()
                 break
 
-        log.debug("NextSaltThread stopped")
+        log.info("NextSaltTask stopped")
 
     async def recv(self):
-        log.debug("Recv Task started")
+        log.info("RecvTask started")
 
         while True:
             packet = await self.connection.recv()
@@ -350,7 +349,7 @@ class Session:
 
             self.recv_queue.put_nowait(packet)
 
-        log.debug("Recv Task stopped")
+        log.info("RecvTask stopped")
 
     async def _send(self, data: Object, wait_response: bool = True):
         message = self.msg_factory(data)
