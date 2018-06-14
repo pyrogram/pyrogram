@@ -56,7 +56,6 @@ class Session:
         platform.release()
     )
 
-    NET_WORKERS = 1
     WAIT_TIMEOUT = 15
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
