@@ -204,8 +204,8 @@ class Session:
         log.debug("Session stopped")
 
     async def restart(self):
-        self.stop()
-        self.start()
+        await self.stop()
+        await self.start()
 
     async def net_worker(self):
         log.info("NetWorkerTask started")
