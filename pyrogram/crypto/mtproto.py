@@ -40,14 +40,13 @@ class MTProto:
         return auth_key_id + msg_key + AES.ige256_encrypt(data + padding, aes_key, aes_iv)
 
     @staticmethod
-    def unpack(b: BytesIO, salt: int, session_id: bytes, auth_key: bytes, auth_key_id: bytes) -> Message:
+    def unpack(b: BytesIO, session_id: bytes, auth_key: bytes, auth_key_id: bytes) -> Message:
         assert b.read(8) == auth_key_id, b.getvalue()
 
         msg_key = b.read(16)
         aes_key, aes_iv = KDF(auth_key, msg_key, False)
         data = BytesIO(AES.ige256_decrypt(b.read(), aes_key, aes_iv))
-
-        assert data.read(8) == Long(salt) or Long(salt) == Long(MTProto.INITIAL_SALT)
+        data.read(8)
 
         # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
         assert data.read(8) == session_id

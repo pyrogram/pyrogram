@@ -219,7 +219,6 @@ class Session:
             try:
                 data = MTProto.unpack(
                     BytesIO(packet),
-                    self.current_salt.salt,
                     self.session_id,
                     self.auth_key,
                     self.auth_key_id
