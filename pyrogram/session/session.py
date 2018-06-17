@@ -308,10 +308,8 @@ class Session:
             # 15 minutes before/after the current/next salt end/start time
             dt = (self.current_salt.valid_until - now).total_seconds() - 900
 
-            log.debug("Current salt: {} | Next salt in {:.0f}m {:.0f}s ({})".format(
-                self.current_salt.salt,
-                dt // 60,
-                dt % 60,
+            log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
+                dt // 60, dt % 60,
                 now + timedelta(seconds=dt)
             ))
 
@@ -340,6 +338,8 @@ class Session:
                 packet = None
 
             if packet is None or len(packet) == 4:
+                self.recv_queue.put_nowait(None)
+
                 if packet:
                     log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
 
