@@ -25,7 +25,6 @@ log = logging.getLogger(__name__)
 
 
 class Connection:
-    TIMEOUT = 10
     MAX_RETRIES = 3
 
     MODES = {
@@ -50,8 +49,8 @@ class Connection:
 
             try:
                 log.info("Connecting...")
-                await asyncio.wait_for(self.protocol.connect(self.address), Connection.TIMEOUT)
-            except (OSError, asyncio.TimeoutError):
+                await self.protocol.connect(self.address)
+            except OSError:
                 self.protocol.close()
                 await asyncio.sleep(1)
             else:

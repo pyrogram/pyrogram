@@ -34,6 +34,8 @@ log = logging.getLogger(__name__)
 
 
 class TCP:
+    TIMEOUT = 10
+
     def __init__(self, proxy: dict):
         self.proxy = proxy
 
@@ -41,6 +43,7 @@ class TCP:
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
 
+        self.socket.settimeout(TCP.TIMEOUT)
         self.proxy_enabled = proxy.get("enabled", False)
 
         if proxy and self.proxy_enabled:
@@ -81,8 +84,11 @@ class TCP:
 
         while len(data) < length:
             try:
-                chunk = await self.reader.read(length - len(data))
-            except OSError:
+                chunk = await asyncio.wait_for(
+                    self.reader.read(length - len(data)),
+                    TCP.TIMEOUT
+                )
+            except (OSError, asyncio.TimeoutError):
                 return None
             else:
                 if chunk:
