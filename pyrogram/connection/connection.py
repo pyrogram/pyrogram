@@ -57,6 +57,7 @@ class Connection:
             else:
                 break
         else:
+            log.warning("Connection failed! Trying again...")
             raise TimeoutError
 
     def close(self):
