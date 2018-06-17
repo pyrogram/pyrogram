@@ -186,11 +186,11 @@ class Session:
 
         self.connection.close()
 
-        await self.recv_task
+        if self.recv_task:
+            await self.recv_task
 
-        self.recv_queue.put_nowait(None)
-
-        await self.net_worker_task
+        if self.net_worker_task:
+            await self.net_worker_task
 
         for i in self.results.values():
             i.event.set()
