@@ -334,7 +334,10 @@ class Session:
         log.info("RecvTask started")
 
         while True:
-            packet = await self.connection.recv()
+            try:
+                packet = await asyncio.wait_for(self.connection.recv(), self.connection.TIMEOUT)
+            except asyncio.TimeoutError:
+                packet = None
 
             if packet is None or len(packet) == 4:
                 if packet:
