@@ -167,7 +167,7 @@ class Session:
 
         self.is_connected.set()
 
-        log.debug("Session started")
+        log.info("Session started")
 
     async def stop(self):
         self.is_connected.clear()
@@ -201,7 +201,7 @@ class Session:
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("Session stopped")
+        log.info("Session stopped")
 
     async def restart(self):
         await self.stop()
