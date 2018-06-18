@@ -249,7 +249,7 @@ def encode(s: bytes) -> str:
 
 
 # TODO: Reorganize code, maybe split parts as well
-def parse_messages(
+async def parse_messages(
         client,
         messages: list or types.Message or types.MessageService or types.MessageEmpty,
         users: dict,
@@ -484,9 +484,9 @@ def parse_messages(
 
                             if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
                                 try:
-                                    set_name = client.send(
+                                    set_name = (await client.send(
                                         functions.messages.GetStickerSet(sticker_attribute.stickerset)
-                                    ).set.short_name
+                                    )).set.short_name
                                 except StickersetInvalid:
                                     set_name = None
                             else:
@@ -591,7 +591,7 @@ def parse_messages(
             if message.reply_to_msg_id and replies:
                 while True:
                     try:
-                        m.reply_to_message = client.get_messages(
+                        m.reply_to_message = await client.get_messages(
                             m.chat.id, message.reply_to_msg_id,
                             replies=replies - 1
                         )
@@ -693,7 +693,7 @@ def parse_messages(
             if isinstance(action, types.MessageActionPinMessage):
                 while True:
                     try:
-                        m.pinned_message = client.get_messages(
+                        m.pinned_message = await client.get_messages(
                             m.chat.id, message.reply_to_msg_id,
                             replies=0
                         )
@@ -790,7 +790,7 @@ def parse_photos(photos):
     )
 
 
-def parse_callback_query(client, callback_query, users):
+async def parse_callback_query(client, callback_query, users):
     peer = callback_query.peer
 
     if isinstance(peer, types.PeerUser):
@@ -803,14 +803,14 @@ def parse_callback_query(client, callback_query, users):
     return pyrogram_types.CallbackQuery(
         id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
-        message=client.get_messages(peer_id, callback_query.msg_id),
+        message=await client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
         game_short_name=callback_query.game_short_name
     )
 
 
-def parse_inline_callback_query(callback_query, users):
+async def parse_inline_callback_query(callback_query, users):
     return pyrogram_types.CallbackQuery(
         id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
@@ -828,7 +828,7 @@ def parse_inline_callback_query(callback_query, users):
     )
 
 
-def parse_chat_full(
+async def parse_chat_full(
         client,
         chat_full: types.messages.ChatFull or types.UserFull
 ) -> pyrogram_types.Chat:
@@ -853,7 +853,7 @@ def parse_chat_full(
             chat.sticker_set_name = full_chat.stickerset
 
             if full_chat.pinned_msg_id:
-                chat.pinned_message = client.get_messages(
+                chat.pinned_message = await client.get_messages(
                     int("-100" + str(full_chat.id)),
                     full_chat.pinned_msg_id
                 )
