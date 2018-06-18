@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import re
-from queue import Queue
-from threading import Lock
 
 from ..style import Markdown, HTML
 from ...api.core import Object
@@ -30,7 +29,7 @@ class BaseClient:
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
-    DOWNLOAD_WORKERS = 1
+    DOWNLOAD_WORKERS = 4
     OFFLINE_SLEEP = 300
 
     MEDIA_TYPE_ID = {
@@ -65,15 +64,15 @@ class BaseClient:
 
         self.session = None
         self.media_sessions = {}
-        self.media_sessions_lock = Lock()
+        self.media_sessions_lock = asyncio.Lock()
 
         self.is_started = None
         self.is_idle = None
 
-        self.updates_queue = Queue()
-        self.updates_workers_list = []
-        self.download_queue = Queue()
-        self.download_workers_list = []
+        self.updates_queue = asyncio.Queue()
+        self.updates_worker_task = None
+        self.download_queue = asyncio.Queue()
+        self.download_worker_tasks = []
 
         self.disconnect_handler = None
 
