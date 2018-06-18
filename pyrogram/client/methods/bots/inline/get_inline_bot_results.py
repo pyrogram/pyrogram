@@ -22,12 +22,12 @@ from ....ext import BaseClient
 
 
 class GetInlineBotResults(BaseClient):
-    def get_inline_bot_results(self,
-                               bot: int or str,
-                               query: str,
-                               offset: str = "",
-                               latitude: float = None,
-                               longitude: float = None):
+    async def get_inline_bot_results(self,
+                                     bot: int or str,
+                                     query: str,
+                                     offset: str = "",
+                                     latitude: float = None,
+                                     longitude: float = None):
         """Use this method to get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
@@ -60,9 +60,9 @@ class GetInlineBotResults(BaseClient):
         # TODO: Don't return the raw type
 
         try:
-            return self.send(
+            return await self.send(
                 functions.messages.GetInlineBotResults(
-                    bot=self.resolve_peer(bot),
+                    bot=await self.resolve_peer(bot),
                     peer=types.InputPeerSelf(),
                     query=query,
                     offset=offset,

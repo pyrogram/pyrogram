@@ -21,13 +21,13 @@ from ....ext import BaseClient, utils
 
 
 class EditMessageText(BaseClient):
-    def edit_message_text(self,
-                          chat_id: int or str,
-                          message_id: int,
-                          text: str,
-                          parse_mode: str = "",
-                          disable_web_page_preview: bool = None,
-                          reply_markup=None):
+    async def edit_message_text(self,
+                                chat_id: int or str,
+                                message_id: int,
+                                text: str,
+                                parse_mode: str = "",
+                                disable_web_page_preview: bool = None,
+                                reply_markup=None):
         """Use this method to edit text messages.
 
         Args:
@@ -62,9 +62,9 @@ class EditMessageText(BaseClient):
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
@@ -74,7 +74,7 @@ class EditMessageText(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

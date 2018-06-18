@@ -22,14 +22,14 @@ from ...ext import utils, BaseClient
 
 
 class SendMessage(BaseClient):
-    def send_message(self,
-                     chat_id: int or str,
-                     text: str,
-                     parse_mode: str = "",
-                     disable_web_page_preview: bool = None,
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup=None):
+    async def send_message(self,
+                           chat_id: int or str,
+                           text: str,
+                           parse_mode: str = "",
+                           disable_web_page_preview: bool = None,
+                           disable_notification: bool = None,
+                           reply_to_message_id: int = None,
+                           reply_markup=None):
         """Use this method to send text messages.
 
         Args:
@@ -69,9 +69,9 @@ class SendMessage(BaseClient):
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
@@ -91,7 +91,7 @@ class SendMessage(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

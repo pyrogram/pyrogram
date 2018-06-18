@@ -16,19 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from threading import Event
+import asyncio
 
 from pyrogram.client import types as pyrogram_types
 from ..ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
-    def download_media(self,
-                       message: pyrogram_types.Message or str,
-                       file_name: str = "",
-                       block: bool = True,
-                       progress: callable = None,
-                       progress_args: tuple = None):
+    async def download_media(self,
+                             message: pyrogram_types.Message or str,
+                             file_name: str = "",
+                             block: bool = True,
+                             progress: callable = None,
+                             progress_args: tuple = None):
         """Use this method to download the media from a Message.
 
         Args:
@@ -114,12 +114,12 @@ class DownloadMedia(BaseClient):
         else:
             return
 
-        done = Event()
+        done = asyncio.Event()
         path = [None]
 
-        self.download_queue.put((media, file_name, done, progress, progress_args, path))
+        self.download_queue.put_nowait((media, file_name, done, progress, progress_args, path))
 
         if block:
-            done.wait()
+            await done.wait()
 
         return path[0]

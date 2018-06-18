@@ -21,12 +21,12 @@ from ....ext import BaseClient, utils
 
 
 class EditMessageCaption(BaseClient):
-    def edit_message_caption(self,
-                             chat_id: int or str,
-                             message_id: int,
-                             caption: str,
-                             parse_mode: str = "",
-                             reply_markup=None):
+    async def edit_message_caption(self,
+                                   chat_id: int or str,
+                                   message_id: int,
+                                   caption: str,
+                                   parse_mode: str = "",
+                                   reply_markup=None):
         """Use this method to edit captions of messages.
 
         Args:
@@ -58,9 +58,9 @@ class EditMessageCaption(BaseClient):
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 **style.parse(caption)
@@ -69,7 +69,7 @@ class EditMessageCaption(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

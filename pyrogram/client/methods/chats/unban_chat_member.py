@@ -21,9 +21,9 @@ from ...ext import BaseClient
 
 
 class UnbanChatMember(BaseClient):
-    def unban_chat_member(self,
-                          chat_id: int or str,
-                          user_id: int or str):
+    async def unban_chat_member(self,
+                                chat_id: int or str,
+                                user_id: int or str):
         """Use this method to unban a previously kicked user in a supergroup or channel.
         The user will **not** return to the group or channel automatically, but will be able to join via link, etc.
         You must be an administrator for this to work.
@@ -43,10 +43,10 @@ class UnbanChatMember(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        self.send(
+        await self.send(
             functions.channels.EditBanned(
-                channel=self.resolve_peer(chat_id),
-                user_id=self.resolve_peer(user_id),
+                channel=await self.resolve_peer(chat_id),
+                user_id=await self.resolve_peer(user_id),
                 banned_rights=types.ChannelBannedRights(
                     until_date=0
                 )

@@ -26,14 +26,14 @@ from ....ext import BaseClient, utils
 
 
 class SendSticker(BaseClient):
-    def send_sticker(self,
-                     chat_id: int or str,
-                     sticker: str,
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup=None,
-                     progress: callable = None,
-                     progress_args: tuple = ()):
+    async def send_sticker(self,
+                           chat_id: int or str,
+                           sticker: str,
+                           disable_notification: bool = None,
+                           reply_to_message_id: int = None,
+                           reply_markup=None,
+                           progress: callable = None,
+                           progress_args: tuple = ()):
         """Use this method to send .webp stickers.
 
         Args:
@@ -92,7 +92,7 @@ class SendSticker(BaseClient):
         file = None
 
         if os.path.exists(sticker):
-            file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+            file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type="image/webp",
                 file=file,
@@ -129,9 +129,9 @@ class SendSticker(BaseClient):
 
         while True:
             try:
-                r = self.send(
+                r = await self.send(
                     functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
@@ -141,11 +141,11 @@ class SendSticker(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                self.save_file(sticker, file_id=file.id, file_part=e.x)
+                await self.save_file(sticker, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return await utils.parse_messages(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

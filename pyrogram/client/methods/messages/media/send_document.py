@@ -27,16 +27,16 @@ from ....ext import BaseClient, utils
 
 
 class SendDocument(BaseClient):
-    def send_document(self,
-                      chat_id: int or str,
-                      document: str,
-                      caption: str = "",
-                      parse_mode: str = "",
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup=None,
-                      progress: callable = None,
-                      progress_args: tuple = ()):
+    async def send_document(self,
+                            chat_id: int or str,
+                            document: str,
+                            caption: str = "",
+                            parse_mode: str = "",
+                            disable_notification: bool = None,
+                            reply_to_message_id: int = None,
+                            reply_markup=None,
+                            progress: callable = None,
+                            progress_args: tuple = ()):
         """Use this method to send general files.
 
         Args:
@@ -104,7 +104,7 @@ class SendDocument(BaseClient):
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(document):
-            file = self.save_file(document, progress=progress, progress_args=progress_args)
+            file = await self.save_file(document, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
                 file=file,
@@ -141,9 +141,9 @@ class SendDocument(BaseClient):
 
         while True:
             try:
-                r = self.send(
+                r = await self.send(
                     functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=media,
                         silent=disable_notification or None,
                         reply_to_msg_id=reply_to_message_id,
@@ -153,11 +153,11 @@ class SendDocument(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                self.save_file(document, file_id=file.id, file_part=e.x)
+                await self.save_file(document, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return await utils.parse_messages(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

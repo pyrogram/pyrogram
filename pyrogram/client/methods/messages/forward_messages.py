@@ -21,11 +21,11 @@ from ...ext import BaseClient, utils
 
 
 class ForwardMessages(BaseClient):
-    def forward_messages(self,
-                         chat_id: int or str,
-                         from_chat_id: int or str,
-                         message_ids,
-                         disable_notification: bool = None):
+    async def forward_messages(self,
+                               chat_id: int or str,
+                               from_chat_id: int or str,
+                               message_ids,
+                               disable_notification: bool = None):
         """Use this method to forward messages of any kind.
 
         Args:
@@ -61,10 +61,10 @@ class ForwardMessages(BaseClient):
         is_iterable = not isinstance(message_ids, int)
         message_ids = list(message_ids) if is_iterable else [message_ids]
 
-        r = self.send(
+        r = await self.send(
             functions.messages.ForwardMessages(
-                to_peer=self.resolve_peer(chat_id),
-                from_peer=self.resolve_peer(from_chat_id),
+                to_peer=await self.resolve_peer(chat_id),
+                from_peer=await self.resolve_peer(from_chat_id),
                 id=message_ids,
                 silent=disable_notification or None,
                 random_id=[self.rnd_id() for _ in message_ids]
@@ -79,7 +79,7 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    utils.parse_messages(
+                    await utils.parse_messages(
                         self, i.message,
                         users, chats
                     )

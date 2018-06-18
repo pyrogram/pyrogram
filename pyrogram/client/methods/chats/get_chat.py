@@ -21,7 +21,7 @@ from ...ext import BaseClient, utils
 
 
 class GetChat(BaseClient):
-    def get_chat(self, chat_id: int or str):
+    async def get_chat(self, chat_id: int or str):
         """Use this method to get up to date information about the chat (current name of the user for
         one-on-one conversations, current username of a user, group or channel, etc.)
 
@@ -31,13 +31,13 @@ class GetChat(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            r = self.send(functions.channels.GetFullChannel(peer))
+            r = await self.send(functions.channels.GetFullChannel(peer))
         elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
-            r = self.send(functions.users.GetFullUser(peer))
+            r = await self.send(functions.users.GetFullUser(peer))
         else:
-            r = self.send(functions.messages.GetFullChat(peer.chat_id))
+            r = await self.send(functions.messages.GetFullChat(peer.chat_id))
 
-        return utils.parse_chat_full(self, r)
+        return await utils.parse_chat_full(self, r)

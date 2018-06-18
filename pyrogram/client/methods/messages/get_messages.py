@@ -21,10 +21,10 @@ from ...ext import BaseClient, utils
 
 
 class GetMessages(BaseClient):
-    def get_messages(self,
-                     chat_id: int or str,
-                     message_ids,
-                     replies: int = 1):
+    async def get_messages(self,
+                           chat_id: int or str,
+                           message_ids,
+                           replies: int = 1):
         """Use this method to get messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -51,7 +51,7 @@ class GetMessages(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
         is_iterable = not isinstance(message_ids, int)
         message_ids = list(message_ids) if is_iterable else [message_ids]
         message_ids = [types.InputMessageID(i) for i in message_ids]
@@ -66,9 +66,9 @@ class GetMessages(BaseClient):
                 id=message_ids
             )
 
-        r = self.send(rpc)
+        r = await self.send(rpc)
 
-        messages = utils.parse_messages(
+        messages = await utils.parse_messages(
             self, r.messages,
             {i.id: i for i in r.users},
             {i.id: i for i in r.chats},

@@ -21,10 +21,10 @@ from ....ext import BaseClient, ChatAction
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(self,
-                         chat_id: int or str,
-                         action: ChatAction or str,
-                         progress: int = 0):
+    async def send_chat_action(self,
+                               chat_id: int or str,
+                               action: ChatAction or str,
+                               progress: int = 0):
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
@@ -63,9 +63,9 @@ class SendChatAction(BaseClient):
         else:
             action = action()
 
-        return self.send(
+        return await self.send(
             functions.messages.SetTyping(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 action=action
             )
         )

@@ -31,11 +31,11 @@ class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
     # TODO: Return new Message object
     # TODO: Figure out how to send albums using URLs
-    def send_media_group(self,
-                         chat_id: int or str,
-                         media: list,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
+    async def send_media_group(self,
+                               chat_id: int or str,
+                               media: list,
+                               disable_notification: bool = None,
+                               reply_to_message_id: int = None):
         """Use this method to send a group of photos or videos as an album.
         On success, an Update containing the sent Messages is returned.
 
@@ -65,11 +65,11 @@ class SendMediaGroup(BaseClient):
 
             if isinstance(i, pyrogram_types.InputMediaPhoto):
                 if os.path.exists(i.media):
-                    media = self.send(
+                    media = await self.send(
                         functions.messages.UploadMedia(
-                            peer=self.resolve_peer(chat_id),
+                            peer=await self.resolve_peer(chat_id),
                             media=types.InputMediaUploadedPhoto(
-                                file=self.save_file(i.media)
+                                file=await self.save_file(i.media)
                             )
                         )
                     )
@@ -104,11 +104,11 @@ class SendMediaGroup(BaseClient):
                         )
             elif isinstance(i, pyrogram_types.InputMediaVideo):
                 if os.path.exists(i.media):
-                    media = self.send(
+                    media = await self.send(
                         functions.messages.UploadMedia(
-                            peer=self.resolve_peer(chat_id),
+                            peer=await self.resolve_peer(chat_id),
                             media=types.InputMediaUploadedDocument(
-                                file=self.save_file(i.media),
+                                file=await self.save_file(i.media),
                                 mime_type=mimetypes.types_map[".mp4"],
                                 attributes=[
                                     types.DocumentAttributeVideo(
@@ -160,9 +160,9 @@ class SendMediaGroup(BaseClient):
                 )
             )
 
-        return self.send(
+        return await self.send(
             functions.messages.SendMultiMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id

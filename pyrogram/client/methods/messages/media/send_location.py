@@ -21,13 +21,13 @@ from ....ext import BaseClient, utils
 
 
 class SendLocation(BaseClient):
-    def send_location(self,
-                      chat_id: int or str,
-                      latitude: float,
-                      longitude: float,
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup=None):
+    async def send_location(self,
+                            chat_id: int or str,
+                            latitude: float,
+                            longitude: float,
+                            disable_notification: bool = None,
+                            reply_to_message_id: int = None,
+                            reply_markup=None):
         """Use this method to send points on the map.
 
         Args:
@@ -60,9 +60,9 @@ class SendLocation(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
                     types.InputGeoPoint(
                         latitude,
@@ -79,7 +79,7 @@ class SendLocation(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

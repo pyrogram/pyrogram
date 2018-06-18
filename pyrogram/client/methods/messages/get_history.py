@@ -22,12 +22,12 @@ from ...ext import BaseClient, utils
 
 
 class GetHistory(BaseClient):
-    def get_history(self,
-                    chat_id: int or str,
-                    offset: int = 0,
-                    limit: int = 100,
-                    offset_id: int = 0,
-                    offset_date: int = 0):
+    async def get_history(self,
+                          chat_id: int or str,
+                          offset: int = 0,
+                          limit: int = 100,
+                          offset_id: int = 0,
+                          offset_date: int = 0):
         """Use this method to retrieve the history of a chat.
 
         You can get up to 100 messages at once.
@@ -60,9 +60,9 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>`
         """
 
-        r = self.send(
+        r = await self.send(
             functions.messages.GetHistory(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 offset_id=offset_id,
                 offset_date=offset_date,
                 add_offset=offset,
@@ -83,7 +83,7 @@ class GetHistory(BaseClient):
         }
 
         if reply_to_messages:
-            temp = self.get_messages(
+            temp = await self.get_messages(
                 chat_id, reply_to_messages,
                 replies=0
             )
@@ -93,7 +93,7 @@ class GetHistory(BaseClient):
             for i in range(len(temp)):
                 reply_to_messages[temp[i].message_id] = temp[i]
 
-        messages = utils.parse_messages(
+        messages = await utils.parse_messages(
             self, r.messages,
             users, chats,
             replies=0

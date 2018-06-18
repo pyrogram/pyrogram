@@ -21,10 +21,10 @@ from ...ext import BaseClient
 
 
 class KickChatMember(BaseClient):
-    def kick_chat_member(self,
-                         chat_id: int or str,
-                         user_id: int or str,
-                         until_date: int = 0):
+    async def kick_chat_member(self,
+                               chat_id: int or str,
+                               user_id: int or str,
+                               until_date: int = 0):
         """Use this method to kick a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must
@@ -55,11 +55,11 @@ class KickChatMember(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        chat_peer = self.resolve_peer(chat_id)
-        user_peer = self.resolve_peer(user_id)
+        chat_peer = await self.resolve_peer(chat_id)
+        user_peer = await self.resolve_peer(user_id)
 
         if isinstance(chat_peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
@@ -77,7 +77,7 @@ class KickChatMember(BaseClient):
                 )
             )
         else:
-            self.send(
+            await self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer

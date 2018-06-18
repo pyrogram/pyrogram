@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class ExportChatInviteLink(BaseClient):
-    def export_chat_invite_link(self, chat_id: int or str):
+    async def export_chat_invite_link(self, chat_id: int or str):
         """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
@@ -37,16 +37,16 @@ class ExportChatInviteLink(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return self.send(
+            return await self.send(
                 functions.messages.ExportChatInvite(
                     chat_id=peer.chat_id
                 )
             ).link
         elif isinstance(peer, types.InputPeerChannel):
-            return self.send(
+            return await self.send(
                 functions.channels.ExportInvite(
                     channel=peer
                 )

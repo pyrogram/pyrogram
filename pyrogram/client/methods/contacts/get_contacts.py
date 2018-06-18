@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import time
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FloodWait
@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 
 class GetContacts(BaseClient):
-    def get_contacts(self):
+    async def get_contacts(self):
         """Use this method to get contacts from your Telegram address book
 
         Requires no parameters.
@@ -40,10 +40,10 @@ class GetContacts(BaseClient):
         """
         while True:
             try:
-                contacts = self.send(functions.contacts.GetContacts(0))
+                contacts = await self.send(functions.contacts.GetContacts(0))
             except FloodWait as e:
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
-                time.sleep(e.x)
+                await asyncio.sleep(e.x)
                 continue
             else:
                 if isinstance(contacts, types.contacts.Contacts):

@@ -21,14 +21,14 @@ from ....ext import BaseClient, utils
 
 
 class SendContact(BaseClient):
-    def send_contact(self,
-                     chat_id: int or str,
-                     phone_number: str,
-                     first_name: str,
-                     last_name: str = "",
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup=None):
+    async def send_contact(self,
+                           chat_id: int or str,
+                           phone_number: str,
+                           first_name: str,
+                           last_name: str = "",
+                           disable_notification: bool = None,
+                           reply_to_message_id: int = None,
+                           reply_markup=None):
         """Use this method to send phone contacts.
 
         Args:
@@ -64,9 +64,9 @@ class SendContact(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaContact(
                     phone_number,
                     first_name,
@@ -82,7 +82,7 @@ class SendContact(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

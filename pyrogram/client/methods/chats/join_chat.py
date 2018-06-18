@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    def join_chat(self, chat_id: str):
+    async def join_chat(self, chat_id: str):
         """Use this method to join a group chat or channel.
 
         Args:
@@ -35,13 +35,13 @@ class JoinChat(BaseClient):
         match = self.INVITE_LINK_RE.match(chat_id)
 
         if match:
-            return self.send(
+            return await self.send(
                 functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
             )
         else:
-            resolved_peer = self.send(
+            resolved_peer = await self.send(
                 functions.contacts.ResolveUsername(
                     username=chat_id.lower().strip("@")
                 )
@@ -52,7 +52,7 @@ class JoinChat(BaseClient):
                 access_hash=resolved_peer.chats[0].access_hash
             )
 
-            return self.send(
+            return await self.send(
                 functions.channels.JoinChannel(
                     channel=channel
                 )

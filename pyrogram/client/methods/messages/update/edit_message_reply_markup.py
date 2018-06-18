@@ -21,10 +21,10 @@ from ....ext import BaseClient, utils
 
 
 class EditMessageReplyMarkup(BaseClient):
-    def edit_message_reply_markup(self,
-                                  chat_id: int or str,
-                                  message_id: int,
-                                  reply_markup=None):
+    async def edit_message_reply_markup(self,
+                                        chat_id: int or str,
+                                        message_id: int,
+                                        reply_markup=None):
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Args:
@@ -48,9 +48,9 @@ class EditMessageReplyMarkup(BaseClient):
             :class:`Error <pyrogram.Error>`
         """
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None
             )
@@ -58,7 +58,7 @@ class EditMessageReplyMarkup(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

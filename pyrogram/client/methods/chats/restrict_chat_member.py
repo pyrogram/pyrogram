@@ -21,14 +21,14 @@ from ...ext import BaseClient
 
 
 class RestrictChatMember(BaseClient):
-    def restrict_chat_member(self,
-                             chat_id: int or str,
-                             user_id: int or str,
-                             until_date: int = 0,
-                             can_send_messages: bool = False,
-                             can_send_media_messages: bool = False,
-                             can_send_other_messages: bool = False,
-                             can_add_web_page_previews: bool = False):
+    async def restrict_chat_member(self,
+                                   chat_id: int or str,
+                                   user_id: int or str,
+                                   until_date: int = 0,
+                                   can_send_messages: bool = False,
+                                   can_send_media_messages: bool = False,
+                                   can_send_other_messages: bool = False,
+                                   can_add_web_page_previews: bool = False):
         """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
         this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift
         restrictions from a user.
@@ -93,10 +93,10 @@ class RestrictChatMember(BaseClient):
             send_media = None
             embed_links = None
 
-        self.send(
+        await self.send(
             functions.channels.EditBanned(
-                channel=self.resolve_peer(chat_id),
-                user_id=self.resolve_peer(user_id),
+                channel=await self.resolve_peer(chat_id),
+                user_id=await self.resolve_peer(user_id),
                 banned_rights=types.ChannelBannedRights(
                     until_date=until_date,
                     send_messages=send_messages,

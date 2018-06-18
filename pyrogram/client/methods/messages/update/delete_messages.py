@@ -21,10 +21,10 @@ from ....ext import BaseClient
 
 
 class DeleteMessages(BaseClient):
-    def delete_messages(self,
-                        chat_id: int or str,
-                        message_ids,
-                        revoke: bool = True):
+    async def delete_messages(self,
+                              chat_id: int or str,
+                              message_ids,
+                              revoke: bool = True):
         """Use this method to delete messages, including service messages, with the following limitations:
 
         - A message can only be deleted if it was sent less than 48 hours ago.
@@ -56,18 +56,18 @@ class DeleteMessages(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.DeleteMessages(
                     channel=peer,
                     id=message_ids
                 )
             )
         else:
-            self.send(
+            await self.send(
                 functions.messages.DeleteMessages(
                     id=message_ids,
                     revoke=revoke or None
