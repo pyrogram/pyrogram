@@ -119,7 +119,6 @@ class Dispatcher:
 
     async def update_worker(self):
         while True:
-            tasks = []
             update = await self.updates.get()
 
             if update is None:
@@ -130,13 +129,13 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                tasks.append(self.dispatch(update, users=users, chats=chats, is_raw=True))
+                await self.dispatch(update, users=users, chats=chats, is_raw=True)
 
                 if isinstance(update, Dispatcher.MESSAGE_UPDATES):
                     if isinstance(update.message, types.MessageEmpty):
                         continue
 
-                    message = utils.parse_messages(
+                    message = await utils.parse_messages(
                         self.client,
                         update.message,
                         users,
@@ -145,7 +144,7 @@ class Dispatcher:
 
                     is_edited_message = isinstance(update, Dispatcher.EDIT_MESSAGE_UPDATES)
 
-                    tasks.append(self.dispatch(
+                    await self.dispatch(
                         pyrogram.Update(
                             message=((message if message.chat.type != "channel"
                                       else None) if not is_edited_message
@@ -160,26 +159,24 @@ class Dispatcher:
                                                   else None) if is_edited_message
                                                  else None)
                         )
-                    ))
+                    )
                 elif isinstance(update, types.UpdateBotCallbackQuery):
-                    tasks.append(self.dispatch(
+                    await self.dispatch(
                         pyrogram.Update(
-                            callback_query=utils.parse_callback_query(
+                            callback_query=await utils.parse_callback_query(
                                 self.client, update, users
                             )
                         )
-                    ))
+                    )
                 elif isinstance(update, types.UpdateInlineBotCallbackQuery):
-                    tasks.append(self.dispatch(
+                    await self.dispatch(
                         pyrogram.Update(
-                            callback_query=utils.parse_inline_callback_query(
+                            callback_query=await utils.parse_inline_callback_query(
                                 update, users
                             )
                         )
-                    ))
+                    )
                 else:
                     continue
-
-                await asyncio.gather(*tasks)
             except Exception as e:
                 log.error(e, exc_info=True)
