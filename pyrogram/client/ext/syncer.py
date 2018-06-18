@@ -16,13 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import base64
 import json
 import logging
 import os
 import shutil
 import time
-from threading import Thread, Event, Lock
 
 from . import utils
 
@@ -33,13 +33,12 @@ class Syncer:
     INTERVAL = 20
 
     clients = {}
-    thread = None
-    event = Event()
-    lock = Lock()
+    event = asyncio.Event()
+    lock = asyncio.Lock()
 
     @classmethod
-    def add(cls, client):
-        with cls.lock:
+    async def add(cls, client):
+        with await cls.lock:
             cls.sync(client)
 
             cls.clients[id(client)] = client
@@ -48,8 +47,8 @@ class Syncer:
                 cls.start()
 
     @classmethod
-    def remove(cls, client):
-        with cls.lock:
+    async def remove(cls, client):
+        with await cls.lock:
             cls.sync(client)
 
             del cls.clients[id(client)]
@@ -60,24 +59,23 @@ class Syncer:
     @classmethod
     def start(cls):
         cls.event.clear()
-        cls.thread = Thread(target=cls.worker, name=cls.__name__)
-        cls.thread.start()
+        asyncio.ensure_future(cls.worker())
 
     @classmethod
     def stop(cls):
         cls.event.set()
 
     @classmethod
-    def worker(cls):
+    async def worker(cls):
         while True:
-            cls.event.wait(cls.INTERVAL)
-
-            if cls.event.is_set():
+            try:
+                await asyncio.wait_for(cls.event.wait(), cls.INTERVAL)
+            except asyncio.TimeoutError:
+                with await cls.lock:
+                    for client in cls.clients.values():
+                        cls.sync(client)
+            else:
                 break
-
-            with cls.lock:
-                for client in cls.clients.values():
-                    cls.sync(client)
 
     @classmethod
     def sync(cls, client):
