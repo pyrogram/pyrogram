@@ -310,14 +310,14 @@ class Message(Object):
         self.command = command
         self.reply_markup = reply_markup
 
-    def reply_text(self,
-                   text: str,
-                   quote: bool = None,
-                   parse_mode: str = "",
-                   disable_web_page_preview: bool = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup=None):
+    async def reply_text(self,
+                         text: str,
+                         quote: bool = None,
+                         parse_mode: str = "",
+                         disable_web_page_preview: bool = None,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None,
+                         reply_markup=None):
         """Use this method as a shortcut for:
 
         .. code-block:: python
@@ -373,7 +373,7 @@ class Message(Object):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_message(
+        return await self._client.send_message(
             chat_id=self.chat.id,
             text=text,
             parse_mode=parse_mode,
@@ -383,9 +383,9 @@ class Message(Object):
             reply_markup=reply_markup
         )
 
-    def forward(self,
-                chat_id: int or str,
-                disable_notification: bool = None):
+    async def forward(self,
+                      chat_id: int or str,
+                      disable_notification: bool = None):
         """Use this method as a shortcut for:
 
         .. code-block:: python
@@ -418,14 +418,14 @@ class Message(Object):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self._client.forward_messages(
+        return await self._client.forward_messages(
             chat_id=chat_id,
             from_chat_id=self.chat.id,
             message_ids=self.message_id,
             disable_notification=disable_notification
         )
 
-    def delete(self, revoke: bool = True):
+    async def delete(self, revoke: bool = True):
         """Use this method as a shortcut for:
 
         .. code-block:: python
@@ -453,7 +453,7 @@ class Message(Object):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        self._client.delete_messages(
+        await self._client.delete_messages(
             chat_id=self.chat.id,
             message_ids=self.message_id,
             revoke=revoke
