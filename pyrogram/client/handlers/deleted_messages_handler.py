@@ -37,8 +37,8 @@ class DeletedMessagesHandler(Handler):
         client (:obj:`Client <pyrogram.Client>`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        message (:obj:`Message <pyrogram.Message>`):
-            The received message.
+        messages (:obj:`Message <pyrogram.Messages>`):
+            The received messages.
     """
 
     def __init__(self, callback: callable, filters=None):
