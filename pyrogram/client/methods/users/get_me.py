@@ -21,7 +21,7 @@ from ...ext import BaseClient, utils
 
 
 class GetMe(BaseClient):
-    def get_me(self):
+    async def get_me(self):
         """A simple method for testing your authorization. Requires no parameters.
 
         Returns:
@@ -31,7 +31,7 @@ class GetMe(BaseClient):
             :class:`Error <pyrogram.Error>`
         """
         return utils.parse_user(
-            self.send(
+            await self.send(
                 functions.users.GetFullUser(
                     types.InputPeerSelf()
                 )

@@ -16,12 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+
 from pyrogram.api import functions
 from ...ext import BaseClient, utils
 
 
 class GetUsers(BaseClient):
-    def get_users(self, user_ids):
+    async def get_users(self, user_ids):
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
@@ -41,9 +43,9 @@ class GetUsers(BaseClient):
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]
-        user_ids = [self.resolve_peer(i) for i in user_ids]
+        user_ids = await asyncio.gather(*[self.resolve_peer(i) for i in user_ids])
 
-        r = self.send(
+        r = await self.send(
             functions.users.GetUsers(
                 id=user_ids
             )

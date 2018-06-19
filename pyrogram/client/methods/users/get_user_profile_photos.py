@@ -21,10 +21,10 @@ from ...ext import BaseClient, utils
 
 
 class GetUserProfilePhotos(BaseClient):
-    def get_user_profile_photos(self,
-                                user_id: int or str,
-                                offset: int = 0,
-                                limit: int = 100):
+    async def get_user_profile_photos(self,
+                                      user_id: int or str,
+                                      offset: int = 0,
+                                      limit: int = 100):
         """Use this method to get a list of profile pictures for a user.
 
         Args:
@@ -49,9 +49,9 @@ class GetUserProfilePhotos(BaseClient):
             :class:`Error <pyrogram.Error>`
         """
         return utils.parse_photos(
-            self.send(
+            await self.send(
                 functions.photos.GetUserPhotos(
-                    user_id=self.resolve_peer(user_id),
+                    user_id=await self.resolve_peer(user_id),
                     offset=offset,
                     max_id=0,
                     limit=limit

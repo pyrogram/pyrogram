@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
+    async def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
@@ -43,7 +43,7 @@ class ChangeCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if isinstance(r, types.account.Password):
             current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
@@ -51,7 +51,7 @@ class ChangeCloudPassword(BaseClient):
             new_salt = r.new_salt + os.urandom(8)
             new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
 
-            return self.send(
+            return await self.send(
                 functions.account.UpdatePasswordSettings(
                     current_password_hash=current_password_hash,
                     new_settings=types.account.PasswordInputSettings(

@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class RemoveCloudPassword(BaseClient):
-    def remove_cloud_password(self, password: str):
+    async def remove_cloud_password(self, password: str):
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
@@ -36,12 +36,12 @@ class RemoveCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if isinstance(r, types.account.Password):
             password_hash = sha256(r.current_salt + password.encode() + r.current_salt).digest()
 
-            return self.send(
+            return await self.send(
                 functions.account.UpdatePasswordSettings(
                     current_password_hash=password_hash,
                     new_settings=types.account.PasswordInputSettings(

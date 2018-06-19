@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
+    async def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
         """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 
         This password will be asked when you log in on a new device in addition to the SMS code.
@@ -45,13 +45,13 @@ class EnableCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if isinstance(r, types.account.NoPassword):
             salt = r.new_salt + os.urandom(8)
             password_hash = sha256(salt + password.encode() + salt).digest()
 
-            return self.send(
+            return await self.send(
                 functions.account.UpdatePasswordSettings(
                     current_password_hash=salt,
                     new_settings=types.account.PasswordInputSettings(
