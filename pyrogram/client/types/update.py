@@ -30,11 +30,17 @@ class Update(Object):
         edited_message (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a message that is known to the bot and was edited.
 
+        deleted_messages (:obj:`Message <pyrogram.Message>`, *optional*):
+            Deleted messages.
+
         channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
             New incoming channel post of any kind — text, photo, sticker, etc.
 
         edited_channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a channel post that is known to the bot and was edited.
+
+        deleted_channel_posts (:obj:`Message <pyrogram.Message>`, *optional*):
+            Deleted channel posts.
 
         inline_query (:obj:`InlineQuery <pyrogram.InlineQuery>`, *optional*):
             New incoming inline query.
@@ -60,8 +66,10 @@ class Update(Object):
             self,
             message=None,
             edited_message=None,
+            deleted_messages=None,
             channel_post=None,
             edited_channel_post=None,
+            deleted_channel_posts=None,
             inline_query=None,
             chosen_inline_result=None,
             callback_query=None,
@@ -70,8 +78,10 @@ class Update(Object):
     ):
         self.message = message
         self.edited_message = edited_message
+        self.deleted_messages = deleted_messages
         self.channel_post = channel_post
         self.edited_channel_post = edited_channel_post
+        self.deleted_channel_posts = deleted_channel_posts
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
         self.callback_query = callback_query

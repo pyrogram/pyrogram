@@ -19,4 +19,5 @@
 from .callback_query_handler import CallbackQueryHandler
 from .disconnect_handler import DisconnectHandler
 from .message_handler import MessageHandler
+from .deleted_messages_handler import DeletedMessagesHandler
 from .raw_update_handler import RawUpdateHandler
