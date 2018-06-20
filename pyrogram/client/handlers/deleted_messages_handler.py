@@ -20,14 +20,14 @@ from .handler import Handler
 
 
 class DeletedMessagesHandler(Handler):
-    """The Deleted Message handler class. Used to handle deleted messages coming from any chat
+    """The Deleted Messages handler class. Used to handle deleted messages coming from any chat
     (private, group, channel). It is intended to be used with
     :meth:`add_handler() <pyrogram.Client.add_handler>`
 
     Args:
         callback (``callable``):
-            Pass a function that will be called when a new Message arrives. It takes *(client, message)*
-            as positional arguments (look at the section below for a detailed description).
+            Pass a function that will be called when one or more Messages have been deleted.
+            It takes *(client, messages)* as positional arguments (look at the section below for a detailed description).
 
         filters (:obj:`Filters <pyrogram.Filters>`):
             Pass one or more filters to allow only a subset of messages to be passed
@@ -37,8 +37,8 @@ class DeletedMessagesHandler(Handler):
         client (:obj:`Client <pyrogram.Client>`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        messages (:obj:`Message <pyrogram.Messages>`):
-            The received messages.
+        messages (:obj:`Messages <pyrogram.Messages>`):
+            The deleted messages.
     """
 
     def __init__(self, callback: callable, filters=None):
