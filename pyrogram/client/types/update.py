@@ -30,7 +30,7 @@ class Update(Object):
         edited_message (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a message that is known to the bot and was edited.
 
-        deleted_messages (:obj:`Message <pyrogram.Message>`, *optional*):
+        deleted_messages (:obj:`Messages <pyrogram.Messages>`, *optional*):
             Deleted messages.
 
         channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
@@ -39,7 +39,7 @@ class Update(Object):
         edited_channel_post (:obj:`Message <pyrogram.Message>`, *optional*):
             New version of a channel post that is known to the bot and was edited.
 
-        deleted_channel_posts (:obj:`Message <pyrogram.Message>`, *optional*):
+        deleted_channel_posts (:obj:`Messages <pyrogram.Messages>`, *optional*):
             Deleted channel posts.
 
         inline_query (:obj:`InlineQuery <pyrogram.InlineQuery>`, *optional*):
