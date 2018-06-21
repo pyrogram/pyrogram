@@ -718,11 +718,14 @@ def parse_deleted_messages(
     parsed_messages = []
 
     for message in messages:
-        m = pyrogram_types.Message(
-            message_id=message,
-            chat=(pyrogram_types.Chat(id=int("-100" + str(channel_id)), type="channel") if channel_id is not None else None)
+        parsed_messages.append(
+            pyrogram_types.Message(
+                message_id=message,
+                chat=(pyrogram_types.Chat(id=int("-100" + str(channel_id)), type="channel")
+                      if channel_id is not None
+                      else None)
+            )
         )
-        parsed_messages.append(m)
 
     return pyrogram_types.Messages(len(parsed_messages), parsed_messages)
 
