@@ -711,6 +711,25 @@ def parse_messages(
     return parsed_messages if is_list else parsed_messages[0]
 
 
+def parse_deleted_messages(
+        messages: list,
+        channel_id: int
+) -> pyrogram_types.Messages:
+    parsed_messages = []
+
+    for message in messages:
+        parsed_messages.append(
+            pyrogram_types.Message(
+                message_id=message,
+                chat=(pyrogram_types.Chat(id=int("-100" + str(channel_id)), type="channel")
+                      if channel_id is not None
+                      else None)
+            )
+        )
+
+    return pyrogram_types.Messages(len(parsed_messages), parsed_messages)
+
+
 def get_peer_id(input_peer) -> int:
     return (
         input_peer.user_id if isinstance(input_peer, types.InputPeerUser)

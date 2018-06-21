@@ -89,13 +89,13 @@ class Filters:
     venue = build("Venue", lambda _, m: bool(m.venue))
     """Filter messages that contain :obj:`Venue <pyrogram.api.types.pyrogram.Venue>` objects."""
 
-    private = build("Private", lambda _, m: bool(m.chat.type == "private"))
+    private = build("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
     """Filter messages sent in private chats."""
 
-    group = build("Group", lambda _, m: bool(m.chat.type in {"group", "supergroup"}))
+    group = build("Group", lambda _, m: bool(m.chat and m.chat.type in {"group", "supergroup"}))
     """Filter messages sent in group or supergroup chats."""
 
-    channel = build("Channel", lambda _, m: bool(m.chat.type == "channel"))
+    channel = build("Channel", lambda _, m: bool(m.chat and m.chat.type == "channel"))
     """Filter messages sent in channels."""
 
     new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
