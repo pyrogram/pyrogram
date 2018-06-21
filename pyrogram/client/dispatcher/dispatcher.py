@@ -182,13 +182,12 @@ class Dispatcher:
                         (update.channel_id if is_channel else None)
                     )
 
-                    self.dispatch(
+                    await self.dispatch(
                         pyrogram.Update(
                             deleted_messages=(messages if not is_channel else None),
                             deleted_channel_posts=(messages if is_channel else None)
                         )
                     )
-
                 elif isinstance(update, types.UpdateBotCallbackQuery):
                     await self.dispatch(
                         pyrogram.Update(
