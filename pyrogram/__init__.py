@@ -38,6 +38,6 @@ from .client.types.reply_markup import (
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
-    MessageHandler, CallbackQueryHandler, RawUpdateHandler,
-    DisconnectHandler, Filters
+    MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
+    RawUpdateHandler, DisconnectHandler, Filters
 )

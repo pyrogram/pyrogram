@@ -23,7 +23,7 @@ from collections import OrderedDict
 import pyrogram
 from pyrogram.api import types
 from ..ext import utils
-from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler
+from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler, DeletedMessagesHandler
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +37,11 @@ class Dispatcher:
     EDIT_MESSAGE_UPDATES = (
         types.UpdateEditMessage,
         types.UpdateEditChannelMessage
+    )
+
+    DELETE_MESSAGE_UPDATES = (
+        types.UpdateDeleteMessages,
+        types.UpdateDeleteChannelMessages
     )
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
@@ -97,6 +102,9 @@ class Dispatcher:
                                or update.edited_message
                                or update.edited_channel_post)
 
+                    deleted_messages = (update.deleted_channel_posts
+                                        or update.deleted_messages)
+
                     callback_query = update.callback_query
 
                     if message and isinstance(handler, MessageHandler):
@@ -104,6 +112,11 @@ class Dispatcher:
                             continue
 
                         args = (self.client, message)
+                    elif deleted_messages and isinstance(handler, DeletedMessagesHandler):
+                        if not handler.check(deleted_messages):
+                            continue
+
+                        args = (self.client, deleted_messages)
                     elif callback_query and isinstance(handler, CallbackQueryHandler):
                         if not handler.check(callback_query):
                             continue
@@ -160,6 +173,22 @@ class Dispatcher:
                                                  else None)
                         )
                     )
+
+                elif isinstance(update, Dispatcher.DELETE_MESSAGE_UPDATES):
+                    is_channel = hasattr(update, 'channel_id')
+
+                    messages = utils.parse_deleted_messages(
+                        update.messages,
+                        (update.channel_id if is_channel else None)
+                    )
+
+                    self.dispatch(
+                        pyrogram.Update(
+                            deleted_messages=(messages if not is_channel else None),
+                            deleted_channel_posts=(messages if is_channel else None)
+                        )
+                    )
+
                 elif isinstance(update, types.UpdateBotCallbackQuery):
                     await self.dispatch(
                         pyrogram.Update(
