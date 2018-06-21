@@ -28,19 +28,19 @@ from ....ext import BaseClient, utils
 
 class SendGIF(BaseClient):
     async def send_gif(self,
-                 chat_id: int or str,
-                 gif: str,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 duration: int = 0,
-                 width: int = 0,
-                 height: int = 0,
-                 thumb: str = None,
-                 disable_notification: bool = None,
-                 reply_to_message_id: int = None,
-                 reply_markup=None,
-                 progress: callable = None,
-                 progress_args: tuple = ()):
+                       chat_id: int or str,
+                       gif: str,
+                       caption: str = "",
+                       parse_mode: str = "",
+                       duration: int = 0,
+                       width: int = 0,
+                       height: int = 0,
+                       thumb: str = None,
+                       disable_notification: bool = None,
+                       reply_to_message_id: int = None,
+                       reply_markup=None,
+                       progress: callable = None,
+                       progress_args: tuple = ()):
         """Use this method to send GIF files.
 
         Args:
