@@ -24,7 +24,7 @@ class OnRawUpdate(BaseClient):
     def on_raw_update(self, group: int = 0):
         """Use this decorator to automatically register a function for handling
         raw updates. This does the same thing as :meth:`add_handler` using the
-        RawUpdateHandler.
+        :class:`RawUpdateHandler`.
 
         Args:
             group (``int``, *optional*):
