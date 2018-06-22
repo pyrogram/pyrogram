@@ -35,6 +35,7 @@ ask you to input the phone code manually.
 
     app.start()
     print(app.get_me())
+    app.stop()
 
 Sign Up
 -------
@@ -62,3 +63,4 @@ Telegram account in case the phone number you passed is not registered yet.
 
     app.start()
     print(app.get_me())
+    app.stop()
