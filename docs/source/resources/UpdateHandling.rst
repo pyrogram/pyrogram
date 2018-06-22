@@ -32,8 +32,7 @@ We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will
             print(message)
 
 
-        app.start()
-        app.idle()
+        app.run()
 
 -   If you prefer not to use decorators, there is an alternative way for registering Handlers.
     This is useful, for example, when you want to keep your callback functions in separate files.
@@ -51,8 +50,7 @@ We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will
 
         app.add_handler(MessageHandler(my_handler))
 
-        app.start()
-        app.idle()
+        app.run()
 
 Using Filters
 -------------
