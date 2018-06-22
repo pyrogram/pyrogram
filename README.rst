@@ -12,12 +12,11 @@ Pyrogram |twitter|
 
     @app.on_message(Filters.private)
     def hello(client, message):
-        client.send_message(
-            message.chat.id, "Hello {}".format(message.from_user.first_name))
+        message.reply_text(
+            "Hello {}".format(message.from_user.first_name))
 
 
-    app.start()
-    app.idle()
+    app.run()
 
 **Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
 custom Telegram applications that interact with the MTProto API as both User and Bot.
