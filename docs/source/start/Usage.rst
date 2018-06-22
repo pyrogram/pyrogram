@@ -14,7 +14,7 @@ named after the `Telegram Bot API`_.
     In this case, you must use the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you get stuck
     or want to propose a new method!
 
-Examples:
+Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
 
 -   Get information about the authorized user:
 
@@ -49,15 +49,17 @@ method provided by the Client class.
     re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API.
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
-Examples:
+Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
 
 -   Update first name, last name and bio:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.account.UpdateProfile(
@@ -66,13 +68,17 @@ Examples:
             )
         )
 
+        app.stop()
+
 -   Share your Last Seen time only with your contacts:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions, types
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.account.SetPrivacy(
@@ -81,13 +87,17 @@ Examples:
             )
         )
 
+        app.stop()
+
 -   Invite users to your channel/supergroup:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions, types
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.channels.InviteToChannel(
@@ -99,6 +109,8 @@ Examples:
                 ]
             )
         )
+
+        app.stop()
 
 .. _methods: ../pyrogram/Client.html#available-methods
 .. _plenty of them: ../pyrogram/Client.html#available-methods
