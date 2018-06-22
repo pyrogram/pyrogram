@@ -303,7 +303,7 @@ class Client(Methods, BaseClient):
         self.stop()
 
     def run(self):
-        """Use this method to automatically :meth:`start` and :meth:`idle` a Client.
+        """Use this method to automatically start and idle a Client.
         Requires no parameters.
 
         Raises:
