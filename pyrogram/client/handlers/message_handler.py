@@ -24,6 +24,9 @@ class MessageHandler(Handler):
     any chat (private, group, channel). It is intended to be used with
     :meth:`add_handler() <pyrogram.Client.add_handler>`
 
+    For a nicer way to register this handler, have a look at the
+    :meth:`on_message() <pyrogram.Client.on_message>` decorator.
+
     Args:
         callback (``callable``):
             Pass a function that will be called when a new Message arrives. It takes *(client, message)*
