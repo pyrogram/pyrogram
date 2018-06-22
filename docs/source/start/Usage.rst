@@ -10,9 +10,9 @@ High-level API
 The easiest and recommended way to interact with Telegram is via the high-level Pyrogram methods_ and types_, which are
 named after the `Telegram Bot API`_.
 
-.. hint:: If you can't find a method you want to use, chances are it's not implemented yet. In this case, you must use
-    the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you're stuck or want to propose a
-    new method!
+.. hint:: If you can't find an high-level method you want to use, chances are it's not implemented yet.
+    In this case, you must use the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you get stuck
+    or want to propose a new method!
 
 Examples:
 
@@ -39,7 +39,7 @@ Examples:
 Using Raw Functions
 -------------------
 
-If you can't find a high-level method for your needs or want complete, low-level access to the whole Telegram API,
+If you can't find a high-level method for your needs or if want complete, low-level access to the whole Telegram API,
 you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>` exposed by the
 ``pyrogram.api`` package and call any Telegram API method you wish using the :meth:`send() <pyrogram.Client.send>`
 method provided by the Client class.

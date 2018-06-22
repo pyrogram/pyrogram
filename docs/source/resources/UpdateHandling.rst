@@ -6,6 +6,7 @@ and are handled by registering one or more callback functions with an Handler. T
 from, one for each kind of update:
 
 -   `MessageHandler <../pyrogram/handlers/MessageHandler.html>`_
+-   `DeletedMessagesHandler <../pyrogram/handlers/DeletedMessagesHandler.html>`_
 -   `CallbackQueryHandler <../pyrogram/handlers/CallbackQueryHandler.html>`_
 -   `RawUpdateHandler <../pyrogram/handlers/RawUpdateHandler.html>`_
 
