@@ -40,7 +40,7 @@ There are two ways to configure a Pyrogram application project, and you can choo
         from pyrogram import Client
 
         app = Client(
-            session_name="my_account",
+            "my_account",
             api_id=12345,
             api_hash="0123456789abcdef0123456789abcdef"
         )
@@ -61,7 +61,7 @@ the :class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` 
     from pyrogram import Client
 
     app = Client("my_account")
-    app.start()
+    app.run()
 
 This starts an interactive shell asking you to input your **phone number** (including your `Country Code`_)
 and the **phone code** you will receive:
@@ -92,7 +92,7 @@ Instead of phone numbers, Bots are authorized via their tokens which are created
     from pyrogram import Client
 
     app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
-    app.start()
+    app.run()
 
 That's all, no further action is needed. The session file will be named after the Bot user_id, which is
 ``123456.session`` for the example above.
