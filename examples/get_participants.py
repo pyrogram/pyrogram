@@ -28,12 +28,12 @@ Refer to get_participants2.py for more than 10.000 users.
 """
 
 app = Client("my_account")
-app.start()
-
 target = "pyrogramchat"  # Target channel/supergroup
 users = []  # List that will contain all the users of the target chat
 limit = 200  # Amount of users to retrieve for each API call
 offset = 0  # Offset starts at 0
+
+app.start()
 
 while True:
     try:

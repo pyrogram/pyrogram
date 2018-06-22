@@ -28,5 +28,4 @@ def raw(client, update, users, chats):
     print(update)
 
 
-app.start()
-app.idle()
+app.run()  # Automatically start() and idle()
