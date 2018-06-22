@@ -1,7 +1,7 @@
 Setup
 =====
 
-Once you successfully installed_ Pyrogram, you will have to follow a few steps before you can actually use
+Once you successfully `installed Pyrogram`_, you will still have to follow a few steps before you can actually use
 the library to make API calls. This section provides all the information you need in order to set up a project
 with Pyrogram.
 
@@ -46,7 +46,7 @@ There are two ways to configure a Pyrogram application project, and you can choo
         )
 
 .. note:: The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
-and *api_hash* parameters usage.
+    and *api_hash* parameters usage.
 
 User Authorization
 ------------------
@@ -97,6 +97,6 @@ Instead of phone numbers, Bots are authorized via their tokens which are created
 That's all, no further action is needed. The session file will be named after the Bot user_id, which is
 ``123456.session`` for the example above.
 
-.. _installed: Installation.html
+.. _installed Pyrogram: Installation.html
 .. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 .. _BotFather: https://t.me/botfather
