@@ -169,14 +169,9 @@ class Client(Methods, BaseClient):
         self._proxy["enabled"] = True
         self._proxy.update(value)
 
-    def start(self, debug: bool = False):
+    def start(self):
         """Use this method to start the Client after creating it.
         Requires no parameters.
-
-        Args:
-            debug (``bool``, *optional*):
-                Enable or disable debug mode. When enabled, extra logging
-                lines will be printed out on your console.
 
         Raises:
             :class:`Error <pyrogram.Error>`
