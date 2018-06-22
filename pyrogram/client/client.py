@@ -265,6 +265,38 @@ class Client(Methods, BaseClient):
         self.is_started = False
         await self.session.stop()
 
+    def signal_handler(self, *args):
+        self.is_idle = False
+
+    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Blocks the program execution until one of the signals are received,
+        then gently stop the Client by closing the underlying connection.
+
+        Args:
+            stop_signals (``tuple``, *optional*):
+                Iterable containing signals the signal handler will listen to.
+                Defaults to (SIGINT, SIGTERM, SIGABRT).
+        """
+        for s in stop_signals:
+            signal(s, self.signal_handler)
+
+        self.is_idle = True
+
+        while self.is_idle:
+            time.sleep(1)
+
+        self.stop()
+
+    def run(self):
+        """Use this method to automatically start and idle a Client.
+        Requires no parameters.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        self.start()
+        self.idle()
+
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
 

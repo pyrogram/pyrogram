@@ -17,6 +17,7 @@ Client
         start
         stop
         idle
+        run
         on_message
         on_callback_query
         on_raw_update

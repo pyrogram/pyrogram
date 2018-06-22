@@ -23,6 +23,9 @@ class RawUpdateHandler(Handler):
     """The Raw Update handler class. Used to handle raw updates. It is intended to be used with
     :meth:`add_handler() <pyrogram.Client.add_handler>`
 
+    For a nicer way to register this handler, have a look at the
+    :meth:`on_raw_update() <pyrogram.Client.on_raw_update>` decorator.
+
     Args:
         callback (``callable``):
             A function that will be called when a new update is received from the server. It takes

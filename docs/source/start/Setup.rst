@@ -1,7 +1,7 @@
 Setup
 =====
 
-Once you successfully installed_ Pyrogram, you will have to follow a few steps before you can actually use
+Once you successfully `installed Pyrogram`_, you will still have to follow a few steps before you can actually use
 the library to make API calls. This section provides all the information you need in order to set up a project
 with Pyrogram.
 
@@ -40,13 +40,13 @@ There are two ways to configure a Pyrogram application project, and you can choo
         from pyrogram import Client
 
         app = Client(
-            session_name="my_account",
+            "my_account",
             api_id=12345,
             api_hash="0123456789abcdef0123456789abcdef"
         )
 
 .. note:: The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
-and *api_hash* parameters usage.
+    and *api_hash* parameters usage.
 
 User Authorization
 ------------------
@@ -61,7 +61,7 @@ the :class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` 
     from pyrogram import Client
 
     app = Client("my_account")
-    app.start()
+    app.run()
 
 This starts an interactive shell asking you to input your **phone number** (including your `Country Code`_)
 and the **phone code** you will receive:
@@ -92,11 +92,11 @@ Instead of phone numbers, Bots are authorized via their tokens which are created
     from pyrogram import Client
 
     app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
-    app.start()
+    app.run()
 
 That's all, no further action is needed. The session file will be named after the Bot user_id, which is
 ``123456.session`` for the example above.
 
-.. _installed: Installation.html
+.. _installed Pyrogram: Installation.html
 .. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 .. _BotFather: https://t.me/botfather

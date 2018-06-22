@@ -23,6 +23,9 @@ class CallbackQueryHandler(Handler):
     """The CallbackQuery handler class. Used to handle callback queries coming from inline buttons.
     It is intended to be used with :meth:`add_handler() <pyrogram.Client.add_handler>`
 
+    For a nicer way to register this handler, have a look at the
+    :meth:`on_callback_query() <pyrogram.Client.on_callback_query>` decorator.
+
     Args:
         callback (``callable``):
             Pass a function that will be called when a new CallbackQuery arrives. It takes *(client, callback_query)*

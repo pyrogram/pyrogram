@@ -44,12 +44,11 @@ Welcome to Pyrogram
 
     @app.on_message(Filters.private)
     def hello(client, message):
-        client.send_message(
-            message.chat.id, "Hello {}".format(message.from_user.first_name))
+        message.reply_text(
+            "Hello {}".format(message.from_user.first_name))
 
 
-    app.start()
-    app.idle()
+    app.run()
 
 Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the library.
 Contents are organized by topic and can be accessed from the sidebar, or by following them one by one using the Next

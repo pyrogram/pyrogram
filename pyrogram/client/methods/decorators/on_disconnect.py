@@ -24,7 +24,7 @@ class OnDisconnect(BaseClient):
     def on_disconnect(self):
         """Use this decorator to automatically register a function for handling
         disconnections. This does the same thing as :meth:`add_handler` using the
-        DisconnectHandler.
+        :class:`DisconnectHandler`.
         """
 
         def decorator(func):

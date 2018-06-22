@@ -10,11 +10,11 @@ High-level API
 The easiest and recommended way to interact with Telegram is via the high-level Pyrogram methods_ and types_, which are
 named after the `Telegram Bot API`_.
 
-.. hint:: If you can't find a method you want to use, chances are it's not implemented yet. In this case, you must use
-    the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you're stuck or want to propose a
-    new method!
+.. hint:: If you can't find an high-level method you want to use, chances are it's not implemented yet.
+    In this case, you must use the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you get stuck
+    or want to propose a new method!
 
-Examples:
+Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
 
 -   Get information about the authorized user:
 
@@ -39,7 +39,7 @@ Examples:
 Using Raw Functions
 -------------------
 
-If you can't find a high-level method for your needs or want complete, low-level access to the whole Telegram API,
+If you can't find a high-level method for your needs or if want complete, low-level access to the whole Telegram API,
 you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>` exposed by the
 ``pyrogram.api`` package and call any Telegram API method you wish using the :meth:`send() <pyrogram.Client.send>`
 method provided by the Client class.
@@ -49,15 +49,17 @@ method provided by the Client class.
     re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API.
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
-Examples:
+Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
 
 -   Update first name, last name and bio:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.account.UpdateProfile(
@@ -66,13 +68,17 @@ Examples:
             )
         )
 
+        app.stop()
+
 -   Share your Last Seen time only with your contacts:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions, types
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.account.SetPrivacy(
@@ -81,13 +87,17 @@ Examples:
             )
         )
 
+        app.stop()
+
 -   Invite users to your channel/supergroup:
 
     .. code-block:: python
 
+        from pyrogram import Client
         from pyrogram.api import functions, types
 
-        ...
+        app = Client("my_account")
+        app.start()
 
         app.send(
             functions.channels.InviteToChannel(
@@ -99,6 +109,8 @@ Examples:
                 ]
             )
         )
+
+        app.stop()
 
 .. _methods: ../pyrogram/Client.html#available-methods
 .. _plenty of them: ../pyrogram/Client.html#available-methods

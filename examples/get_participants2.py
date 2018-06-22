@@ -33,14 +33,13 @@ as some user names may not contain ascii letters at all.
 """
 
 app = Client("my_account")
-app.start()
-
 target = "pyrogramchat"  # Target channel/supergroup username or id
 users = {}  # To ensure uniqueness, users will be stored in a dictionary with user_id as key
 limit = 200  # Amount of users to retrieve for each API call (200 is the maximum)
-
 # "" + "0123456789" + "abcdefghijklmnopqrstuvwxyz" (as list)
 queries = [""] + [str(i) for i in range(10)] + list(ascii_lowercase)
+
+app.start()
 
 for q in queries:
     print("Searching for '{}'".format(q))
