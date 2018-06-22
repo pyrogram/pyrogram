@@ -294,8 +294,12 @@ class Client(Methods, BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        self.start()
-        self.idle()
+        asyncio.get_event_loop().run_until_complete(
+            asyncio.gather(
+                self.start(),
+                self.idle()
+            )
+        )
 
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
