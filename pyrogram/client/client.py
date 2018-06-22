@@ -302,6 +302,16 @@ class Client(Methods, BaseClient):
 
         self.stop()
 
+    def run(self):
+        """Use this method to automatically :meth:`start` and :meth:`idle` a Client.
+        Requires no parameters.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        self.start()
+        self.idle()
+
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
 
