@@ -19,6 +19,13 @@
 import asyncio
 import sys
 
+try:
+    import uvloop
+except ImportError:
+    pass
+else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
 __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
@@ -42,10 +49,3 @@ from .client import (
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
     RawUpdateHandler, DisconnectHandler, Filters
 )
-
-try:
-    import uvloop
-except ImportError:
-    pass
-else:
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
