@@ -265,9 +265,6 @@ class Client(Methods, BaseClient):
         self.is_started = False
         await self.session.stop()
 
-    def signal_handler(self, *args):
-        self.is_idle = False
-
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
         then gently stop the Client by closing the underlying connection.
@@ -277,8 +274,11 @@ class Client(Methods, BaseClient):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
+        def signal_handler(*args):
+            self.is_idle = False
+
         for s in stop_signals:
-            signal(s, self.signal_handler)
+            signal(s, signal_handler)
 
         self.is_idle = True
 
