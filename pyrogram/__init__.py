@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import sys
 
 __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
@@ -41,3 +42,10 @@ from .client import (
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
     RawUpdateHandler, DisconnectHandler, Filters
 )
+
+try:
+    import uvloop
+except ImportError:
+    pass
+else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
