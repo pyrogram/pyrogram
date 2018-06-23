@@ -17,27 +17,31 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import mimetypes
 import os
 import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendPhoto(BaseClient):
-    async def send_photo(self,
-                         chat_id: int or str,
-                         photo: str,
-                         caption: str = "",
-                         parse_mode: str = "",
-                         ttl_seconds: int = None,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None,
-                         reply_markup=None,
-                         progress: callable = None,
-                         progress_args: tuple = ()):
-        """Use this method to send photos.
+class SendGIF(BaseClient):
+    async def send_gif(self,
+                       chat_id: int or str,
+                       gif: str,
+                       caption: str = "",
+                       parse_mode: str = "",
+                       duration: int = 0,
+                       width: int = 0,
+                       height: int = 0,
+                       thumb: str = None,
+                       disable_notification: bool = None,
+                       reply_to_message_id: int = None,
+                       reply_markup=None,
+                       progress: callable = None,
+                       progress_args: tuple = ()):
+        """Use this method to send GIF files.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -46,24 +50,33 @@ class SendPhoto(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            photo (``str``):
-                Photo to send.
-                Pass a file_id as string to send a photo that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
-                pass a file path as string to upload a new photo that exists on your local machine.
+            gif (``str``):
+                GIF to send.
+                Pass a file_id as string to send a GIF that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a GIF from the Internet, or
+                pass a file path as string to upload a new GIF that exists on your local machine.
 
-            caption (``bool``, *optional*):
-                Photo caption, 0-200 characters.
+            caption (``str``, *optional*):
+                GIF caption, 0-200 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
 
-            ttl_seconds (``int``, *optional*):
-                Self-Destruct Timer.
-                If you set a timer, the photo will self-destruct in *ttl_seconds*
-                seconds after it was viewed.
+            duration (``int``, *optional*):
+                Duration of sent GIF in seconds.
+
+            width (``int``, *optional*):
+                GIF width.
+
+            height (``int``, *optional*):
+                GIF height.
+
+            thumb (``str``, *optional*):
+                GIF thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -108,26 +121,37 @@ class SendPhoto(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(photo):
-            file = await self.save_file(photo, progress=progress, progress_args=progress_args)
-            media = types.InputMediaUploadedPhoto(
+        if os.path.exists(gif):
+            thumb = None if thumb is None else await self.save_file(thumb)
+            file = await self.save_file(gif, progress=progress, progress_args=progress_args)
+            media = types.InputMediaUploadedDocument(
+                mime_type=mimetypes.types_map[".mp4"],
                 file=file,
-                ttl_seconds=ttl_seconds
+                thumb=thumb,
+                attributes=[
+                    types.DocumentAttributeVideo(
+                        supports_streaming=True,
+                        duration=duration,
+                        w=width,
+                        h=height
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(gif)),
+                    types.DocumentAttributeAnimated()
+                ]
             )
-        elif photo.startswith("http"):
-            media = types.InputMediaPhotoExternal(
-                url=photo,
-                ttl_seconds=ttl_seconds
+        elif gif.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=gif
             )
         else:
             try:
-                decoded = utils.decode(photo)
+                decoded = utils.decode(gif)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 2:
+                if unpacked[0] != 10:
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -135,12 +159,11 @@ class SendPhoto(BaseClient):
                     else:
                         raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
 
-                media = types.InputMediaPhoto(
-                    id=types.InputPhoto(
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
                         id=unpacked[2],
                         access_hash=unpacked[3]
-                    ),
-                    ttl_seconds=ttl_seconds
+                    )
                 )
 
         while True:
@@ -157,7 +180,7 @@ class SendPhoto(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                await self.save_file(photo, file_id=file.id, file_part=e.x)
+                await self.save_file(gif, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

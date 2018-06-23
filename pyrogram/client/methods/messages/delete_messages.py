@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
 class DeleteMessages(BaseClient):

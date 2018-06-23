@@ -18,7 +18,7 @@
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import UnknownError
-from ....ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
 class GetInlineBotResults(BaseClient):

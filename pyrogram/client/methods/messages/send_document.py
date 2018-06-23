@@ -23,26 +23,21 @@ import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendAudio(BaseClient):
-    async def send_audio(self,
-                         chat_id: int or str,
-                         audio: str,
-                         caption: str = "",
-                         parse_mode: str = "",
-                         duration: int = 0,
-                         performer: str = None,
-                         title: str = None,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None,
-                         reply_markup=None,
-                         progress: callable = None,
-                         progress_args: tuple = ()):
-        """Use this method to send audio files.
-
-        For sending voice messages, use the :obj:`send_voice()` method instead.
+class SendDocument(BaseClient):
+    async def send_document(self,
+                            chat_id: int or str,
+                            document: str,
+                            caption: str = "",
+                            parse_mode: str = "",
+                            disable_notification: bool = None,
+                            reply_to_message_id: int = None,
+                            reply_markup=None,
+                            progress: callable = None,
+                            progress_args: tuple = ()):
+        """Use this method to send general files.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -51,28 +46,19 @@ class SendAudio(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            audio (``str``):
-                Audio file to send.
-                Pass a file_id as string to send an audio file that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
-                pass a file path as string to upload a new audio file that exists on your local machine.
+            document (``str``):
+                File to send.
+                Pass a file_id as string to send a file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a file from the Internet, or
+                pass a file path as string to upload a new file that exists on your local machine.
 
             caption (``str``, *optional*):
-                Audio caption, 0-200 characters.
+                Document caption, 0-200 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
                 if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
-
-            duration (``int``, *optional*):
-                Duration of the audio in seconds.
-
-            performer (``str``, *optional*):
-                Performer.
-
-            title (``str``, *optional*):
-                Track name.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -117,33 +103,28 @@ class SendAudio(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(audio):
-            file = await self.save_file(audio, progress=progress, progress_args=progress_args)
+        if os.path.exists(document):
+            file = await self.save_file(document, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
-                mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
                 file=file,
                 attributes=[
-                    types.DocumentAttributeAudio(
-                        duration=duration,
-                        performer=performer,
-                        title=title
-                    ),
-                    types.DocumentAttributeFilename(os.path.basename(audio))
+                    types.DocumentAttributeFilename(os.path.basename(document))
                 ]
             )
-        elif audio.startswith("http"):
+        elif document.startswith("http"):
             media = types.InputMediaDocumentExternal(
-                url=audio
+                url=document
             )
         else:
             try:
-                decoded = utils.decode(audio)
+                decoded = utils.decode(document)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 9:
+                if unpacked[0] not in (5, 10):
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -172,7 +153,7 @@ class SendAudio(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                await self.save_file(audio, file_id=file.id, file_part=e.x)
+                await self.save_file(document, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

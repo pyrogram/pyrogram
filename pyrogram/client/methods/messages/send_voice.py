@@ -23,26 +23,22 @@ import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendVideo(BaseClient):
-    async def send_video(self,
+class SendVoice(BaseClient):
+    async def send_voice(self,
                          chat_id: int or str,
-                         video: str,
+                         voice: str,
                          caption: str = "",
                          parse_mode: str = "",
                          duration: int = 0,
-                         width: int = 0,
-                         height: int = 0,
-                         thumb: str = None,
-                         supports_streaming: bool = True,
                          disable_notification: bool = None,
                          reply_to_message_id: int = None,
                          reply_markup=None,
                          progress: callable = None,
                          progress_args: tuple = ()):
-        """Use this method to send video files.
+        """Use this method to send audio files.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -51,14 +47,14 @@ class SendVideo(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video (``str``):
-                Video to send.
-                Pass a file_id as string to send a video that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a video from the Internet, or
-                pass a file path as string to upload a new video that exists on your local machine.
+            voice (``str``):
+                Audio file to send.
+                Pass a file_id as string to send an audio that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
+                pass a file path as string to upload a new audio that exists on your local machine.
 
             caption (``str``, *optional*):
-                Video caption, 0-200 characters.
+                Voice message caption, 0-200 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -66,28 +62,14 @@ class SendVideo(BaseClient):
                 Defaults to Markdown.
 
             duration (``int``, *optional*):
-                Duration of sent video in seconds.
-
-            width (``int``, *optional*):
-                Video width.
-
-            height (``int``, *optional*):
-                Video height.
-
-            thumb (``str``, *optional*):
-                Video thumbnail.
-                Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
-
-            supports_streaming (``bool``, *optional*):
-                Pass True, if the uploaded video is suitable for streaming.
+                Duration of the voice message in seconds.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             reply_to_message_id (``int``, *optional*):
-                If the message is a reply, ID of the original message.
+                If the message is a reply, ID of the original message
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -125,36 +107,31 @@ class SendVideo(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(video):
-            thumb = None if thumb is None else self.save_file(thumb)
-            file = await self.save_file(video, progress=progress, progress_args=progress_args)
+        if os.path.exists(voice):
+            file = await self.save_file(voice, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
-                mime_type=mimetypes.types_map[".mp4"],
+                mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
                 file=file,
-                thumb=thumb,
                 attributes=[
-                    types.DocumentAttributeVideo(
-                        supports_streaming=supports_streaming or None,
-                        duration=duration,
-                        w=width,
-                        h=height
-                    ),
-                    types.DocumentAttributeFilename(os.path.basename(video))
+                    types.DocumentAttributeAudio(
+                        voice=True,
+                        duration=duration
+                    )
                 ]
             )
-        elif video.startswith("http"):
+        elif voice.startswith("http"):
             media = types.InputMediaDocumentExternal(
-                url=video
+                url=voice
             )
         else:
             try:
-                decoded = utils.decode(video)
+                decoded = utils.decode(voice)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 4:
+                if unpacked[0] != 3:
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -183,7 +160,7 @@ class SendVideo(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                await self.save_file(video, file_id=file.id, file_part=e.x)
+                await self.save_file(voice, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

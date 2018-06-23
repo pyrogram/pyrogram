@@ -23,21 +23,26 @@ import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendVideoNote(BaseClient):
-    async def send_video_note(self,
-                              chat_id: int or str,
-                              video_note: str,
-                              duration: int = 0,
-                              length: int = 1,
-                              disable_notification: bool = None,
-                              reply_to_message_id: int = None,
-                              reply_markup=None,
-                              progress: callable = None,
-                              progress_args: tuple = ()):
-        """Use this method to send video messages.
+class SendVideo(BaseClient):
+    async def send_video(self,
+                         chat_id: int or str,
+                         video: str,
+                         caption: str = "",
+                         parse_mode: str = "",
+                         duration: int = 0,
+                         width: int = 0,
+                         height: int = 0,
+                         thumb: str = None,
+                         supports_streaming: bool = True,
+                         disable_notification: bool = None,
+                         reply_to_message_id: int = None,
+                         reply_markup=None,
+                         progress: callable = None,
+                         progress_args: tuple = ()):
+        """Use this method to send video files.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -46,24 +51,43 @@ class SendVideoNote(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video_note (``str``):
-                Video note to send.
-                Pass a file_id as string to send a video note that exists on the Telegram servers, or
-                pass a file path as string to upload a new video note that exists on your local machine.
-                Sending video notes by a URL is currently unsupported.
+            video (``str``):
+                Video to send.
+                Pass a file_id as string to send a video that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a video from the Internet, or
+                pass a file path as string to upload a new video that exists on your local machine.
+
+            caption (``str``, *optional*):
+                Video caption, 0-200 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
 
-            length (``int``, *optional*):
-                Video width and height.
+            width (``int``, *optional*):
+                Video width.
+
+            height (``int``, *optional*):
+                Video height.
+
+            thumb (``str``, *optional*):
+                Video thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+
+            supports_streaming (``bool``, *optional*):
+                Pass True, if the uploaded video is suitable for streaming.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             reply_to_message_id (``int``, *optional*):
-                If the message is a reply, ID of the original message
+                If the message is a reply, ID of the original message.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -99,30 +123,38 @@ class SendVideoNote(BaseClient):
             :class:`Error <pyrogram.Error>`
         """
         file = None
+        style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(video_note):
-            file = await self.save_file(video_note, progress=progress, progress_args=progress_args)
+        if os.path.exists(video):
+            thumb = None if thumb is None else self.save_file(thumb)
+            file = await self.save_file(video, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeVideo(
-                        round_message=True,
+                        supports_streaming=supports_streaming or None,
                         duration=duration,
-                        w=length,
-                        h=length
-                    )
+                        w=width,
+                        h=height
+                    ),
+                    types.DocumentAttributeFilename(os.path.basename(video))
                 ]
+            )
+        elif video.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=video
             )
         else:
             try:
-                decoded = utils.decode(video_note)
+                decoded = utils.decode(video)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 13:
+                if unpacked[0] != 4:
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -147,11 +179,11 @@ class SendVideoNote(BaseClient):
                         reply_to_msg_id=reply_to_message_id,
                         random_id=self.rnd_id(),
                         reply_markup=reply_markup.write() if reply_markup else None,
-                        message=""
+                        **style.parse(caption)
                     )
                 )
             except FilePartMissing as e:
-                await self.save_file(video_note, file_id=file.id, file_part=e.x)
+                await self.save_file(video, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

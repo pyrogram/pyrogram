@@ -19,6 +19,7 @@
 import re
 
 from .filter import Filter
+from ..types.reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def build(name: str, func: callable, **kwargs) -> type:
@@ -131,7 +132,11 @@ class Filters:
     pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
-    # TODO: Add filters for reply markups
+    reply_keyboard = build("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
+    """Filter messages containing reply keyboard markups"""
+
+    inline_keyboard = build("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
+    """Filter messages containing inline keyboard markups"""
 
     @staticmethod
     def command(command: str or list,

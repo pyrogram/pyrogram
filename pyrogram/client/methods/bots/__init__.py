@@ -16,12 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .callback_query import CallbackQuery
-from .inline import Inline
+from .answer_callback_query import AnswerCallbackQuery
+from .get_inline_bot_results import GetInlineBotResults
+from .request_callback_answer import RequestCallbackAnswer
+from .send_inline_bot_result import SendInlineBotResult
 
 
 class Bots(
-    CallbackQuery,
-    Inline
+    AnswerCallbackQuery,
+    GetInlineBotResults,
+    RequestCallbackAnswer,
+    SendInlineBotResult
 ):
     pass

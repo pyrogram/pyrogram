@@ -17,18 +17,15 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions
-from ....ext import BaseClient
+from pyrogram.client.ext import BaseClient, ChatAction
 
 
-class SendInlineBotResult(BaseClient):
-    async def send_inline_bot_result(self,
-                                     chat_id: int or str,
-                                     query_id: int,
-                                     result_id: str,
-                                     disable_notification: bool = None,
-                                     reply_to_message_id: int = None):
-        """Use this method to send an inline bot result.
-        Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
+class SendChatAction(BaseClient):
+    async def send_chat_action(self,
+                               chat_id: int or str,
+                               action: ChatAction or str,
+                               progress: int = 0):
+        """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -37,32 +34,38 @@ class SendInlineBotResult(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            query_id (``int``):
-                Unique identifier for the answered query.
+            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
+                Type of action to broadcast.
+                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
+                depending on what the user is about to receive.
+                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
 
-            result_id (``str``):
-                Unique identifier for the result that was chosen.
-
-            disable_notification (``bool``, *optional*):
-                Sends the message silently.
-                Users will receive a notification with no sound.
-
-            reply_to_message_id (``bool``, *optional*):
-                If the message is a reply, ID of the original message.
+            progress (``int``, *optional*):
+                Progress of the upload process.
+                Currently useless because official clients don't seem to be handling this.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, True is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the provided string is not a valid ChatAction
         """
+
+        # Resolve Enum type
+        if isinstance(action, str):
+            action = ChatAction.from_string(action).value
+        elif isinstance(action, ChatAction):
+            action = action.value
+
+        if "Upload" in action.__name__:
+            action = action(progress)
+        else:
+            action = action()
+
         return await self.send(
-            functions.messages.SendInlineBotResult(
+            functions.messages.SetTyping(
                 peer=await self.resolve_peer(chat_id),
-                query_id=query_id,
-                id=result_id,
-                random_id=self.rnd_id(),
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                action=action
             )
         )
