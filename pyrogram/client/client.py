@@ -199,8 +199,6 @@ class Client(Methods, BaseClient):
         self.is_started = True
 
         if self.user_id is None:
-            print(self.TOS)
-
             if self.token is None:
                 self.authorize_user()
             else:
@@ -460,6 +458,9 @@ class Client(Methods, BaseClient):
         phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
+        if terms_of_service:
+            print("\n" + terms_of_service.text + "\n")
+
         if self.force_sms:
             self.send(
                 functions.auth.ResendCode(
@@ -565,7 +566,8 @@ class Client(Methods, BaseClient):
             else:
                 break
 
-        assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
+        if terms_of_service:
+            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
 
         self.password = None
         self.user_id = r.user.id
