@@ -23,26 +23,25 @@ import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendAudio(BaseClient):
-    def send_audio(self,
-                   chat_id: int or str,
-                   audio: str,
-                   caption: str = "",
-                   parse_mode: str = "",
-                   duration: int = 0,
-                   performer: str = None,
-                   title: str = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup=None,
-                   progress: callable = None,
-                   progress_args: tuple = ()):
-        """Use this method to send audio files.
-
-        For sending voice messages, use the :obj:`send_voice()` method instead.
+class SendGIF(BaseClient):
+    def send_gif(self,
+                 chat_id: int or str,
+                 gif: str,
+                 caption: str = "",
+                 parse_mode: str = "",
+                 duration: int = 0,
+                 width: int = 0,
+                 height: int = 0,
+                 thumb: str = None,
+                 disable_notification: bool = None,
+                 reply_to_message_id: int = None,
+                 reply_markup=None,
+                 progress: callable = None,
+                 progress_args: tuple = ()):
+        """Use this method to send GIF files.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -51,14 +50,14 @@ class SendAudio(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            audio (``str``):
-                Audio file to send.
-                Pass a file_id as string to send an audio file that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
-                pass a file path as string to upload a new audio file that exists on your local machine.
+            gif (``str``):
+                GIF to send.
+                Pass a file_id as string to send a GIF that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a GIF from the Internet, or
+                pass a file path as string to upload a new GIF that exists on your local machine.
 
             caption (``str``, *optional*):
-                Audio caption, 0-200 characters.
+                GIF caption, 0-200 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -66,13 +65,18 @@ class SendAudio(BaseClient):
                 Defaults to Markdown.
 
             duration (``int``, *optional*):
-                Duration of the audio in seconds.
+                Duration of sent GIF in seconds.
 
-            performer (``str``, *optional*):
-                Performer.
+            width (``int``, *optional*):
+                GIF width.
 
-            title (``str``, *optional*):
-                Track name.
+            height (``int``, *optional*):
+                GIF height.
+
+            thumb (``str``, *optional*):
+                GIF thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -117,33 +121,37 @@ class SendAudio(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(audio):
-            file = self.save_file(audio, progress=progress, progress_args=progress_args)
+        if os.path.exists(gif):
+            thumb = None if thumb is None else self.save_file(thumb)
+            file = self.save_file(gif, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
-                mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                mime_type=mimetypes.types_map[".mp4"],
                 file=file,
+                thumb=thumb,
                 attributes=[
-                    types.DocumentAttributeAudio(
+                    types.DocumentAttributeVideo(
+                        supports_streaming=True,
                         duration=duration,
-                        performer=performer,
-                        title=title
+                        w=width,
+                        h=height
                     ),
-                    types.DocumentAttributeFilename(os.path.basename(audio))
+                    types.DocumentAttributeFilename(os.path.basename(gif)),
+                    types.DocumentAttributeAnimated()
                 ]
             )
-        elif audio.startswith("http"):
+        elif gif.startswith("http"):
             media = types.InputMediaDocumentExternal(
-                url=audio
+                url=gif
             )
         else:
             try:
-                decoded = utils.decode(audio)
+                decoded = utils.decode(gif)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 9:
+                if unpacked[0] != 10:
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -172,7 +180,7 @@ class SendAudio(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                self.save_file(audio, file_id=file.id, file_part=e.x)
+                self.save_file(gif, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

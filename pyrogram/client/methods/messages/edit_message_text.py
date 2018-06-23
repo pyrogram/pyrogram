@@ -17,17 +17,18 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class EditMessageCaption(BaseClient):
-    def edit_message_caption(self,
-                             chat_id: int or str,
-                             message_id: int,
-                             caption: str,
-                             parse_mode: str = "",
-                             reply_markup=None):
-        """Use this method to edit captions of messages.
+class EditMessageText(BaseClient):
+    def edit_message_text(self,
+                          chat_id: int or str,
+                          message_id: int,
+                          text: str,
+                          parse_mode: str = "",
+                          disable_web_page_preview: bool = None,
+                          reply_markup=None):
+        """Use this method to edit text messages.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -39,13 +40,16 @@ class EditMessageCaption(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            caption (``str``):
-                New caption of the message.
+            text (``str``):
+                New text of the message.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
                 Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
@@ -62,8 +66,9 @@ class EditMessageCaption(BaseClient):
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
+                no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(caption)
+                **style.parse(text)
             )
         )
 

@@ -23,7 +23,7 @@ import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
 class SendVideo(BaseClient):

@@ -17,27 +17,24 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendVideoNote(BaseClient):
-    def send_video_note(self,
-                        chat_id: int or str,
-                        video_note: str,
-                        duration: int = 0,
-                        length: int = 1,
-                        disable_notification: bool = None,
-                        reply_to_message_id: int = None,
-                        reply_markup=None,
-                        progress: callable = None,
-                        progress_args: tuple = ()):
-        """Use this method to send video messages.
+class SendSticker(BaseClient):
+    def send_sticker(self,
+                     chat_id: int or str,
+                     sticker: str,
+                     disable_notification: bool = None,
+                     reply_to_message_id: int = None,
+                     reply_markup=None,
+                     progress: callable = None,
+                     progress_args: tuple = ()):
+        """Use this method to send .webp stickers.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -46,24 +43,18 @@ class SendVideoNote(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            video_note (``str``):
-                Video note to send.
-                Pass a file_id as string to send a video note that exists on the Telegram servers, or
-                pass a file path as string to upload a new video note that exists on your local machine.
-                Sending video notes by a URL is currently unsupported.
-
-            duration (``int``, *optional*):
-                Duration of sent video in seconds.
-
-            length (``int``, *optional*):
-                Video width and height.
+            sticker (``str``):
+                Sticker to send.
+                Pass a file_id as string to send a sticker that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
+                pass a file path as string to upload a new sticker that exists on your local machine.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             reply_to_message_id (``int``, *optional*):
-                If the message is a reply, ID of the original message
+                If the message is a reply, ID of the original message.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -100,29 +91,28 @@ class SendVideoNote(BaseClient):
         """
         file = None
 
-        if os.path.exists(video_note):
-            file = self.save_file(video_note, progress=progress, progress_args=progress_args)
+        if os.path.exists(sticker):
+            file = self.save_file(sticker, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
-                mime_type=mimetypes.types_map[".mp4"],
+                mime_type="image/webp",
                 file=file,
                 attributes=[
-                    types.DocumentAttributeVideo(
-                        round_message=True,
-                        duration=duration,
-                        w=length,
-                        h=length
-                    )
+                    types.DocumentAttributeFilename(os.path.basename(sticker))
                 ]
+            )
+        elif sticker.startswith("http"):
+            media = types.InputMediaDocumentExternal(
+                url=sticker
             )
         else:
             try:
-                decoded = utils.decode(video_note)
+                decoded = utils.decode(sticker)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
                 raise FileIdInvalid from None
             else:
-                if unpacked[0] != 13:
+                if unpacked[0] != 8:
                     media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                     if media_type:
@@ -151,7 +141,7 @@ class SendVideoNote(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                self.save_file(video_note, file_id=file.id, file_part=e.x)
+                self.save_file(sticker, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):

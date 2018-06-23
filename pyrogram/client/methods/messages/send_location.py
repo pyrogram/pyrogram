@@ -17,21 +17,18 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendVenue(BaseClient):
-    def send_venue(self,
-                   chat_id: int or str,
-                   latitude: float,
-                   longitude: float,
-                   title: str,
-                   address: str,
-                   foursquare_id: str = "",
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup=None):
-        """Use this method to send information about a venue.
+class SendLocation(BaseClient):
+    def send_location(self,
+                      chat_id: int or str,
+                      latitude: float,
+                      longitude: float,
+                      disable_notification: bool = None,
+                      reply_to_message_id: int = None,
+                      reply_markup=None):
+        """Use this method to send points on the map.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -41,19 +38,10 @@ class SendVenue(BaseClient):
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             latitude (``float``):
-                Latitude of the venue.
+                Latitude of the location.
 
             longitude (``float``):
-                Longitude of the venue.
-
-            title (``str``):
-                Name of the venue.
-
-            address (``str``):
-                Address of the venue.
-
-            foursquare_id (``str``, *optional*):
-                Foursquare identifier of the venue.
+                Longitude of the location.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -75,16 +63,11 @@ class SendVenue(BaseClient):
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=types.InputMediaVenue(
-                    geo_point=types.InputGeoPoint(
-                        lat=latitude,
-                        long=longitude
-                    ),
-                    title=title,
-                    address=address,
-                    provider="",
-                    venue_id=foursquare_id,
-                    venue_type=""
+                media=types.InputMediaGeoPoint(
+                    types.InputGeoPoint(
+                        latitude,
+                        longitude
+                    )
                 ),
                 message="",
                 silent=disable_notification or None,

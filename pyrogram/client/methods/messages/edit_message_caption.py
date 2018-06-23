@@ -17,15 +17,17 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
-class EditMessageReplyMarkup(BaseClient):
-    def edit_message_reply_markup(self,
-                                  chat_id: int or str,
-                                  message_id: int,
-                                  reply_markup=None):
-        """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+class EditMessageCaption(BaseClient):
+    def edit_message_caption(self,
+                             chat_id: int or str,
+                             message_id: int,
+                             caption: str,
+                             parse_mode: str = "",
+                             reply_markup=None):
+        """Use this method to edit captions of messages.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -37,22 +39,31 @@ class EditMessageReplyMarkup(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
+            caption (``str``):
+                New caption of the message.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, if edited message is sent by the bot, the edited
-            :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
-                reply_markup=reply_markup.write() if reply_markup else None
+                reply_markup=reply_markup.write() if reply_markup else None,
+                **style.parse(caption)
             )
         )
 

@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ....ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, utils
 
 
 class SendContact(BaseClient):
