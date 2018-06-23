@@ -26,16 +26,6 @@ from ...session.internals import MsgId
 
 
 class BaseClient:
-    TOS = (
-        "By using Pyrogram you accept Telegram's Terms of Service (https://telegram.org/tos) and agree not to:\n\n"
-
-        "- Use the library to send spam or scam users.\n"
-        "- Promote violence on publicly viewable Telegram bots, groups or channels.\n"
-        "- Post illegal pornographic content on publicly viewable Telegram bots, groups or channels.\n\n"
-
-        "We reserve the right to update these Terms of Service later.\n"
-    )
-
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
