@@ -265,7 +265,7 @@ class Client(Methods, BaseClient):
         self.is_started = False
         await self.session.stop()
 
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+    async def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
         then gently stop the Client by closing the underlying connection.
 
@@ -275,6 +275,7 @@ class Client(Methods, BaseClient):
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
         def signal_handler(*args):
+            log.info("Stop signal received ({}). Exiting...".format(args[0]))
             self.is_idle = False
 
         for s in stop_signals:
@@ -283,9 +284,9 @@ class Client(Methods, BaseClient):
         self.is_idle = True
 
         while self.is_idle:
-            time.sleep(1)
+            await asyncio.sleep(1)
 
-        self.stop()
+        await self.stop()
 
     def run(self):
         """Use this method to automatically start and idle a Client.
@@ -799,29 +800,6 @@ class Client(Methods, BaseClient):
                 log.error(e, exc_info=True)
 
         log.info("UpdatesWorkerTask stopped")
-
-    def signal_handler(self, *args):
-        log.info("Stop signal received ({}). Exiting...".format(args[0]))
-        self.is_idle = False
-
-    async def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Blocks the program execution until one of the signals are received,
-        then gently stop the Client by closing the underlying connection.
-
-        Args:
-            stop_signals (``tuple``, *optional*):
-                Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
-        """
-        for s in stop_signals:
-            signal(s, self.signal_handler)
-
-        self.is_idle = True
-
-        while self.is_idle:
-            await asyncio.sleep(1)
-
-        await self.stop()
 
     async def send(self, data: Object):
         """Use this method to send Raw Function queries.
