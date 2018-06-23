@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.core import Object
+from .reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 class Message(Object):
@@ -460,3 +461,115 @@ class Message(Object):
         )
 
         return True
+
+    def click(self, x: int or str, y: int = None, quote: bool = None):
+        """Use this method to click a button attached to the message.
+        It's a shortcut for:
+
+        - Clicking inline buttons:
+
+        .. code-block:: python
+
+            client.request_callback_answer(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                callback_data=message.reply_markup[i][j].callback_data
+            )
+
+        - Clicking normal buttons:
+
+        .. code-block:: python
+
+            client.send_message(
+                chat_id=message.chat.id,
+                text=message.reply_markup[i][j].text
+            )
+
+        This method can be used in three different ways:
+
+        1.  Pass one integer argument only (e.g.: ``.click(2)``, to click a button at index 2).
+            Buttons are counted left to right, starting from the top.
+
+        2.  Pass two integer arguments (e.g.: ``.click(1, 0)``, to click a button at position (1, 0)).
+            The origin (0, 0) is top-left.
+
+        3.  Pass one string argument only (e.g.: ``.click("Settings")``, to click a button by using its label).
+            Only the first matching button will be pressed.
+
+        Args:
+            x (``int`` | ``str``):
+                Used as integer index, integer abscissa (in pair with y) or as string label.
+
+            y (``int``, *optional*):
+                Used as ordinate only (in pair with x).
+
+            quote (``bool``, *optional*):
+                Useful for normal buttons only, where pressing it will result in a new message sent.
+                If ``True``, the message will be sent as a reply to this message.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+        Returns:
+            -   The result of *request_callback_answer()* in case of inline callback button clicks.
+            -   The result of *reply_text()* in case of normal button clicks.
+            -   A string in case the inline button is an URL, switch_inline_query or switch_inline_query_current_chat
+                button.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the provided index or position is out of range or the button label was not found.
+        """
+        if isinstance(self.reply_markup, ReplyKeyboardMarkup):
+            if quote is None:
+                quote = self.chat.type != "private"
+
+            return self.reply_text(x, quote=quote)
+        elif isinstance(self.reply_markup, InlineKeyboardMarkup):
+            if isinstance(x, int) and y is None:
+                try:
+                    button = [
+                        button
+                        for row in self.reply_markup.inline_keyboard
+                        for button in row
+                    ][x]
+                except IndexError:
+                    raise ValueError("The button at index {} doesn't exist".format(x)) from None
+            elif isinstance(x, int) and isinstance(y, int):
+                try:
+                    button = self.reply_markup.inline_keyboard[y][x]
+                except IndexError:
+                    raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y)) from None
+            elif isinstance(x, str):
+                x = x.encode("utf-16", "surrogatepass").decode("utf-16")
+
+                try:
+                    button = [
+                        button
+                        for row in self.reply_markup.inline_keyboard
+                        for button in row
+                        if x == button.text
+                    ][0]
+                except IndexError:
+                    raise ValueError(
+                        "The button with label '{}' doesn't exists".format(
+                            x.encode("unicode_escape").decode()
+                        )
+                    ) from None
+            else:
+                raise ValueError("Invalid arguments")
+
+            if button.callback_data:
+                return self._client.request_callback_answer(
+                    chat_id=self.chat.id,
+                    message_id=self.message_id,
+                    data=button.callback_data
+                )
+            elif button.url:
+                return button.url
+            elif button.switch_inline_query:
+                return button.switch_inline_query
+            elif button.switch_inline_query_current_chat:
+                return button.switch_inline_query_current_chat
+            else:
+                raise ValueError("This button is not supported yet")
+        else:
+            raise ValueError("The message doesn't contain any keyboard")
