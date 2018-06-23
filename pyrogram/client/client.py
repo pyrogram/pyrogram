@@ -199,6 +199,8 @@ class Client(Methods, BaseClient):
         self.is_started = True
 
         if self.user_id is None:
+            print(self.TOS)
+
             if self.token is None:
                 self.authorize_user()
             else:
