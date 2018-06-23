@@ -311,14 +311,14 @@ class Message(Object):
         self.command = command
         self.reply_markup = reply_markup
 
-    def reply_text(self,
-                   text: str,
-                   quote: bool = None,
-                   parse_mode: str = "",
-                   disable_web_page_preview: bool = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup=None):
+    def reply(self,
+              text: str,
+              quote: bool = None,
+              parse_mode: str = "",
+              disable_web_page_preview: bool = None,
+              disable_notification: bool = None,
+              reply_to_message_id: int = None,
+              reply_markup=None):
         """Use this method as a shortcut for:
 
         .. code-block:: python
@@ -510,7 +510,7 @@ class Message(Object):
 
         Returns:
             -   The result of *request_callback_answer()* in case of inline callback button clicks.
-            -   The result of *reply_text()* in case of normal button clicks.
+            -   The result of *reply()* in case of normal button clicks.
             -   A string in case the inline button is an URL, switch_inline_query or switch_inline_query_current_chat
                 button.
 
@@ -522,7 +522,7 @@ class Message(Object):
             if quote is None:
                 quote = self.chat.type != "private"
 
-            return self.reply_text(x, quote=quote)
+            return self.reply(x, quote=quote)
         elif isinstance(self.reply_markup, InlineKeyboardMarkup):
             if isinstance(x, int) and y is None:
                 try:
