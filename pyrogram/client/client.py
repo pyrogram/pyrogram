@@ -77,6 +77,26 @@ class Client(Methods, BaseClient):
             The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
+        app_version (``str``, *optional*):
+            Application version. Defaults to "Pyrogram \U0001f525 vX.Y.Z"
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        device_model (``str``, *optional*):
+            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        system_version (``str``, *optional*):
+            Operating System version. Defaults to *platform.system() + " " + platform.release()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        system_lang_code (``str``, *optional*):
+            Code of the language used on the system, in ISO 639-1 standard. Defaults to "en".
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        lang_code (``str``, *optional*):
+            Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
