@@ -332,7 +332,7 @@ class Message(Object):
         Example:
             .. code-block:: python
 
-                message.reply_text("hello", quote=True)
+                message.reply("hello", quote=True)
 
         Args:
             text (``str``):
