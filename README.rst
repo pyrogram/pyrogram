@@ -1,7 +1,7 @@
 |header|
 
-Pyrogram |twitter|
-==================
+Pyrogram
+========
 
 .. code-block:: python
 
@@ -26,8 +26,8 @@ Features
 -   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
 -   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 76 running on MTProto 2.0.
--   **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
+-   **Updated** to the latest Telegram API version, currently Layer 79 on top of MTProto 2.0.
+-   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
 -   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
 Requirements
@@ -54,7 +54,7 @@ Getting Started
 Contributing
 ------------
 
-Pyrogram is brand new! **You are welcome to try it and help make it better** by either submitting pull
+Pyrogram is brand new, and **you are welcome to try it and help make it even better** by either submitting pull
 requests or reporting issues/bugs as well as suggesting best practices, ideas, enhancements on both code
 and documentation. Any help is appreciated!
 
@@ -100,17 +100,14 @@ Copyright & License
         </a>
         <br><br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://media.pyrogram.ml/images/scheme.svg"
-                alt="Scheme Layer 76">
+            <img src="https://img.shields.io/badge/SCHEME-LAYER%2079-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+                alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://media.pyrogram.ml/images/tgcrypto.svg"
+            <img src="https://img.shields.io/badge/TGCRYPTO-V1.0.4-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
                 alt="TgCrypto">
         </a>
     </p>
-
-.. |twitter| image:: https://media.pyrogram.ml/images/twitter.svg
-    :target: https://twitter.com/intent/tweet?text=Build%20custom%20Telegram%20applications%20with%20Pyrogram&url=https://github.com/pyrogram/pyrogram&hashtags=Telegram,MTProto,Python
 
 .. |logo| image:: https://pyrogram.ml/images/logo.png
     :target: https://pyrogram.ml
@@ -118,10 +115,10 @@ Copyright & License
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
-.. |scheme| image:: https://www.pyrogram.ml/images/scheme.svg
+.. |scheme| image:: "https://img.shields.io/badge/SCHEME-LAYER%2079-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
     :target: compiler/api/source/main_api.tl
-    :alt: Scheme Layer 76
+    :alt: Scheme Layer
 
-.. |tgcrypto| image:: https://www.pyrogram.ml/images/tgcrypto.svg
+.. |tgcrypto| image:: "https://img.shields.io/badge/TGCRYPTO-V1.0.4-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
     :target: https://github.com/pyrogram/tgcrypto
     :alt: TgCrypto

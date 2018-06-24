@@ -18,7 +18,6 @@
 
 import asyncio
 import logging
-import platform
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
@@ -43,19 +42,8 @@ class Result:
 
 
 class Session:
-    VERSION = __version__
-    APP_VERSION = "Pyrogram \U0001f525 {}".format(VERSION)
-
-    DEVICE_MODEL = "{} {}".format(
-        platform.python_implementation(),
-        platform.python_version()
-    )
-
-    SYSTEM_VERSION = "{} {}".format(
-        platform.system(),
-        platform.release()
-    )
-
+    INITIAL_SALT = 0x616e67656c696361
+    NET_WORKERS = 1
     WAIT_TIMEOUT = 15
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -78,28 +66,24 @@ class Session:
     }
 
     def __init__(self,
+                 client: pyrogram,
                  dc_id: int,
-                 test_mode: bool,
-                 proxy: dict,
                  auth_key: bytes,
-                 api_id: int,
-                 is_cdn: bool = False,
-                 client: pyrogram = None):
+                 is_media: bool = False,
+                 is_cdn: bool = False):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
-        self.dc_id = dc_id
-        self.test_mode = test_mode
-        self.proxy = proxy
-        self.api_id = api_id
-        self.is_cdn = is_cdn
         self.client = client
+        self.dc_id = dc_id
+        self.auth_key = auth_key
+        self.is_media = is_media
+        self.is_cdn = is_cdn
 
         self.connection = None
 
-        self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
         self.session_id = Long(MsgId())
@@ -125,7 +109,7 @@ class Session:
 
     async def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+            self.connection = Connection(DataCenter(self.dc_id, self.client.test_mode), self.client.proxy)
 
             try:
                 await self.connection.connect()
@@ -144,12 +128,14 @@ class Session:
                         functions.InvokeWithLayer(
                             layer,
                             functions.InitConnection(
-                                self.api_id,
-                                self.DEVICE_MODEL,
-                                self.SYSTEM_VERSION,
-                                self.APP_VERSION,
-                                "en", "", "en",
-                                functions.help.GetConfig(),
+                                api_id=self.client.api_id,
+                                app_version=self.client.app_version,
+                                device_model=self.client.device_model,
+                                system_version=self.client.system_version,
+                                system_lang_code=self.client.system_lang_code,
+                                lang_code=self.client.lang_code,
+                                lang_pack="",
+                                query=functions.help.GetConfig(),
                             )
                         )
                     )
@@ -349,7 +335,7 @@ class Session:
 
         log.info("RecvTask stopped")
 
-    async def _send(self, data: Object, wait_response: bool = True):
+    async def _send(self, data: Object, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
@@ -372,7 +358,7 @@ class Session:
 
         if wait_response:
             try:
-                await asyncio.wait_for(self.results[msg_id].event.wait(), self.WAIT_TIMEOUT)
+                await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
             except asyncio.TimeoutError:
                 pass
 
@@ -390,14 +376,14 @@ class Session:
             else:
                 return result
 
-    async def send(self, data: Object, retries: int = MAX_RETRIES):
+    async def send(self, data: Object, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
         try:
             await asyncio.wait_for(self.is_connected.wait(), self.WAIT_TIMEOUT)
         except asyncio.TimeoutError:
             pass
 
         try:
-            return await self._send(data)
+            return await self._send(data, timeout=timeout)
         except (OSError, TimeoutError, InternalServerError) as e:
             if retries == 0:
                 raise e from None
@@ -408,7 +394,7 @@ class Session:
                     datetime.now(), type(data)))
 
             await asyncio.sleep(0.5)
-            return await self.send(data, retries - 1)
+            return await self.send(data, retries - 1, timeout)
 
 # class Result:
 #     def __init__(self):
@@ -807,4 +793,4 @@ class Session:
 #                     datetime.now(), type(data)))
 #
 #             time.sleep(0.5)
-#             return self.send(data, retries - 1)
+#             return self.send(data, retries - 1, timeout)

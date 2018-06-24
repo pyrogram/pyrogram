@@ -17,14 +17,32 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import platform
 import re
 
+from pyrogram import __version__
 from ..style import Markdown, HTML
 from ...api.core import Object
+from ...session import Session
 from ...session.internals import MsgId
 
 
 class BaseClient:
+    APP_VERSION = "Pyrogram \U0001f525 {}".format(__version__)
+
+    DEVICE_MODEL = "{} {}".format(
+        platform.python_implementation(),
+        platform.python_version()
+    )
+
+    SYSTEM_VERSION = "{} {}".format(
+        platform.system(),
+        platform.release()
+    )
+
+    SYSTEM_LANG_CODE = "en"
+    LANG_CODE = "en"
+
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
@@ -76,7 +94,7 @@ class BaseClient:
 
         self.disconnect_handler = None
 
-    def send(self, data: Object):
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         pass
 
     def resolve_peer(self, peer_id: int or str):

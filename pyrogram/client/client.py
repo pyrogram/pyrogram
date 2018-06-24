@@ -50,9 +50,6 @@ from .ext import BaseClient, Syncer, utils
 from .handlers import DisconnectHandler
 from .methods import Methods
 
-# Custom format for nice looking log lines
-LOG_FORMAT = "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
-
 log = logging.getLogger(__name__)
 
 
@@ -76,6 +73,26 @@ class Client(Methods, BaseClient):
             The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
+        app_version (``str``, *optional*):
+            Application version. Defaults to "Pyrogram \U0001f525 vX.Y.Z"
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        device_model (``str``, *optional*):
+            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        system_version (``str``, *optional*):
+            Operating System version. Defaults to *platform.system() + " " + platform.release()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        system_lang_code (``str``, *optional*):
+            Code of the language used on the system, in ISO 639-1 standard. Defaults to "en".
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        lang_code (``str``, *optional*):
+            Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
@@ -92,8 +109,8 @@ class Client(Methods, BaseClient):
             entering it manually. Only applicable for new sessions.
 
         phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only), or pass a callback function
-            which must return the correct phone code as string (e.g., "12345").
+            Pass the phone code as string (for test numbers only), or pass a callback function which accepts
+            a single positional argument *(phone_number)* and must return the correct phone code (e.g., "12345").
             Only applicable for new sessions.
 
         password (``str``, *optional*):
@@ -128,6 +145,11 @@ class Client(Methods, BaseClient):
                  session_name: str,
                  api_id: int or str = None,
                  api_hash: str = None,
+                 app_version: str = None,
+                 device_model: str = None,
+                 system_version: str = None,
+                 system_lang_code: str = None,
+                 lang_code: str = None,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -144,6 +166,11 @@ class Client(Methods, BaseClient):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
+        self.app_version = app_version
+        self.device_model = device_model
+        self.system_version = system_version
+        self.system_lang_code = system_lang_code
+        self.lang_code = lang_code
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -186,12 +213,9 @@ class Client(Methods, BaseClient):
         await self.load_session()
 
         self.session = Session(
+            self,
             self.dc_id,
-            self.test_mode,
-            self._proxy,
-            self.auth_key,
-            self.api_id,
-            client=self
+            self.auth_key
         )
 
         await self.session.start()
@@ -274,6 +298,7 @@ class Client(Methods, BaseClient):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
+
         def signal_handler(*args):
             log.info("Stop signal received ({}). Exiting...".format(args[0]))
             self.is_idle = False
@@ -368,12 +393,9 @@ class Client(Methods, BaseClient):
             self.auth_key = await Auth(self.dc_id, self.test_mode, self._proxy).create()
 
             self.session = Session(
+                self,
                 self.dc_id,
-                self.test_mode,
-                self._proxy,
-                self.auth_key,
-                self.api_id,
-                client=self
+                self.auth_key
             )
 
             await self.session.start()
@@ -416,12 +438,9 @@ class Client(Methods, BaseClient):
                 self.auth_key = await Auth(self.dc_id, self.test_mode, self._proxy).create()
 
                 self.session = Session(
+                    self,
                     self.dc_id,
-                    self.test_mode,
-                    self._proxy,
-                    self.auth_key,
-                    self.api_id,
-                    client=self
+                    self.auth_key
                 )
                 await self.session.start()
 
@@ -465,7 +484,7 @@ class Client(Methods, BaseClient):
             self.phone_code = (
                 input("Enter phone code: ") if self.phone_code is None
                 else self.phone_code if type(self.phone_code) is str
-                else str(self.phone_code())
+                else str(self.phone_code(self.phone_number))
             )
 
             try:
@@ -807,7 +826,7 @@ class Client(Methods, BaseClient):
 
         log.info("UpdatesWorkerTask stopped")
 
-    async def send(self, data: Object):
+    async def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -818,13 +837,19 @@ class Client(Methods, BaseClient):
             data (``Object``):
                 The API Scheme function filled with proper arguments.
 
+            retries (``int``):
+                Number of retries.
+
+            timeout (``float``):
+                Timeout in seconds.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
 
-        r = await self.session.send(data)
+        r = await self.session.send(data, retries, timeout)
 
         self.fetch_peers(getattr(r, "users", []))
         self.fetch_peers(getattr(r, "chats", []))
@@ -845,6 +870,31 @@ class Client(Methods, BaseClient):
                 raise AttributeError(
                     "No API Key found. "
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
+                )
+
+        for option in {"app_version", "device_model", "system_version", "system_lang_code", "lang_code"}:
+            if getattr(self, option):
+                pass
+            else:
+                setattr(self, option, Client.APP_VERSION)
+
+                if parser.has_section("pyrogram"):
+                    setattr(self, option, parser.get(
+                        "pyrogram",
+                        option,
+                        fallback=getattr(Client, option.upper())
+                    ))
+
+        if self.lang_code:
+            pass
+        else:
+            self.lang_code = Client.LANG_CODE
+
+            if parser.has_section("pyrogram"):
+                self.lang_code = parser.get(
+                    "pyrogram",
+                    "lang_code",
+                    fallback=Client.LANG_CODE
                 )
 
         if self._proxy:
@@ -1017,7 +1067,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self._proxy, self.auth_key, self.api_id)
+        session = Session(self, self.dc_id, self.auth_key, is_media=True)
         await session.start()
 
         try:
@@ -1101,11 +1151,10 @@ class Client(Methods, BaseClient):
                     )
 
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self._proxy,
                         await Auth(dc_id, self.test_mode, self._proxy).create(),
-                        self.api_id
+                        is_media=True
                     )
 
                     await session.start()
@@ -1120,11 +1169,10 @@ class Client(Methods, BaseClient):
                     )
                 else:
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self._proxy,
                         self.auth_key,
-                        self.api_id
+                        is_media=True
                     )
 
                     await session.start()
@@ -1190,11 +1238,10 @@ class Client(Methods, BaseClient):
 
                     if cdn_session is None:
                         cdn_session = Session(
+                            self,
                             r.dc_id,
-                            self.test_mode,
-                            self._proxy,
                             await Auth(r.dc_id, self.test_mode, self._proxy).create(),
-                            self.api_id,
+                            is_media=True,
                             is_cdn=True
                         )
 
