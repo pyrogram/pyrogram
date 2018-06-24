@@ -47,5 +47,7 @@ class RequestCallbackAnswer(BaseClient):
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
                 data=callback_data.encode()
-            )
+            ),
+            retries=0,
+            timeout=10
         )
