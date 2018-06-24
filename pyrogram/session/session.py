@@ -391,7 +391,7 @@ class Session:
 
         log.debug("RecvThread stopped")
 
-    def _send(self, data: Object, wait_response: bool = True):
+    def _send(self, data: Object, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
@@ -407,7 +407,7 @@ class Session:
             raise e
 
         if wait_response:
-            self.results[msg_id].event.wait(self.WAIT_TIMEOUT)
+            self.results[msg_id].event.wait(timeout)
             result = self.results.pop(msg_id).value
 
             if result is None:
@@ -422,11 +422,11 @@ class Session:
             else:
                 return result
 
-    def send(self, data: Object, retries: int = MAX_RETRIES):
+    def send(self, data: Object, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
         self.is_connected.wait(self.WAIT_TIMEOUT)
 
         try:
-            return self._send(data)
+            return self._send(data, timeout=timeout)
         except (OSError, TimeoutError, InternalServerError) as e:
             if retries == 0:
                 raise e from None
@@ -437,4 +437,4 @@ class Session:
                     datetime.now(), type(data)))
 
             time.sleep(0.5)
-            return self.send(data, retries - 1)
+            return self.send(data, retries - 1, timeout)

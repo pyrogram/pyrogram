@@ -23,6 +23,7 @@ from threading import Lock
 from ..style import Markdown, HTML
 from ...api.core import Object
 from ...session.internals import MsgId
+from ...session import Session
 
 
 class BaseClient:
@@ -77,7 +78,7 @@ class BaseClient:
 
         self.disconnect_handler = None
 
-    def send(self, data: Object):
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         pass
 
     def resolve_peer(self, peer_id: int or str):

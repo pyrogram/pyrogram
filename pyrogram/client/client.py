@@ -817,7 +817,7 @@ class Client(Methods, BaseClient):
 
         log.debug("{} stopped".format(name))
 
-    def send(self, data: Object):
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -828,13 +828,19 @@ class Client(Methods, BaseClient):
             data (``Object``):
                 The API Scheme function filled with proper arguments.
 
+            retries (``int``):
+                Number of retries.
+
+            timeout (``float``):
+                Timeout in seconds.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
 
-        r = self.session.send(data)
+        r = self.session.send(data, retries, timeout)
 
         self.fetch_peers(getattr(r, "users", []))
         self.fetch_peers(getattr(r, "chats", []))
