@@ -471,6 +471,10 @@ class Client(Methods, BaseClient):
 
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
+        terms_of_service = r.terms_of_service
+
+        if terms_of_service:
+            print("\n" + terms_of_service.text + "\n")
 
         if self.force_sms:
             await self.send(
@@ -576,6 +580,9 @@ class Client(Methods, BaseClient):
                 log.error(e, exc_info=True)
             else:
                 break
+
+        if terms_of_service:
+            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
 
         self.password = None
         self.user_id = r.user.id
