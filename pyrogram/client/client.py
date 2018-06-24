@@ -288,19 +288,25 @@ class Client(Methods, BaseClient):
 
         await self.stop()
 
-    def run(self):
+    def run(self, coroutine=None):
         """Use this method to automatically start and idle a Client.
-        Requires no parameters.
+        If a coroutine is passed as argument this method will start the client, run the coroutine
+        until is complete and then stop the client automatically.
+
+        Args:
+            coroutine: (``Coroutine``, *optional*):
+                Pass a coroutine to run it until is complete.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        asyncio.get_event_loop().run_until_complete(
-            asyncio.gather(
-                self.start(),
-                self.idle()
-            )
-        )
+        run = asyncio.get_event_loop().run_until_complete
+
+        run(self.start())
+        run(coroutine or self.idle())
+
+        if coroutine:
+            run(self.stop())
 
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
