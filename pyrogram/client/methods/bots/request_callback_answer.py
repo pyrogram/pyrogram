@@ -25,9 +25,8 @@ class RequestCallbackAnswer(BaseClient):
                                 chat_id: int or str,
                                 message_id: int,
                                 callback_data: str):
-        """Use this method to request a callback answer from bots. This is the equivalent of clicking an inline button
-        containing callback data. The answer contains info useful for clients to display a notification at the top of
-        the chat screen or as an alert.
+        """Use this method to request a callback answer from bots. This is the equivalent of clicking an
+        inline button containing callback data.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -41,6 +40,14 @@ class RequestCallbackAnswer(BaseClient):
 
             callback_data (``str``):
                 Callback data associated with the inline button you want to get the answer from.
+
+        Returns:
+            The answer containing info useful for clients to display a notification at the top of the chat screen
+            or as an alert.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``TimeoutError``: If the bot fails to answer within 10 seconds
         """
         return self.send(
             functions.messages.GetBotCallbackAnswer(
