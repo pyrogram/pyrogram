@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import platform
 import threading
 import time
 from datetime import timedelta, datetime
@@ -47,19 +46,6 @@ class Result:
 
 
 class Session:
-    VERSION = __version__
-    APP_VERSION = "Pyrogram \U0001f525 {}".format(VERSION)
-
-    DEVICE_MODEL = "{} {}".format(
-        platform.python_implementation(),
-        platform.python_version()
-    )
-
-    SYSTEM_VERSION = "{} {}".format(
-        platform.system(),
-        platform.release()
-    )
-
     INITIAL_SALT = 0x616e67656c696361
     NET_WORKERS = 1
     WAIT_TIMEOUT = 15
@@ -84,28 +70,24 @@ class Session:
     }
 
     def __init__(self,
+                 client: pyrogram,
                  dc_id: int,
-                 test_mode: bool,
-                 proxy: dict,
                  auth_key: bytes,
-                 api_id: int,
-                 is_cdn: bool = False,
-                 client: pyrogram = None):
+                 is_media: bool = False,
+                 is_cdn: bool = False):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
             Session.notice_displayed = True
 
-        self.dc_id = dc_id
-        self.test_mode = test_mode
-        self.proxy = proxy
-        self.api_id = api_id
-        self.is_cdn = is_cdn
         self.client = client
+        self.dc_id = dc_id
+        self.auth_key = auth_key
+        self.is_media = is_media
+        self.is_cdn = is_cdn
 
         self.connection = None
 
-        self.auth_key = auth_key
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
         self.session_id = Long(MsgId())
@@ -130,7 +112,7 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+            self.connection = Connection(DataCenter(self.dc_id, self.client.test_mode), self.client.proxy)
 
             try:
                 self.connection.connect()
@@ -159,12 +141,14 @@ class Session:
                         functions.InvokeWithLayer(
                             layer,
                             functions.InitConnection(
-                                self.api_id,
-                                self.DEVICE_MODEL,
-                                self.SYSTEM_VERSION,
-                                self.APP_VERSION,
-                                "en", "", "en",
-                                functions.help.GetConfig(),
+                                api_id=self.client.api_id,
+                                device_model=self.client.DEVICE_MODEL,
+                                system_version=self.client.SYSTEM_VERSION,
+                                app_version=self.client.APP_VERSION,
+                                system_lang_code=self.client.SYSTEM_LANG_CODE,
+                                lang_code=self.client.LANG_CODE,
+                                lang_pack="",
+                                query=functions.help.GetConfig(),
                             )
                         )
                     )

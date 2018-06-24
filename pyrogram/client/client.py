@@ -187,12 +187,9 @@ class Client(Methods, BaseClient):
         self.load_session()
 
         self.session = Session(
+            self,
             self.dc_id,
-            self.test_mode,
-            self._proxy,
-            self.auth_key,
-            self.api_id,
-            client=self
+            self.auth_key
         )
 
         self.session.start()
@@ -372,12 +369,9 @@ class Client(Methods, BaseClient):
             self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
             self.session = Session(
+                self,
                 self.dc_id,
-                self.test_mode,
-                self._proxy,
-                self.auth_key,
-                self.api_id,
-                client=self
+                self.auth_key
             )
 
             self.session.start()
@@ -420,12 +414,9 @@ class Client(Methods, BaseClient):
                 self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
                 self.session = Session(
+                    self,
                     self.dc_id,
-                    self.test_mode,
-                    self._proxy,
-                    self.auth_key,
-                    self.api_id,
-                    client=self
+                    self.auth_key
                 )
                 self.session.start()
 
@@ -1033,7 +1024,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self._proxy, self.auth_key, self.api_id)
+        session = Session(self, self.dc_id, self.auth_key, is_media=True)
         session.start()
 
         try:
@@ -1117,11 +1108,10 @@ class Client(Methods, BaseClient):
                     )
 
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self._proxy,
                         Auth(dc_id, self.test_mode, self._proxy).create(),
-                        self.api_id
+                        is_media=True
                     )
 
                     session.start()
@@ -1136,11 +1126,10 @@ class Client(Methods, BaseClient):
                     )
                 else:
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self._proxy,
                         self.auth_key,
-                        self.api_id
+                        is_media=True
                     )
 
                     session.start()
@@ -1206,11 +1195,10 @@ class Client(Methods, BaseClient):
 
                     if cdn_session is None:
                         cdn_session = Session(
+                            self,
                             r.dc_id,
-                            self.test_mode,
-                            self._proxy,
                             Auth(r.dc_id, self.test_mode, self._proxy).create(),
-                            self.api_id,
+                            is_media=True,
                             is_cdn=True
                         )
 
