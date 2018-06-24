@@ -181,7 +181,7 @@ class Session:
         for i in self.results.values():
             i.event.set()
 
-        if self.client and callable(self.client.disconnect_handler):
+        if not self.is_media and callable(self.client.disconnect_handler):
             try:
                 await self.client.disconnect_handler(self.client)
             except Exception as e:
