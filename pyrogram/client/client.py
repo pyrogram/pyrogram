@@ -93,8 +93,8 @@ class Client(Methods, BaseClient):
             entering it manually. Only applicable for new sessions.
 
         phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only), or pass a callback function
-            which must return the correct phone code as string (e.g., "12345").
+            Pass the phone code as string (for test numbers only), or pass a callback function which accepts
+            a single positional argument *(phone_number)* and must return the correct phone code (e.g., "12345").
             Only applicable for new sessions.
 
         password (``str``, *optional*):
