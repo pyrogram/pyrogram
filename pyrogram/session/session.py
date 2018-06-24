@@ -142,11 +142,11 @@ class Session:
                             layer,
                             functions.InitConnection(
                                 api_id=self.client.api_id,
-                                device_model=self.client.DEVICE_MODEL,
-                                system_version=self.client.SYSTEM_VERSION,
-                                app_version=self.client.APP_VERSION,
-                                system_lang_code=self.client.SYSTEM_LANG_CODE,
-                                lang_code=self.client.LANG_CODE,
+                                app_version=self.client.app_version,
+                                device_model=self.client.device_model,
+                                system_version=self.client.system_version,
+                                system_lang_code=self.client.system_lang_code,
+                                lang_code=self.client.lang_code,
                                 lang_pack="",
                                 query=functions.help.GetConfig(),
                             )

@@ -129,6 +129,11 @@ class Client(Methods, BaseClient):
                  session_name: str,
                  api_id: int or str = None,
                  api_hash: str = None,
+                 app_version: str = None,
+                 device_model: str = None,
+                 system_version: str = None,
+                 system_lang_code: str = None,
+                 lang_code: str = None,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -145,6 +150,11 @@ class Client(Methods, BaseClient):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
+        self.app_version = app_version
+        self.device_model = device_model
+        self.system_version = system_version
+        self.system_lang_code = system_lang_code
+        self.lang_code = lang_code
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -852,6 +862,68 @@ class Client(Methods, BaseClient):
                 raise AttributeError(
                     "No API Key found. "
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
+                )
+
+        # TODO: Woah! Some redundant code down here
+
+        if self.app_version:
+            pass
+        else:
+            self.app_version = Client.APP_VERSION
+
+            if parser.has_section("pyrogram"):
+                self.app_version = parser.get(
+                    "pyrogram",
+                    "app_version",
+                    fallback=Client.APP_VERSION
+                )
+
+        if self.device_model:
+            pass
+        else:
+            self.device_model = Client.DEVICE_MODEL
+
+            if parser.has_section("pyrogram"):
+                self.device_model = parser.get(
+                    "pyrogram",
+                    "device_model",
+                    fallback=Client.DEVICE_MODEL
+                )
+
+        if self.system_version:
+            pass
+        else:
+            self.system_version = Client.SYSTEM_VERSION
+
+            if parser.has_section("pyrogram"):
+                self.system_version = parser.get(
+                    "pyrogram",
+                    "system_version",
+                    fallback=Client.SYSTEM_VERSION
+                )
+
+        if self.system_lang_code:
+            pass
+        else:
+            self.system_lang_code = Client.SYSTEM_LANG_CODE
+
+            if parser.has_section("pyrogram"):
+                self.system_lang_code = parser.get(
+                    "pyrogram",
+                    "system_lang_code",
+                    fallback=Client.SYSTEM_LANG_CODE
+                )
+
+        if self.lang_code:
+            pass
+        else:
+            self.lang_code = Client.LANG_CODE
+
+            if parser.has_section("pyrogram"):
+                self.lang_code = parser.get(
+                    "pyrogram",
+                    "lang_code",
+                    fallback=Client.LANG_CODE
                 )
 
         if self._proxy:
