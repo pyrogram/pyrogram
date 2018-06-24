@@ -51,9 +51,6 @@ from .dispatcher import Dispatcher
 from .ext import utils, Syncer, BaseClient
 from .methods import Methods
 
-# Custom format for nice looking log lines
-LOG_FORMAT = "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
-
 log = logging.getLogger(__name__)
 
 
@@ -316,6 +313,7 @@ class Client(Methods, BaseClient):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
+
         def signal_handler(*args):
             self.is_idle = False
 
