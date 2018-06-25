@@ -89,6 +89,7 @@ To get started, press the Next button.
     resources/AutoAuthorization
     resources/TextFormatting
     resources/BotsInteraction
+    resources/CustomizeSessions
     resources/ErrorHandling
 
 .. toctree::
