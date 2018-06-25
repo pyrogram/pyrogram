@@ -10,10 +10,6 @@ High-level API
 The easiest and recommended way to interact with Telegram is via the high-level Pyrogram methods_ and types_, which are
 named after the `Telegram Bot API`_.
 
-.. hint:: If you can't find an high-level method you want to use, chances are it's not implemented yet.
-    In this case, you must use the `Raw Functions`_. Meanwhile, feel free to join our Community_ if you get stuck
-    or want to propose a new method!
-
 Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
 
 -   Get information about the authorized user:
@@ -45,8 +41,10 @@ you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`type
 method provided by the Client class.
 
 .. hint:: Every high-level method mentioned in the section above is built on top of these raw functions.
+
     Nothing stops you from using the raw functions only, but they are rather complex and `plenty of them`_ are already
     re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API.
+
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
 Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
