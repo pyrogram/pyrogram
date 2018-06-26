@@ -30,10 +30,8 @@ Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/exa
 
         app.send_photo("me", "/home/dan/perla.jpg", "Cute!")
 
-.. _using-raw-functions:
-
-Using Raw Functions
--------------------
+Raw Functions
+-------------
 
 If you can't find a high-level method for your needs or if want complete, low-level access to the whole Telegram API,
 you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>` exposed by the
