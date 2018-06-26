@@ -516,7 +516,8 @@ class Message(Object):
 
         Raises:
             :class:`Error <pyrogram.Error>`
-            ``ValueError``: If the provided index or position is out of range or the button label was not found.
+            ``ValueError``: If the provided index or position is out of range or the button label was not found
+            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, ReplyKeyboardMarkup):
             if quote is None:
