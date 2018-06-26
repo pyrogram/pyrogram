@@ -20,6 +20,7 @@ import asyncio
 import base64
 import binascii
 import getpass
+import inspect
 import json
 import logging
 import math
@@ -328,10 +329,17 @@ class Client(Methods, BaseClient):
         run = asyncio.get_event_loop().run_until_complete
 
         run(self.start())
-        run(coroutine or self.idle())
 
-        if coroutine:
+        run(
+            coroutine if inspect.iscoroutine(coroutine)
+            else coroutine() if coroutine
+            else self.idle()
+        )
+
+        if self.is_started:
             run(self.stop())
+
+        return coroutine
 
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
