@@ -561,7 +561,7 @@ class Message(Object):
                 return self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
-                    data=button.callback_data
+                    callback_data=button.callback_data
                 )
             elif button.url:
                 return button.url
