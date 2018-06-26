@@ -84,12 +84,12 @@ To get started, press the Next button.
     :caption: Resources
 
     resources/UpdateHandling
-    resources/SOCKS5Proxy
-    resources/TgCrypto
     resources/AutoAuthorization
-    resources/TextFormatting
-    resources/BotsInteraction
     resources/CustomizeSessions
+    resources/TgCrypto
+    resources/TextFormatting
+    resources/SOCKS5Proxy
+    resources/BotsInteraction
     resources/ErrorHandling
 
 .. toctree::
