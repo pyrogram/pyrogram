@@ -77,7 +77,8 @@ def generate(source_path, base):
 
     build(source_path)
 
-    for k, v in all_entities.items():
+    for k, v in sorted(all_entities.items()):
+        v = sorted(v)
         entities = []
 
         for i in v:
