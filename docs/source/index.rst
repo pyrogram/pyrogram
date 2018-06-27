@@ -26,7 +26,7 @@ Welcome to Pyrogram
         </a>
         <br><br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/SCHEME-LAYER%2081-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30
+            <img src="https://img.shields.io/badge/SCHEME-LAYER%2081-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
                 alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
