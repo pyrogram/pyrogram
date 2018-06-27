@@ -585,6 +585,8 @@ class Client(Methods, BaseClient):
         self.password = None
         self.user_id = r.user.id
 
+        print("Login successful")
+
     def fetch_peers(self, entities: list):
         for entity in entities:
             if isinstance(entity, types.User):
