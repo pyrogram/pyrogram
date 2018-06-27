@@ -516,7 +516,8 @@ class Message(Object):
 
         Raises:
             :class:`Error <pyrogram.Error>`
-            ``ValueError``: If the provided index or position is out of range or the button label was not found.
+            ``ValueError``: If the provided index or position is out of range or the button label was not found
+            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, ReplyKeyboardMarkup):
             if quote is None:
@@ -561,7 +562,7 @@ class Message(Object):
                 return await self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
-                    data=button.callback_data
+                    callback_data=button.callback_data
                 )
             elif button.url:
                 return button.url

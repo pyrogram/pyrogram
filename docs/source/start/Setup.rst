@@ -54,7 +54,7 @@ User Authorization
 In order to use the API, Telegram requires that Users be authorized via their phone numbers.
 Pyrogram automatically manages this access, all you need to do is create an instance of
 the :class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` of your choice
-(e.g.: "my_account") and call the :meth:`start() <pyrogram.Client.start>` method:
+(e.g.: "my_account") and call the :meth:`run() <pyrogram.Client.run>` method:
 
 .. code-block:: python
 

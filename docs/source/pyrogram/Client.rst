@@ -62,6 +62,7 @@ Client
         get_inline_bot_results
         send_inline_bot_result
         answer_callback_query
+        request_callback_answer
         get_users
         get_chat
         get_messages

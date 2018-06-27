@@ -86,10 +86,6 @@ class Client(Methods, BaseClient):
             Operating System version. Defaults to *platform.system() + " " + platform.release()*
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
-        system_lang_code (``str``, *optional*):
-            Code of the language used on the system, in ISO 639-1 standard. Defaults to "en".
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
-
         lang_code (``str``, *optional*):
             Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
             This is an alternative way to set it if you don't want to use the *config.ini* file.
@@ -149,7 +145,6 @@ class Client(Methods, BaseClient):
                  app_version: str = None,
                  device_model: str = None,
                  system_version: str = None,
-                 system_lang_code: str = None,
                  lang_code: str = None,
                  proxy: dict = None,
                  test_mode: bool = False,
@@ -170,7 +165,6 @@ class Client(Methods, BaseClient):
         self.app_version = app_version
         self.device_model = device_model
         self.system_version = system_version
-        self.system_lang_code = system_lang_code
         self.lang_code = lang_code
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
@@ -595,6 +589,8 @@ class Client(Methods, BaseClient):
         self.password = None
         self.user_id = r.user.id
 
+        print("Login successful")
+
     def fetch_peers(self, entities: list):
         for entity in entities:
             if isinstance(entity, types.User):
@@ -887,7 +883,7 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        for option in {"app_version", "device_model", "system_version", "system_lang_code", "lang_code"}:
+        for option in {"app_version", "device_model", "system_version", "lang_code"}:
             if getattr(self, option):
                 pass
             else:
