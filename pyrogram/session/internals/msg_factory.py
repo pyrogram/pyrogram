@@ -17,8 +17,8 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.core import Message, MsgContainer, Object
-from pyrogram.api.functions import Ping, HttpWait
-from pyrogram.api.types import MsgsAck
+from pyrogram.api.functions import Ping
+from pyrogram.api.types import MsgsAck, HttpWait
 from .msg_id import MsgId
 from .seq_no import SeqNo
 

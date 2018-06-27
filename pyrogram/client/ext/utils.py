@@ -33,26 +33,28 @@ log = logging.getLogger(__name__)
 # TODO: Organize the code better?
 
 class Str(str):
-    def __init__(self, value):
-        str.__init__(value)
-        self._markdown = None
-        self._html = None
+    __slots__ = "_client", "_entities"
+
+    def __init__(self, *args):
+        super().__init__()
+        self._client = None
+        self._entities = None
+
+    def init(self, client, entities):
+        self._client = client
+        self._entities = entities
+
+    @property
+    def text(self):
+        return self
 
     @property
     def markdown(self):
-        return self._markdown
-
-    @markdown.setter
-    def markdown(self, value):
-        self._markdown = value
+        return self._client.markdown.unparse(self, self._entities)
 
     @property
     def html(self):
-        return self._html
-
-    @html.setter
-    def html(self, value):
-        self._html = value
+        return self._client.html.unparse(self, self._entities)
 
 
 ENTITIES = {
@@ -413,7 +415,7 @@ def parse_messages(
                                     date=doc.date
                                 )
                         elif types.DocumentAttributeAnimated in attributes:
-                            video_attributes = attributes[types.DocumentAttributeVideo]
+                            video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
                             gif = pyrogram_types.GIF(
                                 file_id=encode(
@@ -425,9 +427,9 @@ def parse_messages(
                                         doc.access_hash
                                     )
                                 ),
-                                width=video_attributes.w,
-                                height=video_attributes.h,
-                                duration=video_attributes.duration,
+                                width=getattr(video_attributes, "w", 0),
+                                height=getattr(video_attributes, "h", 0),
+                                duration=getattr(video_attributes, "duration", 0),
                                 thumb=parse_thumb(doc.thumb),
                                 mime_type=doc.mime_type,
                                 file_size=doc.size,
@@ -581,16 +583,10 @@ def parse_messages(
             )
 
             if m.text:
-                args = (m.text, m.entities or [])
-
-                m.text.markdown = client.markdown.unparse(*args)
-                m.text.html = client.html.unparse(*args)
+                m.text.init(m._client, m.entities or [])
 
             if m.caption:
-                args = (m.caption, m.caption_entities or [])
-
-                m.caption.markdown = client.markdown.unparse(*args)
-                m.caption.html = client.html.unparse(*args)
+                m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
                 while True:
@@ -715,6 +711,25 @@ def parse_messages(
     return parsed_messages if is_list else parsed_messages[0]
 
 
+def parse_deleted_messages(
+        messages: list,
+        channel_id: int
+) -> pyrogram_types.Messages:
+    parsed_messages = []
+
+    for message in messages:
+        parsed_messages.append(
+            pyrogram_types.Message(
+                message_id=message,
+                chat=(pyrogram_types.Chat(id=int("-100" + str(channel_id)), type="channel")
+                      if channel_id is not None
+                      else None)
+            )
+        )
+
+    return pyrogram_types.Messages(len(parsed_messages), parsed_messages)
+
+
 def get_peer_id(input_peer) -> int:
     return (
         input_peer.user_id if isinstance(input_peer, types.InputPeerUser)
@@ -805,13 +820,30 @@ def parse_callback_query(client, callback_query, users):
         peer_id = int("-100" + str(peer.channel_id))
 
     return pyrogram_types.CallbackQuery(
-        id=callback_query.query_id,
+        id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
         message=client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
         game_short_name=callback_query.game_short_name
-        # TODO: add inline_message_id
+    )
+
+
+def parse_inline_callback_query(callback_query, users):
+    return pyrogram_types.CallbackQuery(
+        id=str(callback_query.query_id),
+        from_user=parse_user(users[callback_query.user_id]),
+        chat_instance=str(callback_query.chat_instance),
+        inline_message_id=b64encode(
+            pack(
+                "<iqq",
+                callback_query.msg_id.dc_id,
+                callback_query.msg_id.id,
+                callback_query.msg_id.access_hash
+            ),
+            b"-_"
+        ).decode().rstrip("="),
+        game_short_name=callback_query.game_short_name
     )
 
 

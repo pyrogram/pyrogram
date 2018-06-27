@@ -49,5 +49,4 @@ def welcome(client, message):
     )
 
 
-app.start()
-app.idle()
+app.run()  # Automatically start() and idle()

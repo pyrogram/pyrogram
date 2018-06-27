@@ -24,7 +24,7 @@ class OnMessage(BaseClient):
     def on_message(self, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         messages. This does the same thing as :meth:`add_handler` using the
-        MessageHandler.
+        :class:`MessageHandler`.
 
         Args:
             filters (:obj:`Filters <pyrogram.Filters>`):

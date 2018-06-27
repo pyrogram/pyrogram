@@ -24,11 +24,11 @@ from pyrogram.api.errors import FloodWait
 """This example shows how to retrieve the full message history of a chat"""
 
 app = Client("my_account")
-app.start()
-
 target = "me"  # "me" refers to your own chat (Saved Messages)
 messages = []  # List that will contain all the messages of the target chat
 offset_id = 0  # ID of the last message of the chunk
+
+app.start()
 
 while True:
     try:

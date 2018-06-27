@@ -23,7 +23,7 @@ __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.7.4"
+__version__ = "0.7.5"
 
 from .api.errors import Error
 from .client.types import (
@@ -38,6 +38,6 @@ from .client.types.reply_markup import (
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
-    MessageHandler, CallbackQueryHandler, RawUpdateHandler,
-    Filters
+    MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
+    RawUpdateHandler, DisconnectHandler, Filters
 )

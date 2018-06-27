@@ -5,5 +5,7 @@ Handlers
 
 .. toctree::
     MessageHandler
+    DeletedMessagesHandler
     CallbackQueryHandler
+    DisconnectHandler
     RawUpdateHandler

@@ -19,13 +19,21 @@
 from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
 from .join_chat import JoinChat
+from .kick_chat_member import KickChatMember
 from .leave_chat import LeaveChat
+from .promote_chat_member import PromoteChatMember
+from .restrict_chat_member import RestrictChatMember
+from .unban_chat_member import UnbanChatMember
 
 
 class Chats(
     GetChat,
     ExportChatInviteLink,
     LeaveChat,
-    JoinChat
+    JoinChat,
+    KickChatMember,
+    UnbanChatMember,
+    RestrictChatMember,
+    PromoteChatMember
 ):
     pass

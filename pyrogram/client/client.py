@@ -18,6 +18,7 @@
 
 import base64
 import binascii
+import getpass
 import json
 import logging
 import math
@@ -43,14 +44,12 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, FileIdInvalid)
+from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
 from .ext import utils, Syncer, BaseClient
 from .methods import Methods
-
-# Custom format for nice looking log lines
-LOG_FORMAT = "[%(asctime)s.%(msecs)03d] %(filename)s:%(lineno)s %(levelname)s: %(message)s"
 
 log = logging.getLogger(__name__)
 
@@ -75,6 +74,22 @@ class Client(Methods, BaseClient):
             The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
+        app_version (``str``, *optional*):
+            Application version. Defaults to "Pyrogram \U0001f525 vX.Y.Z"
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        device_model (``str``, *optional*):
+            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        system_version (``str``, *optional*):
+            Operating System version. Defaults to *platform.system() + " " + platform.release()*
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        lang_code (``str``, *optional*):
+            Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
+
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
@@ -91,8 +106,8 @@ class Client(Methods, BaseClient):
             entering it manually. Only applicable for new sessions.
 
         phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only), or pass a callback function
-            which must return the correct phone code as string (e.g., "12345").
+            Pass the phone code as string (for test numbers only), or pass a callback function which accepts
+            a single positional argument *(phone_number)* and must return the correct phone code (e.g., "12345").
             Only applicable for new sessions.
 
         password (``str``, *optional*):
@@ -127,6 +142,10 @@ class Client(Methods, BaseClient):
                  session_name: str,
                  api_id: int or str = None,
                  api_hash: str = None,
+                 app_version: str = None,
+                 device_model: str = None,
+                 system_version: str = None,
+                 lang_code: str = None,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -143,7 +162,12 @@ class Client(Methods, BaseClient):
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
-        self.proxy = proxy
+        self.app_version = app_version
+        self.device_model = device_model
+        self.system_version = system_version
+        self.lang_code = lang_code
+        # TODO: Make code consistent, use underscore for private/protected fields
+        self._proxy = proxy
         self.test_mode = test_mode
         self.phone_number = phone_number
         self.phone_code = phone_code
@@ -157,14 +181,18 @@ class Client(Methods, BaseClient):
 
         self.dispatcher = Dispatcher(self, workers)
 
-    def start(self, debug: bool = False):
+    @property
+    def proxy(self):
+        return self._proxy
+
+    @proxy.setter
+    def proxy(self, value):
+        self._proxy["enabled"] = True
+        self._proxy.update(value)
+
+    def start(self):
         """Use this method to start the Client after creating it.
         Requires no parameters.
-
-        Args:
-            debug (``bool``, *optional*):
-                Enable or disable debug mode. When enabled, extra logging
-                lines will be printed out on your console.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -180,12 +208,9 @@ class Client(Methods, BaseClient):
         self.load_session()
 
         self.session = Session(
+            self,
             self.dc_id,
-            self.test_mode,
-            self.proxy,
-            self.auth_key,
-            self.api_id,
-            client=self
+            self.auth_key
         )
 
         self.session.start()
@@ -273,6 +298,39 @@ class Client(Methods, BaseClient):
         self.is_started = False
         self.session.stop()
 
+    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Blocks the program execution until one of the signals are received,
+        then gently stop the Client by closing the underlying connection.
+
+        Args:
+            stop_signals (``tuple``, *optional*):
+                Iterable containing signals the signal handler will listen to.
+                Defaults to (SIGINT, SIGTERM, SIGABRT).
+        """
+
+        def signal_handler(*args):
+            self.is_idle = False
+
+        for s in stop_signals:
+            signal(s, signal_handler)
+
+        self.is_idle = True
+
+        while self.is_idle:
+            time.sleep(1)
+
+        self.stop()
+
+    def run(self):
+        """Use this method to automatically start and idle a Client.
+        Requires no parameters.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        self.start()
+        self.idle()
+
     def add_handler(self, handler, group: int = 0):
         """Use this method to register an update handler.
 
@@ -290,7 +348,10 @@ class Client(Methods, BaseClient):
         Returns:
             A tuple of (handler, group)
         """
-        self.dispatcher.add_handler(handler, group)
+        if isinstance(handler, DisconnectHandler):
+            self.disconnect_handler = handler.callback
+        else:
+            self.dispatcher.add_handler(handler, group)
 
         return handler, group
 
@@ -308,7 +369,10 @@ class Client(Methods, BaseClient):
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
-        self.dispatcher.remove_handler(handler, group)
+        if isinstance(handler, DisconnectHandler):
+            self.disconnect_handler = None
+        else:
+            self.dispatcher.remove_handler(handler, group)
 
     def authorize_bot(self):
         try:
@@ -324,15 +388,12 @@ class Client(Methods, BaseClient):
             self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
             self.session = Session(
+                self,
                 self.dc_id,
-                self.test_mode,
-                self.proxy,
-                self.auth_key,
-                self.api_id,
-                client=self
+                self.auth_key
             )
 
             self.session.start()
@@ -372,15 +433,12 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
 
                 self.session = Session(
+                    self,
                     self.dc_id,
-                    self.test_mode,
-                    self.proxy,
-                    self.auth_key,
-                    self.api_id,
-                    client=self
+                    self.auth_key
                 )
                 self.session.start()
 
@@ -399,8 +457,11 @@ class Client(Methods, BaseClient):
                     print(e.MESSAGE)
                     self.phone_number = None
             except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
+                if phone_number_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
@@ -408,6 +469,10 @@ class Client(Methods, BaseClient):
 
         phone_registered = r.phone_registered
         phone_code_hash = r.phone_code_hash
+        terms_of_service = r.terms_of_service
+
+        if terms_of_service:
+            print("\n" + terms_of_service.text + "\n")
 
         if self.force_sms:
             self.send(
@@ -421,7 +486,7 @@ class Client(Methods, BaseClient):
             self.phone_code = (
                 input("Enter phone code: ") if self.phone_code is None
                 else self.phone_code if type(self.phone_code) is str
-                else str(self.phone_code())
+                else str(self.phone_code(self.phone_number))
             )
 
             try:
@@ -478,7 +543,7 @@ class Client(Methods, BaseClient):
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
-                            self.password = input("Enter password: ")  # TODO: Use getpass
+                            self.password = getpass.getpass("Enter password: ")
 
                         if type(self.password) is str:
                             self.password = r.current_salt + self.password.encode() + r.current_salt
@@ -493,23 +558,34 @@ class Client(Methods, BaseClient):
                             print(e.MESSAGE)
                             self.password = None
                     except FloodWait as e:
-                        print(e.MESSAGE.format(x=e.x))
-                        time.sleep(e.x)
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE.format(x=e.x))
+                            time.sleep(e.x)
                     except Exception as e:
                         log.error(e, exc_info=True)
                     else:
                         break
                 break
             except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
+                if phone_code_invalid_raises or first_name_invalid_raises:
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
             else:
                 break
 
+        if terms_of_service:
+            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
+
         self.password = None
         self.user_id = r.user.id
+
+        print("Login successful")
 
     def fetch_peers(self, entities: list):
         for entity in entities:
@@ -763,29 +839,7 @@ class Client(Methods, BaseClient):
 
         log.debug("{} stopped".format(name))
 
-    def signal_handler(self, *args):
-        self.is_idle = False
-
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Blocks the program execution until one of the signals are received,
-        then gently stop the Client by closing the underlying connection.
-
-        Args:
-            stop_signals (``tuple``, *optional*):
-                Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
-        """
-        for s in stop_signals:
-            signal(s, self.signal_handler)
-
-        self.is_idle = True
-
-        while self.is_idle:
-            time.sleep(1)
-
-        self.stop()
-
-    def send(self, data: Object):
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -796,13 +850,19 @@ class Client(Methods, BaseClient):
             data (``Object``):
                 The API Scheme function filled with proper arguments.
 
+            retries (``int``):
+                Number of retries.
+
+            timeout (``float``):
+                Timeout in seconds.
+
         Raises:
             :class:`Error <pyrogram.Error>`
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
 
-        r = self.session.send(data)
+        r = self.session.send(data, retries, timeout)
 
         self.fetch_peers(getattr(r, "users", []))
         self.fetch_peers(getattr(r, "chats", []))
@@ -825,19 +885,42 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        if self.proxy:
-            self.proxy["enabled"] = True
-            self.proxy["username"] = self.proxy.get("username", None)
-            self.proxy["password"] = self.proxy.get("password", None)
+        for option in {"app_version", "device_model", "system_version", "lang_code"}:
+            if getattr(self, option):
+                pass
+            else:
+                setattr(self, option, Client.APP_VERSION)
+
+                if parser.has_section("pyrogram"):
+                    setattr(self, option, parser.get(
+                        "pyrogram",
+                        option,
+                        fallback=getattr(Client, option.upper())
+                    ))
+
+        if self.lang_code:
+            pass
         else:
-            self.proxy = {}
+            self.lang_code = Client.LANG_CODE
+
+            if parser.has_section("pyrogram"):
+                self.lang_code = parser.get(
+                    "pyrogram",
+                    "lang_code",
+                    fallback=Client.LANG_CODE
+                )
+
+        if self._proxy:
+            self._proxy["enabled"] = True
+        else:
+            self._proxy = {}
 
             if parser.has_section("proxy"):
-                self.proxy["enabled"] = parser.getboolean("proxy", "enabled")
-                self.proxy["hostname"] = parser.get("proxy", "hostname")
-                self.proxy["port"] = parser.getint("proxy", "port")
-                self.proxy["username"] = parser.get("proxy", "username", fallback=None) or None
-                self.proxy["password"] = parser.get("proxy", "password", fallback=None) or None
+                self._proxy["enabled"] = parser.getboolean("proxy", "enabled")
+                self._proxy["hostname"] = parser.get("proxy", "hostname")
+                self._proxy["port"] = parser.getint("proxy", "port")
+                self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
+                self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
     def load_session(self):
         try:
@@ -846,7 +929,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -983,7 +1066,6 @@ class Client(Methods, BaseClient):
                 except (KeyError, ValueError):
                     raise PeerIdInvalid
 
-    # TODO: Improvements for the new API
     def save_file(self,
                   path: str,
                   file_id: int = None,
@@ -998,7 +1080,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self.dc_id, self.test_mode, self.proxy, self.auth_key, self.api_id)
+        session = Session(self, self.dc_id, self.auth_key, is_media=True)
         session.start()
 
         try:
@@ -1027,7 +1109,7 @@ class Client(Methods, BaseClient):
                             bytes=chunk
                         )
 
-                    assert self.send(rpc), "Couldn't upload file"
+                    assert session.send(rpc), "Couldn't upload file"
 
                     if is_missing_part:
                         return
@@ -1059,7 +1141,6 @@ class Client(Methods, BaseClient):
         finally:
             session.stop()
 
-    # TODO: Improvements for the new API
     def get_file(self,
                  dc_id: int,
                  id: int = None,
@@ -1083,11 +1164,10 @@ class Client(Methods, BaseClient):
                     )
 
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self.proxy,
-                        Auth(dc_id, self.test_mode, self.proxy).create(),
-                        self.api_id
+                        Auth(dc_id, self.test_mode, self._proxy).create(),
+                        is_media=True
                     )
 
                     session.start()
@@ -1102,11 +1182,10 @@ class Client(Methods, BaseClient):
                     )
                 else:
                     session = Session(
+                        self,
                         dc_id,
-                        self.test_mode,
-                        self.proxy,
                         self.auth_key,
-                        self.api_id
+                        is_media=True
                     )
 
                     session.start()
@@ -1172,11 +1251,10 @@ class Client(Methods, BaseClient):
 
                     if cdn_session is None:
                         cdn_session = Session(
+                            self,
                             r.dc_id,
-                            self.test_mode,
-                            self.proxy,
-                            Auth(r.dc_id, self.test_mode, self.proxy).create(),
-                            self.api_id,
+                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            is_media=True,
                             is_cdn=True
                         )
 
@@ -1213,11 +1291,13 @@ class Client(Methods, BaseClient):
                             chunk = r2.bytes
 
                             # https://core.telegram.org/cdn#decrypting-files
-                            decrypted_chunk = AES.ctr_decrypt(
+                            decrypted_chunk = AES.ctr256_decrypt(
                                 chunk,
                                 r.encryption_key,
-                                r.encryption_iv,
-                                offset
+                                bytearray(
+                                    r.encryption_iv[:-4]
+                                    + (offset // 16).to_bytes(4, "big")
+                                )
                             )
 
                             hashes = session.send(
@@ -1245,9 +1325,6 @@ class Client(Methods, BaseClient):
                                 break
                 except Exception as e:
                     raise e
-                finally:
-                    pass  # Don't stop sessions, they are now cached and kept online
-                    # cdn_session.stop()  TODO: Remove this branch
         except Exception as e:
             log.error(e, exc_info=True)
 
@@ -1259,6 +1336,3 @@ class Client(Methods, BaseClient):
             return ""
         else:
             return file_name
-        finally:
-            pass  # Don't stop sessions, they are now cached and kept online
-            # session.stop() TODO: Remove this branch

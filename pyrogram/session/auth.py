@@ -49,8 +49,9 @@ class Auth:
     def __init__(self, dc_id: int, test_mode: bool, proxy: dict):
         self.dc_id = dc_id
         self.test_mode = test_mode
+        self.proxy = proxy
 
-        self.connection = Connection(DataCenter(dc_id, test_mode), proxy)
+        self.connection = None
 
     @staticmethod
     def pack(data: Object) -> bytes:
@@ -83,6 +84,8 @@ class Auth:
         # The server may close the connection at any time, causing the auth key creation to fail.
         # If that happens, just try again up to MAX_RETRIES times.
         while True:
+            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))
 
@@ -163,7 +166,7 @@ class Auth:
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
 
-                answer_with_hash = AES.ige_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
+                answer_with_hash = AES.ige256_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
                 answer = answer_with_hash[20:]
 
                 server_dh_inner_data = Object.read(BytesIO(answer))
@@ -192,7 +195,7 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 16)
                 data_with_hash = sha + data + padding
-                encrypted_data = AES.ige_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
+                encrypted_data = AES.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = self.send(

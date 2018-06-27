@@ -26,27 +26,22 @@ log = logging.getLogger(__name__)
 class TCPAbridged(TCP):
     def __init__(self, proxy: dict):
         super().__init__(proxy)
-        self.is_first_packet = None
 
     def connect(self, address: tuple):
         super().connect(address)
-        self.is_first_packet = True
+        super().sendall(b"\xef")
+
         log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
         length = len(data) // 4
 
-        data = (
-            bytes([length]) + data
-            if length <= 126
-            else b"\x7f" + int.to_bytes(length, 3, "little") + data
+        super().sendall(
+            (bytes([length])
+             if length <= 126
+             else b"\x7f" + length.to_bytes(3, "little"))
+            + data
         )
-
-        if self.is_first_packet:
-            data = b"\xef" + data
-            self.is_first_packet = False
-
-        super().sendall(data)
 
     def recvall(self, length: int = 0) -> bytes or None:
         length = super().recvall(1)

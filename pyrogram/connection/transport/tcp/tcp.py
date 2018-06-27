@@ -41,15 +41,15 @@ class TCP(socks.socksocket):
         if proxy and self.proxy_enabled:
             self.set_proxy(
                 proxy_type=socks.SOCKS5,
-                addr=proxy["hostname"],
-                port=proxy["port"],
-                username=proxy["username"],
-                password=proxy["password"]
+                addr=proxy.get("hostname", None),
+                port=proxy.get("port", None),
+                username=proxy.get("username", None),
+                password=proxy.get("password", None)
             )
 
             log.info("Using proxy {}:{}".format(
-                proxy["hostname"],
-                proxy["port"]
+                proxy.get("hostname", None),
+                proxy.get("port", None)
             ))
 
     def close(self):

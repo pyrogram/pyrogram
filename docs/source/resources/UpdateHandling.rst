@@ -6,8 +6,10 @@ and are handled by registering one or more callback functions with an Handler. T
 from, one for each kind of update:
 
 -   `MessageHandler <../pyrogram/handlers/MessageHandler.html>`_
+-   `DeletedMessagesHandler <../pyrogram/handlers/DeletedMessagesHandler.html>`_
 -   `CallbackQueryHandler <../pyrogram/handlers/CallbackQueryHandler.html>`_
 -   `RawUpdateHandler <../pyrogram/handlers/RawUpdateHandler.html>`_
+-   `DisconnectHandler <../pyrogram/handlers/DisconnectHandler.html>`_
 
 Registering an Handler
 ----------------------
@@ -31,8 +33,7 @@ We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will
             print(message)
 
 
-        app.start()
-        app.idle()
+        app.run()
 
 -   If you prefer not to use decorators, there is an alternative way for registering Handlers.
     This is useful, for example, when you want to keep your callback functions in separate files.
@@ -50,8 +51,7 @@ We shall examine the :obj:`MessageHandler <pyrogram.MessageHandler>`, which will
 
         app.add_handler(MessageHandler(my_handler))
 
-        app.start()
-        app.idle()
+        app.run()
 
 Using Filters
 -------------

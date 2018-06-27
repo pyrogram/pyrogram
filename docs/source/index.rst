@@ -26,11 +26,11 @@ Welcome to Pyrogram
         </a>
         <br><br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://media.pyrogram.ml/images/scheme.svg"
-                alt="Scheme Layer 75">
+            <img src="https://img.shields.io/badge/SCHEME-LAYER%2081-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+                alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://media.pyrogram.ml/images/tgcrypto.svg"
+            <img src="https://img.shields.io/badge/TGCRYPTO-V1.0.4-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
                 alt="TgCrypto">
         </a>
     </p>
@@ -44,12 +44,10 @@ Welcome to Pyrogram
 
     @app.on_message(Filters.private)
     def hello(client, message):
-        client.send_message(
-            message.chat.id, "Hello {}".format(message.from_user.first_name))
+        message.reply("Hello {}".format(message.from_user.first_name))
 
 
-    app.start()
-    app.idle()
+    app.run()
 
 Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the library.
 Contents are organized by topic and can be accessed from the sidebar, or by following them one by one using the Next
@@ -58,7 +56,7 @@ button at the end of each page. But first, here's a brief overview of what is th
 About
 -----
 
-Pyrogram is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
+**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
 custom Telegram applications that interact with the MTProto API as both User and Bot.
 
 Features
@@ -67,29 +65,30 @@ Features
 -   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
 -   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 76 running on MTProto 2.0.
--   **Documented**: Pyrogram API methods are documented and resemble the Telegram Bot API.
+-   **Updated** to the latest Telegram API version, currently Layer 81 on top of MTProto 2.0.
+-   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
 -   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
 To get started, press the Next button.
 
 .. toctree::
     :hidden:
-    :caption: Getting Started
+    :caption: Quick Start
 
-    start/QuickInstallation
-    start/ProjectSetup
-    start/BasicUsage
+    start/Installation
+    start/Setup
+    start/Usage
 
 .. toctree::
     :hidden:
     :caption: Resources
 
     resources/UpdateHandling
-    resources/SOCKS5Proxy
-    resources/TgCrypto
     resources/AutoAuthorization
+    resources/CustomizeSessions
+    resources/TgCrypto
     resources/TextFormatting
+    resources/SOCKS5Proxy
     resources/BotsInteraction
     resources/ErrorHandling
 
@@ -107,5 +106,4 @@ To get started, press the Next button.
     types/index
 
 .. _`Telegram`: https://telegram.org/
-
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto/

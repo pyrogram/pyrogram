@@ -7,6 +7,8 @@ Client
     :inherited-members:
     :members:
 
+    .. _available-methods:
+
     **Available methods**
 
     .. autosummary::
@@ -15,6 +17,7 @@ Client
         start
         stop
         idle
+        run
         on_message
         on_callback_query
         on_raw_update
@@ -49,6 +52,10 @@ Client
         enable_cloud_password
         change_cloud_password
         remove_cloud_password
+        kick_chat_member
+        unban_chat_member
+        restrict_chat_member
+        promote_chat_member
         add_contacts
         get_contacts
         delete_contacts

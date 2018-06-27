@@ -28,8 +28,12 @@ Inline Bots
 
     .. code-block:: python
 
-        # Send the first result (bot_results.results[0]) to your own chat (Saved Messages)
-        app.send_inline_bot_result("me", bot_results.query_id, bot_results.results[0].id)
+        # Send the first result to your own chat
+        app.send_inline_bot_result(
+            "me",
+            bot_results.query_id,
+            bot_results.results[0].id
+        )
 
     .. figure:: https://i.imgur.com/wwxr7B7.png
         :width: 90%

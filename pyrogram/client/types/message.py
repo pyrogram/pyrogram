@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.core import Object
+from .reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 class Message(Object):
@@ -260,7 +261,7 @@ class Message(Object):
             reply_markup=None,
     ):
         self.message_id = message_id  # int
-        self.client = client
+        self._client = client
         self.date = date  # int
         self.chat = chat  # Chat
         self.from_user = from_user  # flags.0?User
@@ -309,3 +310,267 @@ class Message(Object):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+
+    def reply(self,
+              text: str,
+              quote: bool = None,
+              parse_mode: str = "",
+              disable_web_page_preview: bool = None,
+              disable_notification: bool = None,
+              reply_to_message_id: int = None,
+              reply_markup=None):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_message(
+                chat_id=message.chat.id,
+                text="hello",
+                reply_to_message_id=message.message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply("hello", quote=True)
+
+        Args:
+            text (``str``):
+                Text of the message to be sent.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return self._client.send_message(
+            chat_id=self.chat.id,
+            text=text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    def forward(self,
+                chat_id: int or str,
+                disable_notification: bool = None):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.forward_messages(
+                chat_id=chat_id,
+                from_chat_id=message.chat.id,
+                message_ids=message.message_id,
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.forward(chat_id)
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+        Returns:
+            On success, the forwarded Message is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        return self._client.forward_messages(
+            chat_id=chat_id,
+            from_chat_id=self.chat.id,
+            message_ids=self.message_id,
+            disable_notification=disable_notification
+        )
+
+    def delete(self, revoke: bool = True):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.delete_messages(
+                chat_id=chat_id,
+                message_ids=message.message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.delete()
+
+        Args:
+            revoke (``bool``, *optional*):
+                Deletes messages on both parts.
+                This is only for private cloud chats and normal groups, messages on
+                channels and supergroups are always revoked (i.e.: deleted for everyone).
+                Defaults to True.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        self._client.delete_messages(
+            chat_id=self.chat.id,
+            message_ids=self.message_id,
+            revoke=revoke
+        )
+
+        return True
+
+    def click(self, x: int or str, y: int = None, quote: bool = None):
+        """Use this method to click a button attached to the message.
+        It's a shortcut for:
+
+        - Clicking inline buttons:
+
+        .. code-block:: python
+
+            client.request_callback_answer(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                callback_data=message.reply_markup[i][j].callback_data
+            )
+
+        - Clicking normal buttons:
+
+        .. code-block:: python
+
+            client.send_message(
+                chat_id=message.chat.id,
+                text=message.reply_markup[i][j].text
+            )
+
+        This method can be used in three different ways:
+
+        1.  Pass one integer argument only (e.g.: ``.click(2)``, to click a button at index 2).
+            Buttons are counted left to right, starting from the top.
+
+        2.  Pass two integer arguments (e.g.: ``.click(1, 0)``, to click a button at position (1, 0)).
+            The origin (0, 0) is top-left.
+
+        3.  Pass one string argument only (e.g.: ``.click("Settings")``, to click a button by using its label).
+            Only the first matching button will be pressed.
+
+        Args:
+            x (``int`` | ``str``):
+                Used as integer index, integer abscissa (in pair with y) or as string label.
+
+            y (``int``, *optional*):
+                Used as ordinate only (in pair with x).
+
+            quote (``bool``, *optional*):
+                Useful for normal buttons only, where pressing it will result in a new message sent.
+                If ``True``, the message will be sent as a reply to this message.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+        Returns:
+            -   The result of *request_callback_answer()* in case of inline callback button clicks.
+            -   The result of *reply()* in case of normal button clicks.
+            -   A string in case the inline button is an URL, switch_inline_query or switch_inline_query_current_chat
+                button.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the provided index or position is out of range or the button label was not found
+            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
+        """
+        if isinstance(self.reply_markup, ReplyKeyboardMarkup):
+            if quote is None:
+                quote = self.chat.type != "private"
+
+            return self.reply(x, quote=quote)
+        elif isinstance(self.reply_markup, InlineKeyboardMarkup):
+            if isinstance(x, int) and y is None:
+                try:
+                    button = [
+                        button
+                        for row in self.reply_markup.inline_keyboard
+                        for button in row
+                    ][x]
+                except IndexError:
+                    raise ValueError("The button at index {} doesn't exist".format(x)) from None
+            elif isinstance(x, int) and isinstance(y, int):
+                try:
+                    button = self.reply_markup.inline_keyboard[y][x]
+                except IndexError:
+                    raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y)) from None
+            elif isinstance(x, str):
+                x = x.encode("utf-16", "surrogatepass").decode("utf-16")
+
+                try:
+                    button = [
+                        button
+                        for row in self.reply_markup.inline_keyboard
+                        for button in row
+                        if x == button.text
+                    ][0]
+                except IndexError:
+                    raise ValueError(
+                        "The button with label '{}' doesn't exists".format(
+                            x.encode("unicode_escape").decode()
+                        )
+                    ) from None
+            else:
+                raise ValueError("Invalid arguments")
+
+            if button.callback_data:
+                return self._client.request_callback_answer(
+                    chat_id=self.chat.id,
+                    message_id=self.message_id,
+                    callback_data=button.callback_data
+                )
+            elif button.url:
+                return button.url
+            elif button.switch_inline_query:
+                return button.switch_inline_query
+            elif button.switch_inline_query_current_chat:
+                return button.switch_inline_query_current_chat
+            else:
+                raise ValueError("This button is not supported yet")
+        else:
+            raise ValueError("The message doesn't contain any keyboard")

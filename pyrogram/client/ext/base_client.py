@@ -16,17 +16,35 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import platform
 import re
 from queue import Queue
 from threading import Lock
 
+from pyrogram import __version__
 from ..style import Markdown, HTML
 from ...api.core import Object
+from ...session import Session
 from ...session.internals import MsgId
 
 
 class BaseClient:
-    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:t\.me/joinchat/)([\w-]+)$")
+    APP_VERSION = "Pyrogram \U0001f525 {}".format(__version__)
+
+    DEVICE_MODEL = "{} {}".format(
+        platform.python_implementation(),
+        platform.python_version()
+    )
+
+    SYSTEM_VERSION = "{} {}".format(
+        platform.system(),
+        platform.release()
+    )
+
+    SYSTEM_LANG_CODE = "en"
+    LANG_CODE = "en"
+
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
@@ -75,7 +93,9 @@ class BaseClient:
         self.download_queue = Queue()
         self.download_workers_list = []
 
-    def send(self, data: Object):
+        self.disconnect_handler = None
+
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         pass
 
     def resolve_peer(self, peer_id: int or str):
