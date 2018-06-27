@@ -27,7 +27,7 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types
 from pyrogram.api.all import layer
 from pyrogram.api.core import Object, MsgContainer, Int, Long, FutureSalt, FutureSalts
-from pyrogram.api.errors import Error, InternalServerError
+from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import MTProto
 from .internals import MsgId, MsgFactory, DataCenter
@@ -143,6 +143,9 @@ class Session:
                 self.ping_task = asyncio.ensure_future(self.ping())
 
                 log.info("Connection inited: Layer {}".format(layer))
+            except AuthKeyDuplicated as e:
+                self.stop()
+                raise e
             except (OSError, TimeoutError, Error):
                 await self.stop()
             except Exception as e:
