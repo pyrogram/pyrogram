@@ -757,7 +757,7 @@ def get_offset_date(dialogs):
         return 0
 
 
-def parse_photos(photos):
+def parse_profile_photos(photos):
     if isinstance(photos, types.photos.Photos):
         total_count = len(photos.photos)
     else:
