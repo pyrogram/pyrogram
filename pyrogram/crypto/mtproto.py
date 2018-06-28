@@ -25,8 +25,6 @@ from . import AES, KDF
 
 
 class MTProto:
-    INITIAL_SALT = 0x616e67656c696361
-
     @staticmethod
     def pack(message: Message, salt: int, session_id: bytes, auth_key: bytes, auth_key_id: bytes) -> bytes:
         data = Long(salt) + session_id + message.write()

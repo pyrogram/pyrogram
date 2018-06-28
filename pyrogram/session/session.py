@@ -117,7 +117,7 @@ class Session:
                 self.net_worker_task = asyncio.ensure_future(self.net_worker())
                 self.recv_task = asyncio.ensure_future(self.recv())
 
-                self.current_salt = FutureSalt(0, 0, MTProto.INITIAL_SALT)
+                self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
                 self.current_salt = FutureSalt(0, 0, (await self._send(functions.Ping(0))).new_server_salt)
                 self.current_salt = (await self._send(functions.GetFutureSalts(1))).salts[0]
 
