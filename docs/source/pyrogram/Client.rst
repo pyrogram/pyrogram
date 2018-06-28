@@ -42,6 +42,7 @@ Client
         send_chat_action
         download_media
         get_user_profile_photos
+        delete_profile_photos
         edit_message_text
         edit_message_caption
         edit_message_reply_markup
