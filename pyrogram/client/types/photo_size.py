@@ -32,18 +32,14 @@ class PhotoSize(Object):
         height (``int``):
             Photo height.
 
-        file_size (``int``, *optional*):
+        file_size (``int``):
             File size.
-
-        date (``int``, *optional*):
-            Date the photo was sent in Unix time
     """
 
     ID = 0xb0700005
 
-    def __init__(self, file_id, width, height, file_size=None, date=None):
-        self.file_id = file_id  # string
-        self.width = width  # int
-        self.height = height  # int
-        self.file_size = file_size  # flags.0?int
-        self.date = date
+    def __init__(self, file_id: str, width: int, height: int, file_size: int):
+        self.file_id = file_id
+        self.width = width
+        self.height = height
+        self.file_size = file_size
