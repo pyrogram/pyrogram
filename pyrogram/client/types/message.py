@@ -132,7 +132,7 @@ class Message(Object):
         new_chat_title (``str``, *optional*):
             A chat title was changed to this value.
 
-        new_chat_photo (List of :obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        new_chat_photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
             A chat photo was change to this value.
 
         delete_chat_photo (``bool``, *optional*):
