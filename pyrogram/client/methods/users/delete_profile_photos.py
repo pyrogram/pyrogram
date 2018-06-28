@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class DeleteProfilePhotos(BaseClient):
-    def delete_profile_photos(self, id: str or list):
+    async def delete_profile_photos(self, id: str or list):
         """Use this method to delete your own profile photos
 
         Args:
@@ -51,7 +51,7 @@ class DeleteProfilePhotos(BaseClient):
                 )
             )
 
-        return bool(self.send(
+        return bool(await self.send(
             functions.photos.DeletePhotos(
                 id=input_photos
             )
