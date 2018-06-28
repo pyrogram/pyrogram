@@ -89,8 +89,8 @@ class Message(Object):
         game (:obj:`Game <pyrogram.Game>`, *optional*):
             Message is a game, information about the game. More about games.
 
-        photo (List of :obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Message is a photo, available sizes of the photo.
+        photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
+            Message is a photo, information about the photo.
 
         sticker (:obj:`Sticker <pyrogram.Sticker>`, *optional*):
             Message is a sticker, information about the sticker.
