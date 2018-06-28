@@ -29,7 +29,7 @@ class Photo(Object):
         date (``int``):
             Date the photo was sent in Unix time
 
-        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>):
+        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
             Available sizes of this photo
     """
 
