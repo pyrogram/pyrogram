@@ -674,13 +674,23 @@ def parse_messages(
                                     ),
                                     width=size.w,
                                     height=size.h,
-                                    file_size=file_size,
-                                    date=photo.date
+                                    file_size=file_size
                                 )
 
                                 photo_sizes.append(photo_size)
 
-                    new_chat_photo = photo_sizes
+                    new_chat_photo = pyrogram_types.Photo(
+                        id=b64encode(
+                            pack(
+                                "<qq",
+                                photo.id,
+                                photo.access_hash
+                            ),
+                            b"-_"
+                        ).decode().rstrip("="),
+                        date=photo.date,
+                        sizes=photo_sizes
+                    )
 
             m = pyrogram_types.Message(
                 message_id=message.id,
