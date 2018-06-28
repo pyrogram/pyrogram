@@ -48,7 +48,7 @@ class GetUserProfilePhotos(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return utils.parse_photos(
+        return utils.parse_profile_photos(
             await self.send(
                 functions.photos.GetUserPhotos(
                     user_id=await self.resolve_peer(user_id),

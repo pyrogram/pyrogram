@@ -19,27 +19,23 @@
 from pyrogram.api.core import Object
 
 
-class PhotoSize(Object):
-    """This object represents one size of a photo or a file / sticker thumbnail.
+class Photo(Object):
+    """This object represents a Photo
 
     Args:
-        file_id (``str``):
-            Unique identifier for this file.
+        id (``str``):
+            Unique identifier for this photo.
 
-        width (``int``):
-            Photo width.
+        date (``int``):
+            Date the photo was sent in Unix time
 
-        height (``int``):
-            Photo height.
-
-        file_size (``int``):
-            File size.
+        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
+            Available sizes of this photo
     """
 
-    ID = 0xb0700005
+    ID = 0xb0700027
 
-    def __init__(self, file_id: str, width: int, height: int, file_size: int):
-        self.file_id = file_id
-        self.width = width
-        self.height = height
-        self.file_size = file_size
+    def __init__(self, id: str, date: int, sizes: list):
+        self.id = id
+        self.date = date
+        self.sizes = sizes

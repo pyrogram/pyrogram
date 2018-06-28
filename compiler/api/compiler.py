@@ -494,17 +494,16 @@ def start():
         f.write("\n    0xb0700015: \"pyrogram.client.types.ChatPhoto\",")
         f.write("\n    0xb0700016: \"pyrogram.client.types.ChatMember\",")
         f.write("\n    0xb0700017: \"pyrogram.client.types.Sticker\",")
-        f.write("\n    0xb0700025: \"pyrogram.client.types.GIF\",")
-        f.write("\n    0xb0700026: \"pyrogram.client.types.Messages\",")
-
         f.write("\n    0xb0700018: \"pyrogram.client.types.reply_markup.ForceReply\",")
         f.write("\n    0xb0700019: \"pyrogram.client.types.reply_markup.InlineKeyboardButton\",")
         f.write("\n    0xb0700020: \"pyrogram.client.types.reply_markup.InlineKeyboardMarkup\",")
         f.write("\n    0xb0700021: \"pyrogram.client.types.reply_markup.KeyboardButton\",")
         f.write("\n    0xb0700022: \"pyrogram.client.types.reply_markup.ReplyKeyboardMarkup\",")
         f.write("\n    0xb0700023: \"pyrogram.client.types.reply_markup.ReplyKeyboardRemove\",")
-
-        f.write("\n    0xb0700024: \"pyrogram.client.types.CallbackQuery\"")
+        f.write("\n    0xb0700024: \"pyrogram.client.types.CallbackQuery\",")
+        f.write("\n    0xb0700025: \"pyrogram.client.types.GIF\",")
+        f.write("\n    0xb0700026: \"pyrogram.client.types.Messages\",")
+        f.write("\n    0xb0700027: \"pyrogram.client.types.Photo\",")
 
         f.write("\n}\n")
 
