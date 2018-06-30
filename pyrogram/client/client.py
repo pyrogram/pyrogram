@@ -1082,8 +1082,8 @@ class Client(Methods, BaseClient):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = int(math.ceil(file_size / part_size))
-        is_big = True if file_size > 10 * 1024 * 1024 else False
-        is_missing_part = True if file_id is not None else False
+        is_big = file_size > 10 * 1024 * 1024
+        is_missing_part = file_id is not None
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
         session = Session(self, self.dc_id, self.auth_key, is_media=True)
