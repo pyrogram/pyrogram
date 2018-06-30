@@ -42,10 +42,11 @@ class TCP:
         self.lock = asyncio.Lock()
 
         self.socket = socks.socksocket()
+        self.socket.settimeout(TCP.TIMEOUT)
+
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
 
-        self.socket.settimeout(TCP.TIMEOUT)
         self.proxy_enabled = proxy.get("enabled", False)
 
         if proxy and self.proxy_enabled:
