@@ -1070,6 +1070,15 @@ class Client(Methods, BaseClient):
                         file_part: int = 0,
                         progress: callable = None,
                         progress_args: tuple = ()):
+        async def worker():
+            while True:
+                data = await queue.get()
+
+                if data is None:
+                    return
+
+                await asyncio.ensure_future(session.send(data))
+
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
         file_total_parts = int(math.ceil(file_size / part_size))
@@ -1077,11 +1086,13 @@ class Client(Methods, BaseClient):
         is_missing_part = True if file_id is not None else False
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
-
         session = Session(self, self.dc_id, self.auth_key, is_media=True)
-        await session.start()
+        workers = [asyncio.ensure_future(worker()) for _ in range(4)]
+        queue = asyncio.Queue(16)
 
         try:
+            await session.start()
+
             with open(path, "rb") as f:
                 f.seek(part_size * file_part)
 
@@ -1107,7 +1118,7 @@ class Client(Methods, BaseClient):
                             bytes=chunk
                         )
 
-                    assert await session.send(rpc), "Couldn't upload file"
+                    await queue.put(rpc)
 
                     if is_missing_part:
                         return
@@ -1137,6 +1148,10 @@ class Client(Methods, BaseClient):
                     md5_checksum=md5_sum
                 )
         finally:
+            for _ in workers:
+                await queue.put(None)
+
+            await asyncio.gather(*workers)
             await session.stop()
 
     async def get_file(self,
