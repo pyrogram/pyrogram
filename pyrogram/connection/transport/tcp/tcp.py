@@ -39,6 +39,8 @@ class TCP:
     def __init__(self, proxy: dict):
         self.proxy = proxy
 
+        self.lock = asyncio.Lock()
+
         self.socket = socks.socksocket()
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
@@ -76,8 +78,9 @@ class TCP:
                 self.socket.close()
 
     async def send(self, data: bytes):
-        self.writer.write(data)
-        await self.writer.drain()
+        with await self.lock:
+            self.writer.write(data)
+            await self.writer.drain()
 
     async def recv(self, length: int = 0):
         data = b""
