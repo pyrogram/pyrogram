@@ -77,7 +77,7 @@ class DownloadMedia(BaseClient):
         """
         if isinstance(message, pyrogram_types.Message):
             if message.photo:
-                media = message.photo[-1]
+                media = message.photo.sizes[-1]
             elif message.audio:
                 media = message.audio
             elif message.document:
@@ -95,7 +95,7 @@ class DownloadMedia(BaseClient):
             else:
                 return
         elif isinstance(message, (
-                pyrogram_types.PhotoSize,
+                pyrogram_types.Photo,
                 pyrogram_types.Audio,
                 pyrogram_types.Document,
                 pyrogram_types.Video,

@@ -9,6 +9,7 @@ from, one for each kind of update:
 -   `DeletedMessagesHandler <../pyrogram/handlers/DeletedMessagesHandler.html>`_
 -   `CallbackQueryHandler <../pyrogram/handlers/CallbackQueryHandler.html>`_
 -   `RawUpdateHandler <../pyrogram/handlers/RawUpdateHandler.html>`_
+-   `DisconnectHandler <../pyrogram/handlers/DisconnectHandler.html>`_
 
 Registering an Handler
 ----------------------

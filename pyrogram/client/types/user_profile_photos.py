@@ -26,12 +26,12 @@ class UserProfilePhotos(Object):
         total_count (``int``):
             Total number of profile pictures the target user has.
 
-        photos (List of List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
-            Requested profile pictures (in up to 4 sizes each).
+        photos (List of :obj:`Photo <pyrogram.Photo>`):
+            Requested profile pictures.
     """
 
     ID = 0xb0700014
 
     def __init__(self, total_count: int, photos: list):
-        self.total_count = total_count  # int
-        self.photos = photos  # Vector<Vector<PhotoSize>>
+        self.total_count = total_count
+        self.photos = photos

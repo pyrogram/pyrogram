@@ -35,7 +35,7 @@ class ReplyKeyboardRemove(Object):
             keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
     """
 
-    ID = 0xb0700002
+    ID = 0xb0700023
 
     def __init__(self, selective: bool = None):
         self.selective = selective

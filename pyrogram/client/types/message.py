@@ -89,8 +89,8 @@ class Message(Object):
         game (:obj:`Game <pyrogram.Game>`, *optional*):
             Message is a game, information about the game. More about games.
 
-        photo (List of :obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Message is a photo, available sizes of the photo.
+        photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
+            Message is a photo, information about the photo.
 
         sticker (:obj:`Sticker <pyrogram.Sticker>`, *optional*):
             Message is a sticker, information about the sticker.
@@ -132,7 +132,7 @@ class Message(Object):
         new_chat_title (``str``, *optional*):
             A chat title was changed to this value.
 
-        new_chat_photo (List of :obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        new_chat_photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
             A chat photo was change to this value.
 
         delete_chat_photo (``bool``, *optional*):
@@ -516,7 +516,8 @@ class Message(Object):
 
         Raises:
             :class:`Error <pyrogram.Error>`
-            ``ValueError``: If the provided index or position is out of range or the button label was not found.
+            ``ValueError``: If the provided index or position is out of range or the button label was not found
+            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, ReplyKeyboardMarkup):
             if quote is None:
@@ -561,7 +562,7 @@ class Message(Object):
                 return self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
-                    data=button.callback_data
+                    callback_data=button.callback_data
                 )
             elif button.url:
                 return button.url

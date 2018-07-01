@@ -31,6 +31,7 @@ from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
 from .messages import Messages
+from .photo import Photo
 from .photo_size import PhotoSize
 from .reply_markup import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,

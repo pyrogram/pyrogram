@@ -42,6 +42,7 @@ Client
         send_chat_action
         download_media
         get_user_profile_photos
+        delete_profile_photos
         edit_message_text
         edit_message_caption
         edit_message_reply_markup
@@ -62,6 +63,7 @@ Client
         get_inline_bot_results
         send_inline_bot_result
         answer_callback_query
+        request_callback_answer
         get_users
         get_chat
         get_messages

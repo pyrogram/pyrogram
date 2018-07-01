@@ -9,6 +9,7 @@ Types
     Message
     MessageEntity
     Messages
+    Photo
     PhotoSize
     Audio
     Document

@@ -31,7 +31,7 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
-from pyrogram.api.errors import Error, InternalServerError
+from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
 from .internals import MsgId, MsgFactory, DataCenter
@@ -145,7 +145,7 @@ class Session:
                                 app_version=self.client.app_version,
                                 device_model=self.client.device_model,
                                 system_version=self.client.system_version,
-                                system_lang_code=self.client.system_lang_code,
+                                system_lang_code=self.client.lang_code,
                                 lang_code=self.client.lang_code,
                                 lang_pack="",
                                 query=functions.help.GetConfig(),
@@ -157,6 +157,9 @@ class Session:
                 self.ping_thread.start()
 
                 log.info("Connection inited: Layer {}".format(layer))
+            except AuthKeyDuplicated as e:
+                self.stop()
+                raise e
             except (OSError, TimeoutError, Error):
                 self.stop()
             except Exception as e:
