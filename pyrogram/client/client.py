@@ -711,7 +711,9 @@ class Client(Methods, BaseClient):
 
                     file_name = "{}_{}_{}{}".format(
                         media_type_str,
-                        datetime.fromtimestamp(media.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                        datetime.fromtimestamp(
+                            getattr(media, "date", None) or time.time()
+                        ).strftime("%Y-%m-%d_%H-%M-%S"),
                         self.rnd_id(),
                         extension
                     )
