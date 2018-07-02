@@ -48,6 +48,7 @@ from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
 from .ext import BaseClient, Syncer, utils
+from .ext.utils import ainput
 from .handlers import DisconnectHandler
 from .methods import Methods
 
@@ -413,15 +414,15 @@ class Client(Methods, BaseClient):
 
         while True:
             if self.phone_number is None:
-                self.phone_number = input("Enter phone number: ")
+                self.phone_number = await ainput("Enter phone number: ")
 
                 while True:
-                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
+                    confirm = await ainput("Is \"{}\" correct? (y/n): ".format(self.phone_number))
 
                     if confirm in ("y", "1"):
                         break
                     elif confirm in ("n", "2"):
-                        self.phone_number = input("Enter phone number: ")
+                        self.phone_number = await ainput("Enter phone number: ")
 
             self.phone_number = self.phone_number.strip("+")
 
@@ -488,7 +489,7 @@ class Client(Methods, BaseClient):
 
         while True:
             self.phone_code = (
-                input("Enter phone code: ") if self.phone_code is None
+                await ainput("Enter phone code: ") if self.phone_code is None
                 else self.phone_code if type(self.phone_code) is str
                 else str(self.phone_code(self.phone_number))
             )
@@ -514,8 +515,8 @@ class Client(Methods, BaseClient):
                     except PhoneNumberUnoccupied:
                         pass
 
-                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
-                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
+                    self.first_name = self.first_name if self.first_name is not None else await ainput("First name: ")
+                    self.last_name = self.last_name if self.last_name is not None else await ainput("Last name: ")
 
                     r = await self.send(
                         functions.auth.SignUp(
