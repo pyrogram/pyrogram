@@ -16,9 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
+import sys
 import time
 from base64 import b64decode, b64encode
+from concurrent.futures.thread import ThreadPoolExecutor
 from struct import pack
 from weakref import proxy
 
@@ -55,6 +58,13 @@ class Str(str):
     @property
     def html(self):
         return self._client.html.unparse(self, self._entities)
+
+
+async def ainput(prompt: str = ""):
+    with ThreadPoolExecutor(1, "AsyncInput", lambda x: print(x, end="", flush=True), (prompt,)) as executor:
+        return (await asyncio.get_event_loop().run_in_executor(
+            executor, sys.stdin.readline
+        )).rstrip()
 
 
 ENTITIES = {
