@@ -77,7 +77,12 @@ class DownloadMedia(BaseClient):
         """
         if isinstance(message, pyrogram_types.Message):
             if message.photo:
-                media = message.photo.sizes[-1]
+                media = pyrogram_types.Document(
+                    file_id=message.photo.sizes[-1].file_id,
+                    file_size=message.photo.sizes[-1].file_size,
+                    mime_type="",
+                    date=message.photo.date
+                )
             elif message.audio:
                 media = message.audio
             elif message.document:
@@ -96,6 +101,7 @@ class DownloadMedia(BaseClient):
                 return
         elif isinstance(message, (
                 pyrogram_types.Photo,
+                pyrogram_types.PhotoSize,
                 pyrogram_types.Audio,
                 pyrogram_types.Document,
                 pyrogram_types.Video,
@@ -104,7 +110,15 @@ class DownloadMedia(BaseClient):
                 pyrogram_types.Sticker,
                 pyrogram_types.GIF
         )):
-            media = message
+            if isinstance(message, pyrogram_types.Photo):
+                media = pyrogram_types.Document(
+                    file_id=message.sizes[-1].file_id,
+                    file_size=message.sizes[-1].file_size,
+                    mime_type="",
+                    date=message.date
+                )
+            else:
+                media = message
         elif isinstance(message, str):
             media = pyrogram_types.Document(
                 file_id=message,
