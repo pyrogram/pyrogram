@@ -61,7 +61,9 @@ class Str(str):
 
 
 async def ainput(prompt: str = ""):
-    with ThreadPoolExecutor(1, "AsyncInput", lambda x: print(x, end="", flush=True), (prompt,)) as executor:
+    print(prompt, end="", flush=True)
+
+    with ThreadPoolExecutor(1, "AsyncInput") as executor:
         return (await asyncio.get_event_loop().run_in_executor(
             executor, sys.stdin.readline
         )).rstrip()
