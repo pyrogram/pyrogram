@@ -585,7 +585,7 @@ class Client(Methods, BaseClient):
                 break
 
         if terms_of_service:
-            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
+            assert await self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
 
         self.password = None
         self.user_id = r.user.id
