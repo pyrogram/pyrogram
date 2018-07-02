@@ -24,11 +24,12 @@ from ...ext import BaseClient, utils
 class GetHistory(BaseClient):
     def get_history(self,
                     chat_id: int or str,
-                    offset: int = 0,
                     limit: int = 100,
+                    offset: int = 0,
                     offset_id: int = 0,
                     offset_date: int = 0,
-                    reverse: bool = False):
+                    add_offset: int = 0,
+                    downwards: bool = False):
         """Use this method to retrieve the history of a chat.
 
         You can get up to 100 messages at once.
@@ -53,9 +54,6 @@ class GetHistory(BaseClient):
 
             offset_date (``int``, *optional*):
                 Pass a date in Unix time as offset to retrieve only older messages starting from that date.
-                
-            reverse (``bool``, *optional*):
-                get the messages in order from first to last (instead of newest to oldest).
 
         Returns:
             On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
@@ -63,15 +61,13 @@ class GetHistory(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        if reverse:
-            offset = -limit*(offset + 1)
-            if offset_id: offset_id +=1
+        # TODO: Docstrings
         r = self.send(
             functions.messages.GetHistory(
                 peer=self.resolve_peer(chat_id),
                 offset_id=offset_id,
                 offset_date=offset_date,
-                add_offset=offset,
+                add_offset=offset + add_offset - (limit if downwards else 0),
                 limit=limit,
                 max_id=0,
                 min_id=0,
@@ -113,5 +109,5 @@ class GetHistory(BaseClient):
 
         return pyrogram.Messages(
             total_count=getattr(r, "count", len(r.messages)),
-            messages=messages if not reverse else messages[::-1]
+            messages=messages[::-1]
         )
