@@ -19,7 +19,6 @@
 import asyncio
 import base64
 import binascii
-import getpass
 import inspect
 import json
 import logging
@@ -548,7 +547,7 @@ class Client(Methods, BaseClient):
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
-                            self.password = getpass.getpass("Enter password: ")
+                            self.password = await ainput("Enter password: ")
 
                         if type(self.password) is str:
                             self.password = r.current_salt + self.password.encode() + r.current_salt
