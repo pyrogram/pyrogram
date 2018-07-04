@@ -235,7 +235,7 @@ class Client(Methods, BaseClient):
                 self.get_contacts()
             else:
                 self.send(functions.messages.GetPinnedDialogs())
-                self.get_dialogs_chunk(0)
+                self.get_initial_dialogs_chunk()
         else:
             self.send(functions.updates.GetState())
 
@@ -978,7 +978,7 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    def get_dialogs_chunk(self, offset_date):
+    def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
                 r = self.send(
@@ -1001,14 +1001,14 @@ class Client(Methods, BaseClient):
     def get_initial_dialogs(self):
         self.send(functions.messages.GetPinnedDialogs())
 
-        dialogs = self.get_dialogs_chunk(0)
+        dialogs = self.get_initial_dialogs_chunk()
         offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.get_dialogs_chunk(offset_date)
+            dialogs = self.get_initial_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
 
-        self.get_dialogs_chunk(0)
+        self.get_initial_dialogs_chunk()
 
     def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
