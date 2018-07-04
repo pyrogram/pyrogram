@@ -909,7 +909,7 @@ def parse_chat_full(
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
-                    int("-100" + str(full_chat.id)),
+                    parsed_chat.id,
                     full_chat.pinned_msg_id
                 )
 
