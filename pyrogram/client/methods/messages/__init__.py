@@ -21,6 +21,7 @@ from .edit_message_caption import EditMessageCaption
 from .edit_message_reply_markup import EditMessageReplyMarkup
 from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
+from .get_dialogs import GetDialogs
 from .get_history import GetHistory
 from .get_messages import GetMessages
 from .send_audio import SendAudio
@@ -47,6 +48,7 @@ class Messages(
     ForwardMessages,
     GetHistory,
     GetMessages,
+    GetDialogs,
     SendAudio,
     SendChatAction,
     SendContact,
