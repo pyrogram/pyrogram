@@ -504,6 +504,8 @@ def start():
         f.write("\n    0xb0700025: \"pyrogram.client.types.GIF\",")
         f.write("\n    0xb0700026: \"pyrogram.client.types.Messages\",")
         f.write("\n    0xb0700027: \"pyrogram.client.types.Photo\",")
+        f.write("\n    0xb0700028: \"pyrogram.client.types.Dialog\",")
+        f.write("\n    0xb0700029: \"pyrogram.client.types.Dialogs\",")
 
         f.write("\n}\n")
 

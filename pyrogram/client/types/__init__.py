@@ -22,6 +22,8 @@ from .chat import Chat
 from .chat_member import ChatMember
 from .chat_photo import ChatPhoto
 from .contact import Contact
+from .dialog import Dialog
+from .dialogs import Dialogs
 from .document import Document
 from .gif import GIF
 from .input_media_photo import InputMediaPhoto
