@@ -81,7 +81,8 @@ class Chat(Object):
             invite_link: str = None,
             pinned_message=None,
             sticker_set_name: str = None,
-            can_set_sticker_set: bool = None
+            can_set_sticker_set: bool = None,
+            members_count: int = None
     ):
         self.id = id
         self.type = type
@@ -96,3 +97,4 @@ class Chat(Object):
         self.pinned_message = pinned_message
         self.sticker_set_name = sticker_set_name
         self.can_set_sticker_set = can_set_sticker_set
+        self.members_count = members_count
