@@ -983,8 +983,12 @@ class Client(Methods, BaseClient):
             try:
                 r = self.send(
                     functions.messages.GetDialogs(
-                        offset_date, 0, types.InputPeerEmpty(),
-                        self.DIALOGS_AT_ONCE, True
+                        offset_date=offset_date,
+                        offset_id=0,
+                        offset_peer=types.InputPeerEmpty(),
+                        limit=self.DIALOGS_AT_ONCE,
+                        hash=0,
+                        exclude_pinned=True
                     )
                 )
             except FloodWait as e:
