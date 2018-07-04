@@ -777,7 +777,7 @@ class Client(Methods, BaseClient):
 
                         pts = getattr(update, "pts", None)
                         pts_count = getattr(update, "pts_count", None)
-                        
+
                         if isinstance(update, types.UpdateChannelTooLong):
                             log.warning(update)
 
