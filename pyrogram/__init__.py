@@ -37,8 +37,8 @@ from .api.errors import Error
 from .client.types import (
     Audio, Chat, ChatMember, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputPhoneContact, Location, Message, MessageEntity,
-    Photo, PhotoSize, Sticker, Update, User, UserProfilePhotos, Venue, GIF,
-    Video, VideoNote, Voice, CallbackQuery, Messages
+    Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserProfilePhotos,
+    Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages
 )
 from .client.types.reply_markup import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,

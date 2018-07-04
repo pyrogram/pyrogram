@@ -231,11 +231,11 @@ class Client(Methods, BaseClient):
                 self.peers_by_username = {}
                 self.peers_by_phone = {}
 
-                await self.get_dialogs()
+                await self.get_initial_dialogs()
                 await self.get_contacts()
             else:
                 await self.send(functions.messages.GetPinnedDialogs())
-                await self.get_dialogs_chunk(0)
+                await self.get_initial_dialogs_chunk()
         else:
             await self.send(functions.updates.GetState())
 
@@ -775,7 +775,7 @@ class Client(Methods, BaseClient):
 
                         pts = getattr(update, "pts", None)
                         pts_count = getattr(update, "pts_count", None)
-                        
+
                         if isinstance(update, types.UpdateChannelTooLong):
                             log.warning(update)
 
@@ -837,6 +837,8 @@ class Client(Methods, BaseClient):
                         self.dispatcher.updates.put_nowait((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates.put_nowait((updates.update, [], []))
+                elif isinstance(updates, types.UpdatesTooLong):
+                    log.warning(updates)
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -974,13 +976,17 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    async def get_dialogs_chunk(self, offset_date):
+    async def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
                 r = await self.send(
                     functions.messages.GetDialogs(
-                        offset_date, 0, types.InputPeerEmpty(),
-                        self.DIALOGS_AT_ONCE, True
+                        offset_date=offset_date,
+                        offset_id=0,
+                        offset_peer=types.InputPeerEmpty(),
+                        limit=self.DIALOGS_AT_ONCE,
+                        hash=0,
+                        exclude_pinned=True
                     )
                 )
             except FloodWait as e:
@@ -990,17 +996,17 @@ class Client(Methods, BaseClient):
                 log.info("Total peers: {}".format(len(self.peers_by_id)))
                 return r
 
-    async def get_dialogs(self):
+    async def get_initial_dialogs(self):
         await self.send(functions.messages.GetPinnedDialogs())
 
-        dialogs = await self.get_dialogs_chunk(0)
+        dialogs = await self.get_initial_dialogs_chunk()
         offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = await self.get_dialogs_chunk(offset_date)
+            dialogs = await self.get_initial_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
 
-        await self.get_dialogs_chunk(0)
+        await self.get_initial_dialogs_chunk()
 
     async def resolve_peer(self, peer_id: int or str):
         """Use this method to get the *InputPeer* of a known *peer_id*.
