@@ -839,6 +839,8 @@ class Client(Methods, BaseClient):
                         self.dispatcher.updates.put((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates.put((updates.update, [], []))
+                elif isinstance(updates, types.UpdatesTooLong):
+                    log.warning(updates)
             except Exception as e:
                 log.error(e, exc_info=True)
 
