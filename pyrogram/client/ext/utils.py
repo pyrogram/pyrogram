@@ -884,8 +884,8 @@ def parse_chat_full(
         chat_full: types.messages.ChatFull or types.UserFull
 ) -> pyrogram_types.Chat:
     if isinstance(chat_full, types.UserFull):
-        chat = parse_user_chat(chat_full.user)
-        chat.description = chat_full.about
+        parsed_chat = parse_user_chat(chat_full.user)
+        parsed_chat.description = chat_full.about
     else:
         full_chat = chat_full.full_chat
         chat = None
@@ -895,21 +895,25 @@ def parse_chat_full(
                 chat = i
 
         if isinstance(full_chat, types.ChatFull):
-            chat = parse_chat_chat(chat)
+            parsed_chat = parse_chat_chat(chat)
+
+            if isinstance(full_chat.participants, types.ChatParticipants):
+                parsed_chat.members_count = len(full_chat.participants.participants)
         else:
-            chat = parse_channel_chat(chat)
-            chat.description = full_chat.about or None
+            parsed_chat = parse_channel_chat(chat)
+            parsed_chat.members_count = full_chat.participants_count
+            parsed_chat.description = full_chat.about or None
             # TODO: Add StickerSet type
-            chat.can_set_sticker_set = full_chat.can_set_stickers
-            chat.sticker_set_name = full_chat.stickerset
+            parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
+            parsed_chat.sticker_set_name = full_chat.stickerset
 
             if full_chat.pinned_msg_id:
-                chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = client.get_messages(
                     int("-100" + str(full_chat.id)),
                     full_chat.pinned_msg_id
                 )
 
         if isinstance(full_chat.exported_invite, types.ChatInviteExported):
-            chat.invite_link = full_chat.exported_invite.link
+            parsed_chat.invite_link = full_chat.exported_invite.link
 
-    return chat
+    return parsed_chat
