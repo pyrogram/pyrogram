@@ -231,7 +231,7 @@ class Client(Methods, BaseClient):
                 self.peers_by_username = {}
                 self.peers_by_phone = {}
 
-                self.get_dialogs()
+                self.get_initial_dialogs()
                 self.get_contacts()
             else:
                 self.send(functions.messages.GetPinnedDialogs())
@@ -998,7 +998,7 @@ class Client(Methods, BaseClient):
                 log.info("Total peers: {}".format(len(self.peers_by_id)))
                 return r
 
-    def get_dialogs(self):
+    def get_initial_dialogs(self):
         self.send(functions.messages.GetPinnedDialogs())
 
         dialogs = self.get_dialogs_chunk(0)
