@@ -23,13 +23,13 @@ class Dialog(Object):
     ID = 0xb0700028
 
     def __init__(self,
-                 id: int,
+                 chat,
                  top_message,
                  unread_messages_count: int,
                  unread_mentions_count: int,
                  unread_mark: bool):
         # TODO docstrings
-        self.id = id
+        self.chat = chat
         self.top_message = top_message
         self.unread_messages_count = unread_messages_count
         self.unread_mentions_count = unread_mentions_count
