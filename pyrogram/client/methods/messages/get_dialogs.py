@@ -24,12 +24,12 @@ from ...ext import BaseClient, utils
 class GetDialogs(BaseClient):
     # TODO docstrings
 
-    def get_dialogs(self,
-                    limit: int = 100,
-                    pinned_only: bool = False,
-                    last_chunk=None):
+    async def get_dialogs(self,
+                          limit: int = 100,
+                          pinned_only: bool = False,
+                          last_chunk=None):
         if pinned_only:
-            r = self.send(functions.messages.GetPinnedDialogs())
+            r = await self.send(functions.messages.GetPinnedDialogs())
         else:
             offset_date = 0
 
@@ -44,7 +44,7 @@ class GetDialogs(BaseClient):
                             offset_date = message_date
                             break
 
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetDialogs(
                     offset_date=offset_date,
                     offset_id=0,
@@ -72,7 +72,7 @@ class GetDialogs(BaseClient):
             else:
                 chat_id = int("-100" + str(to_id.channel_id))
 
-            messages[chat_id] = utils.parse_messages(self, message, users, chats)
+            messages[chat_id] = await utils.parse_messages(self, message, users, chats)
 
         dialogs = []
 
