@@ -44,7 +44,7 @@ class GetMessages(BaseClient):
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
+            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element, otherwise if
             *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
             is returned.
 
