@@ -25,55 +25,54 @@ class GetDialogs(BaseClient):
     # TODO docstrings
 
     def get_dialogs(self,
-                    last_chunk=None,
-                    limit: int = 100):
-        offset_date = 0
-        offset_id = 0
-        offset_peer = types.InputPeerEmpty()
+                    limit: int = 100,
+                    pinned_only: bool = False,
+                    last_chunk=None):
+        if pinned_only:
+            r = self.send(functions.messages.GetPinnedDialogs())
+        else:
+            offset_date = 0
 
-        if last_chunk:
-            for dialog in reversed(last_chunk.dialogs):
-                top_message = dialog.top_message
+            if last_chunk:
+                for dialog in reversed(last_chunk.dialogs):
+                    top_message = dialog.top_message
 
-                if top_message:
-                    message_date = top_message.date
+                    if top_message:
+                        message_date = top_message.date
 
-                    if message_date:
-                        offset_id = top_message.message_id
-                        offset_date = message_date
-                        offset_peer = self.resolve_peer(dialog.id)
-                        break
+                        if message_date:
+                            offset_date = message_date
+                            break
 
-        r = self.send(
-            functions.messages.GetDialogs(
-                offset_date=offset_date,
-                offset_id=offset_id,
-                offset_peer=offset_peer,
-                limit=limit,
-                hash=0,
-                exclude_pinned=True
+            r = self.send(
+                functions.messages.GetDialogs(
+                    offset_date=offset_date,
+                    offset_id=0,
+                    offset_peer=types.InputPeerEmpty(),
+                    limit=limit,
+                    hash=0,
+                    exclude_pinned=True
+                )
             )
-        )
 
         users = {i.id: i for i in r.users}
         chats = {i.id: i for i in r.chats}
         messages = {}
 
         for message in r.messages:
-            if isinstance(message, (types.Message, types.MessageService)):
-                chat_id = message.to_id
+            to_id = message.to_id
 
-                if isinstance(chat_id, types.PeerUser):
-                    chat_id = chat_id.user_id
-                elif isinstance(chat_id, types.PeerChat):
-                    chat_id = -chat_id.chat_id
+            if isinstance(to_id, types.PeerUser):
+                if message.out:
+                    chat_id = to_id.user_id
                 else:
-                    chat_id = int("-100" + str(chat_id.channel_id))
+                    chat_id = message.from_id
+            elif isinstance(to_id, types.PeerChat):
+                chat_id = -to_id.chat_id
+            else:
+                chat_id = int("-100" + str(to_id.channel_id))
 
-                messages[chat_id] = utils.parse_messages(
-                    self, message,
-                    users, chats
-                )
+            messages[chat_id] = utils.parse_messages(self, message, users, chats)
 
         dialogs = []
 
@@ -89,7 +88,7 @@ class GetDialogs(BaseClient):
 
             dialogs.append(
                 pyrogram.Dialog(
-                    id=chat_id,
+                    chat=utils.parse_dialog_chat(dialog.peer, users, chats),
                     top_message=messages.get(chat_id),
                     unread_messages_count=dialog.unread_count,
                     unread_mentions_count=dialog.unread_mentions_count,

@@ -917,3 +917,12 @@ def parse_chat_full(
             parsed_chat.invite_link = full_chat.exported_invite.link
 
     return parsed_chat
+
+
+def parse_dialog_chat(peer, users: dict, chats: dict):
+    if isinstance(peer, types.PeerUser):
+        return parse_user_chat(users[peer.user_id])
+    elif isinstance(peer, types.PeerChat):
+        return parse_chat_chat(chats[peer.chat_id])
+    else:
+        return parse_channel_chat(chats[peer.channel_id])
