@@ -36,31 +36,44 @@ class GetChatMembers(BaseClient):
                          limit: int = 200,
                          query: str = "",
                          filter: str = Filters.ALL):
-        filter = filter.lower()
+        peer = self.resolve_peer(chat_id)
 
-        if filter == Filters.ALL:
-            filter = types.ChannelParticipantsSearch(q=query)
-        elif filter == Filters.KICKED:
-            filter = types.ChannelParticipantsKicked(q=query)
-        elif filter == Filters.RESTRICTED:
-            filter = types.ChannelParticipantsBanned(q=query)
-        elif filter == Filters.BOTS:
-            filter = types.ChannelParticipantsBots()
-        elif filter == Filters.RECENT:
-            filter = types.ChannelParticipantsRecent()
-        elif filter == Filters.ADMINISTRATORS:
-            filter = types.ChannelParticipantsAdmins()
-        else:
-            raise ValueError("Invalid filter \"{}\"".format(filter))
-
-        return utils.parse_chat_members(
-            self.send(
-                functions.channels.GetParticipants(
-                    channel=self.resolve_peer(chat_id),
-                    filter=filter,
-                    offset=offset,
-                    limit=limit,
-                    hash=0
+        if isinstance(peer, types.InputPeerChat):
+            return utils.parse_chat_members(
+                self.send(
+                    functions.messages.GetFullChat(
+                        peer.chat_id
+                    )
                 )
             )
-        )
+        elif isinstance(peer, types.InputPeerChannel):
+            filter = filter.lower()
+
+            if filter == Filters.ALL:
+                filter = types.ChannelParticipantsSearch(q=query)
+            elif filter == Filters.KICKED:
+                filter = types.ChannelParticipantsKicked(q=query)
+            elif filter == Filters.RESTRICTED:
+                filter = types.ChannelParticipantsBanned(q=query)
+            elif filter == Filters.BOTS:
+                filter = types.ChannelParticipantsBots()
+            elif filter == Filters.RECENT:
+                filter = types.ChannelParticipantsRecent()
+            elif filter == Filters.ADMINISTRATORS:
+                filter = types.ChannelParticipantsAdmins()
+            else:
+                raise ValueError("Invalid filter \"{}\"".format(filter))
+
+            return utils.parse_chat_members(
+                self.send(
+                    functions.channels.GetParticipants(
+                        channel=peer,
+                        filter=filter,
+                        offset=offset,
+                        limit=limit,
+                        hash=0
+                    )
+                )
+            )
+        else:
+            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
