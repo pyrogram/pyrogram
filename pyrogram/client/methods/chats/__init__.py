@@ -30,6 +30,7 @@ from .set_chat_description import SetChatDescription
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
 from .unban_chat_member import UnbanChatMember
+from .unpin_chat_message import UnpinChatMessage
 
 
 class Chats(
@@ -46,6 +47,7 @@ class Chats(
     DeleteChatPhoto,
     SetChatTitle,
     SetChatDescription,
-    PinChatMessage
+    PinChatMessage,
+    UnpinChatMessage
 ):
     pass
