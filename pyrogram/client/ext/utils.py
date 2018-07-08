@@ -926,3 +926,103 @@ def parse_dialog_chat(peer, users: dict, chats: dict):
         return parse_chat_chat(chats[peer.chat_id])
     else:
         return parse_channel_chat(chats[peer.channel_id])
+
+
+def parse_chat_members(members: types.channels.ChannelParticipants or types.messages.ChatFull):
+    users = {i.id: i for i in members.users}
+    parsed_members = []
+
+    if isinstance(members, types.channels.ChannelParticipants):
+        members = members.participants
+
+        for member in members:
+            user = parse_user(users[member.user_id])
+
+            if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf)):
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="member"
+                    )
+                )
+            elif isinstance(member, types.ChannelParticipantCreator):
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="creator"
+                    )
+                )
+            elif isinstance(member, types.ChannelParticipantAdmin):
+                rights = member.admin_rights  # type: types.ChannelAdminRights
+
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="administrator",
+                        can_be_edited=member.can_edit,
+                        can_change_info=rights.change_info,
+                        can_post_messages=rights.post_messages,
+                        can_edit_messages=rights.edit_messages,
+                        can_delete_messages=rights.delete_messages,
+                        can_invite_users=rights.invite_users or rights.invite_link,
+                        can_restrict_members=rights.ban_users,
+                        can_pin_messages=rights.pin_messages,
+                        can_promote_members=rights.add_admins
+                    )
+                )
+            elif isinstance(member, types.ChannelParticipantBanned):
+                rights = member.banned_rights  # type: types.ChannelBannedRights
+
+                chat_member = pyrogram_types.ChatMember(
+                    user=user,
+                    status="kicked" if rights.view_messages else "restricted",
+                    until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date
+                )
+
+                if chat_member.status == "restricted":
+                    chat_member.can_send_messages = not rights.send_messages
+                    chat_member.can_send_media_messages = not rights.send_media
+                    chat_member.can_send_other_messages = (
+                            not rights.send_stickers or not rights.send_gifs or
+                            not rights.send_games or not rights.send_inline
+                    )
+                    chat_member.can_add_web_page_previews = not rights.embed_links
+
+                parsed_members.append(chat_member)
+
+        return pyrogram_types.ChatMembers(
+            total_count=members.count,
+            chat_members=parsed_members
+        )
+    else:
+        members = members.full_chat.participants.participants
+
+        for member in members:
+            user = parse_user(users[member.user_id])
+
+            if isinstance(member, types.ChatParticipant):
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="member"
+                    )
+                )
+            elif isinstance(member, types.ChatParticipantCreator):
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="creator"
+                    )
+                )
+            elif isinstance(member, types.ChatParticipantAdmin):
+                parsed_members.append(
+                    pyrogram_types.ChatMember(
+                        user=user,
+                        status="administrator"
+                    )
+                )
+
+        return pyrogram_types.ChatMembers(
+            total_count=len(members),
+            chat_members=parsed_members
+        )
