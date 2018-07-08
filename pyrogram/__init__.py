@@ -30,11 +30,9 @@ from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputPhoneContact, Location, Message, MessageEntity,
     Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserProfilePhotos,
-    Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages
-)
-from .client.types.reply_markup import (
-    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+    Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
+    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup,
+    ReplyKeyboardRemove
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
