@@ -20,6 +20,8 @@ from pyrogram.api.core import Object
 
 
 class ChatMembers(Object):
+    # TODO: Docstrings
+
     ID = 0xb0700030
 
     def __init__(self, total_count: int, chat_members: list):
