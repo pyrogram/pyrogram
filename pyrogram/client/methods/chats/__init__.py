@@ -25,6 +25,7 @@ from .kick_chat_member import KickChatMember
 from .leave_chat import LeaveChat
 from .promote_chat_member import PromoteChatMember
 from .restrict_chat_member import RestrictChatMember
+from .set_chat_description import SetChatDescription
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
 from .unban_chat_member import UnbanChatMember
@@ -42,6 +43,7 @@ class Chats(
     GetChatMembers,
     SetChatPhoto,
     DeleteChatPhoto,
-    SetChatTitle
+    SetChatTitle,
+    SetChatDescription
 ):
     pass
