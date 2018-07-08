@@ -20,6 +20,7 @@ from .audio import Audio
 from .callback_query import CallbackQuery
 from .chat import Chat
 from .chat_member import ChatMember
+from .chat_members import ChatMembers
 from .chat_photo import ChatPhoto
 from .contact import Contact
 from .dialog import Dialog
