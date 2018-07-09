@@ -63,3 +63,5 @@ WEBPAGE_CURL_FAILED	Telegram could not fetch the provided URL
 STICKERSET_INVALID	The requested sticker set is invalid
 PEER_FLOOD	The method can't be used because your account is limited
 MEDIA_CAPTION_TOO_LONG	The media caption is longer than 200 characters
+USER_NOT_MUTUAL_CONTACT	The user is not a mutual contact
+USER_CHANNELS_TOO_MUCH	The user is already in too many channels or supergroups
