@@ -29,11 +29,8 @@ class Voice(Object):
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Voice thumbnail.
-
-        file_name (``str``, *optional*):
-            Voice file name.
+        waveform (``bytes``, *optional*):
+            Voice waveform.
 
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
@@ -51,15 +48,13 @@ class Voice(Object):
             self,
             file_id: str,
             duration: int,
-            thumb=None,
-            file_name: str = None,
+            waveform: bytes = None,
             mime_type: str = None,
             file_size: int = None,
             date: int = None):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.duration = duration  # int
+        self.file_id = file_id
+        self.duration = duration
+        self.waveform = waveform
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
