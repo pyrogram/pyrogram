@@ -60,6 +60,7 @@ class Str(str):
 ENTITIES = {
     types.MessageEntityMention.ID: "mention",
     types.MessageEntityHashtag.ID: "hashtag",
+    types.MessageEntityCashtag.ID: "cashtag",
     types.MessageEntityBotCommand.ID: "bot_command",
     types.MessageEntityUrl.ID: "url",
     types.MessageEntityEmail.ID: "email",
