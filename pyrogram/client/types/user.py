@@ -26,6 +26,18 @@ class User(Object):
         id (``int``):
             Unique identifier for this user or bot.
 
+        is_self(``bool``):
+            True, if this user is you yourself.
+
+        is_contact(``bool``):
+            True, if this user is in your contacts.
+
+        is_mutual_contact(``bool``):
+            True, if you both have each other's contact.
+
+        is_deleted(``bool``):
+            True, if this user is deleted.
+
         is_bot (``bool``):
             True, if this user is a bot.
 
@@ -53,6 +65,10 @@ class User(Object):
     def __init__(
             self,
             id: int,
+            is_self: bool,
+            is_contact: bool,
+            is_mutual_contact: bool,
+            is_deleted: bool,
             is_bot: bool,
             first_name: str,
             last_name: str = None,
@@ -62,6 +78,10 @@ class User(Object):
             photo=None
     ):
         self.id = id
+        self.is_self = is_self
+        self.is_contact = is_contact
+        self.is_mutual_contact = is_mutual_contact
+        self.is_deleted = is_deleted
         self.is_bot = is_bot
         self.first_name = first_name
         self.last_name = last_name

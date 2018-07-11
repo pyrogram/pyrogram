@@ -129,6 +129,10 @@ def parse_chat_photo(photo):
 def parse_user(user: types.User) -> pyrogram_types.User or None:
     return pyrogram_types.User(
         id=user.id,
+        is_self=user.is_self,
+        is_contact=user.contact,
+        is_mutual_contact=user.mutual_contact,
+        is_deleted=user.deleted,
         is_bot=user.bot,
         first_name=user.first_name,
         last_name=user.last_name,
