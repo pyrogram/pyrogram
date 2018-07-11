@@ -42,10 +42,10 @@ class User(Object):
             IETF language tag of the user's language.
 
         phone_number (``str``, *optional*):
-            User's or bot's phone number.
+            User's phone number.
 
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
-            User's or bot's current profile photo.
+            User's or bot's current profile photo. Suitable for downloads only.
     """
 
     ID = 0xb0700001
