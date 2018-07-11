@@ -74,6 +74,7 @@ class DownloadMedia(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"
 
