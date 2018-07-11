@@ -35,9 +35,6 @@ class VideoNote(Object):
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
             Video thumbnail.
 
-        file_name (``str``, *optional*):
-            Video note file name.
-
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
@@ -56,16 +53,14 @@ class VideoNote(Object):
             length: int,
             duration: int,
             thumb=None,
-            file_name: str = None,
             mime_type: str = None,
             file_size: int = None,
             date: int = None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.length = length  # int
-        self.duration = duration  # int
+        self.file_id = file_id
+        self.thumb = thumb
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
+        self.length = length
+        self.duration = duration
