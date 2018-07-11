@@ -400,8 +400,7 @@ def parse_messages(
                                     duration=audio_attributes.duration,
                                     mime_type=doc.mime_type,
                                     file_size=doc.size,
-                                    thumb=parse_thumb(doc.thumb),
-                                    file_name=file_name,
+                                    waveform=audio_attributes.waveform,
                                     date=doc.date
                                 )
                             else:
