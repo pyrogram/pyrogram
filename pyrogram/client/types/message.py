@@ -26,9 +26,6 @@ class Message(Object):
     Args:
         message_id (``int``):
             Unique message identifier inside this chat.
-            
-        client (:obj:`Client <pyrogram.Client>`, *optional*):
-            The client instance this message is bound to.
 
         date (``int``, *optional*):
             Date the message was sent in Unix time.
