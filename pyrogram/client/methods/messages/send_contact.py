@@ -26,6 +26,7 @@ class SendContact(BaseClient):
                      phone_number: str,
                      first_name: str,
                      last_name: str = "",
+                     vcard: str = "",
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
                      reply_markup=None):
@@ -46,6 +47,9 @@ class SendContact(BaseClient):
 
             last_name (``str``, *optional*):
                 Contact's last name.
+
+            vcard (``str``, *optional*):
+                Contact's vCard information.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -68,9 +72,10 @@ class SendContact(BaseClient):
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaContact(
-                    phone_number,
-                    first_name,
-                    last_name
+                    phone_number=phone_number,
+                    first_name=first_name,
+                    last_name=last_name,
+                    vcard=vcard
                 ),
                 message="",
                 silent=disable_notification or None,

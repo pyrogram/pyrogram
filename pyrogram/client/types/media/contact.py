@@ -38,8 +38,16 @@ class Contact(Object):
 
     ID = 0xb0700011
 
-    def __init__(self, phone_number: str, first_name: str, last_name: str = None, user_id=None):
-        self.phone_number = phone_number  # string
-        self.first_name = first_name  # string
-        self.last_name = last_name  # flags.0?string
-        self.user_id = user_id  # flags.1?int
+    def __init__(
+            self,
+            phone_number: str,
+            first_name: str,
+            last_name: str = None,
+            vcard: str = None,
+            user_id: int = None
+    ):
+        self.phone_number = phone_number
+        self.first_name = first_name
+        self.last_name = last_name
+        self.vcard = vcard
+        self.user_id = user_id

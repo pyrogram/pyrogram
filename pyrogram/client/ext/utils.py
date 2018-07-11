@@ -360,6 +360,7 @@ def parse_messages(
                         phone_number=media.phone_number,
                         first_name=media.first_name,
                         last_name=media.last_name or None,
+                        vcard=media.vcard or None,
                         user_id=media.user_id or None
                     )
                 elif isinstance(media, types.MessageMediaVenue):
