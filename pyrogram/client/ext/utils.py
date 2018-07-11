@@ -463,7 +463,6 @@ def parse_messages(
                                     duration=video_attributes.duration,
                                     thumb=parse_thumb(doc.thumb),
                                     file_size=doc.size,
-                                    file_name=file_name,
                                     mime_type=doc.mime_type,
                                     date=doc.date
                                 )
