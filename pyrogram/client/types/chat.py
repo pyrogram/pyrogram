@@ -24,15 +24,13 @@ class Chat(Object):
 
     Args:
         id (``int``):
-            Unique identifier for this chat. This number may be greater than 32 bits and some programming
-            languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits,
-            so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+            Unique identifier for this chat.
 
         type (``str``):
             Type of chat, can be either "private", "group", "supergroup" or "channel".
 
         title (``str``, *optional*):
-            Title, for supergroups, channels and group chats.
+            Title, for supergroups, channels and basic group chats.
 
         username (``str``, *optional*):
             Username, for private chats, supergroups and channels if available.
@@ -44,25 +42,33 @@ class Chat(Object):
             Last name of the other party in a private chat.
 
         all_members_are_administrators (``bool``, *optional*):
-            True if a group has 'All Members Are Admins' enabled.
+            True if a basic group has "All Members Are Admins" enabled.
 
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
-            Chat photo. Returned only in getChat.
+            Chat photo. Suitable for downloads only.
 
         description (``str``, *optional*):
-            Description, for supergroups and channel chats. Returned only in getChat.
+            Description, for supergroups and channel chats.
+            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         invite_link (``str``, *optional*):
-            Chat invite link, for supergroups and channel chats. Returned only in getChat.
+            Chat invite link, for supergroups and channel chats.
+            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         pinned_message (:obj:`Message <pyrogram.Message>`, *optional*):
-            Pinned message, for supergroups and channel chats. Returned only in getChat.
+            Pinned message, for supergroups and channel chats.
+            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         sticker_set_name (``str``, *optional*):
-            For supergroups, name of group sticker set. Returned only in getChat.
+            For supergroups, name of group sticker set.
+            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         can_set_sticker_set (``bool``, *optional*):
-            True, if the bot can change the group sticker set. Returned only in getChat.
+            True, if the group sticker set can be changed by you.
+            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+
+        members_count (``int``, *optional*):
+            Chat members count, for groups and channels only.
     """
 
     ID = 0xb0700002
