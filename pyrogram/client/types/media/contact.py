@@ -32,6 +32,9 @@ class Contact(Object):
         last_name (``str``, *optional*):
             Contact's last name.
 
+        vcard (``str``, *optional*):
+            Contact's vCard.
+
         user_id (``int``, *optional*):
             Contact's user identifier in Telegram.
     """
