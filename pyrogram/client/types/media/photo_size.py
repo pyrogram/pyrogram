@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class PhotoSize(Object):
-    """This object represents one size of a photo or a file / sticker thumbnail.
+    """This object represents one size of a photo or a file/sticker thumbnail.
 
     Args:
         file_id (``str``):

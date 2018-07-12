@@ -27,10 +27,10 @@ class Photo(Object):
             Unique identifier for this photo.
 
         date (``int``):
-            Date the photo was sent in Unix time
+            Date the photo was sent in Unix time.
 
         sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
-            Available sizes of this photo
+            Available sizes of this photo.
     """
 
     ID = 0xb0700027
