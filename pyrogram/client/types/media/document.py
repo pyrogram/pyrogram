@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class Document(Object):
-    """This object represents a general file (as opposed to photos, voice messages and audio files).
+    """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
 
     Args:
         file_id (``str``):
@@ -53,9 +53,9 @@ class Document(Object):
             file_size: int = None,
             date: int = None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.3?int
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
