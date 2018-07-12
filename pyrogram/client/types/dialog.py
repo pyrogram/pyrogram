@@ -20,6 +20,24 @@ from pyrogram.api.core import Object
 
 
 class Dialog(Object):
+    """This object represents a dialog
+
+    Args:
+        chat (:obj:`Chat <pyrogram.Chat>`):
+            Conversation the dialog belongs to.
+
+        top_message (:obj:`Message <pyrogram.Message>`):
+            The last message sent in the dialog at this time.
+
+        unread_messages_count (``int``):
+            Amount of unread messages in this dialogs.
+
+        unread_mentions_count (``int``):
+            Amount of unread messages containing a mention in this dialog.
+
+        unread_mark (``bool``):
+            True, if the dialog has the unread mark set.
+    """
     ID = 0xb0700028
 
     def __init__(self,
@@ -28,7 +46,6 @@ class Dialog(Object):
                  unread_messages_count: int,
                  unread_mentions_count: int,
                  unread_mark: bool):
-        # TODO docstrings
         self.chat = chat
         self.top_message = top_message
         self.unread_messages_count = unread_messages_count
