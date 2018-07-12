@@ -33,5 +33,5 @@ class Messages(Object):
     ID = 0xb0700026
 
     def __init__(self, total_count: int, messages: list):
-        self.total_count = total_count  # int
-        self.messages = messages  # Vector<Vector<PhotoSize>>
+        self.total_count = total_count
+        self.messages = messages
