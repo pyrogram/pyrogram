@@ -33,5 +33,5 @@ class Location(Object):
     ID = 0xb0700012
 
     def __init__(self, longitude: float, latitude: float):
-        self.longitude = longitude  # double
-        self.latitude = latitude  # double
+        self.longitude = longitude
+        self.latitude = latitude
