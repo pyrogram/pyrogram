@@ -45,9 +45,16 @@ class MessageEntity(Object):
 
     ID = 0xb0700004
 
-    def __init__(self, type: str, offset: int, length: int, url: str = None, user=None):
-        self.type = type  # string
-        self.offset = offset  # int
-        self.length = length  # int
-        self.url = url  # flags.0?string
-        self.user = user  # flags.1?User
+    def __init__(
+            self,
+            type: str,
+            offset: int,
+            length: int,
+            url: str = None,
+            user=None
+    ):
+        self.type = type
+        self.offset = offset
+        self.length = length
+        self.url = url
+        self.user = user
