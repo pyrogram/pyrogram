@@ -26,7 +26,29 @@ from ...ext import BaseClient
 
 class SetChatPhoto(BaseClient):
     def set_chat_photo(self, chat_id: int or str, photo: str):
-        # TODO: Docstrings
+        """Use this method to set a new profile photo for the chat.
+        Photos can't be changed for private chats.
+        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Note:
+            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
+            setting is off.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            photo (``str``):
+                New chat photo. You can pass a :class:`Photo` id or a file path to upload a new photo.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If a chat_id belongs to user.
+        """
         peer = self.resolve_peer(chat_id)
 
         if os.path.exists(photo):
