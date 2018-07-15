@@ -22,7 +22,24 @@ from ...ext import BaseClient
 
 class SetChatDescription(BaseClient):
     def set_chat_description(self, chat_id: int or str, description: str):
-        # TODO: Docstrings
+        """Use this method to change the description of a supergroup or a channel.
+        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            description (``str``):
+                New chat description, 0-255 characters.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If a chat_id doesn't belong to a supergroup or a channel.
+        """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
