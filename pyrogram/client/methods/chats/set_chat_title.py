@@ -22,7 +22,29 @@ from ...ext import BaseClient
 
 class SetChatTitle(BaseClient):
     def set_chat_title(self, chat_id: int or str, title: str):
-        # TODO: Docstrings
+        """Use this method to change the title of a chat.
+        Titles can't be changed for private chats.
+        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Note:
+            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
+            setting is off.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For a private channel/supergroup you can use its *t.me/joinchat/* link.
+
+            title (``str``):
+                New chat title, 1-255 characters.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If a chat_id belongs to user.
+        """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
