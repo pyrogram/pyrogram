@@ -68,3 +68,9 @@ Client
         get_chat
         get_messages
         get_history
+        set_chat_photo
+        delete_chat_photo
+        set_chat_title
+        set_chat_description
+        pin_chat_message
+        unpin_chat_message
