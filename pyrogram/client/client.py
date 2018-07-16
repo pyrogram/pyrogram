@@ -1259,8 +1259,6 @@ class Client(Methods, BaseClient):
                             break
 
                         f.write(chunk)
-                        f.flush()
-                        os.fsync(f.fileno())
 
                         offset += limit
 
@@ -1343,8 +1341,6 @@ class Client(Methods, BaseClient):
                                 assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
 
                             f.write(decrypted_chunk)
-                            f.flush()
-                            os.fsync(f.fileno())
 
                             offset += limit
 

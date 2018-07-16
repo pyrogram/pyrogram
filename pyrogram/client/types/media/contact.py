@@ -19,19 +19,38 @@
 from pyrogram.api.core import Object
 
 
-class Messages(Object):
-    """This object represents a chat's messages.
+class Contact(Object):
+    """This object represents a phone contact.
 
     Args:
-        total_count (``int``):
-            Total number of messages the target chat has.
+        phone_number (``str``):
+            Contact's phone number.
 
-        messages (List of :obj:`Message <pyrogram.Message>`):
-            Requested messages.
+        first_name (``str``):
+            Contact's first name.
+
+        last_name (``str``, *optional*):
+            Contact's last name.
+
+        vcard (``str``, *optional*):
+            Contact's vCard.
+
+        user_id (``int``, *optional*):
+            Contact's user identifier in Telegram.
     """
 
-    ID = 0xb0700026
+    ID = 0xb0700011
 
-    def __init__(self, total_count: int, messages: list):
-        self.total_count = total_count
-        self.messages = messages
+    def __init__(
+            self,
+            phone_number: str,
+            first_name: str,
+            last_name: str = None,
+            vcard: str = None,
+            user_id: int = None
+    ):
+        self.phone_number = phone_number
+        self.first_name = first_name
+        self.last_name = last_name
+        self.vcard = vcard
+        self.user_id = user_id

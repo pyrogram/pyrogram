@@ -19,27 +19,27 @@
 from pyrogram.api.core import Object
 
 
-class GIF(Object):
-    """This object represents a GIF file.
+class Video(Object):
+    """This object represents a video file.
 
     Args:
         file_id (``str``):
             Unique identifier for this file.
 
         width (``int``):
-            GIF width as defined by sender.
+            Video width as defined by sender.
 
         height (``int``):
-            GIF height as defined by sender.
+            Video height as defined by sender.
 
         duration (``int``):
-            Duration of the GIF in seconds as defined by sender.
+            Duration of the video in seconds as defined by sender.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            GIF thumbnail.
+            Video thumbnail.
 
         file_name (``str``, *optional*):
-            GIF file name.
+            Video file name.
 
         mime_type (``str``, *optional*):
             Mime type of a file as defined by sender.
@@ -48,10 +48,10 @@ class GIF(Object):
             File size.
 
         date (``int``, *optional*):
-            Date the GIF was sent in Unix time.
+            Date the video was sent in Unix time.
     """
 
-    ID = 0xb0700025
+    ID = 0xb0700008
 
     def __init__(
             self,
@@ -65,12 +65,12 @@ class GIF(Object):
             file_size: int = None,
             date: int = None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.width = width  # int
-        self.height = height  # int
-        self.duration = duration  # int
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
+        self.width = width
+        self.height = height
+        self.duration = duration

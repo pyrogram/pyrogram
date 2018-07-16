@@ -19,19 +19,23 @@
 from pyrogram.api.core import Object
 
 
-class Messages(Object):
-    """This object represents a chat's messages.
+class Photo(Object):
+    """This object represents a Photo
 
     Args:
-        total_count (``int``):
-            Total number of messages the target chat has.
+        id (``str``):
+            Unique identifier for this photo.
 
-        messages (List of :obj:`Message <pyrogram.Message>`):
-            Requested messages.
+        date (``int``):
+            Date the photo was sent in Unix time.
+
+        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
+            Available sizes of this photo.
     """
 
-    ID = 0xb0700026
+    ID = 0xb0700027
 
-    def __init__(self, total_count: int, messages: list):
-        self.total_count = total_count
-        self.messages = messages
+    def __init__(self, id: str, date: int, sizes: list):
+        self.id = id
+        self.date = date
+        self.sizes = sizes

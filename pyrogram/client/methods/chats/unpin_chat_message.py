@@ -17,13 +17,14 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
-class GetChat(BaseClient):
-    async def get_chat(self, chat_id: int or str):
-        """Use this method to get up to date information about the chat (current name of the user for
-        one-on-one conversations, current username of a user, group or channel, etc.)
+class UnpinChatMessage(BaseClient):
+    def unpin_chat_message(self, chat_id: int or str):
+        """Use this method to unpin a message in a supergroup or a channel.
+        You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
+        right in the supergroup or "can_edit_messages" admin right in the channel.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -31,18 +32,24 @@ class GetChat(BaseClient):
                 For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
         Returns:
-            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            ``ValueError``: If a chat_id doesn't belong to a supergroup or a channel.
         """
-        peer = await self.resolve_peer(chat_id)
+        peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            r = await self.send(functions.channels.GetFullChannel(peer))
-        elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
-            r = await self.send(functions.users.GetFullUser(peer))
+            self.send(
+                functions.channels.UpdatePinnedMessage(
+                    channel=peer,
+                    id=0
+                )
+            )
+        elif isinstance(peer, types.InputPeerChat):
+            raise ValueError("The chat_id \"{}\" belongs to a basic group".format(chat_id))
         else:
-            r = await self.send(functions.messages.GetFullChat(peer.chat_id))
+            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
 
-        return await utils.parse_chat_full(self, r)
+        return True

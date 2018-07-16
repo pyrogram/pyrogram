@@ -65,12 +65,12 @@ class Audio(Object):
             performer: str = None,
             title: str = None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.duration = duration  # int
-        self.performer = performer  # flags.5?string
-        self.title = title  # flags.6?string
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
+        self.duration = duration
+        self.performer = performer
+        self.title = title

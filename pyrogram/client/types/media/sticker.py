@@ -19,18 +19,24 @@
 from pyrogram.api.core import Object
 
 
-class Document(Object):
-    """This object represents a general file (as opposed to photos, voice messages and audio files).
+class Sticker(Object):
+    """This object represents a sticker.
 
     Args:
         file_id (``str``):
-            Unique file identifier.
+            Unique identifier for this file.
+
+        width (``int``):
+            Sticker width.
+
+        height (``int``):
+            Sticker height.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Document thumbnail as defined by sender.
+            Sticker thumbnail in the .webp or .jpg format.
 
         file_name (``str``, *optional*):
-            Original filename as defined by sender.
+            Sticker file name.
 
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
@@ -39,23 +45,42 @@ class Document(Object):
             File size.
 
         date (``int``, *optional*):
-            Date the document was sent in Unix time.
+            Date the sticker was sent in Unix time.
+
+        emoji (``str``, *optional*):
+            Emoji associated with the sticker.
+
+        set_name (``str``, *optional*):
+            Name of the sticker set to which the sticker belongs.
+
+        mask_position (:obj:`MaskPosition <pyrogram.MaskPosition>`, *optional*):
+            For mask stickers, the position where the mask should be placed.
     """
 
-    ID = 0xb0700007
+    ID = 0xb0700017
 
     def __init__(
             self,
             file_id: str,
+            width: int,
+            height: int,
             thumb=None,
             file_name: str = None,
             mime_type: str = None,
             file_size: int = None,
-            date: int = None
+            date: int = None,
+            emoji: str = None,
+            set_name: str = None,
+            mask_position=None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.3?int
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
+        self.width = width
+        self.height = height
+        self.emoji = emoji
+        self.set_name = set_name
+        self.mask_position = mask_position

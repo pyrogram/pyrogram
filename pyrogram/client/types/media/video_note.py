@@ -19,27 +19,48 @@
 from pyrogram.api.core import Object
 
 
-class PhotoSize(Object):
-    """This object represents one size of a photo or a file / sticker thumbnail.
+class VideoNote(Object):
+    """This object represents a video message (available in Telegram apps as of v.4.0).
 
     Args:
         file_id (``str``):
             Unique identifier for this file.
 
-        width (``int``):
-            Photo width.
+        length (``int``):
+            Video width and height as defined by sender.
 
-        height (``int``):
-            Photo height.
+        duration (``int``):
+            Duration of the video in seconds as defined by sender.
 
-        file_size (``int``):
+        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+            Video thumbnail.
+
+        mime_type (``str``, *optional*):
+            MIME type of the file as defined by sender.
+
+        file_size (``int``, *optional*):
             File size.
+
+        date (``int``, *optional*):
+            Date the video note was sent in Unix time.
     """
 
-    ID = 0xb0700005
+    ID = 0xb0700010
 
-    def __init__(self, file_id: str, width: int, height: int, file_size: int):
+    def __init__(
+            self,
+            file_id: str,
+            length: int,
+            duration: int,
+            thumb=None,
+            mime_type: str = None,
+            file_size: int = None,
+            date: int = None
+    ):
         self.file_id = file_id
-        self.width = width
-        self.height = height
+        self.thumb = thumb
+        self.mime_type = mime_type
         self.file_size = file_size
+        self.date = date
+        self.length = length
+        self.duration = duration

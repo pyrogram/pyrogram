@@ -26,9 +26,6 @@ class Message(Object):
     Args:
         message_id (``int``):
             Unique message identifier inside this chat.
-            
-        client (:obj:`Client <pyrogram.Client>`, *optional*):
-            The client instance this message is bound to.
 
         date (``int``, *optional*):
             Date the message was sent in Unix time.
@@ -574,3 +571,39 @@ class Message(Object):
                 raise ValueError("This button is not supported yet")
         else:
             raise ValueError("The message doesn't contain any keyboard")
+
+    def download(self, file_name: str = "", block: bool = True):
+        """Use this method as a shortcut for:
+
+        .. code-block:: python
+
+            client.download_media(message)
+
+        Example:
+            .. code-block:: python
+
+                message.download()
+
+        Args:
+            file_name (``str``, *optional*):
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all files are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading files in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
+
+            block (``bool``, *optional*):
+                Blocks the code execution until the file has been downloaded.
+                Defaults to True.
+
+        Returns:
+            On success, the absolute path of the downloaded file as string is returned, None otherwise.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the message doesn't contain any downloadable media
+        """
+        return self._client.download_media(
+            message=self,
+            file_name=file_name,
+            block=block
+        )

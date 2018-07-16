@@ -74,7 +74,10 @@ class DownloadMedia(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>`
+            ``ValueError``: If the message doesn't contain any downloadable media
         """
+        error_message = "This message doesn't contain any downloadable media"
+
         if isinstance(message, pyrogram_types.Message):
             if message.photo:
                 media = pyrogram_types.Document(
@@ -98,7 +101,7 @@ class DownloadMedia(BaseClient):
             elif message.gif:
                 media = message.gif
             else:
-                return
+                raise ValueError(error_message)
         elif isinstance(message, (
                 pyrogram_types.Photo,
                 pyrogram_types.PhotoSize,
@@ -126,7 +129,7 @@ class DownloadMedia(BaseClient):
                 mime_type=""
             )
         else:
-            return
+            raise ValueError(error_message)
 
         done = asyncio.Event()
         path = [None]

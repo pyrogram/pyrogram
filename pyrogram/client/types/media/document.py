@@ -19,58 +19,43 @@
 from pyrogram.api.core import Object
 
 
-class Video(Object):
-    """This object represents a video file.
+class Document(Object):
+    """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
 
     Args:
         file_id (``str``):
-            Unique identifier for this file.
-
-        width (``int``):
-            Video width as defined by sender.
-
-        height (``int``):
-            Video height as defined by sender.
-
-        duration (``int``):
-            Duration of the video in seconds as defined by sender.
+            Unique file identifier.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Video thumbnail.
+            Document thumbnail as defined by sender.
 
         file_name (``str``, *optional*):
-            Video file name.
+            Original filename as defined by sender.
 
         mime_type (``str``, *optional*):
-            Mime type of a file as defined by sender.
+            MIME type of the file as defined by sender.
 
         file_size (``int``, *optional*):
             File size.
 
         date (``int``, *optional*):
-            Date the video was sent in Unix time.
+            Date the document was sent in Unix time.
     """
 
-    ID = 0xb0700008
+    ID = 0xb0700007
 
     def __init__(
             self,
             file_id: str,
-            width: int,
-            height: int,
-            duration: int,
             thumb=None,
             file_name: str = None,
             mime_type: str = None,
             file_size: int = None,
             date: int = None
     ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.width = width  # int
-        self.height = height  # int
-        self.duration = duration  # int
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date

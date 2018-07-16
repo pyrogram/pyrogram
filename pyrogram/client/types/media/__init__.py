@@ -16,22 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
-
-class Location(Object):
-    """This object represents a point on the map.
-
-    Args:
-        longitude (``float``):
-            Longitude as defined by sender.
-
-        latitude (``float``):
-            Latitude as defined by sender.
-    """
-
-    ID = 0xb0700012
-
-    def __init__(self, longitude: float, latitude: float):
-        self.longitude = longitude  # double
-        self.latitude = latitude  # double
+from .audio import Audio
+from .contact import Contact
+from .document import Document
+from .gif import GIF
+from .location import Location
+from .photo import Photo
+from .photo_size import PhotoSize
+from .sticker import Sticker
+from .user_profile_photos import UserProfilePhotos
+from .venue import Venue
+from .video import Video
+from .video_note import VideoNote
+from .voice import Voice

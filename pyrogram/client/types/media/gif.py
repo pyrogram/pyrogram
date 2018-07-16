@@ -19,47 +19,58 @@
 from pyrogram.api.core import Object
 
 
-class Voice(Object):
-    """This object represents a voice note.
+class GIF(Object):
+    """This object represents a GIF file.
 
     Args:
         file_id (``str``):
             Unique identifier for this file.
 
+        width (``int``):
+            GIF width as defined by sender.
+
+        height (``int``):
+            GIF height as defined by sender.
+
         duration (``int``):
-            Duration of the audio in seconds as defined by sender.
+            Duration of the GIF in seconds as defined by sender.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Voice thumbnail.
+            GIF thumbnail.
 
         file_name (``str``, *optional*):
-            Voice file name.
+            GIF file name.
 
         mime_type (``str``, *optional*):
-            MIME type of the file as defined by sender.
+            Mime type of a file as defined by sender.
 
         file_size (``int``, *optional*):
             File size.
 
         date (``int``, *optional*):
-            Date the voice was sent in Unix time.
+            Date the GIF was sent in Unix time.
     """
 
-    ID = 0xb0700009
+    ID = 0xb0700025
 
     def __init__(
             self,
             file_id: str,
+            width: int,
+            height: int,
             duration: int,
             thumb=None,
             file_name: str = None,
             mime_type: str = None,
             file_size: int = None,
-            date: int = None):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.duration = duration  # int
+            date: int = None
+    ):
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date
+        self.width = width
+        self.height = height
+        self.duration = duration

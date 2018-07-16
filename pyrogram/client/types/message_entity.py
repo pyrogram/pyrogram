@@ -26,9 +26,9 @@ class MessageEntity(Object):
     Args:
         type (``str``):
             Type of the entity.
-            Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text),
-            code (monowidth string), pre (monowidth block), text_link (for clickable text URLs),
-            text_mention (for users without usernames).
+            Can be "mention" (@username), "hashtag", "cashtag", "bot_command", "url", "email", "bold" (bold text),
+            italic (italic text), "code" (monowidth string), "pre" (monowidth block), "text_link" (for clickable text
+            URLs), "text_mention" (for users without usernames).
 
         offset (``int``):
             Offset in UTF-16 code units to the start of the entity.
@@ -45,9 +45,16 @@ class MessageEntity(Object):
 
     ID = 0xb0700004
 
-    def __init__(self, type: str, offset: int, length: int, url: str = None, user=None):
-        self.type = type  # string
-        self.offset = offset  # int
-        self.length = length  # int
-        self.url = url  # flags.0?string
-        self.user = user  # flags.1?User
+    def __init__(
+            self,
+            type: str,
+            offset: int,
+            length: int,
+            url: str = None,
+            user=None
+    ):
+        self.type = type
+        self.offset = offset
+        self.length = length
+        self.url = url
+        self.user = user

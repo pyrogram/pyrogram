@@ -20,9 +20,17 @@ from pyrogram.api.core import Object
 
 
 class Dialogs(Object):
+    """This object represents a user's dialogs chunk
+
+    Args:
+        total_count (``int``):
+            Total number of dialogs the user has.
+
+        dialogs (List of :obj:`Dialog <pyrogram.Dialog>`):
+            Requested dialogs.
+    """
     ID = 0xb0700029
 
     def __init__(self, total_count: int, dialogs: list):
-        # TODO docstrings
         self.total_count = total_count
         self.dialogs = dialogs

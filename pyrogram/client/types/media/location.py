@@ -19,19 +19,19 @@
 from pyrogram.api.core import Object
 
 
-class Messages(Object):
-    """This object represents a chat's messages.
+class Location(Object):
+    """This object represents a point on the map.
 
     Args:
-        total_count (``int``):
-            Total number of messages the target chat has.
+        longitude (``float``):
+            Longitude as defined by sender.
 
-        messages (List of :obj:`Message <pyrogram.Message>`):
-            Requested messages.
+        latitude (``float``):
+            Latitude as defined by sender.
     """
 
-    ID = 0xb0700026
+    ID = 0xb0700012
 
-    def __init__(self, total_count: int, messages: list):
-        self.total_count = total_count
-        self.messages = messages
+    def __init__(self, longitude: float, latitude: float):
+        self.longitude = longitude
+        self.latitude = latitude

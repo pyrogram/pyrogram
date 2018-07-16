@@ -19,24 +19,18 @@
 from pyrogram.api.core import Object
 
 
-class VideoNote(Object):
-    """This object represents a video message (available in Telegram apps as of v.4.0).
+class Voice(Object):
+    """This object represents a voice note.
 
     Args:
         file_id (``str``):
             Unique identifier for this file.
 
-        length (``int``):
-            Video width and height as defined by sender.
-
         duration (``int``):
-            Duration of the video in seconds as defined by sender.
+            Duration of the audio in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Video thumbnail.
-
-        file_name (``str``, *optional*):
-            Video note file name.
+        waveform (``bytes``, *optional*):
+            Voice waveform.
 
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
@@ -45,27 +39,22 @@ class VideoNote(Object):
             File size.
 
         date (``int``, *optional*):
-            Date the video note was sent in Unix time.
+            Date the voice was sent in Unix time.
     """
 
-    ID = 0xb0700010
+    ID = 0xb0700009
 
     def __init__(
             self,
             file_id: str,
-            length: int,
             duration: int,
-            thumb=None,
-            file_name: str = None,
+            waveform: bytes = None,
             mime_type: str = None,
             file_size: int = None,
-            date: int = None
-    ):
-        self.file_id = file_id  # string
-        self.thumb = thumb  # flags.0?PhotoSize
-        self.file_name = file_name  # flags.1?string
-        self.mime_type = mime_type  # flags.2?string
-        self.file_size = file_size  # flags.3?int
-        self.date = date  # flags.4?int
-        self.length = length  # int
-        self.duration = duration  # int
+            date: int = None):
+        self.file_id = file_id
+        self.duration = duration
+        self.waveform = waveform
+        self.mime_type = mime_type
+        self.file_size = file_size
+        self.date = date

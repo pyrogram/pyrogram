@@ -19,27 +19,27 @@
 from pyrogram.api.core import Object
 
 
-class Contact(Object):
-    """This object represents a phone contact.
+class PhotoSize(Object):
+    """This object represents one size of a photo or a file/sticker thumbnail.
 
     Args:
-        phone_number (``str``):
-            Contact's phone number.
+        file_id (``str``):
+            Unique identifier for this file.
 
-        first_name (``str``):
-            Contact's first name.
+        width (``int``):
+            Photo width.
 
-        last_name (``str``, *optional*):
-            Contact's last name.
+        height (``int``):
+            Photo height.
 
-        user_id (``int``, *optional*):
-            Contact's user identifier in Telegram.
+        file_size (``int``):
+            File size.
     """
 
-    ID = 0xb0700011
+    ID = 0xb0700005
 
-    def __init__(self, phone_number: str, first_name: str, last_name: str = None, user_id=None):
-        self.phone_number = phone_number  # string
-        self.first_name = first_name  # string
-        self.last_name = last_name  # flags.0?string
-        self.user_id = user_id  # flags.1?int
+    def __init__(self, file_id: str, width: int, height: int, file_size: int):
+        self.file_id = file_id
+        self.width = width
+        self.height = height
+        self.file_size = file_size
