@@ -572,7 +572,7 @@ class Message(Object):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    def download(self, file_name: str = "", block: bool = True):
+    async def download(self, file_name: str = "", block: bool = True):
         """Use this method as a shortcut for:
 
         .. code-block:: python
@@ -602,7 +602,7 @@ class Message(Object):
             :class:`Error <pyrogram.Error>`
             ``ValueError``: If the message doesn't contain any downloadable media
         """
-        return self._client.download_media(
+        return await self._client.download_media(
             message=self,
             file_name=file_name,
             block=block

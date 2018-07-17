@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class SetChatDescription(BaseClient):
-    def set_chat_description(self, chat_id: int or str, description: str):
+    async def set_chat_description(self, chat_id: int or str, description: str):
         """Use this method to change the description of a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
@@ -40,10 +40,10 @@ class SetChatDescription(BaseClient):
             :class:`Error <pyrogram.Error>`
             ``ValueError``: If a chat_id doesn't belong to a supergroup or a channel.
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditAbout(
                     channel=peer,
                     about=description

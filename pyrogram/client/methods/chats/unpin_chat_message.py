@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class UnpinChatMessage(BaseClient):
-    def unpin_chat_message(self, chat_id: int or str):
+    async def unpin_chat_message(self, chat_id: int or str):
         """Use this method to unpin a message in a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.
@@ -38,10 +38,10 @@ class UnpinChatMessage(BaseClient):
             :class:`Error <pyrogram.Error>`
             ``ValueError``: If a chat_id doesn't belong to a supergroup or a channel.
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.UpdatePinnedMessage(
                     channel=peer,
                     id=0

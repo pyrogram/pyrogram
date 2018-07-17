@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class SetChatTitle(BaseClient):
-    def set_chat_title(self, chat_id: int or str, title: str):
+    async def set_chat_title(self, chat_id: int or str, title: str):
         """Use this method to change the title of a chat.
         Titles can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -45,17 +45,17 @@ class SetChatTitle(BaseClient):
             :class:`Error <pyrogram.Error>`
             ``ValueError``: If a chat_id belongs to user.
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            self.send(
+            await self.send(
                 functions.messages.EditChatTitle(
                     chat_id=peer.chat_id,
                     title=title
                 )
             )
         elif isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditTitle(
                     channel=peer,
                     title=title

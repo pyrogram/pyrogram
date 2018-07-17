@@ -25,7 +25,7 @@ from ...ext import BaseClient
 
 
 class SetChatPhoto(BaseClient):
-    def set_chat_photo(self, chat_id: int or str, photo: str):
+    async def set_chat_photo(self, chat_id: int or str, photo: str):
         """Use this method to set a new profile photo for the chat.
         Photos can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -49,7 +49,7 @@ class SetChatPhoto(BaseClient):
             :class:`Error <pyrogram.Error>`
             ``ValueError``: If a chat_id belongs to user.
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if os.path.exists(photo):
             photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
@@ -64,14 +64,14 @@ class SetChatPhoto(BaseClient):
             )
 
         if isinstance(peer, types.InputPeerChat):
-            self.send(
+            await self.send(
                 functions.messages.EditChatPhoto(
                     chat_id=peer.chat_id,
                     photo=photo
                 )
             )
         elif isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditPhoto(
                     channel=peer,
                     photo=photo

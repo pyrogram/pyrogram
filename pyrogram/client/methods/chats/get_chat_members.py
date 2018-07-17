@@ -30,17 +30,17 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(self,
-                         chat_id: int or str,
-                         offset: int = 0,
-                         limit: int = 200,
-                         query: str = "",
-                         filter: str = Filters.ALL):
-        peer = self.resolve_peer(chat_id)
+    async def get_chat_members(self,
+                               chat_id: int or str,
+                               offset: int = 0,
+                               limit: int = 200,
+                               query: str = "",
+                               filter: str = Filters.ALL):
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
             return utils.parse_chat_members(
-                self.send(
+                await self.send(
                     functions.messages.GetFullChat(
                         peer.chat_id
                     )
@@ -65,7 +65,7 @@ class GetChatMembers(BaseClient):
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
             return utils.parse_chat_members(
-                self.send(
+                await self.send(
                     functions.channels.GetParticipants(
                         channel=peer,
                         filter=filter,
