@@ -19,6 +19,7 @@
 from .delete_chat_photo import DeleteChatPhoto
 from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
+from .get_chat_member import GetChatMember
 from .get_chat_members import GetChatMembers
 from .join_chat import JoinChat
 from .kick_chat_member import KickChatMember
@@ -43,6 +44,7 @@ class Chats(
     RestrictChatMember,
     PromoteChatMember,
     GetChatMembers,
+    GetChatMember,
     SetChatPhoto,
     DeleteChatPhoto,
     SetChatTitle,
