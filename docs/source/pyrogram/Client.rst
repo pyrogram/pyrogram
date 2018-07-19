@@ -74,3 +74,5 @@ Client
         set_chat_description
         pin_chat_message
         unpin_chat_message
+        get_chat_member
+        get_chat_members
