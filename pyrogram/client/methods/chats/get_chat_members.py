@@ -60,12 +60,18 @@ class GetChatMembers(BaseClient):
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
-                and channels. It can be any of "all", "kicked", "restricted", "bots", "recent" and "administrators".
-                Defaults to "all".
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Defaults to *"all"*.
 
         .. [1] On supergroups and channels you can get up to 10,000 members for a single query string.
 
-        .. [2] A query string is applicable only for "all", "kicked" and "restricted" filters only.
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
         """
         peer = self.resolve_peer(chat_id)
 
