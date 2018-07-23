@@ -20,6 +20,8 @@ Client
         run
         on_message
         on_callback_query
+        on_deleted_messages
+        on_disconnect
         on_raw_update
         add_handler
         remove_handler
@@ -31,6 +33,7 @@ Client
         send_photo
         send_audio
         send_document
+        send_gif
         send_sticker
         send_video
         send_voice
@@ -76,3 +79,4 @@ Client
         unpin_chat_message
         get_chat_member
         get_chat_members
+        get_dialogs
