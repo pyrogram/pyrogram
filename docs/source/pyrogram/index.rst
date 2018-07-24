@@ -7,6 +7,8 @@ In this section you can find a detailed description of the Pyrogram package and 
 after the well established `Telegram Bot API`_ methods, thus offering a familiar look to Bot developers.
 
 .. toctree::
+    :maxdepth: 1
+
     Client
     types/index
     handlers/index
