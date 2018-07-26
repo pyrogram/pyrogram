@@ -28,7 +28,6 @@ class SetChatDescription(BaseClient):
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             description (``str``):
                 New chat description, 0-255 characters.

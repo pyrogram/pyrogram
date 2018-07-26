@@ -33,13 +33,11 @@ class ForwardMessages(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             from_chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the source chat where the original message was sent.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_ids (``iterable``):
                 A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
