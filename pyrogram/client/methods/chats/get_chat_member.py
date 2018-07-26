@@ -24,7 +24,7 @@ class GetChatMember(BaseClient):
     def get_chat_member(self,
                         chat_id: int or str,
                         user_id: int or str):
-        """Use this method to get information about a single member of a chat.
+        """Use this method to get information about one member of a chat.
 
         Args:
             chat_id (``int`` | ``str``):
