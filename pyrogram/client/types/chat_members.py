@@ -20,7 +20,15 @@ from pyrogram.api.core import Object
 
 
 class ChatMembers(Object):
-    # TODO: Docstrings
+    """This object contains information about the members list of a chat.
+
+    Args:
+        total_count (``int``):
+            Total number of members the chat has.
+
+        chat_members (List of :obj:`ChatMember <pyrogram.ChatMember>`):
+            Requested chat members.
+    """
 
     ID = 0xb0700030
 
