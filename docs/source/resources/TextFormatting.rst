@@ -46,9 +46,7 @@ To use this mode, pass :obj:`HTML <pyrogram.ParseMode.HTML>` or "html" in the *p
 
     <code>inline fixed-width code</code>
 
-    <pre>pre-formatted fixed-width
-    code block
-    </pre>
+    <pre>pre-formatted fixed-width code block</pre>
 
 .. note:: Mentions are only guaranteed to work if you have already met the user (in groups or private chats).
 
