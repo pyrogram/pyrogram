@@ -1,8 +1,11 @@
 Text Formatting
 ===============
 
-Pyrogram, just like `Telegram Bot API`_, supports basic Markdown and HTML formatting styles for text messages and
-media captions; Markdown uses the same syntax as Telegram Desktop's and is enabled by default.
+Pyrogram, just like the `Telegram Bot API`_, natively supports basic Markdown and HTML formatting styles for text
+messages and media captions.
+
+Markdown style uses the same syntax as Telegram Desktop's and is enabled by default.
+
 Beside bold, italic, and pre-formatted code, **Pyrogram does also support inline URLs and inline mentions of users**.
 
 Markdown Style
