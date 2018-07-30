@@ -16,8 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from . import InputMedia
 
-class InputMediaPhoto:
+
+class InputMediaPhoto(InputMedia):
     """This object represents a photo to be sent inside an album.
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
@@ -41,6 +43,4 @@ class InputMediaPhoto:
                  media: str,
                  caption: str = "",
                  parse_mode: str = ""):
-        self.media = media
-        self.caption = caption
-        self.parse_mode = parse_mode
+        super().__init__(media, caption, parse_mode)
