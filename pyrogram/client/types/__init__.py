@@ -23,6 +23,10 @@ from .chat_members import ChatMembers
 from .chat_photo import ChatPhoto
 from .dialog import Dialog
 from .dialogs import Dialogs
+from .input_media import InputMedia
+from .input_media_animation import InputMediaAnimation
+from .input_media_audio import InputMediaAudio
+from .input_media_document import InputMediaDocument
 from .input_media_photo import InputMediaPhoto
 from .input_media_video import InputMediaVideo
 from .input_phone_contact import InputPhoneContact

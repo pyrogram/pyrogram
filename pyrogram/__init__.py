@@ -28,11 +28,10 @@ __version__ = "0.7.6dev1"
 from .api.errors import Error
 from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
-    InputMediaVideo, InputPhoneContact, Location, Message, MessageEntity,
-    Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserProfilePhotos,
-    Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
-    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup,
-    ReplyKeyboardRemove
+    InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
+    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User,
+    UserProfilePhotos, Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
+    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
