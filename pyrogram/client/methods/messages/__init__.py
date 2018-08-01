@@ -18,6 +18,7 @@
 
 from .delete_messages import DeleteMessages
 from .edit_message_caption import EditMessageCaption
+from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
 from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
@@ -44,6 +45,7 @@ class Messages(
     DeleteMessages,
     EditMessageCaption,
     EditMessageReplyMarkup,
+    EditMessageMedia,
     EditMessageText,
     ForwardMessages,
     GetHistory,
