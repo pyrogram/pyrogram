@@ -19,7 +19,7 @@
 import os
 
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient
+from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto
 )
@@ -61,3 +61,11 @@ class EditMessageMedia(BaseClient):
                 **style.parse(caption)
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
+                return utils.parse_messages(
+                    self, i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats}
+                )
