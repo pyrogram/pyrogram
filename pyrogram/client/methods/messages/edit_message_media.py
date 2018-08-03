@@ -51,6 +51,10 @@ class EditMessageMedia(BaseClient):
                         access_hash=media.photo.access_hash
                     )
                 )
+            elif media.media.startswith("http"):
+                media = types.InputMediaPhotoExternal(
+                    url=media.media
+                )
 
         r = self.send(
             functions.messages.EditMessage(
