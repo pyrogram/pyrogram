@@ -16,8 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import functions
+import os
+
+from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
+from pyrogram.client.types import (
+    InputMediaPhoto
+)
 
 
 class EditMessageMedia(BaseClient):
@@ -26,11 +31,33 @@ class EditMessageMedia(BaseClient):
                            message_id: int,
                            media,
                            reply_markup=None):
+        style = self.html if media.parse_mode.lower() == "html" else self.markdown
+        caption = media.caption
+
+        if isinstance(media, InputMediaPhoto):
+            if os.path.exists(media.media):
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedPhoto(
+                            file=self.save_file(media.media)
+                        )
+                    )
+                )
+
+                media = types.InputMediaPhoto(
+                    id=types.InputPhoto(
+                        id=media.photo.id,
+                        access_hash=media.photo.access_hash
+                    )
+                )
+
         r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                media=media
+                media=media,
+                **style.parse(caption)
             )
         )
