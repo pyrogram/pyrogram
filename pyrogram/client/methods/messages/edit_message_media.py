@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import mimetypes
 import os
 import struct
 
@@ -24,7 +25,7 @@ from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
-    InputMediaPhoto
+    InputMediaPhoto, InputMediaVideo
 )
 
 
@@ -80,6 +81,34 @@ class EditMessageMedia(BaseClient):
                             access_hash=unpacked[3]
                         )
                     )
+
+        if isinstance(media, InputMediaVideo):
+            if os.path.exists(media.media):
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map[".mp4"],
+                            file=self.save_file(media.media),
+                            attributes=[
+                                types.DocumentAttributeVideo(
+                                    supports_streaming=media.supports_streaming or None,
+                                    duration=media.duration,
+                                    w=media.width,
+                                    h=media.height
+                                ),
+                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                            ]
+                        )
+                    )
+                )
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=media.document.id,
+                        access_hash=media.document.access_hash
+                    )
+                )
 
         r = self.send(
             functions.messages.EditMessage(
