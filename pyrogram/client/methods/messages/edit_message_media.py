@@ -109,6 +109,32 @@ class EditMessageMedia(BaseClient):
                         access_hash=media.document.access_hash
                     )
                 )
+            elif media.media.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=media.media
+                )
+            else:
+                try:
+                    decoded = utils.decode(media.media)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    if unpacked[0] != 4:
+                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                        if media_type:
+                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                        else:
+                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                    media = types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=unpacked[2],
+                            access_hash=unpacked[3]
+                        )
+                    )
 
         r = self.send(
             functions.messages.EditMessage(
