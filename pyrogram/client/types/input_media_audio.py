@@ -25,43 +25,37 @@ class InputMediaAudio(InputMedia):
 
     Args:
         media (``str``):
-            Video to send.
-            Pass a file_id as string to send a video that exists on the Telegram servers or
-            pass a file path as string to upload a new video that exists on your local machine.
-            Sending video by a URL is currently unsupported.
+            Audio to send.
+            Pass a file_id as string to send an audio that exists on the Telegram servers or
+            pass a file path as string to upload a new audio that exists on your local machine.
 
         caption (``str``, *optional*):
-            Caption of the video to be sent, 0-200 characters
+            Caption of the audio to be sent, 0-200 characters
 
         parse_mode (``str``, *optional*):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
             if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
             Defaults to Markdown.
 
-        width (``int``, *optional*):
-            Video width.
-
-        height (``int``, *optional*):
-            Video height.
-
         duration (``int``, *optional*):
-            Video duration.
+            Duration of the audio in seconds
 
-        supports_streaming (``bool``, *optional*):
-            Pass True, if the uploaded video is suitable for streaming.
+        performer (``int``, *optional*):
+            Performer of the audio
+
+        title (``int``, *optional*):
+            Title of the audio
     """
 
     def __init__(self,
                  media: str,
                  caption: str = "",
                  parse_mode: str = "",
-                 width: int = 0,
-                 height: int = 0,
                  duration: int = 0,
-                 supports_streaming: bool = True):
+                 performer: int = "",
+                 title: str = ""):
         super().__init__(media, caption, parse_mode)
 
-        self.width = width
-        self.height = height
         self.duration = duration
-        self.supports_streaming = supports_streaming
+        self.performer = performer
+        self.title = title
