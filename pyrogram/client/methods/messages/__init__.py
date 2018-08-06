@@ -29,7 +29,7 @@ from .send_audio import SendAudio
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
 from .send_document import SendDocument
-from .send_gif import SendAnimation
+from .send_animation import SendAnimation
 from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
