@@ -30,7 +30,7 @@ from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User,
-    UserProfilePhotos, Venue, GIF, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
+    UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 )
 from .client import (

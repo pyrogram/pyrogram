@@ -19,27 +19,27 @@
 from pyrogram.api.core import Object
 
 
-class GIF(Object):
-    """This object represents a GIF file.
+class Animation(Object):
+    """This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
     Args:
         file_id (``str``):
             Unique identifier for this file.
 
         width (``int``):
-            GIF width as defined by sender.
+            Animation width as defined by sender.
 
         height (``int``):
-            GIF height as defined by sender.
+            Animation height as defined by sender.
 
         duration (``int``):
-            Duration of the GIF in seconds as defined by sender.
+            Duration of the animation in seconds as defined by sender.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            GIF thumbnail.
+            Animation thumbnail.
 
         file_name (``str``, *optional*):
-            GIF file name.
+            Animation file name.
 
         mime_type (``str``, *optional*):
             Mime type of a file as defined by sender.
@@ -48,7 +48,7 @@ class GIF(Object):
             File size.
 
         date (``int``, *optional*):
-            Date the GIF was sent in Unix time.
+            Date the Animation was sent in Unix time.
     """
 
     ID = 0xb0700025

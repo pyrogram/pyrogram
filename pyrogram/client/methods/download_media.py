@@ -111,7 +111,7 @@ class DownloadMedia(BaseClient):
                 pyrogram_types.Voice,
                 pyrogram_types.VideoNote,
                 pyrogram_types.Sticker,
-                pyrogram_types.GIF
+                pyrogram_types.Animation
         )):
             if isinstance(message, pyrogram_types.Photo):
                 media = pyrogram_types.Document(

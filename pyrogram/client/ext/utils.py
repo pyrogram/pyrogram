@@ -293,7 +293,7 @@ def parse_messages(
             venue = None
             audio = None
             voice = None
-            gif = None
+            animation = None
             video = None
             video_note = None
             sticker = None
@@ -432,7 +432,7 @@ def parse_messages(
                         elif types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
-                            gif = pyrogram_types.GIF(
+                            animation = pyrogram_types.Animation(
                                 file_id=encode(
                                     pack(
                                         "<iiqq",
@@ -584,7 +584,7 @@ def parse_messages(
                 venue=venue,
                 audio=audio,
                 voice=voice,
-                gif=gif,
+                animation=animation,
                 video=video,
                 video_note=video_note,
                 sticker=sticker,

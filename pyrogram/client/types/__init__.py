@@ -31,7 +31,7 @@ from .input_media_photo import InputMediaPhoto
 from .input_media_video import InputMediaVideo
 from .input_phone_contact import InputPhoneContact
 from .media import (
-    Audio, Contact, Document, GIF, Location, Photo, PhotoSize,
+    Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
     Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos
 )
 from .message import Message
