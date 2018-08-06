@@ -26,22 +26,22 @@ from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
 
 
-class SendGIF(BaseClient):
-    def send_gif(self,
-                 chat_id: int or str,
-                 gif: str,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 duration: int = 0,
-                 width: int = 0,
-                 height: int = 0,
-                 thumb: str = None,
-                 disable_notification: bool = None,
-                 reply_to_message_id: int = None,
-                 reply_markup=None,
-                 progress: callable = None,
-                 progress_args: tuple = ()):
-        """Use this method to send GIF files.
+class SendAnimation(BaseClient):
+    def send_animation(self,
+                       chat_id: int or str,
+                       animation: str,
+                       caption: str = "",
+                       parse_mode: str = "",
+                       duration: int = 0,
+                       width: int = 0,
+                       height: int = 0,
+                       thumb: str = None,
+                       disable_notification: bool = None,
+                       reply_to_message_id: int = None,
+                       reply_markup=None,
+                       progress: callable = None,
+                       progress_args: tuple = ()):
+        """Use this method to send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Args:
             chat_id (``int`` | ``str``):
@@ -49,14 +49,14 @@ class SendGIF(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            gif (``str``):
-                GIF to send.
-                Pass a file_id as string to send a GIF that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a GIF from the Internet, or
-                pass a file path as string to upload a new GIF that exists on your local machine.
+            animation (``str``):
+                Animation to send.
+                Pass a file_id as string to send an animation that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
+                pass a file path as string to upload a new animation that exists on your local machine.
 
             caption (``str``, *optional*):
-                GIF caption, 0-200 characters.
+                Animation caption, 0-200 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -64,16 +64,16 @@ class SendGIF(BaseClient):
                 Defaults to Markdown.
 
             duration (``int``, *optional*):
-                Duration of sent GIF in seconds.
+                Duration of sent animation in seconds.
 
             width (``int``, *optional*):
-                GIF width.
+                Animation width.
 
             height (``int``, *optional*):
-                GIF height.
+                Animation height.
 
             thumb (``str``, *optional*):
-                GIF thumbnail.
+                Animation thumbnail.
                 Pass a file path as string to send an image that exists on your local machine.
                 Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
@@ -120,9 +120,9 @@ class SendGIF(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(gif):
+        if os.path.exists(animation):
             thumb = None if thumb is None else self.save_file(thumb)
-            file = self.save_file(gif, progress=progress, progress_args=progress_args)
+            file = self.save_file(animation, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
@@ -134,17 +134,17 @@ class SendGIF(BaseClient):
                         w=width,
                         h=height
                     ),
-                    types.DocumentAttributeFilename(os.path.basename(gif)),
+                    types.DocumentAttributeFilename(os.path.basename(animation)),
                     types.DocumentAttributeAnimated()
                 ]
             )
-        elif gif.startswith("http"):
+        elif animation.startswith("http"):
             media = types.InputMediaDocumentExternal(
-                url=gif
+                url=animation
             )
         else:
             try:
-                decoded = utils.decode(gif)
+                decoded = utils.decode(animation)
                 fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
                 unpacked = struct.unpack(fmt, decoded)
             except (AssertionError, binascii.Error, struct.error):
@@ -179,7 +179,7 @@ class SendGIF(BaseClient):
                     )
                 )
             except FilePartMissing as e:
-                self.save_file(gif, file_id=file.id, file_part=e.x)
+                self.save_file(animation, file_id=file.id, file_part=e.x)
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
