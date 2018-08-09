@@ -16,24 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .callback_query import CallbackQuery
-from .input_media import (
-    InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
-    InputMediaDocument, InputMediaAnimation
-)
-from .media import (
-    Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
-    Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos
-)
-from .message import Message
-from .message_entity import MessageEntity
-from .messages import Messages
-from .reply_markup import (
-    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
-)
-from .update import Update
-from .user_and_chats import (
-    Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User
-)
+from .chat import Chat
+from .chat_member import ChatMember
+from .chat_members import ChatMembers
+from .chat_photo import ChatPhoto
+from .dialog import Dialog
+from .dialogs import Dialogs
+from .user import User
