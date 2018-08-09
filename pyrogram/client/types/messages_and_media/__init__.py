@@ -21,6 +21,9 @@ from .audio import Audio
 from .contact import Contact
 from .document import Document
 from .location import Location
+from .message import Message
+from .message_entity import MessageEntity
+from .messages import Messages
 from .photo import Photo
 from .photo_size import PhotoSize
 from .sticker import Sticker
