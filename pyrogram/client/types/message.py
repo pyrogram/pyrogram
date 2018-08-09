@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.core import Object
-from .reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from .bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 class Message(Object):

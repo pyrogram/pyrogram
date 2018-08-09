@@ -19,7 +19,7 @@
 import re
 
 from .filter import Filter
-from ..types.reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from ..types.bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def build(name: str, func: callable, **kwargs) -> type:
