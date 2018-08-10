@@ -28,13 +28,11 @@ from .input_media import (
     InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
     InputMediaDocument, InputMediaAnimation
 )
-from .media import (
+from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
-    Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos
+    Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
+    Message, Messages, MessageEntity
 )
-from .message import Message
-from .message_entity import MessageEntity
-from .messages import Messages
 from .update import Update
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
