@@ -19,7 +19,7 @@
 from threading import Event
 
 from pyrogram.client import types as pyrogram_types
-from ..ext import BaseClient
+from ...ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
