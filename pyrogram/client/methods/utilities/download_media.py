@@ -98,8 +98,8 @@ class DownloadMedia(BaseClient):
                 media = message.video_note
             elif message.sticker:
                 media = message.sticker
-            elif message.gif:
-                media = message.gif
+            elif message.animation:
+                media = message.animation
             else:
                 raise ValueError(error_message)
         elif isinstance(message, (
