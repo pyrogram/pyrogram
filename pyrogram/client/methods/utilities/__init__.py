@@ -17,9 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .download_media import DownloadMedia
+from .resolve_peer import ResolvePeer
 
 
 class Utilities(
-    DownloadMedia
+    DownloadMedia,
+    ResolvePeer
 ):
     pass
