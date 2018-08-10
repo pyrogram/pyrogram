@@ -1010,54 +1010,6 @@ class Client(Methods, BaseClient):
 
         self.get_initial_dialogs_chunk()
 
-    def resolve_peer(self, peer_id: int or str):
-        """Use this method to get the InputPeer of a known peer_id.
-
-        This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
-        you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an InputPeer
-        type is required.
-
-        Args:
-            peer_id (``int`` | ``str``):
-                The peer id you want to extract the InputPeer from.
-                Can be a direct id (int), a username (str) or a phone number (str).
-
-        Returns:
-            On success, the resolved peer id is returned in form of an InputPeer object.
-
-        Raises:
-            :class:`Error <pyrogram.Error>`
-        """
-        if type(peer_id) is str:
-            if peer_id in ("self", "me"):
-                return types.InputPeerSelf()
-
-            peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
-
-            try:
-                int(peer_id)
-            except ValueError:
-                if peer_id not in self.peers_by_username:
-                    self.send(functions.contacts.ResolveUsername(peer_id))
-
-                return self.peers_by_username[peer_id]
-            else:
-                try:
-                    return self.peers_by_phone[peer_id]
-                except KeyError:
-                    raise PeerIdInvalid
-
-        try:  # User
-            return self.peers_by_id[peer_id]
-        except KeyError:
-            try:  # Chat
-                return self.peers_by_id[-peer_id]
-            except KeyError:
-                try:  # Channel
-                    return self.peers_by_id[int("-100" + str(peer_id))]
-                except (KeyError, ValueError):
-                    raise PeerIdInvalid
-
     def save_file(self,
                   path: str,
                   file_id: int = None,
