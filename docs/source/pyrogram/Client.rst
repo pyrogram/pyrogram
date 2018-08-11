@@ -48,7 +48,7 @@ Messages
     send_document
     send_sticker
     send_video
-    send_gif
+    send_animation
     send_voice
     send_video_note
     send_media_group

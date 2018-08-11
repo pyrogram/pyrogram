@@ -31,7 +31,7 @@ Messages & Media
     UserProfilePhotos
     Audio
     Document
-    GIF
+    Animation
     Video
     Voice
     VideoNote
@@ -115,7 +115,7 @@ Input Media
 .. autoclass:: Document
     :members:
 
-.. autoclass:: GIF
+.. autoclass:: Animation
     :members:
 
 .. autoclass:: Video
