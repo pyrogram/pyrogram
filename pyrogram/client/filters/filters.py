@@ -69,8 +69,8 @@ class Filters:
     sticker = build("Sticker", lambda _, m: bool(m.sticker))
     """Filter messages that contain :obj:`Sticker <pyrogram.api.types.pyrogram.Sticker>` objects."""
 
-    gif = build("GIF", lambda _, m: bool(m.gif))
-    """Filter messages that contain :obj:`GIF <pyrogram.api.types.pyrogram.GIF>` objects."""
+    animation = build("GIF", lambda _, m: bool(m.animation))
+    """Filter messages that contain :obj:`Animation <pyrogram.api.types.pyrogram.Animation>` objects."""
 
     video = build("Video", lambda _, m: bool(m.video))
     """Filter messages that contain :obj:`Video <pyrogram.api.types.pyrogram.Video>` objects."""
@@ -276,7 +276,7 @@ class Filters:
             or Filters.photo(m)
             or Filters.sticker(m)
             or Filters.video(m)
-            or Filters.gif(m)
+            or Filters.animation(m)
             or Filters.voice(m)
             or Filters.video_note(m)
             or Filters.contact(m)
