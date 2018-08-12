@@ -10,8 +10,8 @@ after the well established `Telegram Bot API`_ methods, thus offering a familiar
     :maxdepth: 1
 
     Client
-    types/index
-    handlers/index
+    Types
+    Handlers
     Filters
     ChatAction
     ParseMode
