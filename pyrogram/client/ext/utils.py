@@ -69,7 +69,8 @@ ENTITIES = {
     types.MessageEntityCode.ID: "code",
     types.MessageEntityPre.ID: "pre",
     types.MessageEntityTextUrl.ID: "text_link",
-    types.MessageEntityMentionName.ID: "text_mention"
+    types.MessageEntityMentionName.ID: "text_mention",
+    types.MessageEntityPhone.ID: "phone_number"
 }
 
 
