@@ -81,18 +81,20 @@ def parse_entities(entities: list, users: dict) -> list:
         entity_type = ENTITIES.get(entity.ID, None)
 
         if entity_type:
-            output_entities.append(pyrogram_types.MessageEntity(
-                type=entity_type,
-                offset=entity.offset,
-                length=entity.length,
-                url=getattr(entity, "url", None),
-                user=parse_user(
-                    users.get(
-                        getattr(entity, "user_id", None),
-                        None
+            output_entities.append(
+                pyrogram_types.MessageEntity(
+                    type=entity_type,
+                    offset=entity.offset,
+                    length=entity.length,
+                    url=getattr(entity, "url", None),
+                    user=parse_user(
+                        users.get(
+                            getattr(entity, "user_id", None),
+                            None
+                        )
                     )
                 )
-            ))
+            )
 
     return output_entities
 
