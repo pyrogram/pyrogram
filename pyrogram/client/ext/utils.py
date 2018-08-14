@@ -378,7 +378,8 @@ def parse_messages(
                         ),
                         title=media.title,
                         address=media.address,
-                        foursquare_id=media.venue_id or None
+                        foursquare_id=media.venue_id or None,
+                        foursquare_type=media.venue_type
                     )
                 elif isinstance(media, types.MessageMediaDocument):
                     doc = media.document

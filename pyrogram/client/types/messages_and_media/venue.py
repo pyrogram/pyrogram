@@ -35,12 +35,24 @@ class Venue(Object):
         foursquare_id (``str``, *optional*):
             Foursquare identifier of the venue.
 
+        foursquare_type (``str``, *optional*):
+            Foursquare type of the venue.
+            (For example, "arts_entertainment/default", "arts_entertainment/aquarium" or "food/icecream".)
+
     """
 
     ID = 0xb0700013
 
-    def __init__(self, location, title: str, address: str, foursquare_id: str = None):
+    def __init__(
+            self,
+            location,
+            title: str,
+            address: str,
+            foursquare_id: str = None,
+            foursquare_type: str = None
+    ):
         self.location = location
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
+        self.foursquare_type = foursquare_type
