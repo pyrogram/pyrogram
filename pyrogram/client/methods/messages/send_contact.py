@@ -48,7 +48,7 @@ class SendContact(BaseClient):
                 Contact's last name.
 
             vcard (``str``, *optional*):
-                Contact's vCard information.
+                Additional data about the contact in the form of a vCard, 0-2048 bytes
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

@@ -32,11 +32,11 @@ class Contact(Object):
         last_name (``str``, *optional*):
             Contact's last name.
 
-        vcard (``str``, *optional*):
-            Contact's vCard.
-
         user_id (``int``, *optional*):
             Contact's user identifier in Telegram.
+
+        vcard (``str``, *optional*):
+            Additional data about the contact in the form of a vCard
     """
 
     ID = 0xb0700011
@@ -46,11 +46,11 @@ class Contact(Object):
             phone_number: str,
             first_name: str,
             last_name: str = None,
-            vcard: str = None,
-            user_id: int = None
+            user_id: int = None,
+            vcard: str = None
     ):
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
-        self.vcard = vcard
         self.user_id = user_id
+        self.vcard = vcard
