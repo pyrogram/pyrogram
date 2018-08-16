@@ -23,10 +23,14 @@ If you already have one you can skip this step, otherwise:
 Configuration
 -------------
 
-There are two ways to configure a Pyrogram application project, and you can choose the one that fits better for you:
+The API key obtained in the `previous step <#api-keys>`_ defines a token for your application allowing you to access
+the Telegram database using the MTProto API — **it is therefore required for all authorizations of both Users and Bots**.
+
+Having it handy, it's time to configure your Pyrogram project. There are two ways to do so, and you can choose what
+fits better for you:
 
 -   Create a new ``config.ini`` file at the root of your working directory, copy-paste the following and replace the
-    **api_id** and **api_hash** values with `your own <#api-keys>`_. This is the preferred method because allows you
+    **api_id** and **api_hash** values with your own. This is the preferred method because allows you
     to keep your credentials out of your code without having to deal with how to load them:
 
     .. code-block:: ini
@@ -84,11 +88,12 @@ and as long as you keep the session alive, Pyrogram won't ask you again to enter
 Bot Authorization
 -----------------
 
-Being written entirely from the ground up, Pyrogram is also able to authorize Bots.
-Bots are a special kind of users which also make use of MTProto, the underlying Telegram protocol.
-This means that you can use Pyrogram to execute API calls with a Bot identity.
+Bots are a special kind of users and are authorized via their tokens (instead of phone numbers), which are created by
+BotFather_. Bot tokens replace the Users' phone numbers only — you still need to
+`configure a Telegram API key <#configuration>`_ with Pyrogram, even when using Bots.
 
-Instead of phone numbers, Bots are authorized via their tokens which are created by BotFather_:
+The authorization process is automatically managed. All you need to do is pass the bot token as ``session_name``.
+The session file will be named after the Bot user_id, which is ``123456.session`` for the example below.
 
 .. code-block:: python
 
@@ -96,9 +101,6 @@ Instead of phone numbers, Bots are authorized via their tokens which are created
 
     app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
     app.run()
-
-That's all, no further action is needed. The session file will be named after the Bot user_id, which is
-``123456.session`` for the example above.
 
 .. _installed Pyrogram: Installation.html
 .. _`Country Code`: https://en.wikipedia.org/wiki/List_of_country_calling_codes
