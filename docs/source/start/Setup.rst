@@ -52,7 +52,8 @@ fits better for you:
             api_hash="0123456789abcdef0123456789abcdef"
         )
 
-.. note:: The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
+.. note::
+    The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
     and *api_hash* parameters usage.
 
 User Authorization
@@ -83,7 +84,7 @@ After successfully authorizing yourself, a new file called ``my_account.session`
 Pyrogram executing API calls with your identity. This file will be loaded again when you restart your app,
 and as long as you keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
-.. important:: Your ``*.session`` file(s) must be kept secret.
+.. important:: Your ``*.session`` files are personal and must be kept secret.
 
 Bot Authorization
 -----------------
