@@ -8,14 +8,17 @@ with Pyrogram.
 API Keys
 --------
 
-The very first step requires you to obtain a valid Telegram API key.
+The very first step requires you to obtain a valid Telegram API key (API id/hash pair).
 If you already have one you can skip this step, otherwise:
 
 #. Visit https://my.telegram.org/apps and log in with your Telegram Account.
 #. Fill out the form to register a new Telegram application.
-#. Done. The Telegram API key consists of two parts: the **App api_id** and the **App api_hash**.
+#. Done. The API key consists of two parts: **App api_id** and **App api_hash**.
 
-.. important:: This key should be kept secret.
+
+.. important::
+
+     This API key is personal and should be kept secret.
 
 Configuration
 -------------
