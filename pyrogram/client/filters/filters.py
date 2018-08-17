@@ -23,6 +23,7 @@ from ..types.bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def create(name: str, func: callable, **kwargs) -> type:
+    # TODO: unpack kwargs using **kwargs into the dict itself. For Python 3.5+ only
     d = {"__call__": func}
     d.update(kwargs)
 
