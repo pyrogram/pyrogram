@@ -33,8 +33,6 @@ Decorators
     on_disconnect
     on_raw_update
 
-.. _available-methods:
-
 Messages
 --------
 
