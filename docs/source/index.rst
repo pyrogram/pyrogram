@@ -84,6 +84,7 @@ To get started, press the Next button.
     :caption: Resources
 
     resources/UpdateHandling
+    resources/UsingFilters
     resources/AutoAuthorization
     resources/CustomizeSessions
     resources/TgCrypto
