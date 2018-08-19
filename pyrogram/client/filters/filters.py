@@ -31,8 +31,14 @@ def create(name: str, func: callable, **kwargs) -> type:
 
 
 class Filters:
-    """This class provides access to all Filters available in Pyrogram.
-    Filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`."""
+    """This class provides access to all library-defined Filters available in Pyrogram.
+
+    The Filters listed here are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>` only.
+    At the moment, if you want to filter updates coming from different `Handlers <Handlers.html>`_ you have to create
+    your own filters with :meth:`Filters.create` and use them in the same way.
+    """
+
+    create = create
 
     bot = create("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
     """Filter messages coming from bots"""
