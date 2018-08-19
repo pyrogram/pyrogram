@@ -23,6 +23,27 @@ from ..types.bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def create(name: str, func: callable, **kwargs) -> type:
+    """Use this method to create a Filter.
+
+    Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
+
+    Args:
+        name (``str``):
+            Your filter's name. Can be anything you like.
+
+        func (``callable``):
+            A function that accepts two arguments *(filter, update)* and returns a Boolean: True if the update should be
+            handled, False otherwise.
+            The "update" argument type will vary depending on which `Handler <Handlers.html>`_ is coming from.
+            For example, in a :obj:`MessageHandler <pyrogram.MessageHandler>` the update type will be
+            a :obj:`Message <pyrogram.Message>`; in a :obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>` the
+            update type will be a :obj:`CallbackQuery <pyrogram.CallbackQuery>`. Your function body can then access the
+            incoming update and decide whether to allow it or not.
+
+        **kwargs (``any``, *optional*):
+            Any keyword argument you would like to pass. Useful for custom filters that accept parameters (e.g.:
+            :meth:`Filters.command`, :meth:`Filters.regex`).
+    """
     # TODO: unpack kwargs using **kwargs into the dict itself. For Python 3.5+ only
     d = {"__call__": func}
     d.update(kwargs)
