@@ -22,19 +22,41 @@ from ...ext import BaseClient, utils
 
 
 class GetDialogs(BaseClient):
-    # TODO docstrings
-
     def get_dialogs(self,
+                    offset_dialogs=None,
                     limit: int = 100,
-                    pinned_only: bool = False,
-                    last_chunk=None):
+                    pinned_only: bool = False):
+        """Use this method to get the user's dialogs
+
+        You can get up to 100 dialogs at once.
+
+        Args:
+            limit (``str``, *optional*):
+                Limits the number of dialogs to be retrieved.
+                Defaults to 100
+
+            pinned_only (``bool``, *optional*):
+                Pass True if you want to get only pinned dialogs.
+                Defaults to False.
+
+            offset_dialogs (:obj:`Dialogs`):
+                Pass the previous dialogs object to retrieve the next dialogs chunk starting from the last dialog.
+                Defaults to None (start from the beginning).
+
+        Returns:
+            On success, a :obj:`Dialogs` object is returned.
+
+        Raises:
+            :class:`Error`
+        """
+
         if pinned_only:
             r = self.send(functions.messages.GetPinnedDialogs())
         else:
             offset_date = 0
 
-            if last_chunk:
-                for dialog in reversed(last_chunk.dialogs):
+            if offset_dialogs:
+                for dialog in reversed(offset_dialogs.dialogs):
                     top_message = dialog.top_message
 
                     if top_message:
