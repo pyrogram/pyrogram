@@ -37,6 +37,9 @@ class Dialog(Object):
 
         unread_mark (``bool``):
             True, if the dialog has the unread mark set.
+
+        is_pinned (``bool``):
+            True, if the dialog is pinned.
     """
     ID = 0xb0700028
 
@@ -45,9 +48,11 @@ class Dialog(Object):
                  top_message,
                  unread_messages_count: int,
                  unread_mentions_count: int,
-                 unread_mark: bool):
+                 unread_mark: bool,
+                 is_pinned: bool):
         self.chat = chat
         self.top_message = top_message
         self.unread_messages_count = unread_messages_count
         self.unread_mentions_count = unread_mentions_count
         self.unread_mark = unread_mark
+        self.is_pinned = is_pinned

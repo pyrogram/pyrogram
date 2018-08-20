@@ -92,7 +92,8 @@ class GetDialogs(BaseClient):
                     top_message=messages.get(chat_id),
                     unread_messages_count=dialog.unread_count,
                     unread_mentions_count=dialog.unread_mentions_count,
-                    unread_mark=dialog.unread_mark
+                    unread_mark=dialog.unread_mark,
+                    is_pinned=dialog.pinned
                 )
             )
 
