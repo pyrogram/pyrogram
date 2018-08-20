@@ -22,14 +22,13 @@ from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
 from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
-from .get_dialogs import GetDialogs
 from .get_history import GetHistory
 from .get_messages import GetMessages
+from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
 from .send_document import SendDocument
-from .send_animation import SendAnimation
 from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
@@ -50,7 +49,6 @@ class Messages(
     ForwardMessages,
     GetHistory,
     GetMessages,
-    GetDialogs,
     SendAudio,
     SendChatAction,
     SendContact,
