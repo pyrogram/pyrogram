@@ -61,7 +61,7 @@ class SendMessage(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
