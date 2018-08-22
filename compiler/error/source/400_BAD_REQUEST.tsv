@@ -66,3 +66,4 @@ MEDIA_CAPTION_TOO_LONG	The media caption is longer than 200 characters
 USER_NOT_MUTUAL_CONTACT	The user is not a mutual contact
 USER_CHANNELS_TOO_MUCH	The user is already in too many channels or supergroups
 API_ID_PUBLISHED_FLOOD	You are using an API key that is limited on the server side
+USER_NOT_PARTICIPANT	The user is not a member of this chat

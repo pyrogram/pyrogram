@@ -7,7 +7,8 @@ We recommend using the latest version of Python 3 and pip.
 Get Python 3 from https://www.python.org/downloads/ or with your package manager and pip
 by following the instructions at https://pip.pypa.io/en/latest/installing/.
 
-Pyrogram supports Python 3 only, starting from version 3.4 and PyPy.
+.. note::
+    Pyrogram supports Python 3 only, starting from version 3.4 and PyPy.
 
 Install Pyrogram
 ----------------

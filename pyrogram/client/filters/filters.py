@@ -19,10 +19,32 @@
 import re
 
 from .filter import Filter
-from ..types.reply_markup import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from ..types.bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
-def build(name: str, func: callable, **kwargs) -> type:
+def create(name: str, func: callable, **kwargs) -> type:
+    """Use this method to create a Filter.
+
+    Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
+
+    Args:
+        name (``str``):
+            Your filter's name. Can be anything you like.
+
+        func (``callable``):
+            A function that accepts two arguments *(filter, update)* and returns a Boolean: True if the update should be
+            handled, False otherwise.
+            The "update" argument type will vary depending on which `Handler <Handlers.html>`_ is coming from.
+            For example, in a :obj:`MessageHandler <pyrogram.MessageHandler>` the update type will be
+            a :obj:`Message <pyrogram.Message>`; in a :obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>` the
+            update type will be a :obj:`CallbackQuery <pyrogram.CallbackQuery>`. Your function body can then access the
+            incoming update and decide whether to allow it or not.
+
+        **kwargs (``any``, *optional*):
+            Any keyword argument you would like to pass. Useful for custom filters that accept parameters (e.g.:
+            :meth:`Filters.command`, :meth:`Filters.regex`).
+    """
+    # TODO: unpack kwargs using **kwargs into the dict itself. For Python 3.5+ only
     d = {"__call__": func}
     d.update(kwargs)
 
@@ -30,112 +52,118 @@ def build(name: str, func: callable, **kwargs) -> type:
 
 
 class Filters:
-    """This class provides access to all Filters available in Pyrogram.
-    Filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`."""
+    """This class provides access to all library-defined Filters available in Pyrogram.
 
-    bot = build("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
+    The Filters listed here are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>` only.
+    At the moment, if you want to filter updates coming from different `Handlers <Handlers.html>`_ you have to create
+    your own filters with :meth:`Filters.create` and use them in the same way.
+    """
+
+    create = create
+
+    bot = create("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
     """Filter messages coming from bots"""
 
-    incoming = build("Incoming", lambda _, m: not m.outgoing)
+    incoming = create("Incoming", lambda _, m: not m.outgoing)
     """Filter incoming messages."""
 
-    outgoing = build("Outgoing", lambda _, m: m.outgoing)
+    outgoing = create("Outgoing", lambda _, m: m.outgoing)
     """Filter outgoing messages."""
 
-    text = build("Text", lambda _, m: bool(m.text))
+    text = create("Text", lambda _, m: bool(m.text))
     """Filter text messages."""
 
-    reply = build("Reply", lambda _, m: bool(m.reply_to_message))
+    reply = create("Reply", lambda _, m: bool(m.reply_to_message))
     """Filter messages that are replies to other messages."""
 
-    forwarded = build("Forwarded", lambda _, m: bool(m.forward_date))
+    forwarded = create("Forwarded", lambda _, m: bool(m.forward_date))
     """Filter messages that are forwarded."""
 
-    caption = build("Caption", lambda _, m: bool(m.caption))
+    caption = create("Caption", lambda _, m: bool(m.caption))
     """Filter media messages that contain captions."""
 
-    edited = build("Edited", lambda _, m: bool(m.edit_date))
+    edited = create("Edited", lambda _, m: bool(m.edit_date))
     """Filter edited messages."""
 
-    audio = build("Audio", lambda _, m: bool(m.audio))
+    audio = create("Audio", lambda _, m: bool(m.audio))
     """Filter messages that contain :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` objects."""
 
-    document = build("Document", lambda _, m: bool(m.document))
+    document = create("Document", lambda _, m: bool(m.document))
     """Filter messages that contain :obj:`Document <pyrogram.api.types.pyrogram.Document>` objects."""
 
-    photo = build("Photo", lambda _, m: bool(m.photo))
+    photo = create("Photo", lambda _, m: bool(m.photo))
     """Filter messages that contain :obj:`Photo <pyrogram.api.types.pyrogram.PhotoSize>` objects."""
 
-    sticker = build("Sticker", lambda _, m: bool(m.sticker))
+    sticker = create("Sticker", lambda _, m: bool(m.sticker))
     """Filter messages that contain :obj:`Sticker <pyrogram.api.types.pyrogram.Sticker>` objects."""
 
-    gif = build("GIF", lambda _, m: bool(m.gif))
-    """Filter messages that contain :obj:`GIF <pyrogram.api.types.pyrogram.GIF>` objects."""
+    animation = create("GIF", lambda _, m: bool(m.animation))
+    """Filter messages that contain :obj:`Animation <pyrogram.api.types.pyrogram.Animation>` objects."""
 
-    video = build("Video", lambda _, m: bool(m.video))
+    video = create("Video", lambda _, m: bool(m.video))
     """Filter messages that contain :obj:`Video <pyrogram.api.types.pyrogram.Video>` objects."""
 
-    voice = build("Voice", lambda _, m: bool(m.voice))
+    voice = create("Voice", lambda _, m: bool(m.voice))
     """Filter messages that contain :obj:`Voice <pyrogram.api.types.pyrogram.Voice>` note objects."""
 
-    video_note = build("Voice", lambda _, m: bool(m.video_note))
+    video_note = create("Voice", lambda _, m: bool(m.video_note))
     """Filter messages that contain :obj:`VideoNote <pyrogram.api.types.pyrogram.VideoNote>` objects."""
 
-    contact = build("Contact", lambda _, m: bool(m.contact))
+    contact = create("Contact", lambda _, m: bool(m.contact))
     """Filter messages that contain :obj:`Contact <pyrogram.api.types.pyrogram.Contact>` objects."""
 
-    location = build("Location", lambda _, m: bool(m.location))
+    location = create("Location", lambda _, m: bool(m.location))
     """Filter messages that contain :obj:`Location <pyrogram.api.types.pyrogram.Location>` objects."""
 
-    venue = build("Venue", lambda _, m: bool(m.venue))
+    venue = create("Venue", lambda _, m: bool(m.venue))
     """Filter messages that contain :obj:`Venue <pyrogram.api.types.pyrogram.Venue>` objects."""
 
-    private = build("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
+    private = create("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
     """Filter messages sent in private chats."""
 
-    group = build("Group", lambda _, m: bool(m.chat and m.chat.type in {"group", "supergroup"}))
+    group = create("Group", lambda _, m: bool(m.chat and m.chat.type in {"group", "supergroup"}))
     """Filter messages sent in group or supergroup chats."""
 
-    channel = build("Channel", lambda _, m: bool(m.chat and m.chat.type == "channel"))
+    channel = create("Channel", lambda _, m: bool(m.chat and m.chat.type == "channel"))
     """Filter messages sent in channels."""
 
-    new_chat_members = build("NewChatMembers", lambda _, m: bool(m.new_chat_members))
+    new_chat_members = create("NewChatMembers", lambda _, m: bool(m.new_chat_members))
     """Filter service messages for new chat members."""
 
-    left_chat_member = build("LeftChatMember", lambda _, m: bool(m.left_chat_member))
+    left_chat_member = create("LeftChatMember", lambda _, m: bool(m.left_chat_member))
     """Filter service messages for members that left the chat."""
 
-    new_chat_title = build("NewChatTitle", lambda _, m: bool(m.new_chat_title))
+    new_chat_title = create("NewChatTitle", lambda _, m: bool(m.new_chat_title))
     """Filter service messages for new chat titles."""
 
-    new_chat_photo = build("NewChatPhoto", lambda _, m: bool(m.new_chat_photo))
+    new_chat_photo = create("NewChatPhoto", lambda _, m: bool(m.new_chat_photo))
     """Filter service messages for new chat photos."""
 
-    delete_chat_photo = build("DeleteChatPhoto", lambda _, m: bool(m.delete_chat_photo))
+    delete_chat_photo = create("DeleteChatPhoto", lambda _, m: bool(m.delete_chat_photo))
     """Filter service messages for deleted photos."""
 
-    group_chat_created = build("GroupChatCreated", lambda _, m: bool(m.group_chat_created))
+    group_chat_created = create("GroupChatCreated", lambda _, m: bool(m.group_chat_created))
     """Filter service messages for group chat creations."""
 
-    supergroup_chat_created = build("SupergroupChatCreated", lambda _, m: bool(m.supergroup_chat_created))
+    supergroup_chat_created = create("SupergroupChatCreated", lambda _, m: bool(m.supergroup_chat_created))
     """Filter service messages for supergroup chat creations."""
 
-    channel_chat_created = build("ChannelChatCreated", lambda _, m: bool(m.channel_chat_created))
+    channel_chat_created = create("ChannelChatCreated", lambda _, m: bool(m.channel_chat_created))
     """Filter service messages for channel chat creations."""
 
-    migrate_to_chat_id = build("MigrateToChatId", lambda _, m: bool(m.migrate_to_chat_id))
+    migrate_to_chat_id = create("MigrateToChatId", lambda _, m: bool(m.migrate_to_chat_id))
     """Filter service messages that contain migrate_to_chat_id."""
 
-    migrate_from_chat_id = build("MigrateFromChatId", lambda _, m: bool(m.migrate_from_chat_id))
+    migrate_from_chat_id = create("MigrateFromChatId", lambda _, m: bool(m.migrate_from_chat_id))
     """Filter service messages that contain migrate_from_chat_id."""
 
-    pinned_message = build("PinnedMessage", lambda _, m: bool(m.pinned_message))
+    pinned_message = create("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
-    reply_keyboard = build("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
+    reply_keyboard = create("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
     """Filter messages containing reply keyboard markups"""
 
-    inline_keyboard = build("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
+    inline_keyboard = create("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
     """Filter messages containing inline keyboard markups"""
 
     @staticmethod
@@ -174,7 +202,7 @@ class Filters:
 
             return bool(m.command)
 
-        return build(
+        return create(
             "Command",
             f,
             c={command if case_sensitive
@@ -206,7 +234,7 @@ class Filters:
             m.matches = [i for i in _.p.finditer(m.text or "")]
             return bool(m.matches)
 
-        return build("Regex", f, p=re.compile(pattern, flags))
+        return create("Regex", f, p=re.compile(pattern, flags))
 
     @staticmethod
     def user(user: int or str or list):
@@ -216,7 +244,7 @@ class Filters:
             user (``int`` | ``str`` | ``list``):
                 The user or list of user IDs (int) or usernames (str) the filter should look for.
         """
-        return build(
+        return create(
             "User",
             lambda _, m: bool(m.from_user
                               and (m.from_user.id in _.u
@@ -237,7 +265,7 @@ class Filters:
             chat (``int`` | ``str`` | ``list``):
                 The chat or list of chat IDs (int) or usernames (str) the filter should look for.
         """
-        return build(
+        return create(
             "Chat",
             lambda _, m: bool(m.chat
                               and (m.chat.id in _.c
@@ -250,7 +278,7 @@ class Filters:
             )
         )
 
-    service = build(
+    service = create(
         "Service",
         lambda _, m: bool(
             Filters.new_chat_members(m)
@@ -268,7 +296,7 @@ class Filters:
     )
     """Filter all service messages."""
 
-    media = build(
+    media = create(
         "Media",
         lambda _, m: bool(
             Filters.audio(m)
@@ -276,7 +304,7 @@ class Filters:
             or Filters.photo(m)
             or Filters.sticker(m)
             or Filters.video(m)
-            or Filters.gif(m)
+            or Filters.animation(m)
             or Filters.voice(m)
             or Filters.video_note(m)
             or Filters.contact(m)

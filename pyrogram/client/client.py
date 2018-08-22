@@ -1009,21 +1009,19 @@ class Client(Methods, BaseClient):
         await self.get_initial_dialogs_chunk()
 
     async def resolve_peer(self, peer_id: int or str):
-        """Use this method to get the *InputPeer* of a known *peer_id*.
+        """Use this method to get the InputPeer of a known peer_id.
 
-        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to use which is
-        not available yet in the Client class as an easy-to-use method).
+        This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
+        you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an InputPeer
+        type is required.
 
         Args:
-            peer_id (``int`` | ``str`` | ``Peer``):
-                The Peer ID you want to extract the InputPeer from. Can be one of these types: ``int`` (direct ID),
-                ``str`` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
-                :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
+            peer_id (``int`` | ``str``):
+                The peer id you want to extract the InputPeer from.
+                Can be a direct id (int), a username (str) or a phone number (str).
 
         Returns:
-            :obj:`InputPeerUser <pyrogram.api.types.InputPeerUser>` or
-            :obj:`InputPeerChat <pyrogram.api.types.InputPeerChat>` or
-            :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
+            On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1032,37 +1030,20 @@ class Client(Methods, BaseClient):
             if peer_id in ("self", "me"):
                 return types.InputPeerSelf()
 
-            match = self.INVITE_LINK_RE.match(peer_id)
-
-            try:
-                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), "-_")
-                return await self.resolve_peer(struct.unpack(">2iq", decoded)[1])
-            except (AttributeError, binascii.Error, struct.error):
-                pass
-
             peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
 
             try:
                 int(peer_id)
             except ValueError:
-                try:
-                    return self.peers_by_username[peer_id]
-                except KeyError:
+                if peer_id not in self.peers_by_username:
                     await self.send(functions.contacts.ResolveUsername(peer_id))
-                    return self.peers_by_username[peer_id]
+
+                return self.peers_by_username[peer_id]
             else:
                 try:
                     return self.peers_by_phone[peer_id]
                 except KeyError:
                     raise PeerIdInvalid
-
-        if type(peer_id) is not int:
-            if isinstance(peer_id, types.PeerUser):
-                peer_id = peer_id.user_id
-            elif isinstance(peer_id, types.PeerChat):
-                peer_id = -peer_id.chat_id
-            elif isinstance(peer_id, types.PeerChannel):
-                peer_id = int("-100" + str(peer_id.channel_id))
 
         try:  # User
             return self.peers_by_id[peer_id]

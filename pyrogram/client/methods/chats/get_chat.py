@@ -28,7 +28,6 @@ class GetChat(BaseClient):
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
         Returns:
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.

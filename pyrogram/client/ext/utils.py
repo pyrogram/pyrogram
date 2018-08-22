@@ -81,7 +81,8 @@ ENTITIES = {
     types.MessageEntityCode.ID: "code",
     types.MessageEntityPre.ID: "pre",
     types.MessageEntityTextUrl.ID: "text_link",
-    types.MessageEntityMentionName.ID: "text_mention"
+    types.MessageEntityMentionName.ID: "text_mention",
+    types.MessageEntityPhone.ID: "phone_number"
 }
 
 
@@ -92,18 +93,20 @@ def parse_entities(entities: list, users: dict) -> list:
         entity_type = ENTITIES.get(entity.ID, None)
 
         if entity_type:
-            output_entities.append(pyrogram_types.MessageEntity(
-                type=entity_type,
-                offset=entity.offset,
-                length=entity.length,
-                url=getattr(entity, "url", None),
-                user=parse_user(
-                    users.get(
-                        getattr(entity, "user_id", None),
-                        None
+            output_entities.append(
+                pyrogram_types.MessageEntity(
+                    type=entity_type,
+                    offset=entity.offset,
+                    length=entity.length,
+                    url=getattr(entity, "url", None),
+                    user=parse_user(
+                        users.get(
+                            getattr(entity, "user_id", None),
+                            None
+                        )
                     )
                 )
-            ))
+            )
 
     return output_entities
 
@@ -305,7 +308,7 @@ async def parse_messages(
             venue = None
             audio = None
             voice = None
-            gif = None
+            animation = None
             video = None
             video_note = None
             sticker = None
@@ -387,7 +390,8 @@ async def parse_messages(
                         ),
                         title=media.title,
                         address=media.address,
-                        foursquare_id=media.venue_id or None
+                        foursquare_id=media.venue_id or None,
+                        foursquare_type=media.venue_type
                     )
                 elif isinstance(media, types.MessageMediaDocument):
                     doc = media.document
@@ -444,7 +448,7 @@ async def parse_messages(
                         elif types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
-                            gif = pyrogram_types.GIF(
+                            animation = pyrogram_types.Animation(
                                 file_id=encode(
                                     pack(
                                         "<iiqq",
@@ -596,7 +600,7 @@ async def parse_messages(
                 venue=venue,
                 audio=audio,
                 voice=voice,
-                gif=gif,
+                animation=animation,
                 video=video,
                 video_note=video_note,
                 sticker=sticker,

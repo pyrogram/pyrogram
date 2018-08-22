@@ -36,7 +36,6 @@ class SendContact(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             phone_number (``str``):
                 Contact's phone number.
@@ -48,7 +47,7 @@ class SendContact(BaseClient):
                 Contact's last name.
 
             vcard (``str``, *optional*):
-                Contact's vCard information.
+                Additional data about the contact in the form of a vCard, 0-2048 bytes
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

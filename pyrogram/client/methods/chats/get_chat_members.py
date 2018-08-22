@@ -36,6 +36,42 @@ class GetChatMembers(BaseClient):
                                limit: int = 200,
                                query: str = "",
                                filter: str = Filters.ALL):
+        """Use this method to get the members list of a chat.
+
+        A chat can be either a basic group, a supergroup or a channel.
+        You must be admin to retrieve the members (also known as "subscribers") list of a channel.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+
+            offset (``int``, *optional*):
+                Sequential number of the first member to be returned.
+                Defaults to 0 [1]_.
+
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
+                Defaults to 200, which is also the maximum limit allowed per method call.
+
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
+                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Defaults to *"all"*.
+
+        .. [1] On supergroups and channels you can get up to 10,000 members for a single query string.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+        """
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):

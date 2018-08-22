@@ -22,15 +22,15 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendVenue(BaseClient):
     async def send_venue(self,
-                         chat_id: int or str,
-                         latitude: float,
-                         longitude: float,
-                         title: str,
-                         address: str,
-                         foursquare_id: str = "",
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None,
-                         reply_markup=None):
+                   chat_id: int or str,
+                   latitude: float,
+                   longitude: float,
+                   title: str,
+                   address: str,
+                   foursquare_id: str = "",
+                   foursquare_type: str = "",disable_notification: bool = None,
+                   reply_to_message_id: int = None,
+                   reply_markup=None):
         """Use this method to send information about a venue.
 
         Args:
@@ -38,7 +38,6 @@ class SendVenue(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             latitude (``float``):
                 Latitude of the venue.
@@ -54,6 +53,10 @@ class SendVenue(BaseClient):
 
             foursquare_id (``str``, *optional*):
                 Foursquare identifier of the venue.
+
+            foursquare_type (``str``, *optional*):
+                Foursquare type of the venue, if known.
+                (For example, "arts_entertainment/default", "arts_entertainment/aquarium" or "food/icecream".)
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -84,7 +87,7 @@ class SendVenue(BaseClient):
                     address=address,
                     provider="",
                     venue_id=foursquare_id,
-                    venue_type=""
+                    venue_type=foursquare_type
                 ),
                 message="",
                 silent=disable_notification or None,

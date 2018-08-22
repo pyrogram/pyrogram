@@ -40,7 +40,6 @@ class BaseClient:
         platform.release()
     )
 
-    SYSTEM_LANG_CODE = "en"
     LANG_CODE = "en"
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
@@ -59,7 +58,7 @@ class BaseClient:
         5: "document",
         8: "sticker",
         9: "audio",
-        10: "gif",
+        10: "animation",
         13: "video_note"
     }
 
