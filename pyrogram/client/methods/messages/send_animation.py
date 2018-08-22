@@ -27,21 +27,21 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendAnimation(BaseClient):
-    asyncdef send_animation(self,
-                 chat_id: int or str,
-                 animation: str,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 duration: int = 0,
-                 width: int = 0,
-                 height: int = 0,
-                 thumb: str = None,
-                 disable_notification: bool = None,
-                 reply_to_message_id: int = None,
-                 reply_markup=None,
-                 progress: callable = None,
-                 progress_args: tuple = ()):
-        """Use this method to send animation files(animation or H.264/MPEG-4 AVC video without sound).
+    async def send_animation(self,
+                             chat_id: int or str,
+                             animation: str,
+                             caption: str = "",
+                             parse_mode: str = "",
+                             duration: int = 0,
+                             width: int = 0,
+                             height: int = 0,
+                             thumb: str = None,
+                             disable_notification: bool = None,
+                             reply_to_message_id: int = None,
+                             reply_markup=None,
+                             progress: callable = None,
+                             progress_args: tuple = ()):
+        """Use this method to send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Args:
             chat_id (``int`` | ``str``):

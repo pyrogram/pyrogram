@@ -22,10 +22,10 @@ from ...ext import BaseClient, utils
 
 
 class GetDialogs(BaseClient):
-    def get_dialogs(self,
-                    offset_dialogs=None,
-                    limit: int = 100,
-                    pinned_only: bool = False):
+    async def get_dialogs(self,
+                          offset_dialogs=None,
+                          limit: int = 100,
+                          pinned_only: bool = False):
         """Use this method to get the user's dialogs
 
         You can get up to 100 dialogs at once.
