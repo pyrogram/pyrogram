@@ -31,7 +31,7 @@ __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.8.0dev1"
+__version__ = "0.8.0async1"
 
 from .api.errors import Error
 from .client.types import (
