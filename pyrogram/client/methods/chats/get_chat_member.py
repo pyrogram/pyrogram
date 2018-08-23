@@ -21,7 +21,7 @@ from ...ext import BaseClient, utils
 
 
 class GetChatMember(BaseClient):
-    def get_chat_member(self,
+    async def get_chat_member(self,
                         chat_id: int or str,
                         user_id: int or str):
         """Use this method to get information about one member of a chat.
@@ -41,11 +41,11 @@ class GetChatMember(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        chat_id = self.resolve_peer(chat_id)
-        user_id = self.resolve_peer(user_id)
+        chat_id = await self.resolve_peer(chat_id)
+        user_id = await self.resolve_peer(user_id)
 
         if isinstance(chat_id, types.InputPeerChat):
-            full_chat = self.send(
+            full_chat = await self.send(
                 functions.messages.GetFullChat(
                     chat_id=chat_id.chat_id
                 )
@@ -57,7 +57,7 @@ class GetChatMember(BaseClient):
             else:
                 raise errors.UserNotParticipant
         elif isinstance(chat_id, types.InputPeerChannel):
-            r = self.send(
+            r = await self.send(
                 functions.channels.GetParticipant(
                     channel=chat_id,
                     user_id=user_id

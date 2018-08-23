@@ -31,7 +31,7 @@ from pyrogram.client.types import (
 
 
 class EditMessageMedia(BaseClient):
-    def edit_message_media(self,
+    async def edit_message_media(self,
                            chat_id: int or str,
                            message_id: int,
                            media,
@@ -41,11 +41,11 @@ class EditMessageMedia(BaseClient):
 
         if isinstance(media, InputMediaPhoto):
             if os.path.exists(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedPhoto(
-                            file=self.save_file(media.media)
+                            file=await self.save_file(media.media)
                         )
                     )
                 )
@@ -85,12 +85,12 @@ class EditMessageMedia(BaseClient):
 
         if isinstance(media, InputMediaVideo):
             if os.path.exists(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
-                            file=self.save_file(media.media),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=media.supports_streaming or None,
@@ -139,12 +139,12 @@ class EditMessageMedia(BaseClient):
 
         if isinstance(media, InputMediaAudio):
             if os.path.exists(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "audio/mpeg"),
-                            file=self.save_file(media.media),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
                                     duration=media.duration,
@@ -192,12 +192,12 @@ class EditMessageMedia(BaseClient):
 
         if isinstance(media, InputMediaAnimation):
             if os.path.exists(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
-                            file=self.save_file(media.media),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=True,
@@ -245,9 +245,9 @@ class EditMessageMedia(BaseClient):
                         )
                     )
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 media=media,
@@ -257,7 +257,7 @@ class EditMessageMedia(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return await utils.parse_messages(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
