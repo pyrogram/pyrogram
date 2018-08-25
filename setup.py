@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import re
 import shutil
 from sys import argv
@@ -58,7 +59,9 @@ class Clean(Command):
         "pyrogram/api/errors/exceptions",
         "pyrogram/api/functions",
         "pyrogram/api/types",
-        "pyrogram/api/all.py"
+        "pyrogram/api/all.py",
+        "docs/source/functions",
+        "docs/source/types"
     ]
 
     user_options = []
@@ -71,9 +74,12 @@ class Clean(Command):
 
     def run(self):
         for path in self.PATHS:
-            print("removing {}".format(path))
-            shutil.rmtree(path, ignore_errors=True)
-
+            try:
+                shutil.rmtree(path) if os.path.isdir(path) else os.remove(path)
+            except OSError:
+                print("skipping {}".format(path))
+            else:
+                print("removing {}".format(path))
 
 setup(
     name="Pyrogram",
