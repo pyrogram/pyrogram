@@ -37,13 +37,17 @@ if len(argv) > 1 and argv[1] != "sdist":
     docs_compiler.start()
     error_compiler.start()
 
-with open("pyrogram/__init__.py", encoding="utf-8") as f:
-    version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
 
-# PyPI doesn't like raw html
-with open("README.rst", encoding="utf-8") as f:
-    readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
-    readme = re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|scheme| |tgcrypto|", readme)
+def get_version():
+    with open("pyrogram/__init__.py", encoding="utf-8") as f:
+        return re.findall(r"__version__ = \"(.+)\"", f.read())[0]
+
+
+def get_readme():
+    # PyPI doesn't like raw html
+    with open("README.rst", encoding="utf-8") as f:
+        readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
+        return re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|scheme| |tgcrypto|", readme)
 
 
 class Clean(Command):
@@ -73,9 +77,9 @@ class Clean(Command):
 
 setup(
     name="Pyrogram",
-    version=version,
+    version=get_version(),
     description="Telegram MTProto API Client Library for Python",
-    long_description=readme,
+    long_description=get_readme(),
     url="https://github.com/pyrogram",
     download_url="https://github.com/pyrogram/pyrogram/releases/latest",
     author="Dan Tès",
