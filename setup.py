@@ -17,9 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+import shutil
 from sys import argv
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
 
 from compiler.api import compiler as api_compiler
 from compiler.docs import compiler as docs_compiler
@@ -43,6 +44,24 @@ with open("pyrogram/__init__.py", encoding="utf-8") as f:
 with open("README.rst", encoding="utf-8") as f:
     readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
     readme = re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|scheme| |tgcrypto|", readme)
+
+
+class Clean(Command):
+    PATHS = "./build ./dist ./Pyrogram.egg-info".split()
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        for path in self.PATHS:
+            print("removing {}".format(path))
+            shutil.rmtree(path, ignore_errors=True)
+
 
 setup(
     name="Pyrogram",
@@ -85,5 +104,8 @@ setup(
     packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
     install_requires=read("requirements.txt"),
-    extras_require={"tgcrypto": ["tgcrypto>=1.0.4"]}
+    extras_require={"tgcrypto": ["tgcrypto>=1.0.4"]},
+    cmdclass={
+        "clean": Clean
+    }
 )
