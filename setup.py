@@ -47,7 +47,15 @@ with open("README.rst", encoding="utf-8") as f:
 
 
 class Clean(Command):
-    PATHS = "./build ./dist ./Pyrogram.egg-info".split()
+    PATHS = [
+        "./build",
+        "./dist",
+        "./Pyrogram.egg-info",
+        "pyrogram/api/errors/exceptions",
+        "pyrogram/api/functions",
+        "pyrogram/api/types",
+        "pyrogram/api/all.py"
+    ]
 
     user_options = []
 
