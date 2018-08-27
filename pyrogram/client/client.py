@@ -201,7 +201,7 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
-            self.token = self.session_name
+            self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
 
         self.load_config()
@@ -217,14 +217,14 @@ class Client(Methods, BaseClient):
         self.is_started = True
 
         if self.user_id is None:
-            if self.token is None:
+            if self.bot_token is None:
                 self.authorize_user()
             else:
                 self.authorize_bot()
 
             self.save_session()
 
-        if self.token is None:
+        if self.bot_token is None:
             now = time.time()
 
             if abs(now - self.date) > Client.OFFLINE_SLEEP:
@@ -381,7 +381,7 @@ class Client(Methods, BaseClient):
                     flags=0,
                     api_id=self.api_id,
                     api_hash=self.api_hash,
-                    bot_auth_token=self.token
+                    bot_auth_token=self.bot_token
                 )
             )
         except UserMigrate as e:
