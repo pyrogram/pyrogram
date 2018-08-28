@@ -157,6 +157,9 @@ class Session:
                 self.ping_thread.start()
 
                 log.info("Session initialized: Layer {}".format(layer))
+                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
+                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+
             except AuthKeyDuplicated as e:
                 self.stop()
                 raise e
