@@ -52,6 +52,14 @@ class DataCenter:
 
     def __new__(cls, dc_id: int, test_mode: bool, ipv6: bool):
         if ipv6:
-            return (cls.TEST_IPV6[dc_id], 80) if test_mode else (cls.PROD_IPV6[dc_id], 443)
+            return (
+                (cls.TEST_IPV6[dc_id], 80)
+                if test_mode
+                else (cls.PROD_IPV6[dc_id], 443)
+            )
         else:
-            return (cls.TEST[dc_id], 80) if test_mode else (cls.PROD[dc_id], 443)
+            return (
+                (cls.TEST[dc_id], 80)
+                if test_mode
+                else (cls.PROD[dc_id], 443)
+            )
