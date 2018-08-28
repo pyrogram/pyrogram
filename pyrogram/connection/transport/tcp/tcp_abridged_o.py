@@ -28,8 +28,9 @@ log = logging.getLogger(__name__)
 class TCPAbridgedO(TCP):
     RESERVED = (b"HEAD", b"POST", b"GET ", b"OPTI", b"\xee" * 4)
 
-    def __init__(self, proxy: dict):
-        super().__init__(proxy)
+    def __init__(self, ipv6: bool, proxy: dict):
+        super().__init__(ipv6, proxy)
+
         self.encrypt = None
         self.decrypt = None
 

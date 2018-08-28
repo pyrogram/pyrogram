@@ -26,7 +26,7 @@ from pyrogram.api import functions, types
 from pyrogram.api.core import Object, Long, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
-from .internals import MsgId, DataCenter
+from .internals import MsgId
 
 log = logging.getLogger(__name__)
 
@@ -46,9 +46,10 @@ class Auth:
         16
     )
 
-    def __init__(self, dc_id: int, test_mode: bool, proxy: dict):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict):
         self.dc_id = dc_id
         self.test_mode = test_mode
+        self.ipv6 = ipv6
         self.proxy = proxy
 
         self.connection = None
@@ -84,7 +85,7 @@ class Auth:
         # The server may close the connection at any time, causing the auth key creation to fail.
         # If that happens, just try again up to MAX_RETRIES times.
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+            self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))

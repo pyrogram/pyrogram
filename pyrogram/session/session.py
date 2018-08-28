@@ -34,7 +34,7 @@ from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, I
 from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
-from .internals import MsgId, MsgFactory, DataCenter
+from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
@@ -112,7 +112,7 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.client.test_mode), self.client.proxy)
+            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
 
             try:
                 self.connection.connect()

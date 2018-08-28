@@ -21,6 +21,7 @@ import threading
 import time
 
 from .transport import *
+from ..session.internals import DataCenter
 
 log = logging.getLogger(__name__)
 
@@ -36,21 +37,24 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, address: tuple, proxy: dict, mode: int = 1):
-        self.address = address
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 1):
+        self.ipv6 = ipv6
         self.proxy = proxy
+        self.address = DataCenter(dc_id, test_mode, ipv6)
         self.mode = self.MODES.get(mode, TCPAbridged)
+
         self.lock = threading.Lock()
         self.connection = None
 
     def connect(self):
         for i in range(Connection.MAX_RETRIES):
-            self.connection = self.mode(self.proxy)
+            self.connection = self.mode(self.ipv6, self.proxy)
 
             try:
                 log.info("Connecting...")
                 self.connection.connect(self.address)
-            except OSError:
+            except OSError as e:
+                log.warning(e)  # TODO: Remove
                 self.connection.close()
                 time.sleep(1)
             else:

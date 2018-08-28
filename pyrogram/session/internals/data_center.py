@@ -34,5 +34,24 @@ class DataCenter:
         121: "95.213.217.195"
     }
 
-    def __new__(cls, dc_id: int, test_mode: bool):
-        return (cls.TEST[dc_id], 80) if test_mode else (cls.PROD[dc_id], 443)
+    TEST_IPV6 = {
+        1: "2001:0b28:f23d:f001:0000:0000:0000:000e",
+        2: "2001:067c:04e8:f002:0000:0000:0000:000e",
+        3: "2001:0b28:f23d:f003:0000:0000:0000:000e",
+        121: "2a03:b0c0:0003:00d0:0000:0000:0114:d001"
+    }
+
+    PROD_IPV6 = {
+        1: "2001:0b28:f23d:f001:0000:0000:0000:000a",
+        2: "2001:067c:04e8:f002:0000:0000:0000:000a",
+        3: "2001:0b28:f23d:f003:0000:0000:0000:000a",
+        4: "2001:067c:04e8:f004:0000:0000:0000:000a",
+        5: "2001:0b28:f23f:f005:0000:0000:0000:000a",
+        121: "2a03:b0c0:0003:00d0:0000:0000:0114:d001"
+    }
+
+    def __new__(cls, dc_id: int, test_mode: bool, ipv6: bool):
+        if ipv6:
+            return (cls.TEST_IPV6[dc_id], 80) if test_mode else (cls.PROD_IPV6[dc_id], 443)
+        else:
+            return (cls.TEST[dc_id], 80) if test_mode else (cls.PROD[dc_id], 443)
