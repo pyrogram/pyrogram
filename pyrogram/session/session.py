@@ -156,7 +156,7 @@ class Session:
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
 
-                log.info("Connection inited: Layer {}".format(layer))
+                log.info("Session initialized: Layer {}".format(layer))
             except AuthKeyDuplicated as e:
                 self.stop()
                 raise e
