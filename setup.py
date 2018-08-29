@@ -102,7 +102,7 @@ class Clean(Command):
         if self.docs:
             paths.update(Clean.DOCS)
 
-        if self.all:
+        if self.all or not paths:
             paths.update(Clean.ALL)
 
         for path in sorted(list(paths)):
