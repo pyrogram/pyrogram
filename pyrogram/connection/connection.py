@@ -58,6 +58,10 @@ class Connection:
                 self.connection.close()
                 time.sleep(1)
             else:
+                log.info("Connected! IPv{} - {}".format(
+                    "6" if self.ipv6 else "4",
+                    self.mode.__name__
+                ))
                 break
         else:
             raise TimeoutError
