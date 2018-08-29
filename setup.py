@@ -114,12 +114,12 @@ class Clean(Command):
                 print("removing {}".format(path))
 
 
-class Build(Command):
-    description = "Build Pyrogram files"
+class Generate(Command):
+    description = "Generate Pyrogram files"
 
     user_options = [
-        ("api", None, "Build API files"),
-        ("docs", None, "Build docs files"),
+        ("api", None, "Generate API files"),
+        ("docs", None, "Generate docs files")
     ]
 
     def __init__(self, dist, **kw):
@@ -191,6 +191,6 @@ setup(
     extras_require={"tgcrypto": ["tgcrypto>=1.0.4"]},
     cmdclass={
         "clean": Clean,
-        "build": Build,
+        "generate": Generate
     }
 )
