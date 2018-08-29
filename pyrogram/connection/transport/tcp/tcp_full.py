@@ -34,7 +34,6 @@ class TCPFull(TCP):
     def connect(self, address: tuple):
         super().connect(address)
         self.seq_no = 0
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
         # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)

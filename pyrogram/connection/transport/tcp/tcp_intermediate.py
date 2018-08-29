@@ -32,8 +32,6 @@ class TCPIntermediate(TCP):
         super().connect(address)
         super().sendall(b"\xee" * 4)
 
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
-
     def sendall(self, data: bytes, *args):
         super().sendall(pack("<i", len(data)) + data)
 

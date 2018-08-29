@@ -56,8 +56,6 @@ class TCPIntermediateO(TCP):
 
         super().sendall(nonce)
 
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
-
     def sendall(self, data: bytes, *args):
         super().sendall(
             AES.ctr256_encrypt(

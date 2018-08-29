@@ -31,8 +31,6 @@ class TCPAbridged(TCP):
         super().connect(address)
         super().sendall(b"\xef")
 
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
-
     def sendall(self, data: bytes, *args):
         length = len(data) // 4
 
