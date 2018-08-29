@@ -1074,7 +1074,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self, self.ipv6, self.dc_id, self.auth_key, is_media=True)
+        session = Session(self, self.dc_id, self.auth_key, is_media=True)
         session.start()
 
         try:
@@ -1160,7 +1160,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        Auth(dc_id, self.test_mode, self._proxy).create(),
+                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                         is_media=True
                     )
 
@@ -1245,7 +1245,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                             is_media=True,
                             is_cdn=True
                         )
