@@ -35,6 +35,7 @@ class SendAudio(BaseClient):
                    duration: int = 0,
                    performer: str = None,
                    title: str = None,
+                   thumb: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
@@ -73,6 +74,11 @@ class SendAudio(BaseClient):
 
             title (``str``, *optional*):
                 Track name.
+
+            thumb (``str``, *optional*):
+                Audio thumbnail.
+                Pass a file path as string to send an image that exists on your local machine.
+                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -118,10 +124,12 @@ class SendAudio(BaseClient):
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(audio):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(audio, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeAudio(
                         duration=duration,
