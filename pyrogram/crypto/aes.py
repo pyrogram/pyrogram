@@ -27,7 +27,6 @@ try:
 
 
     class AES:
-        # TODO: Use new tgcrypto function names
         @classmethod
         def ige256_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
             return tgcrypto.ige256_encrypt(data, key, iv)
