@@ -62,6 +62,9 @@ Input Media
 
     InputMediaPhoto
     InputMediaVideo
+    InputMediaAudio
+    InputMediaAnimation
+    InputMediaDocument
     InputPhoneContact
 
 ..  User & Chats
@@ -170,6 +173,15 @@ Input Media
     :members:
 
 .. autoclass:: InputMediaVideo
+    :members:
+
+.. autoclass:: InputMediaAudio
+    :members:
+
+.. autoclass:: InputMediaAnimation
+    :members:
+
+.. autoclass:: InputMediaDocument
     :members:
 
 .. autoclass:: InputPhoneContact
