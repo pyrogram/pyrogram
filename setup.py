@@ -46,25 +46,9 @@ def get_readme():
 
 
 class Clean(Command):
-    DIST = [
-        "./build",
-        "./dist",
-        "./Pyrogram.egg-info"
-    ]
-
-    API = [
-        "pyrogram/api/errors/exceptions",
-        "pyrogram/api/functions",
-        "pyrogram/api/types",
-        "pyrogram/api/all.py",
-    ]
-
-    DOCS = [
-        "docs/source/functions",
-        "docs/source/types",
-        "docs/build"
-    ]
-
+    DIST = ["./build", "./dist", "./Pyrogram.egg-info"]
+    API = ["pyrogram/api/errors/exceptions", "pyrogram/api/functions", "pyrogram/api/types", "pyrogram/api/all.py"]
+    DOCS = ["docs/source/functions", "docs/source/types", "docs/build"]
     ALL = DIST + API + DOCS
 
     description = "Clean generated files"
@@ -102,7 +86,7 @@ class Clean(Command):
         if self.docs:
             paths.update(Clean.DOCS)
 
-        if self.all:
+        if self.all or not paths:
             paths.update(Clean.ALL)
 
         for path in sorted(list(paths)):
@@ -114,12 +98,12 @@ class Clean(Command):
                 print("removing {}".format(path))
 
 
-class Build(Command):
-    description = "Build Pyrogram files"
+class Generate(Command):
+    description = "Generate Pyrogram files"
 
     user_options = [
-        ("api", None, "Build API files"),
-        ("docs", None, "Build docs files"),
+        ("api", None, "Generate API files"),
+        ("docs", None, "Generate docs files")
     ]
 
     def __init__(self, dist, **kw):
@@ -191,6 +175,6 @@ setup(
     extras_require={"tgcrypto": ["tgcrypto>=1.0.4"]},
     cmdclass={
         "clean": Clean,
-        "build": Build,
+        "generate": Generate
     }
 )

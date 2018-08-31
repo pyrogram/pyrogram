@@ -30,7 +30,7 @@ from pyrogram.api.core import Object, MsgContainer, Int, Long, FutureSalt, Futur
 from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import MTProto
-from .internals import MsgId, MsgFactory, DataCenter
+from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ class Session:
 
     async def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.client.test_mode), self.client.proxy)
+            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
 
             try:
                 await self.connection.connect()
@@ -142,7 +142,10 @@ class Session:
 
                 self.ping_task = asyncio.ensure_future(self.ping())
 
-                log.info("Connection inited: Layer {}".format(layer))
+                log.info("Session initialized: Layer {}".format(layer))
+                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
+                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+
             except AuthKeyDuplicated as e:
                 self.stop()
                 raise e

@@ -20,6 +20,7 @@ import asyncio
 import logging
 
 from .transport import *
+from ..session.internals import DataCenter
 
 log = logging.getLogger(__name__)
 
@@ -36,24 +37,30 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, address: tuple, proxy: dict, mode: int = 2):
-        self.address = address
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 2):
+        self.ipv6 = ipv6
         self.proxy = proxy
+        self.address = DataCenter(dc_id, test_mode, ipv6)
         self.mode = self.MODES.get(mode, TCPAbridged)
 
         self.protocol = None  # type: TCP
 
     async def connect(self):
         for i in range(Connection.MAX_RETRIES):
-            self.protocol = self.mode(self.proxy)
+            self.protocol = self.mode(self.ipv6, self.proxy)
 
             try:
                 log.info("Connecting...")
                 await self.protocol.connect(self.address)
-            except OSError:
+            except OSError as e:
+                log.warning(e)  # TODO: Remove
                 self.protocol.close()
                 await asyncio.sleep(1)
             else:
+                log.info("Connected! IPv{} - {}".format(
+                    "6" if self.ipv6 else "4",
+                    self.mode.__name__
+                ))
                 break
         else:
             log.warning("Connection failed! Trying again...")

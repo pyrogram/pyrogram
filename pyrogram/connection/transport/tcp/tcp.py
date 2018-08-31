@@ -36,17 +36,17 @@ log = logging.getLogger(__name__)
 class TCP:
     TIMEOUT = 10
 
-    def __init__(self, proxy: dict):
+    def __init__(self, ipv6: bool, proxy: dict):
         self.proxy = proxy
 
         self.lock = asyncio.Lock()
 
-        self.socket = socks.socksocket()
+        self.socket = socks.socksocket(family=socket.AF_INET6 if ipv6 else socket.AF_INET)
+
         self.socket.settimeout(TCP.TIMEOUT)
 
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
-
         self.proxy_enabled = proxy.get("enabled", False)
 
         if proxy and self.proxy_enabled:

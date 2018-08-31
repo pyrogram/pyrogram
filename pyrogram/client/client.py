@@ -146,6 +146,7 @@ class Client(Methods, BaseClient):
                  device_model: str = None,
                  system_version: str = None,
                  lang_code: str = None,
+                 ipv6: bool = False,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -166,6 +167,7 @@ class Client(Methods, BaseClient):
         self.device_model = device_model
         self.system_version = system_version
         self.lang_code = lang_code
+        self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -201,7 +203,7 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
-            self.token = self.session_name
+            self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
 
         self.load_config()
@@ -217,14 +219,14 @@ class Client(Methods, BaseClient):
         self.is_started = True
 
         if self.user_id is None:
-            if self.token is None:
+            if self.bot_token is None:
                 await self.authorize_user()
             else:
                 await self.authorize_bot()
 
             self.save_session()
 
-        if self.token is None:
+        if self.bot_token is None:
             now = time.time()
 
             if abs(now - self.date) > Client.OFFLINE_SLEEP:
@@ -385,14 +387,14 @@ class Client(Methods, BaseClient):
                     flags=0,
                     api_id=self.api_id,
                     api_hash=self.api_hash,
-                    bot_auth_token=self.token
+                    bot_auth_token=self.bot_token
                 )
             )
         except UserMigrate as e:
             await self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = await Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
             self.session = Session(
                 self,
@@ -437,7 +439,7 @@ class Client(Methods, BaseClient):
                 await self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = await Auth(self.dc_id, self.test_mode, self._proxy).create()
+                self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
                 self.session = Session(
                     self,
@@ -934,7 +936,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = await Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -1177,7 +1179,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        await Auth(dc_id, self.test_mode, self._proxy).create(),
+                        await Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                         is_media=True
                     )
 
@@ -1262,7 +1264,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            await Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            await Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                             is_media=True,
                             is_cdn=True
                         )

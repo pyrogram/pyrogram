@@ -63,7 +63,7 @@ class BaseClient:
     }
 
     def __init__(self):
-        self.token = None
+        self.bot_token = None
         self.dc_id = None
         self.auth_key = None
         self.user_id = None

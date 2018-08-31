@@ -25,18 +25,12 @@ log = logging.getLogger(__name__)
 
 
 class TCPIntermediate(TCP):
-    def __init__(self, proxy: dict):
-        super().__init__(proxy)
+    def __init__(self, ipv6: bool, proxy: dict):
+        super().__init__(ipv6, proxy)
 
     async def connect(self, address: tuple):
         await super().connect(address)
         await super().send(b"\xee" * 4)
-
-        log.info("Connected{}!".format(
-            " with proxy"
-            if self.proxy_enabled
-            else ""
-        ))
 
     async def send(self, data: bytes, *args):
         await super().send(pack("<i", len(data)) + data)
