@@ -196,6 +196,7 @@ class Session:
             i.join()
 
         self.net_worker_list.clear()
+        self.recv_queue.queue.clear()
 
         for i in self.results.values():
             i.event.set()
