@@ -35,9 +35,6 @@ class Int(Object):
 class Long(Int):
     SIZE = 8
 
-    def __new__(cls, *args):
-        return super().__new__(cls, *args)
-
 
 class Int128(Int):
     SIZE = 16
