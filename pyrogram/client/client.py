@@ -619,7 +619,7 @@ class Client(Methods, BaseClient):
                 if phone is not None:
                     self.peers_by_phone[phone] = input_peer
 
-            if isinstance(entity, types.Chat):
+            if isinstance(entity, (types.Chat, types.ChatForbidden)):
                 chat_id = entity.id
                 peer_id = -chat_id
 
@@ -629,7 +629,7 @@ class Client(Methods, BaseClient):
 
                 self.peers_by_id[peer_id] = input_peer
 
-            if isinstance(entity, types.Channel):
+            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
                 channel_id = entity.id
                 peer_id = int("-100" + str(channel_id))
 
@@ -638,7 +638,7 @@ class Client(Methods, BaseClient):
                 if access_hash is None:
                     continue
 
-                username = entity.username
+                username = getattr(entity, "username", None)
 
                 input_peer = types.InputPeerChannel(
                     channel_id=channel_id,

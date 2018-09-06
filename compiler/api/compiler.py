@@ -172,9 +172,8 @@ def start():
 
     with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
             open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
-            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api, \
-            open("{}/source/pyrogram.tl".format(HOME), encoding="utf-8") as pyrogram:
-        schema = (auth.read() + system.read() + api.read() + pyrogram.read()).splitlines()
+            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
+        schema = (auth.read() + system.read() + api.read()).splitlines()
 
     with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
         mtproto_template = f.read()

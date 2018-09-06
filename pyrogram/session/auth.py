@@ -111,8 +111,8 @@ class Auth:
 
                 data = types.PQInnerData(
                     res_pq.pq,
-                    int.to_bytes(p, 4, "big"),
-                    int.to_bytes(q, 4, "big"),
+                    p.to_bytes(4, "big"),
+                    q.to_bytes(4, "big"),
                     nonce,
                     server_nonce,
                     new_nonce,
@@ -131,8 +131,8 @@ class Auth:
                     functions.ReqDHParams(
                         nonce,
                         server_nonce,
-                        int.to_bytes(p, 4, "big"),
-                        int.to_bytes(q, 4, "big"),
+                        p.to_bytes(4, "big"),
+                        q.to_bytes(4, "big"),
                         public_key_fingerprint,
                         encrypted_data
                     )
@@ -140,8 +140,8 @@ class Auth:
 
                 encrypted_answer = server_dh_params.encrypted_answer
 
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
-                new_nonce = int.to_bytes(new_nonce, 32, "little", signed=True)
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
+                new_nonce = new_nonce.to_bytes(32, "little", signed=True)
 
                 tmp_aes_key = (
                     sha1(new_nonce + server_nonce).digest()
@@ -170,7 +170,7 @@ class Auth:
                 # Step 6
                 g = server_dh_inner_data.g
                 b = int.from_bytes(urandom(256), "big")
-                g_b = int.to_bytes(pow(g, b, dh_prime), 256, "big")
+                g_b = pow(g, b, dh_prime).to_bytes(256, "big")
 
                 retry_id = 0
 
@@ -199,8 +199,8 @@ class Auth:
 
                 # Step 7; Step 8
                 g_a = int.from_bytes(server_dh_inner_data.g_a, "big")
-                auth_key = int.to_bytes(pow(g_a, b, dh_prime), 256, "big")
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
+                auth_key = pow(g_a, b, dh_prime).to_bytes(256, "big")
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
 
                 # TODO: Handle errors
 
@@ -235,7 +235,7 @@ class Auth:
                 # 3rd message
                 assert nonce == set_client_dh_params_answer.nonce
                 assert server_nonce == set_client_dh_params_answer.server_nonce
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
                 log.debug("Nonce fields check: OK")
 
                 # Step 9

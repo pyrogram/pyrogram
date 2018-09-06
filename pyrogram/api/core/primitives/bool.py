@@ -30,7 +30,7 @@ class BoolFalse(Object):
         return cls.value
 
     def __new__(cls) -> bytes:
-        return int.to_bytes(cls.ID, 4, "little")
+        return cls.ID.to_bytes(4, "little")
 
 
 class BoolTrue(BoolFalse):
