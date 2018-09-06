@@ -147,7 +147,7 @@ class Session:
                 log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
 
             except AuthKeyDuplicated as e:
-                self.stop()
+                await self.stop()
                 raise e
             except (OSError, TimeoutError, Error):
                 await self.stop()
