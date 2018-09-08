@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class GetChatMembersCount(BaseClient):
-    def get_chat_members_count(self, chat_id: int or str):
+    async def get_chat_members_count(self, chat_id: int or str):
         """Use this method to get the number of members in a chat.
 
         Args:
@@ -35,19 +35,23 @@ class GetChatMembersCount(BaseClient):
             :class:`Error <pyrogram.Error>
             ``ValueError``: If a chat_id belongs to user.
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return self.send(
+            r = await self.send(
                 functions.messages.GetChats(
                     id=[peer.chat_id]
                 )
-            ).chats[0].participants_count
+            )
+
+            return r.chats[0].participants_count
         elif isinstance(peer, types.InputPeerChannel):
-            return self.send(
+            r = await self.send(
                 functions.channels.GetFullChannel(
                     channel=peer
                 )
-            ).full_chat.participants_count
+            )
+
+            return r.full_chat.participants_count
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
