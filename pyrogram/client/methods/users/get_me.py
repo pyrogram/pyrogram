@@ -30,10 +30,10 @@ class GetMe(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return utils.parse_user(
-            await self.send(
-                functions.users.GetFullUser(
-                    types.InputPeerSelf()
-                )
-            ).user
+        r = await self.send(
+            functions.users.GetFullUser(
+                types.InputPeerSelf()
+            )
         )
+
+        return utils.parse_user(r.user)
