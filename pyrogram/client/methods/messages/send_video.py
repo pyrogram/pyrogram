@@ -75,9 +75,10 @@ class SendVideo(BaseClient):
                 Video height.
 
             thumb (``str``, *optional*):
-                Video thumbnail.
-                Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             supports_streaming (``bool``, *optional*):
                 Pass True, if the uploaded video is suitable for streaming.
