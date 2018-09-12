@@ -76,9 +76,10 @@ class SendAudio(BaseClient):
                 Track name.
 
             thumb (``str``, *optional*):
-                Audio thumbnail.
-                Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+                Thumbnail of the music file album cover.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
