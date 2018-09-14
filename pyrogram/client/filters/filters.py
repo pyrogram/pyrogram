@@ -236,6 +236,7 @@ class Filters:
 
         return create("Regex", f, p=re.compile(pattern, flags))
 
+    # noinspection PyPep8Naming
     class user(Filter, set):
         """Filter messages coming from one or more users.
 
