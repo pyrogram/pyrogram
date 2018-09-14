@@ -50,6 +50,6 @@ class DeletedMessagesHandler(Handler):
     def check(self, messages):
         return (
             self.filters(messages.messages[0])
-            if self.filters
+            if callable(self.filters)
             else True
         )
