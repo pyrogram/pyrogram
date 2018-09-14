@@ -236,30 +236,33 @@ class Filters:
 
         return create("Regex", f, p=re.compile(pattern, flags))
 
-    @staticmethod
-    def user(users: int or str or list = None):
-        """Filter messages coming from one or more specific users.
+    class user(Filter, set):
+        """Filter messages coming from one or more users.
+
+        You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
+        users container.
 
         Args:
             users (``int`` | ``str`` | ``list``):
                 Pass one or more user ids/usernames to filter the users.
-                The argument passed will be stored as a python set in the *.users* field of the filter instance.
-                To add or remove users dynamically, simply manipulate the inner set.
-                Defaults to None (empty set).
+                Defaults to None (no users).
         """
-        return create(
-            "User",
-            lambda _, m: bool(m.from_user
-                              and (m.from_user.id in _.users
-                                   or (m.from_user.username
-                                       and m.from_user.username.lower() in _.users))),
-            users=(
-                set() if users is None
-                else {users.lower().strip("@") if type(users) is str else users}
-                if not isinstance(users, list)
-                else {i.lower().strip("@") if type(i) is str else i for i in users}
+
+        def __init__(self, users: int or str or list = None):
+            users = [] if users is None else users if type(users) is list else [users]
+            super().__init__(
+                {i.lower().strip("@") if type(i) is str else i for i in users}
+                if type(users) is list else
+                {users.lower().strip("@") if type(users) is str else users}
             )
-        )
+
+        def __call__(self, message):
+            return bool(
+                message.from_user
+                and (message.from_user.id in self
+                     or (message.from_user.username
+                         and message.from_user.username.lower() in self))
+            )
 
     @staticmethod
     def chat(chat: int or str or list):
