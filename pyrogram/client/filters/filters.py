@@ -237,23 +237,27 @@ class Filters:
         return create("Regex", f, p=re.compile(pattern, flags))
 
     @staticmethod
-    def user(user: int or str or list):
-        """Filter messages coming from specific users.
+    def user(users: int or str or list = None):
+        """Filter messages coming from one or more specific users.
 
         Args:
-            user (``int`` | ``str`` | ``list``):
-                The user or list of user IDs (int) or usernames (str) the filter should look for.
+            users (``int`` | ``str`` | ``list``):
+                Pass one or more user ids/usernames to filter the users.
+                The argument passed will be stored as a python set in the *.users* field of the filter instance.
+                To add or remove users dynamically, simply manipulate the inner set.
+                Defaults to None (empty set).
         """
         return create(
             "User",
             lambda _, m: bool(m.from_user
-                              and (m.from_user.id in _.u
+                              and (m.from_user.id in _.users
                                    or (m.from_user.username
-                                       and m.from_user.username.lower() in _.u))),
-            u=(
-                {user.lower().strip("@") if type(user) is str else user}
-                if not isinstance(user, list)
-                else {i.lower().strip("@") if type(i) is str else i for i in user}
+                                       and m.from_user.username.lower() in _.users))),
+            users=(
+                set() if users is None
+                else {users.lower().strip("@") if type(users) is str else users}
+                if not isinstance(users, list)
+                else {i.lower().strip("@") if type(i) is str else i for i in users}
             )
         )
 
