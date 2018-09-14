@@ -265,26 +265,34 @@ class Filters:
                          and message.from_user.username.lower() in self))
             )
 
-    @staticmethod
-    def chat(chat: int or str or list):
-        """Filter messages coming from specific chats.
+    # noinspection PyPep8Naming
+    class chat(Filter, set):
+        """Filter messages coming from one or more chats.
+
+        You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
+        chats container.
 
         Args:
-            chat (``int`` | ``str`` | ``list``):
-                The chat or list of chat IDs (int) or usernames (str) the filter should look for.
+            chats (``int`` | ``str`` | ``list``):
+                Pass one or more chat ids/usernames to filter the chats.
+                Defaults to None (no chats).
         """
-        return create(
-            "Chat",
-            lambda _, m: bool(m.chat
-                              and (m.chat.id in _.c
-                                   or (m.chat.username
-                                       and m.chat.username.lower() in _.c))),
-            c=(
-                {chat.lower().strip("@") if type(chat) is str else chat}
-                if not isinstance(chat, list)
-                else {i.lower().strip("@") if type(i) is str else i for i in chat}
+
+        def __init__(self, chats: int or str or list = None):
+            chats = [] if chats is None else chats if type(chats) is list else [chats]
+            super().__init__(
+                {i.lower().strip("@") if type(i) is str else i for i in chats}
+                if type(chats) is list else
+                {chats.lower().strip("@") if type(chats) is str else chats}
             )
-        )
+
+        def __call__(self, message):
+            return bool(
+                message.chat
+                and (message.chat.id in self
+                     or (message.chat.username
+                         and message.chat.username.lower() in self))
+            )
 
     service = create(
         "Service",
