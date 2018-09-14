@@ -245,7 +245,7 @@ class Filters:
 
         Args:
             users (``int`` | ``str`` | ``list``):
-                Pass one or more user ids/usernames to filter the users.
+                Pass one or more user ids/usernames to filter users.
                 Defaults to None (no users).
         """
 
@@ -274,7 +274,7 @@ class Filters:
 
         Args:
             chats (``int`` | ``str`` | ``list``):
-                Pass one or more chat ids/usernames to filter the chats.
+                Pass one or more chat ids/usernames to filter chats.
                 Defaults to None (no chats).
         """
 
