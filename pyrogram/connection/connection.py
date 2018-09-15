@@ -38,6 +38,7 @@ class Connection:
     }
 
     def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 2):
+        self.dc_id = dc_id
         self.ipv6 = ipv6
         self.proxy = proxy
         self.address = DataCenter(dc_id, test_mode, ipv6)
@@ -57,7 +58,8 @@ class Connection:
                 self.protocol.close()
                 await asyncio.sleep(1)
             else:
-                log.info("Connected! IPv{} - {}".format(
+                log.info("Connected! DC{} - IPv{} - {}".format(
+                    self.dc_id,
                     "6" if self.ipv6 else "4",
                     self.mode.__name__
                 ))

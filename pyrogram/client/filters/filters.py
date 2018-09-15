@@ -236,47 +236,63 @@ class Filters:
 
         return create("Regex", f, p=re.compile(pattern, flags))
 
-    @staticmethod
-    def user(user: int or str or list):
-        """Filter messages coming from specific users.
+    # noinspection PyPep8Naming
+    class user(Filter, set):
+        """Filter messages coming from one or more users.
+
+        You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
+        users container.
 
         Args:
-            user (``int`` | ``str`` | ``list``):
-                The user or list of user IDs (int) or usernames (str) the filter should look for.
+            users (``int`` | ``str`` | ``list``):
+                Pass one or more user ids/usernames to filter users.
+                Defaults to None (no users).
         """
-        return create(
-            "User",
-            lambda _, m: bool(m.from_user
-                              and (m.from_user.id in _.u
-                                   or (m.from_user.username
-                                       and m.from_user.username.lower() in _.u))),
-            u=(
-                {user.lower().strip("@") if type(user) is str else user}
-                if not isinstance(user, list)
-                else {i.lower().strip("@") if type(i) is str else i for i in user}
-            )
-        )
 
-    @staticmethod
-    def chat(chat: int or str or list):
-        """Filter messages coming from specific chats.
+        def __init__(self, users: int or str or list = None):
+            users = [] if users is None else users if type(users) is list else [users]
+            super().__init__(
+                {i.lower().strip("@") if type(i) is str else i for i in users}
+                if type(users) is list else
+                {users.lower().strip("@") if type(users) is str else users}
+            )
+
+        def __call__(self, message):
+            return bool(
+                message.from_user
+                and (message.from_user.id in self
+                     or (message.from_user.username
+                         and message.from_user.username.lower() in self))
+            )
+
+    # noinspection PyPep8Naming
+    class chat(Filter, set):
+        """Filter messages coming from one or more chats.
+
+        You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
+        chats container.
 
         Args:
-            chat (``int`` | ``str`` | ``list``):
-                The chat or list of chat IDs (int) or usernames (str) the filter should look for.
+            chats (``int`` | ``str`` | ``list``):
+                Pass one or more chat ids/usernames to filter chats.
+                Defaults to None (no chats).
         """
-        return create(
-            "Chat",
-            lambda _, m: bool(m.chat
-                              and (m.chat.id in _.c
-                                   or (m.chat.username
-                                       and m.chat.username.lower() in _.c))),
-            c=(
-                {chat.lower().strip("@") if type(chat) is str else chat}
-                if not isinstance(chat, list)
-                else {i.lower().strip("@") if type(i) is str else i for i in chat}
+
+        def __init__(self, chats: int or str or list = None):
+            chats = [] if chats is None else chats if type(chats) is list else [chats]
+            super().__init__(
+                {i.lower().strip("@") if type(i) is str else i for i in chats}
+                if type(chats) is list else
+                {chats.lower().strip("@") if type(chats) is str else chats}
             )
-        )
+
+        def __call__(self, message):
+            return bool(
+                message.chat
+                and (message.chat.id in self
+                     or (message.chat.username
+                         and message.chat.username.lower() in self))
+            )
 
     service = create(
         "Service",
