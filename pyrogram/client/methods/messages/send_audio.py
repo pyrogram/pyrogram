@@ -35,6 +35,7 @@ class SendAudio(BaseClient):
                    duration: int = 0,
                    performer: str = None,
                    title: str = None,
+                   thumb: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
                    reply_markup=None,
@@ -72,6 +73,12 @@ class SendAudio(BaseClient):
 
             title (``str``, *optional*):
                 Track name.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the music file album cover.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -117,10 +124,12 @@ class SendAudio(BaseClient):
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(audio):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(audio, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeAudio(
                         duration=duration,

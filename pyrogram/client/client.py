@@ -218,28 +218,33 @@ class Client(Methods, BaseClient):
         self.session.start()
         self.is_started = True
 
-        if self.user_id is None:
+        try:
+            if self.user_id is None:
+                if self.bot_token is None:
+                    self.authorize_user()
+                else:
+                    self.authorize_bot()
+
+                self.save_session()
+
             if self.bot_token is None:
-                self.authorize_user()
+                now = time.time()
+
+                if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                    self.peers_by_username = {}
+                    self.peers_by_phone = {}
+
+                    self.get_initial_dialogs()
+                    self.get_contacts()
+                else:
+                    self.send(functions.messages.GetPinnedDialogs())
+                    self.get_initial_dialogs_chunk()
             else:
-                self.authorize_bot()
-
-            self.save_session()
-
-        if self.bot_token is None:
-            now = time.time()
-
-            if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                self.peers_by_username = {}
-                self.peers_by_phone = {}
-
-                self.get_initial_dialogs()
-                self.get_contacts()
-            else:
-                self.send(functions.messages.GetPinnedDialogs())
-                self.get_initial_dialogs_chunk()
-        else:
-            self.send(functions.updates.GetState())
+                self.send(functions.updates.GetState())
+        except Exception as e:
+            self.is_started = False
+            self.session.stop()
+            raise e
 
         for i in range(self.UPDATES_WORKERS):
             self.updates_workers_list.append(
