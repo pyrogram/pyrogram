@@ -30,19 +30,19 @@ try:
         # TODO: Use new tgcrypto function names
         @classmethod
         def ige256_encrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
-            return tgcrypto.ige256_encrypt(data, key, iv)
+            return tgcrypto.ige_encrypt(data, key, iv)
 
         @classmethod
         def ige256_decrypt(cls, data: bytes, key: bytes, iv: bytes) -> bytes:
-            return tgcrypto.ige256_decrypt(data, key, iv)
+            return tgcrypto.ige_decrypt(data, key, iv)
 
         @staticmethod
         def ctr256_encrypt(data: bytes, key: bytes, iv: bytearray, state: bytearray = None) -> bytes:
-            return tgcrypto.ctr256_encrypt(data, key, iv, state or bytearray(1))
+            return tgcrypto.ctr_encrypt(data, key, iv, state or bytearray(1))
 
         @staticmethod
         def ctr256_decrypt(data: bytes, key: bytes, iv: bytearray, state: bytearray = None) -> bytes:
-            return tgcrypto.ctr256_decrypt(data, key, iv, state or bytearray(1))
+            return tgcrypto.ctr_decrypt(data, key, iv, state or bytearray(1))
 
         @staticmethod
         def xor(a: bytes, b: bytes) -> bytes:
