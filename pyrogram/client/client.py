@@ -183,6 +183,13 @@ class Client(Methods, BaseClient):
 
         self.dispatcher = Dispatcher(self, workers)
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+
     @property
     def proxy(self):
         return self._proxy
