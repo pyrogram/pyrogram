@@ -218,28 +218,33 @@ class Client(Methods, BaseClient):
         await self.session.start()
         self.is_started = True
 
-        if self.user_id is None:
+        try:
+            if self.user_id is None:
+                if self.bot_token is None:
+                    await self.authorize_user()
+                else:
+                    await self.authorize_bot()
+
+                self.save_session()
+
             if self.bot_token is None:
-                await self.authorize_user()
+                now = time.time()
+
+                if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                    self.peers_by_username = {}
+                    self.peers_by_phone = {}
+
+                    await self.get_initial_dialogs()
+                    await self.get_contacts()
+                else:
+                    await self.send(functions.messages.GetPinnedDialogs())
+                    await self.get_initial_dialogs_chunk()
             else:
-                await self.authorize_bot()
-
-            self.save_session()
-
-        if self.bot_token is None:
-            now = time.time()
-
-            if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                self.peers_by_username = {}
-                self.peers_by_phone = {}
-
-                await self.get_initial_dialogs()
-                await self.get_contacts()
-            else:
-                await self.send(functions.messages.GetPinnedDialogs())
-                await self.get_initial_dialogs_chunk()
-        else:
-            await self.send(functions.updates.GetState())
+                await self.send(functions.updates.GetState())
+        except Exception as e:
+            self.is_started = False
+            await self.session.stop()
+            raise e
 
         self.updates_worker_task = asyncio.ensure_future(self.updates_worker())
 
