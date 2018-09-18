@@ -910,26 +910,12 @@ class Client(Methods, BaseClient):
             if getattr(self, option):
                 pass
             else:
-                setattr(self, option, Client.APP_VERSION)
-
                 if parser.has_section("pyrogram"):
                     setattr(self, option, parser.get(
                         "pyrogram",
                         option,
                         fallback=getattr(Client, option.upper())
                     ))
-
-        if self.lang_code:
-            pass
-        else:
-            self.lang_code = Client.LANG_CODE
-
-            if parser.has_section("pyrogram"):
-                self.lang_code = parser.get(
-                    "pyrogram",
-                    "lang_code",
-                    fallback=Client.LANG_CODE
-                )
 
         if self._proxy:
             self._proxy["enabled"] = True
