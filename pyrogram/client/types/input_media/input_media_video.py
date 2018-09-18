@@ -30,6 +30,12 @@ class InputMediaVideo(InputMedia):
             pass a file path as string to upload a new video that exists on your local machine.
             Sending video by a URL is currently unsupported.
 
+        thumb (``str``):
+            Thumbnail of the video sent.
+            The thumbnail should be in JPEG format and less than 200 KB in size.
+            A thumbnail's width and height should not exceed 90 pixels.
+            Thumbnails can't be reused and can be only uploaded as a new file.
+
         caption (``str``, *optional*):
             Caption of the video to be sent, 0-200 characters
 
@@ -53,6 +59,7 @@ class InputMediaVideo(InputMedia):
 
     def __init__(self,
                  media: str,
+                 thumb: str = None,
                  caption: str = "",
                  parse_mode: str = "",
                  width: int = 0,
@@ -61,6 +68,7 @@ class InputMediaVideo(InputMedia):
                  supports_streaming: bool = True):
         super().__init__(media, caption, parse_mode)
 
+        self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
