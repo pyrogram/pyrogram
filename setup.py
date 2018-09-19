@@ -172,7 +172,7 @@ setup(
     packages=find_packages(exclude=["compiler*"]),
     zip_safe=False,
     install_requires=read("requirements.txt"),
-    extras_require={"tgcrypto": ["tgcrypto==1.1.0"]},
+    extras_require={"tgcrypto": ["tgcrypto==1.1.1"]},
     cmdclass={
         "clean": Clean,
         "generate": Generate
