@@ -57,10 +57,10 @@ Messages
     edit_message_text
     edit_message_caption
     edit_message_reply_markup
+    edit_message_media
     delete_messages
     get_messages
     get_history
-    get_dialogs
 
 Chats
 -----
@@ -84,6 +84,8 @@ Chats
     get_chat
     get_chat_member
     get_chat_members
+    get_chat_members_count
+    get_dialogs
 
 Users
 -----
