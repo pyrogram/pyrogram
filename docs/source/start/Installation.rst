@@ -45,7 +45,7 @@ If no error shows up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.7.5'
+    '0.8.0'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
 .. _develop: http://github.com/pyrogram/pyrogram
