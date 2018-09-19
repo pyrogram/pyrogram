@@ -30,7 +30,7 @@ class Audio(Object):
             Duration of the audio in seconds as defined by sender.
 
         thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Audio thumbnail.
+            Thumbnail of the music file album cover.
 
         file_name (``str``, *optional*):
             Audio file name.

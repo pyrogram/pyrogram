@@ -183,6 +183,13 @@ class Client(Methods, BaseClient):
 
         self.dispatcher = Dispatcher(self, workers)
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+
     @property
     def proxy(self):
         return self._proxy
@@ -897,30 +904,18 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        for option in {"app_version", "device_model", "system_version", "lang_code"}:
+        for option in ["app_version", "device_model", "system_version", "lang_code"]:
             if getattr(self, option):
                 pass
             else:
-                setattr(self, option, Client.APP_VERSION)
-
                 if parser.has_section("pyrogram"):
                     setattr(self, option, parser.get(
                         "pyrogram",
                         option,
                         fallback=getattr(Client, option.upper())
                     ))
-
-        if self.lang_code:
-            pass
-        else:
-            self.lang_code = Client.LANG_CODE
-
-            if parser.has_section("pyrogram"):
-                self.lang_code = parser.get(
-                    "pyrogram",
-                    "lang_code",
-                    fallback=Client.LANG_CODE
-                )
+                else:
+                    setattr(self, option, getattr(Client, option.upper()))
 
         if self._proxy:
             self._proxy["enabled"] = True

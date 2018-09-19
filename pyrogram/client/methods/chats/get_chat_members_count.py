@@ -32,7 +32,7 @@ class GetChatMembersCount(BaseClient):
             On success, an integer is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>
+            :class:`Error <pyrogram.Error>`
             ``ValueError``: If a chat_id belongs to user.
         """
         peer = await self.resolve_peer(chat_id)
