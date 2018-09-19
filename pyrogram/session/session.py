@@ -31,10 +31,10 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
-from pyrogram.api.errors import Error, InternalServerError
+from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
-from .internals import MsgId, MsgFactory, DataCenter
+from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
@@ -112,7 +112,7 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.client.test_mode), self.client.proxy)
+            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
 
             try:
                 self.connection.connect()
@@ -156,7 +156,13 @@ class Session:
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
 
-                log.info("Connection inited: Layer {}".format(layer))
+                log.info("Session initialized: Layer {}".format(layer))
+                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
+                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+
+            except AuthKeyDuplicated as e:
+                self.stop()
+                raise e
             except (OSError, TimeoutError, Error):
                 self.stop()
             except Exception as e:
@@ -193,6 +199,7 @@ class Session:
             i.join()
 
         self.net_worker_list.clear()
+        self.recv_queue.queue.clear()
 
         for i in self.results.values():
             i.event.set()

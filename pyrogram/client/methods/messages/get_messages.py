@@ -33,7 +33,6 @@ class GetMessages(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_ids (``iterable``):
                 A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
@@ -44,7 +43,7 @@ class GetMessages(BaseClient):
 
         Returns:
             On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
+            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element, otherwise if
             *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
             is returned.
 

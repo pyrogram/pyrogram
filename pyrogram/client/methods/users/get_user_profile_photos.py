@@ -32,7 +32,6 @@ class GetUserProfilePhotos(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             offset (``int``, *optional*):
                 Sequential number of the first photo to be returned.
@@ -48,7 +47,7 @@ class GetUserProfilePhotos(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return utils.parse_photos(
+        return utils.parse_profile_photos(
             self.send(
                 functions.photos.GetUserPhotos(
                     user_id=self.resolve_peer(user_id),

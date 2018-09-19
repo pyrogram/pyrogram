@@ -26,7 +26,7 @@ from pyrogram.api import functions, types
 from pyrogram.api.core import Object, Long, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
-from .internals import MsgId, DataCenter
+from .internals import MsgId
 
 log = logging.getLogger(__name__)
 
@@ -34,21 +34,10 @@ log = logging.getLogger(__name__)
 class Auth:
     MAX_RETRIES = 5
 
-    CURRENT_DH_PRIME = int(
-        "C71CAEB9C6B1C9048E6C522F70F13F73980D40238E3E21C14934D037563D930F"
-        "48198A0AA7C14058229493D22530F4DBFA336F6E0AC925139543AED44CCE7C37"
-        "20FD51F69458705AC68CD4FE6B6B13ABDC9746512969328454F18FAF8C595F64"
-        "2477FE96BB2A941D5BCD1D4AC8CC49880708FA9B378E3C4F3A9060BEE67CF9A4"
-        "A4A695811051907E162753B56B0F6B410DBA74D8A84B2A14B3144E0EF1284754"
-        "FD17ED950D5965B4B9DD46582DB1178D169C6BC465B0D6FF9CA3928FEF5B9AE4"
-        "E418FC15E83EBEA0F87FA9FF5EED70050DED2849F47BF959D956850CE929851F"
-        "0D8115F635B105EE2E4E15D04B2454BF6F4FADF034B10403119CD8E3B92FCC5B",
-        16
-    )
-
-    def __init__(self, dc_id: int, test_mode: bool, proxy: dict):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict):
         self.dc_id = dc_id
         self.test_mode = test_mode
+        self.ipv6 = ipv6
         self.proxy = proxy
 
         self.connection = None
@@ -84,7 +73,7 @@ class Auth:
         # The server may close the connection at any time, causing the auth key creation to fail.
         # If that happens, just try again up to MAX_RETRIES times.
         while True:
-            self.connection = Connection(DataCenter(self.dc_id, self.test_mode), self.proxy)
+            self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))
@@ -122,8 +111,8 @@ class Auth:
 
                 data = types.PQInnerData(
                     res_pq.pq,
-                    int.to_bytes(p, 4, "big"),
-                    int.to_bytes(q, 4, "big"),
+                    p.to_bytes(4, "big"),
+                    q.to_bytes(4, "big"),
                     nonce,
                     server_nonce,
                     new_nonce,
@@ -142,8 +131,8 @@ class Auth:
                     functions.ReqDHParams(
                         nonce,
                         server_nonce,
-                        int.to_bytes(p, 4, "big"),
-                        int.to_bytes(q, 4, "big"),
+                        p.to_bytes(4, "big"),
+                        q.to_bytes(4, "big"),
                         public_key_fingerprint,
                         encrypted_data
                     )
@@ -151,8 +140,8 @@ class Auth:
 
                 encrypted_answer = server_dh_params.encrypted_answer
 
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
-                new_nonce = int.to_bytes(new_nonce, 32, "little", signed=True)
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
+                new_nonce = new_nonce.to_bytes(32, "little", signed=True)
 
                 tmp_aes_key = (
                     sha1(new_nonce + server_nonce).digest()
@@ -181,7 +170,7 @@ class Auth:
                 # Step 6
                 g = server_dh_inner_data.g
                 b = int.from_bytes(urandom(256), "big")
-                g_b = int.to_bytes(pow(g, b, dh_prime), 256, "big")
+                g_b = pow(g, b, dh_prime).to_bytes(256, "big")
 
                 retry_id = 0
 
@@ -210,8 +199,8 @@ class Auth:
 
                 # Step 7; Step 8
                 g_a = int.from_bytes(server_dh_inner_data.g_a, "big")
-                auth_key = int.to_bytes(pow(g_a, b, dh_prime), 256, "big")
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
+                auth_key = pow(g_a, b, dh_prime).to_bytes(256, "big")
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
 
                 # TODO: Handle errors
 
@@ -219,7 +208,7 @@ class Auth:
                 # Security checks
                 #######################
 
-                assert dh_prime == self.CURRENT_DH_PRIME
+                assert dh_prime == Prime.CURRENT_DH_PRIME
                 log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
@@ -246,7 +235,7 @@ class Auth:
                 # 3rd message
                 assert nonce == set_client_dh_params_answer.nonce
                 assert server_nonce == set_client_dh_params_answer.server_nonce
-                server_nonce = int.to_bytes(server_nonce, 16, "little", signed=True)
+                server_nonce = server_nonce.to_bytes(16, "little", signed=True)
                 log.debug("Nonce fields check: OK")
 
                 # Step 9

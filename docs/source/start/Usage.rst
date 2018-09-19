@@ -108,9 +108,9 @@ Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/exa
 
         app.stop()
 
-.. _methods: ../pyrogram/Client.html#available-methods
-.. _plenty of them: ../pyrogram/Client.html#available-methods
-.. _types: ../pyrogram/types/index.html
+.. _methods: ../pyrogram/Client.html#messages
+.. _plenty of them: ../pyrogram/Client.html#messages
+.. _types: ../pyrogram/Types.html
 .. _Raw Functions: Usage.html#using-raw-functions
 .. _Community: https://t.me/PyrogramChat
 .. _project set up: Setup.html

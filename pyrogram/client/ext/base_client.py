@@ -41,7 +41,6 @@ class BaseClient:
         platform.release()
     )
 
-    SYSTEM_LANG_CODE = "en"
     LANG_CODE = "en"
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
@@ -60,12 +59,12 @@ class BaseClient:
         5: "document",
         8: "sticker",
         9: "audio",
-        10: "gif",
+        10: "animation",
         13: "video_note"
     }
 
     def __init__(self):
-        self.token = None
+        self.bot_token = None
         self.dc_id = None
         self.auth_key = None
         self.user_id = None

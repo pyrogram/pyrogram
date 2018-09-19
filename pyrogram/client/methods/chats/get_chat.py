@@ -25,6 +25,10 @@ class GetChat(BaseClient):
         """Use this method to get up to date information about the chat (current name of the user for
         one-on-one conversations, current username of a user, group or channel, etc.)
 
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+
         Returns:
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 

@@ -33,8 +33,9 @@ log = logging.getLogger(__name__)
 
 
 class TCP(socks.socksocket):
-    def __init__(self, proxy: dict):
-        super().__init__()
+    def __init__(self, ipv6: bool, proxy: dict):
+        super().__init__(family=socket.AF_INET6 if ipv6 else socket.AF_INET)
+
         self.settimeout(10)
         self.proxy_enabled = proxy.get("enabled", False)
 

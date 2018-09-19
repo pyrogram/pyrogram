@@ -32,6 +32,7 @@ class SendVideoNote(BaseClient):
                         video_note: str,
                         duration: int = 0,
                         length: int = 1,
+                        thumb: str = None,
                         disable_notification: bool = None,
                         reply_to_message_id: int = None,
                         reply_markup=None,
@@ -44,7 +45,6 @@ class SendVideoNote(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             video_note (``str``):
                 Video note to send.
@@ -57,6 +57,12 @@ class SendVideoNote(BaseClient):
 
             length (``int``, *optional*):
                 Video width and height.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -101,10 +107,12 @@ class SendVideoNote(BaseClient):
         file = None
 
         if os.path.exists(video_note):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(video_note, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeVideo(
                         round_message=True,

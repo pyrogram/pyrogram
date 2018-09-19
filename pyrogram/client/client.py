@@ -146,6 +146,7 @@ class Client(Methods, BaseClient):
                  device_model: str = None,
                  system_version: str = None,
                  lang_code: str = None,
+                 ipv6: bool = False,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
@@ -166,6 +167,7 @@ class Client(Methods, BaseClient):
         self.device_model = device_model
         self.system_version = system_version
         self.lang_code = lang_code
+        self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -180,6 +182,13 @@ class Client(Methods, BaseClient):
         self.config_file = config_file
 
         self.dispatcher = Dispatcher(self, workers)
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
 
     @property
     def proxy(self):
@@ -201,7 +210,7 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
-            self.token = self.session_name
+            self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
 
         self.load_config()
@@ -216,28 +225,33 @@ class Client(Methods, BaseClient):
         self.session.start()
         self.is_started = True
 
-        if self.user_id is None:
-            if self.token is None:
-                self.authorize_user()
+        try:
+            if self.user_id is None:
+                if self.bot_token is None:
+                    self.authorize_user()
+                else:
+                    self.authorize_bot()
+
+                self.save_session()
+
+            if self.bot_token is None:
+                now = time.time()
+
+                if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                    self.peers_by_username = {}
+                    self.peers_by_phone = {}
+
+                    self.get_initial_dialogs()
+                    self.get_contacts()
+                else:
+                    self.send(functions.messages.GetPinnedDialogs())
+                    self.get_initial_dialogs_chunk()
             else:
-                self.authorize_bot()
-
-            self.save_session()
-
-        if self.token is None:
-            now = time.time()
-
-            if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                self.peers_by_username = {}
-                self.peers_by_phone = {}
-
-                self.get_dialogs()
-                self.get_contacts()
-            else:
-                self.send(functions.messages.GetPinnedDialogs())
-                self.get_dialogs_chunk(0)
-        else:
-            self.send(functions.updates.GetState())
+                self.send(functions.updates.GetState())
+        except Exception as e:
+            self.is_started = False
+            self.session.stop()
+            raise e
 
         for i in range(self.UPDATES_WORKERS):
             self.updates_workers_list.append(
@@ -381,14 +395,14 @@ class Client(Methods, BaseClient):
                     flags=0,
                     api_id=self.api_id,
                     api_hash=self.api_hash,
-                    bot_auth_token=self.token
+                    bot_auth_token=self.bot_token
                 )
             )
         except UserMigrate as e:
             self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
             self.session = Session(
                 self,
@@ -433,7 +447,7 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
                 self.session = Session(
                     self,
@@ -613,7 +627,7 @@ class Client(Methods, BaseClient):
                 if phone is not None:
                     self.peers_by_phone[phone] = input_peer
 
-            if isinstance(entity, types.Chat):
+            if isinstance(entity, (types.Chat, types.ChatForbidden)):
                 chat_id = entity.id
                 peer_id = -chat_id
 
@@ -623,7 +637,7 @@ class Client(Methods, BaseClient):
 
                 self.peers_by_id[peer_id] = input_peer
 
-            if isinstance(entity, types.Channel):
+            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
                 channel_id = entity.id
                 peer_id = int("-100" + str(channel_id))
 
@@ -632,7 +646,7 @@ class Client(Methods, BaseClient):
                 if access_hash is None:
                     continue
 
-                username = entity.username
+                username = getattr(entity, "username", None)
 
                 input_peer = types.InputPeerChannel(
                     channel_id=channel_id,
@@ -711,7 +725,9 @@ class Client(Methods, BaseClient):
 
                     file_name = "{}_{}_{}{}".format(
                         media_type_str,
-                        datetime.fromtimestamp(media.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                        datetime.fromtimestamp(
+                            getattr(media, "date", None) or time.time()
+                        ).strftime("%Y-%m-%d_%H-%M-%S"),
                         self.rnd_id(),
                         extension
                     )
@@ -776,6 +792,9 @@ class Client(Methods, BaseClient):
                         pts = getattr(update, "pts", None)
                         pts_count = getattr(update, "pts_count", None)
 
+                        if isinstance(update, types.UpdateChannelTooLong):
+                            log.warning(update)
+
                         if isinstance(update, types.UpdateNewChannelMessage):
                             message = update.message
 
@@ -834,6 +853,8 @@ class Client(Methods, BaseClient):
                         self.dispatcher.updates.put((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates.put((updates.update, [], []))
+                elif isinstance(updates, types.UpdatesTooLong):
+                    log.warning(updates)
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -885,30 +906,18 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        for option in {"app_version", "device_model", "system_version", "lang_code"}:
+        for option in ["app_version", "device_model", "system_version", "lang_code"]:
             if getattr(self, option):
                 pass
             else:
-                setattr(self, option, Client.APP_VERSION)
-
                 if parser.has_section("pyrogram"):
                     setattr(self, option, parser.get(
                         "pyrogram",
                         option,
                         fallback=getattr(Client, option.upper())
                     ))
-
-        if self.lang_code:
-            pass
-        else:
-            self.lang_code = Client.LANG_CODE
-
-            if parser.has_section("pyrogram"):
-                self.lang_code = parser.get(
-                    "pyrogram",
-                    "lang_code",
-                    fallback=Client.LANG_CODE
-                )
+                else:
+                    setattr(self, option, getattr(Client, option.upper()))
 
         if self._proxy:
             self._proxy["enabled"] = True
@@ -929,7 +938,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -971,13 +980,17 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    def get_dialogs_chunk(self, offset_date):
+    def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
                 r = self.send(
                     functions.messages.GetDialogs(
-                        offset_date, 0, types.InputPeerEmpty(),
-                        self.DIALOGS_AT_ONCE, True
+                        offset_date=offset_date,
+                        offset_id=0,
+                        offset_peer=types.InputPeerEmpty(),
+                        limit=self.DIALOGS_AT_ONCE,
+                        hash=0,
+                        exclude_pinned=True
                     )
                 )
             except FloodWait as e:
@@ -987,34 +1000,32 @@ class Client(Methods, BaseClient):
                 log.info("Total peers: {}".format(len(self.peers_by_id)))
                 return r
 
-    def get_dialogs(self):
+    def get_initial_dialogs(self):
         self.send(functions.messages.GetPinnedDialogs())
 
-        dialogs = self.get_dialogs_chunk(0)
+        dialogs = self.get_initial_dialogs_chunk()
         offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.get_dialogs_chunk(offset_date)
+            dialogs = self.get_initial_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
 
-        self.get_dialogs_chunk(0)
+        self.get_initial_dialogs_chunk()
 
     def resolve_peer(self, peer_id: int or str):
-        """Use this method to get the *InputPeer* of a known *peer_id*.
+        """Use this method to get the InputPeer of a known peer_id.
 
-        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to use which is
-        not available yet in the Client class as an easy-to-use method).
+        This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
+        you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an InputPeer
+        type is required.
 
         Args:
-            peer_id (``int`` | ``str`` | ``Peer``):
-                The Peer ID you want to extract the InputPeer from. Can be one of these types: ``int`` (direct ID),
-                ``str`` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
-                :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
+            peer_id (``int`` | ``str``):
+                The peer id you want to extract the InputPeer from.
+                Can be a direct id (int), a username (str) or a phone number (str).
 
         Returns:
-            :obj:`InputPeerUser <pyrogram.api.types.InputPeerUser>` or
-            :obj:`InputPeerChat <pyrogram.api.types.InputPeerChat>` or
-            :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
+            On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
             :class:`Error <pyrogram.Error>`
@@ -1023,37 +1034,20 @@ class Client(Methods, BaseClient):
             if peer_id in ("self", "me"):
                 return types.InputPeerSelf()
 
-            match = self.INVITE_LINK_RE.match(peer_id)
-
-            try:
-                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), "-_")
-                return self.resolve_peer(struct.unpack(">2iq", decoded)[1])
-            except (AttributeError, binascii.Error, struct.error):
-                pass
-
             peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
 
             try:
                 int(peer_id)
             except ValueError:
-                try:
-                    return self.peers_by_username[peer_id]
-                except KeyError:
+                if peer_id not in self.peers_by_username:
                     self.send(functions.contacts.ResolveUsername(peer_id))
-                    return self.peers_by_username[peer_id]
+
+                return self.peers_by_username[peer_id]
             else:
                 try:
                     return self.peers_by_phone[peer_id]
                 except KeyError:
                     raise PeerIdInvalid
-
-        if type(peer_id) is not int:
-            if isinstance(peer_id, types.PeerUser):
-                peer_id = peer_id.user_id
-            elif isinstance(peer_id, types.PeerChat):
-                peer_id = -peer_id.chat_id
-            elif isinstance(peer_id, types.PeerChannel):
-                peer_id = int("-100" + str(peer_id.channel_id))
 
         try:  # User
             return self.peers_by_id[peer_id]
@@ -1166,7 +1160,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        Auth(dc_id, self.test_mode, self._proxy).create(),
+                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                         is_media=True
                     )
 
@@ -1229,8 +1223,6 @@ class Client(Methods, BaseClient):
                             break
 
                         f.write(chunk)
-                        f.flush()
-                        os.fsync(f.fileno())
 
                         offset += limit
 
@@ -1253,7 +1245,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                             is_media=True,
                             is_cdn=True
                         )
@@ -1313,8 +1305,6 @@ class Client(Methods, BaseClient):
                                 assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
 
                             f.write(decrypted_chunk)
-                            f.flush()
-                            os.fsync(f.fileno())
 
                             offset += limit
 
