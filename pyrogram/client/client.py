@@ -916,6 +916,8 @@ class Client(Methods, BaseClient):
                         option,
                         fallback=getattr(Client, option.upper())
                     ))
+                else:
+                    setattr(self, option, getattr(Client, option.upper()))
 
         if self._proxy:
             self._proxy["enabled"] = True
