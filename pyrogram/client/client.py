@@ -90,6 +90,10 @@ class Client(Methods, BaseClient):
             Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
+        ipv6 (``bool``, *optional*):
+            Pass True to connect to Telegram using IPv6.
+            Defaults to False (IPv4).
+
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
