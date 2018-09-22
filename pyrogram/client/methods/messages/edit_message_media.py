@@ -36,6 +36,28 @@ class EditMessageMedia(BaseClient):
                            message_id: int,
                            media,
                            reply_markup=None):
+        """Use this method to edit audio, document, photo, or video messages.
+
+        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
+        message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
+        Use previously uploaded file via its file_id or specify a URL. On success, if the edited message was sent
+        by the bot, the edited Message is returned, otherwise True is returned.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_id (``int``):
+                Message identifier in the chat specified in chat_id.
+
+            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+        """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption
 

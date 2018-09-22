@@ -19,6 +19,7 @@
 import asyncio
 import logging
 import socket
+import ipaddress
 
 try:
     import socks
@@ -37,31 +38,43 @@ class TCP:
     TIMEOUT = 10
 
     def __init__(self, ipv6: bool, proxy: dict):
-        self.proxy = proxy
-
-        self.lock = asyncio.Lock()
-
-        self.socket = socks.socksocket(family=socket.AF_INET6 if ipv6 else socket.AF_INET)
-
-        self.socket.settimeout(TCP.TIMEOUT)
+        self.socket = None
 
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
-        self.proxy_enabled = proxy.get("enabled", False)
 
-        if proxy and self.proxy_enabled:
+        self.lock = asyncio.Lock()
+
+        if proxy.get("enabled", False):
+            hostname = proxy.get("hostname", None)
+            port = proxy.get("port", None)
+
+            try:
+                ip_address = ipaddress.ip_address(hostname)
+            except ValueError:
+                self.socket = socks.socksocket(socket.AF_INET)
+            else:
+                if isinstance(ip_address, ipaddress.IPv6Address):
+                    self.socket = socks.socksocket(socket.AF_INET6)
+                else:
+                    self.socket = socks.socksocket(socket.AF_INET)
+
             self.socket.set_proxy(
                 proxy_type=socks.SOCKS5,
-                addr=proxy.get("hostname", None),
-                port=proxy.get("port", None),
+                addr=hostname,
+                port=port,
                 username=proxy.get("username", None),
                 password=proxy.get("password", None)
             )
 
-            log.info("Using proxy {}:{}".format(
-                proxy.get("hostname", None),
-                proxy.get("port", None)
-            ))
+            log.info("Using proxy {}:{}".format(hostname, port))
+        else:
+            super().__init__(
+                socket.AF_INET6 if ipv6
+                else socket.AF_INET
+            )
+
+        self.socket.settimeout(TCP.TIMEOUT)
 
     async def connect(self, address: tuple):
         self.socket.connect(address)
