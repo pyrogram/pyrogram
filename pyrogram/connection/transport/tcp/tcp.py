@@ -17,9 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import ipaddress
 import logging
 import socket
-import ipaddress
 
 try:
     import socks
@@ -69,7 +69,7 @@ class TCP:
 
             log.info("Using proxy {}:{}".format(hostname, port))
         else:
-            super().__init__(
+            self.socket = socks.socksocket(
                 socket.AF_INET6 if ipv6
                 else socket.AF_INET
             )
