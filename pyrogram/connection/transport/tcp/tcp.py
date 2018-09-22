@@ -34,24 +34,33 @@ log = logging.getLogger(__name__)
 
 class TCP(socks.socksocket):
     def __init__(self, ipv6: bool, proxy: dict):
-        super().__init__(family=socket.AF_INET6 if ipv6 else socket.AF_INET)
+        if proxy.get("enabled", False):
+            hostname = proxy.get("hostname", None)
+            port = proxy.get("port", None)
 
-        self.settimeout(10)
-        self.proxy_enabled = proxy.get("enabled", False)
+            try:
+                socket.inet_aton(hostname)
+            except socket.error:
+                super().__init__(socket.AF_INET6)
+            else:
+                super().__init__(socket.AF_INET)
 
-        if proxy and self.proxy_enabled:
             self.set_proxy(
                 proxy_type=socks.SOCKS5,
-                addr=proxy.get("hostname", None),
-                port=proxy.get("port", None),
+                addr=hostname,
+                port=port,
                 username=proxy.get("username", None),
                 password=proxy.get("password", None)
             )
 
-            log.info("Using proxy {}:{}".format(
-                proxy.get("hostname", None),
-                proxy.get("port", None)
-            ))
+            log.info("Using proxy {}:{}".format(hostname, port))
+        else:
+            super().__init__(
+                socket.AF_INET6 if ipv6
+                else socket.AF_INET
+            )
+
+        self.settimeout(10)
 
     def close(self):
         try:
