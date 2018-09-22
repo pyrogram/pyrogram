@@ -18,6 +18,7 @@
 
 import logging
 import socket
+import ipaddress
 
 try:
     import socks
@@ -39,11 +40,14 @@ class TCP(socks.socksocket):
             port = proxy.get("port", None)
 
             try:
-                socket.inet_aton(hostname)
-            except socket.error:
-                super().__init__(socket.AF_INET6)
-            else:
+                ip_address = ipaddress.ip_address(hostname)
+            except ValueError:
                 super().__init__(socket.AF_INET)
+            else:
+                if isinstance(ip_address, ipaddress.IPv6Address):
+                    super().__init__(socket.AF_INET6)
+                else:
+                    super().__init__(socket.AF_INET)
 
             self.set_proxy(
                 proxy_type=socks.SOCKS5,
