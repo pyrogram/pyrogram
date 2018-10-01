@@ -90,43 +90,46 @@ class Dispatcher:
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
         for group in self.groups.values():
-            for handler in group:
-                if is_raw:
-                    if not isinstance(handler, RawUpdateHandler):
-                        continue
-
-                    args = (self.client, update, users, chats)
-                else:
-                    message = (update.message
-                               or update.channel_post
-                               or update.edited_message
-                               or update.edited_channel_post)
-
-                    deleted_messages = (update.deleted_channel_posts
-                                        or update.deleted_messages)
-
-                    callback_query = update.callback_query
-
-                    if message and isinstance(handler, MessageHandler):
-                        if not handler.check(message):
+            try:
+                for handler in group:
+                    if is_raw:
+                        if not isinstance(handler, RawUpdateHandler):
                             continue
 
-                        args = (self.client, message)
-                    elif deleted_messages and isinstance(handler, DeletedMessagesHandler):
-                        if not handler.check(deleted_messages):
-                            continue
-
-                        args = (self.client, deleted_messages)
-                    elif callback_query and isinstance(handler, CallbackQueryHandler):
-                        if not handler.check(callback_query):
-                            continue
-
-                        args = (self.client, callback_query)
+                        args = (self.client, update, users, chats)
                     else:
-                        continue
+                        message = (update.message
+                                   or update.channel_post
+                                   or update.edited_message
+                                   or update.edited_channel_post)
 
-                handler.callback(*args)
-                break
+                        deleted_messages = (update.deleted_channel_posts
+                                            or update.deleted_messages)
+
+                        callback_query = update.callback_query
+
+                        if message and isinstance(handler, MessageHandler):
+                            if not handler.check(message):
+                                continue
+
+                            args = (self.client, message)
+                        elif deleted_messages and isinstance(handler, DeletedMessagesHandler):
+                            if not handler.check(deleted_messages):
+                                continue
+
+                            args = (self.client, deleted_messages)
+                        elif callback_query and isinstance(handler, CallbackQueryHandler):
+                            if not handler.check(callback_query):
+                                continue
+
+                            args = (self.client, callback_query)
+                        else:
+                            continue
+
+                    handler.callback(*args)
+                    break
+            except Exception as e:
+                log.error(e, exc_info=True)
 
     def update_worker(self):
         name = threading.current_thread().name
