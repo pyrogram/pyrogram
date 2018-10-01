@@ -25,12 +25,12 @@ class PromoteChatMember(BaseClient):
                                   chat_id: int or str,
                                   user_id: int or str,
                                   can_change_info: bool = True,
-                                  can_post_messages: bool = True,
-                                  can_edit_messages: bool = True,
+                                  can_post_messages: bool = False,
+                                  can_edit_messages: bool = False,
                                   can_delete_messages: bool = True,
                                   can_invite_users: bool = True,
                                   can_restrict_members: bool = True,
-                                  can_pin_messages: bool = True,
+                                  can_pin_messages: bool = False,
                                   can_promote_members: bool = False):
         """Use this method to promote or demote a user in a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.

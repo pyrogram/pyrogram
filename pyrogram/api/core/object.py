@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
 from collections import OrderedDict
 from datetime import datetime
 from io import BytesIO
@@ -24,23 +23,13 @@ from json import JSONEncoder, dumps
 
 from ..all import objects
 
-log = logging.getLogger(__name__)
-
 
 class Object:
     all = {}
 
     @staticmethod
     def read(b: BytesIO, *args):
-        constructor_id = int.from_bytes(b.read(4), "little")
-
-        try:
-            return Object.all[constructor_id].read(b, *args)
-        except KeyError:
-            log.error("Unknown constructor found: {}. Full data: {}".format(
-                hex(constructor_id),
-                b.getvalue().hex())
-            )
+        return Object.all[int.from_bytes(b.read(4), "little")].read(b, *args)
 
     def write(self, *args) -> bytes:
         pass
