@@ -1,3 +1,4 @@
 id	message
 CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
 RIGHT_FORBIDDEN	One or more admin rights can't be applied to this kind of chat (channel/supergroup)
+CHAT_ADMIN_INVITE_REQUIRED	You don't have rights to invite other users
