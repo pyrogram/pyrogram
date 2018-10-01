@@ -66,6 +66,9 @@ class Filters:
 
     incoming = create("Incoming", lambda _, m: not m.outgoing)
     """Filter incoming messages."""
+    
+    custom = lambda f: create('custom', lambda _, m: bool(f(m)))
+    """Custom filter"""
 
     outgoing = create("Outgoing", lambda _, m: m.outgoing)
     """Filter outgoing messages."""
