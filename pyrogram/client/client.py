@@ -43,7 +43,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
@@ -803,19 +803,22 @@ class Client(Methods, BaseClient):
                             message = update.message
 
                             if not isinstance(message, types.MessageEmpty):
-                                diff = self.send(
-                                    functions.updates.GetChannelDifference(
-                                        channel=self.resolve_peer(int("-100" + str(channel_id))),
-                                        filter=types.ChannelMessagesFilter(
-                                            ranges=[types.MessageRange(
-                                                min_id=update.message.id,
-                                                max_id=update.message.id
-                                            )]
-                                        ),
-                                        pts=pts - pts_count,
-                                        limit=pts
+                                try:
+                                    diff = self.send(
+                                        functions.updates.GetChannelDifference(
+                                            channel=self.resolve_peer(int("-100" + str(channel_id))),
+                                            filter=types.ChannelMessagesFilter(
+                                                ranges=[types.MessageRange(
+                                                    min_id=update.message.id,
+                                                    max_id=update.message.id
+                                                )]
+                                            ),
+                                            pts=pts - pts_count,
+                                            limit=pts
+                                        )
                                     )
-                                )
+                                except ChannelPrivate:
+                                    continue
 
                                 if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
                                     updates.users += diff.users
