@@ -818,11 +818,11 @@ class Client(Methods, BaseClient):
                                         )
                                     )
                                 except ChannelPrivate:
-                                    continue
-
-                                if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
-                                    updates.users += diff.users
-                                    updates.chats += diff.chats
+                                    pass
+                                else:
+                                    if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
+                                        updates.users += diff.users
+                                        updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
