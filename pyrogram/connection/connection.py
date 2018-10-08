@@ -29,7 +29,6 @@ class Connection:
     MAX_RETRIES = 3
 
     MODES = {
-        # TODO: Implement other protocols using asyncio
         0: TCPFull,
         1: TCPAbridged,
         2: TCPIntermediate,
