@@ -31,34 +31,33 @@ class TCPFull(TCP):
 
         self.seq_no = None
 
-    def connect(self, address: tuple):
-        super().connect(address)
+    async def connect(self, address: tuple):
+        await super().connect(address)
         self.seq_no = 0
 
-    def sendall(self, data: bytes, *args):
-        # 12 = packet_length (4), seq_no (4), crc32 (4) (at the end)
+    async def send(self, data: bytes, *args):
         data = pack("<II", len(data) + 12, self.seq_no) + data
         data += pack("<I", crc32(data))
         self.seq_no += 1
 
-        super().sendall(data)
+        await super().send(data)
 
-    def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(4)
+    async def recv(self, length: int = 0) -> bytes or None:
+        length = await super().recv(4)
 
         if length is None:
             return None
 
-        packet = super().recvall(unpack("<I", length)[0] - 4)
+        packet = await super().recv(unpack("<I", length)[0] - 4)
 
         if packet is None:
             return None
 
-        packet = length + packet  # Whole data + checksum
-        checksum = packet[-4:]  # Checksum is at the last 4 bytes
-        packet = packet[:-4]  # Data without checksum
+        packet = length + packet
+        checksum = packet[-4:]
+        packet = packet[:-4]
 
         if crc32(packet) != unpack("<I", checksum)[0]:
             return None
 
-        return packet[8:]  # Skip packet_length (4) and tcp_seq_no (4)
+        return packet[8:]
