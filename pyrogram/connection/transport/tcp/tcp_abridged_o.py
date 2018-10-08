@@ -34,8 +34,8 @@ class TCPAbridgedO(TCP):
         self.encrypt = None
         self.decrypt = None
 
-    def connect(self, address: tuple):
-        super().connect(address)
+    async def connect(self, address: tuple):
+        await super().connect(address)
 
         while True:
             nonce = bytearray(os.urandom(64))
@@ -53,12 +53,12 @@ class TCPAbridgedO(TCP):
 
         nonce[56:64] = AES.ctr256_encrypt(nonce, *self.encrypt)[56:64]
 
-        super().sendall(nonce)
+        await super().send(nonce)
 
-    def sendall(self, data: bytes, *args):
+    async def send(self, data: bytes, *args):
         length = len(data) // 4
 
-        super().sendall(
+        await super().send(
             AES.ctr256_encrypt(
                 (bytes([length])
                  if length <= 126
@@ -68,8 +68,8 @@ class TCPAbridgedO(TCP):
             )
         )
 
-    def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(1)
+    async def recv(self, length: int = 0) -> bytes or None:
+        length = await super().recv(1)
 
         if length is None:
             return None
@@ -77,14 +77,14 @@ class TCPAbridgedO(TCP):
         length = AES.ctr256_decrypt(length, *self.decrypt)
 
         if length == b"\x7f":
-            length = super().recvall(3)
+            length = await super().recv(3)
 
             if length is None:
                 return None
 
             length = AES.ctr256_decrypt(length, *self.decrypt)
 
-        data = super().recvall(int.from_bytes(length, "little") * 4)
+        data = await super().recv(int.from_bytes(length, "little") * 4)
 
         if data is None:
             return None
