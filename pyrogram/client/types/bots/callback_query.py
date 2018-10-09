@@ -57,11 +57,13 @@ class CallbackQuery(Object):
             id: str,
             from_user,
             chat_instance: str,
+            client=None,
             message=None,
             inline_message_id: str = None,
             data: str = None,
             game_short_name: str = None
     ):
+        self._client = client
         self.id = id  # string
         self.from_user = from_user  # User
         self.message = message  # flags.0?Message
