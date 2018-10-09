@@ -21,6 +21,10 @@ import time
 from pyrogram import Client
 from pyrogram.api.errors import FloodWait
 
+"""This example shows you how to get the first 10.000 members of a chat.
+Refer to get_chat_members2.py for more than 10.000 members.
+"""
+
 app = Client("my_account")
 
 target = "pyrogramchat"  # Target channel/supergroup
