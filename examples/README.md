@@ -5,6 +5,9 @@ This folder contains example scripts to show you how **Pyrogram** looks like.
 Every script is working right away (provided you correctly set up your credentials), meaning
 you can simply copy-paste and run. The only things you have to change are session names and target chats.
 
+All the examples listed in this directory are licensed under the terms of the [CC0 1.0 Universal](LICENSE) license and
+can be freely used as basic building blocks for your own applications without worrying about copyrights.
+
 Example | Description
 ---: | :---
 [**hello_world**](hello_world.py) | Demonstration of basic API usages
