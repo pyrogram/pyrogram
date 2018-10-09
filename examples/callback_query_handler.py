@@ -27,11 +27,7 @@ app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
 
 @app.on_callback_query()
 def answer(client, callback_query):
-    client.answer_callback_query(
-        callback_query.id,
-        text='Button contains: "{}"'.format(callback_query.data),
-        show_alert=True
-    )
+    callback_query.answer('Button contains: "{}"'.format(callback_query.data), show_alert=True)
 
 
 app.run()  # Automatically start() and idle()
