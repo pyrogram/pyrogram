@@ -1,10 +1,10 @@
-from pyrogram import Client, Filters
-
 """This simple echo bot replies to every private text message.
 
 It uses the @on_message decorator to register a MessageHandler and applies two filters on it:
 Filters.text and Filters.private to make sure it will reply to private text messages only.
 """
+
+from pyrogram import Client, Filters
 
 app = Client("my_account")
 

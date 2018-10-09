@@ -1,6 +1,6 @@
-from pyrogram import Client
-
 """This example shows how to handle raw updates"""
+
+from pyrogram import Client
 
 app = Client("my_account")
 

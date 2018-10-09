@@ -1,9 +1,9 @@
+"""This example shows how to retrieve the full message history of a chat"""
+
 import time
 
 from pyrogram import Client
 from pyrogram.api.errors import FloodWait
-
-"""This example shows how to retrieve the full message history of a chat"""
 
 app = Client("my_account")
 target = "me"  # "me" refers to your own chat (Saved Messages)

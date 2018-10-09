@@ -1,9 +1,3 @@
-import time
-from string import ascii_lowercase
-
-from pyrogram import Client
-from pyrogram.api.errors import FloodWait
-
 """This is an improved version of get_chat_members.py
 
 Since Telegram will return at most 10.000 members for a single query, this script
@@ -12,6 +6,12 @@ repeats the search using numbers ("0" to "9") and all the available ascii letter
 This can be further improved by also searching for non-ascii characters (e.g.: Japanese script),
 as some user names may not contain ascii letters at all.
 """
+
+import time
+from string import ascii_lowercase
+
+from pyrogram import Client
+from pyrogram.api.errors import FloodWait
 
 app = Client("my_account")
 

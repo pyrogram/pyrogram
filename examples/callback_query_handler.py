@@ -1,8 +1,9 @@
-from pyrogram import Client
-
 """This example shows how to handle callback queries, i.e.: queries coming from inline button presses.
 
-It uses the @on_callback_query decorator to register a CallbackQueryHandler."""
+It uses the @on_callback_query decorator to register a CallbackQueryHandler.
+"""
+
+from pyrogram import Client
 
 app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
 

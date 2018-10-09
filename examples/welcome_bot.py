@@ -1,10 +1,10 @@
-from pyrogram import Client, Emoji, Filters
-
 """This is the Welcome Bot in @PyrogramChat.
 
 It uses the Emoji module to easily add emojis in your text messages and Filters
-to make it only work for specific messages in a specific chat 
+to make it only work for specific messages in a specific chat
 """
+
+from pyrogram import Client, Emoji, Filters
 
 app = Client("my_account")
 
