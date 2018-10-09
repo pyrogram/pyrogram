@@ -11,8 +11,8 @@ Example | Description
 [**echo_bot**](echo_bot.py) | Echo bot that replies to every private text message
 [**welcome_bot**](welcome_bot.py) | The Welcome Bot source code in [@PyrogramChat](https://t.me/pyrogramchat)
 [**get_history**](get_history.py) | How to retrieve the full message history of a chat
-[**get_participants**](get_participants.py) | How to get the first 10.000 members of a supergroup/channel
-[**get_participants2**](get_participants2.py) | Improved version to get more than 10.000 users
+[**get_chat_members**](get_chat_members.py) | How to get the first 10.000 members of a supergroup/channel
+[**get_chat_members2**](get_chat_members2.py) | Improved version to get more than 10.000 members
 [**query_inline_bots**](query_inline_bots.py) | How to query an inline bot and send a result to a chat
 [**send_bot_keyboards**](send_bot_keyboards.py) | How to send normal and inline keyboards using regular bots
 [**callback_query_handler**](callback_query_handler.py) | How to handle queries coming from inline button presses
