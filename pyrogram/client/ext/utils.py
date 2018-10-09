@@ -877,11 +877,12 @@ async def parse_callback_query(client, callback_query, users):
         message=await client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
-        game_short_name=callback_query.game_short_name
+        game_short_name=callback_query.game_short_name,
+        client=client
     )
 
 
-async def parse_inline_callback_query(callback_query, users):
+async def parse_inline_callback_query(client, callback_query, users):
     return pyrogram_types.CallbackQuery(
         id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
@@ -895,7 +896,8 @@ async def parse_inline_callback_query(callback_query, users):
             ),
             b"-_"
         ).decode().rstrip("="),
-        game_short_name=callback_query.game_short_name
+        game_short_name=callback_query.game_short_name,
+        client=client
     )
 
 

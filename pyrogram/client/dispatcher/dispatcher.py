@@ -203,7 +203,7 @@ class Dispatcher:
                     await self.dispatch(
                         pyrogram.Update(
                             callback_query=await utils.parse_inline_callback_query(
-                                update, users
+                                self.client, update, users
                             )
                         )
                     )
