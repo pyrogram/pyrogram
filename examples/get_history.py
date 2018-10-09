@@ -33,8 +33,7 @@ app.start()
 while True:
     try:
         m = app.get_history(target, offset_id=offset_id)
-    except FloodWait as e:
-        # For very large chats the method call can raise a FloodWait
+    except FloodWait as e:  # For very large chats the method call can raise a FloodWait
         print("waiting {}".format(e.x))
         time.sleep(e.x)  # Sleep X seconds before continuing
         continue
