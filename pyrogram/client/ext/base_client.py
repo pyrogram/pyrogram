@@ -49,6 +49,7 @@ class BaseClient:
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
     OFFLINE_SLEEP = 300
+    PLUGINS_DIR = "./plugins"
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",

@@ -164,7 +164,7 @@ class Client(Methods, BaseClient):
                  workers: int = 4,
                  workdir: str = ".",
                  config_file: str = "./config.ini",
-                 plugins_dir: str = "./plugins"):
+                 plugins_dir: str = BaseClient.PLUGINS_DIR):
         super().__init__()
 
         self.session_name = session_name
