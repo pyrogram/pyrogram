@@ -33,6 +33,7 @@ import time
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
+from importlib import import_module
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
 
@@ -45,6 +46,7 @@ from pyrogram.api.errors import (
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
 from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -161,7 +163,8 @@ class Client(Methods, BaseClient):
                  last_name: str = None,
                  workers: int = 4,
                  workdir: str = ".",
-                 config_file: str = "./config.ini"):
+                 config_file: str = "./config.ini",
+                 plugins_dir: str = "./plugins"):
         super().__init__()
 
         self.session_name = session_name
@@ -184,6 +187,7 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
+        self.plugins_dir = plugins_dir
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -225,6 +229,24 @@ class Client(Methods, BaseClient):
             self.dc_id,
             self.auth_key
         )
+
+        if self.plugins_dir is not None:
+            for i in os.listdir(self.plugins_dir):
+                module = import_module("{}.{}".format(self.plugins_dir, i.split(".")[0]))
+
+                for j in dir(module):
+                    # noinspection PyBroadException
+                    try:
+                        handler, group = getattr(module, j)
+
+                        if isinstance(handler, Handler) and isinstance(group, int):
+                            self.add_handler(handler, group)
+
+                            log.info('{}("{}") from "{}/{}" registered in group {}'.format(
+                                type(handler).__name__, j, self.plugins_dir, i, group)
+                            )
+                    except Exception:
+                        pass
 
         self.session.start()
         self.is_started = True
