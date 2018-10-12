@@ -233,13 +233,14 @@ class Client(Methods, BaseClient):
         if self.plugins_dir is not None:
             try:
                 dirs = os.listdir(self.plugins_dir)
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 if self.plugins_dir == Client.PLUGINS_DIR:
-                    pass
+                    log.info("No plugin loaded: default directory is missing")
                 else:
-                    log.warning(e)
+                    log.warning('No plugin loaded: "{}" directory is missing'.format(self.plugins_dir))
             else:
                 plugins_dir = self.plugins_dir.lstrip("./").replace("/", ".")
+                plugins_count = 0
 
                 for i in dirs:
                     module = import_module("{}.{}".format(plugins_dir, i.split(".")[0]))
@@ -252,11 +253,19 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('{}("{}") from "{}/{}" registered in group {}'.format(
+                                log.info('{}("{}") from "{}/{}" loaded in group {}'.format(
                                     type(handler).__name__, j, self.plugins_dir, i, group)
                                 )
+
+                                plugins_count += 1
                         except Exception:
                             pass
+
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                    plugins_count,
+                    "s" if plugins_count > 1 else "",
+                    self.plugins_dir
+                ))
 
         self.session.start()
         self.is_started = True
