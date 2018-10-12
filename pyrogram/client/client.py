@@ -239,8 +239,10 @@ class Client(Methods, BaseClient):
                 else:
                     log.warning(e)
             else:
+                plugins_dir = self.plugins_dir.lstrip("./").replace("/", ".")
+
                 for i in dirs:
-                    module = import_module("{}.{}".format(self.plugins_dir, i.split(".")[0]))
+                    module = import_module("{}.{}".format(plugins_dir, i.split(".")[0]))
 
                     for j in dir(module):
                         # noinspection PyBroadException
