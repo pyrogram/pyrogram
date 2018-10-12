@@ -231,22 +231,30 @@ class Client(Methods, BaseClient):
         )
 
         if self.plugins_dir is not None:
-            for i in os.listdir(self.plugins_dir):
-                module = import_module("{}.{}".format(self.plugins_dir, i.split(".")[0]))
+            try:
+                dirs = os.listdir(self.plugins_dir)
+            except FileNotFoundError as e:
+                if self.plugins_dir == Client.PLUGINS_DIR:
+                    pass
+                else:
+                    log.warning(e)
+            else:
+                for i in dirs:
+                    module = import_module("{}.{}".format(self.plugins_dir, i.split(".")[0]))
 
-                for j in dir(module):
-                    # noinspection PyBroadException
-                    try:
-                        handler, group = getattr(module, j)
+                    for j in dir(module):
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, j)
 
-                        if isinstance(handler, Handler) and isinstance(group, int):
-                            self.add_handler(handler, group)
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
 
-                            log.info('{}("{}") from "{}/{}" registered in group {}'.format(
-                                type(handler).__name__, j, self.plugins_dir, i, group)
-                            )
-                    except Exception:
-                        pass
+                                log.info('{}("{}") from "{}/{}" registered in group {}'.format(
+                                    type(handler).__name__, j, self.plugins_dir, i, group)
+                                )
+                        except Exception:
+                            pass
 
         self.session.start()
         self.is_started = True
