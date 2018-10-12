@@ -17,11 +17,12 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.filters.filter import Filter
 from ...ext import BaseClient
 
 
 class OnMessage(BaseClient):
-    def on_message(self, filters=None, group: int = 0):
+    def on_message(self=None, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         messages. This does the same thing as :meth:`add_handler` using the
         :class:`MessageHandler`.
@@ -36,7 +37,14 @@ class OnMessage(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.MessageHandler(func, filters), group)
-            return func
+            handler = pyrogram.MessageHandler(func, filters)
+
+            if isinstance(self, Filter):
+                return pyrogram.MessageHandler(func, self), group if filters is None else filters
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator
