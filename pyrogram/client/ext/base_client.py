@@ -49,6 +49,7 @@ class BaseClient:
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
     OFFLINE_SLEEP = 300
+    WORKERS = 4
     WORKDIR = "."
     CONFIG_FILE = "./config.ini"
 
