@@ -162,8 +162,8 @@ class Client(Methods, BaseClient):
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = 4,
-                 workdir: str = ".",
-                 config_file: str = "./config.ini",
+                 workdir: str = BaseClient.WORKDIR,
+                 config_file: str = BaseClient.CONFIG_FILE,
                  plugins_dir: str = BaseClient.PLUGINS_DIR):
         super().__init__()
 
