@@ -169,7 +169,7 @@ class Client(Methods, BaseClient):
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str = BaseClient.PLUGINS_DIR):
+                 plugins_dir: str or None = BaseClient.PLUGINS_DIR):
         super().__init__()
 
         self.session_name = session_name
