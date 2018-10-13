@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.filters.filter import Filter
 from ...ext import BaseClient
 
 
@@ -36,7 +37,14 @@ class OnDeletedMessages(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.DeletedMessagesHandler(func, filters), group)
-            return func
+            handler = pyrogram.DeletedMessagesHandler(func, filters)
+
+            if isinstance(self, Filter):
+                return pyrogram.DeletedMessagesHandler(func, self), group if filters is None else filters
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator
