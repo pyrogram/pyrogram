@@ -161,7 +161,7 @@ class Client(Methods, BaseClient):
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
-                 workers: int = 4,
+                 workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
                  plugins_dir: str = BaseClient.PLUGINS_DIR):
