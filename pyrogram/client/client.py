@@ -142,6 +142,11 @@ class Client(Methods, BaseClient):
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
+
+        plugins_dir (``str``, *optional*):
+            Define a custom directory for your plugins. The plugins directory is the location in your
+            filesystem where Pyrogram will automatically load your update handlers.
+            Defaults to "./plugins". Set to None to completely disable plugins.
     """
 
     def __init__(self,
