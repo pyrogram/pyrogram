@@ -33,7 +33,6 @@ class UserStatus(Object):
             within_week: bool = None,
             within_month: bool = None,
             long_time_ago: bool = None,
-            bot: bool = None,
             date: int = None,
     ):
         self.online = online
@@ -42,5 +41,4 @@ class UserStatus(Object):
         self.within_week = within_week
         self.within_month = within_month
         self.long_time_ago = long_time_ago
-        self.bot = bot
         self.date = date

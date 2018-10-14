@@ -130,6 +130,9 @@ def parse_chat_photo(photo):
 
 
 def parse_last_seen(user: types.User) -> pyrogram_types.UserStatus:
+    if user.bot:
+        return None
+
     status = user.status
     last_seen = pyrogram_types.UserStatus()
 
@@ -145,8 +148,6 @@ def parse_last_seen(user: types.User) -> pyrogram_types.UserStatus:
         last_seen.within_week = True
     elif isinstance(status, types.UserStatusLastMonth):
         last_seen.within_month = True
-    elif user.bot:
-        last_seen.bot = True
     else:
         last_seen.long_time_ago = True
 
