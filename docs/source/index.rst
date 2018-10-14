@@ -25,11 +25,11 @@ Welcome to Pyrogram
         </a>
         <br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/SCHEMA-LAYER%2082-eda738.svg?longCache=true&style=popout&colorA=262b30"
+            <img src="https://img.shields.io/badge/schema-layer%2082-eda738.svg?longCache=true&colorA=262b30"
                 alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://img.shields.io/badge/TGCRYPTO-V1.1.1-eda738.svg?longCache=true&style=popout&colorA=262b30"
+            <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
                 alt="TgCrypto">
         </a>
     </p>
