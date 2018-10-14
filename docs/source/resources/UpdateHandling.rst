@@ -2,15 +2,15 @@ Update Handling
 ===============
 
 Updates are events that happen in your Telegram account (incoming messages, new channel posts, new members join, ...)
-and can be handled by registering one or more callback functions in your app by using an `Handler <../pyrogram/Handlers.html>`_.
+and can be handled by registering one or more callback functions in your app by using `Handlers <../pyrogram/Handlers.html>`_.
 
 To put it simply, whenever an update is received from Telegram it will be dispatched and your previously defined callback
-function(s) will be called back with the update itself as argument.
+function(s) matching it will be called back with the update itself as argument.
 
 Registering an Handler
 ----------------------
 
-To explain how `Handlers <../pyrogram/Handlers.html>`_ work let's have a look at the most used one, the
+To explain how handlers work let's have a look at the most used one, the
 :obj:`MessageHandler <pyrogram.MessageHandler>`, which will be in charge for handling :obj:`Message <pyrogram.Message>`
 updates coming from all around your chats. Every other handler shares the same setup logic; you should not have troubles
 settings them up once you learn from this section.
