@@ -23,13 +23,13 @@ Welcome to Pyrogram
         <a href="https://t.me/PyrogramChat">
             Community
         </a>
-        <br><br>
+        <br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/SCHEME-LAYER%2082-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+            <img src="https://img.shields.io/badge/SCHEMA-LAYER%2082-eda738.svg?longCache=true&style=popout&colorA=262b30"
                 alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://img.shields.io/badge/TGCRYPTO-V1.1.1-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+            <img src="https://img.shields.io/badge/TGCRYPTO-V1.1.1-eda738.svg?longCache=true&style=popout&colorA=262b30"
                 alt="TgCrypto">
         </a>
     </p>
