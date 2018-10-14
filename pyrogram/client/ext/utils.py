@@ -129,6 +129,30 @@ def parse_chat_photo(photo):
     )
 
 
+def parse_last_seen(user: types.User) -> pyrogram_types.LastSeen:
+    status = user.status
+    last_seen = pyrogram_types.LastSeen()
+
+    if isinstance(status, types.UserStatusOnline):
+        last_seen.online = True
+        last_seen.date = status.expires
+    elif isinstance(status, types.UserStatusOffline):
+        last_seen.offline = True
+        last_seen.date = status.was_online
+    elif isinstance(status, types.UserStatusRecently):
+        last_seen.recently = True
+    elif isinstance(status, types.UserStatusLastWeek):
+        last_seen.within_week = True
+    elif isinstance(status, types.UserStatusLastMonth):
+        last_seen.within_month = True
+    elif user.bot:
+        last_seen.bot = True
+    else:
+        last_seen.long_time_ago = True
+
+    return last_seen
+
+
 def parse_user(user: types.User) -> pyrogram_types.User or None:
     return pyrogram_types.User(
         id=user.id,
@@ -142,7 +166,8 @@ def parse_user(user: types.User) -> pyrogram_types.User or None:
         username=user.username,
         language_code=user.lang_code,
         phone_number=user.phone,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        last_seen=parse_last_seen(user),
     ) if user else None
 
 
