@@ -26,7 +26,9 @@ Here's a simple example:
 
         app.stop()
 
-You can also use the Client instance in a context manager with the ``with`` statement:
+You can also use Pyrogram in a context manager with the ``with`` statement. The Client will automatically
+:meth:`start <pyrogram.Client.start>` and :meth:`stop <pyrogram.Client.stop>` gracefully, even in case of unhandled
+exceptions in your code:
 
     .. code-block:: python
 
