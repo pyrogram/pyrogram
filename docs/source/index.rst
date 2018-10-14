@@ -49,14 +49,14 @@ Welcome to Pyrogram
     app.run()
 
 Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the library.
-Contents are organized by topic and can be accessed from the sidebar, or by following them one by one using the Next
-button at the end of each page. But first, here's a brief overview of what is this all about.
+Contents are organized into self-contained topics and can be accessed from the sidebar, or by following them in order
+using the Next button at the end of each page. But first, here's a brief overview of what is this all about.
 
 About
 -----
 
-**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
-custom Telegram applications that interact with the MTProto API as both User and Bot.
+**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for
+building custom Telegram applications that interact with the MTProto API as both User and Bot.
 
 Features
 --------
