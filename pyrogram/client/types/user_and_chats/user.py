@@ -70,6 +70,7 @@ class User(Object):
             is_mutual_contact: bool,
             is_deleted: bool,
             is_bot: bool,
+            last_seen,
             first_name: str,
             last_name: str = None,
             username: str = None,
@@ -83,6 +84,7 @@ class User(Object):
         self.is_mutual_contact = is_mutual_contact
         self.is_deleted = is_deleted
         self.is_bot = is_bot
+        self.last_seen = last_seen
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
