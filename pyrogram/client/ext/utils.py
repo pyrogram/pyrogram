@@ -129,9 +129,9 @@ def parse_chat_photo(photo):
     )
 
 
-def parse_last_seen(user: types.User) -> pyrogram_types.LastSeen:
+def parse_last_seen(user: types.User) -> pyrogram_types.UserStatus:
     status = user.status
-    last_seen = pyrogram_types.LastSeen()
+    last_seen = pyrogram_types.UserStatus()
 
     if isinstance(status, types.UserStatusOnline):
         last_seen.online = True

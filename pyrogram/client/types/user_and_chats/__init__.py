@@ -22,5 +22,5 @@ from .chat_members import ChatMembers
 from .chat_photo import ChatPhoto
 from .dialog import Dialog
 from .dialogs import Dialogs
-from .last_seen import LastSeen
+from .user_status import UserStatus
 from .user import User

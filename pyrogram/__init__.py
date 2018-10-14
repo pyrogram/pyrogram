@@ -29,7 +29,7 @@ from .api.errors import Error
 from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
-    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, LastSeen,
+    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 )

@@ -19,7 +19,7 @@
 from pyrogram.api.core import Object
 
 
-class LastSeen(Object):
+class UserStatus(Object):
     """This object represents a User last seen status
     """
 
