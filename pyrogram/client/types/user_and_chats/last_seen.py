@@ -16,11 +16,31 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .chat import Chat
-from .chat_member import ChatMember
-from .chat_members import ChatMembers
-from .chat_photo import ChatPhoto
-from .dialog import Dialog
-from .dialogs import Dialogs
-from .last_seen import LastSeen
-from .user import User
+from pyrogram.api.core import Object
+
+
+class LastSeen(Object):
+    """This object represents a User last seen status
+    """
+
+    ID = 0xb0700031
+
+    def __init__(
+            self,
+            online: bool = None,
+            offline: bool = None,
+            recently: bool = None,
+            within_week: bool = None,
+            within_month: bool = None,
+            long_time_ago: bool = None,
+            bot: bool = None,
+            date: int = None,
+    ):
+        self.online = online
+        self.offline = offline
+        self.recently = recently
+        self.within_week = within_week
+        self.within_month = within_month
+        self.long_time_ago = long_time_ago
+        self.bot = bot
+        self.date = date
