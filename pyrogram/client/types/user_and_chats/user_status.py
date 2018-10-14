@@ -38,6 +38,9 @@ class UserStatus(Object):
             If True, the "date" field will be also set containing the last seen date (i.e.: the date when a user
             was online the last time).
 
+        date (``int``):
+            Exact date in unix time. Available only in case "online" or "offline" equals to True.
+
         recently (``bool``):
             True for users with hidden Last Seen privacy that have been online between 1 second and 2-3 days ago,
             None otherwise.
@@ -53,9 +56,6 @@ class UserStatus(Object):
         long_time_ago (``bool``):
             True for users with hidden Last Seen privacy that have been online more than a month ago (this is also
             always shown to blocked users), None otherwise.
-
-        date (``int``):
-            Exact date in unix time. Available only in case "online" or "offline" equals to True.
     """
 
     ID = 0xb0700031
@@ -64,16 +64,16 @@ class UserStatus(Object):
             self,
             online: bool = None,
             offline: bool = None,
+            date: int = None,
             recently: bool = None,
             within_week: bool = None,
             within_month: bool = None,
-            long_time_ago: bool = None,
-            date: int = None,
+            long_time_ago: bool = None
     ):
         self.online = online
         self.offline = offline
+        self.date = date
         self.recently = recently
         self.within_week = within_week
         self.within_month = within_month
         self.long_time_ago = long_time_ago
-        self.date = date
