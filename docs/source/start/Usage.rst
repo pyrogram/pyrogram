@@ -10,25 +10,36 @@ High-level API
 The easiest and recommended way to interact with Telegram is via the high-level Pyrogram methods_ and types_, which are
 named after the `Telegram Bot API`_.
 
-Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_):
-
--   Get information about the authorized user:
+Here's a simple example:
 
     .. code-block:: python
+
+        from pyrogram import Client
+
+        app = Client("my_account")
+
+        app.start()
 
         print(app.get_me())
+        app.send_message("me", "Hi there! I'm using **Pyrogram**")
+        app.send_location("me", 51.500729, -0.124583)
 
--   Send a message to yourself (Saved Messages):
+        app.stop()
 
-    .. code-block:: python
-
-        app.send_message("me", "Hi there! I'm using Pyrogram")
-
--   Upload a new photo (with caption):
+You can also use the Client instance in a context manager with the ``with`` statement:
 
     .. code-block:: python
 
-        app.send_photo("me", "/home/dan/perla.jpg", "Cute!")
+        from pyrogram import Client
+
+        app = Client("my_account")
+
+        with app:
+            print(app.get_me())
+            app.send_message("me", "Hi there! I'm using **Pyrogram**")
+            app.send_location("me", 51.500729, -0.124583)
+
+More examples on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_.
 
 Raw Functions
 -------------
@@ -38,7 +49,9 @@ you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`type
 ``pyrogram.api`` package and call any Telegram API method you wish using the :meth:`send() <pyrogram.Client.send>`
 method provided by the Client class.
 
-.. hint:: Every high-level method mentioned in the section above is built on top of these raw functions.
+.. hint::
+
+    Every high-level method mentioned in the section above is built on top of these raw functions.
 
     Nothing stops you from using the raw functions only, but they are rather complex and `plenty of them`_ are already
     re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API.
@@ -54,17 +67,13 @@ Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/exa
         from pyrogram import Client
         from pyrogram.api import functions
 
-        app = Client("my_account")
-        app.start()
-
-        app.send(
-            functions.account.UpdateProfile(
-                first_name="Dan", last_name="Tès",
-                about="Bio written from Pyrogram"
+        with Client("my_account") as app:
+            app.send(
+                functions.account.UpdateProfile(
+                    first_name="Dan", last_name="Tès",
+                    about="Bio written from Pyrogram"
+                )
             )
-        )
-
-        app.stop()
 
 -   Share your Last Seen time only with your contacts:
 
@@ -73,17 +82,13 @@ Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/exa
         from pyrogram import Client
         from pyrogram.api import functions, types
 
-        app = Client("my_account")
-        app.start()
-
-        app.send(
-            functions.account.SetPrivacy(
-                key=types.InputPrivacyKeyStatusTimestamp(),
-                rules=[types.InputPrivacyValueAllowContacts()]
+        with Client("my_account") as app:
+            app.send(
+                functions.account.SetPrivacy(
+                    key=types.InputPrivacyKeyStatusTimestamp(),
+                    rules=[types.InputPrivacyValueAllowContacts()]
+                )
             )
-        )
-
-        app.stop()
 
 -   Invite users to your channel/supergroup:
 
@@ -92,21 +97,17 @@ Examples (more on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/exa
         from pyrogram import Client
         from pyrogram.api import functions, types
 
-        app = Client("my_account")
-        app.start()
-
-        app.send(
-            functions.channels.InviteToChannel(
-                channel=app.resolve_peer(123456789),  # ID or Username
-                users=[  # The users you want to invite
-                    app.resolve_peer(23456789),  # By ID
-                    app.resolve_peer("username"),  # By username
-                    app.resolve_peer("393281234567"),  # By phone number
-                ]
+        with Client("my_account") as app:
+            app.send(
+                functions.channels.InviteToChannel(
+                    channel=app.resolve_peer(123456789),  # ID or Username
+                    users=[  # The users you want to invite
+                        app.resolve_peer(23456789),  # By ID
+                        app.resolve_peer("username"),  # By username
+                        app.resolve_peer("393281234567"),  # By phone number
+                    ]
+                )
             )
-        )
-
-        app.stop()
 
 .. _methods: ../pyrogram/Client.html#messages
 .. _plenty of them: ../pyrogram/Client.html#messages
