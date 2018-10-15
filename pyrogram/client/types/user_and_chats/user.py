@@ -41,6 +41,9 @@ class User(Object):
         is_bot (``bool``):
             True, if this user is a bot.
 
+        status (:obj:`UserStatus <pyrogram.UserStatus>`):
+            User's Last Seen status. Empty for bots.
+
         first_name (``str``):
             User's or bot's first name.
 
@@ -70,7 +73,7 @@ class User(Object):
             is_mutual_contact: bool,
             is_deleted: bool,
             is_bot: bool,
-            last_seen,
+            status,
             first_name: str,
             last_name: str = None,
             username: str = None,
@@ -84,7 +87,7 @@ class User(Object):
         self.is_mutual_contact = is_mutual_contact
         self.is_deleted = is_deleted
         self.is_bot = is_bot
-        self.last_seen = last_seen
+        self.status = status
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
