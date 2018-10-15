@@ -129,15 +129,11 @@ def parse_chat_photo(photo):
     )
 
 
-def parse_update_user_status(update: types.UpdateUserStatus) -> pyrogram_types.User:
-    return pyrogram_types.User(id=update.user_id, status=parse_user_status(update.status))
-
-
-def parse_user_status(user_status, is_bot: bool = False) -> pyrogram_types.UserStatus or None:
+def parse_user_status(user_status, user_id: int = None, is_bot: bool = False) -> pyrogram_types.UserStatus or None:
     if is_bot:
         return None
 
-    status = pyrogram_types.UserStatus()
+    status = pyrogram_types.UserStatus(user_id)
 
     if isinstance(user_status, types.UserStatusOnline):
         status.online = True
@@ -171,7 +167,7 @@ def parse_user(user: types.User) -> pyrogram_types.User or None:
         language_code=user.lang_code,
         phone_number=user.phone,
         photo=parse_chat_photo(user.photo),
-        status=parse_user_status(user.status, user.bot),
+        status=parse_user_status(user.status, is_bot=user.bot),
     ) if user else None
 
 
