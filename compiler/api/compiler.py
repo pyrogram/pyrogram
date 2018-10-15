@@ -506,6 +506,7 @@ def start():
         f.write("\n    0xb0700028: \"pyrogram.client.types.Dialog\",")
         f.write("\n    0xb0700029: \"pyrogram.client.types.Dialogs\",")
         f.write("\n    0xb0700030: \"pyrogram.client.types.ChatMembers\",")
+        f.write("\n    0xb0700032: \"pyrogram.client.types.InlineQuery\"")
 
         f.write("\n}\n")
 

@@ -889,6 +889,20 @@ def parse_inline_callback_query(client, callback_query, users):
     )
 
 
+def parse_inline_query(client, inline_query: types.UpdateBotInlineQuery, users):
+    return pyrogram_types.InlineQuery(
+        client=client,
+        id=str(inline_query.query_id),
+        from_user=parse_user(users[inline_query.user_id]),
+        query=inline_query.query,
+        offset=inline_query.offset,
+        location=pyrogram_types.Location(
+            longitude=inline_query.geo.long,
+            latitude=inline_query.geo.lat
+        ) if inline_query.geo else None
+    )
+
+
 def parse_chat_full(
         client,
         chat_full: types.messages.ChatFull or types.UserFull
