@@ -18,7 +18,7 @@
 
 from .bots import (
     CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQuery
 )
 from .bots import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,

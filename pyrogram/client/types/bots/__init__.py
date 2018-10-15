@@ -20,6 +20,7 @@ from .callback_query import CallbackQuery
 from .force_reply import ForceReply
 from .inline_keyboard_button import InlineKeyboardButton
 from .inline_keyboard_markup import InlineKeyboardMarkup
+from .inline_query import InlineQuery
 from .keyboard_button import KeyboardButton
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove

@@ -31,7 +31,8 @@ from .client.types import (
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
-    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
+    InlineQuery
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
