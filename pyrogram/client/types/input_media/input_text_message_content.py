@@ -28,8 +28,9 @@ class InputTextMessageContent:
 
         self.style = HTML() if parse_mode.lower() == "html" else Markdown()
 
-    def write(self):
+    def write(self, reply_markup):
         return types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
+            reply_markup=reply_markup.write(),
             **self.style.parse(self.message_text)
         )
