@@ -17,10 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 
 
-class InlineQueryResultArticle(Object):
+class InlineQueryResultArticle:
     """Represents a link to an article or web page.
 
     Args:
@@ -55,7 +54,6 @@ class InlineQueryResultArticle(Object):
             Thumbnail height.
 
     """
-    ID = 0xb0700033
 
     def __init__(
             self,
