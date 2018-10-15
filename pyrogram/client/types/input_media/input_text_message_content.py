@@ -16,11 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .input_media import InputMedia
-from .input_media_animation import InputMediaAnimation
-from .input_media_audio import InputMediaAudio
-from .input_media_document import InputMediaDocument
-from .input_media_photo import InputMediaPhoto
-from .input_media_video import InputMediaVideo
-from .input_phone_contact import InputPhoneContact
-from .input_text_message_content import InputTextMessageContent
+from pyrogram.api import types
+from pyrogram.client.style import HTML, Markdown
+
+
+class InputTextMessageContent:
+    def __init__(self, message_text: str, parse_mode: str = "", disable_web_page_preview: bool = None):
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+        self.style = HTML() if parse_mode.lower() == "html" else Markdown()
+
+    def write(self):
+        return types.InputBotInlineMessageText(
+            no_webpage=self.disable_web_page_preview or None,
+            **self.style.parse(self.message_text)
+        )
