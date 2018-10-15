@@ -28,6 +28,9 @@ class UserStatus(Object):
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
     Args:
+        user_id (``int``):
+            User's id. Only available for UserStatus updates.
+
         online (``bool``):
             True if the user is online in this moment, None otherwise.
             If True, the "date" field will be also set containing the online expiration date (i.e.: the date when a
@@ -62,6 +65,7 @@ class UserStatus(Object):
 
     def __init__(
             self,
+            user_id: int = None,
             online: bool = None,
             offline: bool = None,
             date: int = None,
@@ -70,6 +74,7 @@ class UserStatus(Object):
             within_month: bool = None,
             long_time_ago: bool = None
     ):
+        self.user_id = user_id
         self.online = online
         self.offline = offline
         self.date = date
