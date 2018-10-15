@@ -16,18 +16,32 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .delete_profile_photos import DeleteProfilePhotos
-from .get_me import GetMe
-from .get_user_profile_photos import GetUserProfilePhotos
-from .get_users import GetUsers
-from .set_profile_photo import SetProfilePhoto
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class Users(
-    GetUserProfilePhotos,
-    SetProfilePhoto,
-    DeleteProfilePhotos,
-    GetUsers,
-    GetMe
-):
-    pass
+class SetProfilePhoto(BaseClient):
+    def set_profile_photo(self, photo: str):
+        """Use this method to set a new profile photo.
+
+        This method only works for Users. Bots profile photos must be set using BotFather.
+
+        Args:
+            photo (``str``):
+                Profile photo to set.
+                Pass a file path as string to upload a new photo that exists on your local machine.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+
+        return bool(
+            self.send(
+                functions.photos.UploadProfilePhoto(
+                    self.save_file(photo)
+                )
+            )
+        )
