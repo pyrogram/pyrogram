@@ -34,8 +34,8 @@ class HTML:
     HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])([^<]+)\2)?>([^>]+)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, peers_by_id):
-        self.peers_by_id = peers_by_id
+    def __init__(self, peers_by_id: dict = None):
+        self.peers_by_id = peers_by_id or {}
 
     def parse(self, text):
         entities = []
