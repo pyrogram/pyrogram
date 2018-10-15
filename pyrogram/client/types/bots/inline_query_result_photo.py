@@ -16,19 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.api import types
+from pyrogram.client.style import HTML, Markdown
 
 
-class InlineQueryResultPhoto(Object):
-    """Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
-
-    Attributes:
-        ID: ``0xb0700000``
+class InlineQueryResultPhoto:
+    """Represents a link to a photo. By default, this photo will be sent by the user with optional caption.
+    Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
     Args:
-        type (``str``):
-            Type of the result, must be photo.
-
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 
@@ -38,35 +34,47 @@ class InlineQueryResultPhoto(Object):
         thumb_url (``str``):
             URL of the thumbnail for the photo.
 
-        photo_width (``int`` ``32-bit``, optional):
+        photo_width (``int``, *optional*):
             Width of the photo.
 
-        photo_height (``int`` ``32-bit``, optional):
+        photo_height (``int``, *optional*):
             Height of the photo.
 
-        title (``str``, optional):
+        title (``str``, *optional*):
             Title for the result.
 
-        description (``str``, optional):
+        description (``str``, *optional*):
             Short description of the result.
 
-        caption (``str``, optional):
+        caption (``str``, *optional*):
             Caption of the photo to be sent, 0-200 characters.
 
-        parse_mode (``str``, optional):
-            Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in the media caption.
+        parse_mode (``str``, *optional*):
+            Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in
+            the media caption.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, *optional*):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, *optional*):
             Content of the message to be sent instead of the photo.
 
     """
-    ID = 0xb0700000
 
-    def __init__(self, type: str, id: str, photo_url: str, thumb_url: str, photo_width: int = None, photo_height: int = None, title: str = None, description: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
-        self.type = type  # string
+    def __init__(
+            self,
+            id: str,
+            photo_url: str,
+            thumb_url: str,
+            photo_width: int = 0,
+            photo_height: int = 0,
+            title: str = None,
+            description: str = None,
+            caption: str = "",
+            parse_mode: str = "",
+            reply_markup=None,
+            input_message_content=None
+    ):
         self.id = id  # string
         self.photo_url = photo_url  # string
         self.thumb_url = thumb_url  # string
@@ -78,3 +86,40 @@ class InlineQueryResultPhoto(Object):
         self.parse_mode = parse_mode  # flags.5?string
         self.reply_markup = reply_markup  # flags.6?InlineKeyboardMarkup
         self.input_message_content = input_message_content  # flags.7?InputMessageContent
+
+        self.style = HTML() if parse_mode.lower() == "html" else Markdown()
+
+    def write(self):
+        return types.InputBotInlineResult(
+            id=self.id,
+            type="photo",
+            send_message=types.InputBotInlineMessageMediaAuto(
+                reply_markup=self.reply_markup.write() if self.reply_markup else None,
+                **self.style.parse(self.caption)
+            ),
+            title=self.title,
+            description=self.description,
+            url=self.photo_url,
+            thumb=types.InputWebDocument(
+                url=self.thumb_url,
+                size=0,
+                mime_type="image/jpeg",
+                attributes=[
+                    types.DocumentAttributeImageSize(
+                        w=0,
+                        h=0
+                    )
+                ]
+            ),
+            content=types.InputWebDocument(
+                url=self.thumb_url,
+                size=0,
+                mime_type="image/jpeg",
+                attributes=[
+                    types.DocumentAttributeImageSize(
+                        w=self.photo_width,
+                        h=self.photo_height
+                    )
+                ]
+            )
+        )

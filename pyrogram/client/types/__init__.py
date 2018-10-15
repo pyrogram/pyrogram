@@ -19,7 +19,7 @@
 from .bots import (
     CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
     KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQuery,
-    InlineQueryResultArticle
+    InlineQueryResultArticle, InlineQueryResultPhoto
 )
 from .bots import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
