@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .answer_callback_query import AnswerCallbackQuery
+from .answer_inline_query import AnswerInlineQuery
 from .get_inline_bot_results import GetInlineBotResults
 from .request_callback_answer import RequestCallbackAnswer
 from .send_inline_bot_result import SendInlineBotResult
@@ -24,6 +25,7 @@ from .send_inline_bot_result import SendInlineBotResult
 
 class Bots(
     AnswerCallbackQuery,
+    AnswerInlineQuery,
     GetInlineBotResults,
     RequestCallbackAnswer,
     SendInlineBotResult

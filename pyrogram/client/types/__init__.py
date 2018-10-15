@@ -18,7 +18,8 @@
 
 from .bots import (
     CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQuery
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineQuery,
+    InlineQueryResultArticle
 )
 from .bots import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
@@ -26,7 +27,7 @@ from .bots import (
 )
 from .input_media import (
     InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
-    InputMediaDocument, InputMediaAnimation
+    InputMediaDocument, InputMediaAnimation, InputTextMessageContent
 )
 from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
