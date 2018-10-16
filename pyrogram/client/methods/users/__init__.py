@@ -20,12 +20,12 @@ from .delete_profile_photos import DeleteProfilePhotos
 from .get_me import GetMe
 from .get_user_profile_photos import GetUserProfilePhotos
 from .get_users import GetUsers
-from .set_profile_photo import SetProfilePhoto
+from .set_user_profile_photo import SetUserProfilePhoto
 
 
 class Users(
     GetUserProfilePhotos,
-    SetProfilePhoto,
+    SetUserProfilePhoto,
     DeleteProfilePhotos,
     GetUsers,
     GetMe

@@ -20,11 +20,12 @@ from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class SetProfilePhoto(BaseClient):
-    def set_profile_photo(self, photo: str):
-        """Use this method to set a new profile photo.
+class SetUserProfilePhoto(BaseClient):
+    def set_user_profile_photo(self, photo: str):
+        """Use this method to set a new user profile photo.
 
-        This method only works for Users. Bots profile photos must be set using BotFather.
+        This method only works for Users.
+        Bots profile photos must be set using BotFather.
 
         Args:
             photo (``str``):
