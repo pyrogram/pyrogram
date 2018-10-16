@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 class SetUserProfilePhoto(BaseClient):
     def set_user_profile_photo(self, photo: str):
-        """Use this method to set a new user profile photo.
+        """Use this method to set a new profile photo.
 
         This method only works for Users.
         Bots profile photos must be set using BotFather.
