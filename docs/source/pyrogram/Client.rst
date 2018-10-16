@@ -30,6 +30,7 @@ Decorators
     on_message
     on_callback_query
     on_deleted_messages
+    on_user_status
     on_disconnect
     on_raw_update
 
