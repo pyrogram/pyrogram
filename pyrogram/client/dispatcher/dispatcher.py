@@ -215,7 +215,7 @@ class Dispatcher:
                         )
                     )
                 elif isinstance(update, types.UpdateUserStatus):
-                    self.dispatch(
+                    await self.dispatch(
                         pyrogram.Update(
                             user_status=utils.parse_user_status(
                                 update.status, update.user_id
