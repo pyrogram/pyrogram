@@ -10,6 +10,7 @@ Users & Chats
     :nosignatures:
 
     User
+    UserStatus
     Chat
     ChatPhoto
     ChatMember
@@ -71,6 +72,9 @@ Input Media
     ------------
 
 .. autoclass:: User
+    :members:
+
+.. autoclass:: UserStatus
     :members:
 
 .. autoclass:: Chat
