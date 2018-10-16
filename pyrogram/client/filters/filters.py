@@ -181,8 +181,8 @@ class Filters:
                 field of the :class:`Message <pyrogram.Message>`.
 
             prefix (``str`` | ``list``, *optional*):
-                A prefix or a list of prefixes as string. Defaults to "/" (slash).
-                Examples: /start, .help, !settings.
+                A prefix or a list of prefixes as string the filter should look for.
+                Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."].
 
             separator (``str``, *optional*):
                 The command arguments separator. Defaults to " " (white space).
