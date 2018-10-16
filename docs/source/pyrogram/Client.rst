@@ -96,8 +96,8 @@ Users
     get_me
     get_users
     get_user_profile_photos
-    set_user_profile_photos
-    delete_userprofile_photos
+    set_user_profile_photo
+    delete_user_profile_photos
 
 Contacts
 --------
