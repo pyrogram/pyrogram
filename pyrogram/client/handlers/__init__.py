@@ -21,3 +21,4 @@ from .deleted_messages_handler import DeletedMessagesHandler
 from .disconnect_handler import DisconnectHandler
 from .message_handler import MessageHandler
 from .raw_update_handler import RawUpdateHandler
+from .user_status_handler import UserStatusHandler

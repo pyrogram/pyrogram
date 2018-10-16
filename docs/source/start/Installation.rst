@@ -4,11 +4,12 @@ Installation
 Being a Python library, Pyrogram requires Python to be installed in your system.
 We recommend using the latest version of Python 3 and pip.
 
-Get Python 3 from https://www.python.org/downloads/ or with your package manager and pip
+Get Python 3 from https://www.python.org/downloads/ (or with your package manager) and pip
 by following the instructions at https://pip.pypa.io/en/latest/installing/.
 
-.. note::
-    Pyrogram supports Python 3 only, starting from version 3.4 and PyPy.
+.. important::
+
+    Pyrogram supports **Python 3** only, starting from version 3.4. **PyPy** is supported too.
 
 Install Pyrogram
 ----------------
@@ -29,7 +30,7 @@ Bleeding Edge
 -------------
 
 If you want the latest development version of Pyrogram, you can install it straight from the develop_
-branch using this command:
+branch using this command (you might need to install **git** first):
 
 .. code-block:: bash
 

@@ -30,6 +30,7 @@ Decorators
     on_message
     on_callback_query
     on_deleted_messages
+    on_user_status
     on_disconnect
     on_raw_update
 
@@ -96,7 +97,8 @@ Users
     get_me
     get_users
     get_user_profile_photos
-    delete_profile_photos
+    set_user_profile_photo
+    delete_user_profile_photos
 
 Contacts
 --------

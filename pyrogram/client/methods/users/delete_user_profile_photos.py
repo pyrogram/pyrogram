@@ -23,8 +23,8 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class DeleteProfilePhotos(BaseClient):
-    async def delete_profile_photos(self, id: str or list):
+class DeleteUserProfilePhotos(BaseClient):
+    async def delete_user_profile_photos(self, id: str or list):
         """Use this method to delete your own profile photos
 
         Args:

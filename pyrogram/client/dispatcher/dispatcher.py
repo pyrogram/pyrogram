@@ -23,7 +23,7 @@ from collections import OrderedDict
 import pyrogram
 from pyrogram.api import types
 from ..ext import utils
-from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler, DeletedMessagesHandler
+from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler, DeletedMessagesHandler, UserStatusHandler
 
 log = logging.getLogger(__name__)
 
@@ -108,6 +108,8 @@ class Dispatcher:
 
                         callback_query = update.callback_query
 
+                        user_status = update.user_status
+
                         if message and isinstance(handler, MessageHandler):
                             if not handler.check(message):
                                 continue
@@ -123,6 +125,11 @@ class Dispatcher:
                                 continue
 
                             args = (self.client, callback_query)
+                        elif user_status and isinstance(handler, UserStatusHandler):
+                            if not handler.check(user_status):
+                                continue
+
+                            args = (self.client, user_status)
                         else:
                             continue
 
@@ -204,6 +211,14 @@ class Dispatcher:
                         pyrogram.Update(
                             callback_query=await utils.parse_inline_callback_query(
                                 self.client, update, users
+                            )
+                        )
+                    )
+                elif isinstance(update, types.UpdateUserStatus):
+                    self.dispatch(
+                        pyrogram.Update(
+                            user_status=utils.parse_user_status(
+                                update.status, update.user_id
                             )
                         )
                     )

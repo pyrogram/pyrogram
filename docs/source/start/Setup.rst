@@ -53,6 +53,7 @@ fits better for you:
         )
 
 .. note::
+
     The examples below assume you have created a ``config.ini`` file, thus they won't show the *api_id*
     and *api_hash* parameters usage.
 
@@ -74,7 +75,7 @@ the :class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` 
 This starts an interactive shell asking you to input your **phone number** (including your `Country Code`_)
 and the **phone code** you will receive:
 
-.. code::
+.. code-block:: text
 
     Enter phone number: +39**********
     Is "+39**********" correct? (y/n): y
@@ -84,7 +85,9 @@ After successfully authorizing yourself, a new file called ``my_account.session`
 Pyrogram executing API calls with your identity. This file will be loaded again when you restart your app,
 and as long as you keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
-.. important:: Your ``*.session`` files are personal and must be kept secret.
+.. important::
+
+    Your ``*.session`` files are personal and must be kept secret.
 
 Bot Authorization
 -----------------

@@ -16,11 +16,26 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .client import Client
-from .ext import BaseClient, ChatAction, Emoji, ParseMode
-from .filters import Filters
-from .handlers import (
-    MessageHandler, DeletedMessagesHandler,
-    CallbackQueryHandler, RawUpdateHandler,
-    DisconnectHandler, UserStatusHandler
-)
+import pyrogram
+from ...ext import BaseClient
+
+
+class OnUserStatus(BaseClient):
+    def on_user_status(self, filters=None, group: int = 0):
+        """Use this decorator to automatically register a function for handling
+        user status updates. This does the same thing as :meth:`add_handler` using the
+        :class:`UserStatusHandler`.
+
+        Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.
+
+            group (``int``, *optional*):
+                The group identifier, defaults to 0.
+        """
+
+        def decorator(func):
+            self.add_handler(pyrogram.UserStatusHandler(func, filters), group)
+            return func
+
+        return decorator

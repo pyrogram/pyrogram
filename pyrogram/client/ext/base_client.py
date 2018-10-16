@@ -48,6 +48,10 @@ class BaseClient:
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 4
     OFFLINE_SLEEP = 300
+    WORKERS = 4
+    WORKDIR = "."
+    CONFIG_FILE = "./config.ini"
+    PLUGINS_DIR = "./plugins"
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",

@@ -33,6 +33,7 @@ import time
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
+from importlib import import_module
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 
 from pyrogram.api import functions, types
@@ -43,6 +44,8 @@ from pyrogram.api.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
+from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -140,6 +143,11 @@ class Client(Methods, BaseClient):
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
+
+        plugins_dir (``str``, *optional*):
+            Define a custom directory for your plugins. The plugins directory is the location in your
+            filesystem where Pyrogram will automatically load your update handlers.
+            Defaults to "./plugins". Set to None to completely disable plugins.
     """
 
     def __init__(self,
@@ -159,9 +167,10 @@ class Client(Methods, BaseClient):
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
-                 workers: int = 4,
-                 workdir: str = ".",
-                 config_file: str = "./config.ini"):
+                 workers: int = BaseClient.WORKERS,
+                 workdir: str = BaseClient.WORKDIR,
+                 config_file: str = BaseClient.CONFIG_FILE,
+                 plugins_dir: str or None = BaseClient.PLUGINS_DIR):
         super().__init__()
 
         self.session_name = session_name
@@ -184,6 +193,7 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
+        self.plugins_dir = plugins_dir
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -219,6 +229,7 @@ class Client(Methods, BaseClient):
 
         self.load_config()
         await self.load_session()
+        self.load_plugins()
 
         self.session = Session(
             self,
@@ -965,6 +976,44 @@ class Client(Methods, BaseClient):
 
                 if peer:
                     self.peers_by_phone[k] = peer
+
+    def load_plugins(self):
+        if self.plugins_dir is not None:
+            try:
+                dirs = os.listdir(self.plugins_dir)
+            except FileNotFoundError:
+                if self.plugins_dir == Client.PLUGINS_DIR:
+                    log.info("No plugin loaded: default directory is missing")
+                else:
+                    log.warning('No plugin loaded: "{}" directory is missing'.format(self.plugins_dir))
+            else:
+                plugins_dir = self.plugins_dir.lstrip("./").replace("/", ".")
+                plugins_count = 0
+
+                for i in dirs:
+                    module = import_module("{}.{}".format(plugins_dir, i.split(".")[0]))
+
+                    for j in dir(module):
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, j)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
+
+                                log.info('{}("{}") from "{}/{}" loaded in group {}'.format(
+                                    type(handler).__name__, j, self.plugins_dir, i, group)
+                                )
+
+                                plugins_count += 1
+                        except Exception:
+                            pass
+
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                    plugins_count,
+                    "s" if plugins_count > 1 else "",
+                    self.plugins_dir
+                ))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
