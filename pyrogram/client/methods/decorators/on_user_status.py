@@ -17,11 +17,12 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.filters.filter import Filter
 from ...ext import BaseClient
 
 
 class OnUserStatus(BaseClient):
-    def on_user_status(self, filters=None, group: int = 0):
+    def on_user_status(self=None, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         user status updates. This does the same thing as :meth:`add_handler` using the
         :class:`UserStatusHandler`.
@@ -35,7 +36,14 @@ class OnUserStatus(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.UserStatusHandler(func, filters), group)
-            return func
+            handler = pyrogram.UserStatusHandler(func, filters)
+
+            if isinstance(self, Filter):
+                return pyrogram.UserStatusHandler(func, self), group if filters is None else filters
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator
