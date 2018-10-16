@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .delete_profile_photos import DeleteProfilePhotos
+from .delete_user_profile_photos import DeleteUserProfilePhotos
 from .get_me import GetMe
 from .get_user_profile_photos import GetUserProfilePhotos
 from .get_users import GetUsers
@@ -26,7 +26,7 @@ from .set_user_profile_photo import SetUserProfilePhoto
 class Users(
     GetUserProfilePhotos,
     SetUserProfilePhoto,
-    DeleteProfilePhotos,
+    DeleteUserProfilePhotos,
     GetUsers,
     GetMe
 ):
