@@ -168,7 +168,7 @@ class Filters:
 
     @staticmethod
     def command(command: str or list,
-                prefix: str = "/",
+                prefix: str or list = "/",
                 separator: str = " ",
                 case_sensitive: bool = False):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
@@ -180,9 +180,9 @@ class Filters:
                 a command arrives, the command itself and its arguments will be stored in the *command*
                 field of the :class:`Message <pyrogram.Message>`.
 
-            prefix (``str``, *optional*):
-                The command prefix. Defaults to "/" (slash).
-                Examples: /start, .help, !settings.
+            prefix (``str`` | ``list``, *optional*):
+                A prefix or a list of prefixes as string the filter should look for.
+                Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."].
 
             separator (``str``, *optional*):
                 The command arguments separator. Defaults to " " (white space).
@@ -194,11 +194,14 @@ class Filters:
         """
 
         def f(_, m):
-            if m.text and m.text.startswith(_.p):
-                t = m.text.split(_.s)
-                c, a = t[0][len(_.p):], t[1:]
-                c = c if _.cs else c.lower()
-                m.command = ([c] + a) if c in _.c else None
+            if m.text:
+                for i in _.p:
+                    if m.text.startswith(i):
+                        t = m.text.split(_.s)
+                        c, a = t[0][len(i):], t[1:]
+                        c = c if _.cs else c.lower()
+                        m.command = ([c] + a) if c in _.c else None
+                        break
 
             return bool(m.command)
 
@@ -211,7 +214,7 @@ class Filters:
             else {c if case_sensitive
                   else c.lower()
                   for c in command},
-            p=prefix,
+            p=set(prefix),
             s=separator,
             cs=case_sensitive
         )
