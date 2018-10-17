@@ -22,7 +22,6 @@ from collections import OrderedDict
 from queue import Queue
 from threading import Thread
 
-import pyrogram
 from pyrogram.api import types
 from ..ext import utils
 from ..handlers import CallbackQueryHandler, MessageHandler, DeletedMessagesHandler, UserStatusHandler, RawUpdateHandler
@@ -110,50 +109,26 @@ class Dispatcher:
                         continue
 
                     message = utils.parse_messages(self.client, update.message, users, chats)
-                    is_edited = isinstance(update, Dispatcher.EDIT_MESSAGE_UPDATES)
-                    is_channel = message.chat.type == "channel"
-
-                    update = pyrogram.Update(
-                        message=message if not is_channel and not is_edited else None,
-                        edited_message=message if not is_channel and is_edited else None,
-                        channel_post=message if is_channel and not is_edited else None,
-                        edited_channel_post=message if is_channel and is_edited else None
-                    )
+                    update = message, MessageHandler
 
                 elif isinstance(update, Dispatcher.DELETE_MESSAGE_UPDATES):
-                    is_channel = hasattr(update, "channel_id")
-                    messages = utils.parse_deleted_messages(
+                    deleted_messages = utils.parse_deleted_messages(
                         update.messages,
-                        update.channel_id if is_channel else None
+                        update.channel_id if hasattr(update, "channel_id") else None
                     )
 
-                    update = pyrogram.Update(
-                        deleted_messages=messages if not is_channel else None,
-                        deleted_channel_posts=messages if is_channel else None
-                    )
+                    update = deleted_messages, DeletedMessagesHandler
 
                 elif isinstance(update, types.UpdateBotCallbackQuery):
-                    update = pyrogram.Update(
-                        callback_query=utils.parse_callback_query(
-                            self.client, update, users
-                        )
-                    )
+                    update = utils.parse_callback_query(self.client, update, users), CallbackQueryHandler
                 elif isinstance(update, types.UpdateInlineBotCallbackQuery):
-                    update = pyrogram.Update(
-                        callback_query=utils.parse_inline_callback_query(
-                            self.client, update, users
-                        )
-                    )
+                    update = utils.parse_inline_callback_query(self.client, update, users), CallbackQueryHandler
                 elif isinstance(update, types.UpdateUserStatus):
-                    update = pyrogram.Update(
-                        user_status=utils.parse_user_status(
-                            update.status, update.user_id
-                        )
-                    )
+                    update = utils.parse_user_status(update.status, update.user_id), UserStatusHandler
                 else:
                     continue
 
-                self.dispatch(update)
+                self.dispatch(*update)
             except Exception as e:
                 log.error(e, exc_info=True)
 
@@ -169,25 +144,10 @@ class Dispatcher:
                         log.error(e, exc_info=True)
 
     # noinspection PyShadowingBuiltins
-    def dispatch(self, update):
-        message = update.message or update.channel_post or update.edited_message or update.edited_channel_post
-        deleted_messages = update.deleted_channel_posts or update.deleted_messages
-        callback_query = update.callback_query
-        user_status = update.user_status
-
-        update = message or deleted_messages or callback_query or user_status
-
-        type = (
-            MessageHandler if message
-            else DeletedMessagesHandler if deleted_messages
-            else CallbackQueryHandler if callback_query
-            else UserStatusHandler if user_status
-            else None
-        )
-
+    def dispatch(self, update, handler_class):
         for group in self.groups.values():
             for handler in group:
-                if isinstance(handler, type):
+                if isinstance(handler, handler_class):
                     if handler.check(update):
                         try:
                             handler.callback(self.client, update)
