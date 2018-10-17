@@ -143,7 +143,6 @@ class Dispatcher:
                     except Exception as e:
                         log.error(e, exc_info=True)
 
-    # noinspection PyShadowingBuiltins
     def dispatch(self, update, handler_class):
         for group in self.groups.values():
             for handler in group:
