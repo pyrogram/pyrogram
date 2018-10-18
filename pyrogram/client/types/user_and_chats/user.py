@@ -63,7 +63,7 @@ class User(Object):
             User's or bot's current profile photo. Suitable for downloads only.
 
         restriction_reason (``str``, *optional*):
-            The reason why this bot might be unavailable for some users.
+            The reason why this bot might be unavailable to some users.
     """
 
     ID = 0xb0700001
