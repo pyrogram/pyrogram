@@ -50,6 +50,7 @@ class Dispatcher:
     def __init__(self, client, workers):
         self.client = client
         self.workers = workers
+
         self.workers_list = []
         self.updates = Queue()
         self.groups = OrderedDict()
@@ -69,8 +70,8 @@ class Dispatcher:
         for _ in range(self.workers):
             self.updates.put(None)
 
-        for i in self.workers_list:
-            i.join()
+        for worker in self.workers_list:
+            worker.join()
 
         self.workers_list.clear()
 
@@ -83,8 +84,8 @@ class Dispatcher:
 
     def remove_handler(self, handler, group: int):
         if group not in self.groups:
-            raise ValueError("Group {} does not exist. "
-                             "Handler was not removed.".format(group))
+            raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
+
         self.groups[group].remove(handler)
 
     def update_worker(self):
@@ -108,8 +109,7 @@ class Dispatcher:
                     if isinstance(update.message, types.MessageEmpty):
                         continue
 
-                    message = utils.parse_messages(self.client, update.message, users, chats)
-                    update = message, MessageHandler
+                    update = utils.parse_messages(self.client, update.message, users, chats), MessageHandler
 
                 elif isinstance(update, Dispatcher.DELETE_MESSAGE_UPDATES):
                     deleted_messages = utils.parse_deleted_messages(
