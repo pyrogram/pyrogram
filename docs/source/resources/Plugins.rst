@@ -1,7 +1,7 @@
 Plugins
 =======
 
-Pyrogram embeds an **automatic** and lightweight plugin system that is meant to greatly simplify the organization of
+Pyrogram embeds an **automatic** and lightweight plugin system that is meant to further simplify the organization of
 large projects and to provide a way for creating pluggable components that can be **easily shared** across different
 Pyrogram applications with **minimal boilerplate code**.
 
@@ -104,13 +104,14 @@ handlers inside.
             Client("my_account").run()
 
 The first important thing to note is the ``plugins`` folder, whose name is default and can be changed easily by setting
-the ``plugins_dir`` parameter when creating a :obj:`Client <pyrogram.Client>`; you can put any python file in the
-plugins folder and each file can contain any decorated function (handlers). Your Pyrogram Client instance (in the
+the ``plugins_dir`` parameter when creating a :obj:`Client <pyrogram.Client>`; you can put *any python file* in the
+plugins folder and each file can contain *any decorated function (handlers)*. Your Pyrogram Client instance (in the
 ``main.py`` file) will **automatically** scan the folder upon creation to search for valid handlers and register them
 for you.
 
-Then you'll notice you can now use decorators. That's right, you can apply the usual decorators to your callback
-functions in a static way, i.e. **without having the Client instance around**: simply use ``@Client`` (Client class)
-instead of the usual ``@app`` (Client instance) namespace and things will work just the same.
+Then you'll notice you can now use decorators, with only one limitation: within a single plugin file you must use
+different names for each decorated function. That's right, you can apply the usual decorators to your callback functions
+in a static way, i.e. **without having the Client instance around**: simply use ``@Client`` (Client class) instead of
+the usual ``@app`` (Client instance) namespace and things will work just the same.
 
 The ``main.py`` script is now at its bare minimum and cleanest state.
