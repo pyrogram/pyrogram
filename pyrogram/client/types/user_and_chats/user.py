@@ -61,6 +61,9 @@ class User(Object):
 
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             User's or bot's current profile photo. Suitable for downloads only.
+
+        restriction_reason (``str``, *optional*):
+            The reason why this bot might be unavailable for some users.
     """
 
     ID = 0xb0700001
@@ -79,7 +82,8 @@ class User(Object):
             username: str = None,
             language_code: str = None,
             phone_number: str = None,
-            photo=None
+            photo=None,
+            restriction_reason: str = None
     ):
         self.id = id
         self.is_self = is_self
@@ -94,3 +98,4 @@ class User(Object):
         self.language_code = language_code
         self.phone_number = phone_number
         self.photo = photo
+        self.restriction_reason = restriction_reason

@@ -168,6 +168,7 @@ def parse_user(user: types.User) -> pyrogram_types.User or None:
         phone_number=user.phone,
         photo=parse_chat_photo(user.photo),
         status=parse_user_status(user.status, is_bot=user.bot),
+        restriction_reason=user.restriction_reason
     ) if user else None
 
 
@@ -187,7 +188,8 @@ def parse_user_chat(user: types.User) -> pyrogram_types.Chat:
         username=user.username,
         first_name=user.first_name,
         last_name=user.last_name,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        restriction_reason=user.restriction_reason
     )
 
 
@@ -212,7 +214,8 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
         username=getattr(channel, "username", None),
-        photo=parse_chat_photo(getattr(channel, "photo", None))
+        photo=parse_chat_photo(getattr(channel, "photo", None)),
+        restriction_reason=channel.restriction_reason
     )
 
 
