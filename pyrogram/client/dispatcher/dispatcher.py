@@ -45,15 +45,38 @@ class Dispatcher:
         types.UpdateDeleteChannelMessages
     )
 
+    CALLBACK_QUERY_UPDATES = (
+        types.UpdateBotCallbackQuery,
+        types.UpdateInlineBotCallbackQuery
+    )
+
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
 
-    def __init__(self, client, workers):
+    UPDATES = None
+
+    def __init__(self, client, workers: int):
         self.client = client
         self.workers = workers
 
         self.workers_list = []
         self.updates = Queue()
         self.groups = OrderedDict()
+
+        Dispatcher.UPDATES = {
+            Dispatcher.MESSAGE_UPDATES:
+                lambda upd, usr, cht: (utils.parse_messages(self.client, upd.message, usr, cht), MessageHandler),
+
+            Dispatcher.DELETE_MESSAGE_UPDATES:
+                lambda upd, usr, cht: (utils.parse_deleted_messages(upd), DeletedMessagesHandler),
+
+            Dispatcher.CALLBACK_QUERY_UPDATES:
+                lambda upd, usr, cht: (utils.parse_callback_query(self.client, upd, usr), CallbackQueryHandler),
+
+            (types.UpdateUserStatus,):
+                lambda upd, usr, cht: (utils.parse_user_status(upd.status, upd.user_id), UserStatusHandler)
+        }
+
+        Dispatcher.UPDATES = {key: value for key_tuple, value in Dispatcher.UPDATES.items() for key in key_tuple}
 
     def start(self):
         for i in range(self.workers):
@@ -103,52 +126,31 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                self.dispatch_raw(update, users=users, chats=chats, handler_class=RawUpdateHandler)
+                parser = Dispatcher.UPDATES.get(type(update), None)
 
-                if isinstance(update, Dispatcher.MESSAGE_UPDATES):
-                    if isinstance(update.message, types.MessageEmpty):
-                        continue
-
-                    update = utils.parse_messages(self.client, update.message, users, chats), MessageHandler
-
-                elif isinstance(update, Dispatcher.DELETE_MESSAGE_UPDATES):
-                    deleted_messages = utils.parse_deleted_messages(
-                        update.messages,
-                        update.channel_id if hasattr(update, "channel_id") else None
-                    )
-
-                    update = deleted_messages, DeletedMessagesHandler
-
-                elif isinstance(update, types.UpdateBotCallbackQuery):
-                    update = utils.parse_callback_query(self.client, update, users), CallbackQueryHandler
-                elif isinstance(update, types.UpdateInlineBotCallbackQuery):
-                    update = utils.parse_inline_callback_query(self.client, update, users), CallbackQueryHandler
-                elif isinstance(update, types.UpdateUserStatus):
-                    update = utils.parse_user_status(update.status, update.user_id), UserStatusHandler
-                else:
+                if parser is None:
                     continue
 
-                self.dispatch(*update)
+                update, handler_type = parser(update, users, chats)
+
+                for group in self.groups.values():
+                    for handler in group:
+                        args = None
+
+                        if isinstance(handler, RawUpdateHandler):
+                            args = (update, users, chats)
+                        elif isinstance(handler, handler_type):
+                            if handler.check(update):
+                                args = (update,)
+
+                        if args is not None:
+                            try:
+                                handler.callback(self.client, *args)
+                            except Exception as e:
+                                log.error(e, exc_info=True)
+                            finally:
+                                break
             except Exception as e:
                 log.error(e, exc_info=True)
 
         log.debug("{} stopped".format(name))
-
-    def dispatch_raw(self, update, users: dict, chats: dict, handler_class):
-        for group in self.groups.values():
-            for handler in group:
-                if isinstance(handler, handler_class):
-                    try:
-                        handler.callback(self.client, update, users, chats)
-                    except Exception as e:
-                        log.error(e, exc_info=True)
-
-    def dispatch(self, update, handler_class):
-        for group in self.groups.values():
-            for handler in group:
-                if isinstance(handler, handler_class):
-                    if handler.check(update):
-                        try:
-                            handler.callback(self.client, update)
-                        except Exception as e:
-                            log.error(e, exc_info=True)
