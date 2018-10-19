@@ -58,6 +58,12 @@ Pyrogram is brand new, and **you are welcome to try it and help make it even bet
 requests or reporting issues/bugs as well as suggesting best practices, ideas, enhancements on both code
 and documentation. Any help is appreciated!
 
+For launching project locally, firstly run
+
+.. code:: shell
+
+    python setup.py generate
+
 Copyright & License
 -------------------
 
