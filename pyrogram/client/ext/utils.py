@@ -215,7 +215,7 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         title=channel.title,
         username=getattr(channel, "username", None),
         photo=parse_chat_photo(getattr(channel, "photo", None)),
-        restriction_reason=channel.restriction_reason
+        restriction_reason=getattr(channel, "restriction_reason")
     )
 
 
