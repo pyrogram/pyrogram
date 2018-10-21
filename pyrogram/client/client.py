@@ -1123,7 +1123,8 @@ class Client(Methods, BaseClient):
                   progress_args: tuple = ()):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
-        assert file_size < 1500 * 1024 * 1024, "Couldn't upload file bigger 1500MiB"
+        if file_size > 1500 * 1024 * 1024:
+            raise ValueError("Telegram doesn't support uploading files bigger than 1500 MiB")
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False
