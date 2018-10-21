@@ -11,50 +11,50 @@ Introduction
 Prior to the Smart Plugin system, pluggable handlers were already possible. For example, if you wanted to modularize
 your applications, you had to do something like this...
 
-    .. note:: This is an example application that replies in private chats with two messages: one containing the same
-        text message you sent and the other containing the reversed text message (e.g.: "pyrogram" -> "pyrogram" and
-        "margoryp"):
+.. note:: This is an example application that replies in private chats with two messages: one containing the same
+    text message you sent and the other containing the reversed text message (e.g.: "pyrogram" -> "pyrogram" and
+    "margoryp"):
 
-    .. code-block:: text
+.. code-block:: text
 
-        myproject/
-            config.ini
-            handlers.py
-            main.py
+    myproject/
+        config.ini
+        handlers.py
+        main.py
 
-    - ``handlers.py``
+- ``handlers.py``
 
-        .. code-block:: python
+    .. code-block:: python
 
-            def echo(client, message):
-                message.reply(message.text)
+        def echo(client, message):
+            message.reply(message.text)
 
 
-            def echo_reversed(client, message):
-                message.reply(message.text[::-1])
+        def echo_reversed(client, message):
+            message.reply(message.text[::-1])
 
-    - ``main.py``
+- ``main.py``
 
-        .. code-block:: python
+    .. code-block:: python
 
-            from pyrogram import Client, MessageHandler, Filters
+        from pyrogram import Client, MessageHandler, Filters
 
-            from handlers import echo, echo_reversed
+        from handlers import echo, echo_reversed
 
-            app = Client("my_account")
+        app = Client("my_account")
 
-            app.add_handler(
-                MessageHandler(
-                    echo,
-                    Filters.text & Filters.private))
+        app.add_handler(
+            MessageHandler(
+                echo,
+                Filters.text & Filters.private))
 
-            app.add_handler(
-                MessageHandler(
-                    echo_reversed,
-                    Filters.text & Filters.private),
-                group=1)
+        app.add_handler(
+            MessageHandler(
+                echo_reversed,
+                Filters.text & Filters.private),
+            group=1)
 
-            app.run()
+        app.run()
 
 ...which is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
 manually ``import``, manually :meth:`add_handler <pyrogram.Client.add_handler>` and manually instantiate each
@@ -64,55 +64,56 @@ functions. So... What if you could?
 Using Smart Plugins
 -------------------
 
-Setting up your Pyrogram project to accommodate Smart Plugins is as easy as creating a folder and putting your files
-full of handlers inside.
+Setting up your Pyrogram project to accommodate Smart Plugins is pretty straightforward:
 
-    .. note::
+#. Create a new folder to store all the plugins (e.g.: "plugins").
+#. Put your files full of plugins inside.
+#. Enable plugins in your Client.
 
-        This is the same example application `as shown above <#introduction>`_, written using the Smart Plugin system.
+.. note::
 
-    .. code-block:: text
-        :emphasize-lines: 2, 3
+    This is the same example application `as shown above <#introduction>`_, written using the Smart Plugin system.
 
-        myproject/
-            plugins/
-                handlers.py
-            config.ini
-            main.py
+.. code-block:: text
+    :emphasize-lines: 2, 3
 
-    - ``plugins/handlers.py``
+    myproject/
+        plugins/
+            handlers.py
+        config.ini
+        main.py
 
-        .. code-block:: python
-            :emphasize-lines: 4, 9
+- ``plugins/handlers.py``
 
-            from pyrogram import Client, Filters
+    .. code-block:: python
+        :emphasize-lines: 4, 9
 
-
-            @Client.on_message(Filters.text & Filters.private)
-            def echo(client, message):
-                message.reply(message.text)
+        from pyrogram import Client, Filters
 
 
-            @Client.on_message(Filters.text & Filters.private, group=1)
-            def echo_reversed(client, message):
-                message.reply(message.text[::-1])
+        @Client.on_message(Filters.text & Filters.private)
+        def echo(client, message):
+            message.reply(message.text)
 
-    - ``main.py``
 
-        .. code-block:: python
+        @Client.on_message(Filters.text & Filters.private, group=1)
+        def echo_reversed(client, message):
+            message.reply(message.text[::-1])
 
-            from pyrogram import Client
+- ``main.py``
 
-            Client("my_account").run()
+    .. code-block:: python
 
-The first important thing to note is the ``plugins`` folder, whose name is default and can be changed easily by setting
-the ``plugins_dir`` parameter when creating a :obj:`Client <pyrogram.Client>`; you can put *any python file* in there
-and each file can contain *any decorated function* (handlers) with only one limitation: within a single plugin file you
-must use different names for each decorated function. Your Pyrogram Client instance (in the ``main.py`` file) will
-**automatically** scan the folder upon creation to search for valid handlers and register them for you.
+        from pyrogram import Client
+
+        Client("my_account", plugins_dir="plugins").run()
+
+The first important thing to note is the new ``plugins`` folder, whose name is passed to the the ``plugins_dir``
+parameter when creating a :obj:`Client <pyrogram.Client>` in the ``main.py`` file — you can put *any python file* in
+there and each file can contain *any decorated function* (handlers) with only one limitation: within a single plugin
+file you must use different names for each decorated function. Your Pyrogram Client instance will **automatically**
+scan the folder upon creation to search for valid handlers and register them for you.
 
 Then you'll notice you can now use decorators. That's right, you can apply the usual decorators to your callback
 functions in a static way, i.e. **without having the Client instance around**: simply use ``@Client`` (Client class)
 instead of the usual ``@app`` (Client instance) namespace and things will work just the same.
-
-The ``main.py`` script is now at its bare minimum and cleanest state.
