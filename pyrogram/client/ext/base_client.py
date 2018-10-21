@@ -52,7 +52,6 @@ class BaseClient:
     WORKERS = 4
     WORKDIR = "."
     CONFIG_FILE = "./config.ini"
-    PLUGINS_DIR = "./plugins"
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",
