@@ -170,7 +170,7 @@ class Client(Methods, BaseClient):
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str or None = BaseClient.PLUGINS_DIR):
+                 plugins_dir: str = None):
         super().__init__()
 
         self.session_name = session_name
@@ -982,10 +982,7 @@ class Client(Methods, BaseClient):
             try:
                 dirs = os.listdir(self.plugins_dir)
             except FileNotFoundError:
-                if self.plugins_dir == Client.PLUGINS_DIR:
-                    log.info("No plugin loaded: default directory is missing")
-                else:
-                    log.warning('No plugin loaded: "{}" directory is missing'.format(self.plugins_dir))
+                log.warning('No plugin loaded: "{}" directory is missing'.format(self.plugins_dir))
             else:
                 plugins_dir = self.plugins_dir.lstrip("./").replace("/", ".")
                 plugins_count = 0
@@ -1009,11 +1006,14 @@ class Client(Methods, BaseClient):
                         except Exception:
                             pass
 
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                    plugins_count,
-                    "s" if plugins_count > 1 else "",
-                    self.plugins_dir
-                ))
+                if plugins_count > 0:
+                    log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                        plugins_count,
+                        "s" if plugins_count > 1 else "",
+                        self.plugins_dir
+                    ))
+                else:
+                    log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()

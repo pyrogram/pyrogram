@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
+from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
 
@@ -58,7 +59,7 @@ class KickChatMember(BaseClient):
         user_peer = await self.resolve_peer(user_id)
 
         if isinstance(chat_peer, types.InputPeerChannel):
-            await self.send(
+            r = await self.send(
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
@@ -76,11 +77,17 @@ class KickChatMember(BaseClient):
                 )
             )
         else:
-            await self.send(
+            r = await self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer
                 )
             )
 
-        return True
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                return utils.parse_messages(
+                    self, i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats}
+                )

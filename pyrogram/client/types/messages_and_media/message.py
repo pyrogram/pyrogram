@@ -105,7 +105,7 @@ class Message(Object):
             Message is a video note, information about the video message.
 
         caption (``str``, *optional*):
-            Caption for the audio, document, photo, video or voice, 0-200 characters.
+            Caption for the audio, document, photo, video or voice, 0-1024 characters.
             If the message contains caption entities (bold, italic, ...) you can access *caption.markdown* or
             *caption.html* to get the marked up caption text. In case there is no caption entity, the fields
             will contain the same text as *caption*.

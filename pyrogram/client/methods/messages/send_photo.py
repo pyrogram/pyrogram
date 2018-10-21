@@ -52,7 +52,7 @@ class SendPhoto(BaseClient):
                 pass a file path as string to upload a new photo that exists on your local machine.
 
             caption (``bool``, *optional*):
-                Photo caption, 0-200 characters.
+                Photo caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`

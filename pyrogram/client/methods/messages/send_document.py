@@ -58,7 +58,7 @@ class SendDocument(BaseClient):
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             caption (``str``, *optional*):
-                Document caption, 0-200 characters.
+                Document caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
