@@ -34,6 +34,7 @@ from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
 from importlib import import_module
+from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 
 from pyrogram.api import functions, types
@@ -979,41 +980,42 @@ class Client(Methods, BaseClient):
 
     def load_plugins(self):
         if self.plugins_dir is not None:
-            try:
-                dirs = os.listdir(self.plugins_dir)
-            except FileNotFoundError:
-                log.warning('No plugin loaded: "{}" directory is missing'.format(self.plugins_dir))
+            plugins_count = 0
+
+            for path in Path(self.plugins_dir).rglob("*.py"):
+                file_path = os.path.splitext(str(path))[0]
+                import_path = []
+
+                while file_path:
+                    file_path, tail = os.path.split(file_path)
+                    import_path.insert(0, tail)
+
+                import_path = ".".join(import_path)
+                module = import_module(import_path)
+
+                for name in dir(module):
+                    # noinspection PyBroadException
+                    try:
+                        handler, group = getattr(module, name)
+
+                        if isinstance(handler, Handler) and isinstance(group, int):
+                            self.add_handler(handler, group)
+
+                            log.info('{}("{}") from "{}" loaded in group {}'.format(
+                                type(handler).__name__, name, import_path, group))
+
+                            plugins_count += 1
+                    except Exception:
+                        pass
+
+            if plugins_count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                    plugins_count,
+                    "s" if plugins_count > 1 else "",
+                    self.plugins_dir
+                ))
             else:
-                plugins_dir = self.plugins_dir.lstrip("./").replace("/", ".")
-                plugins_count = 0
-
-                for i in dirs:
-                    module = import_module("{}.{}".format(plugins_dir, i.split(".")[0]))
-
-                    for j in dir(module):
-                        # noinspection PyBroadException
-                        try:
-                            handler, group = getattr(module, j)
-
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
-
-                                log.info('{}("{}") from "{}/{}" loaded in group {}'.format(
-                                    type(handler).__name__, j, self.plugins_dir, i, group)
-                                )
-
-                                plugins_count += 1
-                        except Exception:
-                            pass
-
-                if plugins_count > 0:
-                    log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                        plugins_count,
-                        "s" if plugins_count > 1 else "",
-                        self.plugins_dir
-                    ))
-                else:
-                    log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
