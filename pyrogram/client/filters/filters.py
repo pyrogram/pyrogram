@@ -183,6 +183,7 @@ class Filters:
             prefix (``str`` | ``list``, *optional*):
                 A prefix or a list of prefixes as string the filter should look for.
                 Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."].
+                Can be None or "" (empty string) to allow commands with no prefix at all.
 
             separator (``str``, *optional*):
                 The command arguments separator. Defaults to " " (white space).
@@ -214,7 +215,7 @@ class Filters:
             else {c if case_sensitive
                   else c.lower()
                   for c in command},
-            p=set(prefix),
+            p=set(prefix) if prefix else {""},
             s=separator,
             cs=case_sensitive
         )
