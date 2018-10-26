@@ -76,7 +76,7 @@ class SendVideo(BaseClient):
             thumb (``str``, *optional*):
                 Thumbnail of the video sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A sum of a thumbnail's width and height should not exceed 400 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             supports_streaming (``bool``, *optional*):
