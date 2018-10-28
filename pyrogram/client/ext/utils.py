@@ -752,7 +752,8 @@ def parse_messages(
                     try:
                         m.pinned_message = client.get_messages(
                             m.chat.id,
-                            message_ids=message.reply_to_msg_id
+                            reply_to_message_ids=message.id,
+                            replies=0
                         )
                     except FloodWait as e:
                         log.warning("get_messages flood: waiting {} seconds".format(e.x))
