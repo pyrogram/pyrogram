@@ -7849,8 +7849,3 @@ class Emoji:
     REVERSED_THUMBS_UP_SIGN_EMOJI_MODIFIER_FITZPATRICK_TYPE_6 = "\U0001f592\U0001f3ff"
     LEFT_WRITING_HAND_EMOJI_MODIFIER_FITZPATRICK_TYPE_6 = "\U0001f58e\U0001f3ff"
     REVERSED_VICTORY_HAND_EMOJI_MODIFIER_FITZPATRICK_TYPE_6 = "\U0001f594\U0001f3ff"
-
-with open("suca.txt", "w") as f:
-    for k, v in Emoji.__dict__.items():
-        if not k.startswith("__"):
-            f.write("{},{}\n".format(k, v))

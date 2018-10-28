@@ -28,35 +28,35 @@ class UserStatus(Object):
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
     Args:
-        user_id (``int``):
-            User's id. Only available for UserStatus updates.
+        user_id (``int``, *optional*):
+            User's id. Only available for incoming UserStatus updates.
 
-        online (``bool``):
-            True if the user is online in this moment, None otherwise.
+        online (``bool``, *optional*):
+            True if the user is online in this very moment, None otherwise.
             If True, the "date" field will be also set containing the online expiration date (i.e.: the date when a
             user will automatically go offline in case of no action by his client).
 
-        offline (``bool``):
-            True if the user is offline and has the Last Seen privacy setting visible for everybody, None otherwise.
+        offline (``bool``, *optional*):
+            True if the user is offline in this moment and has the Last Seen privacy setting public, None otherwise.
             If True, the "date" field will be also set containing the last seen date (i.e.: the date when a user
             was online the last time).
 
-        date (``int``):
+        date (``int``, *optional*):
             Exact date in unix time. Available only in case "online" or "offline" equals to True.
 
-        recently (``bool``):
+        recently (``bool``, *optional*):
             True for users with hidden Last Seen privacy that have been online between 1 second and 2-3 days ago,
             None otherwise.
 
-        within_week (``bool``):
+        within_week (``bool``, *optional*):
             True for users with hidden Last Seen privacy that have been online between 2-3 and seven days ago,
             None otherwise.
 
-        within_month (``bool``):
+        within_month (``bool``, *optional*):
             True for users with hidden Last Seen privacy that have been online between 6-7 days and a month ago,
             None otherwise.
 
-        long_time_ago (``bool``):
+        long_time_ago (``bool``, *optional*):
             True for users with hidden Last Seen privacy that have been online more than a month ago (this is also
             always shown to blocked users), None otherwise.
     """

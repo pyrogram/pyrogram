@@ -23,9 +23,10 @@ from ...ext import BaseClient, utils
 class GetMessages(BaseClient):
     async def get_messages(self,
                            chat_id: int or str,
-                           message_ids,
+                           message_ids: int or list = None,
+                           reply_to_message_ids: int or list = None,
                            replies: int = 1):
-        """Use this method to get messages that belong to a specific chat.
+        """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
         Args:
@@ -34,36 +35,46 @@ class GetMessages(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``iterable``):
-                A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
-                Iterators and Generators are also accepted.
+            message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of the
+                message themselves. Iterators and Generators are also accepted.
+
+            reply_to_message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of
+                the previous message you replied to using this message. Iterators and Generators are also accepted.
+                If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
                 The number of subsequent replies to get for each message. Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
-            is returned.
+            On success and in case *message_ids* or *reply_to_message_ids* was a list, the returned value will be a
+            list of the requested :obj:`Messages <pyrogram.Messages>` even if a list contains just one element,
+            otherwise if *message_ids* or *reply_to_message_ids* was an integer, the single requested
+            :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        ids, ids_type = (
+            (message_ids, types.InputMessageID) if message_ids
+            else (reply_to_message_ids, types.InputMessageReplyTo) if reply_to_message_ids
+            else (None, None)
+        )
+
+        if ids is None:
+            raise ValueError("No argument supplied")
+
         peer = await self.resolve_peer(chat_id)
-        is_iterable = not isinstance(message_ids, int)
-        message_ids = list(message_ids) if is_iterable else [message_ids]
-        message_ids = [types.InputMessageID(i) for i in message_ids]
+
+        is_iterable = not isinstance(ids, int)
+        ids = list(ids) if is_iterable else [ids]
+        ids = [ids_type(i) for i in ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            rpc = functions.channels.GetMessages(
-                channel=peer,
-                id=message_ids
-            )
+            rpc = functions.channels.GetMessages(channel=peer, id=ids)
         else:
-            rpc = functions.messages.GetMessages(
-                id=message_ids
-            )
+            rpc = functions.messages.GetMessages(id=ids)
 
         r = await self.send(rpc)
 

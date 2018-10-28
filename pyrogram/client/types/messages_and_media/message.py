@@ -83,9 +83,6 @@ class Message(Object):
         document (:obj:`Document <pyrogram.Document>`, *optional*):
             Message is a general file, information about the file.
 
-        game (:obj:`Game <pyrogram.Game>`, *optional*):
-            Message is a game, information about the game. More about games.
-
         photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
             Message is a photo, information about the photo.
 
@@ -225,7 +222,6 @@ class Message(Object):
             caption_entities: list = None,
             audio=None,
             document=None,
-            game=None,
             photo=None,
             sticker=None,
             animation=None,
@@ -276,7 +272,6 @@ class Message(Object):
         self.caption_entities = caption_entities  # flags.12?Vector<MessageEntity>
         self.audio = audio  # flags.13?Audio
         self.document = document  # flags.14?Document
-        self.game = game  # flags.15?Game
         self.photo = photo  # flags.16?Vector<PhotoSize>
         self.sticker = sticker  # flags.17?Sticker
         self.animation = animation

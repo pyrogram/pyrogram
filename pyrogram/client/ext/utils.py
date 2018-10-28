@@ -650,7 +650,8 @@ async def parse_messages(
                 while True:
                     try:
                         m.reply_to_message = await client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
+                            m.chat.id,
+                            reply_to_message_ids=message.id,
                             replies=replies - 1
                         )
                     except FloodWait as e:
@@ -762,7 +763,8 @@ async def parse_messages(
                 while True:
                     try:
                         m.pinned_message = await client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
+                            m.chat.id,
+                            reply_to_message_ids=message.id,
                             replies=0
                         )
                     except FloodWait as e:
@@ -960,7 +962,7 @@ async def parse_chat_full(
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
-                    full_chat.pinned_msg_id
+                    message_ids=full_chat.pinned_msg_id
                 )
 
         if isinstance(full_chat.exported_invite, types.ChatInviteExported):
