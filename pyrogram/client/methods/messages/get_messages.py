@@ -35,18 +35,23 @@ class GetMessages(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``iterable``):
-                A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
-                Iterators and Generators are also accepted.
+            message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of the
+                message themselves. Iterators and Generators are also accepted.
+
+            reply_to_message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of
+                the previous message you replied to using this message. Iterators and Generators are also accepted.
+                If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
                 The number of subsequent replies to get for each message. Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
-            is returned.
+            On success and in case *message_ids* or *reply_to_message_ids* was a list, the returned value will be a
+            list of the requested :obj:`Messages <pyrogram.Messages>` even if a list contains just one element,
+            otherwise if *message_ids* or *reply_to_message_ids* was an integer, the single requested
+            :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
