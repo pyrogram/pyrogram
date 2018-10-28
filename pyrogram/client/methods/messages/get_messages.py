@@ -23,9 +23,10 @@ from ...ext import BaseClient, utils
 class GetMessages(BaseClient):
     def get_messages(self,
                      chat_id: int or str,
-                     message_ids,
+                     message_ids: int or list = None,
+                     reply_to_message_ids: int or list = None,
                      replies: int = 1):
-        """Use this method to get messages that belong to a specific chat.
+        """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
         Args:
@@ -50,20 +51,25 @@ class GetMessages(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
+        ids, ids_type = (
+            (message_ids, types.InputMessageID) if message_ids
+            else (reply_to_message_ids, types.InputMessageReplyTo) if reply_to_message_ids
+            else (None, None)
+        )
+
+        if ids is None:
+            raise ValueError("No argument supplied")
+
         peer = self.resolve_peer(chat_id)
-        is_iterable = not isinstance(message_ids, int)
-        message_ids = list(message_ids) if is_iterable else [message_ids]
-        message_ids = [types.InputMessageID(i) for i in message_ids]
+
+        is_iterable = not isinstance(ids, int)
+        ids = list(ids) if is_iterable else [ids]
+        ids = [types.InputMessageID(i) for i in ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            rpc = functions.channels.GetMessages(
-                channel=peer,
-                id=message_ids
-            )
+            rpc = functions.channels.GetMessages(channel=peer, id=ids)
         else:
-            rpc = functions.messages.GetMessages(
-                id=message_ids
-            )
+            rpc = functions.messages.GetMessages(id=ids)
 
         r = self.send(rpc)
 
