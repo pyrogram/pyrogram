@@ -973,6 +973,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
     parsed_members = []
 
     if isinstance(members, types.channels.ChannelParticipants):
+        count = members.count
         members = members.participants
 
         for member in members:
@@ -1031,7 +1032,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
                 parsed_members.append(chat_member)
 
         return pyrogram_types.ChatMembers(
-            total_count=members.count,
+            total_count=count,
             chat_members=parsed_members
         )
     else:
