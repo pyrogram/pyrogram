@@ -47,8 +47,8 @@ class SendChatAction(BaseClient):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``ValueError``: If the provided string is not a valid ChatAction
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if the provided string is not a valid ChatAction.
         """
 
         # Resolve Enum type

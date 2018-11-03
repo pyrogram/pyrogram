@@ -41,8 +41,8 @@ class SetChatTitle(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``ValueError``: If a chat_id belongs to user.
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)
 

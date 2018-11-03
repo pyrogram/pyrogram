@@ -147,7 +147,7 @@ class Client(Methods, BaseClient):
         plugins_dir (``str``, *optional*):
             Define a custom directory for your plugins. The plugins directory is the location in your
             filesystem where Pyrogram will automatically load your update handlers.
-            Defaults to "./plugins". Set to None to completely disable plugins.
+            Defaults to None (plugins disabled).
     """
 
     def __init__(self,
@@ -218,7 +218,8 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
@@ -296,6 +297,9 @@ class Client(Methods, BaseClient):
     def stop(self):
         """Use this method to manually stop the Client.
         Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to stop an already stopped Client.
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
@@ -355,7 +359,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
@@ -887,7 +891,7 @@ class Client(Methods, BaseClient):
 
         Args:
             data (``Object``):
-                The API Scheme function filled with proper arguments.
+                The API Schema function filled with proper arguments.
 
             retries (``int``):
                 Number of retries.
@@ -896,7 +900,7 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
@@ -1085,7 +1089,8 @@ class Client(Methods, BaseClient):
             On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):

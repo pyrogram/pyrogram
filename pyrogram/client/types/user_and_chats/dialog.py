@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class Dialog(Object):
-    """This object represents a dialog
+    """This object represents a dialog.
 
     Args:
         chat (:obj:`Chat <pyrogram.Chat>`):

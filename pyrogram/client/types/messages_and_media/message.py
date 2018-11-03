@@ -164,20 +164,11 @@ class Message(Object):
             Note that the Message object in this field will not contain further reply_to_message fields even if it
             is itself a reply.
 
-        invoice (:obj:`Invoice <pyrogram.Invoice>`, *optional*):
-            Message is an invoice for a payment, information about the invoice. More about payments.
-
-        successful_payment (:obj:`SuccessfulPayment <pyrogram.SuccessfulPayment>`, *optional*):
-            Message is a service message about a successful payment, information about the payment. More about payments.
-
-        connected_website (``str``, *optional*):
-            The domain name of the website on which the user has logged in. More about Telegram Login.
-
         views (``int``, *optional*):
             Channel post views.
 
         via_bot (:obj:`User <pyrogram.User>`):
-            Via bot.
+            The information of the bot that generated the message from an inline query of a user.
             
         outgoing (``bool``, *optional*):
             Whether the message is incoming or outgoing.
@@ -199,6 +190,7 @@ class Message(Object):
             instructions to remove reply keyboard or to force a reply from the user.
     """
 
+    # TODO: Add game missing field. Also invoice, successful_payment, connected_website
     ID = 0xb0700003
 
     def __init__(
@@ -243,9 +235,6 @@ class Message(Object):
             migrate_to_chat_id: int = None,
             migrate_from_chat_id: int = None,
             pinned_message=None,
-            invoice=None,
-            successful_payment=None,
-            connected_website=None,
             views: int = None,
             via_bot=None,
             outgoing: bool = None,
@@ -293,9 +282,6 @@ class Message(Object):
         self.migrate_to_chat_id = migrate_to_chat_id  # flags.33?int
         self.migrate_from_chat_id = migrate_from_chat_id  # flags.34?int
         self.pinned_message = pinned_message  # flags.35?Message
-        self.invoice = invoice  # flags.36?Invoice
-        self.successful_payment = successful_payment  # flags.37?SuccessfulPayment
-        self.connected_website = connected_website  # flags.38?string
         self.views = views  # flags.39?int
         self.via_bot = via_bot  # flags.40?User
         self.outgoing = outgoing
@@ -311,7 +297,9 @@ class Message(Object):
               disable_notification: bool = None,
               reply_to_message_id: int = None,
               reply_markup=None):
-        """Use this method as a shortcut for:
+        """Bound method *reply* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
 
         .. code-block:: python
 
@@ -379,7 +367,9 @@ class Message(Object):
     def forward(self,
                 chat_id: int or str,
                 disable_notification: bool = None):
-        """Use this method as a shortcut for:
+        """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
 
         .. code-block:: python
 
@@ -418,7 +408,9 @@ class Message(Object):
         )
 
     def delete(self, revoke: bool = True):
-        """Use this method as a shortcut for:
+        """Bound method *delete* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
 
         .. code-block:: python
 
@@ -454,8 +446,9 @@ class Message(Object):
         return True
 
     def click(self, x: int or str, y: int = None, quote: bool = None):
-        """Use this method to click a button attached to the message.
-        It's a shortcut for:
+        """Bound method *click* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for clicking a button attached to the message instead of.
 
         - Clicking inline buttons:
 
@@ -476,16 +469,17 @@ class Message(Object):
                 text=message.reply_markup[i][j].text
             )
 
-        This method can be used in three different ways:
+        Example:
+            This method can be used in three different ways:
 
-        1.  Pass one integer argument only (e.g.: ``.click(2)``, to click a button at index 2).
-            Buttons are counted left to right, starting from the top.
+            1.  Pass one integer argument only (e.g.: ``.click(2)``, to click a button at index 2).
+                Buttons are counted left to right, starting from the top.
 
-        2.  Pass two integer arguments (e.g.: ``.click(1, 0)``, to click a button at position (1, 0)).
-            The origin (0, 0) is top-left.
+            2.  Pass two integer arguments (e.g.: ``.click(1, 0)``, to click a button at position (1, 0)).
+                The origin (0, 0) is top-left.
 
-        3.  Pass one string argument only (e.g.: ``.click("Settings")``, to click a button by using its label).
-            Only the first matching button will be pressed.
+            3.  Pass one string argument only (e.g.: ``.click("Settings")``, to click a button by using its label).
+                Only the first matching button will be pressed.
 
         Args:
             x (``int`` | ``str``):
@@ -567,7 +561,9 @@ class Message(Object):
             raise ValueError("The message doesn't contain any keyboard")
 
     def download(self, file_name: str = "", block: bool = True):
-        """Use this method as a shortcut for:
+        """Bound method *download* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
 
         .. code-block:: python
 

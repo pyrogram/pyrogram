@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class UserStatus(Object):
-    """This object represents a User status (Last Seen privacy)
+    """This object represents a User status (Last Seen privacy).
 
     .. note::
 

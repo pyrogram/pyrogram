@@ -54,7 +54,7 @@ class GetMessages(BaseClient):
             :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids

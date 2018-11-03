@@ -39,7 +39,7 @@ class GetChatMembers(BaseClient):
         """Use this method to get the members list of a chat.
 
         A chat can be either a basic group, a supergroup or a channel.
-        You must be admin to retrieve the members (also known as "subscribers") list of a channel.
+        You must be admin to retrieve the members list of a channel (also known as "subscribers").
 
         Args:
             chat_id (``int`` | ``str``):
@@ -51,7 +51,7 @@ class GetChatMembers(BaseClient):
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
-                Defaults to 200, which is also the maximum limit allowed per method call.
+                Defaults to 200, which is also the maximum server limit allowed per method call.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
@@ -68,9 +68,17 @@ class GetChatMembers(BaseClient):
                 *"administrators"* - chat administrators only.
                 Defaults to *"all"*.
 
-        .. [1] On supergroups and channels you can get up to 10,000 members for a single query string.
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
 
         .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+
+        Returns:
+            On success, a :obj:`ChatMembers` object is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if you used an invalid filter or a chat_id that belongs to a user.
         """
         peer = self.resolve_peer(chat_id)
 

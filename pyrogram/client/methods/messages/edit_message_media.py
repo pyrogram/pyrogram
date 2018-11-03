@@ -57,6 +57,12 @@ class EditMessageMedia(BaseClient):
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption
