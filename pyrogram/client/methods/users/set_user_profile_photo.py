@@ -16,24 +16,33 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class GetMe(BaseClient):
-    def get_me(self):
-        """A simple method for testing your authorization. Requires no parameters.
+class SetUserProfilePhoto(BaseClient):
+    def set_user_profile_photo(self, photo: str):
+        """Use this method to set a new profile photo.
+
+        This method only works for Users.
+        Bots profile photos must be set using BotFather.
+
+        Args:
+            photo (``str``):
+                Profile photo to set.
+                Pass a file path as string to upload a new photo that exists on your local machine.
 
         Returns:
-            Basic information about the user or bot in form of a :obj:`User` object
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        return utils.parse_user(
+
+        return bool(
             self.send(
-                functions.users.GetFullUser(
-                    types.InputPeerSelf()
+                functions.photos.UploadProfilePhoto(
+                    self.save_file(photo)
                 )
-            ).user
+            )
         )

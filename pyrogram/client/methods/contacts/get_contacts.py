@@ -36,7 +36,7 @@ class GetContacts(BaseClient):
             On success, the user's contacts are returned
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         while True:
             try:

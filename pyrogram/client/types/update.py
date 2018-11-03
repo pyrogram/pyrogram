@@ -58,6 +58,9 @@ class Update(Object):
 
         pre_checkout_query (:obj:`PreCheckoutQuery <pyrogram.PreCheckoutQuery>`, *optional*):
             New incoming pre-checkout query. Contains full information about checkout.
+
+        user_status (:obj:`UserStatus <pyrogram.UserStatus>`, *optional*):
+            User status (last seen date) update.
     """
 
     ID = 0xb0700000
@@ -74,7 +77,8 @@ class Update(Object):
             chosen_inline_result=None,
             callback_query=None,
             shipping_query=None,
-            pre_checkout_query=None
+            pre_checkout_query=None,
+            user_status=None
     ):
         self.message = message
         self.edited_message = edited_message
@@ -87,3 +91,4 @@ class Update(Object):
         self.callback_query = callback_query
         self.shipping_query = shipping_query
         self.pre_checkout_query = pre_checkout_query
+        self.user_status = user_status

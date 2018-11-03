@@ -9,6 +9,7 @@ Handlers
     MessageHandler
     DeletedMessagesHandler
     CallbackQueryHandler
+    UserStatusHandler
     DisconnectHandler
     RawUpdateHandler
 
@@ -19,6 +20,9 @@ Handlers
     :members:
 
 .. autoclass:: CallbackQueryHandler
+    :members:
+
+.. autoclass:: UserStatusHandler
     :members:
 
 .. autoclass:: DisconnectHandler

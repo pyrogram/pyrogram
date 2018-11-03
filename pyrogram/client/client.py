@@ -33,6 +33,8 @@ import time
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
+from importlib import import_module
+from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
 
@@ -43,8 +45,9 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
 from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -89,6 +92,10 @@ class Client(Methods, BaseClient):
         lang_code (``str``, *optional*):
             Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
             This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        ipv6 (``bool``, *optional*):
+            Pass True to connect to Telegram using IPv6.
+            Defaults to False (IPv4).
 
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
@@ -136,6 +143,11 @@ class Client(Methods, BaseClient):
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
+
+        plugins_dir (``str``, *optional*):
+            Define a custom directory for your plugins. The plugins directory is the location in your
+            filesystem where Pyrogram will automatically load your update handlers.
+            Defaults to None (plugins disabled).
     """
 
     def __init__(self,
@@ -155,9 +167,10 @@ class Client(Methods, BaseClient):
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
-                 workers: int = 4,
-                 workdir: str = ".",
-                 config_file: str = "./config.ini"):
+                 workers: int = BaseClient.WORKERS,
+                 workdir: str = BaseClient.WORKDIR,
+                 config_file: str = BaseClient.CONFIG_FILE,
+                 plugins_dir: str = None):
         super().__init__()
 
         self.session_name = session_name
@@ -180,6 +193,7 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
+        self.plugins_dir = plugins_dir
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -204,7 +218,8 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
@@ -215,6 +230,7 @@ class Client(Methods, BaseClient):
 
         self.load_config()
         self.load_session()
+        self.load_plugins()
 
         self.session = Session(
             self,
@@ -281,6 +297,9 @@ class Client(Methods, BaseClient):
     def stop(self):
         """Use this method to manually stop the Client.
         Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to stop an already stopped Client.
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
@@ -340,7 +359,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
@@ -799,23 +818,26 @@ class Client(Methods, BaseClient):
                             message = update.message
 
                             if not isinstance(message, types.MessageEmpty):
-                                diff = self.send(
-                                    functions.updates.GetChannelDifference(
-                                        channel=self.resolve_peer(int("-100" + str(channel_id))),
-                                        filter=types.ChannelMessagesFilter(
-                                            ranges=[types.MessageRange(
-                                                min_id=update.message.id,
-                                                max_id=update.message.id
-                                            )]
-                                        ),
-                                        pts=pts - pts_count,
-                                        limit=pts
+                                try:
+                                    diff = self.send(
+                                        functions.updates.GetChannelDifference(
+                                            channel=self.resolve_peer(int("-100" + str(channel_id))),
+                                            filter=types.ChannelMessagesFilter(
+                                                ranges=[types.MessageRange(
+                                                    min_id=update.message.id,
+                                                    max_id=update.message.id
+                                                )]
+                                            ),
+                                            pts=pts - pts_count,
+                                            limit=pts
+                                        )
                                     )
-                                )
-
-                                if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
-                                    updates.users += diff.users
-                                    updates.chats += diff.chats
+                                except ChannelPrivate:
+                                    pass
+                                else:
+                                    if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
+                                        updates.users += diff.users
+                                        updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
@@ -869,7 +891,7 @@ class Client(Methods, BaseClient):
 
         Args:
             data (``Object``):
-                The API Scheme function filled with proper arguments.
+                The API Schema function filled with proper arguments.
 
             retries (``int``):
                 Number of retries.
@@ -878,7 +900,7 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
@@ -961,6 +983,45 @@ class Client(Methods, BaseClient):
                 if peer:
                     self.peers_by_phone[k] = peer
 
+    def load_plugins(self):
+        if self.plugins_dir is not None:
+            plugins_count = 0
+
+            for path in Path(self.plugins_dir).rglob("*.py"):
+                file_path = os.path.splitext(str(path))[0]
+                import_path = []
+
+                while file_path:
+                    file_path, tail = os.path.split(file_path)
+                    import_path.insert(0, tail)
+
+                import_path = ".".join(import_path)
+                module = import_module(import_path)
+
+                for name in dir(module):
+                    # noinspection PyBroadException
+                    try:
+                        handler, group = getattr(module, name)
+
+                        if isinstance(handler, Handler) and isinstance(group, int):
+                            self.add_handler(handler, group)
+
+                            log.info('{}("{}") from "{}" loaded in group {}'.format(
+                                type(handler).__name__, name, import_path, group))
+
+                            plugins_count += 1
+                    except Exception:
+                        pass
+
+            if plugins_count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                    plugins_count,
+                    "s" if plugins_count > 1 else "",
+                    self.plugins_dir
+                ))
+            else:
+                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
         auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
@@ -1028,7 +1089,8 @@ class Client(Methods, BaseClient):
             On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         if type(peer_id) is str:
             if peer_id in ("self", "me"):
@@ -1068,6 +1130,13 @@ class Client(Methods, BaseClient):
                   progress_args: tuple = ()):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
+        
+        if file_size == 0:
+            raise ValueError("File size equals to 0 B")
+        
+        if file_size > 1500 * 1024 * 1024:
+            raise ValueError("Telegram doesn't support uploading files bigger than 1500 MiB")
+            
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False

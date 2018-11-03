@@ -33,7 +33,7 @@ class GetChat(BaseClient):
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

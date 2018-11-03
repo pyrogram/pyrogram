@@ -27,7 +27,7 @@ class InlineKeyboardMarkup(Object):
 
     Args:
         inline_keyboard (List of List of :obj:`InlineKeyboardButton <pyrogram.InlineKeyboardButton>`):
-            Array of button rows, each represented by an Array of InlineKeyboardButton objects.
+            List of button rows, each represented by a List of InlineKeyboardButton objects.
     """
 
     ID = 0xb0700020

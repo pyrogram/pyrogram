@@ -50,15 +50,9 @@ class InlineKeyboardButton(Object):
             chat's input field. Can be empty, in which case only the bot's username will be inserted.This offers a
             quick way for the user to open your bot in inline mode in the same chat – good for selecting something
             from multiple options.
-
-        callback_game (:obj:`CallbackGame <pyrogram.CallbackGame>`, *optional*):
-            Description of the game that will be launched when the user presses the button.NOTE: This type of button
-            must always be the first button in the first row.
-
-        pay (``bool``, *optional*):
-            Specify True, to send a Pay button.NOTE: This type of button must always be the first button in the
-            first row.
     """
+
+    # TODO: Add callback_game and pay fields
 
     ID = 0xb0700019
 
@@ -69,16 +63,16 @@ class InlineKeyboardButton(Object):
             url: str = None,
             switch_inline_query: str = None,
             switch_inline_query_current_chat: str = None,
-            callback_game=None,
-            pay: bool = None
+            # callback_game=None,
+            # pay: bool = None
     ):
         self.text = text
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
-        self.callback_game = callback_game
-        self.pay = pay
+        # self.callback_game = callback_game
+        # self.pay = pay
 
     @staticmethod
     def read(b, *args):

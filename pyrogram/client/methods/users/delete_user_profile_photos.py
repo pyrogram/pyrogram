@@ -23,8 +23,8 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class DeleteProfilePhotos(BaseClient):
-    def delete_profile_photos(self, id: str or list):
+class DeleteUserProfilePhotos(BaseClient):
+    def delete_user_profile_photos(self, id: str or list):
         """Use this method to delete your own profile photos
 
         Args:
@@ -36,7 +36,7 @@ class DeleteProfilePhotos(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         id = id if isinstance(id, list) else [id]
         input_photos = []

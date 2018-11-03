@@ -25,7 +25,7 @@ from threading import Thread
 import pyrogram
 from pyrogram.api import types
 from ..ext import utils
-from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler, DeletedMessagesHandler
+from ..handlers import RawUpdateHandler, CallbackQueryHandler, MessageHandler, DeletedMessagesHandler, UserStatusHandler
 
 log = logging.getLogger(__name__)
 
@@ -90,43 +90,53 @@ class Dispatcher:
 
     def dispatch(self, update, users: dict = None, chats: dict = None, is_raw: bool = False):
         for group in self.groups.values():
-            for handler in group:
-                if is_raw:
-                    if not isinstance(handler, RawUpdateHandler):
-                        continue
-
-                    args = (self.client, update, users, chats)
-                else:
-                    message = (update.message
-                               or update.channel_post
-                               or update.edited_message
-                               or update.edited_channel_post)
-
-                    deleted_messages = (update.deleted_channel_posts
-                                        or update.deleted_messages)
-
-                    callback_query = update.callback_query
-
-                    if message and isinstance(handler, MessageHandler):
-                        if not handler.check(message):
+            try:
+                for handler in group:
+                    if is_raw:
+                        if not isinstance(handler, RawUpdateHandler):
                             continue
 
-                        args = (self.client, message)
-                    elif deleted_messages and isinstance(handler, DeletedMessagesHandler):
-                        if not handler.check(deleted_messages):
-                            continue
-
-                        args = (self.client, deleted_messages)
-                    elif callback_query and isinstance(handler, CallbackQueryHandler):
-                        if not handler.check(callback_query):
-                            continue
-
-                        args = (self.client, callback_query)
+                        args = (self.client, update, users, chats)
                     else:
-                        continue
+                        message = (update.message
+                                   or update.channel_post
+                                   or update.edited_message
+                                   or update.edited_channel_post)
 
-                handler.callback(*args)
-                break
+                        deleted_messages = (update.deleted_channel_posts
+                                            or update.deleted_messages)
+
+                        callback_query = update.callback_query
+
+                        user_status = update.user_status
+
+                        if message and isinstance(handler, MessageHandler):
+                            if not handler.check(message):
+                                continue
+
+                            args = (self.client, message)
+                        elif deleted_messages and isinstance(handler, DeletedMessagesHandler):
+                            if not handler.check(deleted_messages):
+                                continue
+
+                            args = (self.client, deleted_messages)
+                        elif callback_query and isinstance(handler, CallbackQueryHandler):
+                            if not handler.check(callback_query):
+                                continue
+
+                            args = (self.client, callback_query)
+                        elif user_status and isinstance(handler, UserStatusHandler):
+                            if not handler.check(user_status):
+                                continue
+
+                            args = (self.client, user_status)
+                        else:
+                            continue
+
+                    handler.callback(*args)
+                    break
+            except Exception as e:
+                log.error(e, exc_info=True)
 
     def update_worker(self):
         name = threading.current_thread().name
@@ -202,7 +212,15 @@ class Dispatcher:
                     self.dispatch(
                         pyrogram.Update(
                             callback_query=utils.parse_inline_callback_query(
-                                update, users
+                                self.client, update, users
+                            )
+                        )
+                    )
+                elif isinstance(update, types.UpdateUserStatus):
+                    self.dispatch(
+                        pyrogram.Update(
+                            user_status=utils.parse_user_status(
+                                update.status, update.user_id
                             )
                         )
                     )

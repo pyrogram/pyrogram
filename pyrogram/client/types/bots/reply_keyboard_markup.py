@@ -25,11 +25,11 @@ from . import KeyboardButton
 
 
 class ReplyKeyboardMarkup(Object):
-    """This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
+    """This object represents a custom keyboard with reply options.
 
     Args:
         keyboard (List of List of :obj:`KeyboardButton <pyrogram.KeyboardButton>`):
-            Array of button rows, each represented by an Array of KeyboardButton objects.
+            List of button rows, each represented by a List of KeyboardButton objects.
 
         resize_keyboard (``bool``, *optional*):
             Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if

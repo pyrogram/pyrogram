@@ -35,7 +35,7 @@ class ExportChatInviteLink(BaseClient):
             On success, the exported invite link as string is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

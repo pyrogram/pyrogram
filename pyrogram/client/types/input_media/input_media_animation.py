@@ -35,7 +35,7 @@ class InputMediaAnimation(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the animation to be sent, 0-200 characters
+            Caption of the animation to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`

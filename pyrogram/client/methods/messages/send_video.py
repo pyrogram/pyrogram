@@ -57,7 +57,7 @@ class SendVideo(BaseClient):
                 pass a file path as string to upload a new video that exists on your local machine.
 
             caption (``str``, *optional*):
-                Video caption, 0-200 characters.
+                Video caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -120,7 +120,7 @@ class SendVideo(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown

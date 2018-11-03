@@ -34,8 +34,8 @@ class UnpinChatMessage(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``ValueError``: If a chat_id doesn't belong to a supergroup or a channel.
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
         peer = self.resolve_peer(chat_id)
 

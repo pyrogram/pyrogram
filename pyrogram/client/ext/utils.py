@@ -129,6 +129,30 @@ def parse_chat_photo(photo):
     )
 
 
+def parse_user_status(user_status, user_id: int = None, is_bot: bool = False) -> pyrogram_types.UserStatus or None:
+    if is_bot:
+        return None
+
+    status = pyrogram_types.UserStatus(user_id)
+
+    if isinstance(user_status, types.UserStatusOnline):
+        status.online = True
+        status.date = user_status.expires
+    elif isinstance(user_status, types.UserStatusOffline):
+        status.offline = True
+        status.date = user_status.was_online
+    elif isinstance(user_status, types.UserStatusRecently):
+        status.recently = True
+    elif isinstance(user_status, types.UserStatusLastWeek):
+        status.within_week = True
+    elif isinstance(user_status, types.UserStatusLastMonth):
+        status.within_month = True
+    else:
+        status.long_time_ago = True
+
+    return status
+
+
 def parse_user(user: types.User) -> pyrogram_types.User or None:
     return pyrogram_types.User(
         id=user.id,
@@ -142,7 +166,9 @@ def parse_user(user: types.User) -> pyrogram_types.User or None:
         username=user.username,
         language_code=user.lang_code,
         phone_number=user.phone,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        status=parse_user_status(user.status, is_bot=user.bot),
+        restriction_reason=user.restriction_reason
     ) if user else None
 
 
@@ -162,7 +188,8 @@ def parse_user_chat(user: types.User) -> pyrogram_types.Chat:
         username=user.username,
         first_name=user.first_name,
         last_name=user.last_name,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        restriction_reason=user.restriction_reason
     )
 
 
@@ -187,7 +214,8 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
         username=getattr(channel, "username", None),
-        photo=parse_chat_photo(getattr(channel, "photo", None))
+        photo=parse_chat_photo(getattr(channel, "photo", None)),
+        restriction_reason=getattr(channel, "restriction_reason")
     )
 
 
@@ -610,7 +638,8 @@ def parse_messages(
                 while True:
                     try:
                         m.reply_to_message = client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
+                            m.chat.id,
+                            reply_to_message_ids=message.id,
                             replies=replies - 1
                         )
                     except FloodWait as e:
@@ -722,7 +751,8 @@ def parse_messages(
                 while True:
                     try:
                         m.pinned_message = client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
+                            m.chat.id,
+                            reply_to_message_ids=message.id,
                             replies=0
                         )
                     except FloodWait as e:
@@ -865,11 +895,12 @@ def parse_callback_query(client, callback_query, users):
         message=client.get_messages(peer_id, callback_query.msg_id),
         chat_instance=str(callback_query.chat_instance),
         data=callback_query.data.decode(),
-        game_short_name=callback_query.game_short_name
+        game_short_name=callback_query.game_short_name,
+        client=client
     )
 
 
-def parse_inline_callback_query(callback_query, users):
+def parse_inline_callback_query(client, callback_query, users):
     return pyrogram_types.CallbackQuery(
         id=str(callback_query.query_id),
         from_user=parse_user(users[callback_query.user_id]),
@@ -883,7 +914,8 @@ def parse_inline_callback_query(callback_query, users):
             ),
             b"-_"
         ).decode().rstrip("="),
-        game_short_name=callback_query.game_short_name
+        game_short_name=callback_query.game_short_name,
+        client=client
     )
 
 
@@ -918,7 +950,7 @@ def parse_chat_full(
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
                     parsed_chat.id,
-                    full_chat.pinned_msg_id
+                    message_ids=full_chat.pinned_msg_id
                 )
 
         if isinstance(full_chat.exported_invite, types.ChatInviteExported):

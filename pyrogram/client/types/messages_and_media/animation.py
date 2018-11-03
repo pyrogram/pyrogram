@@ -48,7 +48,7 @@ class Animation(Object):
             File size.
 
         date (``int``, *optional*):
-            Date the Animation was sent in Unix time.
+            Date the animation was sent in Unix time.
     """
 
     ID = 0xb0700025

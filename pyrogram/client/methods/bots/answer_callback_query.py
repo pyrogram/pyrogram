@@ -50,6 +50,12 @@ class AnswerCallbackQuery(BaseClient):
             cache_time (``int``):
                 The maximum amount of time in seconds that the result of the callback query may be cached client-side.
                 Telegram apps will support caching starting in version 3.14. Defaults to 0.
+
+        Returns:
+            True, on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         return self.send(
             functions.messages.SetBotCallbackAnswer(

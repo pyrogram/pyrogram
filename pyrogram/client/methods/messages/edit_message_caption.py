@@ -53,7 +53,7 @@ class EditMessageCaption(BaseClient):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
