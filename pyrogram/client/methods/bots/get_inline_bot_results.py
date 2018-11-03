@@ -54,8 +54,8 @@ class GetInlineBotResults(BaseClient):
             On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``TimeoutError``: If the bot fails to answer within 10 seconds
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``TimeoutError`` if the bot fails to answer within 10 seconds
         """
         # TODO: Don't return the raw type
 

@@ -34,7 +34,7 @@ class RemoveCloudPassword(BaseClient):
             True on success, False otherwise.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         r = await self.send(functions.account.GetPassword())
 

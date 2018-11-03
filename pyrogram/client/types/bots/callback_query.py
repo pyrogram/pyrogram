@@ -73,7 +73,9 @@ class CallbackQuery(Object):
         self.game_short_name = game_short_name  # flags.3?string
 
     def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
-        """Use this method as a shortcut for:
+        """Bound method *answer* of :obj:`CallbackQuery <pyrogram.CallbackQuery>`.
+
+        Use this method as a shortcut for:
 
         .. code-block:: python
 

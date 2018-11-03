@@ -5,15 +5,22 @@ Pyrogram embeds a **smart** (automatic) and lightweight plugin system that is me
 of large projects and to provide a way for creating pluggable components that can be **easily shared** across different
 Pyrogram applications with **minimal boilerplate code**.
 
+.. tip::
+
+    Smart Plugins are completely optional and disabled by default.
+
 Introduction
 ------------
 
 Prior to the Smart Plugin system, pluggable handlers were already possible. For example, if you wanted to modularize
 your applications, you had to do something like this...
 
-.. note:: This is an example application that replies in private chats with two messages: one containing the same
-    text message you sent and the other containing the reversed text message (e.g.: "pyrogram" -> "pyrogram" and
-    "margoryp"):
+.. note::
+
+    This is an example application that replies in private chats with two messages: one containing the same
+    text message you sent and the other containing the reversed text message.
+
+    Example: *"Pyrogram"* replies with *"Pyrogram"* and *"margoryP"*
 
 .. code-block:: text
 

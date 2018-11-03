@@ -32,8 +32,8 @@ class GetChatMembersCount(BaseClient):
             On success, an integer is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``ValueError``: If a chat_id belongs to user.
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if a chat_id belongs to user.
         """
         peer = await self.resolve_peer(chat_id)
 

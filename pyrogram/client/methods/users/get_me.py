@@ -28,7 +28,7 @@ class GetMe(BaseClient):
             Basic information about the user or bot in form of a :obj:`User` object
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         r = await self.send(
             functions.users.GetFullUser(

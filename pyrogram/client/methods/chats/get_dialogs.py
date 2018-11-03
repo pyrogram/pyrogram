@@ -47,7 +47,7 @@ class GetDialogs(BaseClient):
             On success, a :obj:`Dialogs` object is returned.
 
         Raises:
-            :class:`Error`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
         if pinned_only:

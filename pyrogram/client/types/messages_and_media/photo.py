@@ -20,7 +20,7 @@ from pyrogram.api.core import Object
 
 
 class Photo(Object):
-    """This object represents a Photo
+    """This object represents a Photo.
 
     Args:
         id (``str``):

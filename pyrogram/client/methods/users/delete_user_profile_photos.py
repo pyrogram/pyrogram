@@ -36,7 +36,7 @@ class DeleteUserProfilePhotos(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         id = id if isinstance(id, list) else [id]
         input_photos = []

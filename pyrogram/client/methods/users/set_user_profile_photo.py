@@ -36,7 +36,7 @@ class SetUserProfilePhoto(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
         return bool(

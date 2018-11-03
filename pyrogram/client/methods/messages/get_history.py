@@ -56,7 +56,7 @@ class GetHistory(BaseClient):
             On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
         r = await self.send(

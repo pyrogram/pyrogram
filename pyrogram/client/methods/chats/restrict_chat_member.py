@@ -64,7 +64,7 @@ class RestrictChatMember(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         send_messages = True
         send_media = True
