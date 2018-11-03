@@ -166,6 +166,8 @@ class Filters:
     inline_keyboard = create("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
     """Filter messages containing inline keyboard markups"""
 
+    dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
+
     @staticmethod
     def command(command: str or list,
                 prefix: str or list = "/",
