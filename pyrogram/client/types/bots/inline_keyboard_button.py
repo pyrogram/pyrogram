@@ -59,7 +59,7 @@ class InlineKeyboardButton(Object):
     def __init__(
             self,
             text: str,
-            callback_data: str = None,
+            callback_data: bytes = None,
             url: str = None,
             switch_inline_query: str = None,
             switch_inline_query_current_chat: str = None,
@@ -102,7 +102,7 @@ class InlineKeyboardButton(Object):
 
     def write(self):
         if self.callback_data:
-            return KeyboardButtonCallback(self.text, self.callback_data.encode())
+            return KeyboardButtonCallback(self.text, self.callback_data)
 
         if self.url:
             return KeyboardButtonUrl(self.text, self.url)
