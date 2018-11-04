@@ -17,12 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from base64 import b64decode, b64encode
 from struct import pack
 from weakref import proxy
 
-from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
 from ...api.errors import StickersetInvalid
@@ -635,19 +633,11 @@ def parse_messages(
                 m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
-                while True:
-                    try:
-                        m.reply_to_message = client.get_messages(
-                            m.chat.id,
-                            reply_to_message_ids=message.id,
-                            replies=replies - 1
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                m.reply_to_message = client.get_messages(
+                    m.chat.id,
+                    reply_to_message_ids=message.id,
+                    replies=replies - 1
+                )
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -748,19 +738,11 @@ def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                while True:
-                    try:
-                        m.pinned_message = client.get_messages(
-                            m.chat.id,
-                            reply_to_message_ids=message.id,
-                            replies=0
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                m.pinned_message = client.get_messages(
+                    m.chat.id,
+                    reply_to_message_ids=message.id,
+                    replies=0
+                )
         else:
             m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
