@@ -23,7 +23,7 @@ from weakref import proxy
 
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
-from ...api.errors import StickersetInvalid
+from ...api.errors import StickersetInvalid, MessageIdsEmpty
 
 log = logging.getLogger(__name__)
 
@@ -633,11 +633,14 @@ def parse_messages(
                 m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
-                m.reply_to_message = client.get_messages(
-                    m.chat.id,
-                    reply_to_message_ids=message.id,
-                    replies=replies - 1
-                )
+                try:
+                    m.reply_to_message = client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=replies - 1
+                    )
+                except MessageIdsEmpty:
+                    m.reply_to_message = None
         elif isinstance(message, types.MessageService):
             action = message.action
 
