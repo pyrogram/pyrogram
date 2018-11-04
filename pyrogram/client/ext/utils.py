@@ -19,16 +19,14 @@
 import asyncio
 import logging
 import sys
-import time
 from base64 import b64decode, b64encode
 from concurrent.futures.thread import ThreadPoolExecutor
 from struct import pack
 from weakref import proxy
 
-from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
-from ...api.errors import StickersetInvalid
+from ...api.errors import StickersetInvalid, MessageIdsEmpty
 
 log = logging.getLogger(__name__)
 
@@ -227,7 +225,7 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         title=channel.title,
         username=getattr(channel, "username", None),
         photo=parse_chat_photo(getattr(channel, "photo", None)),
-        restriction_reason=getattr(channel, "restriction_reason")
+        restriction_reason=getattr(channel, "restriction_reason", None)
     )
 
 
@@ -647,19 +645,14 @@ async def parse_messages(
                 m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
-                while True:
-                    try:
-                        m.reply_to_message = await client.get_messages(
-                            m.chat.id,
-                            reply_to_message_ids=message.id,
-                            replies=replies - 1
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                try:
+                    m.reply_to_message = await client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=replies - 1
+                    )
+                except MessageIdsEmpty:
+                    m.reply_to_message = None
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -760,19 +753,11 @@ async def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                while True:
-                    try:
-                        m.pinned_message = await client.get_messages(
-                            m.chat.id,
-                            reply_to_message_ids=message.id,
-                            replies=0
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                m.pinned_message = await client.get_messages(
+                    m.chat.id,
+                    reply_to_message_ids=message.id,
+                    replies=0
+                )
         else:
             m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
@@ -985,6 +970,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
     parsed_members = []
 
     if isinstance(members, types.channels.ChannelParticipants):
+        count = members.count
         members = members.participants
 
         for member in members:
@@ -1043,7 +1029,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
                 parsed_members.append(chat_member)
 
         return pyrogram_types.ChatMembers(
-            total_count=members.count,
+            total_count=count,
             chat_members=parsed_members
         )
     else:

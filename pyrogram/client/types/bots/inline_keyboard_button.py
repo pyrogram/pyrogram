@@ -31,7 +31,7 @@ class InlineKeyboardButton(Object):
         text (``str``):
             Label text on the button.
 
-        callback_data (``str``, *optional*):
+        callback_data (``bytes``, *optional*):
             Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes.
 
         url (``str``, *optional*):
@@ -59,7 +59,7 @@ class InlineKeyboardButton(Object):
     def __init__(
             self,
             text: str,
-            callback_data: str = None,
+            callback_data: bytes = None,
             url: str = None,
             switch_inline_query: str = None,
             switch_inline_query_current_chat: str = None,
@@ -85,7 +85,7 @@ class InlineKeyboardButton(Object):
         if isinstance(b, KeyboardButtonCallback):
             return InlineKeyboardButton(
                 text=b.text,
-                callback_data=b.data.decode()
+                callback_data=b.data
             )
 
         if isinstance(b, KeyboardButtonSwitchInline):
@@ -102,7 +102,7 @@ class InlineKeyboardButton(Object):
 
     def write(self):
         if self.callback_data:
-            return KeyboardButtonCallback(self.text, self.callback_data.encode())
+            return KeyboardButtonCallback(self.text, self.callback_data)
 
         if self.url:
             return KeyboardButtonUrl(self.text, self.url)
