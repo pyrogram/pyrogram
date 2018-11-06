@@ -169,6 +169,7 @@ class Filters:
     dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
 
     mentioned = create("Mentioned", lambda _, m: bool(m.mentioned))
+    """Filter messages containing mentions"""
 
     @staticmethod
     def command(command: str or list,
