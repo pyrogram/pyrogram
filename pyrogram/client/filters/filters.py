@@ -281,6 +281,7 @@ class Filters:
         Args:
             chats (``int`` | ``str`` | ``list``):
                 Pass one or more chat ids/usernames to filter chats.
+                For your personal cloud (Saved Messages) you can simply use “me” or “self”.
                 Defaults to None (no chats).
         """
 
