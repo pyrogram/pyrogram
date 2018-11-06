@@ -591,6 +591,8 @@ def parse_messages(
                 else:
                     reply_markup = None
 
+            mentioned = message.mentioned
+
             m = pyrogram_types.Message(
                 message_id=message.id,
                 date=message.date,
@@ -606,6 +608,7 @@ def parse_messages(
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                mentioned=mentioned,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,

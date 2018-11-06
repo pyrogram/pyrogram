@@ -206,6 +206,7 @@ class Message(Object):
             forward_signature: str = None,
             forward_date: int = None,
             reply_to_message=None,
+            mentioned=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -253,6 +254,7 @@ class Message(Object):
         self.forward_signature = forward_signature  # flags.4?string
         self.forward_date = forward_date  # flags.5?int
         self.reply_to_message = reply_to_message  # flags.6?Message
+        self.mentioned = mentioned
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
