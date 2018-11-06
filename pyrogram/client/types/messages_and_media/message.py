@@ -55,6 +55,9 @@ class Message(Object):
             For replies, the original message. Note that the Message object in this field will not contain
             further reply_to_message fields even if it itself is a reply.
 
+        mentioned (``bool``, *optional*):
+            The message contains a mention.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
