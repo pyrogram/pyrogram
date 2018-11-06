@@ -606,6 +606,7 @@ def parse_messages(
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                mentioned=message.mentioned,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
