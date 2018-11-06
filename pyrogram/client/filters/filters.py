@@ -287,9 +287,9 @@ class Filters:
         def __init__(self, chats: int or str or list = None):
             chats = [] if chats is None else chats if type(chats) is list else [chats]
             super().__init__(
-                {i.lower().strip("@") if type(i) is str else i for i in chats}
+                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in chats}
                 if type(chats) is list else
-                {chats.lower().strip("@") if type(chats) is str else chats}
+                {"me" if chats in ["me", "self"] else chats.lower().strip("@") if type(chats) is str else chats}
             )
 
         def __call__(self, message):
@@ -297,7 +297,10 @@ class Filters:
                 message.chat
                 and (message.chat.id in self
                      or (message.chat.username
-                         and message.chat.username.lower() in self))
+                         and message.chat.username.lower() in self)
+                     or ("me" in self and message.from_user
+                         and message.from_user.is_self
+                         and not message.outgoing))
             )
 
     service = create(
