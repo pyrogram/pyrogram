@@ -55,6 +55,9 @@ class Message(Object):
             For replies, the original message. Note that the Message object in this field will not contain
             further reply_to_message fields even if it itself is a reply.
 
+        mentioned (``bool``, *optional*):
+            The message contains a mention.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
@@ -206,6 +209,7 @@ class Message(Object):
             forward_signature: str = None,
             forward_date: int = None,
             reply_to_message=None,
+            mentioned=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -253,6 +257,7 @@ class Message(Object):
         self.forward_signature = forward_signature  # flags.4?string
         self.forward_date = forward_date  # flags.5?int
         self.reply_to_message = reply_to_message  # flags.6?Message
+        self.mentioned = mentioned
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
@@ -361,6 +366,54 @@ class Message(Object):
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
+        """Bound method *edit* of :obj:`Message <pyrogram.Message>
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_text(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                text="hello",
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit("hello")
+
+        Args:
+            text (``str``):
+                New text of the message.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return await self._client.edit_message_text(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            text=text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
             reply_markup=reply_markup
         )
 

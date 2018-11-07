@@ -618,6 +618,7 @@ async def parse_messages(
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                mentioned=message.mentioned,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
@@ -652,7 +653,7 @@ async def parse_messages(
                         replies=replies - 1
                     )
                 except MessageIdsEmpty:
-                    m.reply_to_message = None
+                    pass
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -753,11 +754,14 @@ async def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                m.pinned_message = await client.get_messages(
-                    m.chat.id,
-                    reply_to_message_ids=message.id,
-                    replies=0
-                )
+                try:
+                    m.pinned_message = await client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=0
+                    )
+                except MessageIdsEmpty:
+                    pass
         else:
             m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
