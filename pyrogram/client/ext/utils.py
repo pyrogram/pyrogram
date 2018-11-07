@@ -641,7 +641,7 @@ def parse_messages(
                         replies=replies - 1
                     )
                 except MessageIdsEmpty:
-                    m.reply_to_message = None
+                    pass
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -742,11 +742,14 @@ def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                m.pinned_message = client.get_messages(
-                    m.chat.id,
-                    reply_to_message_ids=message.id,
-                    replies=0
-                )
+                try:
+                    m.pinned_message = client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=0
+                    )
+                except MessageIdsEmpty:
+                    pass
         else:
             m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
 
