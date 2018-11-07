@@ -369,6 +369,54 @@ class Message(Object):
             reply_markup=reply_markup
         )
 
+    def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
+        """Bound method *edit* of :obj:`Message <pyrogram.Message>
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_text(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                text="hello",
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit("hello")
+
+        Args:
+            text (``str``):
+                New text of the message.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return self._client.edit_message_text(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            text=text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
+            reply_markup=reply_markup
+        )
+
     def forward(self,
                 chat_id: int or str,
                 disable_notification: bool = None):
