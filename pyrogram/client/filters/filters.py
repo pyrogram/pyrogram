@@ -174,6 +174,10 @@ class Filters:
     delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created, migrate_to_chat_id,
     migrate_from_chat_id, pinned_message"""
 
+    media = create("Media", lambda _, m: bool(m.media))
+    """Filter messages containing any of these fields set: audio, document, photo, sticker, video, animation, voice,
+    video_note, contact, location, venue"""
+
     @staticmethod
     def command(command: str or list,
                 prefix: str or list = "/",
@@ -309,23 +313,5 @@ class Filters:
                          and message.from_user.is_self
                          and not message.outgoing))
             )
-
-    media = create(
-        "Media",
-        lambda _, m: bool(
-            Filters.audio(m)
-            or Filters.document(m)
-            or Filters.photo(m)
-            or Filters.sticker(m)
-            or Filters.video(m)
-            or Filters.animation(m)
-            or Filters.voice(m)
-            or Filters.video_note(m)
-            or Filters.contact(m)
-            or Filters.location(m)
-            or Filters.venue(m)
-        )
-    )
-    """Filter all media messages."""
 
     dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
