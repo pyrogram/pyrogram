@@ -282,6 +282,7 @@ class Filters:
         Args:
             users (``int`` | ``str`` | ``list``):
                 Pass one or more user ids/usernames to filter users.
+                For you yourself, "me" or "self" can be used as well. 
                 Defaults to None (no users).
         """
 
