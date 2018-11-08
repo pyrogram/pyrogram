@@ -619,6 +619,7 @@ async def parse_messages(
                 forward_signature=forward_signature,
                 forward_date=forward_date,
                 mentioned=message.mentioned,
+                media=bool(media) or None,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
@@ -740,6 +741,7 @@ async def parse_messages(
                 date=message.date,
                 chat=parse_chat(message, users, chats),
                 from_user=parse_user(users.get(message.from_id, None)),
+                service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,
@@ -763,7 +765,7 @@ async def parse_messages(
                 except MessageIdsEmpty:
                     pass
         else:
-            m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
+            m = pyrogram_types.Message(message_id=message.id, client=proxy(client), empty=True)
 
         parsed_messages.append(m)
 
