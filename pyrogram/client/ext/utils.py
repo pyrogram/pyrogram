@@ -751,7 +751,7 @@ def parse_messages(
                 except MessageIdsEmpty:
                     pass
         else:
-            m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
+            m = pyrogram_types.Message(message_id=message.id, client=proxy(client), empty=True)
 
         parsed_messages.append(m)
 

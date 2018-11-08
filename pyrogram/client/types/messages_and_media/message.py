@@ -58,6 +58,10 @@ class Message(Object):
         mentioned (``bool``, *optional*):
             The message contains a mention.
 
+        empty (``bool``, *optional*):
+            The message is empty.
+            A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
@@ -210,6 +214,7 @@ class Message(Object):
             forward_date: int = None,
             reply_to_message=None,
             mentioned=None,
+            empty=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -258,6 +263,7 @@ class Message(Object):
         self.forward_date = forward_date  # flags.5?int
         self.reply_to_message = reply_to_message  # flags.6?Message
         self.mentioned = mentioned
+        self.empty = empty
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
