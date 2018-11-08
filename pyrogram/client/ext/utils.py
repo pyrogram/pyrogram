@@ -728,6 +728,7 @@ def parse_messages(
                 date=message.date,
                 chat=parse_chat(message, users, chats),
                 from_user=parse_user(users.get(message.from_id, None)),
+                service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,

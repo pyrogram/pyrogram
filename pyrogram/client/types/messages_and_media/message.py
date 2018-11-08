@@ -62,6 +62,12 @@ class Message(Object):
             The message is empty.
             A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
 
+        service (``bool``, *optional*):
+            The message is a service message.
+            A service message has one and only one of these fields set: left_chat_member, new_chat_title,
+            new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
+            migrate_to_chat_id, migrate_from_chat_id, pinned_message.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
@@ -215,6 +221,7 @@ class Message(Object):
             reply_to_message=None,
             mentioned=None,
             empty=None,
+            service=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -264,6 +271,7 @@ class Message(Object):
         self.reply_to_message = reply_to_message  # flags.6?Message
         self.mentioned = mentioned
         self.empty = empty
+        self.service = service
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
