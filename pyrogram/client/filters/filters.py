@@ -166,10 +166,13 @@ class Filters:
     inline_keyboard = create("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
     """Filter messages containing inline keyboard markups"""
 
-    dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
-
     mentioned = create("Mentioned", lambda _, m: bool(m.mentioned))
     """Filter messages containing mentions"""
+
+    service = create("Service", lambda _, m: bool(m.service))
+    """Filter messages containing any of these fields set: left_chat_member, new_chat_title, new_chat_photo,
+    delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created, migrate_to_chat_id,
+    migrate_from_chat_id, pinned_message"""
 
     @staticmethod
     def command(command: str or list,
@@ -307,24 +310,6 @@ class Filters:
                          and not message.outgoing))
             )
 
-    service = create(
-        "Service",
-        lambda _, m: bool(
-            Filters.new_chat_members(m)
-            or Filters.left_chat_member(m)
-            or Filters.new_chat_title(m)
-            or Filters.new_chat_photo(m)
-            or Filters.delete_chat_photo(m)
-            or Filters.group_chat_created(m)
-            or Filters.supergroup_chat_created(m)
-            or Filters.channel_chat_created(m)
-            or Filters.migrate_to_chat_id(m)
-            or Filters.migrate_from_chat_id(m)
-            or Filters.pinned_message(m)
-        )
-    )
-    """Filter all service messages."""
-
     media = create(
         "Media",
         lambda _, m: bool(
@@ -342,3 +327,5 @@ class Filters:
         )
     )
     """Filter all media messages."""
+
+    dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
