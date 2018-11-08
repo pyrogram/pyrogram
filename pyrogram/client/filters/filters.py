@@ -170,13 +170,33 @@ class Filters:
     """Filter messages containing mentions"""
 
     service = create("Service", lambda _, m: bool(m.service))
-    """Filter messages containing any of these fields set: *left_chat_member*, *new_chat_title*, *new_chat_photo*, 
-    *delete_chat_photo*, *group_chat_created*, *supergroup_chat_created*, *channel_chat_created*, *migrate_to_chat_id*, 
-    *migrate_from_chat_id*, *pinned_message*"""
+    """Filter service messages. A service message contains any of the following fields set
+    
+    - left_chat_member
+    - new_chat_title
+    - new_chat_photo
+    - delete_chat_photo
+    - group_chat_created
+    - supergroup_chat_created
+    - channel_chat_created
+    - migrate_to_chat_id
+    - migrate_from_chat_id
+    - pinned_message"""
 
     media = create("Media", lambda _, m: bool(m.media))
-    """Filter messages containing any of these fields set: *audio*, *document*, *photo*, *sticker*, *video*,
-    *animation*, *voice*, *video_note*, *contact*, *location*, *venue*"""
+    """Filter media messages. A media message contains any of the following fields set
+    
+    - audio
+    - document
+    - photo
+    - sticker
+    - video
+    - animation
+    - voice
+    - video_note
+    - contact
+    - location
+    - venue"""
 
     @staticmethod
     def command(command: str or list,
