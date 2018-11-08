@@ -288,9 +288,9 @@ class Filters:
         def __init__(self, users: int or str or list = None):
             users = [] if users is None else users if type(users) is list else [users]
             super().__init__(
-                {i.lower().strip("@") if type(i) is str else i for i in users}
+                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in users}
                 if type(users) is list else
-                {users.lower().strip("@") if type(users) is str else users}
+                {"me" if users in ["me", "self"] else users.lower().strip("@") if type(users) is str else users}
             )
 
         def __call__(self, message):
@@ -298,7 +298,9 @@ class Filters:
                 message.from_user
                 and (message.from_user.id in self
                      or (message.from_user.username
-                         and message.from_user.username.lower() in self))
+                         and message.from_user.username.lower() in self)
+                     or ("me" in self
+                         and message.from_user.is_self))
             )
 
     # noinspection PyPep8Naming
