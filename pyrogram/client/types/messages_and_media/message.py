@@ -68,6 +68,11 @@ class Message(Object):
             new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
             migrate_to_chat_id, migrate_from_chat_id, pinned_message.
 
+        media (``bool``` *optional*):
+            The message is a media message.
+            A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
+            voice, video_note, contact, location, venue.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
@@ -222,6 +227,7 @@ class Message(Object):
             mentioned=None,
             empty=None,
             service=None,
+            media=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -272,6 +278,7 @@ class Message(Object):
         self.mentioned = mentioned
         self.empty = empty
         self.service = service
+        self.media = media
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
