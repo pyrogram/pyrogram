@@ -143,13 +143,15 @@ class Dispatcher:
                             if handler.check(update):
                                 args = (update,)
 
-                        if args is not None:
-                            try:
-                                handler.callback(self.client, *args)
-                            except Exception as e:
-                                log.error(e, exc_info=True)
-                            finally:
-                                break
+                        if args is None:
+                            continue
+
+                        try:
+                            handler.callback(self.client, *args)
+                        except Exception as e:
+                            log.error(e, exc_info=True)
+                        finally:
+                            break
             except Exception as e:
                 log.error(e, exc_info=True)
 
