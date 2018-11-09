@@ -18,8 +18,29 @@
 
 
 class InlineQueryResult:
-    """This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
-    TODO: List types
+    """This object represents one result of an inline query.
+    Pyrogram currently supports results of the following 20 types:
+
+    - :obj:`InlineQueryResultCachedAudio`
+    - :obj:`InlineQueryResultCachedDocument`
+    - :obj:`InlineQueryResultCachedGif`
+    - :obj:`InlineQueryResultCachedMpeg4Gif`
+    - :obj:`InlineQueryResultCachedPhoto`
+    - :obj:`InlineQueryResultCachedSticker`
+    - :obj:`InlineQueryResultCachedVideo`
+    - :obj:`InlineQueryResultCachedVoice`
+    - :obj:`InlineQueryResultArticle`
+    - :obj:`InlineQueryResultAudio`
+    - :obj:`InlineQueryResultContact`
+    - :obj:`InlineQueryResultGame`
+    - :obj:`InlineQueryResultDocument`
+    - :obj:`InlineQueryResultGif`
+    - :obj:`InlineQueryResultLocation`
+    - :obj:`InlineQueryResultMpeg4Gif`
+    - :obj:`InlineQueryResultPhoto`
+    - :obj:`InlineQueryResultVenue`
+    - :obj:`InlineQueryResultVideo`
+    - :obj:`InlineQueryResultVoice`
     """
 
     def __init__(self, type: str, id: str):
