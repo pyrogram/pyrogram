@@ -68,16 +68,16 @@ class InlineQueryResultArticle:
             thumb_width: int = 0,
             thumb_height: int = 0
     ):
-        self.id = id  # string
-        self.title = title  # string
-        self.input_message_content = input_message_content  # flags.4?InputMessageContent
-        self.reply_markup = reply_markup  # flags.3?InlineKeyboardMarkup
+        self.id = id
+        self.title = title
+        self.input_message_content = input_message_content
+        self.reply_markup = reply_markup
         self.url = url
         self.hide_url = hide_url
-        self.description = description  # flags.2?string
-        self.thumb_url = thumb_url  # flags.5?string
-        self.thumb_width = thumb_width  # flags.6?int
-        self.thumb_height = thumb_height  # flags.7?int
+        self.description = description
+        self.thumb_url = thumb_url
+        self.thumb_width = thumb_width
+        self.thumb_height = thumb_height
 
     def write(self):
         return types.InputBotInlineResult(
