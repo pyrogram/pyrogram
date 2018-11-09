@@ -17,9 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
+from .inline_query_result import InlineQueryResult
 
 
-class InlineQueryResultArticle:
+class InlineQueryResultArticle(InlineQueryResult):
     """Represents a link to an article or web page.
 
     Args:
@@ -64,11 +65,12 @@ class InlineQueryResultArticle:
             url: str = None,
             hide_url: bool = None,
             description: str = None,
-            thumb_url: str = "",
+            thumb_url: str = None,
             thumb_width: int = 0,
             thumb_height: int = 0
     ):
-        self.id = id
+        super().__init__("article", id)
+
         self.title = title
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
@@ -82,7 +84,7 @@ class InlineQueryResultArticle:
     def write(self):
         return types.InputBotInlineResult(
             id=self.id,
-            type="article",
+            type=self.type,
             send_message=self.input_message_content.write(self.reply_markup),
             title=self.title,
             description=self.description,
@@ -97,6 +99,5 @@ class InlineQueryResultArticle:
                         h=self.thumb_height
                     )
                 ]
-            ) if self.thumb_url else None,
-            content=None
+            ) if self.thumb_url else None
         )
