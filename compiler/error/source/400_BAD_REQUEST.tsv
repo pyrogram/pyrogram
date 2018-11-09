@@ -69,3 +69,4 @@ API_ID_PUBLISHED_FLOOD	You are using an API key that is limited on the server si
 USER_NOT_PARTICIPANT	The user is not a member of this chat
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
 MESSAGE_IDS_EMPTY	The requested message doesn't exist
+RESULTS_TOO_MUCH	You have put too many items in your result
