@@ -22,5 +22,6 @@ from .input_media_audio import InputMediaAudio
 from .input_media_document import InputMediaDocument
 from .input_media_photo import InputMediaPhoto
 from .input_media_video import InputMediaVideo
+from .input_message_content import InputMessageContent
 from .input_phone_contact import InputPhoneContact
 from .input_text_message_content import InputTextMessageContent

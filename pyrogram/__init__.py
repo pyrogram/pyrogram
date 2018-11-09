@@ -32,10 +32,12 @@ from .client.types import (
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    InlineQuery, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent, InlineQueryResultCachedAudio
+    InlineQuery, InlineQueryResult, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent,
+    InlineQueryResultCachedAudio, InputMessageContent
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters
+    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters,
+    InlineQueryHandler
 )
