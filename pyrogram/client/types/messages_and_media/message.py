@@ -634,7 +634,7 @@ class Message(Object):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    async def download(self, file_name: str = "", block: bool = True):
+    async def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = None):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -659,6 +659,15 @@ class Message(Object):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
+            progress (``callable``):
+                Pass a callback function to view the download progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
@@ -669,5 +678,7 @@ class Message(Object):
         return await self._client.download_media(
             message=self,
             file_name=file_name,
-            block=block
+            block=block,
+            progress=progress,
+            progress_args=progress_args,
         )

@@ -772,10 +772,10 @@ async def parse_messages(
     return parsed_messages if is_list else parsed_messages[0]
 
 
-def parse_deleted_messages(
-        messages: list,
-        channel_id: int
-) -> pyrogram_types.Messages:
+def parse_deleted_messages(update) -> pyrogram_types.Messages:
+    messages = update.messages
+    channel_id = getattr(update, "channel_id", None)
+
     parsed_messages = []
 
     for message in messages:
@@ -882,42 +882,40 @@ def parse_profile_photos(photos):
     )
 
 
-async def parse_callback_query(client, callback_query, users):
-    peer = callback_query.peer
+async def parse_callback_query(client, update, users):
+    message = None
+    inline_message_id = None
 
-    if isinstance(peer, types.PeerUser):
-        peer_id = peer.user_id
-    elif isinstance(peer, types.PeerChat):
-        peer_id = -peer.chat_id
-    else:
-        peer_id = int("-100" + str(peer.channel_id))
+    if isinstance(update, types.UpdateBotCallbackQuery):
+        peer = update.peer
 
-    return pyrogram_types.CallbackQuery(
-        id=str(callback_query.query_id),
-        from_user=parse_user(users[callback_query.user_id]),
-        message=await client.get_messages(peer_id, callback_query.msg_id),
-        chat_instance=str(callback_query.chat_instance),
-        data=callback_query.data.decode(),
-        game_short_name=callback_query.game_short_name,
-        client=client
-    )
+        if isinstance(peer, types.PeerUser):
+            peer_id = peer.user_id
+        elif isinstance(peer, types.PeerChat):
+            peer_id = -peer.chat_id
+        else:
+            peer_id = int("-100" + str(peer.channel_id))
 
-
-async def parse_inline_callback_query(client, callback_query, users):
-    return pyrogram_types.CallbackQuery(
-        id=str(callback_query.query_id),
-        from_user=parse_user(users[callback_query.user_id]),
-        chat_instance=str(callback_query.chat_instance),
-        inline_message_id=b64encode(
+        message = client.get_messages(peer_id, update.msg_id)
+    elif isinstance(update, types.UpdateInlineBotCallbackQuery):
+        inline_message_id = b64encode(
             pack(
                 "<iqq",
-                callback_query.msg_id.dc_id,
-                callback_query.msg_id.id,
-                callback_query.msg_id.access_hash
+                update.msg_id.dc_id,
+                update.msg_id.id,
+                update.msg_id.access_hash
             ),
             b"-_"
-        ).decode().rstrip("="),
-        game_short_name=callback_query.game_short_name,
+        ).decode().rstrip("=")
+
+    return pyrogram_types.CallbackQuery(
+        id=str(update.query_id),
+        from_user=parse_user(users[update.user_id]),
+        message=message,
+        inline_message_id=inline_message_id,
+        chat_instance=str(update.chat_instance),
+        data=update.data.decode(),
+        game_short_name=update.game_short_name,
         client=client
     )
 
