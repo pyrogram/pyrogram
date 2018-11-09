@@ -31,6 +31,6 @@ class InputTextMessageContent:
     def write(self, reply_markup):
         return types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
-            reply_markup=reply_markup.write(),
+            reply_markup=reply_markup.write() if reply_markup else None,
             **self.style.parse(self.message_text)
         )
