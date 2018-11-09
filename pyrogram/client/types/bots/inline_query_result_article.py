@@ -23,6 +23,8 @@ from .inline_query_result import InlineQueryResult
 class InlineQueryResultArticle(InlineQueryResult):
     """Represents a link to an article or web page.
 
+    TODO: Hide url?
+
     Args:
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
@@ -38,9 +40,6 @@ class InlineQueryResultArticle(InlineQueryResult):
 
         url (``str``, *optional*):
             URL of the result
-
-        hide_url (``bool``, *optional*):
-            Pass True, if you don't want the URL to be shown in the message
 
         description (``str``, optional):
             Short description of the result
@@ -63,7 +62,6 @@ class InlineQueryResultArticle(InlineQueryResult):
             input_message_content,
             reply_markup=None,
             url: str = None,
-            hide_url: bool = None,
             description: str = None,
             thumb_url: str = None,
             thumb_width: int = 0,
@@ -75,7 +73,6 @@ class InlineQueryResultArticle(InlineQueryResult):
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
         self.url = url
-        self.hide_url = hide_url
         self.description = description
         self.thumb_url = thumb_url
         self.thumb_width = thumb_width
