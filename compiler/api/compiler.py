@@ -172,9 +172,8 @@ def start():
 
     with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
             open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
-            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api, \
-            open("{}/source/bot.tl".format(HOME), encoding="utf-8") as pyro:
-        schema = (auth.read() + system.read() + api.read() + pyro.read()).splitlines()
+            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
+        schema = (auth.read() + system.read() + api.read()).splitlines()
 
     with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
         mtproto_template = f.read()
@@ -507,7 +506,7 @@ def start():
         f.write("\n    0xb0700028: \"pyrogram.client.types.Dialog\",")
         f.write("\n    0xb0700029: \"pyrogram.client.types.Dialogs\",")
         f.write("\n    0xb0700030: \"pyrogram.client.types.ChatMembers\",")
-        f.write("\n    0xb0700031: \"pyrogram.client.types.UserStatus\"")
+        f.write("\n    0xb0700031: \"pyrogram.client.types.UserStatus\",")
         f.write("\n    0xb0700032: \"pyrogram.client.types.InlineQuery\"")
 
         f.write("\n}\n")
