@@ -108,9 +108,9 @@ class Dispatcher:
 
         self.groups[group].remove(handler)
 
-    def update_worker(self):
+    async def update_worker(self):
         while True:
-            update = self.updates.get()
+            update = await self.updates.get()
 
             if update is None:
                 break
