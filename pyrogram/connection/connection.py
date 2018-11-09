@@ -37,7 +37,7 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 1):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 3):
         self.dc_id = dc_id
         self.ipv6 = ipv6
         self.proxy = proxy

@@ -52,11 +52,9 @@ class Sticker(Object):
 
         set_name (``str``, *optional*):
             Name of the sticker set to which the sticker belongs.
-
-        mask_position (:obj:`MaskPosition <pyrogram.MaskPosition>`, *optional*):
-            For mask stickers, the position where the mask should be placed.
     """
 
+    # TODO: Add mask position
     ID = 0xb0700017
 
     def __init__(

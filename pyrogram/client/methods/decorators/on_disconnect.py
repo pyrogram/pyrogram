@@ -28,7 +28,11 @@ class OnDisconnect(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.DisconnectHandler(func))
-            return func
+            handler = pyrogram.DisconnectHandler(func)
+
+            if self is not None:
+                self.add_handler(handler)
+
+            return handler
 
         return decorator

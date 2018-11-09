@@ -36,7 +36,7 @@ class Contact(Object):
             Contact's user identifier in Telegram.
 
         vcard (``str``, *optional*):
-            Additional data about the contact in the form of a vCard
+            Additional data about the contact in the form of a vCard.
     """
 
     ID = 0xb0700011

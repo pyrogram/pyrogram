@@ -37,5 +37,5 @@ from .messages_and_media import (
 from .update import Update
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User
+    Dialog, Dialogs, User, UserStatus
 )

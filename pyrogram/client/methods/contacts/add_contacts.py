@@ -32,7 +32,7 @@ class AddContacts(BaseClient):
             On success, the added contacts are returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(

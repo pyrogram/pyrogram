@@ -23,13 +23,13 @@ __copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.8.1dev1"
+__version__ = "0.9.2.dev1"
 
 from .api.errors import Error
 from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
-    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User,
+    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
     InlineQuery, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent, InlineQueryResultCachedAudio
@@ -37,5 +37,5 @@ from .client.types import (
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler, Filters
+    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters
 )

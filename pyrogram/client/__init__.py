@@ -22,5 +22,5 @@ from .filters import Filters
 from .handlers import (
     MessageHandler, DeletedMessagesHandler,
     CallbackQueryHandler, RawUpdateHandler,
-    DisconnectHandler
+    DisconnectHandler, UserStatusHandler
 )

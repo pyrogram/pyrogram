@@ -119,7 +119,8 @@ class BaseClient:
     def get_messages(
             self,
             chat_id: int or str,
-            message_ids,
+            message_ids: int or list = None,
+            reply_to_message_ids: int or list = None,
             replies: int = 1
     ):
         pass

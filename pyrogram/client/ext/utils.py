@@ -17,15 +17,13 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from base64 import b64decode, b64encode
 from struct import pack
 from weakref import proxy
 
-from pyrogram.api.errors import FloodWait
 from pyrogram.client import types as pyrogram_types
 from ...api import types, functions
-from ...api.errors import StickersetInvalid
+from ...api.errors import StickersetInvalid, MessageIdsEmpty
 
 log = logging.getLogger(__name__)
 
@@ -129,6 +127,30 @@ def parse_chat_photo(photo):
     )
 
 
+def parse_user_status(user_status, user_id: int = None, is_bot: bool = False) -> pyrogram_types.UserStatus or None:
+    if is_bot:
+        return None
+
+    status = pyrogram_types.UserStatus(user_id)
+
+    if isinstance(user_status, types.UserStatusOnline):
+        status.online = True
+        status.date = user_status.expires
+    elif isinstance(user_status, types.UserStatusOffline):
+        status.offline = True
+        status.date = user_status.was_online
+    elif isinstance(user_status, types.UserStatusRecently):
+        status.recently = True
+    elif isinstance(user_status, types.UserStatusLastWeek):
+        status.within_week = True
+    elif isinstance(user_status, types.UserStatusLastMonth):
+        status.within_month = True
+    else:
+        status.long_time_ago = True
+
+    return status
+
+
 def parse_user(user: types.User) -> pyrogram_types.User or None:
     return pyrogram_types.User(
         id=user.id,
@@ -142,7 +164,9 @@ def parse_user(user: types.User) -> pyrogram_types.User or None:
         username=user.username,
         language_code=user.lang_code,
         phone_number=user.phone,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        status=parse_user_status(user.status, is_bot=user.bot),
+        restriction_reason=user.restriction_reason
     ) if user else None
 
 
@@ -162,7 +186,8 @@ def parse_user_chat(user: types.User) -> pyrogram_types.Chat:
         username=user.username,
         first_name=user.first_name,
         last_name=user.last_name,
-        photo=parse_chat_photo(user.photo)
+        photo=parse_chat_photo(user.photo),
+        restriction_reason=user.restriction_reason
     )
 
 
@@ -187,7 +212,8 @@ def parse_channel_chat(channel: types.Channel) -> pyrogram_types.Chat:
         type="supergroup" if channel.megagroup else "channel",
         title=channel.title,
         username=getattr(channel, "username", None),
-        photo=parse_chat_photo(getattr(channel, "photo", None))
+        photo=parse_chat_photo(getattr(channel, "photo", None)),
+        restriction_reason=getattr(channel, "restriction_reason", None)
     )
 
 
@@ -580,6 +606,8 @@ def parse_messages(
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                mentioned=message.mentioned,
+                media=bool(media) or None,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
@@ -607,18 +635,14 @@ def parse_messages(
                 m.caption.init(m._client, m.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
-                while True:
-                    try:
-                        m.reply_to_message = client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
-                            replies=replies - 1
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                try:
+                    m.reply_to_message = client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=replies - 1
+                    )
+                except MessageIdsEmpty:
+                    pass
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -705,6 +729,7 @@ def parse_messages(
                 date=message.date,
                 chat=parse_chat(message, users, chats),
                 from_user=parse_user(users.get(message.from_id, None)),
+                service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,
@@ -719,20 +744,16 @@ def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                while True:
-                    try:
-                        m.pinned_message = client.get_messages(
-                            m.chat.id, message.reply_to_msg_id,
-                            replies=0
-                        )
-                    except FloodWait as e:
-                        log.warning("get_messages flood: waiting {} seconds".format(e.x))
-                        time.sleep(e.x)
-                        continue
-                    else:
-                        break
+                try:
+                    m.pinned_message = client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=0
+                    )
+                except MessageIdsEmpty:
+                    pass
         else:
-            m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
+            m = pyrogram_types.Message(message_id=message.id, client=proxy(client), empty=True)
 
         parsed_messages.append(m)
 
@@ -934,7 +955,7 @@ def parse_chat_full(
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
                     parsed_chat.id,
-                    full_chat.pinned_msg_id
+                    message_ids=full_chat.pinned_msg_id
                 )
 
         if isinstance(full_chat.exported_invite, types.ChatInviteExported):
@@ -957,6 +978,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
     parsed_members = []
 
     if isinstance(members, types.channels.ChannelParticipants):
+        count = members.count
         members = members.participants
 
         for member in members:
@@ -1015,7 +1037,7 @@ def parse_chat_members(members: types.channels.ChannelParticipants or types.mess
                 parsed_members.append(chat_member)
 
         return pyrogram_types.ChatMembers(
-            total_count=members.count,
+            total_count=count,
             chat_members=parsed_members
         )
     else:

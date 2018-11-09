@@ -69,6 +69,9 @@ class Chat(Object):
 
         members_count (``int``, *optional*):
             Chat members count, for groups and channels only.
+
+        restriction_reason (``str``, *optional*):
+            The reason why this chat might be unavailable to some users.
     """
 
     ID = 0xb0700002
@@ -88,7 +91,8 @@ class Chat(Object):
             pinned_message=None,
             sticker_set_name: str = None,
             can_set_sticker_set: bool = None,
-            members_count: int = None
+            members_count: int = None,
+            restriction_reason: str = None
     ):
         self.id = id
         self.type = type
@@ -104,3 +108,4 @@ class Chat(Object):
         self.sticker_set_name = sticker_set_name
         self.can_set_sticker_set = can_set_sticker_set
         self.members_count = members_count
+        self.restriction_reason = restriction_reason

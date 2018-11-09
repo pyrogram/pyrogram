@@ -31,7 +31,7 @@ class InputMediaPhoto(InputMedia):
             Sending photo by a URL is currently unsupported.
 
         caption (``str``, *optional*):
-            Caption of the photo to be sent, 0-200 characters
+            Caption of the photo to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`

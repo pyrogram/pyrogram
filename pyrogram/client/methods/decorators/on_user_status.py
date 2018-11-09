@@ -17,25 +17,29 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.filters.filter import Filter
 from ...ext import BaseClient
 
 
-class OnRawUpdate(BaseClient):
-    def on_raw_update(self=None, group: int = 0):
+class OnUserStatus(BaseClient):
+    def on_user_status(self=None, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
-        raw updates. This does the same thing as :meth:`add_handler` using the
-        :class:`RawUpdateHandler`.
+        user status updates. This does the same thing as :meth:`add_handler` using the
+        :class:`UserStatusHandler`.
 
         Args:
+            filters (:obj:`Filters <pyrogram.Filters>`):
+                Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.
+
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
 
         def decorator(func):
-            handler = pyrogram.RawUpdateHandler(func)
+            handler = pyrogram.UserStatusHandler(func, filters)
 
-            if isinstance(self, int):
-                return handler, group if self is None else group
+            if isinstance(self, Filter):
+                return pyrogram.UserStatusHandler(func, self), group if filters is None else filters
 
             if self is not None:
                 self.add_handler(handler, group)
