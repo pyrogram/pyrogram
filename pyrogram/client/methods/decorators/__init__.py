@@ -19,6 +19,7 @@
 from .on_callback_query import OnCallbackQuery
 from .on_deleted_messages import OnDeletedMessages
 from .on_disconnect import OnDisconnect
+from .on_inline_query import OnInlineQuery
 from .on_message import OnMessage
 from .on_raw_update import OnRawUpdate
 from .on_user_status import OnUserStatus
@@ -30,6 +31,7 @@ class Decorators(
     OnCallbackQuery,
     OnRawUpdate,
     OnDisconnect,
-    OnUserStatus
+    OnUserStatus,
+    OnInlineQuery
 ):
     pass
