@@ -39,7 +39,7 @@ class InlineQuery(Object):
         location (:obj:`Location <pyrogram.Location>`. *optional*):
             Sender location, only for bots that request user location.
     """
-    ID = 0xb0700024
+    ID = 0xb0700032
 
     def __init__(
             self,
