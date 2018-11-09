@@ -68,6 +68,17 @@ Input Media
     InputMediaDocument
     InputPhoneContact
 
+Inline Mode
+------------
+
+.. autosummary::
+    :nosignatures:
+
+    InlineQueryResult
+    InlineQueryResultArticle
+    InputMessageContent
+    InputTextMessageContent
+
 ..  User & Chats
     ------------
 
@@ -189,4 +200,20 @@ Input Media
     :members:
 
 .. autoclass:: InputPhoneContact
+    :members:
+
+
+..  Inline Mode
+    -----------
+
+.. autoclass:: InlineQueryResult
+    :members:
+
+.. autoclass:: InlineQueryResultArticle
+    :members:
+
+.. autoclass:: InputMessageContent
+    :members:
+
+.. autoclass:: InputTextMessageContent
     :members:
