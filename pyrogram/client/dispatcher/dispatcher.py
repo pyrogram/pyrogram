@@ -60,18 +60,23 @@ class Dispatcher:
         self.updates = asyncio.Queue()
         self.groups = OrderedDict()
 
+        async def message_parser(update, users, chats):
+            return await utils.parse_messages(self.client, update.message, users, chats), MessageHandler
+
+        async def deleted_messages_parser(update, users, chats):
+            return utils.parse_deleted_messages(update), DeletedMessagesHandler
+
+        async def callback_query_parser(update, users, chats):
+            return await utils.parse_callback_query(self.client, update, users), CallbackQueryHandler
+
+        async def user_status_parser(update, users, chats):
+            return utils.parse_user_status(update.status, update.user_id), UserStatusHandler
+
         Dispatcher.UPDATES = {
-            Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_messages(self.client, upd.message, usr, cht), MessageHandler),
-
-            Dispatcher.DELETE_MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_deleted_messages(upd), DeletedMessagesHandler),
-
-            Dispatcher.CALLBACK_QUERY_UPDATES:
-                lambda upd, usr, cht: (utils.parse_callback_query(self.client, upd, usr), CallbackQueryHandler),
-
-            (types.UpdateUserStatus,):
-                lambda upd, usr, cht: (utils.parse_user_status(upd.status, upd.user_id), UserStatusHandler)
+            Dispatcher.MESSAGE_UPDATES: message_parser,
+            Dispatcher.DELETE_MESSAGE_UPDATES: deleted_messages_parser,
+            Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
+            (types.UpdateUserStatus,): user_status_parser
         }
 
         Dispatcher.UPDATES = {key: value for key_tuple, value in Dispatcher.UPDATES.items() for key in key_tuple}
@@ -125,8 +130,7 @@ class Dispatcher:
                 if parser is None:
                     continue
 
-                update, handler_type = parser(update, users, chats)
-                tasks = []
+                update, handler_type = await parser(update, users, chats)
 
                 for group in self.groups.values():
                     for handler in group:
@@ -142,12 +146,10 @@ class Dispatcher:
                             continue
 
                         try:
-                            tasks.append(handler.callback(self.client, *args))
+                            await handler.callback(self.client, *args)
                         except Exception as e:
                             log.error(e, exc_info=True)
                         finally:
                             break
-
-                await asyncio.gather(*tasks)
             except Exception as e:
                 log.error(e, exc_info=True)
