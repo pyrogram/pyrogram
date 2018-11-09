@@ -70,3 +70,4 @@ USER_NOT_PARTICIPANT	The user is not a member of this chat
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
 MESSAGE_IDS_EMPTY	The requested message doesn't exist
 RESULTS_TOO_MUCH	You have put too many items in your result
+RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers
