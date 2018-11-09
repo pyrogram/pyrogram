@@ -19,9 +19,13 @@
 
 class InputMessageContent:
     """This object represents the content of a message to be sent as a result of an inline query.
-    Telegram clients currently support the following 4 types:
 
-    TODO: List types
+    Pyrogram currently supports the following 4 types:
+
+    - :obj:`InputTextMessageContent`
+    - :obj:`InputLocationMessageContent`
+    - :obj:`InputVenueMessageContent`
+    - :obj:`InputContactMessageContent`
     """
 
     def __init__(self):
