@@ -37,6 +37,9 @@ class OnCallbackQuery(BaseClient):
         """
 
         def decorator(func):
+            if isinstance(func, tuple):
+                func = func[0].callback
+
             handler = pyrogram.CallbackQueryHandler(func, filters)
 
             if isinstance(self, Filter):
