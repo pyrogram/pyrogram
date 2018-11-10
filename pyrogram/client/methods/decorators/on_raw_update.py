@@ -32,6 +32,9 @@ class OnRawUpdate(BaseClient):
         """
 
         def decorator(func):
+            if isinstance(func, tuple):
+                func = func[0].callback
+
             handler = pyrogram.RawUpdateHandler(func)
 
             if isinstance(self, int):
