@@ -896,7 +896,7 @@ async def parse_callback_query(client, update, users):
         else:
             peer_id = int("-100" + str(peer.channel_id))
 
-        message = client.get_messages(peer_id, update.msg_id)
+        message = await client.get_messages(peer_id, update.msg_id)
     elif isinstance(update, types.UpdateInlineBotCallbackQuery):
         inline_message_id = b64encode(
             pack(
