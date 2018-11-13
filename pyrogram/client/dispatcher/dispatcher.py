@@ -50,14 +50,12 @@ class Dispatcher:
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
 
-    UPDATES = None
-
     def __init__(self, client, workers: int):
         self.client = client
         self.workers = workers
 
         self.update_worker_tasks = []
-        self.updates = asyncio.Queue()
+        self.updates_queue = asyncio.Queue()
         self.groups = OrderedDict()
 
         async def message_parser(update, users, chats):
@@ -72,14 +70,14 @@ class Dispatcher:
         async def user_status_parser(update, users, chats):
             return utils.parse_user_status(update.status, update.user_id), UserStatusHandler
 
-        Dispatcher.UPDATES = {
+        self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
             Dispatcher.DELETE_MESSAGE_UPDATES: deleted_messages_parser,
             Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
             (types.UpdateUserStatus,): user_status_parser
         }
 
-        Dispatcher.UPDATES = {key: value for key_tuple, value in Dispatcher.UPDATES.items() for key in key_tuple}
+        self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
     async def start(self):
         for i in range(self.workers):
@@ -91,7 +89,7 @@ class Dispatcher:
 
     async def stop(self):
         for i in range(self.workers):
-            self.updates.put_nowait(None)
+            self.updates_queue.put_nowait(None)
 
         for i in self.update_worker_tasks:
             await i
@@ -115,7 +113,7 @@ class Dispatcher:
 
     async def update_worker(self):
         while True:
-            update = await self.updates.get()
+            update = await self.updates_queue.get()
 
             if update is None:
                 break
@@ -125,7 +123,7 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                parser = Dispatcher.UPDATES.get(type(update), None)
+                parser = self.update_parsers.get(type(update), None)
 
                 if parser is None:
                     continue

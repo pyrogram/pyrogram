@@ -850,7 +850,7 @@ class Client(Methods, BaseClient):
                             if len(self.channels_pts[channel_id]) > 50:
                                 self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
 
-                        self.dispatcher.updates.put_nowait((update, updates.users, updates.chats))
+                        self.dispatcher.updates_queue.put_nowait((update, updates.users, updates.chats))
                 elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = await self.send(
                         functions.updates.GetDifference(
@@ -861,7 +861,7 @@ class Client(Methods, BaseClient):
                     )
 
                     if diff.new_messages:
-                        self.dispatcher.updates.put_nowait((
+                        self.dispatcher.updates_queue.put_nowait((
                             types.UpdateNewMessage(
                                 message=diff.new_messages[0],
                                 pts=updates.pts,
@@ -871,9 +871,9 @@ class Client(Methods, BaseClient):
                             diff.chats
                         ))
                     else:
-                        self.dispatcher.updates.put_nowait((diff.other_updates[0], [], []))
+                        self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
-                    self.dispatcher.updates.put_nowait((updates.update, [], []))
+                    self.dispatcher.updates_queue.put_nowait((updates.update, [], []))
                 elif isinstance(updates, types.UpdatesTooLong):
                     log.warning(updates)
             except Exception as e:

@@ -82,7 +82,7 @@ If no error shows up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.9.2'
+    '0.9.3'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
 .. _develop: http://github.com/pyrogram/pyrogram
