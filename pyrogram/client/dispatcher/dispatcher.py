@@ -52,17 +52,15 @@ class Dispatcher:
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
 
-    UPDATES = None
-
     def __init__(self, client, workers: int):
         self.client = client
         self.workers = workers
 
         self.workers_list = []
-        self.updates = Queue()
+        self.updates_queue = Queue()
         self.groups = OrderedDict()
 
-        Dispatcher.UPDATES = {
+        self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
                 lambda upd, usr, cht: (utils.parse_messages(self.client, upd.message, usr, cht), MessageHandler),
 
@@ -76,7 +74,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (utils.parse_user_status(upd.status, upd.user_id), UserStatusHandler)
         }
 
-        Dispatcher.UPDATES = {key: value for key_tuple, value in Dispatcher.UPDATES.items() for key in key_tuple}
+        self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
     def start(self):
         for i in range(self.workers):
@@ -91,7 +89,7 @@ class Dispatcher:
 
     def stop(self):
         for _ in range(self.workers):
-            self.updates.put(None)
+            self.updates_queue.put(None)
 
         for worker in self.workers_list:
             worker.join()
@@ -116,7 +114,7 @@ class Dispatcher:
         log.debug("{} started".format(name))
 
         while True:
-            update = self.updates.get()
+            update = self.updates_queue.get()
 
             if update is None:
                 break
@@ -126,7 +124,7 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                parser = Dispatcher.UPDATES.get(type(update), None)
+                parser = self.update_parsers.get(type(update), None)
 
                 if parser is None:
                     continue
