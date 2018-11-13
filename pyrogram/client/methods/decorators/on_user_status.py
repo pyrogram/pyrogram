@@ -36,6 +36,9 @@ class OnUserStatus(BaseClient):
         """
 
         def decorator(func):
+            if isinstance(func, tuple):
+                func = func[0].callback
+
             handler = pyrogram.UserStatusHandler(func, filters)
 
             if isinstance(self, Filter):

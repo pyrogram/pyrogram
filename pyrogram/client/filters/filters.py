@@ -166,7 +166,37 @@ class Filters:
     inline_keyboard = create("InlineKeyboard", lambda _, m: isinstance(m.reply_markup, InlineKeyboardMarkup))
     """Filter messages containing inline keyboard markups"""
 
-    dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
+    mentioned = create("Mentioned", lambda _, m: bool(m.mentioned))
+    """Filter messages containing mentions"""
+
+    service = create("Service", lambda _, m: bool(m.service))
+    """Filter service messages. A service message contains any of the following fields set
+    
+    - left_chat_member
+    - new_chat_title
+    - new_chat_photo
+    - delete_chat_photo
+    - group_chat_created
+    - supergroup_chat_created
+    - channel_chat_created
+    - migrate_to_chat_id
+    - migrate_from_chat_id
+    - pinned_message"""
+
+    media = create("Media", lambda _, m: bool(m.media))
+    """Filter media messages. A media message contains any of the following fields set
+    
+    - audio
+    - document
+    - photo
+    - sticker
+    - video
+    - animation
+    - voice
+    - video_note
+    - contact
+    - location
+    - venue"""
 
     @staticmethod
     def command(command: str or list,
@@ -252,15 +282,16 @@ class Filters:
         Args:
             users (``int`` | ``str`` | ``list``):
                 Pass one or more user ids/usernames to filter users.
+                For you yourself, "me" or "self" can be used as well. 
                 Defaults to None (no users).
         """
 
         def __init__(self, users: int or str or list = None):
             users = [] if users is None else users if type(users) is list else [users]
             super().__init__(
-                {i.lower().strip("@") if type(i) is str else i for i in users}
+                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in users}
                 if type(users) is list else
-                {users.lower().strip("@") if type(users) is str else users}
+                {"me" if users in ["me", "self"] else users.lower().strip("@") if type(users) is str else users}
             )
 
         def __call__(self, message):
@@ -268,7 +299,9 @@ class Filters:
                 message.from_user
                 and (message.from_user.id in self
                      or (message.from_user.username
-                         and message.from_user.username.lower() in self))
+                         and message.from_user.username.lower() in self)
+                     or ("me" in self
+                         and message.from_user.is_self))
             )
 
     # noinspection PyPep8Naming
@@ -281,15 +314,16 @@ class Filters:
         Args:
             chats (``int`` | ``str`` | ``list``):
                 Pass one or more chat ids/usernames to filter chats.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 Defaults to None (no chats).
         """
 
         def __init__(self, chats: int or str or list = None):
             chats = [] if chats is None else chats if type(chats) is list else [chats]
             super().__init__(
-                {i.lower().strip("@") if type(i) is str else i for i in chats}
+                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in chats}
                 if type(chats) is list else
-                {chats.lower().strip("@") if type(chats) is str else chats}
+                {"me" if chats in ["me", "self"] else chats.lower().strip("@") if type(chats) is str else chats}
             )
 
         def __call__(self, message):
@@ -297,41 +331,10 @@ class Filters:
                 message.chat
                 and (message.chat.id in self
                      or (message.chat.username
-                         and message.chat.username.lower() in self))
+                         and message.chat.username.lower() in self)
+                     or ("me" in self and message.from_user
+                         and message.from_user.is_self
+                         and not message.outgoing))
             )
 
-    service = create(
-        "Service",
-        lambda _, m: bool(
-            Filters.new_chat_members(m)
-            or Filters.left_chat_member(m)
-            or Filters.new_chat_title(m)
-            or Filters.new_chat_photo(m)
-            or Filters.delete_chat_photo(m)
-            or Filters.group_chat_created(m)
-            or Filters.supergroup_chat_created(m)
-            or Filters.channel_chat_created(m)
-            or Filters.migrate_to_chat_id(m)
-            or Filters.migrate_from_chat_id(m)
-            or Filters.pinned_message(m)
-        )
-    )
-    """Filter all service messages."""
-
-    media = create(
-        "Media",
-        lambda _, m: bool(
-            Filters.audio(m)
-            or Filters.document(m)
-            or Filters.photo(m)
-            or Filters.sticker(m)
-            or Filters.video(m)
-            or Filters.animation(m)
-            or Filters.voice(m)
-            or Filters.video_note(m)
-            or Filters.contact(m)
-            or Filters.location(m)
-            or Filters.venue(m)
-        )
-    )
-    """Filter all media messages."""
+    dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))

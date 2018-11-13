@@ -55,6 +55,24 @@ class Message(Object):
             For replies, the original message. Note that the Message object in this field will not contain
             further reply_to_message fields even if it itself is a reply.
 
+        mentioned (``bool``, *optional*):
+            The message contains a mention.
+
+        empty (``bool``, *optional*):
+            The message is empty.
+            A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
+
+        service (``bool``, *optional*):
+            The message is a service message.
+            A service message has one and only one of these fields set: left_chat_member, new_chat_title,
+            new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
+            migrate_to_chat_id, migrate_from_chat_id, pinned_message.
+
+        media (``bool``` *optional*):
+            The message is a media message.
+            A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
+            voice, video_note, contact, location, venue.
+
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
 
@@ -206,6 +224,10 @@ class Message(Object):
             forward_signature: str = None,
             forward_date: int = None,
             reply_to_message=None,
+            mentioned=None,
+            empty=None,
+            service=None,
+            media=None,
             edit_date: int = None,
             media_group_id: str = None,
             author_signature: str = None,
@@ -253,6 +275,10 @@ class Message(Object):
         self.forward_signature = forward_signature  # flags.4?string
         self.forward_date = forward_date  # flags.5?int
         self.reply_to_message = reply_to_message  # flags.6?Message
+        self.mentioned = mentioned
+        self.empty = empty
+        self.service = service
+        self.media = media
         self.edit_date = edit_date  # flags.7?int
         self.media_group_id = media_group_id  # flags.8?string
         self.author_signature = author_signature  # flags.9?string
@@ -361,6 +387,54 @@ class Message(Object):
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
+        """Bound method *edit* of :obj:`Message <pyrogram.Message>
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_text(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                text="hello",
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit("hello")
+
+        Args:
+            text (``str``):
+                New text of the message.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return self._client.edit_message_text(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            text=text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
             reply_markup=reply_markup
         )
 
@@ -560,7 +634,7 @@ class Message(Object):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    def download(self, file_name: str = "", block: bool = True):
+    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = None):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -585,6 +659,15 @@ class Message(Object):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
+            progress (``callable``):
+                Pass a callback function to view the download progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
@@ -595,5 +678,7 @@ class Message(Object):
         return self._client.download_media(
             message=self,
             file_name=file_name,
-            block=block
+            block=block,
+            progress=progress,
+            progress_args=progress_args,
         )

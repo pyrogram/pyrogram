@@ -606,6 +606,8 @@ def parse_messages(
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                mentioned=message.mentioned,
+                media=bool(media) or None,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
@@ -640,7 +642,7 @@ def parse_messages(
                         replies=replies - 1
                     )
                 except MessageIdsEmpty:
-                    m.reply_to_message = None
+                    pass
         elif isinstance(message, types.MessageService):
             action = message.action
 
@@ -727,6 +729,7 @@ def parse_messages(
                 date=message.date,
                 chat=parse_chat(message, users, chats),
                 from_user=parse_user(users.get(message.from_id, None)),
+                service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,
@@ -741,23 +744,26 @@ def parse_messages(
             )
 
             if isinstance(action, types.MessageActionPinMessage):
-                m.pinned_message = client.get_messages(
-                    m.chat.id,
-                    reply_to_message_ids=message.id,
-                    replies=0
-                )
+                try:
+                    m.pinned_message = client.get_messages(
+                        m.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=0
+                    )
+                except MessageIdsEmpty:
+                    pass
         else:
-            m = pyrogram_types.Message(message_id=message.id, client=proxy(client))
+            m = pyrogram_types.Message(message_id=message.id, client=proxy(client), empty=True)
 
         parsed_messages.append(m)
 
     return parsed_messages if is_list else parsed_messages[0]
 
 
-def parse_deleted_messages(
-        messages: list,
-        channel_id: int
-) -> pyrogram_types.Messages:
+def parse_deleted_messages(update) -> pyrogram_types.Messages:
+    messages = update.messages
+    channel_id = getattr(update, "channel_id", None)
+
     parsed_messages = []
 
     for message in messages:
@@ -864,42 +870,40 @@ def parse_profile_photos(photos):
     )
 
 
-def parse_callback_query(client, callback_query, users):
-    peer = callback_query.peer
+def parse_callback_query(client, update, users):
+    message = None
+    inline_message_id = None
 
-    if isinstance(peer, types.PeerUser):
-        peer_id = peer.user_id
-    elif isinstance(peer, types.PeerChat):
-        peer_id = -peer.chat_id
-    else:
-        peer_id = int("-100" + str(peer.channel_id))
+    if isinstance(update, types.UpdateBotCallbackQuery):
+        peer = update.peer
 
-    return pyrogram_types.CallbackQuery(
-        id=str(callback_query.query_id),
-        from_user=parse_user(users[callback_query.user_id]),
-        message=client.get_messages(peer_id, callback_query.msg_id),
-        chat_instance=str(callback_query.chat_instance),
-        data=callback_query.data.decode(),
-        game_short_name=callback_query.game_short_name,
-        client=client
-    )
+        if isinstance(peer, types.PeerUser):
+            peer_id = peer.user_id
+        elif isinstance(peer, types.PeerChat):
+            peer_id = -peer.chat_id
+        else:
+            peer_id = int("-100" + str(peer.channel_id))
 
-
-def parse_inline_callback_query(client, callback_query, users):
-    return pyrogram_types.CallbackQuery(
-        id=str(callback_query.query_id),
-        from_user=parse_user(users[callback_query.user_id]),
-        chat_instance=str(callback_query.chat_instance),
-        inline_message_id=b64encode(
+        message = client.get_messages(peer_id, update.msg_id)
+    elif isinstance(update, types.UpdateInlineBotCallbackQuery):
+        inline_message_id = b64encode(
             pack(
                 "<iqq",
-                callback_query.msg_id.dc_id,
-                callback_query.msg_id.id,
-                callback_query.msg_id.access_hash
+                update.msg_id.dc_id,
+                update.msg_id.id,
+                update.msg_id.access_hash
             ),
             b"-_"
-        ).decode().rstrip("="),
-        game_short_name=callback_query.game_short_name,
+        ).decode().rstrip("=")
+
+    return pyrogram_types.CallbackQuery(
+        id=str(update.query_id),
+        from_user=parse_user(users[update.user_id]),
+        message=message,
+        inline_message_id=inline_message_id,
+        chat_instance=str(update.chat_instance),
+        data=update.data.decode(),
+        game_short_name=update.game_short_name,
         client=client
     )
 
