@@ -68,7 +68,7 @@ class Message(Object):
             new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
             migrate_to_chat_id, migrate_from_chat_id, pinned_message.
 
-        media (``bool``` *optional*):
+        media (``bool`` *optional*):
             The message is a media message.
             A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
             voice, video_note, contact, location, venue.
@@ -391,7 +391,7 @@ class Message(Object):
         )
 
     def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
-        """Bound method *edit* of :obj:`Message <pyrogram.Message>
+        """Bound method *edit* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
 
