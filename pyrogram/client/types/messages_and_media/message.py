@@ -391,7 +391,7 @@ class Message(Object):
         )
 
     def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
-        """Bound method *edit* of :obj:`Message <pyrogram.Message>
+        """Bound method *edit* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
 
