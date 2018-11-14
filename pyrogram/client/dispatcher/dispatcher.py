@@ -129,7 +129,7 @@ class Dispatcher:
                 if parser is None:
                     continue
 
-                update, handler_type = parser(update, users, chats)
+                parsed_update, handler_type = parser(update, users, chats)
 
                 for group in self.groups.values():
                     for handler in group:
@@ -138,8 +138,8 @@ class Dispatcher:
                         if isinstance(handler, RawUpdateHandler):
                             args = (update, users, chats)
                         elif isinstance(handler, handler_type):
-                            if handler.check(update):
-                                args = (update,)
+                            if handler.check(parsed_update):
+                                args = (parsed_update,)
 
                         if args is None:
                             continue
