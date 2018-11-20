@@ -579,10 +579,7 @@ class Message(Object):
             ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, ReplyKeyboardMarkup):
-            if quote is None:
-                quote = self.chat.type != "private"
-
-            return await self.reply(x, quote=quote)
+            return await self.reply(x)
         elif isinstance(self.reply_markup, InlineKeyboardMarkup):
             if isinstance(x, int) and y is None:
                 try:
