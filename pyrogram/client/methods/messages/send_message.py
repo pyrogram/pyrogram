@@ -67,6 +67,7 @@ class SendMessage(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
+        message, entities = style.parse(text).values()
 
         r = self.send(
             functions.messages.SendMessage(
@@ -76,16 +77,20 @@ class SendMessage(BaseClient):
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(text)
+                message=message,
+                entities=entities
             )
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
             return pyrogram_types.Message(
                 message_id=r.id,
+                chat=pyrogram_types.Chat(id=list(self.resolve_peer(chat_id).__dict__.values())[0], type="private"),
+                text=message,
                 date=r.date,
                 outgoing=r.out,
-                entities=utils.parse_entities(r.entities, {}) or None
+                entities=entities,
+                client=self
             )
 
         for i in r.updates:
