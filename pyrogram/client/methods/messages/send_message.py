@@ -85,7 +85,7 @@ class SendMessage(BaseClient):
         if isinstance(r, types.UpdateShortSentMessage):
             return pyrogram_types.Message(
                 message_id=r.id,
-                chat=pyrogram_types.Chat(id=list(self.resolve_peer(chat_id).__dict__.values())[0], type="private"),
+                chat=pyrogram_types.Chat(id=list((await self.resolve_peer(chat_id)).__dict__.values())[0], type="private"),
                 text=message,
                 date=r.date,
                 outgoing=r.out,
