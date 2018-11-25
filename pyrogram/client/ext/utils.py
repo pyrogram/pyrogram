@@ -327,6 +327,7 @@ def parse_messages(
             video_note = None
             sticker = None
             document = None
+            web_page = None
 
             media = message.media
 
@@ -574,6 +575,8 @@ def parse_messages(
                                 file_size=doc.size,
                                 date=doc.date
                             )
+                elif isinstance(media, types.MessageMediaWebPage):
+                    web_page = True
                 else:
                     media = None
 
@@ -621,6 +624,7 @@ def parse_messages(
                 video_note=video_note,
                 sticker=sticker,
                 document=document,
+                web_page=web_page,
                 views=message.views,
                 via_bot=parse_user(users.get(message.via_bot_id, None)),
                 outgoing=message.out,
