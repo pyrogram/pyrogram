@@ -118,6 +118,9 @@ class Filters:
     venue = create("Venue", lambda _, m: bool(m.venue))
     """Filter messages that contain :obj:`Venue <pyrogram.api.types.pyrogram.Venue>` objects."""
 
+    web_page = create("WebPage", lambda _, m: m.web_page)
+    """Filter messages sent with a webpage preview."""
+
     private = create("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
     """Filter messages sent in private chats."""
 
