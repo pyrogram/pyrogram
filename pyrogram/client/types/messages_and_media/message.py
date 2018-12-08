@@ -136,6 +136,9 @@ class Message(Object):
 
         web_page (``bool``, *optional*):
             Message was sent with a webpage preview.
+            **Note:** Support for web pages is still basic; a simple boolean is set in case the message contains a
+            web page preview. In future versions this property could turn into a full web page object that contains
+            more details.
 
         new_chat_members (List of :obj:`User <pyrogram.User>`, *optional*):
             New members that were added to the group or supergroup and information about them
