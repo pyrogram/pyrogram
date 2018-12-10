@@ -9,10 +9,10 @@ from pyrogram import Client, Emoji, Filters
 USER = "**{}**"
 MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.ml/)'s group chat {{}}!".format(Emoji.SPARKLES)
 
-app = Client("dan_prod")
-
-enabled_groups = Filters.chat("PyrogramLounge")
+enabled_groups = Filters.chat("PyrogramChat")
 last_welcomes = {}
+
+app = Client("my_account")
 
 
 @app.on_message(enabled_groups & Filters.new_chat_members)
