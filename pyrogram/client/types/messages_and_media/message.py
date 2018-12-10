@@ -134,6 +134,12 @@ class Message(Object):
         venue (:obj:`Venue <pyrogram.Venue>`, *optional*):
             Message is a venue, information about the venue.
 
+        web_page (``bool``, *optional*):
+            Message was sent with a webpage preview.
+            **Note:** Support for web pages is still basic; a simple boolean is set in case the message contains a
+            web page preview. In future versions this property could turn into a full web page object that contains
+            more details.
+
         new_chat_members (List of :obj:`User <pyrogram.User>`, *optional*):
             New members that were added to the group or supergroup and information about them
             (the bot itself may be one of these members).
@@ -246,6 +252,7 @@ class Message(Object):
             contact=None,
             location=None,
             venue=None,
+            web_page=None,
             new_chat_members: list = None,
             left_chat_member=None,
             new_chat_title: str = None,
@@ -297,6 +304,7 @@ class Message(Object):
         self.contact = contact  # flags.22?Contact
         self.location = location  # flags.23?Location
         self.venue = venue  # flags.24?Venue
+        self.web_page = web_page
         self.new_chat_members = new_chat_members  # flags.25?Vector<User>
         self.left_chat_member = left_chat_member  # flags.26?User
         self.new_chat_title = new_chat_title  # flags.27?string
