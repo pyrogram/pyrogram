@@ -28,8 +28,9 @@ log = logging.getLogger(__name__)
 class TCPAbridgedO(TCP):
     RESERVED = (b"HEAD", b"POST", b"GET ", b"OPTI", b"\xee" * 4)
 
-    def __init__(self, proxy: dict):
-        super().__init__(proxy)
+    def __init__(self, ipv6: bool, proxy: dict):
+        super().__init__(ipv6, proxy)
+
         self.encrypt = None
         self.decrypt = None
 
@@ -53,8 +54,6 @@ class TCPAbridgedO(TCP):
         nonce[56:64] = AES.ctr256_encrypt(nonce, *self.encrypt)[56:64]
 
         super().sendall(nonce)
-
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
         length = len(data) // 4

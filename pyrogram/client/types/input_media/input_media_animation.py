@@ -28,8 +28,14 @@ class InputMediaAnimation(InputMedia):
             Pass a file_id as string to send a file that exists on the Telegram servers or
             pass a file path as string to upload a new file that exists on your local machine.
 
+        thumb (``str``, *optional*):
+            Thumbnail of the animation file sent.
+            The thumbnail should be in JPEG format and less than 200 KB in size.
+            A thumbnail's width and height should not exceed 90 pixels.
+            Thumbnails can't be reused and can be only uploaded as a new file.
+
         caption (``str``, *optional*):
-            Caption of the animation to be sent, 0-200 characters
+            Caption of the animation to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
             Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -48,6 +54,7 @@ class InputMediaAnimation(InputMedia):
 
     def __init__(self,
                  media: str,
+                 thumb: str = None,
                  caption: str = "",
                  parse_mode: str = "",
                  width: int = 0,
@@ -55,6 +62,7 @@ class InputMediaAnimation(InputMedia):
                  duration: int = 0):
         super().__init__(media, caption, parse_mode)
 
+        self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration

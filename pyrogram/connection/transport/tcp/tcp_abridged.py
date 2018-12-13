@@ -24,14 +24,12 @@ log = logging.getLogger(__name__)
 
 
 class TCPAbridged(TCP):
-    def __init__(self, proxy: dict):
-        super().__init__(proxy)
+    def __init__(self, ipv6: bool, proxy: dict):
+        super().__init__(ipv6, proxy)
 
     def connect(self, address: tuple):
         super().connect(address)
         super().sendall(b"\xef")
-
-        log.info("Connected{}!".format(" with proxy" if self.proxy_enabled else ""))
 
     def sendall(self, data: bytes, *args):
         length = len(data) // 4

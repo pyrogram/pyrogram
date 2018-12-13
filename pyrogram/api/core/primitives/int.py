@@ -29,14 +29,11 @@ class Int(Object):
         return int.from_bytes(b.read(cls.SIZE), "little", signed=signed)
 
     def __new__(cls, value: int, signed: bool = True) -> bytes:
-        return int.to_bytes(value, cls.SIZE, "little", signed=signed)
+        return value.to_bytes(cls.SIZE, "little", signed=signed)
 
 
 class Long(Int):
     SIZE = 8
-
-    def __new__(cls, *args):
-        return super().__new__(cls, *args)
 
 
 class Int128(Int):

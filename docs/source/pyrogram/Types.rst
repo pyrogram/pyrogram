@@ -10,6 +10,7 @@ Users & Chats
     :nosignatures:
 
     User
+    UserStatus
     Chat
     ChatPhoto
     ChatMember
@@ -62,12 +63,18 @@ Input Media
 
     InputMediaPhoto
     InputMediaVideo
+    InputMediaAudio
+    InputMediaAnimation
+    InputMediaDocument
     InputPhoneContact
 
 ..  User & Chats
     ------------
 
 .. autoclass:: User
+    :members:
+
+.. autoclass:: UserStatus
     :members:
 
 .. autoclass:: Chat
@@ -170,6 +177,15 @@ Input Media
     :members:
 
 .. autoclass:: InputMediaVideo
+    :members:
+
+.. autoclass:: InputMediaAudio
+    :members:
+
+.. autoclass:: InputMediaAnimation
+    :members:
+
+.. autoclass:: InputMediaDocument
     :members:
 
 .. autoclass:: InputPhoneContact

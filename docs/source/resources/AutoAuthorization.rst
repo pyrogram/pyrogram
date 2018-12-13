@@ -35,11 +35,8 @@ Example:
         password="password"  # (if you have one)
     )
 
-    app.start()
-
-    print(app.get_me())
-
-    app.stop()
+    with app:
+        print(app.get_me())
 
 Sign Up
 -------
@@ -67,8 +64,5 @@ Example:
         last_name=""  # Can be an empty string
     )
 
-    app.start()
-
-    print(app.get_me())
-
-    app.stop()
+    with app:
+        print(app.get_me())

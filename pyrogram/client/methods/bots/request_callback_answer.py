@@ -24,7 +24,7 @@ class RequestCallbackAnswer(BaseClient):
     def request_callback_answer(self,
                                 chat_id: int or str,
                                 message_id: int,
-                                callback_data: str):
+                                callback_data: bytes):
         """Use this method to request a callback answer from bots. This is the equivalent of clicking an
         inline button containing callback data.
 
@@ -37,7 +37,7 @@ class RequestCallbackAnswer(BaseClient):
             message_id (``int``):
                 The message id the inline keyboard is attached on.
 
-            callback_data (``str``):
+            callback_data (``bytes``):
                 Callback data associated with the inline button you want to get the answer from.
 
         Returns:
@@ -45,14 +45,14 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``TimeoutError``: If the bot fails to answer within 10 seconds
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``TimeoutError`` if the bot fails to answer within 10 seconds.
         """
         return self.send(
             functions.messages.GetBotCallbackAnswer(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                data=callback_data.encode()
+                data=callback_data
             ),
             retries=0,
             timeout=10

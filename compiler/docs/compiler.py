@@ -88,7 +88,7 @@ def generate(source_path, base):
             inner_path = base + "/" + k + "/index" + ".rst"
             module = "pyrogram.api.{}.{}".format(base, k)
         else:
-            for i in list(all_entities)[::-1]:
+            for i in sorted(list(all_entities), reverse=True):
                 if i != base:
                     entities.insert(0, "{0}/index".format(i))
 

@@ -30,6 +30,7 @@ Decorators
     on_message
     on_callback_query
     on_deleted_messages
+    on_user_status
     on_disconnect
     on_raw_update
 
@@ -57,10 +58,10 @@ Messages
     edit_message_text
     edit_message_caption
     edit_message_reply_markup
+    edit_message_media
     delete_messages
     get_messages
     get_history
-    get_dialogs
 
 Chats
 -----
@@ -84,6 +85,8 @@ Chats
     get_chat
     get_chat_member
     get_chat_members
+    get_chat_members_count
+    get_dialogs
 
 Users
 -----
@@ -94,7 +97,8 @@ Users
     get_me
     get_users
     get_user_profile_photos
-    delete_profile_photos
+    set_user_profile_photo
+    delete_user_profile_photos
 
 Contacts
 --------

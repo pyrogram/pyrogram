@@ -26,7 +26,7 @@ from pyrogram.api.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
-    InputMediaAnimation
+    InputMediaAnimation, InputMediaDocument
 )
 
 
@@ -36,6 +36,34 @@ class EditMessageMedia(BaseClient):
                            message_id: int,
                            media,
                            reply_markup=None):
+        """Use this method to edit audio, document, photo, or video messages.
+
+        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
+        message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
+        Use previously uploaded file via its file_id or specify a URL. On success, if the edited message was sent
+        by the bot, the edited Message is returned, otherwise True is returned.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_id (``int``):
+                Message identifier in the chat specified in chat_id.
+
+            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption
 
@@ -231,6 +259,54 @@ class EditMessageMedia(BaseClient):
                     raise FileIdInvalid from None
                 else:
                     if unpacked[0] != 10:
+                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                        if media_type:
+                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                        else:
+                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                    media = types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=unpacked[2],
+                            access_hash=unpacked[3]
+                        )
+                    )
+
+        if isinstance(media, InputMediaDocument):
+            if os.path.exists(media.media):
+                media = self.send(
+                    functions.messages.UploadMedia(
+                        peer=self.resolve_peer(chat_id),
+                        media=types.InputMediaUploadedDocument(
+                            mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "text/plain"),
+                            file=self.save_file(media.media),
+                            attributes=[
+                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                            ]
+                        )
+                    )
+                )
+
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=media.document.id,
+                        access_hash=media.document.access_hash
+                    )
+                )
+            elif media.media.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=media.media
+                )
+            else:
+                try:
+                    decoded = utils.decode(media.media)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    if unpacked[0] not in (5, 10):
                         media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
                         if media_type:

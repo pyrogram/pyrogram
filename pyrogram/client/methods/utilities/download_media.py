@@ -73,8 +73,8 @@ class DownloadMedia(BaseClient):
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``ValueError``: If the message doesn't contain any downloadable media
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"
 

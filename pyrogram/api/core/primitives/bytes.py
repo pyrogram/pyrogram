@@ -48,7 +48,7 @@ class Bytes(Object):
         else:
             return (
                 bytes([254])
-                + int.to_bytes(length, 3, "little")
+                + length.to_bytes(3, "little")
                 + value
                 + bytes(-length % 4)
             )

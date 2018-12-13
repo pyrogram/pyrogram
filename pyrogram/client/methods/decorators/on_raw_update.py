@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class OnRawUpdate(BaseClient):
-    def on_raw_update(self, group: int = 0):
+    def on_raw_update(self=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         raw updates. This does the same thing as :meth:`add_handler` using the
         :class:`RawUpdateHandler`.
@@ -32,7 +32,17 @@ class OnRawUpdate(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.RawUpdateHandler(func), group)
-            return func
+            if isinstance(func, tuple):
+                func = func[0].callback
+
+            handler = pyrogram.RawUpdateHandler(func)
+
+            if isinstance(self, int):
+                return handler, group if self is None else group
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator

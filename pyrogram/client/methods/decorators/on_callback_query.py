@@ -17,11 +17,12 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.filters.filter import Filter
 from ...ext import BaseClient
 
 
 class OnCallbackQuery(BaseClient):
-    def on_callback_query(self, filters=None, group: int = 0):
+    def on_callback_query(self=None, filters=None, group: int = 0):
         """Use this decorator to automatically register a function for handling
         callback queries. This does the same thing as :meth:`add_handler` using the
         :class:`CallbackQueryHandler`.
@@ -36,7 +37,17 @@ class OnCallbackQuery(BaseClient):
         """
 
         def decorator(func):
-            self.add_handler(pyrogram.CallbackQueryHandler(func, filters), group)
-            return func
+            if isinstance(func, tuple):
+                func = func[0].callback
+
+            handler = pyrogram.CallbackQueryHandler(func, filters)
+
+            if isinstance(self, Filter):
+                return pyrogram.CallbackQueryHandler(func, self), group if filters is None else filters
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator

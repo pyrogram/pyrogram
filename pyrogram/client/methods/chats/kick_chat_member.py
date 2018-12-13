@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types
+from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
 
@@ -52,13 +53,13 @@ class KickChatMember(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         chat_peer = self.resolve_peer(chat_id)
         user_peer = self.resolve_peer(user_id)
 
         if isinstance(chat_peer, types.InputPeerChannel):
-            self.send(
+            r = self.send(
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
@@ -76,11 +77,17 @@ class KickChatMember(BaseClient):
                 )
             )
         else:
-            self.send(
+            r = self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer
                 )
             )
 
-        return True
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                return utils.parse_messages(
+                    self, i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats}
+                )

@@ -26,7 +26,7 @@ Features
 -   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
 -   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 81 on top of MTProto 2.0.
+-   **Updated** to the latest Telegram API version, currently Layer 82 on top of MTProto 2.0.
 -   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
 -   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
@@ -78,14 +78,13 @@ Copyright & License
 
     <h1 align="center">
         <a href="https://github.com/pyrogram/pyrogram">
-            <div><img src="https://media.pyrogram.ml/images/icon.png" alt="Pyrogram Icon"></div>
-            <div><img src="https://media.pyrogram.ml/images/label.png" alt="Pyrogram Label"></div>
+            <div><img src="https://raw.githubusercontent.com/pyrogram/logos/master/logos/pyrogram_logo2.png" alt="Pyrogram Logo"></div>
         </a>
     </h1>
 
     <p align="center">
         <b>Telegram MTProto API Client Library for Python</b>
-        
+
         <br>
         <a href="https://github.com/pyrogram/pyrogram/releases/latest">
             Download
@@ -98,27 +97,27 @@ Copyright & License
         <a href="https://t.me/PyrogramChat">
             Community
         </a>
-        <br><br>
+        <br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/SCHEME-LAYER%2081-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
-                alt="Scheme Layer">
+            <img src="https://img.shields.io/badge/schema-layer%2082-eda738.svg?longCache=true&colorA=262b30"
+                alt="Schema Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://img.shields.io/badge/TGCRYPTO-V1.0.4-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+            <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
                 alt="TgCrypto">
         </a>
     </p>
 
-.. |logo| image:: https://pyrogram.ml/images/logo.png
+.. |logo| image:: https://raw.githubusercontent.com/pyrogram/logos/master/logos/pyrogram_logo2.png
     :target: https://pyrogram.ml
     :alt: Pyrogram
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
-.. |scheme| image:: "https://img.shields.io/badge/SCHEME-LAYER%2081-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+.. |scheme| image:: "https://img.shields.io/badge/SCHEME-LAYER%2082-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
     :target: compiler/api/source/main_api.tl
     :alt: Scheme Layer
 
-.. |tgcrypto| image:: "https://img.shields.io/badge/TGCRYPTO-V1.0.4-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+.. |tgcrypto| image:: "https://img.shields.io/badge/TGCRYPTO-V1.1.1-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
     :target: https://github.com/pyrogram/tgcrypto
     :alt: TgCrypto

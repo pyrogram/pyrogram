@@ -30,6 +30,7 @@ class SendDocument(BaseClient):
     def send_document(self,
                       chat_id: int or str,
                       document: str,
+                      thumb: str = None,
                       caption: str = "",
                       parse_mode: str = "",
                       disable_notification: bool = None,
@@ -51,8 +52,14 @@ class SendDocument(BaseClient):
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
 
+            thumb (``str``):
+                Thumbnail of the file sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
             caption (``str``, *optional*):
-                Document caption, 0-200 characters.
+                Document caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -97,16 +104,18 @@ class SendDocument(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(document):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(document, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeFilename(os.path.basename(document))
                 ]

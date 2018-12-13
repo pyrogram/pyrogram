@@ -49,6 +49,9 @@ class BaseClient:
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
     OFFLINE_SLEEP = 300
+    WORKERS = 4
+    WORKDIR = "."
+    CONFIG_FILE = "./config.ini"
 
     MEDIA_TYPE_ID = {
         0: "thumbnail",
@@ -64,7 +67,7 @@ class BaseClient:
     }
 
     def __init__(self):
-        self.token = None
+        self.bot_token = None
         self.dc_id = None
         self.auth_key = None
         self.user_id = None
@@ -116,7 +119,8 @@ class BaseClient:
     def get_messages(
             self,
             chat_id: int or str,
-            message_ids,
+            message_ids: int or list = None,
+            reply_to_message_ids: int or list = None,
             replies: int = 1
     ):
         pass

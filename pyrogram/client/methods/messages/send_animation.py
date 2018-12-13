@@ -56,7 +56,7 @@ class SendAnimation(BaseClient):
                 pass a file path as string to upload a new animation that exists on your local machine.
 
             caption (``str``, *optional*):
-                Animation caption, 0-200 characters.
+                Animation caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -73,9 +73,10 @@ class SendAnimation(BaseClient):
                 Animation height.
 
             thumb (``str``, *optional*):
-                Animation thumbnail.
-                Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+                Thumbnail of the animation file sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -115,7 +116,7 @@ class SendAnimation(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
