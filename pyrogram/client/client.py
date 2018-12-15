@@ -437,6 +437,8 @@ class Client(Methods, BaseClient):
         else:
             self.user_id = r.user.id
 
+            print("Logged in successfully as @{}".format(r.user.username))
+
     def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
@@ -621,7 +623,7 @@ class Client(Methods, BaseClient):
         self.password = None
         self.user_id = r.user.id
 
-        print("Login successful")
+        print("Logged in successfully as {}".format(r.user.first_name))
 
     def fetch_peers(self, entities: list):
         for entity in entities:
