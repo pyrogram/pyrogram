@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
 
 
@@ -63,17 +64,10 @@ class UserStatus(Object):
 
     ID = 0xb0700031
 
-    def __init__(
-            self,
-            user_id: int = None,
-            online: bool = None,
-            offline: bool = None,
-            date: int = None,
-            recently: bool = None,
-            within_week: bool = None,
-            within_month: bool = None,
-            long_time_ago: bool = None
-    ):
+    def __init__(self, user_id: int, *, online: bool = None, offline: bool = None, date: int = None,
+                 recently: bool = None, within_week: bool = None, within_month: bool = None,
+                 long_time_ago: bool = None,
+                 client=None, raw=None):
         self.user_id = user_id
         self.online = online
         self.offline = offline
@@ -82,3 +76,31 @@ class UserStatus(Object):
         self.within_week = within_week
         self.within_month = within_month
         self.long_time_ago = long_time_ago
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, user: types.User):
+        if user.bot:
+            return None
+
+        raw_status = user.status
+        status = UserStatus(user_id=user.id, client=client, raw=raw_status)
+
+        if isinstance(raw_status, types.UserStatusOnline):
+            status.online = True
+            status.date = raw_status.expires
+        elif isinstance(raw_status, types.UserStatusOffline):
+            status.offline = True
+            status.date = raw_status.was_online
+        elif isinstance(raw_status, types.UserStatusRecently):
+            status.recently = True
+        elif isinstance(raw_status, types.UserStatusLastWeek):
+            status.within_week = True
+        elif isinstance(raw_status, types.UserStatusLastMonth):
+            status.within_month = True
+        else:
+            status.long_time_ago = True
+
+        return status
