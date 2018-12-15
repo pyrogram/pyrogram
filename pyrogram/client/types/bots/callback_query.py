@@ -60,7 +60,7 @@ class CallbackQuery(Object):
             client=None,
             message=None,
             inline_message_id: str = None,
-            data: str = None,
+            data: bytes = None,
             game_short_name: str = None
     ):
         self._client = client
