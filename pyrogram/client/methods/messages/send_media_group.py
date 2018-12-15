@@ -108,6 +108,7 @@ class SendMediaGroup(BaseClient):
                             peer=self.resolve_peer(chat_id),
                             media=types.InputMediaUploadedDocument(
                                 file=self.save_file(i.media),
+                                thumb=None if i.thumb is None else self.save_file(i.thumb),
                                 mime_type=mimetypes.types_map[".mp4"],
                                 attributes=[
                                     types.DocumentAttributeVideo(
