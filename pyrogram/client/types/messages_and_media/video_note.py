@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from struct import pack
+
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .photo_size import PhotoSize
+from ...ext.utils import encode
 
 
 class VideoNote(Object):
@@ -47,16 +52,9 @@ class VideoNote(Object):
 
     ID = 0xb0700010
 
-    def __init__(
-            self,
-            file_id: str,
-            length: int,
-            duration: int,
-            thumb=None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
-    ):
+    def __init__(self, file_id: str, length: int, duration: int, *,
+                 thumb=None, mime_type: str = None, file_size: int = None, date: int = None,
+                 client=None, raw=None):
         self.file_id = file_id
         self.thumb = thumb
         self.mime_type = mime_type
@@ -64,3 +62,26 @@ class VideoNote(Object):
         self.date = date
         self.length = length
         self.duration = duration
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
+        return VideoNote(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    13,
+                    video_note.dc_id,
+                    video_note.id,
+                    video_note.access_hash
+                )
+            ),
+            length=video_attributes.w,
+            duration=video_attributes.duration,
+            thumb=PhotoSize.parse(client, video_note.thumb),
+            file_size=video_note.size,
+            mime_type=video_note.mime_type,
+            date=video_note.date
+        )

@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from struct import pack
+
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .photo_size import PhotoSize
+from ...ext.utils import encode
 
 
 class Video(Object):
@@ -53,18 +58,9 @@ class Video(Object):
 
     ID = 0xb0700008
 
-    def __init__(
-            self,
-            file_id: str,
-            width: int,
-            height: int,
-            duration: int,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
-    ):
+    def __init__(self, file_id: str, width: int, height: int, duration: int, *,
+                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
+                 client=None, raw=None):
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -74,3 +70,28 @@ class Video(Object):
         self.width = width
         self.height = height
         self.duration = duration
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo, file_name: str) -> "Video":
+        return Video(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    4,
+                    video.dc_id,
+                    video.id,
+                    video.access_hash
+                )
+            ),
+            width=video_attributes.w,
+            height=video_attributes.h,
+            duration=video_attributes.duration,
+            thumb=PhotoSize.parse(client, video.thumb),
+            mime_type=video.mime_type,
+            file_size=video.size,
+            file_name=file_name,
+            date=video.date
+        )
