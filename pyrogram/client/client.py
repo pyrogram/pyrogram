@@ -1202,7 +1202,7 @@ class Client(Methods, BaseClient):
                     file_part += 1
 
                     if progress:
-                        progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+                        await progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
         except Exception as e:
             log.error(e, exc_info=True)
         else:
@@ -1321,7 +1321,7 @@ class Client(Methods, BaseClient):
                         offset += limit
 
                         if progress:
-                            progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
+                            await progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                         r = await session.send(
                             functions.upload.GetFile(
@@ -1403,7 +1403,7 @@ class Client(Methods, BaseClient):
                             offset += limit
 
                             if progress:
-                                progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
+                                await progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                             if len(chunk) < limit:
                                 break
