@@ -1296,7 +1296,7 @@ class Client(Methods, BaseClient):
                         offset += limit
 
                         if progress:
-                            progress(self, min(offset, size), size, *progress_args)
+                            progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                         r = session.send(
                             functions.upload.GetFile(
@@ -1378,7 +1378,7 @@ class Client(Methods, BaseClient):
                             offset += limit
 
                             if progress:
-                                progress(self, min(offset, size), size, *progress_args)
+                                progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                             if len(chunk) < limit:
                                 break
