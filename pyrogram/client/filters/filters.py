@@ -172,6 +172,9 @@ class Filters:
     mentioned = create("Mentioned", lambda _, m: bool(m.mentioned))
     """Filter messages containing mentions"""
 
+    via_bot = create("ViaBot", lambda _, m: bool(m.via_bot))
+    """Filter messages sent via inline bots"""
+
     service = create("Service", lambda _, m: bool(m.service))
     """Filter service messages. A service message contains any of the following fields set
     
