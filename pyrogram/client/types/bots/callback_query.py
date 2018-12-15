@@ -43,7 +43,7 @@ class CallbackQuery(Object):
             Global identifier, uniquely corresponding to the chat to which the message with the callback button was
             sent. Useful for high scores in games.
 
-        data (``str``, *optional*):
+        data (``bytes``, *optional*):
             Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field.
 
         game_short_name (``str``, *optional*):
