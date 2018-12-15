@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .chat_photo import ChatPhoto
 
 
 class Chat(Object):
@@ -76,26 +78,15 @@ class Chat(Object):
 
     ID = 0xb0700002
 
-    def __init__(
-            self,
-            id: int,
-            type: str,
-            title: str = None,
-            username: str = None,
-            first_name: str = None,
-            last_name: str = None,
-            all_members_are_administrators: bool = None,
-            photo=None,
-            description: str = None,
-            invite_link: str = None,
-            pinned_message=None,
-            sticker_set_name: str = None,
-            can_set_sticker_set: bool = None,
-            members_count: int = None,
-            restriction_reason: str = None
-    ):
+    def __init__(self, id: int, type: str, *,
+                 title: str = None, username: str = None, first_name: str = None, last_name: str = None,
+                 all_members_are_administrators: bool = None, photo=None, description: str = None,
+                 invite_link: str = None, pinned_message=None, sticker_set_name: str = None,
+                 can_set_sticker_set: bool = None, members_count: int = None, restriction_reason: str = None,
+                 client=None, raw=None):
         self.id = id
         self.type = type
+
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -109,3 +100,60 @@ class Chat(Object):
         self.can_set_sticker_set = can_set_sticker_set
         self.members_count = members_count
         self.restriction_reason = restriction_reason
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse_user_chat(client, user: types.User) -> "Chat":
+        return Chat(
+            id=user.id,
+            type="private",
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            photo=ChatPhoto.parse(client, user.photo),
+            restriction_reason=user.restriction_reason,
+            client=client,
+            raw=user
+        )
+
+    @staticmethod
+    def parse_chat_chat(client, chat: types.Chat) -> "Chat":
+        admins_enabled = getattr(chat, "admins_enabled", None)
+
+        if admins_enabled is not None:
+            admins_enabled = not admins_enabled
+
+        return Chat(
+            id=-chat.id,
+            type="group",
+            title=chat.title,
+            all_members_are_administrators=admins_enabled,
+            photo=ChatPhoto.parse(client, getattr(chat, "photo", None)),
+            client=client,
+            raw=chat
+        )
+
+    @staticmethod
+    def parse_channel_chat(client, channel: types.Channel) -> "Chat":
+        return Chat(
+            id=int("-100" + str(channel.id)),
+            type="supergroup" if channel.megagroup else "channel",
+            title=channel.title,
+            username=getattr(channel, "username", None),
+            photo=ChatPhoto.parse(client, getattr(channel, "photo", None)),
+            restriction_reason=getattr(channel, "restriction_reason", None),
+            client=client,
+            raw=channel
+        )
+
+    @staticmethod
+    def parse(client, message: types.Message or types.MessageService, users: dict, chats: dict) -> "Chat":
+        if isinstance(message.to_id, types.PeerUser):
+            return Chat.parse_user_chat(client, users[message.to_id.user_id if message.out else message.from_id])
+
+        if isinstance(message.to_id, types.PeerChat):
+            return Chat.parse_chat_chat(chats[message.to_id.chat_id])
+
+        return Chat.parse_channel_chat(client, chats[message.to_id.channel_id])
