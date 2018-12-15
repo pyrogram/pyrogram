@@ -64,11 +64,12 @@ class UserStatus(Object):
 
     ID = 0xb0700031
 
-    def __init__(self, user_id: int, *, online: bool = None, offline: bool = None, date: int = None,
-                 recently: bool = None, within_week: bool = None, within_month: bool = None,
-                 long_time_ago: bool = None,
+    def __init__(self, user_id: int, *,
+                 online: bool = None, offline: bool = None, date: int = None, recently: bool = None,
+                 within_week: bool = None, within_month: bool = None, long_time_ago: bool = None,
                  client=None, raw=None):
         self.user_id = user_id
+
         self.online = online
         self.offline = offline
         self.date = date
