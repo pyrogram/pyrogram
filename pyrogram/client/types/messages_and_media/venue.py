@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .location import Location
 
 
 class Venue(Object):
@@ -43,16 +45,26 @@ class Venue(Object):
 
     ID = 0xb0700013
 
-    def __init__(
-            self,
-            location,
-            title: str,
-            address: str,
-            foursquare_id: str = None,
-            foursquare_type: str = None
-    ):
+    def __init__(self, location, title: str, address: str, *,
+                 foursquare_id: str = None, foursquare_type: str = None,
+                 client=None, raw=None):
         self.location = location
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
         self.foursquare_type = foursquare_type
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, venue: types.MessageMediaVenue):
+        return Venue(
+            location=Location.parse(client, venue.geo),
+            title=venue.title,
+            address=venue.address,
+            foursquare_id=venue.venue_id or None,
+            foursquare_type=venue.venue_type,
+            client=client,
+            raw=venue
+        )

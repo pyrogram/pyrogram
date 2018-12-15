@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
 
 
@@ -32,6 +33,20 @@ class Location(Object):
 
     ID = 0xb0700012
 
-    def __init__(self, longitude: float, latitude: float):
+    def __init__(self, longitude: float, latitude: float, *,
+                 client=None, raw=None):
         self.longitude = longitude
         self.latitude = latitude
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, geo_point: types.GeoPoint) -> "Location":
+        if isinstance(geo_point, types.GeoPoint):
+            return Location(
+                longitude=geo_point.long,
+                latitude=geo_point.lat,
+                client=client,
+                raw=geo_point
+            )
