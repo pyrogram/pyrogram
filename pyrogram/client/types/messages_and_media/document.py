@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from struct import pack
+
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .photo_size import PhotoSize
+from ...ext.utils import encode
 
 
 class Document(Object):
@@ -44,18 +49,36 @@ class Document(Object):
 
     ID = 0xb0700007
 
-    def __init__(
-            self,
-            file_id: str,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
-    ):
+    def __init__(self, file_id: str, *,
+                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
+                 client=None, raw=None):
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, document: types.Document, file_name: str) -> "Document":
+        return Document(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    5,
+                    document.dc_id,
+                    document.id,
+                    document.access_hash
+                )
+            ),
+            thumb=PhotoSize.parse(client, document.thumb),
+            file_name=file_name,
+            mime_type=document.mime_type,
+            file_size=document.size,
+            date=document.date,
+            client=client,
+            raw=document
+        )
