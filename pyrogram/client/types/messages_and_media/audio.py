@@ -16,7 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from struct import pack
+
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .photo_size import PhotoSize
+from ...ext.utils import encode
 
 
 class Audio(Object):
@@ -53,18 +58,10 @@ class Audio(Object):
 
     ID = 0xb0700006
 
-    def __init__(
-            self,
-            file_id: str,
-            duration: int,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None,
-            performer: str = None,
-            title: str = None
-    ):
+    def __init__(self, file_id: str, duration: int, *,
+                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
+                 performer: str = None, title: str = None,
+                 client=None, raw=None):
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -74,3 +71,30 @@ class Audio(Object):
         self.duration = duration
         self.performer = performer
         self.title = title
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio, file_name: str) -> "Audio":
+        return Audio(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    9,
+                    audio.dc_id,
+                    audio.id,
+                    audio.access_hash
+                )
+            ),
+            duration=audio_attributes.duration,
+            performer=audio_attributes.performer,
+            title=audio_attributes.title,
+            mime_type=audio.mime_type,
+            file_size=audio.size,
+            thumb=PhotoSize.parse(client, audio.thumb),
+            file_name=file_name,
+            date=audio.date,
+            client=client,
+            raw=audio
+        )

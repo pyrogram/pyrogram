@@ -16,7 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from ...ext.utils import encode
+from struct import pack
 
 
 class Voice(Object):
@@ -44,17 +47,36 @@ class Voice(Object):
 
     ID = 0xb0700009
 
-    def __init__(
-            self,
-            file_id: str,
-            duration: int,
-            waveform: bytes = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None):
+    def __init__(self, file_id: str, duration: int, *,
+                 waveform: bytes = None, mime_type: str = None, file_size: int = None, date: int = None,
+                 client=None, raw=None):
         self.file_id = file_id
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
+        return Voice(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    3,
+                    voice.dc_id,
+                    voice.id,
+                    voice.access_hash
+                )
+            ),
+            duration=attributes.duration,
+            mime_type=voice.mime_type,
+            file_size=voice.size,
+            waveform=attributes.waveform,
+            date=voice.date,
+            client=client,
+            raw=voice
+        )
