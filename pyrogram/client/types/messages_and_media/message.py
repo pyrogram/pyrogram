@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+from pyrogram.api import types
 from pyrogram.api.core import Object
 from ..bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
@@ -217,62 +217,19 @@ class Message(Object):
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
     ID = 0xb0700003
 
-    def __init__(
-            self,
-            message_id: int,
-            client=None,
-            date: int = None,
-            chat=None,
-            from_user=None,
-            forward_from=None,
-            forward_from_chat=None,
-            forward_from_message_id: int = None,
-            forward_signature: str = None,
-            forward_date: int = None,
-            reply_to_message=None,
-            mentioned=None,
-            empty=None,
-            service=None,
-            media=None,
-            edit_date: int = None,
-            media_group_id: str = None,
-            author_signature: str = None,
-            text: str = None,
-            entities: list = None,
-            caption_entities: list = None,
-            audio=None,
-            document=None,
-            photo=None,
-            sticker=None,
-            animation=None,
-            video=None,
-            voice=None,
-            video_note=None,
-            caption: str = None,
-            contact=None,
-            location=None,
-            venue=None,
-            web_page=None,
-            new_chat_members: list = None,
-            left_chat_member=None,
-            new_chat_title: str = None,
-            new_chat_photo=None,
-            delete_chat_photo: bool = None,
-            group_chat_created: bool = None,
-            supergroup_chat_created: bool = None,
-            channel_chat_created: bool = None,
-            migrate_to_chat_id: int = None,
-            migrate_from_chat_id: int = None,
-            pinned_message=None,
-            views: int = None,
-            via_bot=None,
-            outgoing: bool = None,
-            matches: list = None,
-            command: list = None,
-            reply_markup=None,
-    ):
+    def __init__(self, message_id: int, date: int = None, chat=None, from_user=None, forward_from=None,
+                 forward_from_chat=None, forward_from_message_id: int = None, forward_signature: str = None,
+                 forward_date: int = None, reply_to_message=None, mentioned=None, empty=None, service=None, media=None,
+                 edit_date: int = None, media_group_id: str = None, author_signature: str = None, text: str = None,
+                 entities: list = None, caption_entities: list = None, audio=None, document=None, photo=None,
+                 sticker=None, animation=None, video=None, voice=None, video_note=None, caption: str = None,
+                 contact=None, location=None, venue=None, web_page=None, new_chat_members: list = None,
+                 left_chat_member=None, new_chat_title: str = None, new_chat_photo=None, delete_chat_photo: bool = None,
+                 group_chat_created: bool = None, supergroup_chat_created: bool = None,
+                 channel_chat_created: bool = None, migrate_to_chat_id: int = None, migrate_from_chat_id: int = None,
+                 pinned_message=None, views: int = None, via_bot=None, outgoing: bool = None, matches: list = None,
+                 command: list = None, reply_markup=None, client=None, raw=None):
         self.message_id = message_id  # int
-        self._client = client
         self.date = date  # int
         self.chat = chat  # Chat
         self.from_user = from_user  # flags.0?User
