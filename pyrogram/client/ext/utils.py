@@ -917,7 +917,7 @@ async def parse_callback_query(client, update, users):
         message=message,
         inline_message_id=inline_message_id,
         chat_instance=str(update.chat_instance),
-        data=update.data.decode(),
+        data=update.data,
         game_short_name=update.game_short_name,
         client=client
     )
