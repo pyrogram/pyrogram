@@ -199,10 +199,9 @@ class Client(Methods, BaseClient):
         self.dispatcher = Dispatcher(self, workers)
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
         self.stop()
 
     @property
@@ -284,6 +283,8 @@ class Client(Methods, BaseClient):
 
         mimetypes.init()
 
+        return self
+
     async def stop(self):
         """Use this method to manually stop the Client.
         Requires no parameters.
@@ -317,6 +318,8 @@ class Client(Methods, BaseClient):
 
         self.is_started = False
         await self.session.stop()
+
+        return self
 
     async def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
@@ -438,6 +441,8 @@ class Client(Methods, BaseClient):
             await self.authorize_bot()
         else:
             self.user_id = r.user.id
+
+            print("Logged in successfully as @{}".format(r.user.username))
 
     async def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
@@ -623,7 +628,7 @@ class Client(Methods, BaseClient):
         self.password = None
         self.user_id = r.user.id
 
-        print("Login successful")
+        print("Logged in successfully as {}".format(r.user.first_name))
 
     def fetch_peers(self, entities: list):
         for entity in entities:
@@ -1234,7 +1239,7 @@ class Client(Methods, BaseClient):
                        version: int = 0,
                        size: int = None,
                        progress: callable = None,
-                       progress_args: tuple = None) -> str:
+                       progress_args: tuple = ()) -> str:
         with await self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
@@ -1316,7 +1321,7 @@ class Client(Methods, BaseClient):
                         offset += limit
 
                         if progress:
-                            progress(self, min(offset, size), size, *progress_args)
+                            progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                         r = await session.send(
                             functions.upload.GetFile(
@@ -1398,7 +1403,7 @@ class Client(Methods, BaseClient):
                             offset += limit
 
                             if progress:
-                                progress(self, min(offset, size), size, *progress_args)
+                                progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                             if len(chunk) < limit:
                                 break

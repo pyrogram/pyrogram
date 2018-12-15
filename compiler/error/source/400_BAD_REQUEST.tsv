@@ -51,7 +51,7 @@ BOT_INLINE_DISABLED	The inline feature of the bot is disabled
 INLINE_RESULT_EXPIRED	The inline bot query expired
 INVITE_HASH_INVALID	The invite link hash is invalid
 USER_ALREADY_PARTICIPANT	The user is already a participant of this chat
-TTL_MEDIA_INVALID	This kind of media does not support self-destruction
+TTL_MEDIA_INVALID	The media does not support self-destruction
 MAX_ID_INVALID	The max_id parameter is invalid
 CHANNEL_INVALID	The channel parameter is invalid
 DC_ID_INVALID	The dc_id parameter is invalid
@@ -59,7 +59,7 @@ LIMIT_INVALID	The limit parameter is invalid
 OFFSET_INVALID	The offset parameter is invalid
 EMAIL_INVALID	The email provided is invalid
 USER_IS_BOT	A bot cannot send messages to other bots or to itself
-WEBPAGE_CURL_FAILED	Telegram could not fetch the provided URL
+WEBPAGE_CURL_FAILED	Telegram server could not fetch the provided URL
 STICKERSET_INVALID	The requested sticker set is invalid
 PEER_FLOOD	The method can't be used because your account is limited
 MEDIA_CAPTION_TOO_LONG	The media caption is longer than 200 characters
@@ -69,3 +69,11 @@ API_ID_PUBLISHED_FLOOD	You are using an API key that is limited on the server si
 USER_NOT_PARTICIPANT	The user is not a member of this chat
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
 MESSAGE_IDS_EMPTY	The requested message doesn't exist
+WEBPAGE_MEDIA_EMPTY	The URL doesn't contain any valid media
+QUERY_ID_INVALID	The callback query id is invalid
+MEDIA_EMPTY	The media is invalid
+USER_IS_BLOCKED	The user blocked you
+YOU_BLOCKED_USER	You blocked this user
+ADMINS_TOO_MUCH	The chat has too many administrators
+BOTS_TOO_MUCH	The chat has too many bots
+USER_ADMIN_INVALID	The action requires admin privileges

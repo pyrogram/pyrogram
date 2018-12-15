@@ -27,6 +27,13 @@ class OnUserStatus(BaseClient):
         user status updates. This does the same thing as :meth:`add_handler` using the
         :class:`UserStatusHandler`.
 
+        .. note::
+            This decorator will wrap your defined function in a tuple consisting of *(Handler, group)*.
+
+            To reference your own function after it has been decorated, you need to access
+            *my_function[0].callback*, that is, the *callback* field of Handler object which is the the
+            first element in the tuple.
+
         Args:
             filters (:obj:`Filters <pyrogram.Filters>`):
                 Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.

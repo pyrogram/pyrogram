@@ -28,7 +28,7 @@ class DownloadMedia(BaseClient):
                              file_name: str = "",
                              block: bool = True,
                              progress: callable = None,
-                             progress_args: tuple = None):
+                             progress_args: tuple = ()):
         """Use this method to download the media from a Message.
 
         Args:
