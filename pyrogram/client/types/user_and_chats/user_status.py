@@ -29,8 +29,8 @@ class UserStatus(Object):
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
     Args:
-        user_id (``int``, *optional*):
-            User's id. Only available for incoming UserStatus updates.
+        user_id (``int``):
+            User's id.
 
         online (``bool``, *optional*):
             True if the user is online in this very moment, None otherwise.
