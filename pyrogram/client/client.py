@@ -198,10 +198,9 @@ class Client(Methods, BaseClient):
         self.dispatcher = Dispatcher(self, workers)
 
     def __enter__(self):
-        self.start()
-        return self
+        return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
         self.stop()
 
     @property
@@ -294,6 +293,8 @@ class Client(Methods, BaseClient):
         mimetypes.init()
         Syncer.add(self)
 
+        return self
+
     def stop(self):
         """Use this method to manually stop the Client.
         Requires no parameters.
@@ -330,6 +331,8 @@ class Client(Methods, BaseClient):
 
         self.is_started = False
         self.session.stop()
+
+        return self
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
