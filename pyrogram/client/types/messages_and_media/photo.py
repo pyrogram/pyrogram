@@ -16,7 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from base64 import b64encode
+from struct import pack
+
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from .photo_size import PhotoSize
+from ...ext.utils import encode
 
 
 class Photo(Object):
@@ -35,7 +41,60 @@ class Photo(Object):
 
     ID = 0xb0700027
 
-    def __init__(self, id: str, date: int, sizes: list):
+    def __init__(self, id: str, date: int, sizes: list, *,
+                 client=None, raw=None):
         self.id = id
         self.date = date
         self.sizes = sizes
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, photo: types.Photo):
+        if isinstance(photo, types.Photo):
+            raw_sizes = photo.sizes
+            sizes = []
+
+            for raw_size in raw_sizes:
+                if isinstance(raw_size, (types.PhotoSize, types.PhotoCachedSize)):
+
+                    if isinstance(raw_size, types.PhotoSize):
+                        file_size = raw_size.size
+                    elif isinstance(raw_size, types.PhotoCachedSize):
+                        file_size = len(raw_size.bytes)
+                    else:
+                        file_size = 0
+
+                    loc = raw_size.location
+
+                    if isinstance(loc, types.FileLocation):
+                        size = PhotoSize(
+                            file_id=encode(
+                                pack(
+                                    "<iiqqqqi",
+                                    2, loc.dc_id, photo.id, photo.access_hash,
+                                    loc.volume_id, loc.secret, loc.local_id)),
+                            width=raw_size.w,
+                            height=raw_size.h,
+                            file_size=file_size,
+                            client=client,
+                            raw=raw_size
+                        )
+
+                        sizes.append(size)
+
+            return Photo(
+                id=b64encode(
+                    pack(
+                        "<qq",
+                        photo.id,
+                        photo.access_hash
+                    ),
+                    b"-_"
+                ).decode().rstrip("="),
+                date=photo.date,
+                sizes=sizes,
+                client=client,
+                raw=photo
+            )
