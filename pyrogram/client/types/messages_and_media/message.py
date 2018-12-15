@@ -16,13 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import types
+import pyrogram
+from pyrogram.api import types, functions
 from pyrogram.api.core import Object
-from pyrogram.api.errors import MessageIdsEmpty
-from ..bots import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from pyrogram.api.errors import MessageIdsEmpty, StickersetInvalid
+from .contact import Contact
+from .location import Location
+from .message_entity import MessageEntity
 from ..messages_and_media.photo import Photo
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
+from ...ext.utils import Str
 
 
 class Message(Object):
@@ -222,18 +226,19 @@ class Message(Object):
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
     ID = 0xb0700003
 
-    def __init__(self, message_id: int, date: int = None, chat=None, from_user=None, forward_from=None,
-                 forward_from_chat=None, forward_from_message_id: int = None, forward_signature: str = None,
-                 forward_date: int = None, reply_to_message=None, mentioned=None, empty=None, service=None, media=None,
-                 edit_date: int = None, media_group_id: str = None, author_signature: str = None, text: str = None,
-                 entities: list = None, caption_entities: list = None, audio=None, document=None, photo=None,
-                 sticker=None, animation=None, video=None, voice=None, video_note=None, caption: str = None,
-                 contact=None, location=None, venue=None, web_page=None, new_chat_members: list = None,
-                 left_chat_member=None, new_chat_title: str = None, new_chat_photo=None, delete_chat_photo: bool = None,
-                 group_chat_created: bool = None, supergroup_chat_created: bool = None,
-                 channel_chat_created: bool = None, migrate_to_chat_id: int = None, migrate_from_chat_id: int = None,
-                 pinned_message=None, views: int = None, via_bot=None, outgoing: bool = None, matches: list = None,
-                 command: list = None, reply_markup=None,
+    def __init__(self, message_id: int, *,
+                 date: int = None, chat=None, from_user=None, forward_from=None, forward_from_chat=None,
+                 forward_from_message_id: int = None, forward_signature: str = None, forward_date: int = None,
+                 reply_to_message=None, mentioned=None, empty=None, service=None, media=None, edit_date: int = None,
+                 media_group_id: str = None, author_signature: str = None, text: str = None, entities: list = None,
+                 caption_entities: list = None, audio=None, document=None, photo=None, sticker=None, animation=None,
+                 video=None, voice=None, video_note=None, caption: str = None, contact=None, location=None, venue=None,
+                 web_page=None, new_chat_members: list = None, left_chat_member=None, new_chat_title: str = None,
+                 new_chat_photo=None, delete_chat_photo: bool = None, group_chat_created: bool = None,
+                 supergroup_chat_created: bool = None, channel_chat_created: bool = None,
+                 migrate_to_chat_id: int = None, migrate_from_chat_id: int = None, pinned_message=None,
+                 views: int = None, via_bot=None, outgoing: bool = None, matches: list = None, command: list = None,
+                 reply_markup=None,
                  client=None, raw=None):
         self.message_id = message_id
         self.date = date
@@ -285,6 +290,255 @@ class Message(Object):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
+              replies: int = 1):
+        if isinstance(message, types.MessageEmpty):
+            return Message(
+                message_id=message.id,
+                client=client,
+                raw=message
+            )
+
+        if isinstance(message, types.MessageService):
+            action = message.action
+
+            new_chat_members = None
+            left_chat_member = None
+            new_chat_title = None
+            delete_chat_photo = None
+            migrate_to_chat_id = None
+            migrate_from_chat_id = None
+            group_chat_created = None
+            channel_chat_created = None
+            new_chat_photo = None
+
+            if isinstance(action, types.MessageActionChatAddUser):
+                new_chat_members = [User.parse(client, users[i]) for i in action.users]
+            elif isinstance(action, types.MessageActionChatJoinedByLink):
+                new_chat_members = [User.parse(client, users[message.from_id])]
+            elif isinstance(action, types.MessageActionChatDeleteUser):
+                left_chat_member = User.parse(client, users[action.user_id])
+            elif isinstance(action, types.MessageActionChatEditTitle):
+                new_chat_title = action.title
+            elif isinstance(action, types.MessageActionChatDeletePhoto):
+                delete_chat_photo = True
+            elif isinstance(action, types.MessageActionChatMigrateTo):
+                migrate_to_chat_id = action.channel_id
+            elif isinstance(action, types.MessageActionChannelMigrateFrom):
+                migrate_from_chat_id = action.chat_id
+            elif isinstance(action, types.MessageActionChatCreate):
+                group_chat_created = True
+            elif isinstance(action, types.MessageActionChannelCreate):
+                channel_chat_created = True
+            elif isinstance(action, types.MessageActionChatEditPhoto):
+                new_chat_photo = Photo.parse(client, action.photo)
+
+            parsed_message = Message(
+                message_id=message.id,
+                date=message.date,
+                chat=Chat.parse(client, message, users, chats),
+                from_user=User.parse(client, users.get(message.from_id, None)),
+                service=True,
+                new_chat_members=new_chat_members,
+                left_chat_member=left_chat_member,
+                new_chat_title=new_chat_title,
+                new_chat_photo=new_chat_photo,
+                delete_chat_photo=delete_chat_photo,
+                migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
+                migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
+                group_chat_created=group_chat_created,
+                channel_chat_created=channel_chat_created,
+                client=client,
+                raw=message
+                # TODO: supergroup_chat_created
+            )
+
+            if isinstance(action, types.MessageActionPinMessage):
+                try:
+                    parsed_message.pinned_message = client.get_messages(
+                        parsed_message.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=0
+                    )
+                except MessageIdsEmpty:
+                    pass
+
+            return parsed_message
+
+        if isinstance(message, types.Message):
+            entities = [MessageEntity.parse(client, entity, users) for entity in message.entities]
+            entities = list(filter(lambda x: x is not None, entities))
+
+            forward_from = None
+            forward_from_chat = None
+            forward_from_message_id = None
+            forward_signature = None
+            forward_date = None
+
+            forward_header = message.fwd_from
+
+            if forward_header:
+                forward_date = forward_header.date
+
+                if forward_header.from_id:
+                    forward_from = User.parse(client, users[forward_header.from_id])
+                else:
+                    forward_from_chat = Chat.parse_channel_chat(client, chats[forward_header.channel_id])
+                    forward_from_message_id = forward_header.channel_post
+                    forward_signature = forward_header.post_author
+
+            photo = None
+            location = None
+            contact = None
+            venue = None
+            audio = None
+            voice = None
+            animation = None
+            video = None
+            video_note = None
+            sticker = None
+            document = None
+            web_page = None
+
+            media = message.media
+
+            if media:
+                if isinstance(media, types.MessageMediaPhoto):
+                    photo = Photo.parse(client, media.photo)
+                elif isinstance(media, types.MessageMediaGeo):
+                    location = Location.parse(client, media.geo)
+                elif isinstance(media, types.MessageMediaContact):
+                    contact = Contact.parse(client, media)
+                elif isinstance(media, types.MessageMediaVenue):
+                    venue = pyrogram.Venue.parse(client, media)
+                elif isinstance(media, types.MessageMediaDocument):
+                    doc = media.document
+
+                    if isinstance(doc, types.Document):
+                        attributes = {type(i): i for i in doc.attributes}
+
+                        file_name = getattr(
+                            attributes.get(
+                                types.DocumentAttributeFilename, None
+                            ), "file_name", None
+                        )
+
+                        if types.DocumentAttributeAudio in attributes:
+                            audio_attributes = attributes[types.DocumentAttributeAudio]
+
+                            if audio_attributes.voice:
+                                voice = pyrogram.Voice.parse(client, doc, audio_attributes)
+                            else:
+                                audio = pyrogram.Audio.parse(client, doc, audio_attributes, file_name)
+                        elif types.DocumentAttributeAnimated in attributes:
+                            video_attributes = attributes.get(types.DocumentAttributeVideo, None)
+
+                            animation = pyrogram.Animation.parse(client, doc, video_attributes, file_name)
+                        elif types.DocumentAttributeVideo in attributes:
+                            video_attributes = attributes[types.DocumentAttributeVideo]
+
+                            if video_attributes.round_message:
+                                video_note = pyrogram.VideoNote.parse(client, doc, video_attributes)
+                            else:
+                                video = pyrogram.Video.parse(client, doc, video_attributes, file_name)
+                        elif types.DocumentAttributeSticker in attributes:
+                            image_size_attributes = attributes.get(types.DocumentAttributeImageSize, None)
+                            sticker_attribute = attributes[types.DocumentAttributeSticker]
+
+                            if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
+                                try:
+                                    set_name = client.send(
+                                        functions.messages.GetStickerSet(sticker_attribute.stickerset)
+                                    ).set.short_name
+                                except StickersetInvalid:
+                                    set_name = None
+                            else:
+                                set_name = None
+
+                            sticker = pyrogram.Sticker.parse(client, doc, image_size_attributes,
+                                                    set_name, sticker_attribute, file_name)
+                        else:
+                            document = pyrogram.Document.parse(client, doc, file_name)
+                elif isinstance(media, types.MessageMediaWebPage):
+                    web_page = True
+                else:
+                    media = None
+
+            reply_markup = message.reply_markup
+
+            if reply_markup:
+                if isinstance(reply_markup, types.ReplyKeyboardForceReply):
+                    reply_markup = pyrogram.ForceReply.read(reply_markup)
+                elif isinstance(reply_markup, types.ReplyKeyboardMarkup):
+                    reply_markup = pyrogram.ReplyKeyboardMarkup.read(reply_markup)
+                elif isinstance(reply_markup, types.ReplyInlineMarkup):
+                    reply_markup = pyrogram.InlineKeyboardMarkup.read(reply_markup)
+                elif isinstance(reply_markup, types.ReplyKeyboardHide):
+                    reply_markup = pyrogram.ReplyKeyboardRemove.read(reply_markup)
+                else:
+                    reply_markup = None
+
+            parsed_message = Message(
+                message_id=message.id,
+                date=message.date,
+                chat=Chat.parse(client, message, users, chats),
+                from_user=User.parse(client, users.get(message.from_id, None)),
+                text=Str(message.message) or None if media is None else None,
+                caption=Str(message.message) or None if media is not None else None,
+                entities=entities or None if media is None else None,
+                caption_entities=entities or None if media is not None else None,
+                author_signature=message.post_author,
+                forward_from=forward_from,
+                forward_from_chat=forward_from_chat,
+                forward_from_message_id=forward_from_message_id,
+                forward_signature=forward_signature,
+                forward_date=forward_date,
+                mentioned=message.mentioned,
+                media=bool(media) or None,
+                edit_date=message.edit_date,
+                media_group_id=message.grouped_id,
+                photo=photo,
+                location=location,
+                contact=contact,
+                venue=venue,
+                audio=audio,
+                voice=voice,
+                animation=animation,
+                video=video,
+                video_note=video_note,
+                sticker=sticker,
+                document=document,
+                web_page=web_page,
+                views=message.views,
+                via_bot=User.parse(client, users.get(message.via_bot_id, None)),
+                outgoing=message.out,
+                reply_markup=reply_markup,
+                client=client,
+                raw=message
+            )
+
+            if parsed_message.text:
+                parsed_message.text.init(parsed_message._client, parsed_message.entities or [])
+
+            if parsed_message.caption:
+                parsed_message.caption.init(parsed_message._client, parsed_message.caption_entities or [])
+
+            if message.reply_to_msg_id and replies:
+                try:
+                    parsed_message.reply_to_message = client.get_messages(
+                        parsed_message.chat.id,
+                        reply_to_message_ids=message.id,
+                        replies=replies - 1
+                    )
+                except MessageIdsEmpty:
+                    pass
+
+            return parsed_message
 
     def reply(self,
               text: str,
@@ -549,9 +803,9 @@ class Message(Object):
             ``ValueError``: If the provided index or position is out of range or the button label was not found
             ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
-        if isinstance(self.reply_markup, ReplyKeyboardMarkup):
+        if isinstance(self.reply_markup, pyrogram.ReplyKeyboardMarkup):
             return self.reply(x)
-        elif isinstance(self.reply_markup, InlineKeyboardMarkup):
+        elif isinstance(self.reply_markup, pyrogram.InlineKeyboardMarkup):
             if isinstance(x, int) and y is None:
                 try:
                     button = [

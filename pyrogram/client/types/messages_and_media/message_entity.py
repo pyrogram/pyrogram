@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from pyrogram.api.core import Object
+from ..user_and_chats.user import User
 
 
 class MessageEntity(Object):
@@ -45,16 +47,45 @@ class MessageEntity(Object):
 
     ID = 0xb0700004
 
-    def __init__(
-            self,
-            type: str,
-            offset: int,
-            length: int,
-            url: str = None,
-            user=None
-    ):
+    ENTITIES = {
+        types.MessageEntityMention.ID: "mention",
+        types.MessageEntityHashtag.ID: "hashtag",
+        types.MessageEntityCashtag.ID: "cashtag",
+        types.MessageEntityBotCommand.ID: "bot_command",
+        types.MessageEntityUrl.ID: "url",
+        types.MessageEntityEmail.ID: "email",
+        types.MessageEntityBold.ID: "bold",
+        types.MessageEntityItalic.ID: "italic",
+        types.MessageEntityCode.ID: "code",
+        types.MessageEntityPre.ID: "pre",
+        types.MessageEntityTextUrl.ID: "text_link",
+        types.MessageEntityMentionName.ID: "text_mention",
+        types.MessageEntityPhone.ID: "phone_number"
+    }
+
+    def __init__(self, type: str, offset: int, length: int, *,
+                 url: str = None, user=None,
+                 client=None, raw=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
         self.user = user
+
+        self._client = client
+        self._raw = raw
+
+    @staticmethod
+    def parse(client, entity, users: dict) -> "MessageEntity" or None:
+        type = MessageEntity.ENTITIES.get(entity.ID, None)
+
+        if type is None:
+            return None
+
+        return MessageEntity(
+            type=type,
+            offset=entity.offset,
+            length=entity.length,
+            url=getattr(entity, "url", None),
+            user=User.parse(client, users.get(getattr(entity, "user_id", None), None))
+        )
