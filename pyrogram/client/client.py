@@ -1214,7 +1214,7 @@ class Client(Methods, BaseClient):
                  version: int = 0,
                  size: int = None,
                  progress: callable = None,
-                 progress_args: tuple = None) -> str:
+                 progress_args: tuple = ()) -> str:
         with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
