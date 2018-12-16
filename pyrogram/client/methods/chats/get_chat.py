@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetChat(BaseClient):
@@ -44,4 +45,4 @@ class GetChat(BaseClient):
         else:
             r = self.send(functions.messages.GetFullChat(peer.chat_id))
 
-        return utils.parse_chat_full(self, r)
+        return pyrogram.Chat.parse_full(self, r)
