@@ -17,8 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
+from .chat_member import ChatMember
+from .user import User
 from ..pyrogram_type import PyrogramType
-from ..user_and_chats import ChatMember, User
 
 
 class ChatMembers(PyrogramType):
@@ -32,22 +33,24 @@ class ChatMembers(PyrogramType):
             Requested chat members.
     """
 
-    def __init__(self, *, total_count: int, chat_members: list, client=None):
+    def __init__(self, *, total_count: int, chat_members: list, client, raw):
         self.total_count = total_count
         self.chat_members = chat_members
 
-        self.client = client
+        self._client = client
+        self._raw = raw
 
     @staticmethod
-    def parse(client, members, users: dict):
+    def parse(client, members):
+        users = {i.id: i for i in members.users}
+        chat_members = []
+
         if isinstance(members, types.channels.ChannelParticipants):
             total_count = members.count
             members = members.participants
         else:
             members = members.full_chat.participants.participants
             total_count = len(members)
-
-        chat_members = []
 
         for member in members:
             user = User.parse(client, users[member.user_id])
@@ -56,5 +59,5 @@ class ChatMembers(PyrogramType):
         return ChatMembers(
             total_count=total_count,
             chat_members=chat_members,
-            client=client
+            client=client, raw=members
         )

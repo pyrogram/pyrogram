@@ -84,7 +84,7 @@ class ChatMember(PyrogramType):
                  can_delete_messages: bool = None, can_invite_users: bool = None, can_restrict_members: bool = None,
                  can_pin_messages: bool = None, can_promote_members: bool = None, can_send_messages: bool = None,
                  can_send_media_messages: bool = None, can_send_other_messages: bool = None,
-                 can_add_web_page_previews: bool = None, client=None):
+                 can_add_web_page_previews: bool = None, client, raw):
         self.user = user
         self.status = status
         self.until_date = until_date
@@ -102,18 +102,19 @@ class ChatMember(PyrogramType):
         self.can_send_other_messages = can_send_other_messages
         self.can_add_web_page_previews = can_add_web_page_previews
 
-        self.client = client
+        self._client = client
+        self._raw = raw
 
     @staticmethod
     def parse(client, member, user) -> "ChatMember":
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
-            return ChatMember(user=user, status="member", client=client)
+            return ChatMember(user=user, status="member", client=client, raw=member)
 
         if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
-            return ChatMember(user=user, status="creator", client=client)
+            return ChatMember(user=user, status="creator", client=client, raw=member)
 
         if isinstance(member, types.ChatParticipantAdmin):
-            return ChatMember(user=user, status="administrator", client=client)
+            return ChatMember(user=user, status="administrator", client=client, raw=member)
 
         if isinstance(member, types.ChannelParticipantAdmin):
             rights = member.admin_rights
@@ -130,7 +131,7 @@ class ChatMember(PyrogramType):
                 can_restrict_members=rights.ban_users,
                 can_pin_messages=rights.pin_messages,
                 can_promote_members=rights.add_admins,
-                client=client
+                client=client, raw=member
             )
 
         if isinstance(member, types.ChannelParticipantBanned):
@@ -140,7 +141,7 @@ class ChatMember(PyrogramType):
                 user=user,
                 status="kicked" if rights.view_messages else "restricted",
                 until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date,
-                client=client
+                client=client, raw=member
             )
 
             if chat_member.status == "restricted":
