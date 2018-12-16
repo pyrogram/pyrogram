@@ -24,6 +24,9 @@ class PyrogramType:
     def __str__(self):
         return dumps(self, cls=Encoder, indent=4)
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 
 def remove_none(obj):
     if isinstance(obj, (list, tuple, set)):
@@ -37,8 +40,4 @@ def remove_none(obj):
 class Encoder(JSONEncoder):
     def default(self, o: PyrogramType):
         content = {i: getattr(o, i) for i in filter(lambda x: not x.startswith("_"), o.__dict__)}
-
-        return OrderedDict(
-            [("_", "pyrogram:{}".format(o.__class__.__name__))]
-            + [i for i in remove_none(content).items()]
-        )
+        return remove_none(OrderedDict([("_", "pyrogram:" + o.__class__.__name__)] + [i for i in content.items()]))
