@@ -56,9 +56,10 @@ class Video(PyrogramType):
             Date the video was sent in Unix time.
     """
 
-    def __init__(self, file_id: str, width: int, height: int, duration: int, *,
-                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, width: int, height: int, duration: int, thumb=None,
+                 file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -68,9 +69,6 @@ class Video(PyrogramType):
         self.width = width
         self.height = height
         self.duration = duration
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo, file_name: str) -> "Video":

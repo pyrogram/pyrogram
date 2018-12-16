@@ -69,11 +69,12 @@ class User(PyrogramType):
             The reason why this bot might be unavailable to some users.
     """
 
-    def __init__(self, id: int, is_self: bool, is_contact: bool, is_mutual_contact: bool, is_deleted: bool,
-                 is_bot: bool, first_name: str, *,
-                 last_name: str = None, status=None, username: str = None, language_code: str = None,
-                 phone_number: str = None, photo=None, restriction_reason: str = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, id: int, is_self: bool, is_contact: bool, is_mutual_contact: bool,
+                 is_deleted: bool, is_bot: bool, first_name: str, last_name: str = None, status=None,
+                 username: str = None, language_code: str = None, phone_number: str = None, photo=None,
+                 restriction_reason: str = None):
+        super().__init__(client, raw)
+
         self.id = id
         self.is_self = is_self
         self.is_contact = is_contact
@@ -81,7 +82,6 @@ class User(PyrogramType):
         self.is_deleted = is_deleted
         self.is_bot = is_bot
         self.first_name = first_name
-
         self.last_name = last_name
         self.status = status
         self.username = username
@@ -89,9 +89,6 @@ class User(PyrogramType):
         self.phone_number = phone_number
         self.photo = photo
         self.restriction_reason = restriction_reason
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, user: types.User) -> "User" or None:
@@ -113,5 +110,6 @@ class User(PyrogramType):
             phone_number=user.phone,
             photo=ChatPhoto.parse(client, user.photo),
             restriction_reason=user.restriction_reason,
-            client=client, raw=user
+            client=client,
+            raw=user
         )

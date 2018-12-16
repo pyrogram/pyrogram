@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class Dialogs(Object):
+class Dialogs(PyrogramType):
     """This object represents a user's dialogs chunk
 
     Args:
@@ -29,8 +29,9 @@ class Dialogs(Object):
         dialogs (List of :obj:`Dialog <pyrogram.Dialog>`):
             Requested dialogs.
     """
-    ID = 0xb0700029
 
-    def __init__(self, total_count: int, dialogs: list):
+    def __init__(self, *, client, raw, total_count: int, dialogs: list):
+        super().__init__(client, raw)
+
         self.total_count = total_count
         self.dialogs = dialogs

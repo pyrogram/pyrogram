@@ -36,13 +36,9 @@ class ChatPhoto(Object):
 
     ID = 0xb0700015
 
-    def __init__(self, small_file_id: str, big_file_id: str, *,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, small_file_id: str, big_file_id: str):
         self.small_file_id = small_file_id
         self.big_file_id = big_file_id
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto):

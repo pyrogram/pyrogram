@@ -56,10 +56,11 @@ class Audio(PyrogramType):
             Title of the audio as defined by sender or by audio tags.
     """
 
-    def __init__(self, file_id: str, duration: int, *,
-                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
-                 performer: str = None, title: str = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, duration: int, thumb=None, file_name: str = None,
+                 mime_type: str = None, file_size: int = None, date: int = None, performer: str = None,
+                 title: str = None):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -69,9 +70,6 @@ class Audio(PyrogramType):
         self.duration = duration
         self.performer = performer
         self.title = title
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio, file_name: str) -> "Audio":

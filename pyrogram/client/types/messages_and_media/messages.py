@@ -30,6 +30,8 @@ class Messages(PyrogramType):
             Requested messages.
     """
 
-    def __init__(self, total_count: int, messages: list):
+    def __init__(self, *, client, raw, total_count: int, messages: list):
+        super().__init__(client, raw)
+
         self.total_count = total_count
         self.messages = messages

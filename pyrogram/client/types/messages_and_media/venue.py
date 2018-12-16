@@ -43,17 +43,15 @@ class Venue(PyrogramType):
 
     """
 
-    def __init__(self, location, title: str, address: str, *,
-                 foursquare_id: str = None, foursquare_type: str = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, location, title: str, address: str, foursquare_id: str = None,
+                 foursquare_type: str = None):
+        super().__init__(client, raw)
+
         self.location = location
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
         self.foursquare_type = foursquare_type
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, venue: types.MessageMediaVenue):

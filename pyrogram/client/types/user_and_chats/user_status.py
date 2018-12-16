@@ -62,12 +62,12 @@ class UserStatus(PyrogramType):
             always shown to blocked users), None otherwise.
     """
 
-    def __init__(self, user_id: int, *,
-                 online: bool = None, offline: bool = None, date: int = None, recently: bool = None,
-                 within_week: bool = None, within_month: bool = None, long_time_ago: bool = None,
-                 client=None, raw=None):
-        self.user_id = user_id
+    def __init__(self, *, client, raw, user_id: int, online: bool = None, offline: bool = None, date: int = None,
+                 recently: bool = None, within_week: bool = None, within_month: bool = None,
+                 long_time_ago: bool = None):
+        super().__init__(client, raw)
 
+        self.user_id = user_id
         self.online = online
         self.offline = offline
         self.date = date
@@ -75,9 +75,6 @@ class UserStatus(PyrogramType):
         self.within_week = within_week
         self.within_month = within_month
         self.long_time_ago = long_time_ago
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, user: types.User):

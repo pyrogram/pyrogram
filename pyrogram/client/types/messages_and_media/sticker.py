@@ -61,10 +61,11 @@ class Sticker(PyrogramType):
 
     # TODO: Add mask position
 
-    def __init__(self, file_id: str, width: int, height: int, *,
-                 thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,
-                 emoji: str = None, set_name: str = None, mask_position=None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, width: int, height: int, thumb=None, file_name: str = None,
+                 mime_type: str = None, file_size: int = None, date: int = None, emoji: str = None,
+                 set_name: str = None, mask_position=None):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -76,9 +77,6 @@ class Sticker(PyrogramType):
         self.emoji = emoji
         self.set_name = set_name
         self.mask_position = mask_position
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize, set_name: str,

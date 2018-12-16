@@ -50,9 +50,10 @@ class VideoNote(PyrogramType):
             Date the video note was sent in Unix time.
     """
 
-    def __init__(self, file_id: str, length: int, duration: int, *,
-                 thumb=None, mime_type: str = None, file_size: int = None, date: int = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, length: int, duration: int, thumb=None, mime_type: str = None,
+                 file_size: int = None, date: int = None):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.thumb = thumb
         self.mime_type = mime_type
@@ -60,9 +61,6 @@ class VideoNote(PyrogramType):
         self.date = date
         self.length = length
         self.duration = duration
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":

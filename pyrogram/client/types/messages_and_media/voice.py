@@ -46,18 +46,16 @@ class Voice(PyrogramType):
             Date the voice was sent in Unix time.
     """
 
-    def __init__(self, file_id: str, duration: int, *,
-                 waveform: bytes = None, mime_type: str = None, file_size: int = None, date: int = None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, duration: int, waveform: bytes = None, mime_type: str = None,
+                 file_size: int = None, date: int = None):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":

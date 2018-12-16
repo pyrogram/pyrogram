@@ -79,12 +79,14 @@ class ChatMember(PyrogramType):
             Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
     """
 
-    def __init__(self, *, user, status: str, until_date: int = None, can_be_edited: bool = None,
+    def __init__(self, *, client, raw, user, status: str, until_date: int = None, can_be_edited: bool = None,
                  can_change_info: bool = None, can_post_messages: bool = None, can_edit_messages: bool = None,
                  can_delete_messages: bool = None, can_invite_users: bool = None, can_restrict_members: bool = None,
                  can_pin_messages: bool = None, can_promote_members: bool = None, can_send_messages: bool = None,
                  can_send_media_messages: bool = None, can_send_other_messages: bool = None,
-                 can_add_web_page_previews: bool = None, client, raw):
+                 can_add_web_page_previews: bool = None):
+        super().__init__(client, raw)
+
         self.user = user
         self.status = status
         self.until_date = until_date
@@ -101,9 +103,6 @@ class ChatMember(PyrogramType):
         self.can_send_media_messages = can_send_media_messages
         self.can_send_other_messages = can_send_other_messages
         self.can_add_web_page_previews = can_add_web_page_previews
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, member, user) -> "ChatMember":

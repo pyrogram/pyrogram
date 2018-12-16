@@ -40,15 +40,13 @@ class PhotoSize(PyrogramType):
             File size.
     """
 
-    def __init__(self, file_id: str, width: int, height: int, file_size: int, *,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, file_id: str, width: int, height: int, file_size: int):
+        super().__init__(client, raw)
+
         self.file_id = file_id
         self.width = width
         self.height = height
         self.file_size = file_size
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, photo_size: types.PhotoSize or types.PhotoCachedSize):

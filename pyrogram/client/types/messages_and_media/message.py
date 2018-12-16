@@ -225,20 +225,20 @@ class Message(PyrogramType):
 
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
 
-    def __init__(self, message_id: int, *,
-                 date: int = None, chat=None, from_user=None, forward_from=None, forward_from_chat=None,
-                 forward_from_message_id: int = None, forward_signature: str = None, forward_date: int = None,
-                 reply_to_message=None, mentioned=None, empty=None, service=None, media=None, edit_date: int = None,
-                 media_group_id: str = None, author_signature: str = None, text: str = None, entities: list = None,
-                 caption_entities: list = None, audio=None, document=None, photo=None, sticker=None, animation=None,
-                 video=None, voice=None, video_note=None, caption: str = None, contact=None, location=None, venue=None,
-                 web_page=None, new_chat_members: list = None, left_chat_member=None, new_chat_title: str = None,
-                 new_chat_photo=None, delete_chat_photo: bool = None, group_chat_created: bool = None,
-                 supergroup_chat_created: bool = None, channel_chat_created: bool = None,
-                 migrate_to_chat_id: int = None, migrate_from_chat_id: int = None, pinned_message=None,
-                 views: int = None, via_bot=None, outgoing: bool = None, matches: list = None, command: list = None,
-                 reply_markup=None,
-                 client=None, raw=None):
+    def __init__(self, *, client, raw, message_id: int, date: int = None, chat=None, from_user=None, forward_from=None,
+                 forward_from_chat=None, forward_from_message_id: int = None, forward_signature: str = None,
+                 forward_date: int = None, reply_to_message=None, mentioned=None, empty=None, service=None, media=None,
+                 edit_date: int = None, media_group_id: str = None, author_signature: str = None, text: str = None,
+                 entities: list = None, caption_entities: list = None, audio=None, document=None, photo=None,
+                 sticker=None, animation=None, video=None, voice=None, video_note=None, caption: str = None,
+                 contact=None, location=None, venue=None, web_page=None, new_chat_members: list = None,
+                 left_chat_member=None, new_chat_title: str = None, new_chat_photo=None, delete_chat_photo: bool = None,
+                 group_chat_created: bool = None, supergroup_chat_created: bool = None,
+                 channel_chat_created: bool = None, migrate_to_chat_id: int = None, migrate_from_chat_id: int = None,
+                 pinned_message=None, views: int = None, via_bot=None, outgoing: bool = None, matches: list = None,
+                 command: list = None, reply_markup=None):
+        super().__init__(client, raw)
+
         self.message_id = message_id
         self.date = date
         self.chat = chat
@@ -289,9 +289,6 @@ class Message(PyrogramType):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
-
-        self._client = client
-        self._raw = raw
 
     @staticmethod
     def parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,

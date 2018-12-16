@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class Dialog(Object):
+class Dialog(PyrogramType):
     """This object represents a dialog.
 
     Args:
@@ -41,15 +41,11 @@ class Dialog(Object):
         is_pinned (``bool``):
             True, if the dialog is pinned.
     """
-    ID = 0xb0700028
 
-    def __init__(self,
-                 chat,
-                 top_message,
-                 unread_messages_count: int,
-                 unread_mentions_count: int,
-                 unread_mark: bool,
-                 is_pinned: bool):
+    def __init__(self, *, client, raw, chat, top_message, unread_messages_count: int, unread_mentions_count: int,
+                 unread_mark: bool, is_pinned: bool):
+        super().__init__(client, raw)
+
         self.chat = chat
         self.top_message = top_message
         self.unread_messages_count = unread_messages_count
