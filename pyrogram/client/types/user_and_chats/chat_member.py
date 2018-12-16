@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
 
 
-class ChatMember(Object):
+class ChatMember(PyrogramType):
     """This object contains information about one member of a chat.
 
     Args:
@@ -78,40 +79,77 @@ class ChatMember(Object):
             Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
     """
 
-    ID = 0xb0700016
+    def __init__(self, *, user, status: str, until_date: int = None, can_be_edited: bool = None,
+                 can_change_info: bool = None, can_post_messages: bool = None, can_edit_messages: bool = None,
+                 can_delete_messages: bool = None, can_invite_users: bool = None, can_restrict_members: bool = None,
+                 can_pin_messages: bool = None, can_promote_members: bool = None, can_send_messages: bool = None,
+                 can_send_media_messages: bool = None, can_send_other_messages: bool = None,
+                 can_add_web_page_previews: bool = None, client=None):
+        self.user = user
+        self.status = status
+        self.until_date = until_date
+        self.can_be_edited = can_be_edited
+        self.can_change_info = can_change_info
+        self.can_post_messages = can_post_messages
+        self.can_edit_messages = can_edit_messages
+        self.can_delete_messages = can_delete_messages
+        self.can_invite_users = can_invite_users
+        self.can_restrict_members = can_restrict_members
+        self.can_pin_messages = can_pin_messages
+        self.can_promote_members = can_promote_members
+        self.can_send_messages = can_send_messages
+        self.can_send_media_messages = can_send_media_messages
+        self.can_send_other_messages = can_send_other_messages
+        self.can_add_web_page_previews = can_add_web_page_previews
 
-    def __init__(
-            self,
-            user,
-            status: str,
-            until_date: int = None,
-            can_be_edited: bool = None,
-            can_change_info: bool = None,
-            can_post_messages: bool = None,
-            can_edit_messages: bool = None,
-            can_delete_messages: bool = None,
-            can_invite_users: bool = None,
-            can_restrict_members: bool = None,
-            can_pin_messages: bool = None,
-            can_promote_members: bool = None,
-            can_send_messages: bool = None,
-            can_send_media_messages: bool = None,
-            can_send_other_messages: bool = None,
-            can_add_web_page_previews: bool = None
-    ):
-        self.user = user  # User
-        self.status = status  # string
-        self.until_date = until_date  # flags.0?int
-        self.can_be_edited = can_be_edited  # flags.1?Bool
-        self.can_change_info = can_change_info  # flags.2?Bool
-        self.can_post_messages = can_post_messages  # flags.3?Bool
-        self.can_edit_messages = can_edit_messages  # flags.4?Bool
-        self.can_delete_messages = can_delete_messages  # flags.5?Bool
-        self.can_invite_users = can_invite_users  # flags.6?Bool
-        self.can_restrict_members = can_restrict_members  # flags.7?Bool
-        self.can_pin_messages = can_pin_messages  # flags.8?Bool
-        self.can_promote_members = can_promote_members  # flags.9?Bool
-        self.can_send_messages = can_send_messages  # flags.10?Bool
-        self.can_send_media_messages = can_send_media_messages  # flags.11?Bool
-        self.can_send_other_messages = can_send_other_messages  # flags.12?Bool
-        self.can_add_web_page_previews = can_add_web_page_previews  # flags.13?Bool
+        self.client = client
+
+    @staticmethod
+    def parse(client, member, user) -> "ChatMember":
+        if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
+            return ChatMember(user=user, status="member", client=client)
+
+        if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
+            return ChatMember(user=user, status="creator", client=client)
+
+        if isinstance(member, types.ChatParticipantAdmin):
+            return ChatMember(user=user, status="administrator", client=client)
+
+        if isinstance(member, types.ChannelParticipantAdmin):
+            rights = member.admin_rights
+
+            return ChatMember(
+                user=user,
+                status="administrator",
+                can_be_edited=member.can_edit,
+                can_change_info=rights.change_info,
+                can_post_messages=rights.post_messages,
+                can_edit_messages=rights.edit_messages,
+                can_delete_messages=rights.delete_messages,
+                can_invite_users=rights.invite_users or rights.invite_link,
+                can_restrict_members=rights.ban_users,
+                can_pin_messages=rights.pin_messages,
+                can_promote_members=rights.add_admins,
+                client=client
+            )
+
+        if isinstance(member, types.ChannelParticipantBanned):
+            rights = member.banned_rights
+
+            chat_member = ChatMember(
+                user=user,
+                status="kicked" if rights.view_messages else "restricted",
+                until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date,
+                client=client
+            )
+
+            if chat_member.status == "restricted":
+                chat_member.can_send_messages = not rights.send_messages
+                chat_member.can_send_media_messages = not rights.send_media
+                chat_member.can_send_other_messages = (
+                        not rights.send_stickers or not rights.send_gifs or
+                        not rights.send_games or not rights.send_inline
+                )
+                chat_member.can_add_web_page_previews = not rights.embed_links
+
+            return chat_member
