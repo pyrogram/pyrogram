@@ -18,6 +18,7 @@
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient, utils
+import pyrogram
 
 
 class Filters:
@@ -83,7 +84,8 @@ class GetChatMembers(BaseClient):
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers.parse(
+                self,
                 self.send(
                     functions.messages.GetFullChat(
                         peer.chat_id
@@ -108,7 +110,8 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers.parse(
+                self,
                 self.send(
                     functions.channels.GetParticipants(
                         channel=peer,

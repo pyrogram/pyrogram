@@ -17,7 +17,8 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import functions, types, errors
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
+import pyrogram
 
 
 class GetChatMember(BaseClient):
@@ -51,7 +52,7 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            for member in utils.parse_chat_members(full_chat).chat_members:
+            for member in pyrogram.ChatMembers.parse(self, full_chat).chat_members:
                 if member.user.id == user_id.user_id:
                     return member
             else:
@@ -64,7 +65,8 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers.parse(
+                self,
                 types.channels.ChannelParticipants(
                     count=1,
                     participants=[r.participant],
