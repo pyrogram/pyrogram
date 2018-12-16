@@ -19,11 +19,11 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from pyrogram.client.ext.utils import encode
+from ..pyrogram_type import PyrogramType
 
 
-class PhotoSize(Object):
+class PhotoSize(PyrogramType):
     """This object represents one size of a photo or a file/sticker thumbnail.
 
     Args:
@@ -39,8 +39,6 @@ class PhotoSize(Object):
         file_size (``int``):
             File size.
     """
-
-    ID = 0xb0700005
 
     def __init__(self, file_id: str, width: int, height: int, file_size: int, *,
                  client=None, raw=None):

@@ -16,20 +16,29 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from collections import OrderedDict
+from json import dumps, JSONEncoder
 
 
-class UserProfilePhotos(PyrogramType):
-    """This object represents a user's profile pictures.
+class PyrogramType:
+    def __str__(self):
+        return dumps(self, cls=Encoder, indent=4)
 
-    Args:
-        total_count (``int``):
-            Total number of profile pictures the target user has.
 
-        photos (List of :obj:`Photo <pyrogram.Photo>`):
-            Requested profile pictures.
-    """
+def remove_none(obj):
+    if isinstance(obj, (list, tuple, set)):
+        return type(obj)(remove_none(x) for x in obj if x is not None)
+    elif isinstance(obj, dict):
+        return type(obj)((remove_none(k), remove_none(v)) for k, v in obj.items() if k is not None and v is not None)
+    else:
+        return obj
 
-    def __init__(self, total_count: int, photos: list):
-        self.total_count = total_count
-        self.photos = photos
+
+class Encoder(JSONEncoder):
+    def default(self, o: PyrogramType):
+        content = {i: getattr(o, i) for i in filter(lambda x: not x.startswith("_"), o.__dict__)}
+
+        return OrderedDict(
+            [("_", "pyrogram:{}".format(o.__class__.__name__))]
+            + [i for i in remove_none(content).items()]
+        )

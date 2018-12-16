@@ -19,12 +19,12 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class Sticker(Object):
+class Sticker(PyrogramType):
     """This object represents a sticker.
 
     Args:
@@ -60,7 +60,6 @@ class Sticker(Object):
     """
 
     # TODO: Add mask position
-    ID = 0xb0700017
 
     def __init__(self, file_id: str, width: int, height: int, *,
                  thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,

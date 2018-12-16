@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import types
-from pyrogram.api.core import Object
-from ...ext.utils import encode
 from struct import pack
 
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
-class Voice(Object):
+
+class Voice(PyrogramType):
     """This object represents a voice note.
 
     Args:
@@ -44,8 +45,6 @@ class Voice(Object):
         date (``int``, *optional*):
             Date the voice was sent in Unix time.
     """
-
-    ID = 0xb0700009
 
     def __init__(self, file_id: str, duration: int, *,
                  waveform: bytes = None, mime_type: str = None, file_size: int = None, date: int = None,

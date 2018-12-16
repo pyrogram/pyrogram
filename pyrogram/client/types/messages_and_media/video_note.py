@@ -19,12 +19,12 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class VideoNote(Object):
+class VideoNote(PyrogramType):
     """This object represents a video message (available in Telegram apps as of v.4.0).
 
     Args:
@@ -49,8 +49,6 @@ class VideoNote(Object):
         date (``int``, *optional*):
             Date the video note was sent in Unix time.
     """
-
-    ID = 0xb0700010
 
     def __init__(self, file_id: str, length: int, duration: int, *,
                  thumb=None, mime_type: str = None, file_size: int = None, date: int = None,

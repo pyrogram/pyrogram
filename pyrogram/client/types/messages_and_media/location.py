@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class Location(Object):
+class Location(PyrogramType):
     """This object represents a point on the map.
 
     Args:
@@ -30,8 +30,6 @@ class Location(Object):
         latitude (``float``):
             Latitude as defined by sender.
     """
-
-    ID = 0xb0700012
 
     def __init__(self, longitude: float, latitude: float, *,
                  client=None, raw=None):

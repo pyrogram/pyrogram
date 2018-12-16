@@ -17,12 +17,12 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
-from .user_status import UserStatus
 from .chat_photo import ChatPhoto
+from .user_status import UserStatus
+from ..pyrogram_type import PyrogramType
 
 
-class User(Object):
+class User(PyrogramType):
     """This object represents a Telegram user or bot.
 
     Args:
@@ -68,8 +68,6 @@ class User(Object):
         restriction_reason (``str``, *optional*):
             The reason why this bot might be unavailable to some users.
     """
-
-    ID = 0xb0700001
 
     def __init__(self, id: int, is_self: bool, is_contact: bool, is_mutual_contact: bool, is_deleted: bool,
                  is_bot: bool, first_name: str, *,

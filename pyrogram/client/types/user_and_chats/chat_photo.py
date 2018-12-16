@@ -42,7 +42,7 @@ class ChatPhoto(Object):
         self.big_file_id = big_file_id
 
         self._client = client
-        self.raw = raw
+        self._raw = raw
 
     @staticmethod
     def parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto):

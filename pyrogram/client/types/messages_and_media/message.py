@@ -18,18 +18,18 @@
 
 import pyrogram
 from pyrogram.api import types, functions
-from pyrogram.api.core import Object
 from pyrogram.api.errors import MessageIdsEmpty, StickersetInvalid
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
 from ..messages_and_media.photo import Photo
+from ..pyrogram_type import PyrogramType
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
 from ...ext.utils import Str
 
 
-class Message(Object):
+class Message(PyrogramType):
     """This object represents a message.
 
     Args:
@@ -224,7 +224,6 @@ class Message(Object):
     """
 
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
-    ID = 0xb0700003
 
     def __init__(self, message_id: int, *,
                  date: int = None, chat=None, from_user=None, forward_from=None, forward_from_chat=None,
@@ -461,7 +460,7 @@ class Message(Object):
                                 set_name = None
 
                             sticker = pyrogram.Sticker.parse(client, doc, image_size_attributes,
-                                                    set_name, sticker_attribute, file_name)
+                                                             set_name, sticker_attribute, file_name)
                         else:
                             document = pyrogram.Document.parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):

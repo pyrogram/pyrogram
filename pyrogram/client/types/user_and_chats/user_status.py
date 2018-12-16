@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class UserStatus(Object):
+class UserStatus(PyrogramType):
     """This object represents a User status (Last Seen privacy).
 
     .. note::
@@ -61,8 +61,6 @@ class UserStatus(Object):
             True for users with hidden Last Seen privacy that have been online more than a month ago (this is also
             always shown to blocked users), None otherwise.
     """
-
-    ID = 0xb0700031
 
     def __init__(self, user_id: int, *,
                  online: bool = None, offline: bool = None, date: int = None, recently: bool = None,

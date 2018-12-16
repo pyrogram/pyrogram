@@ -19,12 +19,12 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class Video(Object):
+class Video(PyrogramType):
     """This object represents a video file.
 
     Args:
@@ -55,8 +55,6 @@ class Video(Object):
         date (``int``, *optional*):
             Date the video was sent in Unix time.
     """
-
-    ID = 0xb0700008
 
     def __init__(self, file_id: str, width: int, height: int, duration: int, *,
                  thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,

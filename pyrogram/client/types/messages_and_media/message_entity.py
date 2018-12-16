@@ -17,11 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 from ..user_and_chats.user import User
 
 
-class MessageEntity(Object):
+class MessageEntity(PyrogramType):
     """This object represents one special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
@@ -44,8 +44,6 @@ class MessageEntity(Object):
         user (:obj:`User <pyrogram.User>`, *optional*):
             For "text_mention" only, the mentioned user.
     """
-
-    ID = 0xb0700004
 
     ENTITIES = {
         types.MessageEntityMention.ID: "mention",

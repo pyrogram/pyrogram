@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class Messages(Object):
+class Messages(PyrogramType):
     """This object represents a chat's messages.
 
     Args:
@@ -29,8 +29,6 @@ class Messages(Object):
         messages (List of :obj:`Message <pyrogram.Message>`):
             Requested messages.
     """
-
-    ID = 0xb0700026
 
     def __init__(self, total_count: int, messages: list):
         self.total_count = total_count

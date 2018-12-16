@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 
 
-class Contact(Object):
+class Contact(PyrogramType):
     """This object represents a phone contact.
 
     Args:
@@ -39,8 +39,6 @@ class Contact(Object):
         vcard (``str``, *optional*):
             Additional data about the contact in the form of a vCard.
     """
-
-    ID = 0xb0700011
 
     def __init__(self, phone_number: str, first_name: str, *,
                  last_name: str = None, user_id: int = None, vcard: str = None,

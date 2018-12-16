@@ -19,12 +19,12 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class Animation(Object):
+class Animation(PyrogramType):
     """This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
     Args:
@@ -55,8 +55,6 @@ class Animation(Object):
         date (``int``, *optional*):
             Date the animation was sent in Unix time.
     """
-
-    ID = 0xb0700025
 
     def __init__(self, file_id: str, width: int, height: int, duration: int, *,
                  thumb=None, file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None,

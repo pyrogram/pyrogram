@@ -20,12 +20,12 @@ from base64 import b64encode
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class Photo(Object):
+class Photo(PyrogramType):
     """This object represents a Photo.
 
     Args:
@@ -38,8 +38,6 @@ class Photo(Object):
         sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
             Available sizes of this photo.
     """
-
-    ID = 0xb0700027
 
     def __init__(self, id: str, date: int, sizes: list, *,
                  client=None, raw=None):

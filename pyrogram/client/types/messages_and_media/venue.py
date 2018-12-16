@@ -17,11 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .location import Location
+from ..pyrogram_type import PyrogramType
 
 
-class Venue(Object):
+class Venue(PyrogramType):
     """This object represents a venue.
 
     Args:
@@ -42,8 +42,6 @@ class Venue(Object):
             (For example, "arts_entertainment/default", "arts_entertainment/aquarium" or "food/icecream".)
 
     """
-
-    ID = 0xb0700013
 
     def __init__(self, location, title: str, address: str, *,
                  foursquare_id: str = None, foursquare_type: str = None,

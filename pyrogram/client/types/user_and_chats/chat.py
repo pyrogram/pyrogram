@@ -17,11 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
 from .chat_photo import ChatPhoto
+from ..pyrogram_type import PyrogramType
 
 
-class Chat(Object):
+class Chat(PyrogramType):
     """This object represents a chat.
 
     Args:
@@ -75,8 +75,6 @@ class Chat(Object):
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
     """
-
-    ID = 0xb0700002
 
     def __init__(self, id: int, type: str, *,
                  title: str = None, username: str = None, first_name: str = None, last_name: str = None,
