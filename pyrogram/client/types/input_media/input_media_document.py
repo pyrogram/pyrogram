@@ -43,11 +43,7 @@ class InputMediaDocument(InputMedia):
             Defaults to Markdown.
     """
 
-    def __init__(self,
-                 media: str,
-                 thumb: str = None,
-                 caption: str = "",
-                 parse_mode: str = ""):
+    def __init__(self, media: str, thumb: str = None, caption: str = "", parse_mode: str = ""):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb

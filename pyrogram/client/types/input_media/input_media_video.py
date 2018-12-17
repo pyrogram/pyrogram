@@ -57,15 +57,8 @@ class InputMediaVideo(InputMedia):
             Pass True, if the uploaded video is suitable for streaming.
     """
 
-    def __init__(self,
-                 media: str,
-                 thumb: str = None,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 width: int = 0,
-                 height: int = 0,
-                 duration: int = 0,
-                 supports_streaming: bool = True):
+    def __init__(self, media: str, thumb: str = None, caption: str = "", parse_mode: str = "", width: int = 0,
+                 height: int = 0, duration: int = 0, supports_streaming: bool = True):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb
