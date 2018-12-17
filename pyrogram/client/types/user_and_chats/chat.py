@@ -150,6 +150,15 @@ class Chat(PyrogramType):
         return Chat.parse_channel_chat(client, chats[message.to_id.channel_id])
 
     @staticmethod
+    def parse_dialog(client, peer, users: dict, chats: dict):
+        if isinstance(peer, types.PeerUser):
+            return Chat.parse_user_chat(client, users[peer.user_id])
+        elif isinstance(peer, types.PeerChat):
+            return Chat.parse_chat_chat(client, chats[peer.chat_id])
+        else:
+            return Chat.parse_channel_chat(client, chats[peer.channel_id])
+
+    @staticmethod
     def parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat.parse_user_chat(client, chat_full.user)
