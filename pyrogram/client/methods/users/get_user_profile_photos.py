@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetUserProfilePhotos(BaseClient):
@@ -47,7 +48,8 @@ class GetUserProfilePhotos(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        return utils.parse_profile_photos(
+        return pyrogram.UserProfilePhotos.parse(
+            self,
             self.send(
                 functions.photos.GetUserPhotos(
                     user_id=self.resolve_peer(user_id),
