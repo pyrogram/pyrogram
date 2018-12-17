@@ -18,7 +18,7 @@
 
 import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetHistory(BaseClient):
@@ -59,52 +59,18 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        r = self.send(
-            functions.messages.GetHistory(
-                peer=self.resolve_peer(chat_id),
-                offset_id=offset_id,
-                offset_date=offset_date,
-                add_offset=offset,
-                limit=limit,
-                max_id=0,
-                min_id=0,
-                hash=0
+        return pyrogram.Messages.parse(
+            self,
+            self.send(
+                functions.messages.GetHistory(
+                    peer=self.resolve_peer(chat_id),
+                    offset_id=offset_id,
+                    offset_date=offset_date,
+                    add_offset=offset,
+                    limit=limit,
+                    max_id=0,
+                    min_id=0,
+                    hash=0
+                )
             )
-        )
-
-        users = {i.id: i for i in r.users}
-        chats = {i.id: i for i in r.chats}
-
-        reply_to_messages = {
-            i.reply_to_msg_id: None
-            for i in r.messages
-            if i.reply_to_msg_id
-        }
-
-        if reply_to_messages:
-            temp = self.get_messages(
-                chat_id, reply_to_messages,
-                replies=0
-            )
-
-            assert len(temp) == len(reply_to_messages)
-
-            for i in range(len(temp)):
-                reply_to_messages[temp[i].message_id] = temp[i]
-
-        messages = utils.parse_messages(
-            self, r.messages,
-            users, chats,
-            replies=0
-        )
-
-        assert len(messages) == len(r.messages)
-
-        for i in range(len(messages)):
-            if r.messages[i].reply_to_msg_id:
-                messages[i].reply_to_message = reply_to_messages[r.messages[i].reply_to_msg_id]
-
-        return pyrogram.Messages(
-            total_count=getattr(r, "count", len(r.messages)),
-            messages=messages
         )
