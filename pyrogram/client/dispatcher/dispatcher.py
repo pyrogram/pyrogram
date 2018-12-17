@@ -22,9 +22,9 @@ from collections import OrderedDict
 from queue import Queue
 from threading import Thread
 
+import pyrogram
 from pyrogram.api import types
-from ..ext import utils
-from ..handlers import CallbackQueryHandler, MessageHandler, DeletedMessagesHandler, UserStatusHandler, RawUpdateHandler
+from ..handlers import CallbackQueryHandler, MessageHandler, RawUpdateHandler, UserStatusHandler, DeletedMessagesHandler
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class Dispatcher:
         types.UpdateEditChannelMessage
     )
 
-    DELETE_MESSAGE_UPDATES = (
+    DELETE_MESSAGES_UPDATES = (
         types.UpdateDeleteMessages,
         types.UpdateDeleteChannelMessages
     )
@@ -62,16 +62,18 @@ class Dispatcher:
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_messages(self.client, upd.message, usr, cht), MessageHandler),
+                lambda upd, usr, cht: (pyrogram.Message.parse(self.client, upd.message, usr, cht), MessageHandler),
 
-            Dispatcher.DELETE_MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_deleted_messages(upd), DeletedMessagesHandler),
+            Dispatcher.DELETE_MESSAGES_UPDATES:
+                lambda upd, usr, cht: (pyrogram.Messages.parse_deleted(self.client, upd), DeletedMessagesHandler),
 
             Dispatcher.CALLBACK_QUERY_UPDATES:
-                lambda upd, usr, cht: (utils.parse_callback_query(self.client, upd, usr), CallbackQueryHandler),
+                lambda upd, usr, cht: (pyrogram.CallbackQuery.parse(self.client, upd, usr), CallbackQueryHandler),
 
             (types.UpdateUserStatus,):
-                lambda upd, usr, cht: (utils.parse_user_status(upd.status, upd.user_id), UserStatusHandler)
+                lambda upd, usr, cht: (
+                    pyrogram.UserStatus.parse(self.client, upd.status, upd.user_id), UserStatusHandler
+                )
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
