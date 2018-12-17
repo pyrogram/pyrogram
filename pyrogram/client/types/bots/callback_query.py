@@ -16,10 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from base64 import b64encode
+from struct import pack
+
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ..user_and_chats import User
 
 
-class CallbackQuery(Object):
+class CallbackQuery(PyrogramType):
     """This object represents an incoming callback query from a callback button in an inline keyboard.
     If the button that originated the query was attached to a message sent by the bot, the field message
     will be present. If the button was attached to a message sent via the bot (in inline mode),
@@ -50,27 +55,57 @@ class CallbackQuery(Object):
             Short name of a Game to be returned, serves as the unique identifier for the game.
 
     """
-    ID = 0xb0700024
 
-    def __init__(
-            self,
-            id: str,
-            from_user,
-            chat_instance: str,
-            client=None,
-            message=None,
-            inline_message_id: str = None,
-            data: bytes = None,
-            game_short_name: str = None
-    ):
-        self._client = client
-        self.id = id  # string
-        self.from_user = from_user  # User
-        self.message = message  # flags.0?Message
-        self.inline_message_id = inline_message_id  # flags.1?string
-        self.chat_instance = chat_instance  # string
-        self.data = data  # flags.2?string
-        self.game_short_name = game_short_name  # flags.3?string
+    def __init__(self, *, client, raw, id: str, from_user, chat_instance: str, message=None,
+                 inline_message_id: str = None, data: bytes = None, game_short_name: str = None):
+        super().__init__(client, raw)
+
+        self.id = id
+        self.from_user = from_user
+        self.message = message
+        self.inline_message_id = inline_message_id
+        self.chat_instance = chat_instance
+        self.data = data
+        self.game_short_name = game_short_name
+
+    @staticmethod
+    def parse(client, callback_query, users) -> "CallbackQuery":
+        message = None
+        inline_message_id = None
+
+        if isinstance(callback_query, types.UpdateBotCallbackQuery):
+            peer = callback_query.peer
+
+            if isinstance(peer, types.PeerUser):
+                peer_id = peer.user_id
+            elif isinstance(peer, types.PeerChat):
+                peer_id = -peer.chat_id
+            else:
+                peer_id = int("-100" + str(peer.channel_id))
+
+            message = client.get_messages(peer_id, callback_query.msg_id)
+        elif isinstance(callback_query, types.UpdateInlineBotCallbackQuery):
+            inline_message_id = b64encode(
+                pack(
+                    "<iqq",
+                    callback_query.msg_id.dc_id,
+                    callback_query.msg_id.id,
+                    callback_query.msg_id.access_hash
+                ),
+                b"-_"
+            ).decode().rstrip("=")
+
+        return CallbackQuery(
+            id=str(callback_query.query_id),
+            from_user=User.parse(client, users[callback_query.user_id]),
+            message=message,
+            inline_message_id=inline_message_id,
+            chat_instance=str(callback_query.chat_instance),
+            data=callback_query.data,
+            game_short_name=callback_query.game_short_name,
+            client=client,
+            raw=callback_query
+        )
 
     def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
         """Bound method *answer* of :obj:`CallbackQuery <pyrogram.CallbackQuery>`.
