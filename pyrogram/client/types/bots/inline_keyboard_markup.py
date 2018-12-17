@@ -16,13 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
 from . import InlineKeyboardButton
+from ..pyrogram_type import PyrogramType
 
 
-class InlineKeyboardMarkup(Object):
+class InlineKeyboardMarkup(PyrogramType):
     """This object represents an inline keyboard that appears right next to the message it belongs to.
 
     Args:
@@ -30,9 +29,9 @@ class InlineKeyboardMarkup(Object):
             List of button rows, each represented by a List of InlineKeyboardButton objects.
     """
 
-    ID = 0xb0700020
-
     def __init__(self, inline_keyboard: list):
+        super().__init__(None, None)
+
         self.inline_keyboard = inline_keyboard
 
     @staticmethod

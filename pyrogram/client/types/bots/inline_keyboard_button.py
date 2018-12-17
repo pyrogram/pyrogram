@@ -16,15 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
 from pyrogram.api.types import (
     KeyboardButtonUrl, KeyboardButtonCallback,
     KeyboardButtonSwitchInline
 )
+from ..pyrogram_type import PyrogramType
 
 
-class InlineKeyboardButton(Object):
+class InlineKeyboardButton(PyrogramType):
     """This object represents one button of an inline keyboard. You must use exactly one of the optional fields.
 
     Args:
@@ -54,18 +53,10 @@ class InlineKeyboardButton(Object):
 
     # TODO: Add callback_game and pay fields
 
-    ID = 0xb0700019
+    def __init__(self, text: str, callback_data: bytes = None, url: str = None,
+                 switch_inline_query: str = None, switch_inline_query_current_chat: str = None):
+        super().__init__(None, None)
 
-    def __init__(
-            self,
-            text: str,
-            callback_data: bytes = None,
-            url: str = None,
-            switch_inline_query: str = None,
-            switch_inline_query_current_chat: str = None,
-            # callback_game=None,
-            # pay: bool = None
-    ):
         self.text = text
         self.url = url
         self.callback_data = callback_data

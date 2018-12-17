@@ -16,15 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
 from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
-
 from . import KeyboardButton
+from ..pyrogram_type import PyrogramType
 
 
-class ReplyKeyboardMarkup(Object):
+class ReplyKeyboardMarkup(PyrogramType):
     """This object represents a custom keyboard with reply options.
 
     Args:
@@ -49,15 +47,10 @@ class ReplyKeyboardMarkup(Object):
             select the new language. Other users in the group don't see the keyboard.
     """
 
-    ID = 0xb0700022
+    def __init__(self, keyboard: list, resize_keyboard: bool = None, one_time_keyboard: bool = None,
+                 selective: bool = None):
+        super().__init__(None, None)
 
-    def __init__(
-            self,
-            keyboard: list,
-            resize_keyboard: bool = None,
-            one_time_keyboard: bool = None,
-            selective: bool = None
-    ):
         self.keyboard = keyboard
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
