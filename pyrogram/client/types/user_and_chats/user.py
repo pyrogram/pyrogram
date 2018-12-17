@@ -104,7 +104,7 @@ class User(PyrogramType):
             is_bot=user.bot,
             first_name=user.first_name,
             last_name=user.last_name,
-            status=UserStatus.parse(client, user),
+            status=UserStatus.parse(client, user.status, user.id, user.bot),
             username=user.username,
             language_code=user.lang_code,
             phone_number=user.phone,

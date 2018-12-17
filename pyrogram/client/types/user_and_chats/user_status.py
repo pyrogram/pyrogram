@@ -77,24 +77,23 @@ class UserStatus(PyrogramType):
         self.long_time_ago = long_time_ago
 
     @staticmethod
-    def parse(client, user: types.User):
-        if user.bot:
+    def parse(client, user_status, user_id: int, is_bot: bool = False):
+        if is_bot:
             return None
 
-        raw_status = user.status
-        status = UserStatus(user_id=user.id, client=client, raw=raw_status)
+        status = UserStatus(user_id=user_id, client=client, raw=user_status)
 
-        if isinstance(raw_status, types.UserStatusOnline):
+        if isinstance(user_status, types.UserStatusOnline):
             status.online = True
-            status.date = raw_status.expires
-        elif isinstance(raw_status, types.UserStatusOffline):
+            status.date = user_status.expires
+        elif isinstance(user_status, types.UserStatusOffline):
             status.offline = True
-            status.date = raw_status.was_online
-        elif isinstance(raw_status, types.UserStatusRecently):
+            status.date = user_status.was_online
+        elif isinstance(user_status, types.UserStatusRecently):
             status.recently = True
-        elif isinstance(raw_status, types.UserStatusLastWeek):
+        elif isinstance(user_status, types.UserStatusLastWeek):
             status.within_week = True
-        elif isinstance(raw_status, types.UserStatusLastMonth):
+        elif isinstance(user_status, types.UserStatusLastMonth):
             status.within_month = True
         else:
             status.long_time_ago = True
