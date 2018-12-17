@@ -43,5 +43,9 @@ def remove_none(obj):
 
 class Encoder(JSONEncoder):
     def default(self, o: PyrogramType):
-        content = {i: getattr(o, i) for i in filter(lambda x: not x.startswith("_"), o.__dict__)}
+        try:
+            content = {i: getattr(o, i) for i in filter(lambda x: not x.startswith("_"), o.__dict__)}
+        except AttributeError:
+            return repr(o)
+
         return remove_none(OrderedDict([("_", "pyrogram:" + o.__class__.__name__)] + [i for i in content.items()]))
