@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
+from .message import Message
 from ..pyrogram_type import PyrogramType
 
 
@@ -35,3 +37,17 @@ class Messages(PyrogramType):
 
         self.total_count = total_count
         self.messages = messages
+
+    @staticmethod
+    def parse(client, messages: types.messages.Messages) -> "Messages":
+        users = {i.id: i for i in messages.users}
+        chats = {i.id: i for i in messages.chats}
+
+        total_count = getattr(messages, "count", len(messages.messages))
+
+        return Messages(
+            total_count=total_count,
+            messages=[Message.parse(client, message, users, chats) for message in messages.messages],
+            client=client,
+            raw=messages
+        )
