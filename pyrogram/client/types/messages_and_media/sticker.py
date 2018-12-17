@@ -16,9 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from functools import lru_cache
 from struct import pack
 
-from pyrogram.api import types
+from pyrogram.api import types, functions
+from pyrogram.api.errors import StickersetInvalid
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
@@ -79,8 +81,28 @@ class Sticker(PyrogramType):
         self.mask_position = mask_position
 
     @staticmethod
-    def parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize, set_name: str,
+    @lru_cache(maxsize=256)
+    def get_sticker_set_name(send, input_sticker_set_id):
+        try:
+            return send(
+                functions.messages.GetStickerSet(
+                    types.InputStickerSetID(*input_sticker_set_id)
+                )
+            ).set.short_name
+        except StickersetInvalid:
+            return None
+
+    @staticmethod
+    def parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
               sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
+        sticker_set = sticker_attributes.stickerset
+
+        if isinstance(sticker_set, types.InputStickerSetID):
+            input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
+            set_name = Sticker.get_sticker_set_name(client.send, input_sticker_set_id)
+        else:
+            set_name = None
+
         return Sticker(
             file_id=encode(
                 pack(

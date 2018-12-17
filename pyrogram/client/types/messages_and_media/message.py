@@ -17,8 +17,8 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from pyrogram.api import types, functions
-from pyrogram.api.errors import MessageIdsEmpty, StickersetInvalid
+from pyrogram.api import types
+from pyrogram.api.errors import MessageIdsEmpty
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
@@ -442,21 +442,12 @@ class Message(PyrogramType):
                             else:
                                 video = pyrogram.Video.parse(client, doc, video_attributes, file_name)
                         elif types.DocumentAttributeSticker in attributes:
-                            image_size_attributes = attributes.get(types.DocumentAttributeImageSize, None)
-                            sticker_attribute = attributes[types.DocumentAttributeSticker]
-
-                            if isinstance(sticker_attribute.stickerset, types.InputStickerSetID):
-                                try:
-                                    set_name = client.send(
-                                        functions.messages.GetStickerSet(sticker_attribute.stickerset)
-                                    ).set.short_name
-                                except StickersetInvalid:
-                                    set_name = None
-                            else:
-                                set_name = None
-
-                            sticker = pyrogram.Sticker.parse(client, doc, image_size_attributes,
-                                                             set_name, sticker_attribute, file_name)
+                            sticker = pyrogram.Sticker.parse(
+                                client, doc,
+                                attributes.get(types.DocumentAttributeImageSize, None),
+                                attributes[types.DocumentAttributeSticker],
+                                file_name
+                            )
                         else:
                             document = pyrogram.Document.parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):
@@ -516,12 +507,6 @@ class Message(PyrogramType):
                 client=client,
                 raw=message
             )
-
-            if parsed_message.text:
-                parsed_message.text.init(parsed_message._client, parsed_message.entities or [])
-
-            if parsed_message.caption:
-                parsed_message.caption.init(parsed_message._client, parsed_message.caption_entities or [])
 
             if message.reply_to_msg_id and replies:
                 try:
