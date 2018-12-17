@@ -26,7 +26,6 @@ from ..messages_and_media.photo import Photo
 from ..pyrogram_type import PyrogramType
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
-from ...ext.utils import Str
 
 
 class Message(PyrogramType):
@@ -484,8 +483,8 @@ class Message(PyrogramType):
                 date=message.date,
                 chat=Chat.parse(client, message, users, chats),
                 from_user=User.parse(client, users.get(message.from_id, None)),
-                text=Str(message.message) or None if media is None else None,
-                caption=Str(message.message) or None if media is not None else None,
+                text=Str(message.message).init(client, entities) or None if media is None else None,
+                caption=Str(message.message).init(client, entities) or None if media is not None else None,
                 entities=entities or None if media is None else None,
                 caption_entities=entities or None if media is not None else None,
                 author_signature=message.post_author,
@@ -900,3 +899,29 @@ class Message(PyrogramType):
             progress=progress,
             progress_args=progress_args,
         )
+
+
+class Str(str):
+    def __init__(self, *args):
+        super().__init__()
+
+        self.client = None
+        self.entities = None
+
+    def init(self, client, entities):
+        self.client = client
+        self.entities = entities
+
+        return self
+
+    @property
+    def text(self):
+        return self
+
+    @property
+    def markdown(self):
+        return self.client.markdown.unparse(self, self.entities)
+
+    @property
+    def html(self):
+        return self.client.html.unparse(self, self.entities)
