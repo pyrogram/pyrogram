@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
@@ -52,6 +53,6 @@ class GetUsers(BaseClient):
         users = []
 
         for i in r:
-            users.append(utils.parse_user(i))
+            users.append(pyrogram.User.parse(self, i))
 
         return users if is_iterable else users[0]
