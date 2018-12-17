@@ -19,6 +19,7 @@
 from pyrogram.api import types
 from .message import Message
 from ..pyrogram_type import PyrogramType
+from ..user_and_chats import Chat
 
 
 class Messages(PyrogramType):
@@ -48,4 +49,33 @@ class Messages(PyrogramType):
             messages=[Message.parse(client, message, users, chats) for message in messages.messages],
             client=client,
             raw=messages
+        )
+
+    @staticmethod
+    def parse_deleted(client, update) -> "Messages":
+        messages = update.messages
+        channel_id = getattr(update, "channel_id", None)
+
+        parsed_messages = []
+
+        for message in messages:
+            parsed_messages.append(
+                Message(
+                    message_id=message,
+                    chat=Chat(
+                        id=int("-100" + str(channel_id)),
+                        type="channel",
+                        client=client,
+                        raw=None
+                    ) if channel_id is not None else None,
+                    client=client,
+                    raw=None
+                )
+            )
+
+        return Messages(
+            total_count=len(parsed_messages),
+            messages=parsed_messages,
+            client=client,
+            raw=update
         )
