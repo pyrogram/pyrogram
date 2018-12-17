@@ -89,5 +89,7 @@ class Video(PyrogramType):
             mime_type=video.mime_type,
             file_size=video.size,
             file_name=file_name,
-            date=video.date
+            date=video.date,
+            client=client,
+            raw=video
         )
