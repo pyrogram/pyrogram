@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import types
 from .photo import Photo
 from ..pyrogram_type import PyrogramType
 
@@ -41,7 +40,7 @@ class UserProfilePhotos(PyrogramType):
     @staticmethod
     def parse(client, photos) -> "UserProfilePhotos":
         return UserProfilePhotos(
-            total_count=len(photos.photos) if isinstance(photos, types.photos.Photos) else photos.count,
+            total_count=getattr(photos, "count", len(photos.photos)),
             photos=[Photo.parse(client, photo) for photo in photos.photos],
             client=client,
             raw=photos

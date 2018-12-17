@@ -43,10 +43,8 @@ class Messages(PyrogramType):
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
-        total_count = getattr(messages, "count", len(messages.messages))
-
         return Messages(
-            total_count=total_count,
+            total_count=getattr(messages, "count", len(messages.messages)),
             messages=[Message.parse(client, message, users, chats) for message in messages.messages],
             client=client,
             raw=messages
