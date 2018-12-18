@@ -538,21 +538,10 @@ class Client(Methods, BaseClient):
                             )
                         )
                     except PhoneNumberUnoccupied:
-                        print("PHONE NON-OCCUPIED")
+                        log.warning("Phone number unregistered")
                         phone_registered = False
                         continue
                 else:
-                    try:
-                        self.send(
-                            functions.auth.SignIn(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code
-                            )
-                        )
-                    except PhoneNumberUnoccupied:
-                        pass
-
                     self.first_name = self.first_name if self.first_name is not None else input("First name: ")
                     self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
@@ -567,7 +556,7 @@ class Client(Methods, BaseClient):
                             )
                         )
                     except PhoneNumberOccupied:
-                        print("PHONE OCCUPIED")
+                        log.warning("Phone number already registered")
                         phone_registered = True
                         continue
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
