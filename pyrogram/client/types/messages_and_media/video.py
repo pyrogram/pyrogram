@@ -56,9 +56,9 @@ class Video(PyrogramType):
             Date the video was sent in Unix time.
     """
 
-    def __init__(self, *, client, raw, file_id: str, width: int, height: int, duration: int, thumb=None,
+    def __init__(self, *, client, file_id: str, width: int, height: int, duration: int, thumb=None,
                  file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.file_id = file_id
         self.thumb = thumb
@@ -90,6 +90,5 @@ class Video(PyrogramType):
             file_size=video.size,
             file_name=file_name,
             date=video.date,
-            client=client,
-            raw=video
+            client=client
         )

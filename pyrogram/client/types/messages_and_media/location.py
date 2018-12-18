@@ -31,8 +31,8 @@ class Location(PyrogramType):
             Latitude as defined by sender.
     """
 
-    def __init__(self, *, client, raw, longitude: float, latitude: float, ):
-        super().__init__(client, raw)
+    def __init__(self, *, client, longitude: float, latitude: float, ):
+        super().__init__(client)
 
         self.longitude = longitude
         self.latitude = latitude
@@ -43,6 +43,5 @@ class Location(PyrogramType):
             return Location(
                 longitude=geo_point.long,
                 latitude=geo_point.lat,
-                client=client,
-                raw=geo_point
+                client=client
             )

@@ -61,8 +61,8 @@ class MessageEntity(PyrogramType):
         types.MessageEntityPhone.ID: "phone_number"
     }
 
-    def __init__(self, *, client, raw, type: str, offset: int, length: int, url: str = None, user=None):
-        super().__init__(client, raw)
+    def __init__(self, *, client, type: str, offset: int, length: int, url: str = None, user=None):
+        super().__init__(client)
 
         self.type = type
         self.offset = offset
@@ -83,6 +83,5 @@ class MessageEntity(PyrogramType):
             length=entity.length,
             url=getattr(entity, "url", None),
             user=User.parse(client, users.get(getattr(entity, "user_id", None), None)),
-            client=client,
-            raw=entity
+            client=client
         )

@@ -49,7 +49,7 @@ class ReplyKeyboardMarkup(PyrogramType):
 
     def __init__(self, keyboard: list, resize_keyboard: bool = None, one_time_keyboard: bool = None,
                  selective: bool = None):
-        super().__init__(None, None)
+        super().__init__(None)
 
         self.keyboard = keyboard
         self.resize_keyboard = resize_keyboard
@@ -57,7 +57,7 @@ class ReplyKeyboardMarkup(PyrogramType):
         self.selective = selective
 
     @staticmethod
-    def read(kb, *args):
+    def read(kb):
         keyboard = []
 
         for i in kb.rows:

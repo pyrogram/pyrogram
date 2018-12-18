@@ -34,12 +34,12 @@ class ForceReply(PyrogramType):
     """
 
     def __init__(self, selective: bool = None):
-        super().__init__(None, None)
+        super().__init__(None)
 
         self.selective = selective
 
     @staticmethod
-    def read(o, *args):
+    def read(o):
         return ForceReply(
             selective=o.selective
         )

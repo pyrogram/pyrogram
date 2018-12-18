@@ -56,9 +56,9 @@ class CallbackQuery(PyrogramType):
 
     """
 
-    def __init__(self, *, client, raw, id: str, from_user, chat_instance: str, message=None,
+    def __init__(self, *, client, id: str, from_user, chat_instance: str, message=None,
                  inline_message_id: str = None, data: bytes = None, game_short_name: str = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.id = id
         self.from_user = from_user
@@ -103,8 +103,7 @@ class CallbackQuery(PyrogramType):
             chat_instance=str(callback_query.chat_instance),
             data=callback_query.data,
             game_short_name=callback_query.game_short_name,
-            client=client,
-            raw=callback_query
+            client=client
         )
 
     def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):

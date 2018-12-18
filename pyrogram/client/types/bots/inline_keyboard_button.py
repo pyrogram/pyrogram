@@ -55,7 +55,7 @@ class InlineKeyboardButton(PyrogramType):
 
     def __init__(self, text: str, callback_data: bytes = None, url: str = None,
                  switch_inline_query: str = None, switch_inline_query_current_chat: str = None):
-        super().__init__(None, None)
+        super().__init__(None)
 
         self.text = text
         self.url = url
@@ -66,29 +66,29 @@ class InlineKeyboardButton(PyrogramType):
         # self.pay = pay
 
     @staticmethod
-    def read(b, *args):
-        if isinstance(b, KeyboardButtonUrl):
+    def read(o):
+        if isinstance(o, KeyboardButtonUrl):
             return InlineKeyboardButton(
-                text=b.text,
-                url=b.url
+                text=o.text,
+                url=o.url
             )
 
-        if isinstance(b, KeyboardButtonCallback):
+        if isinstance(o, KeyboardButtonCallback):
             return InlineKeyboardButton(
-                text=b.text,
-                callback_data=b.data
+                text=o.text,
+                callback_data=o.data
             )
 
-        if isinstance(b, KeyboardButtonSwitchInline):
-            if b.same_peer:
+        if isinstance(o, KeyboardButtonSwitchInline):
+            if o.same_peer:
                 return InlineKeyboardButton(
-                    text=b.text,
-                    switch_inline_query_current_chat=b.query
+                    text=o.text,
+                    switch_inline_query_current_chat=o.query
                 )
             else:
                 return InlineKeyboardButton(
-                    text=b.text,
-                    switch_inline_query=b.query
+                    text=o.text,
+                    switch_inline_query=o.query
                 )
 
     def write(self):

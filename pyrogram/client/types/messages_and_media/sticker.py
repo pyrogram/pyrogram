@@ -63,10 +63,10 @@ class Sticker(PyrogramType):
 
     # TODO: Add mask position
 
-    def __init__(self, *, client, raw, file_id: str, width: int, height: int, thumb=None, file_name: str = None,
+    def __init__(self, *, client, file_id: str, width: int, height: int, thumb=None, file_name: str = None,
                  mime_type: str = None, file_size: int = None, date: int = None, emoji: str = None,
                  set_name: str = None, mask_position=None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.file_id = file_id
         self.thumb = thumb
@@ -123,6 +123,5 @@ class Sticker(PyrogramType):
             mime_type=sticker.mime_type,
             file_name=file_name,
             date=sticker.date,
-            client=client,
-            raw=sticker
+            client=client
         )

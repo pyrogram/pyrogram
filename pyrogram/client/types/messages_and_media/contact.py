@@ -40,9 +40,9 @@ class Contact(PyrogramType):
             Additional data about the contact in the form of a vCard.
     """
 
-    def __init__(self, *, client, raw, phone_number: str, first_name: str, last_name: str = None, user_id: int = None,
+    def __init__(self, *, client, phone_number: str, first_name: str, last_name: str = None, user_id: int = None,
                  vcard: str = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.phone_number = phone_number
         self.first_name = first_name
@@ -58,6 +58,5 @@ class Contact(PyrogramType):
             last_name=contact.last_name or None,
             vcard=contact.vcard or None,
             user_id=contact.user_id or None,
-            client=client,
-            raw=contact
+            client=client
         )

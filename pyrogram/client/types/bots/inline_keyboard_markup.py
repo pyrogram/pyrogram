@@ -30,15 +30,15 @@ class InlineKeyboardMarkup(PyrogramType):
     """
 
     def __init__(self, inline_keyboard: list):
-        super().__init__(None, None)
+        super().__init__(None)
 
         self.inline_keyboard = inline_keyboard
 
     @staticmethod
-    def read(kb, *args):
+    def read(o):
         inline_keyboard = []
 
-        for i in kb.rows:
+        for i in o.rows:
             row = []
 
             for j in i.buttons:

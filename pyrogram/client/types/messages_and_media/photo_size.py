@@ -40,8 +40,8 @@ class PhotoSize(PyrogramType):
             File size.
     """
 
-    def __init__(self, *, client, raw, file_id: str, width: int, height: int, file_size: int):
-        super().__init__(client, raw)
+    def __init__(self, *, client, file_id: str, width: int, height: int, file_size: int):
+        super().__init__(client)
 
         self.file_id = file_id
         self.width = width
@@ -71,6 +71,5 @@ class PhotoSize(PyrogramType):
                     width=photo_size.w,
                     height=photo_size.h,
                     file_size=file_size,
-                    client=client,
-                    raw=photo_size
+                    client=client
                 )

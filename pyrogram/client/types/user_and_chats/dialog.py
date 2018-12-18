@@ -44,9 +44,9 @@ class Dialog(PyrogramType):
             True, if the dialog is pinned.
     """
 
-    def __init__(self, *, client, raw, chat, top_message, unread_messages_count: int, unread_mentions_count: int,
+    def __init__(self, *, client, chat, top_message, unread_messages_count: int, unread_mentions_count: int,
                  unread_mark: bool, is_pinned: bool):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.chat = chat
         self.top_message = top_message
@@ -73,6 +73,5 @@ class Dialog(PyrogramType):
             unread_mentions_count=dialog.unread_mentions_count,
             unread_mark=dialog.unread_mark,
             is_pinned=dialog.pinned,
-            client=client,
-            raw=dialog
+            client=client
         )

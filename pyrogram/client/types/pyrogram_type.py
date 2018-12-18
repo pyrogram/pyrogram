@@ -21,9 +21,8 @@ from json import dumps, JSONEncoder
 
 
 class PyrogramType:
-    def __init__(self, client, raw):
+    def __init__(self, client):
         self._client = client
-        self._raw = raw
 
     def __str__(self):
         return dumps(self, cls=Encoder, indent=4)

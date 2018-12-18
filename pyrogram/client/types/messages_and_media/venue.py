@@ -43,9 +43,9 @@ class Venue(PyrogramType):
 
     """
 
-    def __init__(self, *, client, raw, location, title: str, address: str, foursquare_id: str = None,
+    def __init__(self, *, client, location, title: str, address: str, foursquare_id: str = None,
                  foursquare_type: str = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.location = location
         self.title = title
@@ -61,6 +61,5 @@ class Venue(PyrogramType):
             address=venue.address,
             foursquare_id=venue.venue_id or None,
             foursquare_type=venue.venue_type,
-            client=client,
-            raw=venue
+            client=client
         )

@@ -62,10 +62,10 @@ class UserStatus(PyrogramType):
             always shown to blocked users), None otherwise.
     """
 
-    def __init__(self, *, client, raw, user_id: int, online: bool = None, offline: bool = None, date: int = None,
+    def __init__(self, *, client, user_id: int, online: bool = None, offline: bool = None, date: int = None,
                  recently: bool = None, within_week: bool = None, within_month: bool = None,
                  long_time_ago: bool = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.user_id = user_id
         self.online = online
@@ -81,7 +81,7 @@ class UserStatus(PyrogramType):
         if is_bot:
             return None
 
-        status = UserStatus(user_id=user_id, client=client, raw=user_status)
+        status = UserStatus(user_id=user_id, client=client)
 
         if isinstance(user_status, types.UserStatusOnline):
             status.online = True

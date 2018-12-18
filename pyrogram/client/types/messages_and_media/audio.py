@@ -56,10 +56,10 @@ class Audio(PyrogramType):
             Title of the audio as defined by sender or by audio tags.
     """
 
-    def __init__(self, *, client, raw, file_id: str, duration: int, thumb=None, file_name: str = None,
+    def __init__(self, *, client, file_id: str, duration: int, thumb=None, file_name: str = None,
                  mime_type: str = None, file_size: int = None, date: int = None, performer: str = None,
                  title: str = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.file_id = file_id
         self.thumb = thumb
@@ -91,6 +91,5 @@ class Audio(PyrogramType):
             thumb=PhotoSize.parse(client, audio.thumb),
             file_name=file_name,
             date=audio.date,
-            client=client,
-            raw=audio
+            client=client
         )

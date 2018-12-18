@@ -33,8 +33,8 @@ class ChatMembers(PyrogramType):
             Requested chat members.
     """
 
-    def __init__(self, *, client, raw, total_count: int, chat_members: list):
-        super().__init__(client, raw)
+    def __init__(self, *, client, total_count: int, chat_members: list):
+        super().__init__(client)
 
         self.total_count = total_count
         self.chat_members = chat_members
@@ -58,6 +58,5 @@ class ChatMembers(PyrogramType):
         return ChatMembers(
             total_count=total_count,
             chat_members=chat_members,
-            client=client,
-            raw=members
+            client=client
         )

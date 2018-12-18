@@ -39,8 +39,8 @@ class Photo(PyrogramType):
             Available sizes of this photo.
     """
 
-    def __init__(self, *, client, raw, id: str, date: int, sizes: list):
-        super().__init__(client, raw)
+    def __init__(self, *, client, id: str, date: int, sizes: list):
+        super().__init__(client)
 
         self.id = id
         self.date = date
@@ -74,8 +74,7 @@ class Photo(PyrogramType):
                             width=raw_size.w,
                             height=raw_size.h,
                             file_size=file_size,
-                            client=client,
-                            raw=raw_size
+                            client=client
                         )
 
                         sizes.append(size)
@@ -91,6 +90,5 @@ class Photo(PyrogramType):
                 ).decode().rstrip("="),
                 date=photo.date,
                 sizes=sizes,
-                client=client,
-                raw=photo
+                client=client
             )

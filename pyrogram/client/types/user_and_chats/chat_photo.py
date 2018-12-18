@@ -19,11 +19,11 @@
 from struct import pack
 
 from pyrogram.api import types
-from pyrogram.api.core import Object
+from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
 
-class ChatPhoto(Object):
+class ChatPhoto(PyrogramType):
     """This object represents a chat photo.
 
     Args:
@@ -34,9 +34,9 @@ class ChatPhoto(Object):
             Unique file identifier of big (640x640) chat photo. This file_id can be used only for photo download.
     """
 
-    ID = 0xb0700015
+    def __init__(self, *, client, small_file_id: str, big_file_id: str):
+        super().__init__(client)
 
-    def __init__(self, *, client, raw, small_file_id: str, big_file_id: str):
         self.small_file_id = small_file_id
         self.big_file_id = big_file_id
 
@@ -68,6 +68,5 @@ class ChatPhoto(Object):
                     1, loc_big.dc_id, photo_id, 0, loc_big.volume_id, loc_big.secret, loc_big.local_id
                 )
             ),
-            client=client,
-            raw=chat_photo
+            client=client
         )

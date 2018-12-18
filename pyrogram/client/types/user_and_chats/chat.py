@@ -76,11 +76,11 @@ class Chat(PyrogramType):
             The reason why this chat might be unavailable to some users.
     """
 
-    def __init__(self, *, client, raw, id: int, type: str, title: str = None, username: str = None,
+    def __init__(self, *, client, id: int, type: str, title: str = None, username: str = None,
                  first_name: str = None, last_name: str = None, all_members_are_administrators: bool = None, photo=None,
                  description: str = None, invite_link: str = None, pinned_message=None, sticker_set_name: str = None,
                  can_set_sticker_set: bool = None, members_count: int = None, restriction_reason: str = None):
-        super().__init__(client, raw)
+        super().__init__(client)
 
         self.id = id
         self.type = type
@@ -108,7 +108,7 @@ class Chat(PyrogramType):
             last_name=user.last_name,
             photo=ChatPhoto.parse(client, user.photo),
             restriction_reason=user.restriction_reason,
-            client=client, raw=user
+            client=client
         )
 
     @staticmethod
@@ -124,7 +124,7 @@ class Chat(PyrogramType):
             title=chat.title,
             all_members_are_administrators=admins_enabled,
             photo=ChatPhoto.parse(client, getattr(chat, "photo", None)),
-            client=client, raw=chat
+            client=client
         )
 
     @staticmethod
@@ -136,7 +136,7 @@ class Chat(PyrogramType):
             username=getattr(channel, "username", None),
             photo=ChatPhoto.parse(client, getattr(channel, "photo", None)),
             restriction_reason=getattr(channel, "restriction_reason", None),
-            client=client, raw=channel
+            client=client
         )
 
     @staticmethod

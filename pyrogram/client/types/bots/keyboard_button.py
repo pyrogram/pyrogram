@@ -41,26 +41,26 @@ class KeyboardButton(PyrogramType):
     """
 
     def __init__(self, text: str, request_contact: bool = None, request_location: bool = None):
-        super().__init__(None, None)
+        super().__init__(None)
 
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
 
     @staticmethod
-    def read(b, *args):
-        if isinstance(b, RawKeyboardButton):
-            return b.text
+    def read(o):
+        if isinstance(o, RawKeyboardButton):
+            return o.text
 
-        if isinstance(b, KeyboardButtonRequestPhone):
+        if isinstance(o, KeyboardButtonRequestPhone):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_contact=True
             )
 
-        if isinstance(b, KeyboardButtonRequestGeoLocation):
+        if isinstance(o, KeyboardButtonRequestGeoLocation):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_location=True
             )
 

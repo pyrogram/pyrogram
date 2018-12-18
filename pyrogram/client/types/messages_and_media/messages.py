@@ -33,8 +33,8 @@ class Messages(PyrogramType):
             Requested messages.
     """
 
-    def __init__(self, *, client, raw, total_count: int, messages: list):
-        super().__init__(client, raw)
+    def __init__(self, *, client, total_count: int, messages: list):
+        super().__init__(client)
 
         self.total_count = total_count
         self.messages = messages
@@ -47,8 +47,7 @@ class Messages(PyrogramType):
         return Messages(
             total_count=getattr(messages, "count", len(messages.messages)),
             messages=[Message.parse(client, message, users, chats) for message in messages.messages],
-            client=client,
-            raw=messages
+            client=client
         )
 
     @staticmethod
@@ -65,17 +64,14 @@ class Messages(PyrogramType):
                     chat=Chat(
                         id=int("-100" + str(channel_id)),
                         type="channel",
-                        client=client,
-                        raw=None
+                        client=client
                     ) if channel_id is not None else None,
-                    client=client,
-                    raw=None
+                    client=client
                 )
             )
 
         return Messages(
             total_count=len(parsed_messages),
             messages=parsed_messages,
-            client=client,
-            raw=update
+            client=client
         )
