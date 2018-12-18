@@ -45,7 +45,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied)
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.crypto import AES
@@ -529,16 +529,8 @@ class Client(Methods, BaseClient):
 
             try:
                 if phone_registered:
-                    r = self.send(
-                        functions.auth.SignIn(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code
-                        )
-                    )
-                else:
                     try:
-                        self.send(
+                        r = self.send(
                             functions.auth.SignIn(
                                 self.phone_number,
                                 phone_code_hash,
@@ -546,20 +538,27 @@ class Client(Methods, BaseClient):
                             )
                         )
                     except PhoneNumberUnoccupied:
-                        pass
-
+                        log.warning("Phone number unregistered")
+                        phone_registered = False
+                        continue
+                else:
                     self.first_name = self.first_name if self.first_name is not None else input("First name: ")
                     self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
-                    r = self.send(
-                        functions.auth.SignUp(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code,
-                            self.first_name,
-                            self.last_name
+                    try:
+                        r = self.send(
+                            functions.auth.SignUp(
+                                self.phone_number,
+                                phone_code_hash,
+                                self.phone_code,
+                                self.first_name,
+                                self.last_name
+                            )
                         )
-                    )
+                    except PhoneNumberOccupied:
+                        log.warning("Phone number already registered")
+                        phone_registered = True
+                        continue
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
                 if phone_code_invalid_raises:
                     raise
