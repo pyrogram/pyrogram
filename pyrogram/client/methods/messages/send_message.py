@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client import types as pyrogram_types
-from ...ext import utils, BaseClient
+from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
@@ -83,9 +83,13 @@ class SendMessage(BaseClient):
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
-            return pyrogram_types.Message(
+            return pyrogram.Message(
                 message_id=r.id,
-                chat=pyrogram_types.Chat(id=list(self.resolve_peer(chat_id).__dict__.values())[0], type="private"),
+                chat=pyrogram.Chat(
+                    id=list(self.resolve_peer(chat_id).__dict__.values())[0],
+                    type="private",
+                    client=self
+                ),
                 text=message,
                 date=r.date,
                 outgoing=r.out,
@@ -95,7 +99,7 @@ class SendMessage(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message.parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

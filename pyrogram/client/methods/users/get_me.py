@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetMe(BaseClient):
@@ -30,7 +31,8 @@ class GetMe(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        return utils.parse_user(
+        return pyrogram.User.parse(
+            self,
             self.send(
                 functions.users.GetFullUser(
                     types.InputPeerSelf()

@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class ForwardMessages(BaseClient):
@@ -77,7 +78,7 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    utils.parse_messages(
+                    pyrogram.Message.parse(
                         self, i.message,
                         users, chats
                     )

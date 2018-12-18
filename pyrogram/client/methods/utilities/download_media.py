@@ -84,7 +84,8 @@ class DownloadMedia(BaseClient):
                     file_id=message.photo.sizes[-1].file_id,
                     file_size=message.photo.sizes[-1].file_size,
                     mime_type="",
-                    date=message.photo.date
+                    date=message.photo.date,
+                    client=self
                 )
             elif message.audio:
                 media = message.audio
@@ -118,7 +119,8 @@ class DownloadMedia(BaseClient):
                     file_id=message.sizes[-1].file_id,
                     file_size=message.sizes[-1].file_size,
                     mime_type="",
-                    date=message.date
+                    date=message.date,
+                    client=self
                 )
             else:
                 media = message
@@ -126,7 +128,8 @@ class DownloadMedia(BaseClient):
             media = pyrogram_types.Document(
                 file_id=message,
                 file_size=0,
-                mime_type=""
+                mime_type="",
+                client=self
             )
         else:
             raise ValueError(error_message)

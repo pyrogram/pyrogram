@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class EditMessageReplyMarkup(BaseClient):
@@ -57,7 +58,7 @@ class EditMessageReplyMarkup(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message.parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
