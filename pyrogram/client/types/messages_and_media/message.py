@@ -447,6 +447,7 @@ class Message(PyrogramType):
                             document = pyrogram.Document.parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):
                     web_page = True
+                    media = None
                 else:
                     media = None
 
