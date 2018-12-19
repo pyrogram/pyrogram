@@ -60,9 +60,9 @@ class Venue(PyrogramType):
         self.foursquare_type = foursquare_type
 
     @staticmethod
-    def parse(client, venue: types.MessageMediaVenue):
+    def _parse(client, venue: types.MessageMediaVenue):
         return Venue(
-            location=Location.parse(client, venue.geo),
+            location=Location._parse(client, venue.geo),
             title=venue.title,
             address=venue.address,
             foursquare_id=venue.venue_id or None,

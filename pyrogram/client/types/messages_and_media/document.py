@@ -66,7 +66,7 @@ class Document(PyrogramType):
         self.date = date
 
     @staticmethod
-    def parse(client, document: types.Document, file_name: str) -> "Document":
+    def _parse(client, document: types.Document, file_name: str) -> "Document":
         return Document(
             file_id=encode(
                 pack(
@@ -77,7 +77,7 @@ class Document(PyrogramType):
                     document.access_hash
                 )
             ),
-            thumb=PhotoSize.parse(client, document.thumb),
+            thumb=PhotoSize._parse(client, document.thumb),
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,

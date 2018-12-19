@@ -104,7 +104,7 @@ class Sticker(PyrogramType):
             return None
 
     @staticmethod
-    def parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
+    def _parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
               sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
         sticker_set = sticker_attributes.stickerset
 
@@ -126,7 +126,7 @@ class Sticker(PyrogramType):
             ),
             width=image_size_attributes.w if image_size_attributes else 0,
             height=image_size_attributes.h if image_size_attributes else 0,
-            thumb=PhotoSize.parse(client, sticker.thumb),
+            thumb=PhotoSize._parse(client, sticker.thumb),
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

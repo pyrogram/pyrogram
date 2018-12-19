@@ -63,7 +63,7 @@ class Dialog(PyrogramType):
         self.is_pinned = is_pinned
 
     @staticmethod
-    def parse(client, dialog, messages, users, chats) -> "Dialog":
+    def _parse(client, dialog, messages, users, chats) -> "Dialog":
         chat_id = dialog.peer
 
         if isinstance(chat_id, types.PeerUser):
@@ -74,7 +74,7 @@ class Dialog(PyrogramType):
             chat_id = int("-100" + str(chat_id.channel_id))
 
         return Dialog(
-            chat=Chat.parse_dialog(client, dialog.peer, users, chats),
+            chat=Chat._parse_dialog(client, dialog.peer, users, chats),
             top_message=messages.get(chat_id),
             unread_messages_count=dialog.unread_count,
             unread_mentions_count=dialog.unread_mentions_count,

@@ -104,7 +104,7 @@ class User(PyrogramType):
         self.restriction_reason = restriction_reason
 
     @staticmethod
-    def parse(client, user: types.User) -> "User" or None:
+    def _parse(client, user: types.User) -> "User" or None:
         if user is None:
             return None
 
@@ -117,11 +117,11 @@ class User(PyrogramType):
             is_bot=user.bot,
             first_name=user.first_name,
             last_name=user.last_name,
-            status=UserStatus.parse(client, user.status, user.id, user.bot),
+            status=UserStatus._parse(client, user.status, user.id, user.bot),
             username=user.username,
             language_code=user.lang_code,
             phone_number=user.phone,
-            photo=ChatPhoto.parse(client, user.photo),
+            photo=ChatPhoto._parse(client, user.photo),
             restriction_reason=user.restriction_reason,
             client=client
         )

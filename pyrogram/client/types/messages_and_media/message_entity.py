@@ -78,7 +78,7 @@ class MessageEntity(PyrogramType):
         self.user = user
 
     @staticmethod
-    def parse(client, entity, users: dict) -> "MessageEntity" or None:
+    def _parse(client, entity, users: dict) -> "MessageEntity" or None:
         type = MessageEntity.ENTITIES.get(entity.ID, None)
 
         if type is None:
@@ -89,6 +89,6 @@ class MessageEntity(PyrogramType):
             offset=entity.offset,
             length=entity.length,
             url=getattr(entity, "url", None),
-            user=User.parse(client, users.get(getattr(entity, "user_id", None), None)),
+            user=User._parse(client, users.get(getattr(entity, "user_id", None), None)),
             client=client
         )

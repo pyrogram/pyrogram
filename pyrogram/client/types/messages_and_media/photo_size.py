@@ -55,7 +55,7 @@ class PhotoSize(PyrogramType):
         self.file_size = file_size
 
     @staticmethod
-    def parse(client, photo_size: types.PhotoSize or types.PhotoCachedSize):
+    def _parse(client, photo_size: types.PhotoSize or types.PhotoCachedSize):
         if isinstance(photo_size, (types.PhotoSize, types.PhotoCachedSize)):
 
             if isinstance(photo_size, types.PhotoSize):

@@ -81,7 +81,7 @@ class Audio(PyrogramType):
         self.title = title
 
     @staticmethod
-    def parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio, file_name: str) -> "Audio":
+    def _parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio, file_name: str) -> "Audio":
         return Audio(
             file_id=encode(
                 pack(
@@ -97,7 +97,7 @@ class Audio(PyrogramType):
             title=audio_attributes.title,
             mime_type=audio.mime_type,
             file_size=audio.size,
-            thumb=PhotoSize.parse(client, audio.thumb),
+            thumb=PhotoSize._parse(client, audio.thumb),
             file_name=file_name,
             date=audio.date,
             client=client

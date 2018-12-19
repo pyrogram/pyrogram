@@ -44,7 +44,7 @@ class ChatMembers(PyrogramType):
         self.chat_members = chat_members
 
     @staticmethod
-    def parse(client, members):
+    def _parse(client, members):
         users = {i.id: i for i in members.users}
         chat_members = []
 
@@ -56,8 +56,8 @@ class ChatMembers(PyrogramType):
             total_count = len(members)
 
         for member in members:
-            user = User.parse(client, users[member.user_id])
-            chat_members.append(ChatMember.parse(client, member, user))
+            user = User._parse(client, users[member.user_id])
+            chat_members.append(ChatMember._parse(client, member, user))
 
         return ChatMembers(
             total_count=total_count,

@@ -62,17 +62,17 @@ class Dispatcher:
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (pyrogram.Message.parse(self.client, upd.message, usr, cht), MessageHandler),
+                lambda upd, usr, cht: (pyrogram.Message._parse(self.client, upd.message, usr, cht), MessageHandler),
 
             Dispatcher.DELETE_MESSAGES_UPDATES:
-                lambda upd, usr, cht: (pyrogram.Messages.parse_deleted(self.client, upd), DeletedMessagesHandler),
+                lambda upd, usr, cht: (pyrogram.Messages._parse_deleted(self.client, upd), DeletedMessagesHandler),
 
             Dispatcher.CALLBACK_QUERY_UPDATES:
-                lambda upd, usr, cht: (pyrogram.CallbackQuery.parse(self.client, upd, usr), CallbackQueryHandler),
+                lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
 
             (types.UpdateUserStatus,):
                 lambda upd, usr, cht: (
-                    pyrogram.UserStatus.parse(self.client, upd.status, upd.user_id), UserStatusHandler
+                    pyrogram.UserStatus._parse(self.client, upd.status, upd.user_id), UserStatusHandler
                 )
         }
 

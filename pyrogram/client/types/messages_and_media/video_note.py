@@ -71,7 +71,7 @@ class VideoNote(PyrogramType):
         self.duration = duration
 
     @staticmethod
-    def parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
+    def _parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
         return VideoNote(
             file_id=encode(
                 pack(
@@ -84,7 +84,7 @@ class VideoNote(PyrogramType):
             ),
             length=video_attributes.w,
             duration=video_attributes.duration,
-            thumb=PhotoSize.parse(client, video_note.thumb),
+            thumb=PhotoSize._parse(client, video_note.thumb),
             file_size=video_note.size,
             mime_type=video_note.mime_type,
             date=video_note.date,

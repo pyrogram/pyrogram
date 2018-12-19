@@ -118,7 +118,7 @@ class ChatMember(PyrogramType):
         self.can_add_web_page_previews = can_add_web_page_previews
 
     @staticmethod
-    def parse(client, member, user) -> "ChatMember":
+    def _parse(client, member, user) -> "ChatMember":
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
             return ChatMember(user=user, status="member", client=client)
 

@@ -44,7 +44,7 @@ class Dialogs(PyrogramType):
         self.dialogs = dialogs
 
     @staticmethod
-    def parse(client, dialogs) -> "Dialogs":
+    def _parse(client, dialogs) -> "Dialogs":
         users = {i.id: i for i in dialogs.users}
         chats = {i.id: i for i in dialogs.chats}
 
@@ -63,10 +63,10 @@ class Dialogs(PyrogramType):
             else:
                 chat_id = int("-100" + str(to_id.channel_id))
 
-            messages[chat_id] = Message.parse(client, message, users, chats)
+            messages[chat_id] = Message._parse(client, message, users, chats)
 
         return Dialogs(
             total_count=getattr(dialogs, "count", len(dialogs.dialogs)),
-            dialogs=[Dialog.parse(client, dialog, messages, users, chats) for dialog in dialogs.dialogs],
+            dialogs=[Dialog._parse(client, dialog, messages, users, chats) for dialog in dialogs.dialogs],
             client=client
         )

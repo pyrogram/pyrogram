@@ -77,7 +77,7 @@ class CallbackQuery(PyrogramType):
         self.game_short_name = game_short_name
 
     @staticmethod
-    def parse(client, callback_query, users) -> "CallbackQuery":
+    def _parse(client, callback_query, users) -> "CallbackQuery":
         message = None
         inline_message_id = None
 
@@ -105,7 +105,7 @@ class CallbackQuery(PyrogramType):
 
         return CallbackQuery(
             id=str(callback_query.query_id),
-            from_user=User.parse(client, users[callback_query.user_id]),
+            from_user=User._parse(client, users[callback_query.user_id]),
             message=message,
             inline_message_id=inline_message_id,
             chat_instance=str(callback_query.chat_instance),

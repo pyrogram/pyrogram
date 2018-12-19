@@ -44,18 +44,18 @@ class Messages(PyrogramType):
         self.messages = messages
 
     @staticmethod
-    def parse(client, messages: types.messages.Messages) -> "Messages":
+    def _parse(client, messages: types.messages.Messages) -> "Messages":
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
         return Messages(
             total_count=getattr(messages, "count", len(messages.messages)),
-            messages=[Message.parse(client, message, users, chats) for message in messages.messages],
+            messages=[Message._parse(client, message, users, chats) for message in messages.messages],
             client=client
         )
 
     @staticmethod
-    def parse_deleted(client, update) -> "Messages":
+    def _parse_deleted(client, update) -> "Messages":
         messages = update.messages
         channel_id = getattr(update, "channel_id", None)
 

@@ -52,7 +52,7 @@ class Photo(PyrogramType):
         self.sizes = sizes
 
     @staticmethod
-    def parse(client, photo: types.Photo):
+    def _parse(client, photo: types.Photo):
         if isinstance(photo, types.Photo):
             raw_sizes = photo.sizes
             sizes = []

@@ -85,7 +85,7 @@ class UserStatus(PyrogramType):
         self.long_time_ago = long_time_ago
 
     @staticmethod
-    def parse(client, user_status, user_id: int, is_bot: bool = False):
+    def _parse(client, user_status, user_id: int, is_bot: bool = False):
         if is_bot:
             return None
 

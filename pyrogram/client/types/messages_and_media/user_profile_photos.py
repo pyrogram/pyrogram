@@ -42,9 +42,9 @@ class UserProfilePhotos(PyrogramType):
         self.photos = photos
 
     @staticmethod
-    def parse(client, photos) -> "UserProfilePhotos":
+    def _parse(client, photos) -> "UserProfilePhotos":
         return UserProfilePhotos(
             total_count=getattr(photos, "count", len(photos.photos)),
-            photos=[Photo.parse(client, photo) for photo in photos.photos],
+            photos=[Photo._parse(client, photo) for photo in photos.photos],
             client=client
         )

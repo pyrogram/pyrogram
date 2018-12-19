@@ -113,20 +113,20 @@ class Chat(PyrogramType):
         self.restriction_reason = restriction_reason
 
     @staticmethod
-    def parse_user_chat(client, user: types.User) -> "Chat":
+    def _parse_user_chat(client, user: types.User) -> "Chat":
         return Chat(
             id=user.id,
             type="private",
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo=ChatPhoto.parse(client, user.photo),
+            photo=ChatPhoto._parse(client, user.photo),
             restriction_reason=user.restriction_reason,
             client=client
         )
 
     @staticmethod
-    def parse_chat_chat(client, chat: types.Chat) -> "Chat":
+    def _parse_chat_chat(client, chat: types.Chat) -> "Chat":
         admins_enabled = getattr(chat, "admins_enabled", None)
 
         if admins_enabled is not None:
@@ -137,45 +137,45 @@ class Chat(PyrogramType):
             type="group",
             title=chat.title,
             all_members_are_administrators=admins_enabled,
-            photo=ChatPhoto.parse(client, getattr(chat, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
             client=client
         )
 
     @staticmethod
-    def parse_channel_chat(client, channel: types.Channel) -> "Chat":
+    def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
         return Chat(
             id=int("-100" + str(channel.id)),
             type="supergroup" if channel.megagroup else "channel",
             title=channel.title,
             username=getattr(channel, "username", None),
-            photo=ChatPhoto.parse(client, getattr(channel, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
             restriction_reason=getattr(channel, "restriction_reason", None),
             client=client
         )
 
     @staticmethod
-    def parse(client, message: types.Message or types.MessageService, users: dict, chats: dict) -> "Chat":
+    def _parse(client, message: types.Message or types.MessageService, users: dict, chats: dict) -> "Chat":
         if isinstance(message.to_id, types.PeerUser):
-            return Chat.parse_user_chat(client, users[message.to_id.user_id if message.out else message.from_id])
+            return Chat._parse_user_chat(client, users[message.to_id.user_id if message.out else message.from_id])
 
         if isinstance(message.to_id, types.PeerChat):
-            return Chat.parse_chat_chat(client, chats[message.to_id.chat_id])
+            return Chat._parse_chat_chat(client, chats[message.to_id.chat_id])
 
-        return Chat.parse_channel_chat(client, chats[message.to_id.channel_id])
+        return Chat._parse_channel_chat(client, chats[message.to_id.channel_id])
 
     @staticmethod
-    def parse_dialog(client, peer, users: dict, chats: dict):
+    def _parse_dialog(client, peer, users: dict, chats: dict):
         if isinstance(peer, types.PeerUser):
-            return Chat.parse_user_chat(client, users[peer.user_id])
+            return Chat._parse_user_chat(client, users[peer.user_id])
         elif isinstance(peer, types.PeerChat):
-            return Chat.parse_chat_chat(client, chats[peer.chat_id])
+            return Chat._parse_chat_chat(client, chats[peer.chat_id])
         else:
-            return Chat.parse_channel_chat(client, chats[peer.channel_id])
+            return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    def parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
+    def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
-            parsed_chat = Chat.parse_user_chat(client, chat_full.user)
+            _parsed_chat = Chat.parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
         else:
             full_chat = chat_full.full_chat
@@ -186,12 +186,12 @@ class Chat(PyrogramType):
                     chat = i
 
             if isinstance(full_chat, types.ChatFull):
-                parsed_chat = Chat.parse_chat_chat(client, chat)
+                _parsed_chat = Chat.parse_chat_chat(client, chat)
 
                 if isinstance(full_chat.participants, types.ChatParticipants):
                     parsed_chat.members_count = len(full_chat.participants.participants)
             else:
-                parsed_chat = Chat.parse_channel_chat(client, chat)
+                _parsed_chat = Chat.parse_channel_chat(client, chat)
                 parsed_chat.members_count = full_chat.participants_count
                 parsed_chat.description = full_chat.about or None
                 # TODO: Add StickerSet type

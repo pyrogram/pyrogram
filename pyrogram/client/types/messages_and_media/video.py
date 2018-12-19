@@ -81,7 +81,7 @@ class Video(PyrogramType):
         self.duration = duration
 
     @staticmethod
-    def parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo, file_name: str) -> "Video":
+    def _parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo, file_name: str) -> "Video":
         return Video(
             file_id=encode(
                 pack(
@@ -95,7 +95,7 @@ class Video(PyrogramType):
             width=video_attributes.w,
             height=video_attributes.h,
             duration=video_attributes.duration,
-            thumb=PhotoSize.parse(client, video.thumb),
+            thumb=PhotoSize._parse(client, video.thumb),
             mime_type=video.mime_type,
             file_size=video.size,
             file_name=file_name,

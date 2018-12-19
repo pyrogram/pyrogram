@@ -81,7 +81,7 @@ class Animation(PyrogramType):
         self.duration = duration
 
     @staticmethod
-    def parse(client, animation: types.Document, video_attributes: types.DocumentAttributeVideo,
+    def _parse(client, animation: types.Document, video_attributes: types.DocumentAttributeVideo,
               file_name: str) -> "Animation":
         return Animation(
             file_id=encode(
@@ -96,7 +96,7 @@ class Animation(PyrogramType):
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),
-            thumb=PhotoSize.parse(client, animation.thumb),
+            thumb=PhotoSize._parse(client, animation.thumb),
             mime_type=animation.mime_type,
             file_size=animation.size,
             file_name=file_name,

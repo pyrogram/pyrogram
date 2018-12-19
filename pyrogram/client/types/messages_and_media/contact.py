@@ -57,7 +57,7 @@ class Contact(PyrogramType):
         self.vcard = vcard
 
     @staticmethod
-    def parse(client, contact: types.MessageMediaContact) -> "Contact":
+    def _parse(client, contact: types.MessageMediaContact) -> "Contact":
         return Contact(
             phone_number=contact.phone_number,
             first_name=contact.first_name,

@@ -38,7 +38,7 @@ class Location(PyrogramType):
         self.latitude = latitude
 
     @staticmethod
-    def parse(client, geo_point: types.GeoPoint) -> "Location":
+    def _parse(client, geo_point: types.GeoPoint) -> "Location":
         if isinstance(geo_point, types.GeoPoint):
             return Location(
                 longitude=geo_point.long,

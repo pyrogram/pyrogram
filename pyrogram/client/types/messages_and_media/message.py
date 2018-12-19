@@ -336,7 +336,7 @@ class Message(PyrogramType):
         self.reply_markup = reply_markup
 
     @staticmethod
-    def parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
+    def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
               replies: int = 1):
         if isinstance(message, types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
@@ -355,11 +355,11 @@ class Message(PyrogramType):
             new_chat_photo = None
 
             if isinstance(action, types.MessageActionChatAddUser):
-                new_chat_members = [User.parse(client, users[i]) for i in action.users]
+                new_chat_members = [User._parse(client, users[i]) for i in action.users]
             elif isinstance(action, types.MessageActionChatJoinedByLink):
-                new_chat_members = [User.parse(client, users[message.from_id])]
+                new_chat_members = [User._parse(client, users[message.from_id])]
             elif isinstance(action, types.MessageActionChatDeleteUser):
-                left_chat_member = User.parse(client, users[action.user_id])
+                left_chat_member = User._parse(client, users[action.user_id])
             elif isinstance(action, types.MessageActionChatEditTitle):
                 new_chat_title = action.title
             elif isinstance(action, types.MessageActionChatDeletePhoto):
@@ -373,13 +373,13 @@ class Message(PyrogramType):
             elif isinstance(action, types.MessageActionChannelCreate):
                 channel_chat_created = True
             elif isinstance(action, types.MessageActionChatEditPhoto):
-                new_chat_photo = Photo.parse(client, action.photo)
+                new_chat_photo = Photo._parse(client, action.photo)
 
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=Chat.parse(client, message, users, chats),
-                from_user=User.parse(client, users.get(message.from_id, None)),
+                chat=Chat._parse(client, message, users, chats),
+                from_user=User._parse(client, users.get(message.from_id, None)),
                 service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
@@ -407,7 +407,7 @@ class Message(PyrogramType):
             return parsed_message
 
         if isinstance(message, types.Message):
-            entities = [MessageEntity.parse(client, entity, users) for entity in message.entities]
+            entities = [MessageEntity._parse(client, entity, users) for entity in message.entities]
             entities = list(filter(lambda x: x is not None, entities))
 
             forward_from = None
@@ -422,9 +422,9 @@ class Message(PyrogramType):
                 forward_date = forward_header.date
 
                 if forward_header.from_id:
-                    forward_from = User.parse(client, users[forward_header.from_id])
+                    forward_from = User._parse(client, users[forward_header.from_id])
                 else:
-                    forward_from_chat = Chat.parse_channel_chat(client, chats[forward_header.channel_id])
+                    forward_from_chat = Chat._parse_channel_chat(client, chats[forward_header.channel_id])
                     forward_from_message_id = forward_header.channel_post
                     forward_signature = forward_header.post_author
 
@@ -445,13 +445,13 @@ class Message(PyrogramType):
 
             if media:
                 if isinstance(media, types.MessageMediaPhoto):
-                    photo = Photo.parse(client, media.photo)
+                    photo = Photo._parse(client, media.photo)
                 elif isinstance(media, types.MessageMediaGeo):
-                    location = Location.parse(client, media.geo)
+                    location = Location._parse(client, media.geo)
                 elif isinstance(media, types.MessageMediaContact):
-                    contact = Contact.parse(client, media)
+                    contact = Contact._parse(client, media)
                 elif isinstance(media, types.MessageMediaVenue):
-                    venue = pyrogram.Venue.parse(client, media)
+                    venue = pyrogram.Venue._parse(client, media)
                 elif isinstance(media, types.MessageMediaDocument):
                     doc = media.document
 
@@ -468,20 +468,20 @@ class Message(PyrogramType):
                             audio_attributes = attributes[types.DocumentAttributeAudio]
 
                             if audio_attributes.voice:
-                                voice = pyrogram.Voice.parse(client, doc, audio_attributes)
+                                voice = pyrogram.Voice._parse(client, doc, audio_attributes)
                             else:
-                                audio = pyrogram.Audio.parse(client, doc, audio_attributes, file_name)
+                                audio = pyrogram.Audio._parse(client, doc, audio_attributes, file_name)
                         elif types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(types.DocumentAttributeVideo, None)
 
-                            animation = pyrogram.Animation.parse(client, doc, video_attributes, file_name)
+                            animation = pyrogram.Animation._parse(client, doc, video_attributes, file_name)
                         elif types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[types.DocumentAttributeVideo]
 
                             if video_attributes.round_message:
-                                video_note = pyrogram.VideoNote.parse(client, doc, video_attributes)
+                                video_note = pyrogram.VideoNote._parse(client, doc, video_attributes)
                             else:
-                                video = pyrogram.Video.parse(client, doc, video_attributes, file_name)
+                                video = pyrogram.Video._parse(client, doc, video_attributes, file_name)
                         elif types.DocumentAttributeSticker in attributes:
                             sticker = pyrogram.Sticker.parse(
                                 client, doc,
@@ -490,7 +490,7 @@ class Message(PyrogramType):
                                 file_name
                             )
                         else:
-                            document = pyrogram.Document.parse(client, doc, file_name)
+                            document = pyrogram.Document._parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):
                     web_page = True
                     media = None
@@ -514,8 +514,8 @@ class Message(PyrogramType):
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=Chat.parse(client, message, users, chats),
-                from_user=User.parse(client, users.get(message.from_id, None)),
+                chat=Chat._parse(client, message, users, chats),
+                from_user=User._parse(client, users.get(message.from_id, None)),
                 text=Str(message.message).init(client, entities) or None if media is None else None,
                 caption=Str(message.message).init(client, entities) or None if media is not None else None,
                 entities=entities or None if media is None else None,
@@ -543,7 +543,7 @@ class Message(PyrogramType):
                 document=document,
                 web_page=web_page,
                 views=message.views,
-                via_bot=User.parse(client, users.get(message.via_bot_id, None)),
+                via_bot=User._parse(client, users.get(message.via_bot_id, None)),
                 outgoing=message.out,
                 reply_markup=reply_markup,
                 client=client

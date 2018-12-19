@@ -65,7 +65,7 @@ class Voice(PyrogramType):
         self.date = date
 
     @staticmethod
-    def parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
+    def _parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
         return Voice(
             file_id=encode(
                 pack(

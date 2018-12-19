@@ -45,7 +45,7 @@ class ChatPhoto(PyrogramType):
         self.big_file_id = big_file_id
 
     @staticmethod
-    def parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto):
+    def _parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto):
         if not isinstance(chat_photo, (types.UserProfilePhoto, types.ChatPhoto)):
             return None
 
