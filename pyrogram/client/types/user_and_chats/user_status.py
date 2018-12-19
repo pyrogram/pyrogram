@@ -66,7 +66,7 @@ class UserStatus(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  user_id: int,
                  online: bool = None,
                  offline: bool = None,

@@ -50,7 +50,7 @@ class Document(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  file_id: str,
                  thumb: PhotoSize = None,
                  file_name: str = None,

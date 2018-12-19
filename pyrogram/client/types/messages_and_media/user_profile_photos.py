@@ -36,7 +36,7 @@ class UserProfilePhotos(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  total_count: int,
                  photos: List[Photo]):
         super().__init__(client)

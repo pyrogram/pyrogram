@@ -72,7 +72,7 @@ class User(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  id: int,
                  is_self: bool,
                  is_contact: bool,

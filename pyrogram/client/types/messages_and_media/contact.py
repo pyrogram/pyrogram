@@ -44,7 +44,7 @@ class Contact(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  phone_number: str,
                  first_name: str,
                  last_name: str = None,

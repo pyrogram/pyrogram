@@ -210,11 +210,11 @@ class Message(PyrogramType):
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
-        matches (``List of regex Matches``, *optional*):
+        matches (List of regex Matches, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
 
-        command (``List of strings``, *optional*):
+        command (List of ``str``, *optional*):
             A list containing the command and its arguments, if any.
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
@@ -228,7 +228,7 @@ class Message(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  message_id: int,
                  date: int = None,
                  chat: Chat = None,

@@ -79,7 +79,7 @@ class Chat(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  id: int,
                  type: str,
                  title: str = None,

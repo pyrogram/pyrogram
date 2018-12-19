@@ -49,7 +49,7 @@ class Voice(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  file_id: str,
                  duration: int,
                  waveform: bytes = None,

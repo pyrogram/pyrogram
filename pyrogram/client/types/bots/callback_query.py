@@ -59,7 +59,7 @@ class CallbackQuery(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  id: str,
                  from_user: User,
                  chat_instance: str,

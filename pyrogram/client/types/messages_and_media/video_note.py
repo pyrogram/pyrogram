@@ -53,7 +53,7 @@ class VideoNote(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  file_id: str,
                  length: int,
                  duration: int,

@@ -66,7 +66,7 @@ class Sticker(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  file_id: str,
                  width: int,
                  height: int,

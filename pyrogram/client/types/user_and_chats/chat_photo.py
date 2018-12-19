@@ -37,7 +37,7 @@ class ChatPhoto(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  small_file_id: str,
                  big_file_id: str):
         super().__init__(client)

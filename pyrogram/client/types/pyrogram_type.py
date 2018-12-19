@@ -52,7 +52,7 @@ class Encoder(JSONEncoder):
 
         return remove_none(
             OrderedDict(
-                [("_", "pyrogram:" + o.__class__.__name__)]
+                [("_", "pyrogram." + o.__class__.__name__)]
                 + [i for i in content.items()]
             )
         )

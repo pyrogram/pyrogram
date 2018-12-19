@@ -38,7 +38,7 @@ class Messages(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  total_count: int,
                  messages: List[Message]):
         super().__init__(client)

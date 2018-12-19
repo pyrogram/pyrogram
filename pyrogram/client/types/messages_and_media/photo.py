@@ -43,7 +43,7 @@ class Photo(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  id: str,
                  date: int,
                  sizes: List[PhotoSize]):

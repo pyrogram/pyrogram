@@ -38,7 +38,7 @@ class Dialogs(PyrogramType):
 
     def __init__(self,
                  *,
-                 client: "pyrogram.Client",
+                 client: "pyrogram.client.ext.BaseClient",
                  total_count: int,
                  dialogs: List[Dialog]):
         super().__init__(client)
