@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List, Match, Union
+
 import pyrogram
 from pyrogram.api import types
 from pyrogram.api.errors import MessageIdsEmpty
@@ -201,18 +203,18 @@ class Message(PyrogramType):
 
         via_bot (:obj:`User <pyrogram.User>`):
             The information of the bot that generated the message from an inline query of a user.
-            
+
         outgoing (``bool``, *optional*):
             Whether the message is incoming or outgoing.
             Messages received from other chats are incoming (*outgoing* is False).
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
-        matches (``list``, *optional*):
+        matches (``List of regex Matches``, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
 
-        command (``list``, *optional*):
+        command (``List of strings``, *optional*):
             A list containing the command and its arguments, if any.
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`Filters.command <pyrogram.Filters.command>`.
@@ -226,57 +228,60 @@ class Message(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  message_id: int,
                  date: int = None,
-                 chat=None,
-                 from_user=None,
-                 forward_from=None,
-                 forward_from_chat=None,
+                 chat: Chat = None,
+                 from_user: User = None,
+                 forward_from: User = None,
+                 forward_from_chat: Chat = None,
                  forward_from_message_id: int = None,
                  forward_signature: str = None,
                  forward_date: int = None,
-                 reply_to_message=None,
-                 mentioned=None,
-                 empty=None,
-                 service=None,
-                 media=None,
+                 reply_to_message: "Message" = None,
+                 mentioned: bool = None,
+                 empty: bool = None,
+                 service: bool = None,
+                 media: bool = None,
                  edit_date: int = None,
                  media_group_id: str = None,
                  author_signature: str = None,
                  text: str = None,
-                 entities: list = None,
-                 caption_entities: list = None,
-                 audio=None,
-                 document=None,
-                 photo=None,
-                 sticker=None,
-                 animation=None,
-                 video=None,
-                 voice=None,
-                 video_note=None,
+                 entities: List["pyrogram.MessageEntity"] = None,
+                 caption_entities: List["pyrogram.MessageEntity"] = None,
+                 audio: "pyrogram.Audio" = None,
+                 document: "pyrogram.Document" = None,
+                 photo: "pyrogram.Photo" = None,
+                 sticker: "pyrogram.Sticker" = None,
+                 animation: "pyrogram.Animation" = None,
+                 video: "pyrogram.Video" = None,
+                 voice: "pyrogram.Voice" = None,
+                 video_note: "pyrogram.VideoNote" = None,
                  caption: str = None,
-                 contact=None,
-                 location=None,
-                 venue=None,
-                 web_page=None,
-                 new_chat_members: list = None,
-                 left_chat_member=None,
+                 contact: "pyrogram.Contact" = None,
+                 location: "pyrogram.Location" = None,
+                 venue: "pyrogram.Venue" = None,
+                 web_page: bool = None,
+                 new_chat_members: List[User] = None,
+                 left_chat_member: User = None,
                  new_chat_title: str = None,
-                 new_chat_photo=None,
+                 new_chat_photo: "pyrogram.Photo" = None,
                  delete_chat_photo: bool = None,
                  group_chat_created: bool = None,
                  supergroup_chat_created: bool = None,
                  channel_chat_created: bool = None,
                  migrate_to_chat_id: int = None,
                  migrate_from_chat_id: int = None,
-                 pinned_message=None,
+                 pinned_message: "Message" = None,
                  views: int = None,
-                 via_bot=None,
+                 via_bot: User = None,
                  outgoing: bool = None,
-                 matches: list = None,
-                 command: list = None,
-                 reply_markup=None):
+                 matches: List[Match] = None,
+                 command: List[str] = None,
+                 reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                     "pyrogram.ReplyKeyboardMarkup",
+                                     "pyrogram.ReplyKeyboardRemove",
+                                     "pyrogram.ForceReply"] = None):
         super().__init__(client)
 
         self.message_id = message_id
