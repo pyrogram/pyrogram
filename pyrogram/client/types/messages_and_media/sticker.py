@@ -19,6 +19,7 @@
 from functools import lru_cache
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types, functions
 from pyrogram.api.errors import StickersetInvalid
 from .photo_size import PhotoSize
@@ -65,18 +66,17 @@ class Sticker(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  width: int,
                  height: int,
-                 thumb=None,
+                 thumb: PhotoSize = None,
                  file_name: str = None,
                  mime_type: str = None,
                  file_size: int = None,
                  date: int = None,
                  emoji: str = None,
-                 set_name: str = None,
-                 mask_position=None):
+                 set_name: str = None):
         super().__init__(client)
 
         self.file_id = file_id
@@ -89,7 +89,7 @@ class Sticker(PyrogramType):
         self.height = height
         self.emoji = emoji
         self.set_name = set_name
-        self.mask_position = mask_position
+        # self.mask_position = mask_position
 
     @staticmethod
     @lru_cache(maxsize=256)
@@ -105,7 +105,7 @@ class Sticker(PyrogramType):
 
     @staticmethod
     def _parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
-              sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
+               sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
         sticker_set = sticker_attributes.stickerset
 
         if isinstance(sticker_set, types.InputStickerSetID):

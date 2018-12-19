@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
@@ -58,10 +59,10 @@ class Audio(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  duration: int,
-                 thumb=None,
+                 thumb: PhotoSize = None,
                  file_name: str = None,
                  mime_type: str = None,
                  file_size: int = None,
@@ -81,7 +82,8 @@ class Audio(PyrogramType):
         self.title = title
 
     @staticmethod
-    def _parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio, file_name: str) -> "Audio":
+    def _parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio,
+               file_name: str) -> "Audio":
         return Audio(
             file_id=encode(
                 pack(

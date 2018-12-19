@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
+import pyrogram
 from pyrogram.api import types
 from .chat_member import ChatMember
 from .user import User
@@ -35,9 +38,9 @@ class ChatMembers(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  total_count: int,
-                 chat_members: list):
+                 chat_members: List[ChatMember]):
         super().__init__(client)
 
         self.total_count = total_count

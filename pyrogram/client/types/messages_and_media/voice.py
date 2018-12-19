@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
@@ -48,7 +49,7 @@ class Voice(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  duration: int,
                  waveform: bytes = None,

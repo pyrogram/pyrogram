@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 
@@ -31,7 +33,11 @@ class Location(PyrogramType):
             Latitude as defined by sender.
     """
 
-    def __init__(self, *, client, longitude: float, latitude: float):
+    def __init__(self,
+                 *,
+                 client: "pyrogram.Client",
+                 longitude: float,
+                 latitude: float):
         super().__init__(client)
 
         self.longitude = longitude

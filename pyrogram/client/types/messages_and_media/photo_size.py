@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from pyrogram.client.ext.utils import encode
 from ..pyrogram_type import PyrogramType
@@ -42,7 +43,7 @@ class PhotoSize(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  width: int,
                  height: int,

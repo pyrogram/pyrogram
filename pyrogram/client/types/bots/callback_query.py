@@ -19,6 +19,7 @@
 from base64 import b64encode
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 from ..user_and_chats import User
@@ -58,11 +59,11 @@ class CallbackQuery(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  id: str,
-                 from_user,
+                 from_user: User,
                  chat_instance: str,
-                 message=None,
+                 message: "pyrogram.Message" = None,
                  inline_message_id: str = None,
                  data: bytes = None,
                  game_short_name: str = None):

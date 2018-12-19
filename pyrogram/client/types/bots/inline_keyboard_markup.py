@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
 from . import InlineKeyboardButton
 from ..pyrogram_type import PyrogramType
@@ -30,7 +32,7 @@ class InlineKeyboardMarkup(PyrogramType):
     """
 
     def __init__(self,
-                 inline_keyboard: list):
+                 inline_keyboard: List[List[InlineKeyboardButton]]):
         super().__init__(None)
 
         self.inline_keyboard = inline_keyboard

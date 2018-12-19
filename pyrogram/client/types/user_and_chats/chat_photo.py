@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
@@ -36,7 +37,7 @@ class ChatPhoto(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  small_file_id: str,
                  big_file_id: str):
         super().__init__(client)

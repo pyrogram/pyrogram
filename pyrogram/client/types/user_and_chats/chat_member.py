@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 
@@ -81,8 +83,8 @@ class ChatMember(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
-                 user,
+                 client: "pyrogram.Client",
+                 user: "pyrogram.User",
                  status: str,
                  until_date: int = None,
                  can_be_edited: bool = None,

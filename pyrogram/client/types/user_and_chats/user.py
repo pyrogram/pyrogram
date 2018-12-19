@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
 from .user_status import UserStatus
@@ -71,7 +72,7 @@ class User(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  id: int,
                  is_self: bool,
                  is_contact: bool,
@@ -80,11 +81,11 @@ class User(PyrogramType):
                  is_bot: bool,
                  first_name: str,
                  last_name: str = None,
-                 status=None,
+                 status: UserStatus = None,
                  username: str = None,
                  language_code: str = None,
                  phone_number: str = None,
-                 photo=None,
+                 photo: ChatPhoto = None,
                  restriction_reason: str = None):
         super().__init__(client)
 

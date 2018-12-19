@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 
@@ -64,7 +66,7 @@ class UserStatus(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  user_id: int,
                  online: bool = None,
                  offline: bool = None,

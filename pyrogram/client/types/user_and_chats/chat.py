@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
 from ..pyrogram_type import PyrogramType
@@ -78,7 +79,7 @@ class Chat(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  id: int,
                  type: str,
                  title: str = None,
@@ -86,7 +87,7 @@ class Chat(PyrogramType):
                  first_name: str = None,
                  last_name: str = None,
                  all_members_are_administrators: bool = None,
-                 photo=None,
+                 photo: ChatPhoto = None,
                  description: str = None,
                  invite_link: str = None,
                  pinned_message=None,
@@ -175,7 +176,7 @@ class Chat(PyrogramType):
     @staticmethod
     def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
-            _parsed_chat = Chat.parse_user_chat(client, chat_full.user)
+            parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
         else:
             full_chat = chat_full.full_chat
@@ -186,12 +187,12 @@ class Chat(PyrogramType):
                     chat = i
 
             if isinstance(full_chat, types.ChatFull):
-                _parsed_chat = Chat.parse_chat_chat(client, chat)
+                parsed_chat = Chat._parse_chat_chat(client, chat)
 
                 if isinstance(full_chat.participants, types.ChatParticipants):
                     parsed_chat.members_count = len(full_chat.participants.participants)
             else:
-                _parsed_chat = Chat.parse_channel_chat(client, chat)
+                parsed_chat = Chat._parse_channel_chat(client, chat)
                 parsed_chat.members_count = full_chat.participants_count
                 parsed_chat.description = full_chat.about or None
                 # TODO: Add StickerSet type

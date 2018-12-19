@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 from ..user_and_chats.user import User
@@ -63,12 +65,12 @@ class MessageEntity(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  type: str,
                  offset: int,
                  length: int,
                  url: str = None,
-                 user=None):
+                 user: User = None):
         super().__init__(client)
 
         self.type = type

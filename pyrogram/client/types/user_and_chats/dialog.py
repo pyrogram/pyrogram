@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
 from ..user_and_chats import Chat
@@ -46,9 +48,9 @@ class Dialog(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
-                 chat,
-                 top_message,
+                 client: "pyrogram.Client",
+                 chat: Chat,
+                 top_message: "pyrogram.Message",
                  unread_messages_count: int,
                  unread_mentions_count: int,
                  unread_mark: bool,

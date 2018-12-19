@@ -18,7 +18,9 @@
 
 from base64 import b64encode
 from struct import pack
+from typing import List
 
+import pyrogram
 from pyrogram.api import types
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
@@ -41,10 +43,10 @@ class Photo(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  id: str,
                  date: int,
-                 sizes: list):
+                 sizes: List[PhotoSize]):
         super().__init__(client)
 
         self.id = id

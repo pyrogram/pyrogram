@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
+import pyrogram
 from .photo import Photo
 from ..pyrogram_type import PyrogramType
 
@@ -33,9 +36,9 @@ class UserProfilePhotos(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  total_count: int,
-                 photos: list):
+                 photos: List[Photo]):
         super().__init__(client)
 
         self.total_count = total_count

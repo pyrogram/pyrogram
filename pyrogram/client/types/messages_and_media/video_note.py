@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
@@ -52,11 +53,11 @@ class VideoNote(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  length: int,
                  duration: int,
-                 thumb=None,
+                 thumb: PhotoSize = None,
                  mime_type: str = None,
                  file_size: int = None,
                  date: int = None):

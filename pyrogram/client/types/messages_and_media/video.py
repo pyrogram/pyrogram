@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
@@ -58,12 +59,12 @@ class Video(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
                  width: int,
                  height: int,
                  duration: int,
-                 thumb=None,
+                 thumb: PhotoSize = None,
                  file_name: str = None,
                  mime_type: str = None,
                  file_size: int = None,
@@ -81,7 +82,8 @@ class Video(PyrogramType):
         self.duration = duration
 
     @staticmethod
-    def _parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo, file_name: str) -> "Video":
+    def _parse(client, video: types.Document, video_attributes: types.DocumentAttributeVideo,
+               file_name: str) -> "Video":
         return Video(
             file_id=encode(
                 pack(

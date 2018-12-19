@@ -337,7 +337,7 @@ class Message(PyrogramType):
 
     @staticmethod
     def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
-              replies: int = 1):
+               replies: int = 1):
         if isinstance(message, types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 

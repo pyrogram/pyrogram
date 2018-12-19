@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
 from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
 from . import KeyboardButton
@@ -48,7 +50,7 @@ class ReplyKeyboardMarkup(PyrogramType):
     """
 
     def __init__(self,
-                 keyboard: list,
+                 keyboard: List[List[KeyboardButton]],
                  resize_keyboard: bool = None,
                  one_time_keyboard: bool = None,
                  selective: bool = None):

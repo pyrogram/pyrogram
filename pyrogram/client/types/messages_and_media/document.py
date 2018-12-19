@@ -18,6 +18,7 @@
 
 from struct import pack
 
+import pyrogram
 from pyrogram.api import types
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
@@ -49,9 +50,9 @@ class Document(PyrogramType):
 
     def __init__(self,
                  *,
-                 client,
+                 client: "pyrogram.Client",
                  file_id: str,
-                 thumb=None,
+                 thumb: PhotoSize = None,
                  file_name: str = None,
                  mime_type: str = None,
                  file_size: int = None,
