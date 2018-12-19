@@ -32,7 +32,7 @@ class GetDialogs(BaseClient):
 
         Args:
             offset_dialog (:obj:`Dialog`):
-                Pass the last dialog object to retrieve the next dialogs chunk starting it.
+                Sequential Dialog of the first dialog to be returned.
                 Defaults to None (start from the beginning).
 
             limit (``str``, *optional*):
