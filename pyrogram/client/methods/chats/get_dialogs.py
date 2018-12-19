@@ -25,7 +25,7 @@ class GetDialogs(BaseClient):
     def get_dialogs(self,
                     offset_dialog: "pyrogram.Dialog" = None,
                     limit: int = 100,
-                    pinned_only: bool = False):
+                    pinned_only: bool = False) -> "pyrogram.Dialogs":
         """Use this method to get the user's dialogs
 
         You can get up to 100 dialogs at once.

@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 class UnpinChatMessage(BaseClient):
     def unpin_chat_message(self,
-                           chat_id: Union[int, str]):
+                           chat_id: Union[int, str]) -> bool:
         """Use this method to unpin a message in a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.

@@ -33,7 +33,7 @@ class SendLocation(BaseClient):
                       reply_markup: Union["pyrogram.InlineKeyboardMarkup",
                                           "pyrogram.ReplyKeyboardMarkup",
                                           "pyrogram.ReplyKeyboardRemove",
-                                          "pyrogram.ForceReply"] = None):
+                                          "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send points on the map.
 
         Args:

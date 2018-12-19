@@ -30,7 +30,7 @@ class RestrictChatMember(BaseClient):
                              can_send_messages: bool = False,
                              can_send_media_messages: bool = False,
                              can_send_other_messages: bool = False,
-                             can_add_web_page_previews: bool = False):
+                             can_add_web_page_previews: bool = False) -> bool:
         """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
         this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift
         restrictions from a user.

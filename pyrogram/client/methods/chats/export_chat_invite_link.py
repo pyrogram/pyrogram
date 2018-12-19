@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 class ExportChatInviteLink(BaseClient):
     def export_chat_invite_link(self,
-                                chat_id: Union[int, str]):
+                                chat_id: Union[int, str]) -> str:
         """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.

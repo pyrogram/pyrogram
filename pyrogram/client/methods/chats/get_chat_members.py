@@ -38,7 +38,7 @@ class GetChatMembers(BaseClient):
                          offset: int = 0,
                          limit: int = 200,
                          query: str = "",
-                         filter: str = Filters.ALL):
+                         filter: str = Filters.ALL) -> "pyrogram.ChatMembers":
         """Use this method to get the members list of a chat.
 
         A chat can be either a basic group, a supergroup or a channel.

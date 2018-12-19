@@ -28,7 +28,7 @@ class ForwardMessages(BaseClient):
                          chat_id: Union[int, str],
                          from_chat_id: Union[int, str],
                          message_ids: Iterable[int],
-                         disable_notification: bool = None):
+                         disable_notification: bool = None) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
         Args:
@@ -51,7 +51,7 @@ class ForwardMessages(BaseClient):
                 Users will receive a notification with no sound.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the forwarded
+            On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
             :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
             *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
             is returned.
@@ -86,4 +86,8 @@ class ForwardMessages(BaseClient):
                     )
                 )
 
-        return messages if is_iterable else messages[0]
+        return pyrogram.Messages(
+            client=self,
+            total_count=len(messages),
+            messages=messages
+        ) if is_iterable else messages[0]

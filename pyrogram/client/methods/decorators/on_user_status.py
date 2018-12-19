@@ -16,15 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Tuple
+
 import pyrogram
 from pyrogram.client.filters.filter import Filter
+from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
 class OnUserStatus(BaseClient):
     def on_user_status(self=None,
                        filters=None,
-                       group: int = 0):
+                       group: int = 0) -> callable:
         """Use this decorator to automatically register a function for handling
         user status updates. This does the same thing as :meth:`add_handler` using the
         :class:`UserStatusHandler`.
@@ -44,7 +47,7 @@ class OnUserStatus(BaseClient):
                 The group identifier, defaults to 0.
         """
 
-        def decorator(func):
+        def decorator(func: callable) -> Tuple[Handler, int]:
             if isinstance(func, tuple):
                 func = func[0].callback
 

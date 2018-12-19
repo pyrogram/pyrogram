@@ -121,6 +121,8 @@ class ChatMember(PyrogramType):
 
     @staticmethod
     def _parse(client, member, user) -> "ChatMember":
+        user = pyrogram.User._parse(client, user)
+
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
             return ChatMember(user=user, status="member", client=client)
 

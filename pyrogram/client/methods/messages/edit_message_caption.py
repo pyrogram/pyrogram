@@ -29,7 +29,7 @@ class EditMessageCaption(BaseClient):
                              message_id: int,
                              caption: str,
                              parse_mode: str = "",
-                             reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
+                             reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
         """Use this method to edit captions of messages.
 
         Args:

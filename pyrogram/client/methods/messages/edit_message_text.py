@@ -30,7 +30,7 @@ class EditMessageText(BaseClient):
                           text: str,
                           parse_mode: str = "",
                           disable_web_page_preview: bool = None,
-                          reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
+                          reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
         """Use this method to edit text messages.
 
         Args:

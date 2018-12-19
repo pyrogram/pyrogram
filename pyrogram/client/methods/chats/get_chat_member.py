@@ -26,7 +26,7 @@ from ...ext import BaseClient
 class GetChatMember(BaseClient):
     def get_chat_member(self,
                         chat_id: Union[int, str],
-                        user_id: Union[int, str]):
+                        user_id: Union[int, str]) -> "pyrogram.ChatMember":
         """Use this method to get information about one member of a chat.
 
         Args:
@@ -67,13 +67,6 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            return pyrogram.ChatMembers._parse(
-                self,
-                types.channels.ChannelParticipants(
-                    count=1,
-                    participants=[r.participant],
-                    users=r.users
-                )
-            ).chat_members[0]
+            return pyrogram.ChatMember._parse(self, r.participant, r.users[0])
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

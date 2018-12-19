@@ -42,7 +42,7 @@ class SendVideoNote(BaseClient):
                                             "pyrogram.ReplyKeyboardRemove",
                                             "pyrogram.ForceReply"] = None,
                         progress: callable = None,
-                        progress_args: tuple = ()):
+                        progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send video messages.
 
         Args:

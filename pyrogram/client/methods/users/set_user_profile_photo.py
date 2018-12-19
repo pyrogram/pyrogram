@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 class SetUserProfilePhoto(BaseClient):
     def set_user_profile_photo(self,
-                               photo: str):
+                               photo: str) -> bool:
         """Use this method to set a new profile photo.
 
         This method only works for Users.

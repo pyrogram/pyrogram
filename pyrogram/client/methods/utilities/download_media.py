@@ -29,7 +29,7 @@ class DownloadMedia(BaseClient):
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None,
-                       progress_args: tuple = ()):
+                       progress_args: tuple = ()) -> Union[str, None]:
         """Use this method to download the media from a Message.
 
         Args:

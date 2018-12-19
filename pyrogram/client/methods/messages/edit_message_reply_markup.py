@@ -27,7 +27,7 @@ class EditMessageReplyMarkup(BaseClient):
     def edit_message_reply_markup(self,
                                   chat_id: Union[int, str],
                                   message_id: int,
-                                  reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
+                                  reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Args:
