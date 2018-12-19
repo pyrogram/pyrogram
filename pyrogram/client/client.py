@@ -37,6 +37,7 @@ from importlib import import_module
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
+from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -152,7 +153,7 @@ class Client(Methods, BaseClient):
 
     def __init__(self,
                  session_name: str,
-                 api_id: int or str = None,
+                 api_id: Union[int, str] = None,
                  api_hash: str = None,
                  app_version: str = None,
                  device_model: str = None,
@@ -162,7 +163,7 @@ class Client(Methods, BaseClient):
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
-                 phone_code: str or callable = None,
+                 phone_code: Union[str, callable] = None,
                  password: str = None,
                  force_sms: bool = False,
                  first_name: str = None,
@@ -367,7 +368,7 @@ class Client(Methods, BaseClient):
         self.start()
         self.idle()
 
-    def add_handler(self, handler, group: int = 0):
+    def add_handler(self, handler: Handler, group: int = 0):
         """Use this method to register an update handler.
 
         You can register multiple handlers, but at most one handler within a group
@@ -391,7 +392,7 @@ class Client(Methods, BaseClient):
 
         return handler, group
 
-    def remove_handler(self, handler, group: int = 0):
+    def remove_handler(self, handler: Handler, group: int = 0):
         """Removes a previously-added update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
@@ -624,7 +625,9 @@ class Client(Methods, BaseClient):
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
-    def fetch_peers(self, entities: list):
+    def fetch_peers(self, entities: List[Union[types.User,
+                                               types.Chat, types.ChatForbidden,
+                                               types.Channel, types.ChannelForbidden]]):
         for entity in entities:
             if isinstance(entity, types.User):
                 user_id = entity.id
@@ -886,7 +889,10 @@ class Client(Methods, BaseClient):
 
         log.debug("{} stopped".format(name))
 
-    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+    def send(self,
+             data: Object,
+             retries: int = Session.MAX_RETRIES,
+             timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -1045,7 +1051,8 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    def get_initial_dialogs_chunk(self, offset_date: int = 0):
+    def get_initial_dialogs_chunk(self,
+                                  offset_date: int = 0):
         while True:
             try:
                 r = self.send(
@@ -1077,7 +1084,8 @@ class Client(Methods, BaseClient):
 
         self.get_initial_dialogs_chunk()
 
-    def resolve_peer(self, peer_id: int or str):
+    def resolve_peer(self,
+                     peer_id: Union[int, str]):
         """Use this method to get the InputPeer of a known peer_id.
 
         This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
