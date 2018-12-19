@@ -56,8 +56,18 @@ class Animation(PyrogramType):
             Date the animation was sent in Unix time.
     """
 
-    def __init__(self, *, client, file_id: str, width: int, height: int, duration: int, thumb=None,
-                 file_name: str = None, mime_type: str = None, file_size: int = None, date: int = None):
+    def __init__(self,
+                 *,
+                 client,
+                 file_id: str,
+                 width: int,
+                 height: int,
+                 duration: int,
+                 thumb=None,
+                 file_name: str = None,
+                 mime_type: str = None,
+                 file_size: int = None,
+                 date: int = None):
         super().__init__(client)
 
         self.file_id = file_id

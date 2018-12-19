@@ -46,8 +46,15 @@ class Voice(PyrogramType):
             Date the voice was sent in Unix time.
     """
 
-    def __init__(self, *, client, file_id: str, duration: int, waveform: bytes = None, mime_type: str = None,
-                 file_size: int = None, date: int = None):
+    def __init__(self,
+                 *,
+                 client,
+                 file_id: str,
+                 duration: int,
+                 waveform: bytes = None,
+                 mime_type: str = None,
+                 file_size: int = None,
+                 date: int = None):
         super().__init__(client)
 
         self.file_id = file_id

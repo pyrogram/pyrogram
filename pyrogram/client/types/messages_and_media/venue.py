@@ -43,7 +43,13 @@ class Venue(PyrogramType):
 
     """
 
-    def __init__(self, *, client, location, title: str, address: str, foursquare_id: str = None,
+    def __init__(self,
+                 *,
+                 client,
+                 location,
+                 title: str,
+                 address: str,
+                 foursquare_id: str = None,
                  foursquare_type: str = None):
         super().__init__(client)
 

@@ -47,8 +47,15 @@ class Document(PyrogramType):
             Date the document was sent in Unix time.
     """
 
-    def __init__(self, *, client, file_id: str, thumb=None, file_name: str = None, mime_type: str = None,
-                 file_size: int = None, date: int = None):
+    def __init__(self,
+                 *,
+                 client,
+                 file_id: str,
+                 thumb=None,
+                 file_name: str = None,
+                 mime_type: str = None,
+                 file_size: int = None,
+                 date: int = None):
         super().__init__(client)
 
         self.file_id = file_id

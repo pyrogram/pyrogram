@@ -29,7 +29,8 @@ class InlineKeyboardMarkup(PyrogramType):
             List of button rows, each represented by a List of InlineKeyboardButton objects.
     """
 
-    def __init__(self, inline_keyboard: list):
+    def __init__(self,
+                 inline_keyboard: list):
         super().__init__(None)
 
         self.inline_keyboard = inline_keyboard

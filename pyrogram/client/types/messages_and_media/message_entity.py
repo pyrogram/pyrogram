@@ -61,7 +61,14 @@ class MessageEntity(PyrogramType):
         types.MessageEntityPhone.ID: "phone_number"
     }
 
-    def __init__(self, *, client, type: str, offset: int, length: int, url: str = None, user=None):
+    def __init__(self,
+                 *,
+                 client,
+                 type: str,
+                 offset: int,
+                 length: int,
+                 url: str = None,
+                 user=None):
         super().__init__(client)
 
         self.type = type

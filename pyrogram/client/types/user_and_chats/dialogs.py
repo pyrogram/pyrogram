@@ -33,7 +33,11 @@ class Dialogs(PyrogramType):
             Requested dialogs.
     """
 
-    def __init__(self, *, client, total_count: int, dialogs: list):
+    def __init__(self,
+                 *,
+                 client,
+                 total_count: int,
+                 dialogs: list):
         super().__init__(client)
 
         self.total_count = total_count

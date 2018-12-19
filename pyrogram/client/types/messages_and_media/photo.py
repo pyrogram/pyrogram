@@ -39,7 +39,12 @@ class Photo(PyrogramType):
             Available sizes of this photo.
     """
 
-    def __init__(self, *, client, id: str, date: int, sizes: list):
+    def __init__(self,
+                 *,
+                 client,
+                 id: str,
+                 date: int,
+                 sizes: list):
         super().__init__(client)
 
         self.id = id

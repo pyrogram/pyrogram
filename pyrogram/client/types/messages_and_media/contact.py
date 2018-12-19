@@ -40,7 +40,13 @@ class Contact(PyrogramType):
             Additional data about the contact in the form of a vCard.
     """
 
-    def __init__(self, *, client, phone_number: str, first_name: str, last_name: str = None, user_id: int = None,
+    def __init__(self,
+                 *,
+                 client,
+                 phone_number: str,
+                 first_name: str,
+                 last_name: str = None,
+                 user_id: int = None,
                  vcard: str = None):
         super().__init__(client)
 

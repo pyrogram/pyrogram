@@ -31,7 +31,11 @@ class UserProfilePhotos(PyrogramType):
             Requested profile pictures.
     """
 
-    def __init__(self, *, client, total_count: int, photos: list):
+    def __init__(self,
+                 *,
+                 client,
+                 total_count: int,
+                 photos: list):
         super().__init__(client)
 
         self.total_count = total_count

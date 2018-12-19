@@ -33,7 +33,11 @@ class ChatMembers(PyrogramType):
             Requested chat members.
     """
 
-    def __init__(self, *, client, total_count: int, chat_members: list):
+    def __init__(self,
+                 *,
+                 client,
+                 total_count: int,
+                 chat_members: list):
         super().__init__(client)
 
         self.total_count = total_count

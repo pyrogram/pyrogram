@@ -52,8 +52,14 @@ class InputMediaAnimation(InputMedia):
             Animation duration.
     """
 
-    def __init__(self, media: str, thumb: str = None, caption: str = "", parse_mode: str = "", width: int = 0,
-                 height: int = 0, duration: int = 0):
+    def __init__(self,
+                 media: str,
+                 thumb: str = None,
+                 caption: str = "",
+                 parse_mode: str = "",
+                 width: int = 0,
+                 height: int = 0,
+                 duration: int = 0):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb

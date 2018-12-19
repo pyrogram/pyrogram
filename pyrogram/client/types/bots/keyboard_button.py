@@ -40,7 +40,10 @@ class KeyboardButton(PyrogramType):
             Available in private chats only.
     """
 
-    def __init__(self, text: str, request_contact: bool = None, request_location: bool = None):
+    def __init__(self,
+                 text: str,
+                 request_contact: bool = None,
+                 request_location: bool = None):
         super().__init__(None)
 
         self.text = text
