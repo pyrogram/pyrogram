@@ -20,6 +20,7 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,7 +30,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendAnimation(BaseClient):
     def send_animation(self,
-                       chat_id: int or str,
+                       chat_id: Union[int, str],
                        animation: str,
                        caption: str = "",
                        parse_mode: str = "",
@@ -39,7 +40,10 @@ class SendAnimation(BaseClient):
                        thumb: str = None,
                        disable_notification: bool = None,
                        reply_to_message_id: int = None,
-                       reply_markup=None,
+                       reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                           "pyrogram.ReplyKeyboardMarkup",
+                                           "pyrogram.ReplyKeyboardRemove",
+                                           "pyrogram.ForceReply"] = None,
                        progress: callable = None,
                        progress_args: tuple = ()):
         """Use this method to send animation files (animation or H.264/MPEG-4 AVC video without sound).
@@ -185,7 +189,7 @@ class SendAnimation(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return pyrogram.Message.parse(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

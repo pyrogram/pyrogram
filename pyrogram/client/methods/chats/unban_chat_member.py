@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class UnbanChatMember(BaseClient):
     def unban_chat_member(self,
-                          chat_id: int or str,
-                          user_id: int or str):
+                          chat_id: Union[int, str],
+                          user_id: Union[int, str]):
         """Use this method to unban a previously kicked user in a supergroup or channel.
         The user will **not** return to the group or channel automatically, but will be able to join via link, etc.
         You must be an administrator for this to work.

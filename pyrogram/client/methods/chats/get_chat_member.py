@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions, types, errors
 from ...ext import BaseClient
@@ -23,8 +25,8 @@ from ...ext import BaseClient
 
 class GetChatMember(BaseClient):
     def get_chat_member(self,
-                        chat_id: int or str,
-                        user_id: int or str):
+                        chat_id: Union[int, str],
+                        user_id: Union[int, str]):
         """Use this method to get information about one member of a chat.
 
         Args:
@@ -52,7 +54,7 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            for member in pyrogram.ChatMembers.parse(self, full_chat).chat_members:
+            for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
                 if member.user.id == user_id.user_id:
                     return member
             else:
@@ -65,7 +67,7 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            return pyrogram.ChatMembers.parse(
+            return pyrogram.ChatMembers._parse(
                 self,
                 types.channels.ChannelParticipants(
                     count=1,

@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 class GetDialogs(BaseClient):
     def get_dialogs(self,
-                    offset_dialog=None,
+                    offset_dialog: "pyrogram.Dialog" = None,
                     limit: int = 100,
                     pinned_only: bool = False):
         """Use this method to get the user's dialogs
@@ -64,4 +64,4 @@ class GetDialogs(BaseClient):
                 )
             )
 
-        return pyrogram.Dialogs.parse(self, r)
+        return pyrogram.Dialogs._parse(self, r)

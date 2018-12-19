@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
 import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
@@ -23,9 +25,9 @@ from ...ext import BaseClient
 
 class GetMessages(BaseClient):
     def get_messages(self,
-                     chat_id: int or str,
-                     message_ids: int or list = None,
-                     reply_to_message_ids: int or list = None,
+                     chat_id: Union[int, str],
+                     message_ids: Union[int, Iterable[int]] = None,
+                     reply_to_message_ids: Union[int, Iterable[int]] = None,
                      replies: int = 1):
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
@@ -76,6 +78,6 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        messages = pyrogram.Messages.parse(self, self.send(rpc))
+        messages = pyrogram.Messages._parse(self, self.send(rpc))
 
         return messages if is_iterable else messages.messages[0]

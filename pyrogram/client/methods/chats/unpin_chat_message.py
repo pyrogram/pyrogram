@@ -16,12 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class UnpinChatMessage(BaseClient):
-    def unpin_chat_message(self, chat_id: int or str):
+    def unpin_chat_message(self,
+                           chat_id: Union[int, str]):
         """Use this method to unpin a message in a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.

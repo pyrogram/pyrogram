@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class PromoteChatMember(BaseClient):
     def promote_chat_member(self,
-                            chat_id: int or str,
-                            user_id: int or str,
+                            chat_id: Union[int, str],
+                            user_id: Union[int, str],
                             can_change_info: bool = True,
                             can_post_messages: bool = False,
                             can_edit_messages: bool = False,

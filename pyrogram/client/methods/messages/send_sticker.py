@@ -19,6 +19,7 @@
 import binascii
 import os
 import struct
+from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -28,11 +29,14 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendSticker(BaseClient):
     def send_sticker(self,
-                     chat_id: int or str,
+                     chat_id: Union[int, str],
                      sticker: str,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
-                     reply_markup=None,
+                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardRemove",
+                                         "pyrogram.ForceReply"] = None,
                      progress: callable = None,
                      progress_args: tuple = ()):
         """Use this method to send .webp stickers.
@@ -145,7 +149,7 @@ class SendSticker(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return pyrogram.Message.parse(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

@@ -17,14 +17,15 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from threading import Event
+from typing import Union
 
-from pyrogram.client import types as pyrogram_types
+import pyrogram
 from ...ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
     def download_media(self,
-                       message: pyrogram_types.Message or str,
+                       message: Union["pyrogram.Message", str],
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None,
@@ -78,9 +79,9 @@ class DownloadMedia(BaseClient):
         """
         error_message = "This message doesn't contain any downloadable media"
 
-        if isinstance(message, pyrogram_types.Message):
+        if isinstance(message, pyrogram.Message):
             if message.photo:
-                media = pyrogram_types.Document(
+                media = pyrogram.Document(
                     file_id=message.photo.sizes[-1].file_id,
                     file_size=message.photo.sizes[-1].file_size,
                     mime_type="",
@@ -104,18 +105,18 @@ class DownloadMedia(BaseClient):
             else:
                 raise ValueError(error_message)
         elif isinstance(message, (
-                pyrogram_types.Photo,
-                pyrogram_types.PhotoSize,
-                pyrogram_types.Audio,
-                pyrogram_types.Document,
-                pyrogram_types.Video,
-                pyrogram_types.Voice,
-                pyrogram_types.VideoNote,
-                pyrogram_types.Sticker,
-                pyrogram_types.Animation
+                pyrogram.Photo,
+                pyrogram.PhotoSize,
+                pyrogram.Audio,
+                pyrogram.Document,
+                pyrogram.Video,
+                pyrogram.Voice,
+                pyrogram.VideoNote,
+                pyrogram.Sticker,
+                pyrogram.Animation
         )):
-            if isinstance(message, pyrogram_types.Photo):
-                media = pyrogram_types.Document(
+            if isinstance(message, pyrogram.Photo):
+                media = pyrogram.Document(
                     file_id=message.sizes[-1].file_id,
                     file_size=message.sizes[-1].file_size,
                     mime_type="",
@@ -125,7 +126,7 @@ class DownloadMedia(BaseClient):
             else:
                 media = message
         elif isinstance(message, str):
-            media = pyrogram_types.Document(
+            media = pyrogram.Document(
                 file_id=message,
                 file_size=0,
                 mime_type="",

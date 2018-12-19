@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
 import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
@@ -23,9 +25,9 @@ from ...ext import BaseClient
 
 class ForwardMessages(BaseClient):
     def forward_messages(self,
-                         chat_id: int or str,
-                         from_chat_id: int or str,
-                         message_ids,
+                         chat_id: Union[int, str],
+                         from_chat_id: Union[int, str],
+                         message_ids: Iterable[int],
                          disable_notification: bool = None):
         """Use this method to forward messages of any kind.
 
@@ -78,7 +80,7 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    pyrogram.Message.parse(
+                    pyrogram.Message._parse(
                         self, i.message,
                         users, chats
                     )

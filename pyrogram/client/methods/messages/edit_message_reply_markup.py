@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
@@ -23,9 +25,9 @@ from pyrogram.client.ext import BaseClient
 
 class EditMessageReplyMarkup(BaseClient):
     def edit_message_reply_markup(self,
-                                  chat_id: int or str,
+                                  chat_id: Union[int, str],
                                   message_id: int,
-                                  reply_markup=None):
+                                  reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Args:
@@ -58,7 +60,7 @@ class EditMessageReplyMarkup(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message.parse(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

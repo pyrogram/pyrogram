@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class RestrictChatMember(BaseClient):
     def restrict_chat_member(self,
-                             chat_id: int or str,
-                             user_id: int or str,
+                             chat_id: Union[int, str],
+                             user_id: Union[int, str],
                              until_date: int = 0,
                              can_send_messages: bool = False,
                              can_send_media_messages: bool = False,

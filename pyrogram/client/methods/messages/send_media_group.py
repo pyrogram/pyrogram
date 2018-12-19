@@ -20,10 +20,11 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union, List
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid
-from pyrogram.client import types as pyrogram_types
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -32,8 +33,8 @@ class SendMediaGroup(BaseClient):
     # TODO: Return new Message object
     # TODO: Figure out how to send albums using URLs
     def send_media_group(self,
-                         chat_id: int or str,
-                         media: list,
+                         chat_id: Union[int, str],
+                         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
                          disable_notification: bool = None,
                          reply_to_message_id: int = None):
         """Use this method to send a group of photos or videos as an album.
@@ -62,7 +63,7 @@ class SendMediaGroup(BaseClient):
         for i in media:
             style = self.html if i.parse_mode.lower() == "html" else self.markdown
 
-            if isinstance(i, pyrogram_types.InputMediaPhoto):
+            if isinstance(i, pyrogram.InputMediaPhoto):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
@@ -101,7 +102,7 @@ class SendMediaGroup(BaseClient):
                                 access_hash=unpacked[3]
                             )
                         )
-            elif isinstance(i, pyrogram_types.InputMediaVideo):
+            elif isinstance(i, pyrogram.InputMediaVideo):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(

@@ -16,12 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class SetChatTitle(BaseClient):
-    def set_chat_title(self, chat_id: int or str, title: str):
+    def set_chat_title(self,
+                       chat_id: Union[int, str],
+                       title: str):
         """Use this method to change the title of a chat.
         Titles can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.

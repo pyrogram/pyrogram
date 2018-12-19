@@ -16,13 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Iterable, Union
+
 import pyrogram
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
-    def get_users(self, user_ids):
+    def get_users(self,
+                  user_ids: Iterable[Union[int, str]]):
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
@@ -53,6 +56,6 @@ class GetUsers(BaseClient):
         users = []
 
         for i in r:
-            users.append(pyrogram.User.parse(self, i))
+            users.append(pyrogram.User._parse(self, i))
 
         return users if is_iterable else users[0]

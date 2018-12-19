@@ -20,6 +20,7 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,14 +30,15 @@ from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
     InputMediaAnimation, InputMediaDocument
 )
+from pyrogram.client.types.input_media import InputMedia
 
 
 class EditMessageMedia(BaseClient):
     def edit_message_media(self,
-                           chat_id: int or str,
+                           chat_id: Union[int, str],
                            message_id: int,
-                           media,
-                           reply_markup=None):
+                           media: InputMedia,
+                           reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
         """Use this method to edit audio, document, photo, or video messages.
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
@@ -334,7 +336,7 @@ class EditMessageMedia(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message.parse(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
 
 
 class DeleteMessages(BaseClient):
     def delete_messages(self,
-                        chat_id: int or str,
-                        message_ids,
+                        chat_id: Union[int, str],
+                        message_ids: Iterable[int],
                         revoke: bool = True):
         """Use this method to delete messages, including service messages, with the following limitations:
 

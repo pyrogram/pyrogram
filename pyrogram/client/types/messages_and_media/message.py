@@ -483,7 +483,7 @@ class Message(PyrogramType):
                             else:
                                 video = pyrogram.Video._parse(client, doc, video_attributes, file_name)
                         elif types.DocumentAttributeSticker in attributes:
-                            sticker = pyrogram.Sticker.parse(
+                            sticker = pyrogram.Sticker._parse(
                                 client, doc,
                                 attributes.get(types.DocumentAttributeImageSize, None),
                                 attributes[types.DocumentAttributeSticker],

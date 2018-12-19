@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions
 from ...ext import BaseClient
@@ -23,7 +25,7 @@ from ...ext import BaseClient
 
 class GetHistory(BaseClient):
     def get_history(self,
-                    chat_id: int or str,
+                    chat_id: Union[int, str],
                     offset: int = 0,
                     limit: int = 100,
                     offset_id: int = 0,
@@ -59,7 +61,7 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        return pyrogram.Messages.parse(
+        return pyrogram.Messages._parse(
             self,
             self.send(
                 functions.messages.GetHistory(

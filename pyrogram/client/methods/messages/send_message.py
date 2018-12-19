@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
@@ -23,13 +25,16 @@ from ...ext import BaseClient
 
 class SendMessage(BaseClient):
     def send_message(self,
-                     chat_id: int or str,
+                     chat_id: Union[int, str],
                      text: str,
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
-                     reply_markup=None):
+                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardRemove",
+                                         "pyrogram.ForceReply"] = None):
         """Use this method to send text messages.
 
         Args:
@@ -99,7 +104,7 @@ class SendMessage(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return pyrogram.Message.parse(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

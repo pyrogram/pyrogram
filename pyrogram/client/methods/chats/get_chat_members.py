@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
@@ -32,7 +34,7 @@ class Filters:
 
 class GetChatMembers(BaseClient):
     def get_chat_members(self,
-                         chat_id: int or str,
+                         chat_id: Union[int, str],
                          offset: int = 0,
                          limit: int = 200,
                          query: str = "",
@@ -84,7 +86,7 @@ class GetChatMembers(BaseClient):
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return pyrogram.ChatMembers.parse(
+            return pyrogram.ChatMembers._parse(
                 self,
                 self.send(
                     functions.messages.GetFullChat(
@@ -110,7 +112,7 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return pyrogram.ChatMembers.parse(
+            return pyrogram.ChatMembers._parse(
                 self,
                 self.send(
                     functions.channels.GetParticipants(

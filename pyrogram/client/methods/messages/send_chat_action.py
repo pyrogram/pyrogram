@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient, ChatAction
 
 
 class SendChatAction(BaseClient):
     def send_chat_action(self,
-                         chat_id: int or str,
-                         action: ChatAction or str,
+                         chat_id: Union[int, str],
+                         action: Union[ChatAction, str],
                          progress: int = 0):
         """Use this method when you need to tell the other party that something is happening on your side.
 
