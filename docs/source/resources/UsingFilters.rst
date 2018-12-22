@@ -162,7 +162,7 @@ yourself. This allows you to test your filter by pressing the inline button:
         "username",  # Change this to your username or id
         "Pyrogram's custom filter test",
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Press me", "pyrogram")]]
+            [[InlineKeyboardButton("Press me", b"pyrogram")]]
         )
     )
 
@@ -178,7 +178,7 @@ containing "pyrogram" as data:
 
     hardcoded_data = Filters.create(
         name="HardcodedData",
-        func=lambda filter, callback_query: callback_query.data == "pyrogram"
+        func=lambda filter, callback_query: callback_query.data == b"pyrogram"
     )
 
 The ``lambda`` operator in python is used to create small anonymous functions and is perfect for this example, the same
@@ -187,7 +187,7 @@ could be achieved with a normal function, but we don't really need it as it make
 .. code-block:: python
 
     def func(filter, callback_query):
-        return callback_query.data == "pyrogram"
+        return callback_query.data == b"pyrogram"
 
     hardcoded_data = Filters.create(
         name="HardcodedData",
@@ -223,6 +223,6 @@ And its usage:
 
 .. code-block:: python
 
-    @app.on_callback_query(dynamic_data("pyrogram"))
+    @app.on_callback_query(dynamic_data(b"pyrogram"))
     def pyrogram_data(client, callback_query):
         client.answer_callback_query(callback_query.id, "it works!")
