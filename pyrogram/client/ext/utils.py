@@ -16,7 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+import sys
 from base64 import b64decode, b64encode
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from ...api import types
 
@@ -55,6 +58,15 @@ def encode(s: bytes) -> str:
             r += bytes([i])
 
     return b64encode(r, b"-_").decode().rstrip("=")
+
+
+async def ainput(prompt: str = ""):
+    print(prompt, end="", flush=True)
+
+    with ThreadPoolExecutor(1) as executor:
+        return (await asyncio.get_event_loop().run_in_executor(
+            executor, sys.stdin.readline
+        )).rstrip()
 
 
 def get_peer_id(input_peer) -> int:

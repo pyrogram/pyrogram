@@ -72,7 +72,7 @@ class Dispatcher:
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
-            Dispatcher.DELETE_MESSAGE_UPDATES: deleted_messages_parser,
+            Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
             Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
             (types.UpdateUserStatus,): user_status_parser
         }

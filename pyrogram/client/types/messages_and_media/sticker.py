@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from functools import lru_cache
 from struct import pack
+
+from async_lru import alru_cache
 
 import pyrogram
 from pyrogram.api import types, functions
@@ -92,14 +93,14 @@ class Sticker(PyrogramType):
         # self.mask_position = mask_position
 
     @staticmethod
-    @lru_cache(maxsize=256)
+    @alru_cache(maxsize=256)
     async def get_sticker_set_name(send, input_sticker_set_id):
         try:
-            return await send(
+            return (await send(
                 functions.messages.GetStickerSet(
                     types.InputStickerSetID(*input_sticker_set_id)
                 )
-            ).set.short_name
+            )).set.short_name
         except StickersetInvalid:
             return None
 

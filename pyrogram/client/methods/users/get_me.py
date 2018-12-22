@@ -33,9 +33,9 @@ class GetMe(BaseClient):
         """
         return pyrogram.User._parse(
             self,
-            await self.send(
+            (await self.send(
                 functions.users.GetFullUser(
                     types.InputPeerSelf()
                 )
-            ).user
+            )).user
         )

@@ -78,7 +78,7 @@ class CallbackQuery(PyrogramType):
         self.game_short_name = game_short_name
 
     @staticmethod
-    def _parse(client, callback_query, users) -> "CallbackQuery":
+    async def _parse(client, callback_query, users) -> "CallbackQuery":
         message = None
         inline_message_id = None
 
@@ -92,7 +92,7 @@ class CallbackQuery(PyrogramType):
             else:
                 peer_id = int("-100" + str(peer.channel_id))
 
-            message = client.get_messages(peer_id, callback_query.msg_id)
+            message = await client.get_messages(peer_id, callback_query.msg_id)
         elif isinstance(callback_query, types.UpdateInlineBotCallbackQuery):
             inline_message_id = b64encode(
                 pack(
