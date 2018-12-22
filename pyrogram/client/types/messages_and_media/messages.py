@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from typing import List
+
+import pyrogram
+from pyrogram.api import types
+from .message import Message
+from ..pyrogram_type import PyrogramType
+from ..user_and_chats import Chat
 
 
-class Messages(Object):
+class Messages(PyrogramType):
     """This object represents a chat's messages.
 
     Args:
@@ -30,8 +36,55 @@ class Messages(Object):
             Requested messages.
     """
 
-    ID = 0xb0700026
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 total_count: int,
+                 messages: List[Message]):
+        super().__init__(client)
 
-    def __init__(self, total_count: int, messages: list):
         self.total_count = total_count
         self.messages = messages
+
+    @staticmethod
+    async def _parse(client, messages: types.messages.Messages) -> "Messages":
+        users = {i.id: i for i in messages.users}
+        chats = {i.id: i for i in messages.chats}
+
+        # TODO: WTF! Py 3.5 doesn't support await inside comprehensions
+        parsed_messages = []
+
+        for message in messages.messages:
+            parsed_messages.append(await Message._parse(client, message, users, chats))
+
+        return Messages(
+            total_count=getattr(messages, "count", len(messages.messages)),
+            messages=parsed_messages,
+            client=client
+        )
+
+    @staticmethod
+    def _parse_deleted(client, update) -> "Messages":
+        messages = update.messages
+        channel_id = getattr(update, "channel_id", None)
+
+        parsed_messages = []
+
+        for message in messages:
+            parsed_messages.append(
+                Message(
+                    message_id=message,
+                    chat=Chat(
+                        id=int("-100" + str(channel_id)),
+                        type="channel",
+                        client=client
+                    ) if channel_id is not None else None,
+                    client=client
+                )
+            )
+
+        return Messages(
+            total_count=len(parsed_messages),
+            messages=parsed_messages,
+            client=client
+        )

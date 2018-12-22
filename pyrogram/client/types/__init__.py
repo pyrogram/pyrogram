@@ -33,7 +33,6 @@ from .messages_and_media import (
     Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
     Message, Messages, MessageEntity
 )
-from .update import Update
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
     Dialog, Dialogs, User, UserStatus

@@ -16,16 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class ForwardMessages(BaseClient):
     async def forward_messages(self,
-                               chat_id: int or str,
-                               from_chat_id: int or str,
-                               message_ids,
-                               disable_notification: bool = None):
+                               chat_id: Union[int, str],
+                               from_chat_id: Union[int, str],
+                               message_ids: Iterable[int],
+                               disable_notification: bool = None) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
         Args:
@@ -48,7 +51,7 @@ class ForwardMessages(BaseClient):
                 Users will receive a notification with no sound.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the forwarded
+            On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
             :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
             *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
             is returned.
@@ -77,10 +80,14 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    await utils.parse_messages(
+                    await pyrogram.Message._parse(
                         self, i.message,
                         users, chats
                     )
                 )
 
-        return messages if is_iterable else messages[0]
+        return pyrogram.Messages(
+            client=self,
+            total_count=len(messages),
+            messages=messages
+        ) if is_iterable else messages[0]

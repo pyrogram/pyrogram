@@ -17,17 +17,18 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
+from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
 class OnDisconnect(BaseClient):
-    def on_disconnect(self=None):
+    def on_disconnect(self=None) -> callable:
         """Use this decorator to automatically register a function for handling
         disconnections. This does the same thing as :meth:`add_handler` using the
         :class:`DisconnectHandler`.
         """
 
-        def decorator(func):
+        def decorator(func: callable) -> Handler:
             handler = pyrogram.DisconnectHandler(func)
 
             if self is not None:

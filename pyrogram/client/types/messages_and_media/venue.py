@@ -16,10 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+from pyrogram.api import types
+from .location import Location
+from ..pyrogram_type import PyrogramType
 
 
-class Venue(Object):
+class Venue(PyrogramType):
     """This object represents a venue.
 
     Args:
@@ -41,18 +44,29 @@ class Venue(Object):
 
     """
 
-    ID = 0xb0700013
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 location: Location,
+                 title: str,
+                 address: str,
+                 foursquare_id: str = None,
+                 foursquare_type: str = None):
+        super().__init__(client)
 
-    def __init__(
-            self,
-            location,
-            title: str,
-            address: str,
-            foursquare_id: str = None,
-            foursquare_type: str = None
-    ):
         self.location = location
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
         self.foursquare_type = foursquare_type
+
+    @staticmethod
+    def _parse(client, venue: types.MessageMediaVenue):
+        return Venue(
+            location=Location._parse(client, venue.geo),
+            title=venue.title,
+            address=venue.address,
+            foursquare_id=venue.venue_id or None,
+            foursquare_type=venue.venue_type,
+            client=client
+        )

@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from struct import pack
+
+import pyrogram
+from pyrogram.api import types
+from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
 
-class VideoNote(Object):
+class VideoNote(PyrogramType):
     """This object represents a video message (available in Telegram apps as of v.4.0).
 
     Args:
@@ -45,18 +51,18 @@ class VideoNote(Object):
             Date the video note was sent in Unix time.
     """
 
-    ID = 0xb0700010
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 file_id: str,
+                 length: int,
+                 duration: int,
+                 thumb: PhotoSize = None,
+                 mime_type: str = None,
+                 file_size: int = None,
+                 date: int = None):
+        super().__init__(client)
 
-    def __init__(
-            self,
-            file_id: str,
-            length: int,
-            duration: int,
-            thumb=None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
-    ):
         self.file_id = file_id
         self.thumb = thumb
         self.mime_type = mime_type
@@ -64,3 +70,24 @@ class VideoNote(Object):
         self.date = date
         self.length = length
         self.duration = duration
+
+    @staticmethod
+    def _parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
+        return VideoNote(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    13,
+                    video_note.dc_id,
+                    video_note.id,
+                    video_note.access_hash
+                )
+            ),
+            length=video_attributes.w,
+            duration=video_attributes.duration,
+            thumb=PhotoSize._parse(client, video_note.thumb),
+            file_size=video_note.size,
+            mime_type=video_note.mime_type,
+            date=video_note.date,
+            client=client
+        )

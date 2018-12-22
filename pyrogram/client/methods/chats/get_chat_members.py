@@ -16,8 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class Filters:
@@ -31,11 +34,11 @@ class Filters:
 
 class GetChatMembers(BaseClient):
     async def get_chat_members(self,
-                               chat_id: int or str,
+                               chat_id: Union[int, str],
                                offset: int = 0,
                                limit: int = 200,
                                query: str = "",
-                               filter: str = Filters.ALL):
+                               filter: str = Filters.ALL) -> "pyrogram.ChatMembers":
         """Use this method to get the members list of a chat.
 
         A chat can be either a basic group, a supergroup or a channel.
@@ -83,7 +86,8 @@ class GetChatMembers(BaseClient):
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers._parse(
+                self,
                 await self.send(
                     functions.messages.GetFullChat(
                         peer.chat_id
@@ -108,7 +112,8 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers._parse(
+                self,
                 await self.send(
                     functions.channels.GetParticipants(
                         channel=peer,

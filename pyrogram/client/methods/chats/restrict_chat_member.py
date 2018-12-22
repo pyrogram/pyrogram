@@ -16,19 +16,21 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class RestrictChatMember(BaseClient):
     async def restrict_chat_member(self,
-                                   chat_id: int or str,
-                                   user_id: int or str,
+                                   chat_id: Union[int, str],
+                                   user_id: Union[int, str],
                                    until_date: int = 0,
                                    can_send_messages: bool = False,
                                    can_send_media_messages: bool = False,
                                    can_send_other_messages: bool = False,
-                                   can_add_web_page_previews: bool = False):
+                                   can_add_web_page_previews: bool = False) -> bool:
         """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
         this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift
         restrictions from a user.

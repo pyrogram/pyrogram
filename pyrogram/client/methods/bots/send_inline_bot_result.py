@@ -16,13 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
 
 class SendInlineBotResult(BaseClient):
     async def send_inline_bot_result(self,
-                                     chat_id: int or str,
+                                     chat_id: Union[int, str],
                                      query_id: int,
                                      result_id: str,
                                      disable_notification: bool = None,

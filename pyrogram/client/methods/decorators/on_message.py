@@ -22,7 +22,9 @@ from ...ext import BaseClient
 
 
 class OnMessage(BaseClient):
-    def on_message(self=None, filters=None, group: int = 0):
+    def on_message(self=None,
+                   filters=None,
+                   group: int = 0) -> callable:
         """Use this decorator to automatically register a function for handling
         messages. This does the same thing as :meth:`add_handler` using the
         :class:`MessageHandler`.

@@ -19,13 +19,16 @@
 import os
 from base64 import b64decode
 from struct import unpack
+from typing import Union
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class SetChatPhoto(BaseClient):
-    async def set_chat_photo(self, chat_id: int or str, photo: str):
+    async def set_chat_photo(self,
+                             chat_id: Union[int, str],
+                             photo: str) -> bool:
         """Use this method to set a new profile photo for the chat.
         Photos can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.

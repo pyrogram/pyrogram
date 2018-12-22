@@ -36,6 +36,7 @@ from hashlib import sha256, md5
 from importlib import import_module
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
+from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -44,8 +45,7 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate)
-from pyrogram.client.handlers import DisconnectHandler
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied)
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
@@ -153,7 +153,7 @@ class Client(Methods, BaseClient):
 
     def __init__(self,
                  session_name: str,
-                 api_id: int or str = None,
+                 api_id: Union[int, str] = None,
                  api_hash: str = None,
                  app_version: str = None,
                  device_model: str = None,
@@ -163,7 +163,7 @@ class Client(Methods, BaseClient):
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
-                 phone_code: str or callable = None,
+                 phone_code: Union[str, callable] = None,
                  password: str = None,
                  force_sms: bool = False,
                  first_name: str = None,
@@ -372,7 +372,7 @@ class Client(Methods, BaseClient):
 
         return coroutine
 
-    def add_handler(self, handler, group: int = 0):
+    def add_handler(self, handler: Handler, group: int = 0):
         """Use this method to register an update handler.
 
         You can register multiple handlers, but at most one handler within a group
@@ -396,7 +396,7 @@ class Client(Methods, BaseClient):
 
         return handler, group
 
-    def remove_handler(self, handler, group: int = 0):
+    def remove_handler(self, handler: Handler, group: int = 0):
         """Removes a previously-added update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
@@ -534,16 +534,8 @@ class Client(Methods, BaseClient):
 
             try:
                 if phone_registered:
-                    r = await self.send(
-                        functions.auth.SignIn(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code
-                        )
-                    )
-                else:
                     try:
-                        await self.send(
+                        r = await self.send(
                             functions.auth.SignIn(
                                 self.phone_number,
                                 phone_code_hash,
@@ -551,20 +543,27 @@ class Client(Methods, BaseClient):
                             )
                         )
                     except PhoneNumberUnoccupied:
-                        pass
+                        log.warning("Phone number unregistered")
+                        phone_registered = False
+                        continue
+                else:
+                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
+                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
-                    self.first_name = self.first_name if self.first_name is not None else await ainput("First name: ")
-                    self.last_name = self.last_name if self.last_name is not None else await ainput("Last name: ")
-
-                    r = await self.send(
-                        functions.auth.SignUp(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code,
-                            self.first_name,
-                            self.last_name
+                    try:
+                        r = await self.send(
+                            functions.auth.SignUp(
+                                self.phone_number,
+                                phone_code_hash,
+                                self.phone_code,
+                                self.first_name,
+                                self.last_name
+                            )
                         )
-                    )
+                    except PhoneNumberOccupied:
+                        log.warning("Phone number already registered")
+                        phone_registered = True
+                        continue
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
                 if phone_code_invalid_raises:
                     raise
@@ -630,7 +629,9 @@ class Client(Methods, BaseClient):
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
-    def fetch_peers(self, entities: list):
+    def fetch_peers(self, entities: List[Union[types.User,
+                                               types.Chat, types.ChatForbidden,
+                                               types.Channel, types.ChannelForbidden]]):
         for entity in entities:
             if isinstance(entity, types.User):
                 user_id = entity.id
@@ -886,7 +887,10 @@ class Client(Methods, BaseClient):
 
         log.info("UpdatesWorkerTask stopped")
 
-    async def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+    async def send(self,
+             data: Object,
+             retries: int = Session.MAX_RETRIES,
+             timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -1045,7 +1049,8 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    async def get_initial_dialogs_chunk(self, offset_date: int = 0):
+    async def get_initial_dialogs_chunk(self,
+                                  offset_date: int = 0):
         while True:
             try:
                 r = await self.send(
@@ -1077,7 +1082,8 @@ class Client(Methods, BaseClient):
 
         await self.get_initial_dialogs_chunk()
 
-    async def resolve_peer(self, peer_id: int or str):
+    async def resolve_peer(self,
+                     peer_id: Union[int, str]):
         """Use this method to get the InputPeer of a known peer_id.
 
         This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
@@ -1146,13 +1152,13 @@ class Client(Methods, BaseClient):
 
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
-        
+
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
-        
+
         if file_size > 1500 * 1024 * 1024:
             raise ValueError("Telegram doesn't support uploading files bigger than 1500 MiB")
-            
+
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = file_size > 10 * 1024 * 1024
         is_missing_part = file_id is not None

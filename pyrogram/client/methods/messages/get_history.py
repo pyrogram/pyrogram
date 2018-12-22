@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetHistory(BaseClient):
     async def get_history(self,
-                          chat_id: int or str,
+                          chat_id: Union[int, str],
                           offset: int = 0,
                           limit: int = 100,
                           offset_id: int = 0,
@@ -59,52 +61,18 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        r = await self.send(
-            functions.messages.GetHistory(
-                peer=await self.resolve_peer(chat_id),
-                offset_id=offset_id,
-                offset_date=offset_date,
-                add_offset=offset,
-                limit=limit,
-                max_id=0,
-                min_id=0,
-                hash=0
+        return await pyrogram.Messages._parse(
+            self,
+            await self.send(
+                functions.messages.GetHistory(
+                    peer=await self.resolve_peer(chat_id),
+                    offset_id=offset_id,
+                    offset_date=offset_date,
+                    add_offset=offset,
+                    limit=limit,
+                    max_id=0,
+                    min_id=0,
+                    hash=0
+                )
             )
-        )
-
-        users = {i.id: i for i in r.users}
-        chats = {i.id: i for i in r.chats}
-
-        reply_to_messages = {
-            i.reply_to_msg_id: None
-            for i in r.messages
-            if i.reply_to_msg_id
-        }
-
-        if reply_to_messages:
-            temp = await self.get_messages(
-                chat_id, reply_to_messages,
-                replies=0
-            )
-
-            assert len(temp) == len(reply_to_messages)
-
-            for i in range(len(temp)):
-                reply_to_messages[temp[i].message_id] = temp[i]
-
-        messages = await utils.parse_messages(
-            self, r.messages,
-            users, chats,
-            replies=0
-        )
-
-        assert len(messages) == len(r.messages)
-
-        for i in range(len(messages)):
-            if r.messages[i].reply_to_msg_id:
-                messages[i].reply_to_message = reply_to_messages[r.messages[i].reply_to_msg_id]
-
-        return pyrogram.Messages(
-            total_count=getattr(r, "count", len(r.messages)),
-            messages=messages
         )

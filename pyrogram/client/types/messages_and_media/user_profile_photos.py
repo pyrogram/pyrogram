@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from typing import List
+
+import pyrogram
+from .photo import Photo
+from ..pyrogram_type import PyrogramType
 
 
-class UserProfilePhotos(Object):
+class UserProfilePhotos(PyrogramType):
     """This object represents a user's profile pictures.
 
     Args:
@@ -30,8 +34,20 @@ class UserProfilePhotos(Object):
             Requested profile pictures.
     """
 
-    ID = 0xb0700014
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 total_count: int,
+                 photos: List[Photo]):
+        super().__init__(client)
 
-    def __init__(self, total_count: int, photos: list):
         self.total_count = total_count
         self.photos = photos
+
+    @staticmethod
+    def _parse(client, photos) -> "UserProfilePhotos":
+        return UserProfilePhotos(
+            total_count=getattr(photos, "count", len(photos.photos)),
+            photos=[Photo._parse(client, photo) for photo in photos.photos],
+            client=client
+        )

@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from struct import pack
+
+import pyrogram
+from pyrogram.api import types
+from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
 
-class Document(Object):
+class Document(PyrogramType):
     """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
 
     Args:
@@ -42,20 +48,40 @@ class Document(Object):
             Date the document was sent in Unix time.
     """
 
-    ID = 0xb0700007
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 file_id: str,
+                 thumb: PhotoSize = None,
+                 file_name: str = None,
+                 mime_type: str = None,
+                 file_size: int = None,
+                 date: int = None):
+        super().__init__(client)
 
-    def __init__(
-            self,
-            file_id: str,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
-    ):
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
+
+    @staticmethod
+    def _parse(client, document: types.Document, file_name: str) -> "Document":
+        return Document(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    5,
+                    document.dc_id,
+                    document.id,
+                    document.access_hash
+                )
+            ),
+            thumb=PhotoSize._parse(client, document.thumb),
+            file_name=file_name,
+            mime_type=document.mime_type,
+            file_size=document.size,
+            date=document.date,
+            client=client
+        )

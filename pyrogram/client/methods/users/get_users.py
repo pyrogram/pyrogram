@@ -17,13 +17,16 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+from typing import Iterable, Union, List
 
+import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
-    async def get_users(self, user_ids):
+    async def get_users(self,
+                        user_ids: Iterable[Union[int, str]]) -> Union["pyrogram.User", List["pyrogram.User"]]:
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
@@ -34,9 +37,9 @@ class GetUsers(BaseClient):
                 Iterators and Generators are also accepted.
 
         Returns:
-            On success and in case *user_ids* was a list, the returned value will be a list of the requested
+            On success and in case *user_ids* was an iterable, the returned value will be a list of the requested
             :obj:`Users <User>` even if a list contains just one element, otherwise if
-            *user_ids* was an integer, the single requested :obj:`User` is returned.
+            *user_ids* was an integer or string, the single requested :obj:`User` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -54,6 +57,6 @@ class GetUsers(BaseClient):
         users = []
 
         for i in r:
-            users.append(utils.parse_user(i))
+            users.append(pyrogram.User._parse(self, i))
 
         return users if is_iterable else users[0]

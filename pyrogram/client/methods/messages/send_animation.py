@@ -20,7 +20,9 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -28,7 +30,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendAnimation(BaseClient):
     async def send_animation(self,
-                             chat_id: int or str,
+                             chat_id: Union[int, str],
                              animation: str,
                              caption: str = "",
                              parse_mode: str = "",
@@ -38,9 +40,12 @@ class SendAnimation(BaseClient):
                              thumb: str = None,
                              disable_notification: bool = None,
                              reply_to_message_id: int = None,
-                             reply_markup=None,
+                             reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                                 "pyrogram.ReplyKeyboardMarkup",
+                                                 "pyrogram.ReplyKeyboardRemove",
+                                                 "pyrogram.ForceReply"] = None,
                              progress: callable = None,
-                             progress_args: tuple = ()):
+                             progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Args:
@@ -184,7 +189,7 @@ class SendAnimation(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return await utils.parse_messages(
+                        return await pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

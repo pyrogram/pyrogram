@@ -18,13 +18,15 @@
 
 from base64 import b64decode
 from struct import unpack
+from typing import List, Union
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class DeleteUserProfilePhotos(BaseClient):
-    async def delete_user_profile_photos(self, id: str or list):
+    async def delete_user_profile_photos(self,
+                                   id: Union[str, List[str]]) -> bool:
         """Use this method to delete your own profile photos
 
         Args:

@@ -16,20 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client import types as pyrogram_types
-from ...ext import utils, BaseClient
+from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
     async def send_message(self,
-                           chat_id: int or str,
+                           chat_id: Union[int, str],
                            text: str,
                            parse_mode: str = "",
                            disable_web_page_preview: bool = None,
                            disable_notification: bool = None,
                            reply_to_message_id: int = None,
-                           reply_markup=None):
+                           reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                               "pyrogram.ReplyKeyboardMarkup",
+                                               "pyrogram.ReplyKeyboardRemove",
+                                               "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send text messages.
 
         Args:
@@ -83,9 +88,13 @@ class SendMessage(BaseClient):
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
-            return pyrogram_types.Message(
+            return pyrogram.Message(
                 message_id=r.id,
-                chat=pyrogram_types.Chat(id=list((await self.resolve_peer(chat_id)).__dict__.values())[0], type="private"),
+                chat=pyrogram.Chat(
+                    id=list((await self.resolve_peer(chat_id)).__dict__.values())[0],
+                    type="private",
+                    client=self
+                ),
                 text=message,
                 date=r.date,
                 outgoing=r.out,
@@ -95,7 +104,7 @@ class SendMessage(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return await utils.parse_messages(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

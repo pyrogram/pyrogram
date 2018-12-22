@@ -16,12 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class LeaveChat(BaseClient):
-    async def leave_chat(self, chat_id: int or str, delete: bool = False):
+    async def leave_chat(self,
+                         chat_id: Union[int, str],
+                         delete: bool = False):
         """Use this method to leave a group chat or channel.
 
         Args:

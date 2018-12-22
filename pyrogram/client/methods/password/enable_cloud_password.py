@@ -24,7 +24,10 @@ from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    async def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
+    async def enable_cloud_password(self,
+                                    password: str,
+                                    hint: str = "",
+                                    email: str = "") -> bool:
         """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 
         This password will be asked when you log in on a new device in addition to the SMS code.

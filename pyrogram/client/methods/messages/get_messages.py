@@ -16,16 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetMessages(BaseClient):
     async def get_messages(self,
-                           chat_id: int or str,
-                           message_ids: int or list = None,
-                           reply_to_message_ids: int or list = None,
-                           replies: int = 1):
+                           chat_id: Union[int, str],
+                           message_ids: Union[int, Iterable[int]] = None,
+                           reply_to_message_ids: Union[int, Iterable[int]] = None,
+                           replies: int = 1) -> "pyrogram.Messages":
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -48,10 +51,9 @@ class GetMessages(BaseClient):
                 The number of subsequent replies to get for each message. Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* or *reply_to_message_ids* was a list, the returned value will be a
-            list of the requested :obj:`Messages <pyrogram.Messages>` even if a list contains just one element,
-            otherwise if *message_ids* or *reply_to_message_ids* was an integer, the single requested
-            :obj:`Message <pyrogram.Message>` is returned.
+            On success and in case *message_ids* or *reply_to_message_ids* was an iterable, the returned value will be a
+            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element. Otherwise, if *message_ids* or
+            *reply_to_message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -76,13 +78,6 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        r = await self.send(rpc)
+        messages = await pyrogram.Messages._parse(self, self.send(rpc))
 
-        messages = await utils.parse_messages(
-            self, r.messages,
-            {i.id: i for i in r.users},
-            {i.id: i for i in r.chats},
-            replies=replies
-        )
-
-        return messages if is_iterable else messages[0]
+        return messages if is_iterable else messages.messages[0]

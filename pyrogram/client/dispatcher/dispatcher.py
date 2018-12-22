@@ -20,9 +20,9 @@ import asyncio
 import logging
 from collections import OrderedDict
 
+import pyrogram
 from pyrogram.api import types
-from ..ext import utils
-from ..handlers import CallbackQueryHandler, MessageHandler, DeletedMessagesHandler, UserStatusHandler, RawUpdateHandler
+from ..handlers import CallbackQueryHandler, MessageHandler, RawUpdateHandler, UserStatusHandler, DeletedMessagesHandler
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Dispatcher:
         types.UpdateEditChannelMessage
     )
 
-    DELETE_MESSAGE_UPDATES = (
+    DELETE_MESSAGES_UPDATES = (
         types.UpdateDeleteMessages,
         types.UpdateDeleteChannelMessages
     )
@@ -59,16 +59,16 @@ class Dispatcher:
         self.groups = OrderedDict()
 
         async def message_parser(update, users, chats):
-            return await utils.parse_messages(self.client, update.message, users, chats), MessageHandler
+            return await pyrogram.Message._parse(self.client, update.message, users, chats), MessageHandler
 
         async def deleted_messages_parser(update, users, chats):
-            return utils.parse_deleted_messages(update), DeletedMessagesHandler
+            return pyrogram.Messages._parse_deleted(self.client, update), DeletedMessagesHandler
 
         async def callback_query_parser(update, users, chats):
-            return await utils.parse_callback_query(self.client, update, users), CallbackQueryHandler
+            return await pyrogram.CallbackQuery._parse(self.client, update, users), CallbackQueryHandler
 
         async def user_status_parser(update, users, chats):
-            return utils.parse_user_status(update.status, update.user_id), UserStatusHandler
+            return pyrogram.UserStatus._parse(self.client, update.status, update.user_id), UserStatusHandler
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,

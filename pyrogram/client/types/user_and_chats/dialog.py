@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ..user_and_chats import Chat
 
 
-class Dialog(Object):
+class Dialog(PyrogramType):
     """This object represents a dialog.
 
     Args:
@@ -41,18 +45,42 @@ class Dialog(Object):
         is_pinned (``bool``):
             True, if the dialog is pinned.
     """
-    ID = 0xb0700028
 
     def __init__(self,
-                 chat,
-                 top_message,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 chat: Chat,
+                 top_message: "pyrogram.Message",
                  unread_messages_count: int,
                  unread_mentions_count: int,
                  unread_mark: bool,
                  is_pinned: bool):
+        super().__init__(client)
+
         self.chat = chat
         self.top_message = top_message
         self.unread_messages_count = unread_messages_count
         self.unread_mentions_count = unread_mentions_count
         self.unread_mark = unread_mark
         self.is_pinned = is_pinned
+
+    @staticmethod
+    def _parse(client, dialog, messages, users, chats) -> "Dialog":
+        chat_id = dialog.peer
+
+        if isinstance(chat_id, types.PeerUser):
+            chat_id = chat_id.user_id
+        elif isinstance(chat_id, types.PeerChat):
+            chat_id = -chat_id.chat_id
+        else:
+            chat_id = int("-100" + str(chat_id.channel_id))
+
+        return Dialog(
+            chat=Chat._parse_dialog(client, dialog.peer, users, chats),
+            top_message=messages.get(chat_id),
+            unread_messages_count=dialog.unread_count,
+            unread_mentions_count=dialog.unread_mentions_count,
+            unread_mark=dialog.unread_mark,
+            is_pinned=dialog.pinned,
+            client=client
+        )

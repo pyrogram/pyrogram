@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class PromoteChatMember(BaseClient):
     async def promote_chat_member(self,
-                                  chat_id: int or str,
-                                  user_id: int or str,
+                                  chat_id: Union[int, str],
+                                  user_id: Union[int, str],
                                   can_change_info: bool = True,
                                   can_post_messages: bool = False,
                                   can_edit_messages: bool = False,
@@ -31,7 +33,7 @@ class PromoteChatMember(BaseClient):
                                   can_invite_users: bool = True,
                                   can_restrict_members: bool = True,
                                   can_pin_messages: bool = False,
-                                  can_promote_members: bool = False):
+                                  can_promote_members: bool = False) -> bool:
         """Use this method to promote or demote a user in a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.

@@ -16,13 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
 from pyrogram.api.types import KeyboardButton as RawKeyboardButton
 from pyrogram.api.types import KeyboardButtonRequestPhone, KeyboardButtonRequestGeoLocation
+from ..pyrogram_type import PyrogramType
 
 
-class KeyboardButton(Object):
+class KeyboardButton(PyrogramType):
     """This object represents one button of the reply keyboard.
     For simple text buttons String can be used instead of this object to specify text of the button.
     Optional fields are mutually exclusive.
@@ -41,27 +40,30 @@ class KeyboardButton(Object):
             Available in private chats only.
     """
 
-    ID = 0xb0700021
+    def __init__(self,
+                 text: str,
+                 request_contact: bool = None,
+                 request_location: bool = None):
+        super().__init__(None)
 
-    def __init__(self, text: str, request_contact: bool = None, request_location: bool = None):
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
 
     @staticmethod
-    def read(b, *args):
-        if isinstance(b, RawKeyboardButton):
-            return b.text
+    def read(o):
+        if isinstance(o, RawKeyboardButton):
+            return o.text
 
-        if isinstance(b, KeyboardButtonRequestPhone):
+        if isinstance(o, KeyboardButtonRequestPhone):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_contact=True
             )
 
-        if isinstance(b, KeyboardButtonRequestGeoLocation):
+        if isinstance(o, KeyboardButtonRequestGeoLocation):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_location=True
             )
 

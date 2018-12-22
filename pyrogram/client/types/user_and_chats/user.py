@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+from pyrogram.api import types
+from .chat_photo import ChatPhoto
+from .user_status import UserStatus
+from ..pyrogram_type import PyrogramType
 
 
-class User(Object):
+class User(PyrogramType):
     """This object represents a Telegram user or bot.
 
     Args:
@@ -66,25 +70,25 @@ class User(Object):
             The reason why this bot might be unavailable to some users.
     """
 
-    ID = 0xb0700001
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 id: int,
+                 is_self: bool,
+                 is_contact: bool,
+                 is_mutual_contact: bool,
+                 is_deleted: bool,
+                 is_bot: bool,
+                 first_name: str,
+                 last_name: str = None,
+                 status: UserStatus = None,
+                 username: str = None,
+                 language_code: str = None,
+                 phone_number: str = None,
+                 photo: ChatPhoto = None,
+                 restriction_reason: str = None):
+        super().__init__(client)
 
-    def __init__(
-            self,
-            id: int,
-            is_self: bool,
-            is_contact: bool,
-            is_mutual_contact: bool,
-            is_deleted: bool,
-            is_bot: bool,
-            first_name: str,
-            status=None,
-            last_name: str = None,
-            username: str = None,
-            language_code: str = None,
-            phone_number: str = None,
-            photo=None,
-            restriction_reason: str = None
-    ):
         self.id = id
         self.is_self = is_self
         self.is_contact = is_contact
@@ -92,10 +96,33 @@ class User(Object):
         self.is_deleted = is_deleted
         self.is_bot = is_bot
         self.first_name = first_name
-        self.status = status
         self.last_name = last_name
+        self.status = status
         self.username = username
         self.language_code = language_code
         self.phone_number = phone_number
         self.photo = photo
         self.restriction_reason = restriction_reason
+
+    @staticmethod
+    def _parse(client, user: types.User) -> "User" or None:
+        if user is None:
+            return None
+
+        return User(
+            id=user.id,
+            is_self=user.is_self,
+            is_contact=user.contact,
+            is_mutual_contact=user.mutual_contact,
+            is_deleted=user.deleted,
+            is_bot=user.bot,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            status=UserStatus._parse(client, user.status, user.id, user.bot),
+            username=user.username,
+            language_code=user.lang_code,
+            phone_number=user.phone,
+            photo=ChatPhoto._parse(client, user.photo),
+            restriction_reason=user.restriction_reason,
+            client=client
+        )

@@ -16,12 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetMe(BaseClient):
-    async def get_me(self):
+    async def get_me(self) -> "pyrogram.User":
         """A simple method for testing your authorization. Requires no parameters.
 
         Returns:
@@ -30,10 +31,11 @@ class GetMe(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        r = await self.send(
-            functions.users.GetFullUser(
-                types.InputPeerSelf()
-            )
+        return pyrogram.User._parse(
+            self,
+            await self.send(
+                functions.users.GetFullUser(
+                    types.InputPeerSelf()
+                )
+            ).user
         )
-
-        return utils.parse_user(r.user)

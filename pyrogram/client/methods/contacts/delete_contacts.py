@@ -16,17 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
 from pyrogram.api import functions, types
 from pyrogram.api.errors import PeerIdInvalid
 from ...ext import BaseClient
 
 
 class DeleteContacts(BaseClient):
-    async def delete_contacts(self, ids: list):
+    async def delete_contacts(self,
+                        ids: List[int]):
         """Use this method to delete contacts from your Telegram address book
 
         Args:
-            ids (``list``):
+            ids (List of ``int``):
                 A list of unique identifiers for the target users.
                 Can be an ID (int), a username (string) or phone number (string).
 

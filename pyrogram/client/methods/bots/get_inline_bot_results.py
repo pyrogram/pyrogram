@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from pyrogram.api.errors import UnknownError
 from pyrogram.client.ext import BaseClient
@@ -23,7 +25,7 @@ from pyrogram.client.ext import BaseClient
 
 class GetInlineBotResults(BaseClient):
     async def get_inline_bot_results(self,
-                                     bot: int or str,
+                                     bot: Union[int, str],
                                      query: str,
                                      offset: str = "",
                                      latitude: float = None,

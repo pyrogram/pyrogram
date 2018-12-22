@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from typing import List
+
+import pyrogram
+from pyrogram.api import types
+from .chat_member import ChatMember
+from .user import User
+from ..pyrogram_type import PyrogramType
 
 
-class ChatMembers(Object):
+class ChatMembers(PyrogramType):
     """This object contains information about the members list of a chat.
 
     Args:
@@ -30,8 +36,34 @@ class ChatMembers(Object):
             Requested chat members.
     """
 
-    ID = 0xb0700030
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 total_count: int,
+                 chat_members: List[ChatMember]):
+        super().__init__(client)
 
-    def __init__(self, total_count: int, chat_members: list):
         self.total_count = total_count
         self.chat_members = chat_members
+
+    @staticmethod
+    def _parse(client, members):
+        users = {i.id: i for i in members.users}
+        chat_members = []
+
+        if isinstance(members, types.channels.ChannelParticipants):
+            total_count = members.count
+            members = members.participants
+        else:
+            members = members.full_chat.participants.participants
+            total_count = len(members)
+
+        for member in members:
+            user = User._parse(client, users[member.user_id])
+            chat_members.append(ChatMember._parse(client, member, user))
+
+        return ChatMembers(
+            total_count=total_count,
+            chat_members=chat_members,
+            client=client
+        )

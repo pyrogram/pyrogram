@@ -23,7 +23,8 @@ from ...ext import BaseClient
 
 
 class RemoveCloudPassword(BaseClient):
-    async def remove_cloud_password(self, password: str):
+    async def remove_cloud_password(self,
+                                    password: str) -> bool:
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:

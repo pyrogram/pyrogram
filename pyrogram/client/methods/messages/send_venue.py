@@ -16,21 +16,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class SendVenue(BaseClient):
     async def send_venue(self,
-                   chat_id: int or str,
-                   latitude: float,
-                   longitude: float,
-                   title: str,
-                   address: str,
-                   foursquare_id: str = "",
-                   foursquare_type: str = "",disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup=None):
+                         chat_id: Union[int, str],
+                         latitude: float,
+                         longitude: float,
+                         title: str,
+                         address: str,
+                         foursquare_id: str = "",
+                         foursquare_type: str = "", disable_notification: bool = None,
+                         reply_to_message_id: int = None,
+                         reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                             "pyrogram.ReplyKeyboardMarkup",
+                                             "pyrogram.ReplyKeyboardRemove",
+                                             "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send information about a venue.
 
         Args:
@@ -99,7 +105,7 @@ class SendVenue(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return await utils.parse_messages(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

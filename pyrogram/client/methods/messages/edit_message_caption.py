@@ -16,17 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class EditMessageCaption(BaseClient):
     async def edit_message_caption(self,
-                                   chat_id: int or str,
+                                   chat_id: Union[int, str],
                                    message_id: int,
                                    caption: str,
                                    parse_mode: str = "",
-                                   reply_markup=None):
+                                   reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
         """Use this method to edit captions of messages.
 
         Args:
@@ -68,7 +71,7 @@ class EditMessageCaption(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return await utils.parse_messages(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
