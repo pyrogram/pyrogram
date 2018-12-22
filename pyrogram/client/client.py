@@ -1223,7 +1223,6 @@ class Client(Methods, BaseClient):
                  volume_id: int = None,
                  local_id: int = None,
                  secret: int = None,
-                 version: int = 0,
                  size: int = None,
                  progress: callable = None,
                  progress_args: tuple = ()) -> str:
@@ -1271,13 +1270,14 @@ class Client(Methods, BaseClient):
             location = types.InputFileLocation(
                 volume_id=volume_id,
                 local_id=local_id,
-                secret=secret
+                secret=secret,
+                file_reference=b""
             )
         else:  # Any other file can be more easily accessed by id and access_hash
             location = types.InputDocumentFileLocation(
                 id=id,
                 access_hash=access_hash,
-                version=version
+                file_reference=b""
             )
 
         limit = 1024 * 1024

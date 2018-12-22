@@ -61,7 +61,8 @@ class SetChatPhoto(BaseClient):
             photo = types.InputChatPhoto(
                 id=types.InputPhoto(
                     id=s[0],
-                    access_hash=s[1]
+                    access_hash=s[1],
+                    file_reference=b""
                 )
             )
 

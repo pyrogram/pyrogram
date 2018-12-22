@@ -84,7 +84,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaPhoto(
                     id=types.InputPhoto(
                         id=media.photo.id,
-                        access_hash=media.photo.access_hash
+                        access_hash=media.photo.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -110,7 +111,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaPhoto(
                         id=types.InputPhoto(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -138,7 +140,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -164,7 +167,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -191,7 +195,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -217,7 +222,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -246,7 +252,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -272,7 +279,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -294,7 +302,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -320,7 +329,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
