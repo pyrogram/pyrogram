@@ -262,6 +262,7 @@ class Message(PyrogramType):
                  location: "pyrogram.Location" = None,
                  venue: "pyrogram.Venue" = None,
                  web_page: bool = None,
+                 poll: "pyrogram.Poll" = None,
                  new_chat_members: List[User] = None,
                  left_chat_member: User = None,
                  new_chat_title: str = None,
@@ -317,6 +318,7 @@ class Message(PyrogramType):
         self.location = location
         self.venue = venue
         self.web_page = web_page
+        self.poll = poll
         self.new_chat_members = new_chat_members
         self.left_chat_member = left_chat_member
         self.new_chat_title = new_chat_title
@@ -440,6 +442,7 @@ class Message(PyrogramType):
             sticker = None
             document = None
             web_page = None
+            poll = None
 
             media = message.media
 
@@ -494,6 +497,8 @@ class Message(PyrogramType):
                 elif isinstance(media, types.MessageMediaWebPage):
                     web_page = True
                     media = None
+                elif isinstance(media, types.MessageMediaPoll):
+                    poll = pyrogram.Poll._parse(client, media)
                 else:
                     media = None
 
@@ -542,6 +547,7 @@ class Message(PyrogramType):
                 sticker=sticker,
                 document=document,
                 web_page=web_page,
+                poll=poll,
                 views=message.views,
                 via_bot=User._parse(client, users.get(message.via_bot_id, None)),
                 outgoing=message.out,
