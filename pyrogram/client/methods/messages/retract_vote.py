@@ -23,10 +23,26 @@ from pyrogram.client.ext import BaseClient
 
 
 class RetractVote(BaseClient):
-    # TODO: Docs
     def retract_vote(self,
                      chat_id: Union[int, str],
                      message_id: id) -> bool:
+        """Use this method to retract your vote in a poll.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_id (``int``):
+                Unique poll message identifier inside this chat.
+
+        Returns:
+            On success, True is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
         self.send(
             functions.messages.SendVote(
                 peer=self.resolve_peer(chat_id),
