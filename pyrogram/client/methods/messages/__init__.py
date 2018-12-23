@@ -39,6 +39,7 @@ from .send_venue import SendVenue
 from .send_video import SendVideo
 from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
+from .vote_poll import VotePoll
 
 
 class Messages(
@@ -64,6 +65,7 @@ class Messages(
     SendVideo,
     SendVideoNote,
     SendVoice,
-    SendPoll
+    SendPoll,
+    VotePoll
 ):
     pass
