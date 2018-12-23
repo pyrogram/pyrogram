@@ -44,7 +44,10 @@ class EnableCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        raise NotImplementedError
+        raise NotImplementedError(
+            "Cloud password methods are currently not available. "
+            "See https://github.com/pyrogram/pyrogram/issues/178"
+        )
 
         # r = self.send(functions.account.GetPassword())
         #
