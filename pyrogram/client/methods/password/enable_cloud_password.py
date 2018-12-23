@@ -16,10 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-from hashlib import sha256
-
-from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
@@ -48,22 +44,24 @@ class EnableCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        r = self.send(functions.account.GetPassword())
+        raise NotImplementedError
 
-        if isinstance(r, types.account.NoPassword):
-            salt = r.new_salt + os.urandom(8)
-            password_hash = sha256(salt + password.encode() + salt).digest()
-
-            return self.send(
-                functions.account.UpdatePasswordSettings(
-                    current_password_hash=salt,
-                    new_settings=types.account.PasswordInputSettings(
-                        new_salt=salt,
-                        new_password_hash=password_hash,
-                        hint=hint,
-                        email=email
-                    )
-                )
-            )
-        else:
-            return False
+        # r = self.send(functions.account.GetPassword())
+        #
+        # if isinstance(r, types.account.NoPassword):
+        #     salt = r.new_salt + os.urandom(8)
+        #     password_hash = sha256(salt + password.encode() + salt).digest()
+        #
+        #     return self.send(
+        #         functions.account.UpdatePasswordSettings(
+        #             current_password_hash=salt,
+        #             new_settings=types.account.PasswordInputSettings(
+        #                 new_salt=salt,
+        #                 new_password_hash=password_hash,
+        #                 hint=hint,
+        #                 email=email
+        #             )
+        #         )
+        #     )
+        # else:
+        #     return False

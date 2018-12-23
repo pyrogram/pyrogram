@@ -16,10 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-from hashlib import sha256
-
-from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
@@ -46,23 +42,25 @@ class ChangeCloudPassword(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        r = self.send(functions.account.GetPassword())
+        raise NotImplementedError
 
-        if isinstance(r, types.account.Password):
-            current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
-
-            new_salt = r.new_salt + os.urandom(8)
-            new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
-
-            return self.send(
-                functions.account.UpdatePasswordSettings(
-                    current_password_hash=current_password_hash,
-                    new_settings=types.account.PasswordInputSettings(
-                        new_salt=new_salt,
-                        new_password_hash=new_password_hash,
-                        hint=new_hint
-                    )
-                )
-            )
-        else:
-            return False
+        # r = self.send(functions.account.GetPassword())
+        #
+        # if isinstance(r, types.account.Password):
+        #     current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
+        #
+        #     new_salt = r.new_salt + os.urandom(8)
+        #     new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
+        #
+        #     return self.send(
+        #         functions.account.UpdatePasswordSettings(
+        #             current_password_hash=current_password_hash,
+        #             new_settings=types.account.PasswordInputSettings(
+        #                 new_salt=new_salt,
+        #                 new_password_hash=new_password_hash,
+        #                 hint=new_hint
+        #             )
+        #         )
+        #     )
+        # else:
+        #     return False
