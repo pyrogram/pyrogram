@@ -18,14 +18,14 @@
 
 from typing import Union
 
-from pyrogram.api import functions, types
+from pyrogram.api import functions
 from ...ext import BaseClient
 
 
 class UnpinChatMessage(BaseClient):
     def unpin_chat_message(self,
                            chat_id: Union[int, str]) -> bool:
-        """Use this method to unpin a message in a supergroup or a channel.
+        """Use this method to unpin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.
 
@@ -40,18 +40,11 @@ class UnpinChatMessage(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
-        peer = self.resolve_peer(chat_id)
-
-        if isinstance(peer, types.InputPeerChannel):
-            self.send(
-                functions.channels.UpdatePinnedMessage(
-                    channel=peer,
-                    id=0
-                )
+        self.send(
+            functions.messages.UpdatePinnedMessage(
+                peer=self.resolve_peer(chat_id),
+                id=0
             )
-        elif isinstance(peer, types.InputPeerChat):
-            raise ValueError("The chat_id \"{}\" belongs to a basic group".format(chat_id))
-        else:
-            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
+        )
 
         return True
