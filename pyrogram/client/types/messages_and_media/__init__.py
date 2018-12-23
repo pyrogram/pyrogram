@@ -27,7 +27,6 @@ from .messages import Messages
 from .photo import Photo
 from .photo_size import PhotoSize
 from .poll import Poll
-from .poll_answer import PollAnswer
 from .sticker import Sticker
 from .user_profile_photos import UserProfilePhotos
 from .venue import Venue

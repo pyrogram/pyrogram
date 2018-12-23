@@ -20,8 +20,19 @@ from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .poll_answer import PollAnswer
 from ..pyrogram_type import PyrogramType
+
+
+class PollOption(PyrogramType):
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 text: str,
+                 voters: int):
+        super().__init__(client)
+
+        self.text = text
+        self.voters = voters
 
 
 class Poll(PyrogramType):
@@ -31,16 +42,16 @@ class Poll(PyrogramType):
                  id: int,
                  closed: bool,
                  question: str,
-                 answers: List[PollAnswer],
-                 answer_chosen: int = None,
+                 options: List[PollOption],
+                 option_chosen: int = None,
                  total_voters: int):
         super().__init__(client)
 
         self.id = id
         self.closed = closed
         self.question = question
-        self.answers = answers
-        self.answer_chosen = answer_chosen
+        self.options = options
+        self.option_chosen = option_chosen
         self.total_voters = total_voters
 
     @staticmethod
@@ -48,21 +59,21 @@ class Poll(PyrogramType):
         poll = media_poll.poll
         results = media_poll.results.results
         total_voters = media_poll.results.total_voters
-        answer_chosen = None
+        option_chosen = None
 
-        answers = []
+        options = []
 
         for i, answer in enumerate(poll.answers):
-            voters = None
+            voters = 0
 
             if results:
                 result = results[i]
                 voters = result.voters
 
                 if result.chosen:
-                    answer_chosen = i
+                    option_chosen = i
 
-            answers.append(PollAnswer(
+            options.append(PollOption(
                 text=answer.text,
                 voters=voters,
                 client=client
@@ -72,8 +83,8 @@ class Poll(PyrogramType):
             id=poll.id,
             closed=poll.closed,
             question=poll.question,
-            answers=answers,
-            answer_chosen=answer_chosen,
+            options=options,
+            option_chosen=option_chosen,
             total_voters=total_voters,
             client=client
         )

@@ -31,7 +31,7 @@ from .input_media import (
 from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
     Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
-    Message, Messages, MessageEntity, Poll, PollAnswer
+    Message, Messages, MessageEntity, Poll
 )
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
