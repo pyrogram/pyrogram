@@ -86,37 +86,37 @@ class Filters:
     """Filter edited messages."""
 
     audio = create("Audio", lambda _, m: bool(m.audio))
-    """Filter messages that contain :obj:`Audio <pyrogram.api.types.pyrogram.Audio>` objects."""
+    """Filter messages that contain :obj:`Audio <pyrogram.Audio>` objects."""
 
     document = create("Document", lambda _, m: bool(m.document))
-    """Filter messages that contain :obj:`Document <pyrogram.api.types.pyrogram.Document>` objects."""
+    """Filter messages that contain :obj:`Document <pyrogram.Document>` objects."""
 
     photo = create("Photo", lambda _, m: bool(m.photo))
-    """Filter messages that contain :obj:`Photo <pyrogram.api.types.pyrogram.PhotoSize>` objects."""
+    """Filter messages that contain :obj:`Photo <pyrogram.PhotoSize>` objects."""
 
     sticker = create("Sticker", lambda _, m: bool(m.sticker))
-    """Filter messages that contain :obj:`Sticker <pyrogram.api.types.pyrogram.Sticker>` objects."""
+    """Filter messages that contain :obj:`Sticker <pyrogram.Sticker>` objects."""
 
     animation = create("GIF", lambda _, m: bool(m.animation))
-    """Filter messages that contain :obj:`Animation <pyrogram.api.types.pyrogram.Animation>` objects."""
+    """Filter messages that contain :obj:`Animation <pyrogram.Animation>` objects."""
 
     video = create("Video", lambda _, m: bool(m.video))
-    """Filter messages that contain :obj:`Video <pyrogram.api.types.pyrogram.Video>` objects."""
+    """Filter messages that contain :obj:`Video <pyrogram.Video>` objects."""
 
     voice = create("Voice", lambda _, m: bool(m.voice))
-    """Filter messages that contain :obj:`Voice <pyrogram.api.types.pyrogram.Voice>` note objects."""
+    """Filter messages that contain :obj:`Voice <pyrogram.Voice>` note objects."""
 
     video_note = create("Voice", lambda _, m: bool(m.video_note))
-    """Filter messages that contain :obj:`VideoNote <pyrogram.api.types.pyrogram.VideoNote>` objects."""
+    """Filter messages that contain :obj:`VideoNote <pyrogram.VideoNote>` objects."""
 
     contact = create("Contact", lambda _, m: bool(m.contact))
-    """Filter messages that contain :obj:`Contact <pyrogram.api.types.pyrogram.Contact>` objects."""
+    """Filter messages that contain :obj:`Contact <pyrogram.Contact>` objects."""
 
     location = create("Location", lambda _, m: bool(m.location))
-    """Filter messages that contain :obj:`Location <pyrogram.api.types.pyrogram.Location>` objects."""
+    """Filter messages that contain :obj:`Location <pyrogram.Location>` objects."""
 
     venue = create("Venue", lambda _, m: bool(m.venue))
-    """Filter messages that contain :obj:`Venue <pyrogram.api.types.pyrogram.Venue>` objects."""
+    """Filter messages that contain :obj:`Venue <pyrogram.Venue>` objects."""
 
     web_page = create("WebPage", lambda _, m: m.web_page)
     """Filter messages sent with a webpage preview."""
