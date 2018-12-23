@@ -38,6 +38,28 @@ class PollOption(PyrogramType):
 
 
 class Poll(PyrogramType):
+    """This object represents a Poll
+
+    Args:
+        id (``int``):
+            The poll id in this chat.
+
+        closed (``bool``):
+            Whether the poll is closed or not.
+
+        question (``str``):
+            Poll question
+
+        options (List of :obj:`PollOption`):
+            The available poll options.
+
+        total_voters (``int``):
+            Total amount of voters for this poll.
+
+        option_chosen (``int``, *optional*):
+            The index of your chosen option (in case you voted already), None otherwise.
+    """
+
     def __init__(self,
                  *,
                  client: "pyrogram.client.ext.BaseClient",
@@ -45,16 +67,16 @@ class Poll(PyrogramType):
                  closed: bool,
                  question: str,
                  options: List[PollOption],
-                 option_chosen: int = None,
-                 total_voters: int):
+                 total_voters: int,
+                 option_chosen: int = None):
         super().__init__(client)
 
         self.id = id
         self.closed = closed
         self.question = question
         self.options = options
-        self.option_chosen = option_chosen
         self.total_voters = total_voters
+        self.option_chosen = option_chosen
 
     @staticmethod
     def _parse(client, media_poll: types.MessageMediaPoll) -> "Poll":
@@ -87,7 +109,7 @@ class Poll(PyrogramType):
             closed=poll.closed,
             question=poll.question,
             options=options,
-            option_chosen=option_chosen,
             total_voters=total_voters,
+            option_chosen=option_chosen,
             client=client
         )
