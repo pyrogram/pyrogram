@@ -23,11 +23,30 @@ from pyrogram.client.ext import BaseClient
 
 
 class VotePoll(BaseClient):
-    # TODO: Docs
     def vote_poll(self,
                   chat_id: Union[int, str],
                   message_id: id,
                   option: int) -> bool:
+        """Use this method to vote a poll.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_id (``int``):
+                Unique poll message identifier inside this chat.
+
+            option (``int``):
+                Index of the poll option you want to vote for (0 to 9).
+
+        Returns:
+            On success, True is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
         poll = self.get_messages(chat_id, message_id).poll
 
         self.send(
