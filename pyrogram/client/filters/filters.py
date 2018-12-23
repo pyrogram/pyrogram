@@ -122,7 +122,7 @@ class Filters:
     """Filter messages sent with a webpage preview."""
 
     poll = create("Poll", lambda _, m: m.poll)
-    """Filter messages that contain :obj:`Poll <pyrogram.api.types.pyrogram.Poll>` objects."""
+    """Filter messages that contain :obj:`Poll <pyrogram.Poll>` objects."""
 
     private = create("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
     """Filter messages sent in private chats."""
