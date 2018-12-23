@@ -28,11 +28,13 @@ class PollOption(PyrogramType):
                  *,
                  client: "pyrogram.client.ext.BaseClient",
                  text: str,
-                 voters: int):
+                 voters: int,
+                 data: bytes):
         super().__init__(client)
 
         self.text = text
         self.voters = voters
+        self._data = data
 
 
 class Poll(PyrogramType):
@@ -76,6 +78,7 @@ class Poll(PyrogramType):
             options.append(PollOption(
                 text=answer.text,
                 voters=voters,
+                data=answer.option,
                 client=client
             ))
 

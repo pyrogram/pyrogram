@@ -28,11 +28,13 @@ class VotePoll(BaseClient):
                   chat_id: Union[int, str],
                   message_id: id,
                   option: int) -> bool:
+        poll = self.get_messages(chat_id, message_id).poll
+
         self.send(
             functions.messages.SendVote(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                options=[bytes([option])]
+                options=[poll.options[option]._data]
             )
         )
 
