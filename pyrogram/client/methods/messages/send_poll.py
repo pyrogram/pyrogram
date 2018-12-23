@@ -24,7 +24,6 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendPoll(BaseClient):
-    # TODO: Docs
     def send_poll(self,
                   chat_id: Union[int, str],
                   question: str,
@@ -35,6 +34,37 @@ class SendPoll(BaseClient):
                                       "pyrogram.ReplyKeyboardMarkup",
                                       "pyrogram.ReplyKeyboardRemove",
                                       "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+        """Use this method to send a new poll.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            question (``str``):
+                The poll question, as string.
+
+            options (List of ``str``):
+                The poll options, as list of strings (2 to 10 options are allowed).
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
