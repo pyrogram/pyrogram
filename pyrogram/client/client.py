@@ -1102,35 +1102,56 @@ class Client(Methods, BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
-        if type(peer_id) is str:
-            if peer_id in ("self", "me"):
-                return types.InputPeerSelf()
-
-            peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
-
-            try:
-                int(peer_id)
-            except ValueError:
-                if peer_id not in self.peers_by_username:
-                    await self.send(functions.contacts.ResolveUsername(peer_id))
-
-                return self.peers_by_username[peer_id]
-            else:
-                try:
-                    return self.peers_by_phone[peer_id]
-                except KeyError:
-                    raise PeerIdInvalid
-
-        try:  # User
+        try:
             return self.peers_by_id[peer_id]
         except KeyError:
-            try:  # Chat
-                return self.peers_by_id[-peer_id]
+            if type(peer_id) is str:
+                if peer_id in ("self", "me"):
+                    return types.InputPeerSelf()
+
+                peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
+
+                try:
+                    int(peer_id)
+                except ValueError:
+                    if peer_id not in self.peers_by_username:
+                        await self.send(functions.contacts.ResolveUsername(username=peer_id
+                            )
+                        )
+
+                    return self.peers_by_username[peer_id]
+                else:
+                    try:
+                        return self.peers_by_phone[peer_id]
+                    except KeyError:
+                        raise PeerIdInvalid
+
+            if peer_id > 0:
+                self.fetch_peers(
+                    self.send(
+                        functions.users.GetUsers(
+                            id=[types.InputUser(peer_id, 0)]
+                        )
+                    )
+                )
+            else:
+                if str(peer_id).startswith("-100"):
+                    self.send(
+                        functions.channels.GetChannels(
+                            id=[types.InputChannel(int(str(peer_id)[4:]), 0)]
+                        )
+                    )
+                else:
+                    self.send(
+                        functions.messages.GetChats(
+                            id=[-peer_id]
+                        )
+                    )
+
+            try:
+                return self.peers_by_id[peer_id]
             except KeyError:
-                try:  # Channel
-                    return self.peers_by_id[int("-100" + str(peer_id))]
-                except (KeyError, ValueError):
-                    raise PeerIdInvalid
+                raise PeerIdInvalid
 
     async def save_file(self,
                         path: str,
