@@ -20,25 +20,12 @@ from typing import List
 
 import pyrogram
 from pyrogram.api import types
+from .poll_option import PollOption
 from ..pyrogram_type import PyrogramType
 
 
-class PollOption(PyrogramType):
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 text: str,
-                 voters: int,
-                 data: bytes):
-        super().__init__(client)
-
-        self.text = text
-        self.voters = voters
-        self._data = data
-
-
 class Poll(PyrogramType):
-    """This object represents a Poll
+    """This object represents a Poll.
 
     Args:
         id (``int``):
@@ -48,7 +35,7 @@ class Poll(PyrogramType):
             Whether the poll is closed or not.
 
         question (``str``):
-            Poll question
+            Poll question.
 
         options (List of :obj:`PollOption`):
             The available poll options.

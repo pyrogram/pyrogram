@@ -16,24 +16,31 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .bots import (
-    CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
-)
-from .bots import (
-    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
-)
-from .input_media import (
-    InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
-    InputMediaDocument, InputMediaAnimation
-)
-from .messages_and_media import (
-    Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
-    Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
-    Message, Messages, MessageEntity, Poll, PollOption
-)
-from .user_and_chats import (
-    Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User, UserStatus
-)
+import pyrogram
+from ..pyrogram_type import PyrogramType
+
+
+class PollOption(PyrogramType):
+    def __init__(self,
+                 *,
+                 client: "pyrogram.client.ext.BaseClient",
+                 text: str,
+                 voters: int,
+                 data: bytes):
+        """This object represents a Poll Option.
+
+        Args:
+            text (``str``):
+                Text of the poll option.
+
+            voters (``int``):
+                The number of users who voted this option.
+
+            data (``bytes``):
+                Unique data that identifies this option (among all the other options in a poll).
+        """
+        super().__init__(client)
+
+        self.text = text
+        self.voters = voters
+        self.data = data
