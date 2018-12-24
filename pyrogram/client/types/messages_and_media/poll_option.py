@@ -21,24 +21,25 @@ from ..pyrogram_type import PyrogramType
 
 
 class PollOption(PyrogramType):
+    """This object represents a Poll Option.
+
+    Args:
+        text (``str``):
+            Text of the poll option.
+
+        voters (``int``):
+            The number of users who voted this option.
+
+        data (``bytes``):
+            Unique data that identifies this option among all the other options in a poll.
+    """
+
     def __init__(self,
                  *,
                  client: "pyrogram.client.ext.BaseClient",
                  text: str,
                  voters: int,
                  data: bytes):
-        """This object represents a Poll Option.
-
-        Args:
-            text (``str``):
-                Text of the poll option.
-
-            voters (``int``):
-                The number of users who voted this option.
-
-            data (``bytes``):
-                Unique data that identifies this option (among all the other options in a poll).
-        """
         super().__init__(client)
 
         self.text = text
