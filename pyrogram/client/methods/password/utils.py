@@ -46,6 +46,7 @@ def compute_hash(algo: types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter1000
     return sha256(algo.salt2 + hash3 + algo.salt2)
 
 
+# noinspection PyPep8Naming
 def compute_check(r: types.account.Password, password: str) -> types.InputCheckPasswordSRP:
     algo = r.current_algo
 
