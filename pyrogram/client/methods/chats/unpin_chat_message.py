@@ -38,7 +38,6 @@ class UnpinChatMessage(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
         self.send(
             functions.messages.UpdatePinnedMessage(
