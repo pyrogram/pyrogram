@@ -1,2 +1,3 @@
 id	message
 AUTH_KEY_DUPLICATED	Authorization error - you must delete your session file and log in again with your phone number
+FILEREF_UPGRADE_NEEDED	The file reference has expired - you must obtain the original media message
