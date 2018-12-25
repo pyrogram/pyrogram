@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
+from pyrogram.api import functions, types
+from .utils import compute_hash, compute_check, btoi, itob
 from ...ext import BaseClient
 
 
@@ -37,33 +41,30 @@ class ChangeCloudPassword(BaseClient):
                 A new password hint.
 
         Returns:
-            True on success, False otherwise.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` in case there is no cloud password to change.
         """
-        raise NotImplementedError(
-            "Cloud password methods are currently not available. "
-            "See https://github.com/pyrogram/pyrogram/issues/178"
+        r = self.send(functions.account.GetPassword())
+
+        if not r.has_password:
+            raise ValueError("There is no cloud password to change")
+
+        r.new_algo.salt1 += os.urandom(32)
+        new_hash = btoi(compute_hash(r.new_algo, new_password))
+        new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
+
+        self.send(
+            functions.account.UpdatePasswordSettings(
+                password=compute_check(r, current_password),
+                new_settings=types.account.PasswordInputSettings(
+                    new_algo=r.new_algo,
+                    new_password_hash=new_hash,
+                    hint=new_hint
+                )
+            )
         )
 
-        # r = self.send(functions.account.GetPassword())
-        #
-        # if isinstance(r, types.account.Password):
-        #     current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
-        #
-        #     new_salt = r.new_salt + os.urandom(8)
-        #     new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
-        #
-        #     return self.send(
-        #         functions.account.UpdatePasswordSettings(
-        #             current_password_hash=current_password_hash,
-        #             new_settings=types.account.PasswordInputSettings(
-        #                 new_salt=new_salt,
-        #                 new_password_hash=new_password_hash,
-        #                 hint=new_hint
-        #             )
-        #         )
-        #     )
-        # else:
-        #     return False
+        return True
