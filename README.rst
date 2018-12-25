@@ -17,8 +17,8 @@ Pyrogram
 
     app.run()
 
-**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for building
-custom Telegram applications that interact with the MTProto API as both User and Bot.
+**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for
+building custom Telegram applications that interact with the MTProto API as both User and Bot.
 
 Features
 --------
@@ -26,7 +26,7 @@ Features
 -   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
 -   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 82 on top of MTProto 2.0.
+-   **Updated** to the latest Telegram API version, currently Layer 91 on top of MTProto 2.0.
 -   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
 -   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
@@ -99,7 +99,7 @@ Copyright & License
         </a>
         <br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2082-eda738.svg?longCache=true&colorA=262b30"
+            <img src="https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
                 alt="Schema Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
@@ -114,10 +114,10 @@ Copyright & License
 
 .. |description| replace:: **Telegram MTProto API Client Library for Python**
 
-.. |scheme| image:: "https://img.shields.io/badge/SCHEME-LAYER%2082-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+.. |scheme| image:: "https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
     :target: compiler/api/source/main_api.tl
     :alt: Scheme Layer
 
-.. |tgcrypto| image:: "https://img.shields.io/badge/TGCRYPTO-V1.1.1-eda738.svg?longCache=true&style=for-the-badge&colorA=262b30"
+.. |tgcrypto| image:: "https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
     :target: https://github.com/pyrogram/tgcrypto
     :alt: TgCrypto
