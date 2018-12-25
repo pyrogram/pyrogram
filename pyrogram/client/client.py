@@ -18,7 +18,6 @@
 
 import base64
 import binascii
-import getpass
 import json
 import logging
 import math
@@ -46,9 +45,12 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
+    PasswordRecoveryNa, PasswordEmpty
+)
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -574,21 +576,46 @@ class Client(Methods, BaseClient):
                     self.first_name = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
-                r = self.send(functions.account.GetPassword())
 
                 while True:
                     try:
+                        r = self.send(functions.account.GetPassword())
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
-                            self.password = getpass.getpass("Enter password: ")
 
-                        if type(self.password) is str:
-                            self.password = r.current_salt + self.password.encode() + r.current_salt
+                            self.password = input("Enter password (empty to recover): ")
 
-                        password_hash = sha256(self.password).digest()
+                            if self.password == "":
+                                r = self.send(functions.auth.RequestPasswordRecovery())
 
-                        r = self.send(functions.auth.CheckPassword(password_hash))
+                                print("An e-mail containing the recovery code has been sent to {}".format(
+                                    r.email_pattern
+                                ))
+
+                                r = self.send(
+                                    functions.auth.RecoverPassword(
+                                        code=input("Enter password recovery code: ")
+                                    )
+                                )
+                            else:
+                                r = self.send(
+                                    functions.auth.CheckPassword(
+                                        password=compute_check(r, self.password)
+                                    )
+                                )
+                    except PasswordEmpty as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
+                    except PasswordRecoveryNa as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
                     except PasswordHashInvalid as e:
                         if password_hash_invalid_raises:
                             raise
@@ -601,6 +628,7 @@ class Client(Methods, BaseClient):
                         else:
                             print(e.MESSAGE.format(x=e.x))
                             time.sleep(e.x)
+                            self.password = None
                     except Exception as e:
                         log.error(e, exc_info=True)
                     else:
