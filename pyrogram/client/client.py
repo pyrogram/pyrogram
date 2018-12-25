@@ -45,8 +45,12 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
+    PasswordRecoveryNa, PasswordEmpty
+)
+from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -578,21 +582,47 @@ class Client(Methods, BaseClient):
                     self.first_name = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
-                r = await self.send(functions.account.GetPassword())
 
                 while True:
                     try:
+                        r = await self.send(functions.account.GetPassword())
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
                             self.password = await ainput("Enter password: ")
 
-                        if type(self.password) is str:
-                            self.password = r.current_salt + self.password.encode() + r.current_salt
+                            self.password = await ainput("Enter password (empty to recover): ")
 
-                        password_hash = sha256(self.password).digest()
+                            if self.password == "":
+                                r = await self.send(functions.auth.RequestPasswordRecovery())
 
-                        r = await self.send(functions.auth.CheckPassword(password_hash))
+                                print("An e-mail containing the recovery code has been sent to {}".format(
+                                    r.email_pattern
+                                ))
+
+                                r = await self.send(
+                                    functions.auth.RecoverPassword(
+                                        code=await ainput("Enter password recovery code: ")
+                                    )
+                                )
+                            else:
+                                r = await self.send(
+                                    functions.auth.CheckPassword(
+                                        password=compute_check(r, self.password)
+                                    )
+                                )
+                    except PasswordEmpty as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
+                    except PasswordRecoveryNa as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
                     except PasswordHashInvalid as e:
                         if password_hash_invalid_raises:
                             raise
@@ -605,6 +635,7 @@ class Client(Methods, BaseClient):
                         else:
                             print(e.MESSAGE.format(x=e.x))
                             time.sleep(e.x)
+                            self.password = None
                     except Exception as e:
                         log.error(e, exc_info=True)
                     else:
@@ -1263,7 +1294,7 @@ class Client(Methods, BaseClient):
                        volume_id: int = None,
                        local_id: int = None,
                        secret: int = None,
-                       version: int = 0,
+
                        size: int = None,
                        progress: callable = None,
                        progress_args: tuple = ()) -> str:
@@ -1311,13 +1342,14 @@ class Client(Methods, BaseClient):
             location = types.InputFileLocation(
                 volume_id=volume_id,
                 local_id=local_id,
-                secret=secret
+                secret=secret,
+                file_reference=b""
             )
         else:  # Any other file can be more easily accessed by id and access_hash
             location = types.InputDocumentFileLocation(
                 id=id,
                 access_hash=access_hash,
-                version=version
+                file_reference=b""
             )
 
         limit = 1024 * 1024

@@ -199,11 +199,11 @@ class Chat(PyrogramType):
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = full_chat.stickerset
 
-                if full_chat.pinned_msg_id:
-                    parsed_chat.pinned_message = client.get_messages(
-                        parsed_chat.id,
-                        message_ids=full_chat.pinned_msg_id
-                    )
+            if full_chat.pinned_msg_id:
+                parsed_chat.pinned_message = client.get_messages(
+                    parsed_chat.id,
+                    message_ids=full_chat.pinned_msg_id
+                )
 
             if isinstance(full_chat.exported_invite, types.ChatInviteExported):
                 parsed_chat.invite_link = full_chat.exported_invite.link

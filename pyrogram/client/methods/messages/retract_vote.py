@@ -19,31 +19,35 @@
 from typing import Union
 
 from pyrogram.api import functions
-from ...ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
-class UnpinChatMessage(BaseClient):
-    async def unpin_chat_message(self,
-                                 chat_id: Union[int, str]) -> bool:
-        """Use this method to unpin a message in a group, channel or your own chat.
-        You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
-        right in the supergroup or "can_edit_messages" admin right in the channel.
+class RetractVote(BaseClient):
+    def retract_vote(self,
+                     chat_id: Union[int, str],
+                     message_id: id) -> bool:
+        """Use this method to retract your vote in a poll.
 
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_id (``int``):
+                Unique poll message identifier inside this chat.
 
         Returns:
-            True on success.
+            On success, True is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
-        await self.send(
-            functions.messages.UpdatePinnedMessage(
-                peer=await self.resolve_peer(chat_id),
-                id=0
+        self.send(
+            functions.messages.SendVote(
+                peer=self.resolve_peer(chat_id),
+                msg_id=message_id,
+                options=[]
             )
         )
 

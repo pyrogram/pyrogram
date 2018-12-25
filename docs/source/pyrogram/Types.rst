@@ -40,6 +40,8 @@ Messages & Media
     Location
     Venue
     Sticker
+    Poll
+    PollOption
 
 Bots
 ----
@@ -144,6 +146,12 @@ Input Media
     :members:
 
 .. autoclass:: Sticker
+    :members:
+
+.. autoclass:: Poll
+    :members:
+
+.. autoclass:: PollOption
     :members:
 
 ..  Bots

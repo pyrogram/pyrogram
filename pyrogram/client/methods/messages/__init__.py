@@ -24,6 +24,7 @@ from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
 from .get_history import GetHistory
 from .get_messages import GetMessages
+from .retract_vote import RetractVote
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_chat_action import SendChatAction
@@ -33,11 +34,13 @@ from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
 from .send_photo import SendPhoto
+from .send_poll import SendPoll
 from .send_sticker import SendSticker
 from .send_venue import SendVenue
 from .send_video import SendVideo
 from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
+from .vote_poll import VotePoll
 
 
 class Messages(
@@ -62,6 +65,9 @@ class Messages(
     SendVenue,
     SendVideo,
     SendVideoNote,
-    SendVoice
+    SendVoice,
+    SendPoll,
+    VotePoll,
+    RetractVote
 ):
     pass

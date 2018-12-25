@@ -142,7 +142,8 @@ class SendPhoto(BaseClient):
                 media = types.InputMediaPhoto(
                     id=types.InputPhoto(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     ),
                     ttl_seconds=ttl_seconds
                 )
