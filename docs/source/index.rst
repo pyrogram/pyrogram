@@ -89,10 +89,11 @@ To get started, press the Next button.
     resources/CustomizeSessions
     resources/TgCrypto
     resources/TextFormatting
-    resources/TestServers
     resources/SOCKS5Proxy
     resources/BotsInteraction
     resources/ErrorHandling
+    resources/TestServers
+    resources/Changelog
 
 .. toctree::
     :hidden:
