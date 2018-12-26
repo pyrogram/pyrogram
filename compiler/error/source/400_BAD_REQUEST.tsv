@@ -80,3 +80,4 @@ USER_ADMIN_INVALID	The action requires admin privileges
 INPUT_USER_DEACTIVATED	The target user has been deactivated
 PASSWORD_RECOVERY_NA	The password recovery e-mail is not available
 PASSWORD_EMPTY	The password entered is empty
+PHONE_NUMBER_FLOOD	This number has tried to login too many times
