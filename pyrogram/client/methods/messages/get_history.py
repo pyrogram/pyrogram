@@ -28,8 +28,11 @@ class GetHistory(BaseClient):
                     chat_id: Union[int, str],
                     offset: int = 0,
                     limit: int = 100,
+                    offset: int = 0,
                     offset_id: int = 0,
-                    offset_date: int = 0):
+                    offset_date: int = 0,
+                    add_offset: int = 0,
+                    downwards: bool = False):
         """Use this method to retrieve the history of a chat.
 
         You can get up to 100 messages at once.
@@ -60,7 +63,6 @@ class GetHistory(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-
         return pyrogram.Messages._parse(
             self,
             self.send(
