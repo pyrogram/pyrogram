@@ -18,7 +18,6 @@
 
 import base64
 import binascii
-import getpass
 import json
 import logging
 import math
@@ -33,8 +32,11 @@ import time
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
+from importlib import import_module
+from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
+from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -43,8 +45,12 @@ from pyrogram.api.errors import (
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, FileIdInvalid)
+    VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
+    PasswordRecoveryNa, PasswordEmpty
+)
 from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
@@ -89,6 +95,10 @@ class Client(Methods, BaseClient):
         lang_code (``str``, *optional*):
             Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
             This is an alternative way to set it if you don't want to use the *config.ini* file.
+
+        ipv6 (``bool``, *optional*):
+            Pass True to connect to Telegram using IPv6.
+            Defaults to False (IPv4).
 
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
@@ -136,27 +146,34 @@ class Client(Methods, BaseClient):
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
+
+        plugins_dir (``str``, *optional*):
+            Define a custom directory for your plugins. The plugins directory is the location in your
+            filesystem where Pyrogram will automatically load your update handlers.
+            Defaults to None (plugins disabled).
     """
 
     def __init__(self,
                  session_name: str,
-                 api_id: int or str = None,
+                 api_id: Union[int, str] = None,
                  api_hash: str = None,
                  app_version: str = None,
                  device_model: str = None,
                  system_version: str = None,
                  lang_code: str = None,
+                 ipv6: bool = False,
                  proxy: dict = None,
                  test_mode: bool = False,
                  phone_number: str = None,
-                 phone_code: str or callable = None,
+                 phone_code: Union[str, callable] = None,
                  password: str = None,
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
-                 workers: int = 4,
-                 workdir: str = ".",
-                 config_file: str = "./config.ini"):
+                 workers: int = BaseClient.WORKERS,
+                 workdir: str = BaseClient.WORKDIR,
+                 config_file: str = BaseClient.CONFIG_FILE,
+                 plugins_dir: str = None):
         super().__init__()
 
         self.session_name = session_name
@@ -166,6 +183,7 @@ class Client(Methods, BaseClient):
         self.device_model = device_model
         self.system_version = system_version
         self.lang_code = lang_code
+        self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
@@ -178,8 +196,15 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
+        self.plugins_dir = plugins_dir
 
         self.dispatcher = Dispatcher(self, workers)
+
+    def __enter__(self):
+        return self.start()
+
+    def __exit__(self, *args):
+        self.stop()
 
     @property
     def proxy(self):
@@ -195,17 +220,19 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
-            self.token = self.session_name
+            self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
 
         self.load_config()
         self.load_session()
+        self.load_plugins()
 
         self.session = Session(
             self,
@@ -216,28 +243,33 @@ class Client(Methods, BaseClient):
         self.session.start()
         self.is_started = True
 
-        if self.user_id is None:
-            if self.token is None:
-                self.authorize_user()
+        try:
+            if self.user_id is None:
+                if self.bot_token is None:
+                    self.authorize_user()
+                else:
+                    self.authorize_bot()
+
+                self.save_session()
+
+            if self.bot_token is None:
+                now = time.time()
+
+                if abs(now - self.date) > Client.OFFLINE_SLEEP:
+                    self.peers_by_username = {}
+                    self.peers_by_phone = {}
+
+                    self.get_initial_dialogs()
+                    self.get_contacts()
+                else:
+                    self.send(functions.messages.GetPinnedDialogs())
+                    self.get_initial_dialogs_chunk()
             else:
-                self.authorize_bot()
-
-            self.save_session()
-
-        if self.token is None:
-            now = time.time()
-
-            if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                self.peers_by_username = {}
-                self.peers_by_phone = {}
-
-                self.get_dialogs()
-                self.get_contacts()
-            else:
-                self.send(functions.messages.GetPinnedDialogs())
-                self.get_dialogs_chunk(0)
-        else:
-            self.send(functions.updates.GetState())
+                self.send(functions.updates.GetState())
+        except Exception as e:
+            self.is_started = False
+            self.session.stop()
+            raise e
 
         for i in range(self.UPDATES_WORKERS):
             self.updates_workers_list.append(
@@ -264,9 +296,14 @@ class Client(Methods, BaseClient):
         mimetypes.init()
         Syncer.add(self)
 
+        return self
+
     def stop(self):
         """Use this method to manually stop the Client.
         Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to stop an already stopped Client.
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
@@ -298,6 +335,8 @@ class Client(Methods, BaseClient):
         self.is_started = False
         self.session.stop()
 
+        return self
+
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
         then gently stop the Client by closing the underlying connection.
@@ -326,12 +365,12 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
 
-    def add_handler(self, handler, group: int = 0):
+    def add_handler(self, handler: Handler, group: int = 0):
         """Use this method to register an update handler.
 
         You can register multiple handlers, but at most one handler within a group
@@ -355,7 +394,7 @@ class Client(Methods, BaseClient):
 
         return handler, group
 
-    def remove_handler(self, handler, group: int = 0):
+    def remove_handler(self, handler: Handler, group: int = 0):
         """Removes a previously-added update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
@@ -381,14 +420,14 @@ class Client(Methods, BaseClient):
                     flags=0,
                     api_id=self.api_id,
                     api_hash=self.api_hash,
-                    bot_auth_token=self.token
+                    bot_auth_token=self.bot_token
                 )
             )
         except UserMigrate as e:
             self.session.stop()
 
             self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
             self.session = Session(
                 self,
@@ -400,6 +439,8 @@ class Client(Methods, BaseClient):
             self.authorize_bot()
         else:
             self.user_id = r.user.id
+
+            print("Logged in successfully as @{}".format(r.user.username))
 
     def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
@@ -433,7 +474,7 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+                self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
                 self.session = Session(
                     self,
@@ -491,16 +532,8 @@ class Client(Methods, BaseClient):
 
             try:
                 if phone_registered:
-                    r = self.send(
-                        functions.auth.SignIn(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code
-                        )
-                    )
-                else:
                     try:
-                        self.send(
+                        r = self.send(
                             functions.auth.SignIn(
                                 self.phone_number,
                                 phone_code_hash,
@@ -508,20 +541,27 @@ class Client(Methods, BaseClient):
                             )
                         )
                     except PhoneNumberUnoccupied:
-                        pass
-
+                        log.warning("Phone number unregistered")
+                        phone_registered = False
+                        continue
+                else:
                     self.first_name = self.first_name if self.first_name is not None else input("First name: ")
                     self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
 
-                    r = self.send(
-                        functions.auth.SignUp(
-                            self.phone_number,
-                            phone_code_hash,
-                            self.phone_code,
-                            self.first_name,
-                            self.last_name
+                    try:
+                        r = self.send(
+                            functions.auth.SignUp(
+                                self.phone_number,
+                                phone_code_hash,
+                                self.phone_code,
+                                self.first_name,
+                                self.last_name
+                            )
                         )
-                    )
+                    except PhoneNumberOccupied:
+                        log.warning("Phone number already registered")
+                        phone_registered = True
+                        continue
             except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
                 if phone_code_invalid_raises:
                     raise
@@ -536,21 +576,46 @@ class Client(Methods, BaseClient):
                     self.first_name = None
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
-                r = self.send(functions.account.GetPassword())
 
                 while True:
                     try:
+                        r = self.send(functions.account.GetPassword())
 
                         if self.password is None:
                             print("Hint: {}".format(r.hint))
-                            self.password = getpass.getpass("Enter password: ")
 
-                        if type(self.password) is str:
-                            self.password = r.current_salt + self.password.encode() + r.current_salt
+                            self.password = input("Enter password (empty to recover): ")
 
-                        password_hash = sha256(self.password).digest()
+                            if self.password == "":
+                                r = self.send(functions.auth.RequestPasswordRecovery())
 
-                        r = self.send(functions.auth.CheckPassword(password_hash))
+                                print("An e-mail containing the recovery code has been sent to {}".format(
+                                    r.email_pattern
+                                ))
+
+                                r = self.send(
+                                    functions.auth.RecoverPassword(
+                                        code=input("Enter password recovery code: ")
+                                    )
+                                )
+                            else:
+                                r = self.send(
+                                    functions.auth.CheckPassword(
+                                        password=compute_check(r, self.password)
+                                    )
+                                )
+                    except PasswordEmpty as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
+                    except PasswordRecoveryNa as e:
+                        if password_hash_invalid_raises:
+                            raise
+                        else:
+                            print(e.MESSAGE)
+                            self.password = None
                     except PasswordHashInvalid as e:
                         if password_hash_invalid_raises:
                             raise
@@ -563,6 +628,7 @@ class Client(Methods, BaseClient):
                         else:
                             print(e.MESSAGE.format(x=e.x))
                             time.sleep(e.x)
+                            self.password = None
                     except Exception as e:
                         log.error(e, exc_info=True)
                     else:
@@ -585,9 +651,11 @@ class Client(Methods, BaseClient):
         self.password = None
         self.user_id = r.user.id
 
-        print("Login successful")
+        print("Logged in successfully as {}".format(r.user.first_name))
 
-    def fetch_peers(self, entities: list):
+    def fetch_peers(self, entities: List[Union[types.User,
+                                               types.Chat, types.ChatForbidden,
+                                               types.Channel, types.ChannelForbidden]]):
         for entity in entities:
             if isinstance(entity, types.User):
                 user_id = entity.id
@@ -613,7 +681,7 @@ class Client(Methods, BaseClient):
                 if phone is not None:
                     self.peers_by_phone[phone] = input_peer
 
-            if isinstance(entity, types.Chat):
+            if isinstance(entity, (types.Chat, types.ChatForbidden)):
                 chat_id = entity.id
                 peer_id = -chat_id
 
@@ -623,7 +691,7 @@ class Client(Methods, BaseClient):
 
                 self.peers_by_id[peer_id] = input_peer
 
-            if isinstance(entity, types.Channel):
+            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
                 channel_id = entity.id
                 peer_id = int("-100" + str(channel_id))
 
@@ -632,7 +700,7 @@ class Client(Methods, BaseClient):
                 if access_hash is None:
                     continue
 
-                username = entity.username
+                username = getattr(entity, "username", None)
 
                 input_peer = types.InputPeerChannel(
                     channel_id=channel_id,
@@ -711,7 +779,9 @@ class Client(Methods, BaseClient):
 
                     file_name = "{}_{}_{}{}".format(
                         media_type_str,
-                        datetime.fromtimestamp(media.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                        datetime.fromtimestamp(
+                            getattr(media, "date", None) or time.time()
+                        ).strftime("%Y-%m-%d_%H-%M-%S"),
                         self.rnd_id(),
                         extension
                     )
@@ -776,27 +846,33 @@ class Client(Methods, BaseClient):
                         pts = getattr(update, "pts", None)
                         pts_count = getattr(update, "pts_count", None)
 
+                        if isinstance(update, types.UpdateChannelTooLong):
+                            log.warning(update)
+
                         if isinstance(update, types.UpdateNewChannelMessage):
                             message = update.message
 
                             if not isinstance(message, types.MessageEmpty):
-                                diff = self.send(
-                                    functions.updates.GetChannelDifference(
-                                        channel=self.resolve_peer(int("-100" + str(channel_id))),
-                                        filter=types.ChannelMessagesFilter(
-                                            ranges=[types.MessageRange(
-                                                min_id=update.message.id,
-                                                max_id=update.message.id
-                                            )]
-                                        ),
-                                        pts=pts - pts_count,
-                                        limit=pts
+                                try:
+                                    diff = self.send(
+                                        functions.updates.GetChannelDifference(
+                                            channel=self.resolve_peer(int("-100" + str(channel_id))),
+                                            filter=types.ChannelMessagesFilter(
+                                                ranges=[types.MessageRange(
+                                                    min_id=update.message.id,
+                                                    max_id=update.message.id
+                                                )]
+                                            ),
+                                            pts=pts - pts_count,
+                                            limit=pts
+                                        )
                                     )
-                                )
-
-                                if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
-                                    updates.users += diff.users
-                                    updates.chats += diff.chats
+                                except ChannelPrivate:
+                                    pass
+                                else:
+                                    if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
+                                        updates.users += diff.users
+                                        updates.chats += diff.chats
 
                         if channel_id and pts:
                             if channel_id not in self.channels_pts:
@@ -810,7 +886,7 @@ class Client(Methods, BaseClient):
                             if len(self.channels_pts[channel_id]) > 50:
                                 self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
 
-                        self.dispatcher.updates.put((update, updates.users, updates.chats))
+                        self.dispatcher.updates_queue.put((update, updates.users, updates.chats))
                 elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = self.send(
                         functions.updates.GetDifference(
@@ -821,7 +897,7 @@ class Client(Methods, BaseClient):
                     )
 
                     if diff.new_messages:
-                        self.dispatcher.updates.put((
+                        self.dispatcher.updates_queue.put((
                             types.UpdateNewMessage(
                                 message=diff.new_messages[0],
                                 pts=updates.pts,
@@ -831,15 +907,20 @@ class Client(Methods, BaseClient):
                             diff.chats
                         ))
                     else:
-                        self.dispatcher.updates.put((diff.other_updates[0], [], []))
+                        self.dispatcher.updates_queue.put((diff.other_updates[0], [], []))
                 elif isinstance(updates, types.UpdateShort):
-                    self.dispatcher.updates.put((updates.update, [], []))
+                    self.dispatcher.updates_queue.put((updates.update, [], []))
+                elif isinstance(updates, types.UpdatesTooLong):
+                    log.warning(updates)
             except Exception as e:
                 log.error(e, exc_info=True)
 
         log.debug("{} stopped".format(name))
 
-    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+    def send(self,
+             data: Object,
+             retries: int = Session.MAX_RETRIES,
+             timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -848,7 +929,7 @@ class Client(Methods, BaseClient):
 
         Args:
             data (``Object``):
-                The API Scheme function filled with proper arguments.
+                The API Schema function filled with proper arguments.
 
             retries (``int``):
                 Number of retries.
@@ -857,7 +938,7 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
@@ -885,30 +966,18 @@ class Client(Methods, BaseClient):
                     "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
                 )
 
-        for option in {"app_version", "device_model", "system_version", "lang_code"}:
+        for option in ["app_version", "device_model", "system_version", "lang_code"]:
             if getattr(self, option):
                 pass
             else:
-                setattr(self, option, Client.APP_VERSION)
-
                 if parser.has_section("pyrogram"):
                     setattr(self, option, parser.get(
                         "pyrogram",
                         option,
                         fallback=getattr(Client, option.upper())
                     ))
-
-        if self.lang_code:
-            pass
-        else:
-            self.lang_code = Client.LANG_CODE
-
-            if parser.has_section("pyrogram"):
-                self.lang_code = parser.get(
-                    "pyrogram",
-                    "lang_code",
-                    fallback=Client.LANG_CODE
-                )
+                else:
+                    setattr(self, option, getattr(Client, option.upper()))
 
         if self._proxy:
             self._proxy["enabled"] = True
@@ -929,7 +998,7 @@ class Client(Methods, BaseClient):
         except FileNotFoundError:
             self.dc_id = 1
             self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self._proxy).create()
+            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
         else:
             self.dc_id = s["dc_id"]
             self.test_mode = s["test_mode"]
@@ -952,6 +1021,45 @@ class Client(Methods, BaseClient):
                 if peer:
                     self.peers_by_phone[k] = peer
 
+    def load_plugins(self):
+        if self.plugins_dir is not None:
+            plugins_count = 0
+
+            for path in Path(self.plugins_dir).rglob("*.py"):
+                file_path = os.path.splitext(str(path))[0]
+                import_path = []
+
+                while file_path:
+                    file_path, tail = os.path.split(file_path)
+                    import_path.insert(0, tail)
+
+                import_path = ".".join(import_path)
+                module = import_module(import_path)
+
+                for name in dir(module):
+                    # noinspection PyBroadException
+                    try:
+                        handler, group = getattr(module, name)
+
+                        if isinstance(handler, Handler) and isinstance(group, int):
+                            self.add_handler(handler, group)
+
+                            log.info('{}("{}") from "{}" loaded in group {}'.format(
+                                type(handler).__name__, name, import_path, group))
+
+                            plugins_count += 1
+                    except Exception:
+                        pass
+
+            if plugins_count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
+                    plugins_count,
+                    "s" if plugins_count > 1 else "",
+                    self.plugins_dir
+                ))
+            else:
+                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
         auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
@@ -971,13 +1079,18 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    def get_dialogs_chunk(self, offset_date):
+    def get_initial_dialogs_chunk(self,
+                                  offset_date: int = 0):
         while True:
             try:
                 r = self.send(
                     functions.messages.GetDialogs(
-                        offset_date, 0, types.InputPeerEmpty(),
-                        self.DIALOGS_AT_ONCE, True
+                        offset_date=offset_date,
+                        offset_id=0,
+                        offset_peer=types.InputPeerEmpty(),
+                        limit=self.DIALOGS_AT_ONCE,
+                        hash=0,
+                        exclude_pinned=True
                     )
                 )
             except FloodWait as e:
@@ -987,84 +1100,90 @@ class Client(Methods, BaseClient):
                 log.info("Total peers: {}".format(len(self.peers_by_id)))
                 return r
 
-    def get_dialogs(self):
+    def get_initial_dialogs(self):
         self.send(functions.messages.GetPinnedDialogs())
 
-        dialogs = self.get_dialogs_chunk(0)
+        dialogs = self.get_initial_dialogs_chunk()
         offset_date = utils.get_offset_date(dialogs)
 
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.get_dialogs_chunk(offset_date)
+            dialogs = self.get_initial_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
 
-        self.get_dialogs_chunk(0)
+        self.get_initial_dialogs_chunk()
 
-    def resolve_peer(self, peer_id: int or str):
-        """Use this method to get the *InputPeer* of a known *peer_id*.
+    def resolve_peer(self,
+                     peer_id: Union[int, str]):
+        """Use this method to get the InputPeer of a known peer_id.
 
-        It is intended to be used when working with Raw Functions (i.e: a Telegram API method you wish to use which is
-        not available yet in the Client class as an easy-to-use method).
+        This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
+        you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an InputPeer
+        type is required.
 
         Args:
-            peer_id (``int`` | ``str`` | ``Peer``):
-                The Peer ID you want to extract the InputPeer from. Can be one of these types: ``int`` (direct ID),
-                ``str`` (@username), :obj:`PeerUser <pyrogram.api.types.PeerUser>`,
-                :obj:`PeerChat <pyrogram.api.types.PeerChat>`, :obj:`PeerChannel <pyrogram.api.types.PeerChannel>`
+            peer_id (``int`` | ``str``):
+                The peer id you want to extract the InputPeer from.
+                Can be a direct id (int), a username (str) or a phone number (str).
 
         Returns:
-            :obj:`InputPeerUser <pyrogram.api.types.InputPeerUser>` or
-            :obj:`InputPeerChat <pyrogram.api.types.InputPeerChat>` or
-            :obj:`InputPeerChannel <pyrogram.api.types.InputPeerChannel>` depending on the *peer_id*.
+            On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``KeyError`` in case the peer doesn't exist in the internal database.
         """
-        if type(peer_id) is str:
-            if peer_id in ("self", "me"):
-                return types.InputPeerSelf()
-
-            match = self.INVITE_LINK_RE.match(peer_id)
-
-            try:
-                decoded = base64.b64decode(match.group(1) + "=" * (-len(match.group(1)) % 4), "-_")
-                return self.resolve_peer(struct.unpack(">2iq", decoded)[1])
-            except (AttributeError, binascii.Error, struct.error):
-                pass
-
-            peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
-
-            try:
-                int(peer_id)
-            except ValueError:
-                try:
-                    return self.peers_by_username[peer_id]
-                except KeyError:
-                    self.send(functions.contacts.ResolveUsername(peer_id))
-                    return self.peers_by_username[peer_id]
-            else:
-                try:
-                    return self.peers_by_phone[peer_id]
-                except KeyError:
-                    raise PeerIdInvalid
-
-        if type(peer_id) is not int:
-            if isinstance(peer_id, types.PeerUser):
-                peer_id = peer_id.user_id
-            elif isinstance(peer_id, types.PeerChat):
-                peer_id = -peer_id.chat_id
-            elif isinstance(peer_id, types.PeerChannel):
-                peer_id = int("-100" + str(peer_id.channel_id))
-
-        try:  # User
+        try:
             return self.peers_by_id[peer_id]
         except KeyError:
-            try:  # Chat
-                return self.peers_by_id[-peer_id]
+            if type(peer_id) is str:
+                if peer_id in ("self", "me"):
+                    return types.InputPeerSelf()
+
+                peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
+
+                try:
+                    int(peer_id)
+                except ValueError:
+                    if peer_id not in self.peers_by_username:
+                        self.send(
+                            functions.contacts.ResolveUsername(
+                                username=peer_id
+                            )
+                        )
+
+                    return self.peers_by_username[peer_id]
+                else:
+                    try:
+                        return self.peers_by_phone[peer_id]
+                    except KeyError:
+                        raise PeerIdInvalid
+
+            if peer_id > 0:
+                self.fetch_peers(
+                    self.send(
+                        functions.users.GetUsers(
+                            id=[types.InputUser(peer_id, 0)]
+                        )
+                    )
+                )
+            else:
+                if str(peer_id).startswith("-100"):
+                    self.send(
+                        functions.channels.GetChannels(
+                            id=[types.InputChannel(int(str(peer_id)[4:]), 0)]
+                        )
+                    )
+                else:
+                    self.send(
+                        functions.messages.GetChats(
+                            id=[-peer_id]
+                        )
+                    )
+
+            try:
+                return self.peers_by_id[peer_id]
             except KeyError:
-                try:  # Channel
-                    return self.peers_by_id[int("-100" + str(peer_id))]
-                except (KeyError, ValueError):
-                    raise PeerIdInvalid
+                raise PeerIdInvalid
 
     def save_file(self,
                   path: str,
@@ -1074,6 +1193,13 @@ class Client(Methods, BaseClient):
                   progress_args: tuple = ()):
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
+
+        if file_size == 0:
+            raise ValueError("File size equals to 0 B")
+
+        if file_size > 1500 * 1024 * 1024:
+            raise ValueError("Telegram doesn't support uploading files bigger than 1500 MiB")
+
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = True if file_size > 10 * 1024 * 1024 else False
         is_missing_part = True if file_id is not None else False
@@ -1148,10 +1274,9 @@ class Client(Methods, BaseClient):
                  volume_id: int = None,
                  local_id: int = None,
                  secret: int = None,
-                 version: int = 0,
                  size: int = None,
                  progress: callable = None,
-                 progress_args: tuple = None) -> str:
+                 progress_args: tuple = ()) -> str:
         with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
@@ -1166,7 +1291,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        Auth(dc_id, self.test_mode, self._proxy).create(),
+                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                         is_media=True
                     )
 
@@ -1196,13 +1321,14 @@ class Client(Methods, BaseClient):
             location = types.InputFileLocation(
                 volume_id=volume_id,
                 local_id=local_id,
-                secret=secret
+                secret=secret,
+                file_reference=b""
             )
         else:  # Any other file can be more easily accessed by id and access_hash
             location = types.InputDocumentFileLocation(
                 id=id,
                 access_hash=access_hash,
-                version=version
+                file_reference=b""
             )
 
         limit = 1024 * 1024
@@ -1229,13 +1355,11 @@ class Client(Methods, BaseClient):
                             break
 
                         f.write(chunk)
-                        f.flush()
-                        os.fsync(f.fileno())
 
                         offset += limit
 
                         if progress:
-                            progress(self, min(offset, size), size, *progress_args)
+                            progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                         r = session.send(
                             functions.upload.GetFile(
@@ -1253,7 +1377,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            Auth(r.dc_id, self.test_mode, self._proxy).create(),
+                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
                             is_media=True,
                             is_cdn=True
                         )
@@ -1313,13 +1437,11 @@ class Client(Methods, BaseClient):
                                 assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
 
                             f.write(decrypted_chunk)
-                            f.flush()
-                            os.fsync(f.fileno())
 
                             offset += limit
 
                             if progress:
-                                progress(self, min(offset, size), size, *progress_args)
+                                progress(self, min(offset, size) if size != 0 else offset, size, *progress_args)
 
                             if len(chunk) < limit:
                                 break

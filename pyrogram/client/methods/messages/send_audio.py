@@ -20,7 +20,9 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -28,18 +30,22 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendAudio(BaseClient):
     def send_audio(self,
-                   chat_id: int or str,
+                   chat_id: Union[int, str],
                    audio: str,
                    caption: str = "",
                    parse_mode: str = "",
                    duration: int = 0,
                    performer: str = None,
                    title: str = None,
+                   thumb: str = None,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
-                   reply_markup=None,
+                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardRemove",
+                                       "pyrogram.ForceReply"] = None,
                    progress: callable = None,
-                   progress_args: tuple = ()):
+                   progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice()` method instead.
@@ -49,7 +55,6 @@ class SendAudio(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             audio (``str``):
                 Audio file to send.
@@ -58,7 +63,7 @@ class SendAudio(BaseClient):
                 pass a file path as string to upload a new audio file that exists on your local machine.
 
             caption (``str``, *optional*):
-                Audio caption, 0-200 characters.
+                Audio caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -73,6 +78,12 @@ class SendAudio(BaseClient):
 
             title (``str``, *optional*):
                 Track name.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the music file album cover.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -112,16 +123,18 @@ class SendAudio(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
         if os.path.exists(audio):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(audio, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeAudio(
                         duration=duration,
@@ -154,7 +167,8 @@ class SendAudio(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     )
                 )
 
@@ -176,7 +190,7 @@ class SendAudio(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

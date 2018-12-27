@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from pyrogram.api.errors import UnknownError
 from pyrogram.client.ext import BaseClient
@@ -23,7 +25,7 @@ from pyrogram.client.ext import BaseClient
 
 class GetInlineBotResults(BaseClient):
     def get_inline_bot_results(self,
-                               bot: int or str,
+                               bot: Union[int, str],
                                query: str,
                                offset: str = "",
                                latitude: float = None,
@@ -54,8 +56,8 @@ class GetInlineBotResults(BaseClient):
             On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``TimeoutError``: If the bot fails to answer within 10 seconds
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``TimeoutError`` if the bot fails to answer within 10 seconds
         """
         # TODO: Don't return the raw type
 

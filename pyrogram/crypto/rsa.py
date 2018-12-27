@@ -206,12 +206,8 @@ class RSA:
 
     @classmethod
     def encrypt(cls, data: bytes, fingerprint: int) -> bytes:
-        return int.to_bytes(
-            pow(
-                int.from_bytes(data, "big"),
-                cls.server_public_keys[fingerprint].e,
-                cls.server_public_keys[fingerprint].m
-            ),
-            256,
-            "big"
-        )
+        return pow(
+            int.from_bytes(data, "big"),
+            cls.server_public_keys[fingerprint].e,
+            cls.server_public_keys[fingerprint].m
+        ).to_bytes(256, "big")

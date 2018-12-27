@@ -20,7 +20,9 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -28,7 +30,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendVideo(BaseClient):
     def send_video(self,
-                   chat_id: int or str,
+                   chat_id: Union[int, str],
                    video: str,
                    caption: str = "",
                    parse_mode: str = "",
@@ -39,9 +41,12 @@ class SendVideo(BaseClient):
                    supports_streaming: bool = True,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
-                   reply_markup=None,
+                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardRemove",
+                                       "pyrogram.ForceReply"] = None,
                    progress: callable = None,
-                   progress_args: tuple = ()):
+                   progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send video files.
 
         Args:
@@ -49,7 +54,6 @@ class SendVideo(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             video (``str``):
                 Video to send.
@@ -58,7 +62,7 @@ class SendVideo(BaseClient):
                 pass a file path as string to upload a new video that exists on your local machine.
 
             caption (``str``, *optional*):
-                Video caption, 0-200 characters.
+                Video caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -75,9 +79,10 @@ class SendVideo(BaseClient):
                 Video height.
 
             thumb (``str``, *optional*):
-                Video thumbnail.
-                Pass a file path as string to send an image that exists on your local machine.
-                Thumbnail should have 90 or less pixels of width and 90 or less pixels of height.
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             supports_streaming (``bool``, *optional*):
                 Pass True, if the uploaded video is suitable for streaming.
@@ -120,7 +125,7 @@ class SendVideo(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
@@ -165,7 +170,8 @@ class SendVideo(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     )
                 )
 
@@ -187,7 +193,7 @@ class SendVideo(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

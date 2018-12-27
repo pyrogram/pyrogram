@@ -19,7 +19,9 @@
 import binascii
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -27,13 +29,16 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendSticker(BaseClient):
     def send_sticker(self,
-                     chat_id: int or str,
+                     chat_id: Union[int, str],
                      sticker: str,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
-                     reply_markup=None,
+                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardRemove",
+                                         "pyrogram.ForceReply"] = None,
                      progress: callable = None,
-                     progress_args: tuple = ()):
+                     progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send .webp stickers.
 
         Args:
@@ -41,7 +46,6 @@ class SendSticker(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             sticker (``str``):
                 Sticker to send.
@@ -87,7 +91,7 @@ class SendSticker(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
 
@@ -123,7 +127,8 @@ class SendSticker(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     )
                 )
 
@@ -145,7 +150,7 @@ class SendSticker(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

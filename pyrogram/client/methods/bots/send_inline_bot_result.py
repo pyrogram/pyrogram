@@ -16,17 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
 
 class SendInlineBotResult(BaseClient):
     def send_inline_bot_result(self,
-                               chat_id: int or str,
+                               chat_id: Union[int, str],
                                query_id: int,
                                result_id: str,
                                disable_notification: bool = None,
-                               reply_to_message_id: int = None):
+                               reply_to_message_id: int = None,
+                               hide_via: bool = None):
         """Use this method to send an inline bot result.
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
@@ -35,7 +38,6 @@ class SendInlineBotResult(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             query_id (``int``):
                 Unique identifier for the answered query.
@@ -50,11 +52,14 @@ class SendInlineBotResult(BaseClient):
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            hide_via (``bool``):
+                Sends the message with *via @bot* hidden.
+
         Returns:
             On success, the sent Message is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         return self.send(
             functions.messages.SendInlineBotResult(
@@ -63,6 +68,7 @@ class SendInlineBotResult(BaseClient):
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                reply_to_msg_id=reply_to_message_id,
+                hide_via=hide_via or None
             )
         )

@@ -16,15 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class KickChatMember(BaseClient):
     def kick_chat_member(self,
-                         chat_id: int or str,
-                         user_id: int or str,
-                         until_date: int = 0):
+                         chat_id: Union[int, str],
+                         user_id: Union[int, str],
+                         until_date: int = 0) -> "pyrogram.Message":
         """Use this method to kick a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must
@@ -38,7 +41,6 @@ class KickChatMember(BaseClient):
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
@@ -53,13 +55,13 @@ class KickChatMember(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         chat_peer = self.resolve_peer(chat_id)
         user_peer = self.resolve_peer(user_id)
 
         if isinstance(chat_peer, types.InputPeerChannel):
-            self.send(
+            r = self.send(
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
@@ -77,11 +79,17 @@ class KickChatMember(BaseClient):
                 )
             )
         else:
-            self.send(
+            r = self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer
                 )
             )
 
-        return True
+        for i in r.updates:
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                return pyrogram.Message._parse(
+                    self, i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats}
+                )

@@ -16,23 +16,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
+import pyrogram
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
 class AddContacts(BaseClient):
-    def add_contacts(self, contacts: list):
+    def add_contacts(self,
+                     contacts: List["pyrogram.InputPhoneContact"]):
         """Use this method to add contacts to your Telegram address book.
 
         Args:
-            contacts (``list``):
-                A list of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`
+            contacts (List of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`):
+                The contact list to be added
 
         Returns:
             On success, the added contacts are returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(

@@ -16,12 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class ExportChatInviteLink(BaseClient):
-    def export_chat_invite_link(self, chat_id: int or str):
+    def export_chat_invite_link(self,
+                                chat_id: Union[int, str]) -> str:
         """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
@@ -35,7 +38,7 @@ class ExportChatInviteLink(BaseClient):
             On success, the exported invite link as string is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

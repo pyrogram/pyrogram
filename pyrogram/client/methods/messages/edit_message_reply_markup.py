@@ -16,15 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class EditMessageReplyMarkup(BaseClient):
     def edit_message_reply_markup(self,
-                                  chat_id: int or str,
+                                  chat_id: Union[int, str],
                                   message_id: int,
-                                  reply_markup=None):
+                                  reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Args:
@@ -32,7 +35,6 @@ class EditMessageReplyMarkup(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
@@ -45,7 +47,7 @@ class EditMessageReplyMarkup(BaseClient):
             :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
         r = self.send(
@@ -58,7 +60,7 @@ class EditMessageReplyMarkup(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

@@ -16,16 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class ForwardMessages(BaseClient):
     def forward_messages(self,
-                         chat_id: int or str,
-                         from_chat_id: int or str,
-                         message_ids,
-                         disable_notification: bool = None):
+                         chat_id: Union[int, str],
+                         from_chat_id: Union[int, str],
+                         message_ids: Iterable[int],
+                         disable_notification: bool = None) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
         Args:
@@ -33,13 +36,11 @@ class ForwardMessages(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             from_chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the source chat where the original message was sent.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_ids (``iterable``):
                 A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
@@ -50,13 +51,13 @@ class ForwardMessages(BaseClient):
                 Users will receive a notification with no sound.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the forwarded
+            On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
             :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
             *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
             is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         is_iterable = not isinstance(message_ids, int)
         message_ids = list(message_ids) if is_iterable else [message_ids]
@@ -79,10 +80,14 @@ class ForwardMessages(BaseClient):
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                 messages.append(
-                    utils.parse_messages(
+                    pyrogram.Message._parse(
                         self, i.message,
                         users, chats
                     )
                 )
 
-        return messages if is_iterable else messages[0]
+        return pyrogram.Messages(
+            client=self,
+            total_count=len(messages),
+            messages=messages
+        ) if is_iterable else messages[0]

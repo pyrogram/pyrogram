@@ -16,21 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class SendVenue(BaseClient):
     def send_venue(self,
-                   chat_id: int or str,
+                   chat_id: Union[int, str],
                    latitude: float,
                    longitude: float,
                    title: str,
                    address: str,
                    foursquare_id: str = "",
+                   foursquare_type: str = "",
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
-                   reply_markup=None):
+                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardRemove",
+                                       "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send information about a venue.
 
         Args:
@@ -38,7 +45,6 @@ class SendVenue(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             latitude (``float``):
                 Latitude of the venue.
@@ -55,6 +61,10 @@ class SendVenue(BaseClient):
             foursquare_id (``str``, *optional*):
                 Foursquare identifier of the venue.
 
+            foursquare_type (``str``, *optional*):
+                Foursquare type of the venue, if known.
+                (For example, "arts_entertainment/default", "arts_entertainment/aquarium" or "food/icecream".)
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -70,7 +80,7 @@ class SendVenue(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(
@@ -84,7 +94,7 @@ class SendVenue(BaseClient):
                     address=address,
                     provider="",
                     venue_id=foursquare_id,
-                    venue_type=""
+                    venue_type=foursquare_type
                 ),
                 message="",
                 silent=disable_notification or None,
@@ -96,7 +106,7 @@ class SendVenue(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

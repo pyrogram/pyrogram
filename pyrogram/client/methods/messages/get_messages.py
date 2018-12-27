@@ -16,16 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetMessages(BaseClient):
     def get_messages(self,
-                     chat_id: int or str,
-                     message_ids,
-                     replies: int = 1):
-        """Use this method to get messages that belong to a specific chat.
+                     chat_id: Union[int, str],
+                     message_ids: Union[int, Iterable[int]] = None,
+                     reply_to_message_ids: Union[int, Iterable[int]] = None,
+                     replies: int = 1) -> "pyrogram.Messages":
+        """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
         Args:
@@ -33,46 +37,47 @@ class GetMessages(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
-            message_ids (``iterable``):
-                A list of Message identifiers in the chat specified in *chat_id* or a single message id, as integer.
-                Iterators and Generators are also accepted.
+            message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of the
+                message themselves. Iterators and Generators are also accepted.
+
+            reply_to_message_ids (``iterable``, *optional*):
+                Pass a single message identifier or a list of message ids (as integers) to get the content of
+                the previous message you replied to using this message. Iterators and Generators are also accepted.
+                If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
                 The number of subsequent replies to get for each message. Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* was a list, the returned value will be a list of the requested
-            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>`
-            is returned.
+            On success and in case *message_ids* or *reply_to_message_ids* was an iterable, the returned value will be a
+            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element. Otherwise, if *message_ids* or
+            *reply_to_message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        peer = self.resolve_peer(chat_id)
-        is_iterable = not isinstance(message_ids, int)
-        message_ids = list(message_ids) if is_iterable else [message_ids]
-        message_ids = [types.InputMessageID(i) for i in message_ids]
-
-        if isinstance(peer, types.InputPeerChannel):
-            rpc = functions.channels.GetMessages(
-                channel=peer,
-                id=message_ids
-            )
-        else:
-            rpc = functions.messages.GetMessages(
-                id=message_ids
-            )
-
-        r = self.send(rpc)
-
-        messages = utils.parse_messages(
-            self, r.messages,
-            {i.id: i for i in r.users},
-            {i.id: i for i in r.chats},
-            replies=replies
+        ids, ids_type = (
+            (message_ids, types.InputMessageID) if message_ids
+            else (reply_to_message_ids, types.InputMessageReplyTo) if reply_to_message_ids
+            else (None, None)
         )
 
-        return messages if is_iterable else messages[0]
+        if ids is None:
+            raise ValueError("No argument supplied")
+
+        peer = self.resolve_peer(chat_id)
+
+        is_iterable = not isinstance(ids, int)
+        ids = list(ids) if is_iterable else [ids]
+        ids = [ids_type(i) for i in ids]
+
+        if isinstance(peer, types.InputPeerChannel):
+            rpc = functions.channels.GetMessages(channel=peer, id=ids)
+        else:
+            rpc = functions.messages.GetMessages(id=ids)
+
+        messages = pyrogram.Messages._parse(self, self.send(rpc))
+
+        return messages if is_iterable else messages.messages[0]

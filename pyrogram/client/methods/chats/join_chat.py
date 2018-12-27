@@ -21,7 +21,8 @@ from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    def join_chat(self, chat_id: str):
+    def join_chat(self,
+                  chat_id: str):
         """Use this method to join a group chat or channel.
 
         Args:
@@ -30,7 +31,7 @@ class JoinChat(BaseClient):
                 channel/supergroup (in the format @username).
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 

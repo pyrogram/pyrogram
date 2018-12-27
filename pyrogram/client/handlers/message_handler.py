@@ -50,6 +50,6 @@ class MessageHandler(Handler):
     def check(self, message):
         return (
             self.filters(message)
-            if self.filters
+            if callable(self.filters)
             else True
         )

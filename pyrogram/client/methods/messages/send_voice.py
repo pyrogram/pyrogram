@@ -20,7 +20,9 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -28,16 +30,19 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendVoice(BaseClient):
     def send_voice(self,
-                   chat_id: int or str,
+                   chat_id: Union[int, str],
                    voice: str,
                    caption: str = "",
                    parse_mode: str = "",
                    duration: int = 0,
                    disable_notification: bool = None,
                    reply_to_message_id: int = None,
-                   reply_markup=None,
+                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardMarkup",
+                                       "pyrogram.ReplyKeyboardRemove",
+                                       "pyrogram.ForceReply"] = None,
                    progress: callable = None,
-                   progress_args: tuple = ()):
+                   progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send audio files.
 
         Args:
@@ -45,7 +50,6 @@ class SendVoice(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             voice (``str``):
                 Audio file to send.
@@ -54,7 +58,7 @@ class SendVoice(BaseClient):
                 pass a file path as string to upload a new audio that exists on your local machine.
 
             caption (``str``, *optional*):
-                Voice message caption, 0-200 characters.
+                Voice message caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
@@ -102,7 +106,7 @@ class SendVoice(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
@@ -142,7 +146,8 @@ class SendVoice(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     )
                 )
 
@@ -164,7 +169,7 @@ class SendVoice(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

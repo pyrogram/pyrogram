@@ -20,7 +20,9 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
@@ -28,15 +30,19 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendVideoNote(BaseClient):
     def send_video_note(self,
-                        chat_id: int or str,
+                        chat_id: Union[int, str],
                         video_note: str,
                         duration: int = 0,
                         length: int = 1,
+                        thumb: str = None,
                         disable_notification: bool = None,
                         reply_to_message_id: int = None,
-                        reply_markup=None,
+                        reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                            "pyrogram.ReplyKeyboardMarkup",
+                                            "pyrogram.ReplyKeyboardRemove",
+                                            "pyrogram.ForceReply"] = None,
                         progress: callable = None,
-                        progress_args: tuple = ()):
+                        progress_args: tuple = ()) -> "pyrogram.Message":
         """Use this method to send video messages.
 
         Args:
@@ -44,7 +50,6 @@ class SendVideoNote(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             video_note (``str``):
                 Video note to send.
@@ -57,6 +62,12 @@ class SendVideoNote(BaseClient):
 
             length (``int``, *optional*):
                 Video width and height.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -96,15 +107,17 @@ class SendVideoNote(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
 
         if os.path.exists(video_note):
+            thumb = None if thumb is None else self.save_file(thumb)
             file = self.save_file(video_note, progress=progress, progress_args=progress_args)
             media = types.InputMediaUploadedDocument(
                 mime_type=mimetypes.types_map[".mp4"],
                 file=file,
+                thumb=thumb,
                 attributes=[
                     types.DocumentAttributeVideo(
                         round_message=True,
@@ -133,7 +146,8 @@ class SendVideoNote(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=unpacked[2],
-                        access_hash=unpacked[3]
+                        access_hash=unpacked[3],
+                        file_reference=b""
                     )
                 )
 
@@ -155,7 +169,7 @@ class SendVideoNote(BaseClient):
             else:
                 for i in r.updates:
                     if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return utils.parse_messages(
+                        return pyrogram.Message._parse(
                             self, i.message,
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}

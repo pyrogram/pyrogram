@@ -20,10 +20,11 @@ import binascii
 import mimetypes
 import os
 import struct
+from typing import Union, List
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid
-from pyrogram.client import types as pyrogram_types
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -32,8 +33,8 @@ class SendMediaGroup(BaseClient):
     # TODO: Return new Message object
     # TODO: Figure out how to send albums using URLs
     def send_media_group(self,
-                         chat_id: int or str,
-                         media: list,
+                         chat_id: Union[int, str],
+                         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
                          disable_notification: bool = None,
                          reply_to_message_id: int = None):
         """Use this method to send a group of photos or videos as an album.
@@ -44,7 +45,6 @@ class SendMediaGroup(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             media (``list``):
                 A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
@@ -63,7 +63,7 @@ class SendMediaGroup(BaseClient):
         for i in media:
             style = self.html if i.parse_mode.lower() == "html" else self.markdown
 
-            if isinstance(i, pyrogram_types.InputMediaPhoto):
+            if isinstance(i, pyrogram.InputMediaPhoto):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
@@ -77,7 +77,8 @@ class SendMediaGroup(BaseClient):
                     media = types.InputMediaPhoto(
                         id=types.InputPhoto(
                             id=media.photo.id,
-                            access_hash=media.photo.access_hash
+                            access_hash=media.photo.access_hash,
+                            file_reference=b""
                         )
                     )
                 else:
@@ -99,16 +100,18 @@ class SendMediaGroup(BaseClient):
                         media = types.InputMediaPhoto(
                             id=types.InputPhoto(
                                 id=unpacked[2],
-                                access_hash=unpacked[3]
+                                access_hash=unpacked[3],
+                                file_reference=b""
                             )
                         )
-            elif isinstance(i, pyrogram_types.InputMediaVideo):
+            elif isinstance(i, pyrogram.InputMediaVideo):
                 if os.path.exists(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
                             peer=self.resolve_peer(chat_id),
                             media=types.InputMediaUploadedDocument(
                                 file=self.save_file(i.media),
+                                thumb=None if i.thumb is None else self.save_file(i.thumb),
                                 mime_type=mimetypes.types_map[".mp4"],
                                 attributes=[
                                     types.DocumentAttributeVideo(
@@ -126,7 +129,8 @@ class SendMediaGroup(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=media.document.id,
-                            access_hash=media.document.access_hash
+                            access_hash=media.document.access_hash,
+                            file_reference=b""
                         )
                     )
                 else:
@@ -148,7 +152,8 @@ class SendMediaGroup(BaseClient):
                         media = types.InputMediaDocument(
                             id=types.InputDocument(
                                 id=unpacked[2],
-                                access_hash=unpacked[3]
+                                access_hash=unpacked[3],
+                                file_reference=b""
                             )
                         )
 

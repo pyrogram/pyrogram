@@ -16,15 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
 
 class RequestCallbackAnswer(BaseClient):
     def request_callback_answer(self,
-                                chat_id: int or str,
+                                chat_id: Union[int, str],
                                 message_id: int,
-                                callback_data: str):
+                                callback_data: bytes):
         """Use this method to request a callback answer from bots. This is the equivalent of clicking an
         inline button containing callback data.
 
@@ -33,12 +35,11 @@ class RequestCallbackAnswer(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_id (``int``):
                 The message id the inline keyboard is attached on.
 
-            callback_data (``str``):
+            callback_data (``bytes``):
                 Callback data associated with the inline button you want to get the answer from.
 
         Returns:
@@ -46,14 +47,14 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
-            ``TimeoutError``: If the bot fails to answer within 10 seconds
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``TimeoutError`` if the bot fails to answer within 10 seconds.
         """
         return self.send(
             functions.messages.GetBotCallbackAnswer(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                data=callback_data.encode()
+                data=callback_data
             ),
             retries=0,
             timeout=10

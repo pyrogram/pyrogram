@@ -16,15 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union, Iterable
+
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
 
 
 class DeleteMessages(BaseClient):
     def delete_messages(self,
-                        chat_id: int or str,
-                        message_ids,
-                        revoke: bool = True):
+                        chat_id: Union[int, str],
+                        message_ids: Iterable[int],
+                        revoke: bool = True) -> bool:
         """Use this method to delete messages, including service messages, with the following limitations:
 
         - A message can only be deleted if it was sent less than 48 hours ago.
@@ -38,7 +40,6 @@ class DeleteMessages(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             message_ids (``iterable``):
                 A list of Message identifiers to delete or a single message id.
@@ -54,7 +55,7 @@ class DeleteMessages(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]

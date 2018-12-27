@@ -16,15 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Tuple
+
 import pyrogram
+from pyrogram.client.filters.filter import Filter
+from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
 class OnCallbackQuery(BaseClient):
-    def on_callback_query(self, filters=None, group: int = 0):
+    def on_callback_query(self=None,
+                          filters=None,
+                          group: int = 0) -> callable:
         """Use this decorator to automatically register a function for handling
         callback queries. This does the same thing as :meth:`add_handler` using the
         :class:`CallbackQueryHandler`.
+
+        .. note::
+            This decorator will wrap your defined function in a tuple consisting of *(Handler, group)*.
+
+            To reference your own function after it has been decorated, you need to access
+            *my_function[0].callback*, that is, the *callback* field of Handler object which is the the
+            first element in the tuple.
 
         Args:
             filters (:obj:`Filters <pyrogram.Filters>`):
@@ -35,8 +48,18 @@ class OnCallbackQuery(BaseClient):
                 The group identifier, defaults to 0.
         """
 
-        def decorator(func):
-            self.add_handler(pyrogram.CallbackQueryHandler(func, filters), group)
-            return func
+        def decorator(func: callable) -> Tuple[Handler, int]:
+            if isinstance(func, tuple):
+                func = func[0].callback
+
+            handler = pyrogram.CallbackQueryHandler(func, filters)
+
+            if isinstance(self, Filter):
+                return pyrogram.CallbackQueryHandler(func, self), group if filters is None else filters
+
+            if self is not None:
+                self.add_handler(handler, group)
+
+            return handler, group
 
         return decorator

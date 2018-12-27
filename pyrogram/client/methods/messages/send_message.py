@@ -16,20 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client import types as pyrogram_types
-from ...ext import utils, BaseClient
+from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
     def send_message(self,
-                     chat_id: int or str,
+                     chat_id: Union[int, str],
                      text: str,
                      parse_mode: str = "",
                      disable_web_page_preview: bool = None,
                      disable_notification: bool = None,
                      reply_to_message_id: int = None,
-                     reply_markup=None):
+                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardMarkup",
+                                         "pyrogram.ReplyKeyboardRemove",
+                                         "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send text messages.
 
         Args:
@@ -37,7 +42,6 @@ class SendMessage(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                For a private channel/supergroup you can use its *t.me/joinchat/* link.
 
             text (``str``):
                 Text of the message to be sent.
@@ -62,12 +66,13 @@ class SendMessage(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent Message is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
+        message, entities = style.parse(text).values()
 
         r = self.send(
             functions.messages.SendMessage(
@@ -77,21 +82,29 @@ class SendMessage(BaseClient):
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(text)
+                message=message,
+                entities=entities
             )
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
-            return pyrogram_types.Message(
+            return pyrogram.Message(
                 message_id=r.id,
+                chat=pyrogram.Chat(
+                    id=list(self.resolve_peer(chat_id).__dict__.values())[0],
+                    type="private",
+                    client=self
+                ),
+                text=message,
                 date=r.date,
                 outgoing=r.out,
-                entities=utils.parse_entities(r.entities, {}) or None
+                entities=entities,
+                client=self
             )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

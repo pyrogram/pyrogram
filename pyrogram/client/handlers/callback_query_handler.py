@@ -49,6 +49,6 @@ class CallbackQueryHandler(Handler):
     def check(self, callback_query):
         return (
             self.filters(callback_query)
-            if self.filters
+            if callable(self.filters)
             else True
         )
