@@ -25,7 +25,7 @@ Welcome to Pyrogram
         </a>
         <br>
         <a href="https://github.com/pyrogram/pyrogram/blob/master/compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2082-eda738.svg?longCache=true&colorA=262b30"
+            <img src="https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
                 alt="Scheme Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
@@ -64,7 +64,7 @@ Features
 -   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
 -   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 82 on top of MTProto 2.0.
+-   **Updated** to the latest Telegram API version, currently Layer 91 on top of MTProto 2.0.
 -   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
 -   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
 
@@ -92,6 +92,8 @@ To get started, press the Next button.
     resources/SOCKS5Proxy
     resources/BotsInteraction
     resources/ErrorHandling
+    resources/TestServers
+    resources/Changelog
 
 .. toctree::
     :hidden:
