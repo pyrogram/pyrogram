@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .delete_messages import DeleteMessages
+from .download_media import DownloadMedia
 from .edit_message_caption import EditMessageCaption
 from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
@@ -68,6 +69,7 @@ class Messages(
     SendVoice,
     SendPoll,
     VotePoll,
-    RetractVote
+    RetractVote,
+    DownloadMedia
 ):
     pass
