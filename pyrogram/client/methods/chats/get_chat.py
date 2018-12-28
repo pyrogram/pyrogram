@@ -32,13 +32,36 @@ class GetChat(BaseClient):
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
+                Unique identifier for the target chat in form of a *t.me/joinchat/* link, identifier (int) or username
+                of the target channel/supergroup (in the format @username).
 
         Returns:
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` in case the chat invite link refers to a chat you haven't joined yet.
         """
+        match = self.INVITE_LINK_RE.match(str(chat_id))
+
+        if match:
+            h = match.group(1)
+
+            r = self.send(
+                functions.messages.CheckChatInvite(
+                    hash=h
+                )
+            )
+
+            if isinstance(r, types.ChatInvite):
+                raise ValueError("You haven't joined \"t.me/joinchat/{}\" yet".format(h))
+
+            if isinstance(r.chat, types.Chat):
+                chat_id = -r.chat.id
+
+            if isinstance(r.chat, types.Channel):
+                chat_id = int("-100" + str(r.chat.id))
+
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
