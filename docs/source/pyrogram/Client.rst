@@ -19,7 +19,7 @@ Utilities
     remove_handler
     send
     resolve_peer
-    download_media
+    save_file
 
 Decorators
 ----------
