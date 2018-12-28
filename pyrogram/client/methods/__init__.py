@@ -23,7 +23,6 @@ from .decorators import Decorators
 from .messages import Messages
 from .password import Password
 from .users import Users
-from .utilities import Utilities
 
 
 class Methods(
@@ -32,7 +31,6 @@ class Methods(
     Password,
     Chats,
     Users,
-    Utilities,
     Messages,
     Decorators
 ):
