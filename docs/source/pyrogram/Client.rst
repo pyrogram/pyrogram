@@ -74,6 +74,7 @@ Chats
 
     join_chat
     leave_chat
+    get_chat_preview
     kick_chat_member
     unban_chat_member
     restrict_chat_member

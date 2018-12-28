@@ -12,6 +12,7 @@ Users & Chats
     User
     UserStatus
     Chat
+    ChatPreview
     ChatPhoto
     ChatMember
     ChatMembers
@@ -80,6 +81,9 @@ Input Media
     :members:
 
 .. autoclass:: Chat
+    :members:
+
+.. autoclass:: ChatPreview
     :members:
 
 .. autoclass:: ChatPhoto
