@@ -1,5 +1,5 @@
-Flood
-=====
+420 - Flood
+===========
 
 .. module:: pyrogram.api.errors.Flood
 
