@@ -75,7 +75,6 @@ Chats
 
     join_chat
     leave_chat
-    get_chat_preview
     kick_chat_member
     unban_chat_member
     restrict_chat_member
@@ -88,6 +87,7 @@ Chats
     pin_chat_message
     unpin_chat_message
     get_chat
+    get_chat_preview
     get_chat_member
     get_chat_members
     get_chat_members_count
