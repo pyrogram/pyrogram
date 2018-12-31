@@ -1,5 +1,5 @@
-Unknown Error
-=============
+520 - Unknown Error
+===================
 
 .. module:: pyrogram.api.errors.UnknownError
 

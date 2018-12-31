@@ -1,5 +1,5 @@
-Unauthorized
-============
+401 - Unauthorized
+==================
 
 .. module:: pyrogram.api.errors.Unauthorized
 

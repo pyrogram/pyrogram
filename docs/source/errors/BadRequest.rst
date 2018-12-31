@@ -1,5 +1,5 @@
-Bad Request
-===========
+400 - Bad Request
+=================
 
 .. module:: pyrogram.api.errors.BadRequest
 

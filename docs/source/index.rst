@@ -93,6 +93,7 @@ To get started, press the Next button.
     resources/BotsInteraction
     resources/ErrorHandling
     resources/TestServers
+    resources/AdvancedUsage
     resources/Changelog
 
 .. toctree::

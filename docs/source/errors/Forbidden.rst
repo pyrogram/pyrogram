@@ -1,5 +1,5 @@
-Forbidden
-=========
+403 - Forbidden
+===============
 
 .. module:: pyrogram.api.errors.Forbidden
 

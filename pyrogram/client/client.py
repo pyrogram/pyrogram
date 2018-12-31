@@ -919,9 +919,9 @@ class Client(Methods, BaseClient):
         log.info("UpdatesWorkerTask stopped")
 
     async def send(self,
-             data: Object,
-             retries: int = Session.MAX_RETRIES,
-             timeout: float = Session.WAIT_TIMEOUT):
+                   data: Object,
+                   retries: int = Session.MAX_RETRIES,
+                   timeout: float = Session.WAIT_TIMEOUT):
         """Use this method to send Raw Function queries.
 
         This method makes possible to manually call every single Telegram API method in a low-level manner.
@@ -1081,7 +1081,7 @@ class Client(Methods, BaseClient):
             )
 
     async def get_initial_dialogs_chunk(self,
-                                  offset_date: int = 0):
+                                        offset_date: int = 0):
         while True:
             try:
                 r = await self.send(
@@ -1114,12 +1114,12 @@ class Client(Methods, BaseClient):
         await self.get_initial_dialogs_chunk()
 
     async def resolve_peer(self,
-                     peer_id: Union[int, str]):
+                           peer_id: Union[int, str]):
         """Use this method to get the InputPeer of a known peer_id.
 
-        This is a utility method intended to be used only when working with Raw Functions (i.e: a Telegram API method
-        you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an InputPeer
-        type is required.
+        This is a utility method intended to be used **only** when working with Raw Functions (i.e: a Telegram API
+        method you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an
+        InputPeer type is required.
 
         Args:
             peer_id (``int`` | ``str``):
@@ -1147,8 +1147,8 @@ class Client(Methods, BaseClient):
                 except ValueError:
                     if peer_id not in self.peers_by_username:
                         await self.send(functions.contacts.ResolveUsername(username=peer_id
-                            )
-                        )
+                                                                           )
+                                        )
 
                     return self.peers_by_username[peer_id]
                 else:
@@ -1190,6 +1190,52 @@ class Client(Methods, BaseClient):
                         file_part: int = 0,
                         progress: callable = None,
                         progress_args: tuple = ()):
+        """Use this method to upload a file onto Telegram servers, without actually sending the message to anyone.
+
+        This is a utility method intended to be used **only** when working with Raw Functions (i.e: a Telegram API
+        method you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an
+        InputFile type is required.
+
+        Args:
+            path (``str``):
+                The path of the file you want to upload that exists on your local machine.
+
+            file_id (``int``, *optional*):
+                In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.
+
+            file_part (``int``, *optional*):
+                In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the uploaded file is returned in form of an InputFile object.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+
         async def worker(session):
             while True:
                 data = await queue.get()

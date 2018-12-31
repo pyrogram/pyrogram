@@ -27,7 +27,7 @@ class JoinChat(BaseClient):
 
         Args:
             chat_id (``str``):
-                Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
+                Unique identifier for the target chat in form of a *t.me/joinchat/* link or username of the target
                 channel/supergroup (in the format @username).
 
         Raises:

@@ -1,5 +1,5 @@
-Not Acceptable
-==============
+406 - Not Acceptable
+====================
 
 .. module:: pyrogram.api.errors.NotAcceptable
 

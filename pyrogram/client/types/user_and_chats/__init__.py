@@ -20,6 +20,7 @@ from .chat import Chat
 from .chat_member import ChatMember
 from .chat_members import ChatMembers
 from .chat_photo import ChatPhoto
+from .chat_preview import ChatPreview
 from .dialog import Dialog
 from .dialogs import Dialogs
 from .user import User

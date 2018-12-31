@@ -19,7 +19,7 @@ Utilities
     remove_handler
     send
     resolve_peer
-    download_media
+    save_file
 
 Decorators
 ----------
@@ -65,6 +65,7 @@ Messages
     send_poll
     vote_poll
     retract_vote
+    download_media
 
 Chats
 -----
@@ -86,6 +87,7 @@ Chats
     pin_chat_message
     unpin_chat_message
     get_chat
+    get_chat_preview
     get_chat_member
     get_chat_members
     get_chat_members_count

@@ -20,7 +20,7 @@ import asyncio
 from typing import Union
 
 import pyrogram
-from ...ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
 class DownloadMedia(BaseClient):

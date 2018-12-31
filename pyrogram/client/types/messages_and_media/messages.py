@@ -47,7 +47,7 @@ class Messages(PyrogramType):
         self.messages = messages
 
     @staticmethod
-    async def _parse(client, messages: types.messages.Messages) -> "Messages":
+    async def _parse(client, messages: types.messages.Messages, replies: int = 1) -> "Messages":
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
@@ -55,7 +55,7 @@ class Messages(PyrogramType):
         parsed_messages = []
 
         for message in messages.messages:
-            parsed_messages.append(await Message._parse(client, message, users, chats))
+            parsed_messages.append(await Message._parse(client, message, users, chats, replies))
 
         return Messages(
             total_count=getattr(messages, "count", len(messages.messages)),

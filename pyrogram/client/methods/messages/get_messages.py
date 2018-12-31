@@ -78,6 +78,6 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        messages = await pyrogram.Messages._parse(self, await self.send(rpc))
+        messages = await pyrogram.Messages._parse(self, await self.send(rpc), replies)
 
         return messages if is_iterable else messages.messages[0]

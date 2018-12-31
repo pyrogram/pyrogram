@@ -1,5 +1,5 @@
-Internal Server Error
-=====================
+500 - Internal Server Error
+===========================
 
 .. module:: pyrogram.api.errors.InternalServerError
 
