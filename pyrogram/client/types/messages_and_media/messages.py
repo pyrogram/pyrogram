@@ -47,13 +47,13 @@ class Messages(PyrogramType):
         self.messages = messages
 
     @staticmethod
-    def _parse(client, messages: types.messages.Messages) -> "Messages":
+    def _parse(client, messages: types.messages.Messages, replies: int = 1) -> "Messages":
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
         return Messages(
             total_count=getattr(messages, "count", len(messages.messages)),
-            messages=[Message._parse(client, message, users, chats) for message in messages.messages],
+            messages=[Message._parse(client, message, users, chats, replies) for message in messages.messages],
             client=client
         )
 
