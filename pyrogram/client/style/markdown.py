@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from collections import OrderedDict
 
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
@@ -97,10 +98,11 @@ class Markdown:
             entities.append(entity)
             message = message.replace(match.group(), body)
 
-        return dict(
-            message=utils.remove_surrogates(message),
-            entities=entities
-        )
+        # TODO: OrderedDict to be removed in Python3.6
+        return OrderedDict([
+            ("message", utils.remove_surrogates(message)),
+            ("entities", entities)
+        ])
 
     def unparse(self, message: str, entities: list):
         message = utils.add_surrogates(message).strip()
