@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -22,10 +22,11 @@ from struct import pack
 import pyrogram
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 from ..user_and_chats import User
 
 
-class CallbackQuery(PyrogramType):
+class CallbackQuery(PyrogramType, Update):
     """This object represents an incoming callback query from a callback button in an inline keyboard.
     If the button that originated the query was attached to a message sent by the bot, the field message
     will be present. If the button was attached to a message sent via the bot (in inline mode),

@@ -84,6 +84,7 @@ To get started, press the Next button.
 
     resources/UpdateHandling
     resources/UsingFilters
+    resources/MoreOnUpdates
     resources/SmartPlugins
     resources/AutoAuthorization
     resources/CustomizeSessions

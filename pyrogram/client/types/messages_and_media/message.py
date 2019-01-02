@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -26,11 +26,12 @@ from .location import Location
 from .message_entity import MessageEntity
 from ..messages_and_media.photo import Photo
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
 
 
-class Message(PyrogramType):
+class Message(PyrogramType, Update):
     """This object represents a message.
 
     Args:

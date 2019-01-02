@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -45,7 +45,7 @@ class GetHistory(BaseClient):
                 Limits the number of messages to be retrieved.
                 By default, the first 100 messages are returned.
 
-            offset (``int``, *optional*)
+            offset (``int``, *optional*):
                 Sequential number of the first message to be returned. Defaults to 0 (most recent message).
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
 

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -20,9 +20,10 @@ import pyrogram
 
 from pyrogram.api import types
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 
 
-class UserStatus(PyrogramType):
+class UserStatus(PyrogramType, Update):
     """This object represents a User status (Last Seen privacy).
 
     .. note::
