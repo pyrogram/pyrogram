@@ -45,7 +45,7 @@ class GetHistory(BaseClient):
                 Limits the number of messages to be retrieved.
                 By default, the first 100 messages are returned.
 
-            offset (``int``, *optional*)
+            offset (``int``, *optional*):
                 Sequential number of the first message to be returned. Defaults to 0 (most recent message).
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
 
