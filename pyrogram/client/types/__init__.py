@@ -37,3 +37,4 @@ from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
     Dialog, Dialogs, User, UserStatus, ChatPreview
 )
+from .update import StopPropagation

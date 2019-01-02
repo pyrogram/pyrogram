@@ -26,11 +26,12 @@ from .location import Location
 from .message_entity import MessageEntity
 from ..messages_and_media.photo import Photo
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
 
 
-class Message(PyrogramType):
+class Message(PyrogramType, Update):
     """This object represents a message.
 
     Args:

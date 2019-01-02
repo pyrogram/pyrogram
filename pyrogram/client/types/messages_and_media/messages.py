@@ -22,10 +22,11 @@ import pyrogram
 from pyrogram.api import types
 from .message import Message
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 from ..user_and_chats import Chat
 
 
-class Messages(PyrogramType):
+class Messages(PyrogramType, Update):
     """This object represents a chat's messages.
 
     Args:
