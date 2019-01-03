@@ -151,6 +151,12 @@ class Client(Methods, BaseClient):
             Define a custom directory for your plugins. The plugins directory is the location in your
             filesystem where Pyrogram will automatically load your update handlers.
             Defaults to None (plugins disabled).
+
+        no_updates (``bool``, *optional*):
+            Pass True to completely disable incoming updates for the current session.
+            When updates are disabled your client can't receive any new message.
+            Useful for batch programs that don't need to deal with updates.
+            Defaults to False (updates enabled and always received).
     """
 
     def __init__(self,
@@ -173,7 +179,8 @@ class Client(Methods, BaseClient):
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str = None):
+                 plugins_dir: str = None,
+                 no_updates: bool = None):
         super().__init__()
 
         self.session_name = session_name
@@ -197,6 +204,7 @@ class Client(Methods, BaseClient):
         self.workdir = workdir
         self.config_file = config_file
         self.plugins_dir = plugins_dir
+        self.no_updates = no_updates
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -942,6 +950,9 @@ class Client(Methods, BaseClient):
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
+
+        if self.no_updates:
+            data = functions.InvokeWithoutUpdates(data)
 
         r = self.session.send(data, retries, timeout)
 
