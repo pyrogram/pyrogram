@@ -56,6 +56,8 @@ class GetChat(BaseClient):
             if isinstance(r, types.ChatInvite):
                 raise ValueError("You haven't joined \"t.me/joinchat/{}\" yet".format(h))
 
+            self.fetch_peers([r.chat])
+
             if isinstance(r.chat, types.Chat):
                 chat_id = -r.chat.id
 

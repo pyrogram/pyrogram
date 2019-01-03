@@ -102,6 +102,9 @@ class BaseClient:
     def resolve_peer(self, peer_id: int or str):
         pass
 
+    def fetch_peers(self, entities):
+        pass
+
     def add_handler(self, handler, group: int = 0) -> tuple:
         pass
 
