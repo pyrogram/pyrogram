@@ -61,6 +61,9 @@ class Filters:
 
     create = create
 
+    me = create("Me", lambda _, m: bool(m.from_user and m.from_user.is_self))
+    """Filter messages coming from you yourself"""
+
     bot = create("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
     """Filter messages coming from bots"""
 
