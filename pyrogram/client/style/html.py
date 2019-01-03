@@ -38,12 +38,12 @@ class HTML:
     def __init__(self, peers_by_id):
         self.peers_by_id = peers_by_id
 
-    def parse(self, text):
+    def parse(self, message: str):
         entities = []
-        text = utils.add_surrogates(text)
+        message = utils.add_surrogates(str(message))
         offset = 0
 
-        for match in self.HTML_RE.finditer(text):
+        for match in self.HTML_RE.finditer(message):
             start = match.start() - offset
             style, url, body = match.group(1, 3, 4)
 
@@ -73,12 +73,12 @@ class HTML:
                     continue
 
             entities.append(entity)
-            text = text.replace(match.group(), body)
+            message = message.replace(match.group(), body)
             offset += len(style) * 2 + 5 + (len(url) + 8 if url else 0)
 
         # TODO: OrderedDict to be removed in Python3.6
         return OrderedDict([
-            ("message", utils.remove_surrogates(text)),
+            ("message", utils.remove_surrogates(message)),
             ("entities", entities)
         ])
 
