@@ -90,6 +90,8 @@ class BaseClient:
         self.is_started = None
         self.is_idle = None
 
+        self.takeout_id = None
+
         self.updates_queue = Queue()
         self.updates_workers_list = []
         self.download_queue = Queue()

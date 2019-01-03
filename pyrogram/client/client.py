@@ -157,6 +157,13 @@ class Client(Methods, BaseClient):
             When updates are disabled your client can't receive any new message.
             Useful for batch programs that don't need to deal with updates.
             Defaults to False (updates enabled and always received).
+
+        takeout (``bool``, *optional*):
+            Pass True to let the client use a takeout session instead of a normal one, implies no_updates.
+            Useful for exporting your Telegram data. Methods invoked inside a takeout session (such as get_history,
+            download_media, ...) are less prone to throw FloodWait exceptions.
+            Only available for users, bots will ignore this parameter.
+            Defaults to False (normal session).
     """
 
     def __init__(self,
@@ -180,7 +187,8 @@ class Client(Methods, BaseClient):
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
                  plugins_dir: str = None,
-                 no_updates: bool = None):
+                 no_updates: bool = None,
+                 takeout: bool = None):
         super().__init__()
 
         self.session_name = session_name
@@ -205,6 +213,7 @@ class Client(Methods, BaseClient):
         self.config_file = config_file
         self.plugins_dir = plugins_dir
         self.no_updates = no_updates
+        self.takeout = takeout
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -261,6 +270,10 @@ class Client(Methods, BaseClient):
                 self.save_session()
 
             if self.bot_token is None:
+                if self.takeout:
+                    self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
+                    log.warning("Takeout session {} initiated".format(self.takeout_id))
+
                 now = time.time()
 
                 if abs(now - self.date) > Client.OFFLINE_SLEEP:
@@ -315,6 +328,10 @@ class Client(Methods, BaseClient):
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
+
+        if self.takeout_id:
+            self.send(functions.account.FinishTakeoutSession())
+            log.warning("Takeout session {} finished".format(self.takeout_id))
 
         Syncer.remove(self)
         self.dispatcher.stop()
@@ -953,6 +970,9 @@ class Client(Methods, BaseClient):
 
         if self.no_updates:
             data = functions.InvokeWithoutUpdates(data)
+
+        if self.takeout_id:
+            data = functions.InvokeWithTakeout(self.takeout_id, data)
 
         r = self.session.send(data, retries, timeout)
 
