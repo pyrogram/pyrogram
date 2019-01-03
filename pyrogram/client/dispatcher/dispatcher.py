@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -134,24 +134,29 @@ class Dispatcher:
                 parsed_update, handler_type = parser(update, users, chats)
 
                 for group in self.groups.values():
-                    for handler in group:
-                        args = None
+                    try:
+                        for handler in group:
+                            args = None
 
-                        if isinstance(handler, RawUpdateHandler):
-                            args = (update, users, chats)
-                        elif isinstance(handler, handler_type):
-                            if handler.check(parsed_update):
-                                args = (parsed_update,)
+                            if isinstance(handler, RawUpdateHandler):
+                                args = (update, users, chats)
+                            elif isinstance(handler, handler_type):
+                                if handler.check(parsed_update):
+                                    args = (parsed_update,)
 
-                        if args is None:
-                            continue
+                            if args is None:
+                                continue
 
-                        try:
-                            handler.callback(self.client, *args)
-                        except Exception as e:
-                            log.error(e, exc_info=True)
-                        finally:
+                            try:
+                                handler.callback(self.client, *args)
+                            except StopIteration:
+                                raise
+                            except Exception as e:
+                                log.error(e, exc_info=True)
+
                             break
+                    except StopIteration:
+                        break
             except Exception as e:
                 log.error(e, exc_info=True)
 

@@ -16,20 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .on_callback_query import OnCallbackQuery
-from .on_deleted_messages import OnDeletedMessages
-from .on_disconnect import OnDisconnect
-from .on_message import OnMessage
-from .on_raw_update import OnRawUpdate
-from .on_user_status import OnUserStatus
 
-
-class Decorators(
-    OnMessage,
-    OnDeletedMessages,
-    OnCallbackQuery,
-    OnRawUpdate,
-    OnDisconnect,
-    OnUserStatus
-):
+class StopPropagation(StopIteration):
     pass
+
+
+class Update:
+    def stop_propagation(self):
+        raise StopPropagation

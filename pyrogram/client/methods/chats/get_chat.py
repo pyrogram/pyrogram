@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -55,6 +55,8 @@ class GetChat(BaseClient):
 
             if isinstance(r, types.ChatInvite):
                 raise ValueError("You haven't joined \"t.me/joinchat/{}\" yet".format(h))
+
+            self.fetch_peers([r.chat])
 
             if isinstance(r.chat, types.Chat):
                 chat_id = -r.chat.id

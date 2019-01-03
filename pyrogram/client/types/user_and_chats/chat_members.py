@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -59,8 +59,7 @@ class ChatMembers(PyrogramType):
             total_count = len(members)
 
         for member in members:
-            user = User._parse(client, users[member.user_id])
-            chat_members.append(ChatMember._parse(client, member, user))
+            chat_members.append(ChatMember._parse(client, member, users[member.user_id]))
 
         return ChatMembers(
             total_count=total_count,

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -101,6 +101,9 @@ class BaseClient:
         pass
 
     def resolve_peer(self, peer_id: int or str):
+        pass
+
+    def fetch_peers(self, entities):
         pass
 
     def add_handler(self, handler, group: int = 0) -> tuple:
