@@ -81,3 +81,5 @@ INPUT_USER_DEACTIVATED	The target user has been deactivated
 PASSWORD_RECOVERY_NA	The password recovery e-mail is not available
 PASSWORD_EMPTY	The password entered is empty
 PHONE_NUMBER_FLOOD	This number has tried to login too many times
+TAKEOUT_INVALID	The takeout id is invalid
+TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
