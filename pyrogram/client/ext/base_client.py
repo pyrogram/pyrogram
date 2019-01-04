@@ -117,3 +117,6 @@ class BaseClient:
 
     def get_history(self, *args, **kwargs):
         pass
+
+    def get_dialogs(self, *args, **kwargs):
+        pass

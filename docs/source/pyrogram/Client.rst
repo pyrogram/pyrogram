@@ -93,6 +93,7 @@ Chats
     get_chat_members
     get_chat_members_count
     get_dialogs
+    iter_dialogs
 
 Users
 -----
