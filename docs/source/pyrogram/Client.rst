@@ -92,6 +92,7 @@ Chats
     get_chat_member
     get_chat_members
     get_chat_members_count
+    iter_chat_members
     get_dialogs
     iter_dialogs
 

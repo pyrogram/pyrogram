@@ -120,3 +120,6 @@ class BaseClient:
 
     def get_dialogs(self, *args, **kwargs):
         pass
+
+    def get_chat_members(self, *args, **kwargs):
+        pass

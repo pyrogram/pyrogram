@@ -24,6 +24,7 @@ from .get_chat_members import GetChatMembers
 from .get_chat_members_count import GetChatMembersCount
 from .get_chat_preview import GetChatPreview
 from .get_dialogs import GetDialogs
+from .iter_chat_members import IterChatMembers
 from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
 from .kick_chat_member import KickChatMember
@@ -58,6 +59,7 @@ class Chats(
     GetDialogs,
     GetChatMembersCount,
     GetChatPreview,
-    IterDialogs
+    IterDialogs,
+    IterChatMembers
 ):
     pass
