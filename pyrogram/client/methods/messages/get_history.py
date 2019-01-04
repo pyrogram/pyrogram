@@ -30,7 +30,7 @@ class GetHistory(BaseClient):
                     offset: int = 0,
                     offset_id: int = 0,
                     offset_date: int = 0,
-                    reversed: bool = False):
+                    reverse: bool = False):
         """Use this method to retrieve the history of a chat.
 
         You can get up to 100 messages at once.
@@ -55,7 +55,7 @@ class GetHistory(BaseClient):
             offset_date (``int``, *optional*):
                 Pass a date in Unix time as offset to retrieve only older messages starting from that date.
 
-            reversed (``bool``, *optional*):
+            reverse (``bool``, *optional*):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
@@ -72,7 +72,7 @@ class GetHistory(BaseClient):
                     peer=self.resolve_peer(chat_id),
                     offset_id=offset_id,
                     offset_date=offset_date,
-                    add_offset=offset - (limit if reversed else 0),
+                    add_offset=offset - (limit if reverse else 0),
                     limit=limit,
                     max_id=0,
                     min_id=0,
@@ -81,7 +81,7 @@ class GetHistory(BaseClient):
             )
         )
 
-        if reversed:
+        if reverse:
             messages.messages.reverse()
 
         return messages
