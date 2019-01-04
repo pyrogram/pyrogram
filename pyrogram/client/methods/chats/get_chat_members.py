@@ -39,10 +39,12 @@ class GetChatMembers(BaseClient):
                          limit: int = 200,
                          query: str = "",
                          filter: str = Filters.ALL) -> "pyrogram.ChatMembers":
-        """Use this method to get the members list of a chat.
+        """Use this method to get a chunk of the members list of a chat.
 
+        You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.
         You must be admin to retrieve the members list of a channel (also known as "subscribers").
+        For a more convenient way of getting chat members see :meth:`iter_chat_members`.
 
         Args:
             chat_id (``int`` | ``str``):
