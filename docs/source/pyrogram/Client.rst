@@ -62,6 +62,7 @@ Messages
     delete_messages
     get_messages
     get_history
+    iter_history
     send_poll
     vote_poll
     retract_vote

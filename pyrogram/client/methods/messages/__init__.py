@@ -25,6 +25,7 @@ from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
 from .get_history import GetHistory
 from .get_messages import GetMessages
+from .iter_history import IterHistory
 from .retract_vote import RetractVote
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
@@ -70,6 +71,7 @@ class Messages(
     SendPoll,
     VotePoll,
     RetractVote,
-    DownloadMedia
+    DownloadMedia,
+    IterHistory
 ):
     pass
