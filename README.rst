@@ -61,7 +61,7 @@ and documentation. Any help is appreciated!
 Copyright & License
 -------------------
 
--   Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+-   Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 -   Licensed under the terms of the `GNU Lesser General Public License v3 or later (LGPLv3+)`_
 
 .. _`Telegram`: https://telegram.org/
