@@ -18,7 +18,7 @@
 
 import sys
 
-__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
+__copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
