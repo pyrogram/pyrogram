@@ -100,8 +100,11 @@ class Filters:
     sticker = create("Sticker", lambda _, m: bool(m.sticker))
     """Filter messages that contain :obj:`Sticker <pyrogram.Sticker>` objects."""
 
-    animation = create("GIF", lambda _, m: bool(m.animation))
+    animation = create("Animation", lambda _, m: bool(m.animation))
     """Filter messages that contain :obj:`Animation <pyrogram.Animation>` objects."""
+
+    game = create("Game", lambda _, m: bool(m.game))
+    """Filter messages that contain :obj:`Game <pyrogram.Game>` objects."""
 
     video = create("Video", lambda _, m: bool(m.video))
     """Filter messages that contain :obj:`Video <pyrogram.Video>` objects."""
@@ -169,6 +172,9 @@ class Filters:
     pinned_message = create("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
+    game_score = create("GameScore", lambda _, m: bool(m.game_score))
+    """Filter service messages for game scores."""
+
     reply_keyboard = create("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
     """Filter messages containing reply keyboard markups"""
 
@@ -193,7 +199,8 @@ class Filters:
     - channel_chat_created
     - migrate_to_chat_id
     - migrate_from_chat_id
-    - pinned_message"""
+    - pinned_message
+    - game_score"""
 
     media = create("Media", lambda _, m: bool(m.media))
     """Filter media messages. A media message contains any of the following fields set
@@ -208,7 +215,8 @@ class Filters:
     - video_note
     - contact
     - location
-    - venue"""
+    - venue
+    - poll"""
 
     @staticmethod
     def command(command: str or list,
