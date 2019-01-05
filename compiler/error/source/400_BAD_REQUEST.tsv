@@ -84,3 +84,4 @@ PHONE_NUMBER_FLOOD	This number has tried to login too many times
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 MESSAGE_POLL_CLOSED	You can't interact with a closed poll
+MEDIA_INVALID	The media is invalid
