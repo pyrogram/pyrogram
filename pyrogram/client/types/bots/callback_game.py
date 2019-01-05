@@ -16,11 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .callback_query import CallbackQuery
-from .force_reply import ForceReply
-from .inline_keyboard_button import InlineKeyboardButton
-from .inline_keyboard_markup import InlineKeyboardMarkup
-from .keyboard_button import KeyboardButton
-from .reply_keyboard_markup import ReplyKeyboardMarkup
-from .reply_keyboard_remove import ReplyKeyboardRemove
-from .callback_game import CallbackGame
+from ..pyrogram_type import PyrogramType
+
+
+class CallbackGame(PyrogramType):
+    """A placeholder, currently holds no information.
+
+    Use BotFather to set up your game.
+    """
+
+    def __init__(self):
+        super().__init__(None)

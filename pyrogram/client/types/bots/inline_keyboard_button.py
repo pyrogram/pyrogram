@@ -18,8 +18,9 @@
 
 from pyrogram.api.types import (
     KeyboardButtonUrl, KeyboardButtonCallback,
-    KeyboardButtonSwitchInline
+    KeyboardButtonSwitchInline, KeyboardButtonGame
 )
+from .callback_game import CallbackGame
 from ..pyrogram_type import PyrogramType
 
 
@@ -58,7 +59,8 @@ class InlineKeyboardButton(PyrogramType):
                  callback_data: bytes = None,
                  url: str = None,
                  switch_inline_query: str = None,
-                 switch_inline_query_current_chat: str = None):
+                 switch_inline_query_current_chat: str = None,
+                 callback_game: CallbackGame = None):
         super().__init__(None)
 
         self.text = text
@@ -66,7 +68,7 @@ class InlineKeyboardButton(PyrogramType):
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
-        # self.callback_game = callback_game
+        self.callback_game = callback_game
         # self.pay = pay
 
     @staticmethod
@@ -95,6 +97,12 @@ class InlineKeyboardButton(PyrogramType):
                     switch_inline_query=o.query
                 )
 
+        if isinstance(o, KeyboardButtonGame):
+            return InlineKeyboardButton(
+                text=o.text,
+                callback_game=CallbackGame()
+            )
+
     def write(self):
         if self.callback_data:
             return KeyboardButtonCallback(self.text, self.callback_data)
@@ -107,3 +115,6 @@ class InlineKeyboardButton(PyrogramType):
 
         if self.switch_inline_query_current_chat:
             return KeyboardButtonSwitchInline(self.text, self.switch_inline_query_current_chat, same_peer=True)
+
+        if self.callback_game:
+            return KeyboardButtonGame(self.text)
