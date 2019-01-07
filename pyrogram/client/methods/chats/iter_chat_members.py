@@ -89,6 +89,7 @@ class IterChatMembers(BaseClient):
         yielded = set()
         queries = [query] if query else QUERIES
         total = limit or (1 << 31) - 1
+        filter = Filters.RECENT if total <= 10000 and filter == Filters.ALL else filter
         limit = min(200, total)
 
         if filter not in QUERYABLE_FILTERS:
