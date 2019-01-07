@@ -423,7 +423,7 @@ class Message(PyrogramType, Update):
 
                 if message.reply_to_msg_id and replies:
                     try:
-                        parsed_message.reply_to_message = client.get_messages(
+                        parsed_message.reply_to_message = await client.get_messages(
                             parsed_message.chat.id,
                             reply_to_message_ids=message.id,
                             replies=0
@@ -912,7 +912,11 @@ class Message(PyrogramType, Update):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    async def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = None):
+    async def download(self,
+                       file_name: str = "",
+                       block: bool = True,
+                       progress: callable = None,
+                       progress_args: tuple = None):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:

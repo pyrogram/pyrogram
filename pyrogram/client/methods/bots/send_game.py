@@ -24,15 +24,15 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendGame(BaseClient):
-    def send_game(self,
-                  chat_id: Union[int, str],
-                  game_short_name: str,
-                  disable_notification: bool = None,
-                  reply_to_message_id: int = None,
-                  reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardRemove",
-                                      "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    async def send_game(self,
+                        chat_id: Union[int, str],
+                        game_short_name: str,
+                        disable_notification: bool = None,
+                        reply_to_message_id: int = None,
+                        reply_markup: Union["pyrogram.InlineKeyboardMarkup",
+                                            "pyrogram.ReplyKeyboardMarkup",
+                                            "pyrogram.ReplyKeyboardRemove",
+                                            "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
         """Use this method to send a game.
 
         Args:
@@ -61,9 +61,9 @@ class SendGame(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaGame(
                     id=types.InputGameShortName(
                         bot_id=types.InputUserSelf(),
@@ -80,7 +80,7 @@ class SendGame(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

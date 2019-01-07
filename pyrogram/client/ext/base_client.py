@@ -96,29 +96,29 @@ class BaseClient:
 
         self.disconnect_handler = None
 
-    def send(self, *args, **kwargs):
+    async def send(self, *args, **kwargs):
         pass
 
-    def resolve_peer(self, *args, **kwargs):
+    async def resolve_peer(self, *args, **kwargs):
         pass
 
-    def fetch_peers(self, *args, **kwargs):
+    async def fetch_peers(self, *args, **kwargs):
         pass
 
-    def add_handler(self, *args, **kwargs):
+    async def add_handler(self, *args, **kwargs):
         pass
 
-    def save_file(self, *args, **kwargs):
+    async def save_file(self, *args, **kwargs):
         pass
 
-    def get_messages(self, *args, **kwargs):
+    async def get_messages(self, *args, **kwargs):
         pass
 
-    def get_history(self, *args, **kwargs):
+    async def get_history(self, *args, **kwargs):
         pass
 
-    def get_dialogs(self, *args, **kwargs):
+    async def get_dialogs(self, *args, **kwargs):
         pass
 
-    def get_chat_members(self, *args, **kwargs):
+    async def get_chat_members(self, *args, **kwargs):
         pass
