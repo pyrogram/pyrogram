@@ -20,7 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
 class SendGame(BaseClient):

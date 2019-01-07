@@ -67,8 +67,6 @@ Messages
     vote_poll
     retract_vote
     download_media
-    send_game
-    set_game_score
 
 Chats
 -----
@@ -140,6 +138,8 @@ Bots
     send_inline_bot_result
     answer_callback_query
     request_callback_answer
+    send_game
+    set_game_score
 
 
 .. autoclass:: pyrogram.Client
