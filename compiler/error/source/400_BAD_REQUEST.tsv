@@ -86,3 +86,4 @@ TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 MESSAGE_POLL_CLOSED	You can't interact with a closed poll
 MEDIA_INVALID	The media is invalid
 BOT_SCORE_NOT_MODIFIED	The bot score was not modified
+USER_BOT_REQUIRED	The method can be used by bots only
