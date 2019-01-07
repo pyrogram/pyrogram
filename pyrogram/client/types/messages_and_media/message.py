@@ -202,7 +202,7 @@ class Message(PyrogramType, Update):
             Note that the Message object in this field will not contain further reply_to_message fields even if it
             is itself a reply.
 
-        game_score (``int``, *optional*):
+        game_high_score (:obj:`GameHighScore <pyrogram.GameHighScore>`, *optional*):
             The game score for a user.
             The reply_to_message field will contain the game Message.
 
@@ -283,7 +283,7 @@ class Message(PyrogramType, Update):
                  migrate_to_chat_id: int = None,
                  migrate_from_chat_id: int = None,
                  pinned_message: "Message" = None,
-                 game_score: int = None,
+                 game_high_score: int = None,
                  views: int = None,
                  via_bot: User = None,
                  outgoing: bool = None,
@@ -341,7 +341,7 @@ class Message(PyrogramType, Update):
         self.migrate_to_chat_id = migrate_to_chat_id
         self.migrate_from_chat_id = migrate_from_chat_id
         self.pinned_message = pinned_message
-        self.game_score = game_score
+        self.game_high_score = game_high_score
         self.views = views
         self.via_bot = via_bot
         self.outgoing = outgoing
@@ -419,7 +419,7 @@ class Message(PyrogramType, Update):
                     pass
 
             if isinstance(action, types.MessageActionGameScore):
-                parsed_message.game_score = action.score
+                parsed_message.game_high_score = pyrogram.GameHighScore._parse_action(client, message, users)
 
                 if message.reply_to_msg_id and replies:
                     try:
