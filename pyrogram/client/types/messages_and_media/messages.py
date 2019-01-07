@@ -52,14 +52,41 @@ class Messages(PyrogramType, Update):
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
+        total_count = getattr(messages, "count", len(messages.messages))
+
+        if not messages.messages:
+            return Messages(
+                total_count=total_count,
+                messages=[],
+                client=client
+            )
+
         # TODO: WTF! Py 3.5 doesn't support await inside comprehensions
         parsed_messages = []
 
         for message in messages.messages:
-            parsed_messages.append(await Message._parse(client, message, users, chats, replies))
+            parsed_messages.appen(await Message._parse(client, message, users, chats, replies=0))
+
+        if replies:
+            messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
+            reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
+
+            if reply_message_ids:
+                reply_messages = (await client.get_messages(
+                    parsed_messages[0].chat.id,
+                    reply_to_message_ids=reply_message_ids,
+                    replies=0
+                )).messages
+
+                for message in parsed_messages:
+                    reply_id = messages_with_replies[message.message_id]
+
+                    for reply in reply_messages:
+                        if reply.message_id == reply_id:
+                            message.reply_to_message = reply
 
         return Messages(
-            total_count=getattr(messages, "count", len(messages.messages)),
+            total_count=total_count,
             messages=parsed_messages,
             client=client
         )

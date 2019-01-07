@@ -16,25 +16,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, Generator
 
 import pyrogram
-from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class GetHistory(BaseClient):
-    async def get_history(self,
-                          chat_id: Union[int, str],
-                          limit: int = 100,
-                          offset: int = 0,
-                          offset_id: int = 0,
-                          offset_date: int = 0,
-                          reverse: bool = False):
-        """Use this method to retrieve a chunk of the history of a chat.
+class IterHistory(BaseClient):
+    def iter_history(self,
+                     chat_id: Union[int, str],
+                     limit: int = 0,
+                     offset: int = 0,
+                     offset_id: int = 0,
+                     offset_date: int = 0,
+                     reverse: bool = False) -> Generator["pyrogram.Message", None, None]:
+        """Use this method to iterate through a chat history sequentially.
 
-        You can get up to 100 messages at once.
-        For a more convenient way of getting a chat history see :meth:`iter_history`.
+        This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from
+        the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a single call.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -44,14 +43,14 @@ class GetHistory(BaseClient):
 
             limit (``int``, *optional*):
                 Limits the number of messages to be retrieved.
-                By default, the first 100 messages are returned.
+                By default, no limit is applied and all messages are returned.
 
             offset (``int``, *optional*):
-                Sequential number of the first message to be returned. Defaults to 0 (most recent message).
+                Sequential number of the first message to be returned..
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
 
             offset_id (``int``, *optional*):
-                Pass a message identifier as offset to retrieve only older messages starting from that message.
+                Identifier of the first message to be returned.
 
             offset_date (``int``, *optional*):
                 Pass a date in Unix time as offset to retrieve only older messages starting from that date.
@@ -60,29 +59,35 @@ class GetHistory(BaseClient):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
-            On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
+            A generator yielding :obj:`Message <pyrogram.Message>` objects.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
+        offset_id = offset_id or (1 if reverse else 0)
+        current = 0
+        total = limit or (1 << 31) - 1
+        limit = min(100, total)
 
-        messages = await pyrogram.Messages._parse(
-            self,
-            await self.send(
-                functions.messages.GetHistory(
-                    peer=await self.resolve_peer(chat_id),
-                    offset_id=offset_id,
-                    offset_date=offset_date,
-                    add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
-                    limit=limit,
-                    max_id=0,
-                    min_id=0,
-                    hash=0
-                )
-            )
-        )
+        while True:
+            messages = self.get_history(
+                chat_id=chat_id,
+                limit=limit,
+                offset=offset,
+                offset_id=offset_id,
+                offset_date=offset_date,
+                reverse=reverse
+            ).messages
 
-        if reverse:
-            messages.messages.reverse()
+            if not messages:
+                return
 
-        return messages
+            offset_id = messages[-1].message_id + (1 if reverse else 0)
+
+            for message in messages:
+                yield message
+
+                current += 1
+
+                if current >= total:
+                    return

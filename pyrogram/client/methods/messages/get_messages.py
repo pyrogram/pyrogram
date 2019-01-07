@@ -16,11 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from typing import Union, Iterable
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.api.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class GetMessages(BaseClient):
@@ -28,7 +33,7 @@ class GetMessages(BaseClient):
                            chat_id: Union[int, str],
                            message_ids: Union[int, Iterable[int]] = None,
                            reply_to_message_ids: Union[int, Iterable[int]] = None,
-                           replies: int = 1) -> "pyrogram.Messages":
+                           replies: int = 1) -> Union["pyrogram.Message", "pyrogram.Messages"]:
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -78,6 +83,15 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        messages = await pyrogram.Messages._parse(self, await self.send(rpc), replies)
+        while True:
+            try:
+                r = await self.send(rpc)
+            except FloodWait as e:
+                log.warning("Sleeping for {}s".format(e.x))
+                time.sleep(e.x)
+            else:
+                break
+
+        messages = await pyrogram.Messages._parse(self, r, replies)
 
         return messages if is_iterable else messages.messages[0]

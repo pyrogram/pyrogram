@@ -16,22 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .animation import Animation
-from .audio import Audio
-from .contact import Contact
-from .document import Document
-from .location import Location
-from .message import Message
-from .message_entity import MessageEntity
-from .messages import Messages
-from .photo import Photo
-from .photo_size import PhotoSize
-from .poll import Poll
-from .poll_option import PollOption
-from .sticker import Sticker
-from .user_profile_photos import UserProfilePhotos
-from .venue import Venue
-from .video import Video
-from .video_note import VideoNote
-from .voice import Voice
-from .game import Game
+from ..pyrogram_type import PyrogramType
+
+
+class CallbackGame(PyrogramType):
+    """A placeholder, currently holds no information.
+
+    Use BotFather to set up your game.
+    """
+
+    def __init__(self):
+        super().__init__(None)
