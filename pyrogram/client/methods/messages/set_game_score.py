@@ -50,7 +50,7 @@ class SetGameScore(BaseClient):
             disable_edit_message (``bool``, *optional*):
                 Pass True, if the game message should not be automatically edited to include the current scoreboard.
 
-            chat_id (``int`` | ``str``):
+            chat_id (``int`` | ``str``, *optional*):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
