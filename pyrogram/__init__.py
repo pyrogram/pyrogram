@@ -32,7 +32,7 @@ from .client.types import (
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    Poll, PollOption, ChatPreview, StopPropagation, Game
+    Poll, PollOption, ChatPreview, StopPropagation, Game, CallbackGame, GameHighScore, GameHighScores
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,

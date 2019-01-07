@@ -186,6 +186,12 @@ Input Media
 .. autoclass:: Game
     :members:
 
+.. autoclass:: GameHighScore
+    :members:
+
+.. autoclass:: GameHighScores
+    :members:
+
 ..  Input Media
     -----------
 

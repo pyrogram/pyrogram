@@ -20,6 +20,7 @@ from .animation import Animation
 from .audio import Audio
 from .contact import Contact
 from .document import Document
+from .game import Game
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
@@ -34,4 +35,3 @@ from .venue import Venue
 from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
-from .game import Game
