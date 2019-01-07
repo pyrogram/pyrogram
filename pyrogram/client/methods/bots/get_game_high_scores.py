@@ -20,7 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
-from ...ext import BaseClient
+from pyrogram.client.ext import BaseClient
 
 
 class GetGameHighScores(BaseClient):
@@ -45,6 +45,12 @@ class GetGameHighScores(BaseClient):
             message_id (``int``, *optional*):
                 Identifier of the sent message.
                 Required if inline_message_id is not specified.
+
+        Returns:
+            On success, a :obj:`GameHighScores <pyrogram.GameHighScores>` object is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         # TODO: inline_message_id
 
