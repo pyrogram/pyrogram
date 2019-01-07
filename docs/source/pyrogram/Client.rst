@@ -138,6 +138,9 @@ Bots
     send_inline_bot_result
     answer_callback_query
     request_callback_answer
+    send_game
+    set_game_score
+    get_game_high_scores
 
 
 .. autoclass:: pyrogram.Client

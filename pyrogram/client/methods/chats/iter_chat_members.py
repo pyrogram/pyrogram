@@ -61,7 +61,7 @@ class IterChatMembers(BaseClient):
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Defaults to "" (empty string) [2]_.
+                Defaults to "" (empty string).
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
@@ -73,11 +73,6 @@ class IterChatMembers(BaseClient):
                 *"recent"* - recent members only,
                 *"administrators"* - chat administrators only.
                 Defaults to *"all"*.
-
-        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
-            on channels.
-
-        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Returns:
             A generator yielding :obj:`ChatMember <pyrogram.ChatMember>` objects.

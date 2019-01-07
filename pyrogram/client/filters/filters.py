@@ -172,8 +172,8 @@ class Filters:
     pinned_message = create("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
-    game_score = create("GameScore", lambda _, m: bool(m.game_score))
-    """Filter service messages for game scores."""
+    game_high_score = create("GameHighScore", lambda _, m: bool(m.game_high_score))
+    """Filter service messages for game high scores."""
 
     reply_keyboard = create("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
     """Filter messages containing reply keyboard markups"""
