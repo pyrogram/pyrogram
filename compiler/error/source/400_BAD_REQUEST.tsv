@@ -85,3 +85,4 @@ TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 MESSAGE_POLL_CLOSED	You can't interact with a closed poll
 MEDIA_INVALID	The media is invalid
+BOT_SCORE_NOT_MODIFIED	The bot score was not modified
