@@ -17,7 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from string import ascii_lowercase
-from typing import Union, Generator
+from typing import Union, AsyncGenerator, Optional
+
+from async_generator import async_generator, yield_
 
 import pyrogram
 from ...ext import BaseClient
@@ -37,11 +39,12 @@ QUERYABLE_FILTERS = (Filters.ALL, Filters.KICKED, Filters.RESTRICTED)
 
 
 class IterChatMembers(BaseClient):
-    def iter_chat_members(self,
-                          chat_id: Union[int, str],
-                          limit: int = 0,
-                          query: str = "",
-                          filter: str = Filters.ALL) -> Generator["pyrogram.ChatMember", None, None]:
+    @async_generator
+    async def iter_chat_members(self,
+                                chat_id: Union[int, str],
+                                limit: int = 0,
+                                query: str = "",
+                                filter: str = Filters.ALL) -> Optional[AsyncGenerator["pyrogram.ChatMember", None]]:
         """Use this method to iterate through the members of a chat sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_chat_members` in a loop, thus saving you
@@ -95,13 +98,13 @@ class IterChatMembers(BaseClient):
             offset = 0
 
             while True:
-                chat_members = self.get_chat_members(
+                chat_members = (await self.get_chat_members(
                     chat_id=chat_id,
                     offset=offset,
                     limit=limit,
                     query=q,
                     filter=filter
-                ).chat_members
+                )).chat_members
 
                 if not chat_members:
                     break
@@ -114,7 +117,7 @@ class IterChatMembers(BaseClient):
                     if user_id in yielded:
                         continue
 
-                    yield chat_member
+                    await yield_(chat_member)
 
                     yielded.add(chat_member.user.id)
 

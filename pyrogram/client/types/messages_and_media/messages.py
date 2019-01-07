@@ -65,7 +65,7 @@ class Messages(PyrogramType, Update):
         parsed_messages = []
 
         for message in messages.messages:
-            parsed_messages.appen(await Message._parse(client, message, users, chats, replies=0))
+            parsed_messages.append(await Message._parse(client, message, users, chats, replies=0))
 
         if replies:
             messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}

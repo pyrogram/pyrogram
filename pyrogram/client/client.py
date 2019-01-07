@@ -321,7 +321,7 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client is already stopped")
 
         if self.takeout_id:
-            self.send(functions.account.FinishTakeoutSession())
+            await self.send(functions.account.FinishTakeoutSession())
             log.warning("Takeout session {} finished".format(self.takeout_id))
 
         await Syncer.remove(self)

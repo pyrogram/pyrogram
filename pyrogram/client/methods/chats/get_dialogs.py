@@ -78,4 +78,4 @@ class GetDialogs(BaseClient):
             else:
                 break
 
-        return pyrogram.Dialogs._parse(self, r)
+        return await pyrogram.Dialogs._parse(self, r)

@@ -16,20 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Generator
+from typing import Union, Optional, AsyncGenerator
+
+from async_generator import async_generator, yield_
 
 import pyrogram
 from ...ext import BaseClient
 
 
 class IterHistory(BaseClient):
-    def iter_history(self,
-                     chat_id: Union[int, str],
-                     limit: int = 0,
-                     offset: int = 0,
-                     offset_id: int = 0,
-                     offset_date: int = 0,
-                     reverse: bool = False) -> Generator["pyrogram.Message", None, None]:
+    @async_generator
+    async def iter_history(self,
+                           chat_id: Union[int, str],
+                           limit: int = 0,
+                           offset: int = 0,
+                           offset_id: int = 0,
+                           offset_date: int = 0,
+                           reverse: bool = False) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
         """Use this method to iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from
@@ -70,14 +73,14 @@ class IterHistory(BaseClient):
         limit = min(100, total)
 
         while True:
-            messages = self.get_history(
+            messages = (await self.get_history(
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
                 offset_id=offset_id,
                 offset_date=offset_date,
                 reverse=reverse
-            ).messages
+            )).messages
 
             if not messages:
                 return
@@ -85,7 +88,7 @@ class IterHistory(BaseClient):
             offset_id = messages[-1].message_id + (1 if reverse else 0)
 
             for message in messages:
-                yield message
+                await yield_(message)
 
                 current += 1
 
