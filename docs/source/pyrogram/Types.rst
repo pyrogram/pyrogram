@@ -57,6 +57,7 @@ Bots
     InlineKeyboardButton
     ForceReply
     CallbackQuery
+    Game
 
 Input Media
 -----------
@@ -180,6 +181,9 @@ Input Media
     :members:
 
 .. autoclass:: CallbackQuery
+    :members:
+
+.. autoclass:: Game
     :members:
 
 ..  Input Media

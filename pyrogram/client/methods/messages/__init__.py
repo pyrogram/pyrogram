@@ -33,6 +33,7 @@ from .send_audio import SendAudio
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
 from .send_document import SendDocument
+from .send_game import SendGame
 from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
@@ -44,6 +45,7 @@ from .send_video import SendVideo
 from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
 from .vote_poll import VotePoll
+from .set_game_score import SetGameScore
 
 
 class Messages(
@@ -74,6 +76,8 @@ class Messages(
     ClosePoll,
     RetractVote,
     DownloadMedia,
-    IterHistory
+    IterHistory,
+    SendGame,
+    SetGameScore
 ):
     pass

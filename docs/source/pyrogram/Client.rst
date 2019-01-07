@@ -67,6 +67,8 @@ Messages
     vote_poll
     retract_vote
     download_media
+    send_game
+    set_game_score
 
 Chats
 -----
