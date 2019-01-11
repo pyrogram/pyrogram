@@ -578,13 +578,13 @@ class Client(Methods, BaseClient):
             if not phone_registered:
                 self.first_name = (
                     input("First name: ") if self.first_name is None
-                    else str(self.first_name) if callable(self.first_name)
+                    else str(self.first_name()) if callable(self.first_name)
                     else str(self.first_name)
                 )
 
                 self.last_name = (
                     input("Last name: ") if self.last_name is None
-                    else str(self.last_name) if callable(self.last_name)
+                    else str(self.last_name()) if callable(self.last_name)
                     else str(self.last_name)
                 )
 
