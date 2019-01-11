@@ -109,6 +109,9 @@ class Filters:
     video = create("Video", lambda _, m: bool(m.video))
     """Filter messages that contain :obj:`Video <pyrogram.Video>` objects."""
 
+    media_group = create("MediaGroup", lambda _, m: bool(m.media_group_id))
+    """Filter messages containing photos or videos being part of an album."""
+
     voice = create("Voice", lambda _, m: bool(m.voice))
     """Filter messages that contain :obj:`Voice <pyrogram.Voice>` note objects."""
 
