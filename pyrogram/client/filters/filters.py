@@ -287,7 +287,7 @@ class Filters:
         """
 
         def f(_, m):
-            m.matches = [i for i in _.p.finditer(m.text or "")]
+            m.matches = [i for i in _.p.finditer(m.text or m.caption or "")]
             return bool(m.matches)
 
         return create("Regex", f, p=re.compile(pattern, flags))
