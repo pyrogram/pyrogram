@@ -1368,6 +1368,8 @@ class Client(Methods, BaseClient):
 
                     if progress:
                         progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+        except Client.StopTransmission:
+            raise
         except Exception as e:
             log.error(e, exc_info=True)
         else:
@@ -1569,7 +1571,8 @@ class Client(Methods, BaseClient):
                 except Exception as e:
                     raise e
         except Exception as e:
-            log.error(e, exc_info=True)
+            if not isinstance(e, Client.StopTransmission):
+                log.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)
