@@ -21,6 +21,7 @@ Utilities
     send
     resolve_peer
     save_file
+    stop_transmission
 
 Decorators
 ----------

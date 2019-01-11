@@ -466,6 +466,12 @@ class Client(Methods, BaseClient):
         else:
             self.dispatcher.remove_handler(handler, group)
 
+    def stop_transmission(self):
+        """Use this method to stop downloading or uploading a file.
+        Must be called inside a progress callback function.
+        """
+        raise Client.StopTransmission
+
     async def authorize_bot(self):
         try:
             r = await self.send(
@@ -1376,6 +1382,8 @@ class Client(Methods, BaseClient):
 
                     if progress:
                         await progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+        except Client.StopTransmission:
+            raise
         except Exception as e:
             log.error(e, exc_info=True)
         else:
@@ -1584,7 +1592,8 @@ class Client(Methods, BaseClient):
                 except Exception as e:
                     raise e
         except Exception as e:
-            log.error(e, exc_info=True)
+            if not isinstance(e, Client.StopTransmission):
+                log.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)

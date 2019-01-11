@@ -72,6 +72,7 @@ class DownloadMedia(BaseClient):
 
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
+            In case the download is deliberately stopped with :meth:`stop_transmission`, None is returned as well.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.

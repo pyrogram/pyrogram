@@ -916,7 +916,7 @@ class Message(PyrogramType, Update):
                        file_name: str = "",
                        block: bool = True,
                        progress: callable = None,
-                       progress_args: tuple = None):
+                       progress_args: tuple = ()):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:

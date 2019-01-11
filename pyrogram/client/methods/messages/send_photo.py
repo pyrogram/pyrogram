@@ -41,7 +41,7 @@ class SendPhoto(BaseClient):
                                              "pyrogram.ReplyKeyboardRemove",
                                              "pyrogram.ForceReply"] = None,
                          progress: callable = None,
-                         progress_args: tuple = ()) -> "pyrogram.Message":
+                         progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
         """Use this method to send photos.
 
         Args:
@@ -105,6 +105,7 @@ class SendPhoto(BaseClient):
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -112,45 +113,46 @@ class SendPhoto(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(photo):
-            file = await self.save_file(photo, progress=progress, progress_args=progress_args)
-            media = types.InputMediaUploadedPhoto(
-                file=file,
-                ttl_seconds=ttl_seconds
-            )
-        elif photo.startswith("http"):
-            media = types.InputMediaPhotoExternal(
-                url=photo,
-                ttl_seconds=ttl_seconds
-            )
-        else:
-            try:
-                decoded = utils.decode(photo)
-                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                unpacked = struct.unpack(fmt, decoded)
-            except (AssertionError, binascii.Error, struct.error):
-                raise FileIdInvalid from None
-            else:
-                if unpacked[0] != 2:
-                    media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                    if media_type:
-                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                    else:
-                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                media = types.InputMediaPhoto(
-                    id=types.InputPhoto(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    ),
+        try:
+            if os.path.exists(photo):
+                file = await self.save_file(photo, progress=progress, progress_args=progress_args)
+                media = types.InputMediaUploadedPhoto(
+                    file=file,
                     ttl_seconds=ttl_seconds
                 )
+            elif photo.startswith("http"):
+                media = types.InputMediaPhotoExternal(
+                    url=photo,
+                    ttl_seconds=ttl_seconds
+                )
+            else:
+                try:
+                    decoded = utils.decode(photo)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    if unpacked[0] != 2:
+                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
-        while True:
-            try:
-                r = await self.send(
+                        if media_type:
+                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                        else:
+                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                    media = types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=unpacked[2],
+                            access_hash=unpacked[3],
+                            file_reference=b""
+                        ),
+                        ttl_seconds=ttl_seconds
+                    )
+
+            while True:
+                try:
+                    r = await self.send(
                     functions.messages.SendMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=media,
@@ -171,3 +173,5 @@ class SendPhoto(BaseClient):
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}
                         )
+        except BaseClient.StopTransmission:
+            return None

@@ -46,7 +46,7 @@ class SendVideo(BaseClient):
                                              "pyrogram.ReplyKeyboardRemove",
                                              "pyrogram.ForceReply"] = None,
                          progress: callable = None,
-                         progress_args: tuple = ()) -> "pyrogram.Message":
+                         progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
         """Use this method to send video files.
 
         Args:
@@ -123,6 +123,7 @@ class SendVideo(BaseClient):
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -130,54 +131,55 @@ class SendVideo(BaseClient):
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        if os.path.exists(video):
-            thumb = None if thumb is None else self.save_file(thumb)
-            file = await self.save_file(video, progress=progress, progress_args=progress_args)
-            media = types.InputMediaUploadedDocument(
-                mime_type=mimetypes.types_map[".mp4"],
-                file=file,
-                thumb=thumb,
-                attributes=[
-                    types.DocumentAttributeVideo(
-                        supports_streaming=supports_streaming or None,
-                        duration=duration,
-                        w=width,
-                        h=height
-                    ),
-                    types.DocumentAttributeFilename(os.path.basename(video))
-                ]
-            )
-        elif video.startswith("http"):
-            media = types.InputMediaDocumentExternal(
-                url=video
-            )
-        else:
-            try:
-                decoded = utils.decode(video)
-                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                unpacked = struct.unpack(fmt, decoded)
-            except (AssertionError, binascii.Error, struct.error):
-                raise FileIdInvalid from None
-            else:
-                if unpacked[0] != 4:
-                    media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                    if media_type:
-                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                    else:
-                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                media = types.InputMediaDocument(
-                    id=types.InputDocument(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
+        try:
+            if os.path.exists(video):
+                thumb = None if thumb is None else self.save_file(thumb)
+                file = await self.save_file(video, progress=progress, progress_args=progress_args)
+                media = types.InputMediaUploadedDocument(
+                    mime_type=mimetypes.types_map[".mp4"],
+                    file=file,
+                    thumb=thumb,
+                    attributes=[
+                        types.DocumentAttributeVideo(
+                            supports_streaming=supports_streaming or None,
+                            duration=duration,
+                            w=width,
+                            h=height
+                        ),
+                        types.DocumentAttributeFilename(os.path.basename(video))
+                    ]
                 )
+            elif video.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=video
+                )
+            else:
+                try:
+                    decoded = utils.decode(video)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    if unpacked[0] != 4:
+                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
 
-        while True:
-            try:
-                r = await self.send(
+                        if media_type:
+                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                        else:
+                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                    media = types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=unpacked[2],
+                            access_hash=unpacked[3],
+                            file_reference=b""
+                        )
+                    )
+
+            while True:
+                try:
+                    r = await self.send(
                     functions.messages.SendMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=media,
@@ -198,3 +200,5 @@ class SendVideo(BaseClient):
                             {i.id: i for i in r.users},
                             {i.id: i for i in r.chats}
                         )
+        except BaseClient.StopTransmission:
+            return None
