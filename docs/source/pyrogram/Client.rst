@@ -13,6 +13,7 @@ Utilities
 
     start
     stop
+    restart
     idle
     run
     add_handler

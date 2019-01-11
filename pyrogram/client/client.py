@@ -113,18 +113,28 @@ class Client(Methods, BaseClient):
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
-        phone_number (``str``, *optional*):
-            Pass your phone number (with your Country Code prefix included) to avoid
-            entering it manually. Only applicable for new sessions.
+        phone_number (``str`` | ``callable``, *optional*):
+            Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
+            Or pass a callback function which accepts no arguments and must return the correct phone number as string
+            (e.g., "391234567890").
+            Only applicable for new sessions.
 
         phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only), or pass a callback function which accepts
-            a single positional argument *(phone_number)* and must return the correct phone code (e.g., "12345").
+            Pass the phone code as string (for test numbers only) to avoid entering it manually. Or pass a callback
+            function which accepts a single positional argument *(phone_number)* and must return the correct phone code
+            as string (e.g., "12345").
             Only applicable for new sessions.
 
         password (``str``, *optional*):
-            Pass your Two-Step Verification password (if you have one) to avoid entering it
-            manually. Only applicable for new sessions.
+            Pass your Two-Step Verification password as string (if you have one) to avoid entering it manually.
+            Or pass a callback function which accepts a single positional argument *(password_hint)* and must return
+            the correct password as string (e.g., "password").
+            Only applicable for new sessions.
+
+        recovery_code (``callable``, *optional*):
+            Pass a callback function which accepts a single positional argument *(email_pattern)* and must return the
+            correct password recovery code as string (e.g., "987654").
+            Only applicable for new sessions.
 
         force_sms (``str``, *optional*):
             Pass True to force Telegram sending the authorization code via SMS.
@@ -182,6 +192,7 @@ class Client(Methods, BaseClient):
                  phone_number: str = None,
                  phone_code: Union[str, callable] = None,
                  password: str = None,
+                 recovery_code: callable = None,
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
@@ -207,6 +218,7 @@ class Client(Methods, BaseClient):
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
+        self.recovery_code = recovery_code
         self.force_sms = force_sms
         self.first_name = first_name
         self.last_name = last_name
@@ -350,6 +362,16 @@ class Client(Methods, BaseClient):
 
         return self
 
+    async def restart(self):
+        """Use this method to restart the Client.
+        Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to restart a stopped Client.
+        """
+        await self.stop()
+        await self.start()
+
     async def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
         then gently stop the Client by closing the underlying connection.
@@ -476,20 +498,25 @@ class Client(Methods, BaseClient):
     async def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
-        password_hash_invalid_raises = self.password is not None
+        password_invalid_raises = self.password is not None
         first_name_invalid_raises = self.first_name is not None
 
+        async def default_phone_number_callback():
+            while True:
+                phone_number = await ainput("Enter phone number: ")
+                confirm = await ainput("Is \"{}\" correct? (y/n): ".format(phone_number))
+
+                if confirm in ("y", "1"):
+                    return phone_number
+                elif confirm in ("n", "2"):
+                    continue
+
         while True:
-            if self.phone_number is None:
-                self.phone_number = await ainput("Enter phone number: ")
-
-                while True:
-                    confirm = await ainput("Is \"{}\" correct? (y/n): ".format(self.phone_number))
-
-                    if confirm in ("y", "1"):
-                        break
-                    elif confirm in ("n", "2"):
-                        self.phone_number = await ainput("Enter phone number: ")
+            self.phone_number = (
+                await default_phone_number_callback() if self.phone_number is None
+                else str(await self.phone_number()) if callable(self.phone_number)
+                else str(self.phone_number)
+            )
 
             self.phone_number = self.phone_number.strip("+")
 
@@ -505,23 +532,21 @@ class Client(Methods, BaseClient):
                 await self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
+
+                self.auth_key = await Auth(
+                    self.dc_id,
+                    self.test_mode,
+                    self.ipv6,
+                    self._proxy
+                ).create()
 
                 self.session = Session(
                     self,
                     self.dc_id,
                     self.auth_key
                 )
-                await self.session.start()
 
-                r = await self.send(
-                    functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
-                    )
-                )
-                break
+                await self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
                 if phone_number_invalid_raises:
                     raise
@@ -536,6 +561,7 @@ class Client(Methods, BaseClient):
                     time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
+                raise
             else:
                 break
 
@@ -555,10 +581,23 @@ class Client(Methods, BaseClient):
             )
 
         while True:
+            if not phone_registered:
+                self.first_name = (
+                    await ainput("First name: ") if self.first_name is None
+                    else str(await self.first_name()) if callable(self.first_name)
+                    else str(self.first_name)
+                )
+
+                self.last_name = (
+                    await ainput("Last name: ") if self.last_name is None
+                    else str(await self.last_name()) if callable(self.last_name)
+                    else str(self.last_name)
+                )
+
             self.phone_code = (
                 await ainput("Enter phone code: ") if self.phone_code is None
-                else self.phone_code if type(self.phone_code) is str
-                else str(self.phone_code(self.phone_number))
+                else str(await self.phone_code(self.phone_number)) if callable(self.phone_code)
+                else str(self.phone_code)
             )
 
             try:
@@ -576,9 +615,6 @@ class Client(Methods, BaseClient):
                         phone_registered = False
                         continue
                 else:
-                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
-                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
-
                     try:
                         r = await self.send(
                             functions.auth.SignUp(
@@ -608,61 +644,62 @@ class Client(Methods, BaseClient):
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
 
+                async def default_password_callback(password_hint: str) -> str:
+                    print("Hint: {}".format(password_hint))
+                    return await ainput("Enter password (empty to recover): ")
+
+                async def default_recovery_callback(email_pattern: str) -> str:
+                    print("An e-mail containing the recovery code has been sent to {}".format(email_pattern))
+                    return await ainput("Enter password recovery code: ")
+
                 while True:
                     try:
                         r = await self.send(functions.account.GetPassword())
 
-                        if self.password is None:
-                            print("Hint: {}".format(r.hint))
-                            self.password = await ainput("Enter password: ")
+                        self.password = (
+                            await default_password_callback(r.hint) if self.password is None
+                            else str((await self.password(r.hint)) or "") if callable(self.password)
+                            else str(self.password)
+                        )
 
-                            self.password = await ainput("Enter password (empty to recover): ")
+                        if self.password == "":
+                            r = await self.send(functions.auth.RequestPasswordRecovery())
 
-                            if self.password == "":
-                                r = await self.send(functions.auth.RequestPasswordRecovery())
+                            self.recovery_code = (
+                                await default_recovery_callback(r.email_pattern) if self.recovery_code is None
+                                else str(await self.recovery_code(r.email_pattern)) if callable(self.recovery_code)
+                                else str(self.recovery_code)
+                            )
 
-                                print("An e-mail containing the recovery code has been sent to {}".format(
-                                    r.email_pattern
-                                ))
-
-                                r = await self.send(
-                                    functions.auth.RecoverPassword(
-                                        code=await ainput("Enter password recovery code: ")
-                                    )
+                            r = await self.send(
+                                functions.auth.RecoverPassword(
+                                    code=self.recovery_code
                                 )
-                            else:
-                                r = await self.send(
-                                    functions.auth.CheckPassword(
-                                        password=compute_check(r, self.password)
-                                    )
+                            )
+                        else:
+                            r = await self.send(
+                                functions.auth.CheckPassword(
+                                    password=compute_check(r, self.password)
                                 )
-                    except PasswordEmpty as e:
-                        if password_hash_invalid_raises:
+                            )
+                    except (PasswordEmpty, PasswordRecoveryNa, PasswordHashInvalid) as e:
+                        if password_invalid_raises:
                             raise
                         else:
                             print(e.MESSAGE)
                             self.password = None
-                    except PasswordRecoveryNa as e:
-                        if password_hash_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
-                    except PasswordHashInvalid as e:
-                        if password_hash_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
+                            self.recovery_code = None
                     except FloodWait as e:
-                        if password_hash_invalid_raises:
+                        if password_invalid_raises:
                             raise
                         else:
                             print(e.MESSAGE.format(x=e.x))
                             time.sleep(e.x)
                             self.password = None
+                            self.recovery_code = None
                     except Exception as e:
                         log.error(e, exc_info=True)
+                        raise
                     else:
                         break
                 break
@@ -674,6 +711,7 @@ class Client(Methods, BaseClient):
                     time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
+                raise
             else:
                 break
 

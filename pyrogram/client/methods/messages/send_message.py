@@ -88,10 +88,18 @@ class SendMessage(BaseClient):
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
+            peer = await self.resolve_peer(chat_id)
+
+            peer_id = (
+                peer.user_id
+                if isinstance(peer, types.InputPeerUser)
+                else -peer.chat_id
+            )
+
             return pyrogram.Message(
                 message_id=r.id,
                 chat=pyrogram.Chat(
-                    id=list((await self.resolve_peer(chat_id)).__dict__.values())[0],
+                    id=peer_id,
                     type="private",
                     client=self
                 ),
