@@ -912,7 +912,7 @@ class Message(PyrogramType, Update):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = None):
+    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = ()):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
