@@ -460,6 +460,12 @@ class Client(Methods, BaseClient):
         else:
             self.dispatcher.remove_handler(handler, group)
 
+    def stop_transmission(self):
+        """Use this method to stop downloading or uploading a file.
+        Must be called inside a progress callback function.
+        """
+        raise Client.StopTransmission
+
     def authorize_bot(self):
         try:
             r = self.send(
