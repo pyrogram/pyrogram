@@ -38,7 +38,7 @@ class SendSticker(BaseClient):
                                          "pyrogram.ReplyKeyboardRemove",
                                          "pyrogram.ForceReply"] = None,
                      progress: callable = None,
-                     progress_args: tuple = ()) -> "pyrogram.Message":
+                     progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
         """Use this method to send .webp stickers.
 
         Args:
@@ -89,69 +89,73 @@ class SendSticker(BaseClient):
 
         Returns:
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         file = None
 
-        if os.path.exists(sticker):
-            file = self.save_file(sticker, progress=progress, progress_args=progress_args)
-            media = types.InputMediaUploadedDocument(
-                mime_type="image/webp",
-                file=file,
-                attributes=[
-                    types.DocumentAttributeFilename(os.path.basename(sticker))
-                ]
-            )
-        elif sticker.startswith("http"):
-            media = types.InputMediaDocumentExternal(
-                url=sticker
-            )
-        else:
-            try:
-                decoded = utils.decode(sticker)
-                fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                unpacked = struct.unpack(fmt, decoded)
-            except (AssertionError, binascii.Error, struct.error):
-                raise FileIdInvalid from None
-            else:
-                if unpacked[0] != 8:
-                    media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                    if media_type:
-                        raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                    else:
-                        raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                media = types.InputMediaDocument(
-                    id=types.InputDocument(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
+        try:
+            if os.path.exists(sticker):
+                file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+                media = types.InputMediaUploadedDocument(
+                    mime_type="image/webp",
+                    file=file,
+                    attributes=[
+                        types.DocumentAttributeFilename(os.path.basename(sticker))
+                    ]
                 )
-
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.SendMedia(
-                        peer=self.resolve_peer(chat_id),
-                        media=media,
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id(),
-                        reply_markup=reply_markup.write() if reply_markup else None,
-                        message=""
-                    )
+            elif sticker.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=sticker
                 )
-            except FilePartMissing as e:
-                self.save_file(sticker, file_id=file.id, file_part=e.x)
             else:
-                for i in r.updates:
-                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return pyrogram.Message._parse(
-                            self, i.message,
-                            {i.id: i for i in r.users},
-                            {i.id: i for i in r.chats}
+                try:
+                    decoded = utils.decode(sticker)
+                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+                    unpacked = struct.unpack(fmt, decoded)
+                except (AssertionError, binascii.Error, struct.error):
+                    raise FileIdInvalid from None
+                else:
+                    if unpacked[0] != 8:
+                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+                        if media_type:
+                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
+                        else:
+                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+                    media = types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=unpacked[2],
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
+                    )
+
+            while True:
+                try:
+                    r = self.send(
+                        functions.messages.SendMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=media,
+                            silent=disable_notification or None,
+                            reply_to_msg_id=reply_to_message_id,
+                            random_id=self.rnd_id(),
+                            reply_markup=reply_markup.write() if reply_markup else None,
+                            message=""
+                        )
+                    )
+                except FilePartMissing as e:
+                    self.save_file(sticker, file_id=file.id, file_part=e.x)
+                else:
+                    for i in r.updates:
+                        if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                            return pyrogram.Message._parse(
+                                self, i.message,
+                                {i.id: i for i in r.users},
+                                {i.id: i for i in r.chats}
+                            )
+        except BaseClient.StopTransmission:
+            return None
