@@ -374,6 +374,16 @@ class Client(Methods, BaseClient):
 
         return self
 
+    def restart(self):
+        """Use this method to restart the Client.
+        Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to restart a stopped Client.
+        """
+        self.stop()
+        self.start()
+
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
         then gently stop the Client by closing the underlying connection.
