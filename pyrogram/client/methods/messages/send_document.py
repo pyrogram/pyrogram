@@ -157,25 +157,25 @@ class SendDocument(BaseClient):
             while True:
                 try:
                     r = await self.send(
-                    functions.messages.SendMedia(
-                        peer=await self.resolve_peer(chat_id),
-                        media=media,
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id,
-                        random_id=self.rnd_id(),
-                        reply_markup=reply_markup.write() if reply_markup else None,
-                        **style.parse(caption)
-                    )
-                )
-            except FilePartMissing as e:
-                await self.save_file(document, file_id=file.id, file_part=e.x)
-            else:
-                for i in r.updates:
-                    if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                        return await pyrogram.Message._parse(
-                            self, i.message,
-                            {i.id: i for i in r.users},
-                            {i.id: i for i in r.chats}
+                        functions.messages.SendMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=media,
+                            silent=disable_notification or None,
+                            reply_to_msg_id=reply_to_message_id,
+                            random_id=self.rnd_id(),
+                            reply_markup=reply_markup.write() if reply_markup else None,
+                            **style.parse(caption)
                         )
+                    )
+                except FilePartMissing as e:
+                    await self.save_file(document, file_id=file.id, file_part=e.x)
+                else:
+                    for i in r.updates:
+                        if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                            return await pyrogram.Message._parse(
+                                self, i.message,
+                                {i.id: i for i in r.users},
+                                {i.id: i for i in r.chats}
+                            )
         except BaseClient.StopTransmission:
             return None
