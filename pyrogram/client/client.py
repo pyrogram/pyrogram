@@ -1074,35 +1074,27 @@ class Client(Methods, BaseClient):
 
         if self.plugins:
             self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
+            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
+            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
         else:
-            self.plugins = {}
-
             try:
                 section = parser["plugins"]
 
-                include = section.get("include") or None
-                exclude = section.get("exclude") or None
-
-                if include is not None:
-                    include = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in include.strip().split("\n")
-                    ]
-
-                if exclude is not None:
-                    exclude = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in exclude.strip().split("\n")
-                    ]
-
-                self.plugins["enabled"] = section.getboolean("enabled", True)
-                self.plugins["root"] = section.get("root")
-                self.plugins["include"] = include
-                self.plugins["exclude"] = exclude
+                self.plugins = {
+                    "enabled": section.getboolean("enabled", True),
+                    "root": section.get("root"),
+                    "include": section.get("include") or None,
+                    "exclude": section.get("exclude") or None
+                }
             except KeyError:
                 pass
-            else:
-                print(self.plugins)
+
+        for option in ["include", "exclude"]:
+            if self.plugins[option] is not None:
+                self.plugins[option] = [
+                    (i.split()[0], i.split()[1:] or None)
+                    for i in self.plugins[option].strip().split("\n")
+                ]
 
     def load_session(self):
         try:
@@ -1140,7 +1132,7 @@ class Client(Methods, BaseClient):
             include = self.plugins["include"]
             exclude = self.plugins["exclude"]
 
-            plugins_count = 0
+            count = 0
 
             if include is None:
                 for path in sorted(Path(root).rglob("*.py")):
@@ -1158,7 +1150,7 @@ class Client(Methods, BaseClient):
                                 log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
                                     type(handler).__name__, name, group, module_path))
 
-                                plugins_count += 1
+                                count += 1
                         except Exception:
                             pass
             else:
@@ -1191,7 +1183,7 @@ class Client(Methods, BaseClient):
                                 log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
                                     type(handler).__name__, name, group, module_path))
 
-                                plugins_count += 1
+                                count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[LOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -1227,20 +1219,16 @@ class Client(Methods, BaseClient):
                                 log.info('[UNLOAD] {}("{}") from group {} in "{}"'.format(
                                     type(handler).__name__, name, group, module_path))
 
-                                plugins_count -= 1
+                                count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     name, module_path))
 
-            if plugins_count > 0:
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                    plugins_count,
-                    "s" if plugins_count > 1 else "",
-                    root
-                ))
+            if count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(count, "s" if count > 1 else "", root))
             else:
-                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(root))
+                log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
