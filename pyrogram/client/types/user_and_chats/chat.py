@@ -174,7 +174,7 @@ class Chat(PyrogramType):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
+    async def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
@@ -200,7 +200,7 @@ class Chat(PyrogramType):
                 parsed_chat.sticker_set_name = full_chat.stickerset
 
             if full_chat.pinned_msg_id:
-                parsed_chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
                     message_ids=full_chat.pinned_msg_id
                 )

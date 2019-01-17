@@ -73,4 +73,4 @@ class GetChat(BaseClient):
         else:
             r = await self.send(functions.messages.GetFullChat(peer.chat_id))
 
-        return pyrogram.Chat._parse_full(self, r)
+        return await pyrogram.Chat._parse_full(self, r)
