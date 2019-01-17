@@ -105,10 +105,10 @@ class BaseClient:
     async def resolve_peer(self, *args, **kwargs):
         pass
 
-    async def fetch_peers(self, *args, **kwargs):
+    def fetch_peers(self, *args, **kwargs):
         pass
 
-    async def add_handler(self, *args, **kwargs):
+    def add_handler(self, *args, **kwargs):
         pass
 
     async def save_file(self, *args, **kwargs):
