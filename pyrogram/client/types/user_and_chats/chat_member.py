@@ -37,8 +37,11 @@ class ChatMember(PyrogramType):
             Date when the user joined, unix time. Not available for creator.
 
         invited_by (:obj:`User <pyrogram.User>`, *optional*):
-            Information about the user who invited this member.
+            Administrators and self member only. Information about the user who invited this member.
             In case the user joined by himself this will be the same as "user".
+
+        promoted_by (:obj:`User <pyrogram.User>`, *optional*):
+            Administrators only. Information about the user who promoted this member as administrator.
 
         until_date (``int``, *optional*):
             Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
@@ -95,6 +98,7 @@ class ChatMember(PyrogramType):
                  status: str,
                  date: int = None,
                  invited_by: "pyrogram.User" = None,
+                 promoted_by: "pyrogram.User" = None,
                  until_date: int = None,
                  can_be_edited: bool = None,
                  can_change_info: bool = None,
@@ -115,6 +119,7 @@ class ChatMember(PyrogramType):
         self.status = status
         self.date = date
         self.invited_by = invited_by
+        self.promoted_by = promoted_by
         self.until_date = until_date
         self.can_be_edited = can_be_edited
         self.can_change_info = can_change_info
@@ -152,6 +157,7 @@ class ChatMember(PyrogramType):
                 status="administrator",
                 date=member.date,
                 invited_by=invited_by,
+                promoted_by=pyrogram.User._parse(client, users[member.promoted_by]),
                 can_be_edited=member.can_edit,
                 can_change_info=rights.change_info,
                 can_post_messages=rights.post_messages,
