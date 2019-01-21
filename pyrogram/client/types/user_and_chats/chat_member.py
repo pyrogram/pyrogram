@@ -36,6 +36,10 @@ class ChatMember(PyrogramType):
         date (``int``, *optional*):
             Date when the user joined, unix time. Not available for creator.
 
+        invited_by (:obj:`User <pyrogram.User>`, *optional*):
+            Information about the user who invited this member.
+            In case the user joined by himself this will be the same as "user".
+
         until_date (``int``, *optional*):
             Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
 
@@ -90,6 +94,7 @@ class ChatMember(PyrogramType):
                  user: "pyrogram.User",
                  status: str,
                  date: int = None,
+                 invited_by: "pyrogram.User" = None,
                  until_date: int = None,
                  can_be_edited: bool = None,
                  can_change_info: bool = None,
@@ -109,6 +114,7 @@ class ChatMember(PyrogramType):
         self.user = user
         self.status = status
         self.date = date
+        self.invited_by = invited_by
         self.until_date = until_date
         self.can_be_edited = can_be_edited
         self.can_change_info = can_change_info
@@ -125,17 +131,18 @@ class ChatMember(PyrogramType):
         self.can_add_web_page_previews = can_add_web_page_previews
 
     @staticmethod
-    def _parse(client, member, user) -> "ChatMember":
-        user = pyrogram.User._parse(client, user)
+    def _parse(client, member, users) -> "ChatMember":
+        user = pyrogram.User._parse(client, users[member.user_id])
+        invited_by = pyrogram.User._parse(client, users[member.inviter_id]) if hasattr(member, "inviter_id") else None
 
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
-            return ChatMember(user=user, status="member", date=member.date, client=client)
+            return ChatMember(user=user, status="member", date=member.date, invited_by=invited_by, client=client)
 
         if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
             return ChatMember(user=user, status="creator", client=client)
 
         if isinstance(member, types.ChatParticipantAdmin):
-            return ChatMember(user=user, status="administrator", date=member.date, client=client)
+            return ChatMember(user=user, status="administrator", date=member.date, invited_by=invited_by, client=client)
 
         if isinstance(member, types.ChannelParticipantAdmin):
             rights = member.admin_rights
@@ -144,6 +151,7 @@ class ChatMember(PyrogramType):
                 user=user,
                 status="administrator",
                 date=member.date,
+                invited_by=invited_by,
                 can_be_edited=member.can_edit,
                 can_change_info=rights.change_info,
                 can_post_messages=rights.post_messages,
