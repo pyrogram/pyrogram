@@ -181,8 +181,8 @@ class ChatMember(PyrogramType):
             chat_member = ChatMember(
                 user=user,
                 status=(
-                    "left" if member.left
-                    else "kicked" if rights.view_messages
+                    "kicked" if rights.view_messages
+                    else "left" if member.left
                     else "restricted"
                 ),
                 date=member.date,
