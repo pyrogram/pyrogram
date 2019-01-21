@@ -197,7 +197,7 @@ class Chat(PyrogramType):
                 parsed_chat.description = full_chat.about or None
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
-                parsed_chat.sticker_set_name = full_chat.stickerset
+                parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
