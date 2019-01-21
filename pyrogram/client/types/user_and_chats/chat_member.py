@@ -33,6 +33,9 @@ class ChatMember(PyrogramType):
             The member's status in the chat. Can be "creator", "administrator", "member", "restricted",
             "left" or "kicked".
 
+        date (``int``, *optional*):
+            Date when the user joined, unix time. Not available for creator.
+
         until_date (``int``, *optional*):
             Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
 
@@ -86,6 +89,7 @@ class ChatMember(PyrogramType):
                  client: "pyrogram.client.ext.BaseClient",
                  user: "pyrogram.User",
                  status: str,
+                 date: int = None,
                  until_date: int = None,
                  can_be_edited: bool = None,
                  can_change_info: bool = None,
@@ -104,6 +108,7 @@ class ChatMember(PyrogramType):
 
         self.user = user
         self.status = status
+        self.date = date
         self.until_date = until_date
         self.can_be_edited = can_be_edited
         self.can_change_info = can_change_info
@@ -124,13 +129,13 @@ class ChatMember(PyrogramType):
         user = pyrogram.User._parse(client, user)
 
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
-            return ChatMember(user=user, status="member", client=client)
+            return ChatMember(user=user, status="member", date=member.date, client=client)
 
         if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
             return ChatMember(user=user, status="creator", client=client)
 
         if isinstance(member, types.ChatParticipantAdmin):
-            return ChatMember(user=user, status="administrator", client=client)
+            return ChatMember(user=user, status="administrator", date=member.date, client=client)
 
         if isinstance(member, types.ChannelParticipantAdmin):
             rights = member.admin_rights
@@ -138,6 +143,7 @@ class ChatMember(PyrogramType):
             return ChatMember(
                 user=user,
                 status="administrator",
+                date=member.date,
                 can_be_edited=member.can_edit,
                 can_change_info=rights.change_info,
                 can_post_messages=rights.post_messages,
@@ -160,6 +166,7 @@ class ChatMember(PyrogramType):
                     else "kicked" if rights.view_messages
                     else "restricted"
                 ),
+                date=member.date,
                 until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date,
                 client=client
             )
