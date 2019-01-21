@@ -99,7 +99,7 @@ class Audio(PyrogramType):
             title=audio_attributes.title,
             mime_type=audio.mime_type,
             file_size=audio.size,
-            thumb=PhotoSize._parse(client, audio.thumb),
+            thumb=PhotoSize._parse(client, audio.thumbs),
             file_name=file_name,
             date=audio.date,
             client=client

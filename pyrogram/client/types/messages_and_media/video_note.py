@@ -85,7 +85,7 @@ class VideoNote(PyrogramType):
             ),
             length=video_attributes.w,
             duration=video_attributes.duration,
-            thumb=PhotoSize._parse(client, video_note.thumb),
+            thumb=PhotoSize._parse(client, video_note.thumbs),
             file_size=video_note.size,
             mime_type=video_note.mime_type,
             date=video_note.date,

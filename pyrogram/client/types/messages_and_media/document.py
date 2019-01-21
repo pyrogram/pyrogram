@@ -78,7 +78,7 @@ class Document(PyrogramType):
                     document.access_hash
                 )
             ),
-            thumb=PhotoSize._parse(client, document.thumb),
+            thumb=PhotoSize._parse(client, document.thumbs),
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,
