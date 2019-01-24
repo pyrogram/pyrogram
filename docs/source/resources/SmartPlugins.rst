@@ -13,7 +13,8 @@ Introduction
 ------------
 
 Prior to the Smart Plugin system, pluggable handlers were already possible. For example, if you wanted to modularize
-your applications, you had to do something like this:
+your applications, you had to put your function definitions in separate files and register them inside your main script,
+like this:
 
 .. note::
 
@@ -66,15 +67,15 @@ your applications, you had to do something like this:
 This is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
 manually ``import``, manually :meth:`add_handler <pyrogram.Client.add_handler>` and manually instantiate each
 :obj:`MessageHandler <pyrogram.MessageHandler>` object because **you can't use those cool decorators** for your
-functions. So... What if you could?
+functions. So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
 
 Using Smart Plugins
 -------------------
 
-Setting up your Pyrogram project to accommodate Smart Plugins is pretty straightforward:
+Setting up your Pyrogram project to accommodate Smart Plugins is straightforward:
 
-#. Create a new folder to store all the plugins (e.g.: "plugins").
-#. Put your files full of plugins inside. Organize them as you wish.
+#. Create a new folder to store all the plugins (e.g.: "plugins", "handlers", ...).
+#. Put your python files full of plugins inside. Organize them as you wish.
 #. Enable plugins in your Client or via the *config.ini* file.
 
 .. note::
@@ -160,7 +161,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``
-keys, either in the *config.ini* or in the dictionary passed as Client argument. Here's how they work:
+keys, either in the *config.ini* file or in the dictionary passed as Client argument. Here's how they work:
 
 - If both ``include`` and ``exclude`` are omitted, all plugins are loaded as described above.
 - If ``include`` is given, only the specified plugins will be loaded, in the order they are passed.
@@ -169,7 +170,7 @@ keys, either in the *config.ini* or in the dictionary passed as Client argument.
 The ``include`` and ``exclude`` value is a **list of strings**. Each string containing the path of the module relative
 to the plugins root folder, in Python notation (dots instead of slashes).
 
-    E.g.: ``subfolder.module`` refers to ``plugins/subfolder/module.py`` (root="plugins").
+    E.g.: ``subfolder.module`` refers to ``plugins/subfolder/module.py``, with ``root="plugins"`.
 
 You can also choose the order in which the single handlers inside a module are loaded, thus overriding the default
 top-to-bottom loading policy. You can do this by appending the name of the functions to the module path, each one
@@ -290,4 +291,69 @@ also organized in subfolders:
 Load/Unload Plugins at Runtime
 ------------------------------
 
-TODO
+In the `previous section <#specifying-the-plugins-to-include>`_ we've explained how to specify which plugins to load and
+which to ignore before your Client starts. Here we'll show, instead, how to unload and load again a previously
+registered plugins at runtime.
+
+Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram updates
+) will be modified in such a way that, when you reference them later on, they will be actually pointing to a tuple of
+*(handler: Handler, group: int)*. The actual callback function is therefore stored inside the handler's *callback*
+attribute. Here's an example:
+
+- ``plugins/handlers.py``
+
+    .. code-block:: python
+        :emphasize-lines: 5, 6
+
+        @Client.on_message(Filters.text & Filters.private)
+        def echo(client, message):
+            message.reply(message.text)
+
+        print(echo)
+        print(echo[0].callback)
+
+-   Printing ``echo`` will show something like ``(<MessageHandler object at 0x10e3abc50>, 0)``.
+
+-   Printing ``echo[0].callback``, that is, the *callback* attribute of the first eleent of the tuple, which is an
+    Handler, will reveal the actual callback ``<function echo at 0x10e3b6598>``.
+
+Unloading
+^^^^^^^^^
+
+In order to unload a plugin, or any other handler, all you need to do is obtain a reference to it (by importing the
+relevant module) and call :meth:`remove_handler <pyrogram.Client.remove_handler>` Client's method with your function
+name preceded by the star ``*`` operator as argument. Example:
+
+- ``main.py``
+
+    .. code-block:: python
+
+        from plugins.handlers import echo
+
+        ...
+
+        app.remove_handler(*echo)
+
+The star ``*`` operator is used to unpack the tuple into positional arguments so that *remove_handler* will receive
+exactly what is needed. The same could have been achieved with:
+
+.. code-block:: python
+
+    handler, group = echo
+    app.remove_handler(handler, group)
+
+Loading
+^^^^^^^
+
+Similarly to the unloading process, in order to load again a previously unloaded plugin you do the same, but this time
+using :meth:`add_handler <pyrogram.Client.add_handler>` instead. Example:
+
+- ``main.py``
+
+    .. code-block:: python
+
+        from plugins.handlers import echo
+
+        ...
+
+        app.add_handler(*echo)
