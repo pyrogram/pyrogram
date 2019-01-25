@@ -157,10 +157,8 @@ class Client(Methods, BaseClient):
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
 
-        plugins_dir (``str``, *optional*):
-            Define a custom directory for your plugins. The plugins directory is the location in your
-            filesystem where Pyrogram will automatically load your update handlers.
-            Defaults to None (plugins disabled).
+        plugins (``dict``, *optional*):
+            TODO: doctrings
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -197,7 +195,7 @@ class Client(Methods, BaseClient):
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str = None,
+                 plugins: dict = None,
                  no_updates: bool = None,
                  takeout: bool = None):
         super().__init__()
@@ -223,7 +221,7 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
-        self.plugins_dir = plugins_dir
+        self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
 
@@ -1074,6 +1072,30 @@ class Client(Methods, BaseClient):
                 self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
                 self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
+        if self.plugins:
+            self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
+            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
+            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
+        else:
+            try:
+                section = parser["plugins"]
+
+                self.plugins = {
+                    "enabled": section.getboolean("enabled", True),
+                    "root": section.get("root"),
+                    "include": section.get("include") or None,
+                    "exclude": section.get("exclude") or None
+                }
+            except KeyError:
+                pass
+
+        for option in ["include", "exclude"]:
+            if self.plugins[option] is not None:
+                self.plugins[option] = [
+                    (i.split()[0], i.split()[1:] or None)
+                    for i in self.plugins[option].strip().split("\n")
+                ]
+
     def load_session(self):
         try:
             with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
@@ -1105,43 +1127,108 @@ class Client(Methods, BaseClient):
                     self.peers_by_phone[k] = peer
 
     def load_plugins(self):
-        if self.plugins_dir is not None:
-            plugins_count = 0
+        if self.plugins.get("enabled", False):
+            root = self.plugins["root"]
+            include = self.plugins["include"]
+            exclude = self.plugins["exclude"]
 
-            for path in Path(self.plugins_dir).rglob("*.py"):
-                file_path = os.path.splitext(str(path))[0]
-                import_path = []
+            count = 0
 
-                while file_path:
-                    file_path, tail = os.path.split(file_path)
-                    import_path.insert(0, tail)
+            if include is None:
+                for path in sorted(Path(root).rglob("*.py")):
+                    module_path = os.path.splitext(str(path))[0].replace("/", ".")
+                    module = import_module(module_path)
 
-                import_path = ".".join(import_path)
-                module = import_module(import_path)
+                    for name in vars(module).keys():
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
 
-                for name in dir(module):
-                    # noinspection PyBroadException
-                    try:
-                        handler, group = getattr(module, name)
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
 
-                        if isinstance(handler, Handler) and isinstance(group, int):
-                            self.add_handler(handler, group)
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
 
-                            log.info('{}("{}") from "{}" loaded in group {}'.format(
-                                type(handler).__name__, name, import_path, group))
-
-                            plugins_count += 1
-                    except Exception:
-                        pass
-
-            if plugins_count > 0:
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                    plugins_count,
-                    "s" if plugins_count > 1 else "",
-                    self.plugins_dir
-                ))
+                                count += 1
+                        except Exception:
+                            pass
             else:
-                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+                for path, handlers in include:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[LOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
+
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count += 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if exclude is not None:
+                for path, handlers in exclude:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[UNLOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.remove_handler(handler, group)
+
+                                log.info('[UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count -= 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(count, "s" if count > 1 else "", root))
+            else:
+                log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
