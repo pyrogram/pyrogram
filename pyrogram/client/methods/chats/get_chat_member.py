@@ -67,6 +67,8 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            return pyrogram.ChatMember._parse(self, r.participant, r.users[0])
+            users = {i.id: i for i in r.users}
+
+            return pyrogram.ChatMember._parse(self, r.participant, users)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

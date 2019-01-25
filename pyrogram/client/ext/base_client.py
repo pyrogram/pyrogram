@@ -125,3 +125,6 @@ class BaseClient:
 
     async def get_chat_members(self, *args, **kwargs):
         pass
+
+    def get_chat_members_count(self, *args, **kwargs):
+        pass
