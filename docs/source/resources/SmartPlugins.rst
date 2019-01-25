@@ -170,7 +170,7 @@ keys, either in the *config.ini* file or in the dictionary passed as Client argu
 The ``include`` and ``exclude`` value is a **list of strings**. Each string containing the path of the module relative
 to the plugins root folder, in Python notation (dots instead of slashes).
 
-    E.g.: ``subfolder.module`` refers to ``plugins/subfolder/module.py``, with ``root="plugins"`.
+    E.g.: ``subfolder.module`` refers to ``plugins/subfolder/module.py``, with ``root="plugins"``.
 
 You can also choose the order in which the single handlers inside a module are loaded, thus overriding the default
 top-to-bottom loading policy. You can do this by appending the name of the functions to the module path, each one
