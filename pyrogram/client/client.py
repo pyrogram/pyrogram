@@ -1087,14 +1087,15 @@ class Client(Methods, BaseClient):
                     "exclude": section.get("exclude") or None
                 }
             except KeyError:
-                pass
+                self.plugins = {}
 
-        for option in ["include", "exclude"]:
-            if self.plugins[option] is not None:
-                self.plugins[option] = [
-                    (i.split()[0], i.split()[1:] or None)
-                    for i in self.plugins[option].strip().split("\n")
-                ]
+        if self.plugins:
+            for option in ["include", "exclude"]:
+                if self.plugins[option] is not None:
+                    self.plugins[option] = [
+                        (i.split()[0], i.split()[1:] or None)
+                        for i in self.plugins[option].strip().split("\n")
+                    ]
 
     async def load_session(self):
         try:
