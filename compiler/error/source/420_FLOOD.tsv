@@ -1,2 +1,3 @@
 id	message
 FLOOD_WAIT_X	A wait of {x} seconds is required
+TAKEOUT_INIT_DELAY_X	Either confirm data export request on another device or wait {x} seconds
