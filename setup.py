@@ -127,7 +127,7 @@ class Generate(Command):
             docs_compiler.start()
 
 
-if len(argv) > 1 and argv[1] in ["bdist_wheel", "install"]:
+if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     error_compiler.start()
     api_compiler.start()
     docs_compiler.start()
