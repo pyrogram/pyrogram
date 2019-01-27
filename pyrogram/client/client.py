@@ -139,8 +139,9 @@ class Client(Methods, BaseClient):
             Only applicable for new sessions.
 
         first_name (``str``, *optional*):
-            Pass a First Name to avoid entering it manually. It will be used to automatically
-            create a new Telegram account in case the phone number you passed is not registered yet.
+            Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
+            arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
+            a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
         last_name (``str``, *optional*):
@@ -158,7 +159,8 @@ class Client(Methods, BaseClient):
             Path of the configuration file. Defaults to ./config.ini
 
         plugins (``dict``, *optional*):
-            TODO: doctrings
+            Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
