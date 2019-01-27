@@ -209,3 +209,12 @@ class Chat(PyrogramType):
                 parsed_chat.invite_link = full_chat.exported_invite.link
 
         return parsed_chat
+
+    @staticmethod
+    def _parse_mtproto_chat(client, chat):
+        if isinstance(chat, types.Chat):
+            return Chat._parse_chat_chat(client, chat)
+        elif isinstance(chat, types.User):
+            return Chat._parse_user_chat(client, chat)
+        else:
+            return Chat._parse_channel_chat(client, chat)

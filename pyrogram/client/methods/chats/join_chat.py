@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
@@ -36,7 +37,7 @@ class JoinChat(BaseClient):
         match = self.INVITE_LINK_RE.match(chat_id)
 
         if match:
-            return self.send(
+            chat = self.send(
                 functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
@@ -53,8 +54,10 @@ class JoinChat(BaseClient):
                 access_hash=resolved_peer.chats[0].access_hash
             )
 
-            return self.send(
+            chat = self.send(
                 functions.channels.JoinChannel(
                     channel=channel
                 )
             )
+
+        return pyrogram.Chat._parse_mtproto_chat(self, chat.chats[0])
