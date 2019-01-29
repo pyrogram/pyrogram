@@ -133,7 +133,7 @@ class SendVideo(BaseClient):
 
         try:
             if os.path.exists(video):
-                thumb = None if thumb is None else self.save_file(thumb)
+                thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=mimetypes.types_map[".mp4"],
