@@ -16,20 +16,31 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .delete_user_profile_photos import DeleteUserProfilePhotos
-from .get_me import GetMe
-from .get_user_profile_photos import GetUserProfilePhotos
-from .get_users import GetUsers
-from .set_user_profile_photo import SetUserProfilePhoto
-from .set_username import SetUsername
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class Users(
-    GetUserProfilePhotos,
-    SetUserProfilePhoto,
-    DeleteUserProfilePhotos,
-    GetUsers,
-    GetMe,
-    SetUsername
-):
-    pass
+class SetUsername(BaseClient):
+    def set_username(self,
+                     username: str) -> bool:
+        """Use this method to set a username.
+
+        This method only works for Users.
+        Bots usernames must be changed via Telegram Support.
+
+        Args:
+            username (``str``):
+                Username to set.
+
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+
+        return bool(
+            self.send(
+                functions.account.UpdateUsername(username)
+            )
+        )
