@@ -115,6 +115,3 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-test.py
-video.jpg
-video.mp4
