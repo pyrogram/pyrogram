@@ -31,6 +31,9 @@ class JoinChat(BaseClient):
                 Unique identifier for the target chat in form of a *t.me/joinchat/* link or username of the target
                 channel/supergroup (in the format @username).
 
+        Returns:
+            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
@@ -42,6 +45,10 @@ class JoinChat(BaseClient):
                     hash=match.group(1)
                 )
             )
+            if isinstance(chat.chats[0], types.Chat):
+                return pyrogram.Chat._parse_chat_chat(self, chat.chats[0])
+            elif isinstance(chat.chats[0], types.Channel):
+                return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
         else:
             resolved_peer = self.send(
                 functions.contacts.ResolveUsername(
@@ -60,4 +67,4 @@ class JoinChat(BaseClient):
                 )
             )
 
-        return pyrogram.Chat._parse_mtproto_chat(self, chat.chats[0])
+            return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
