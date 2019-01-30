@@ -21,7 +21,7 @@ from .get_me import GetMe
 from .get_user_profile_photos import GetUserProfilePhotos
 from .get_users import GetUsers
 from .set_user_profile_photo import SetUserProfilePhoto
-from .set_username import SetUsername
+from .update_user_username import UpdateUserUsername
 
 
 class Users(
@@ -30,6 +30,6 @@ class Users(
     DeleteUserProfilePhotos,
     GetUsers,
     GetMe,
-    SetUsername
+    UpdateUserUsername
 ):
     pass

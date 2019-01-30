@@ -16,21 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class SetUsername(BaseClient):
-    def set_username(self,
-                     username: str) -> bool:
-        """Use this method to set a username.
+class UpdateUserUsername(BaseClient):
+    def update_user_username(self,
+                             username: Union[str, None]) -> bool:
+        """Use this method to update a username.
 
         This method only works for Users.
-        Bots usernames must be changed via Telegram Support.
+        Bots usernames must be changed via Bot Support.
 
         Args:
-            username (``str``):
-                Username to set.
+            username (``str`` | ``None``):
+                Username to set. Empty or ``None`` to remove username.
 
         Returns:
             True on success.
@@ -41,6 +43,6 @@ class SetUsername(BaseClient):
 
         return bool(
             self.send(
-                functions.account.UpdateUsername(username)
+                functions.account.UpdateUsername(username or '')
             )
         )
