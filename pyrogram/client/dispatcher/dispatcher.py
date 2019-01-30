@@ -128,10 +128,11 @@ class Dispatcher:
 
                 parser = self.update_parsers.get(type(update), None)
 
-                if parser is None:
-                    continue
-
-                parsed_update, handler_type = parser(update, users, chats)
+                parsed_update, handler_type = (
+                    parser(update, users, chats)
+                    if parser
+                    else (None, type)
+                )
 
                 for group in self.groups.values():
                     try:
