@@ -130,7 +130,7 @@ class SendAudio(BaseClient):
 
         try:
             if os.path.exists(audio):
-                thumb = None if thumb is None else self.save_file(thumb)
+                thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
