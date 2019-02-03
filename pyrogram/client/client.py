@@ -530,9 +530,10 @@ class Client(Methods, BaseClient):
             try:
                 r = self.send(
                     functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
+                        phone_number=self.phone_number,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        settings=types.CodeSettings()
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
