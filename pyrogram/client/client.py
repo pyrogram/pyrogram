@@ -48,7 +48,6 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
@@ -571,7 +570,7 @@ class Client(Methods, BaseClient):
                     raise
                 else:
                     print(e.MESSAGE.format(x=e.x))
-                    time.sleep(e.x)
+                    await asyncio.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
                 raise
@@ -707,7 +706,7 @@ class Client(Methods, BaseClient):
                             raise
                         else:
                             print(e.MESSAGE.format(x=e.x))
-                            time.sleep(e.x)
+                            await asyncio.sleep(e.x)
                             self.password = None
                             self.recovery_code = None
                     except Exception as e:
@@ -721,7 +720,7 @@ class Client(Methods, BaseClient):
                     raise
                 else:
                     print(e.MESSAGE.format(x=e.x))
-                    time.sleep(e.x)
+                    await asyncio.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
                 raise

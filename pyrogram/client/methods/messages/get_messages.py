@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import time
 from typing import Union, Iterable
 
 import pyrogram
@@ -88,7 +88,7 @@ class GetMessages(BaseClient):
                 r = await self.send(rpc)
             except FloodWait as e:
                 log.warning("Sleeping for {}s".format(e.x))
-                time.sleep(e.x)
+                await asyncio.sleep(e.x)
             else:
                 break
 
