@@ -21,6 +21,13 @@ class StopPropagation(StopIteration):
     pass
 
 
+class ContinuePropagation(StopIteration):
+    pass
+
+
 class Update:
     def stop_propagation(self):
         raise StopPropagation
+
+    def continue_propagation(self):
+        raise ContinuePropagation

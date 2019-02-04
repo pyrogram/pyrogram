@@ -151,6 +151,8 @@ class Dispatcher:
                             handler.callback(self.client, *args)
                         except pyrogram.StopPropagation:
                             raise
+                        except pyrogram.ContinuePropagation:
+                            continue
                         except Exception as e:
                             log.error(e, exc_info=True)
 
