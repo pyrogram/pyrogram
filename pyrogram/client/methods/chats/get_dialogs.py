@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import time
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -73,8 +73,8 @@ class GetDialogs(BaseClient):
                         )
                     )
             except FloodWait as e:
-                log.warning("Sleeping {}s".format(e.x))
-                time.sleep(e.x)
+                log.warning("Sleeping for {}s".format(e.x))
+                await asyncio.sleep(e.x)
             else:
                 break
 

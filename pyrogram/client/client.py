@@ -48,7 +48,6 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
@@ -141,8 +140,9 @@ class Client(Methods, BaseClient):
             Only applicable for new sessions.
 
         first_name (``str``, *optional*):
-            Pass a First Name to avoid entering it manually. It will be used to automatically
-            create a new Telegram account in case the phone number you passed is not registered yet.
+            Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
+            arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
+            a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
         last_name (``str``, *optional*):
@@ -160,7 +160,8 @@ class Client(Methods, BaseClient):
             Path of the configuration file. Defaults to ./config.ini
 
         plugins (``dict``, *optional*):
-            TODO: doctrings
+            Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -569,7 +570,7 @@ class Client(Methods, BaseClient):
                     raise
                 else:
                     print(e.MESSAGE.format(x=e.x))
-                    time.sleep(e.x)
+                    await asyncio.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
                 raise
@@ -705,7 +706,7 @@ class Client(Methods, BaseClient):
                             raise
                         else:
                             print(e.MESSAGE.format(x=e.x))
-                            time.sleep(e.x)
+                            await asyncio.sleep(e.x)
                             self.password = None
                             self.recovery_code = None
                     except Exception as e:
@@ -719,7 +720,7 @@ class Client(Methods, BaseClient):
                     raise
                 else:
                     print(e.MESSAGE.format(x=e.x))
-                    time.sleep(e.x)
+                    await asyncio.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
                 raise
