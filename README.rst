@@ -120,10 +120,10 @@ Copyright & License
 
 .. |description| replace:: **Telegram MTProto API Framework for Python**
 
-.. |schema| image:: "https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
+.. |schema| image:: https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30
     :target: compiler/api/source/main_api.tl
     :alt: Schema Layer
 
-.. |tgcrypto| image:: "https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
+.. |tgcrypto| image:: https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30
     :target: https://github.com/pyrogram/tgcrypto
     :alt: TgCrypto Version
