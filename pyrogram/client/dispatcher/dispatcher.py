@@ -128,35 +128,35 @@ class Dispatcher:
 
                 parser = self.update_parsers.get(type(update), None)
 
-                if parser is None:
-                    continue
-
-                parsed_update, handler_type = parser(update, users, chats)
+                parsed_update, handler_type = (
+                    parser(update, users, chats)
+                    if parser is not None
+                    else (None, type(None))
+                )
 
                 for group in self.groups.values():
-                    try:
-                        for handler in group:
-                            args = None
+                    for handler in group:
+                        args = None
 
-                            if isinstance(handler, RawUpdateHandler):
-                                args = (update, users, chats)
-                            elif isinstance(handler, handler_type):
-                                if handler.check(parsed_update):
-                                    args = (parsed_update,)
+                        if isinstance(handler, handler_type):
+                            if handler.check(parsed_update):
+                                args = (parsed_update,)
+                        elif isinstance(handler, RawUpdateHandler):
+                            args = (update, users, chats)
 
-                            if args is None:
-                                continue
+                        if args is None:
+                            continue
 
-                            try:
-                                handler.callback(self.client, *args)
-                            except StopIteration:
-                                raise
-                            except Exception as e:
-                                log.error(e, exc_info=True)
+                        try:
+                            handler.callback(self.client, *args)
+                        except pyrogram.StopPropagation:
+                            raise
+                        except Exception as e:
+                            log.error(e, exc_info=True)
 
-                            break
-                    except StopIteration:
                         break
+            except pyrogram.StopPropagation:
+                pass
             except Exception as e:
                 log.error(e, exc_info=True)
 
