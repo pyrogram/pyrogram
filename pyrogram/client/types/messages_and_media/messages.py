@@ -52,9 +52,38 @@ class Messages(PyrogramType, Update):
         users = {i.id: i for i in messages.users}
         chats = {i.id: i for i in messages.chats}
 
+        total_count = getattr(messages, "count", len(messages.messages))
+
+        if not messages.messages:
+            return Messages(
+                total_count=total_count,
+                messages=[],
+                client=client
+            )
+
+        parsed_messages = [Message._parse(client, message, users, chats, replies=0) for message in messages.messages]
+
+        if replies:
+            messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
+            reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
+
+            if reply_message_ids:
+                reply_messages = client.get_messages(
+                    parsed_messages[0].chat.id,
+                    reply_to_message_ids=reply_message_ids,
+                    replies=0
+                ).messages
+
+                for message in parsed_messages:
+                    reply_id = messages_with_replies[message.message_id]
+
+                    for reply in reply_messages:
+                        if reply.message_id == reply_id:
+                            message.reply_to_message = reply
+
         return Messages(
-            total_count=getattr(messages, "count", len(messages.messages)),
-            messages=[Message._parse(client, message, users, chats, replies) for message in messages.messages],
+            total_count=total_count,
+            messages=parsed_messages,
             client=client
         )
 

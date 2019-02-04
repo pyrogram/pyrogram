@@ -18,12 +18,12 @@
 
 import sys
 
-__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
+__copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.10.3"
+__version__ = "0.11.0"
 
 from .api.errors import Error
 from .client.types import (
@@ -32,7 +32,8 @@ from .client.types import (
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    Poll, PollOption, ChatPreview, StopPropagation
+    Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore,
+    GameHighScores
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,

@@ -121,6 +121,9 @@ class Message(PyrogramType, Update):
         animation (:obj:`Animation <pyrogram.Animation>`, *optional*):
             Message is an animation, information about the animation.
 
+        game (:obj:`Game <pyrogram.Game>`, *optional*):
+            Message is a game, information about the game.
+
         video (:obj:`Video <pyrogram.Video>`, *optional*):
             Message is a video, information about the video.
 
@@ -199,6 +202,10 @@ class Message(PyrogramType, Update):
             Note that the Message object in this field will not contain further reply_to_message fields even if it
             is itself a reply.
 
+        game_high_score (:obj:`GameHighScore <pyrogram.GameHighScore>`, *optional*):
+            The game score for a user.
+            The reply_to_message field will contain the game Message.
+
         views (``int``, *optional*):
             Channel post views.
 
@@ -255,6 +262,7 @@ class Message(PyrogramType, Update):
                  photo: "pyrogram.Photo" = None,
                  sticker: "pyrogram.Sticker" = None,
                  animation: "pyrogram.Animation" = None,
+                 game: "pyrogram.Game" = None,
                  video: "pyrogram.Video" = None,
                  voice: "pyrogram.Voice" = None,
                  video_note: "pyrogram.VideoNote" = None,
@@ -275,6 +283,7 @@ class Message(PyrogramType, Update):
                  migrate_to_chat_id: int = None,
                  migrate_from_chat_id: int = None,
                  pinned_message: "Message" = None,
+                 game_high_score: int = None,
                  views: int = None,
                  via_bot: User = None,
                  outgoing: bool = None,
@@ -311,6 +320,7 @@ class Message(PyrogramType, Update):
         self.photo = photo
         self.sticker = sticker
         self.animation = animation
+        self.game = game
         self.video = video
         self.voice = voice
         self.video_note = video_note
@@ -331,6 +341,7 @@ class Message(PyrogramType, Update):
         self.migrate_to_chat_id = migrate_to_chat_id
         self.migrate_from_chat_id = migrate_from_chat_id
         self.pinned_message = pinned_message
+        self.game_high_score = game_high_score
         self.views = views
         self.via_bot = via_bot
         self.outgoing = outgoing
@@ -407,6 +418,19 @@ class Message(PyrogramType, Update):
                 except MessageIdsEmpty:
                     pass
 
+            if isinstance(action, types.MessageActionGameScore):
+                parsed_message.game_high_score = pyrogram.GameHighScore._parse_action(client, message, users)
+
+                if message.reply_to_msg_id and replies:
+                    try:
+                        parsed_message.reply_to_message = client.get_messages(
+                            parsed_message.chat.id,
+                            reply_to_message_ids=message.id,
+                            replies=0
+                        )
+                    except MessageIdsEmpty:
+                        pass
+
             return parsed_message
 
         if isinstance(message, types.Message):
@@ -435,6 +459,7 @@ class Message(PyrogramType, Update):
             location = None
             contact = None
             venue = None
+            game = None
             audio = None
             voice = None
             animation = None
@@ -456,6 +481,8 @@ class Message(PyrogramType, Update):
                     contact = Contact._parse(client, media)
                 elif isinstance(media, types.MessageMediaVenue):
                     venue = pyrogram.Venue._parse(client, media)
+                elif isinstance(media, types.MessageMediaGame):
+                    game = pyrogram.Game._parse(client, message)
                 elif isinstance(media, types.MessageMediaDocument):
                     doc = media.document
 
@@ -543,6 +570,7 @@ class Message(PyrogramType, Update):
                 audio=audio,
                 voice=voice,
                 animation=animation,
+                game=game,
                 video=video,
                 video_note=video_note,
                 sticker=sticker,
@@ -884,7 +912,7 @@ class Message(PyrogramType, Update):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = None):
+    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = ()):
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:

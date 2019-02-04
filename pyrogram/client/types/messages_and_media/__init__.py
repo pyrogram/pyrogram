@@ -20,6 +20,7 @@ from .animation import Animation
 from .audio import Audio
 from .contact import Contact
 from .document import Document
+from .game import Game
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity

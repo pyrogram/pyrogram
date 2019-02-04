@@ -16,11 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
+from pyrogram.api.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
@@ -30,10 +35,11 @@ class GetHistory(BaseClient):
                     offset: int = 0,
                     offset_id: int = 0,
                     offset_date: int = 0,
-                    reversed: bool = False):
-        """Use this method to retrieve the history of a chat.
+                    reverse: bool = False):
+        """Use this method to retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
+        For a more convenient way of getting a chat history see :meth:`iter_history`.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -55,7 +61,7 @@ class GetHistory(BaseClient):
             offset_date (``int``, *optional*):
                 Pass a date in Unix time as offset to retrieve only older messages starting from that date.
 
-            reversed (``bool``, *optional*):
+            reverse (``bool``, *optional*):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
@@ -65,23 +71,30 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        messages = pyrogram.Messages._parse(
-            self,
-            self.send(
-                functions.messages.GetHistory(
-                    peer=self.resolve_peer(chat_id),
-                    offset_id=offset_id,
-                    offset_date=offset_date,
-                    add_offset=offset - (limit if reversed else 0),
-                    limit=limit,
-                    max_id=0,
-                    min_id=0,
-                    hash=0
+        while True:
+            try:
+                messages = pyrogram.Messages._parse(
+                    self,
+                    self.send(
+                        functions.messages.GetHistory(
+                            peer=self.resolve_peer(chat_id),
+                            offset_id=offset_id,
+                            offset_date=offset_date,
+                            add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
+                            limit=limit,
+                            max_id=0,
+                            min_id=0,
+                            hash=0
+                        )
+                    )
                 )
-            )
-        )
+            except FloodWait as e:
+                log.warning("Sleeping for {}s".format(e.x))
+                time.sleep(e.x)
+            else:
+                break
 
-        if reversed:
+        if reverse:
             messages.messages.reverse()
 
         return messages

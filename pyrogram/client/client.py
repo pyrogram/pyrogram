@@ -111,26 +111,37 @@ class Client(Methods, BaseClient):
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
-        phone_number (``str``, *optional*):
-            Pass your phone number (with your Country Code prefix included) to avoid
-            entering it manually. Only applicable for new sessions.
+        phone_number (``str`` | ``callable``, *optional*):
+            Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
+            Or pass a callback function which accepts no arguments and must return the correct phone number as string
+            (e.g., "391234567890").
+            Only applicable for new sessions.
 
         phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only), or pass a callback function which accepts
-            a single positional argument *(phone_number)* and must return the correct phone code (e.g., "12345").
+            Pass the phone code as string (for test numbers only) to avoid entering it manually. Or pass a callback
+            function which accepts a single positional argument *(phone_number)* and must return the correct phone code
+            as string (e.g., "12345").
             Only applicable for new sessions.
 
         password (``str``, *optional*):
-            Pass your Two-Step Verification password (if you have one) to avoid entering it
-            manually. Only applicable for new sessions.
+            Pass your Two-Step Verification password as string (if you have one) to avoid entering it manually.
+            Or pass a callback function which accepts a single positional argument *(password_hint)* and must return
+            the correct password as string (e.g., "password").
+            Only applicable for new sessions.
+
+        recovery_code (``callable``, *optional*):
+            Pass a callback function which accepts a single positional argument *(email_pattern)* and must return the
+            correct password recovery code as string (e.g., "987654").
+            Only applicable for new sessions.
 
         force_sms (``str``, *optional*):
             Pass True to force Telegram sending the authorization code via SMS.
             Only applicable for new sessions.
 
         first_name (``str``, *optional*):
-            Pass a First Name to avoid entering it manually. It will be used to automatically
-            create a new Telegram account in case the phone number you passed is not registered yet.
+            Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
+            arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
+            a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
         last_name (``str``, *optional*):
@@ -147,10 +158,22 @@ class Client(Methods, BaseClient):
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
 
-        plugins_dir (``str``, *optional*):
-            Define a custom directory for your plugins. The plugins directory is the location in your
-            filesystem where Pyrogram will automatically load your update handlers.
-            Defaults to None (plugins disabled).
+        plugins (``dict``, *optional*):
+            Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
+
+        no_updates (``bool``, *optional*):
+            Pass True to completely disable incoming updates for the current session.
+            When updates are disabled your client can't receive any new message.
+            Useful for batch programs that don't need to deal with updates.
+            Defaults to False (updates enabled and always received).
+
+        takeout (``bool``, *optional*):
+            Pass True to let the client use a takeout session instead of a normal one, implies no_updates.
+            Useful for exporting your Telegram data. Methods invoked inside a takeout session (such as get_history,
+            download_media, ...) are less prone to throw FloodWait exceptions.
+            Only available for users, bots will ignore this parameter.
+            Defaults to False (normal session).
     """
 
     def __init__(self,
@@ -167,13 +190,16 @@ class Client(Methods, BaseClient):
                  phone_number: str = None,
                  phone_code: Union[str, callable] = None,
                  password: str = None,
+                 recovery_code: callable = None,
                  force_sms: bool = False,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str = None):
+                 plugins: dict = None,
+                 no_updates: bool = None,
+                 takeout: bool = None):
         super().__init__()
 
         self.session_name = session_name
@@ -190,13 +216,16 @@ class Client(Methods, BaseClient):
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
+        self.recovery_code = recovery_code
         self.force_sms = force_sms
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
-        self.plugins_dir = plugins_dir
+        self.plugins = plugins
+        self.no_updates = no_updates
+        self.takeout = takeout
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -212,7 +241,14 @@ class Client(Methods, BaseClient):
 
     @proxy.setter
     def proxy(self, value):
-        self._proxy["enabled"] = True
+        if value is None:
+            self._proxy = None
+            return
+
+        if self._proxy is None:
+            self._proxy = {}
+
+        self._proxy["enabled"] = bool(value.get("enabled", True))
         self._proxy.update(value)
 
     def start(self):
@@ -253,6 +289,10 @@ class Client(Methods, BaseClient):
                 self.save_session()
 
             if self.bot_token is None:
+                if self.takeout:
+                    self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
+                    log.warning("Takeout session {} initiated".format(self.takeout_id))
+
                 now = time.time()
 
                 if abs(now - self.date) > Client.OFFLINE_SLEEP:
@@ -308,6 +348,10 @@ class Client(Methods, BaseClient):
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
 
+        if self.takeout_id:
+            self.send(functions.account.FinishTakeoutSession())
+            log.warning("Takeout session {} finished".format(self.takeout_id))
+
         Syncer.remove(self)
         self.dispatcher.stop()
 
@@ -336,6 +380,16 @@ class Client(Methods, BaseClient):
         self.session.stop()
 
         return self
+
+    def restart(self):
+        """Use this method to restart the Client.
+        Requires no parameters.
+
+        Raises:
+            ``ConnectionError`` in case you try to restart a stopped Client.
+        """
+        self.stop()
+        self.start()
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Blocks the program execution until one of the signals are received,
@@ -413,6 +467,12 @@ class Client(Methods, BaseClient):
         else:
             self.dispatcher.remove_handler(handler, group)
 
+    def stop_transmission(self):
+        """Use this method to stop downloading or uploading a file.
+        Must be called inside a progress callback function.
+        """
+        raise Client.StopTransmission
+
     def authorize_bot(self):
         try:
             r = self.send(
@@ -445,20 +505,25 @@ class Client(Methods, BaseClient):
     def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
-        password_hash_invalid_raises = self.password is not None
+        password_invalid_raises = self.password is not None
         first_name_invalid_raises = self.first_name is not None
 
+        def default_phone_number_callback():
+            while True:
+                phone_number = input("Enter phone number: ")
+                confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
+
+                if confirm in ("y", "1"):
+                    return phone_number
+                elif confirm in ("n", "2"):
+                    continue
+
         while True:
-            if self.phone_number is None:
-                self.phone_number = input("Enter phone number: ")
-
-                while True:
-                    confirm = input("Is \"{}\" correct? (y/n): ".format(self.phone_number))
-
-                    if confirm in ("y", "1"):
-                        break
-                    elif confirm in ("n", "2"):
-                        self.phone_number = input("Enter phone number: ")
+            self.phone_number = (
+                default_phone_number_callback() if self.phone_number is None
+                else str(self.phone_number()) if callable(self.phone_number)
+                else str(self.phone_number)
+            )
 
             self.phone_number = self.phone_number.strip("+")
 
@@ -474,23 +539,21 @@ class Client(Methods, BaseClient):
                 self.session.stop()
 
                 self.dc_id = e.x
-                self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
+
+                self.auth_key = Auth(
+                    self.dc_id,
+                    self.test_mode,
+                    self.ipv6,
+                    self._proxy
+                ).create()
 
                 self.session = Session(
                     self,
                     self.dc_id,
                     self.auth_key
                 )
-                self.session.start()
 
-                r = self.send(
-                    functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
-                    )
-                )
-                break
+                self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
                 if phone_number_invalid_raises:
                     raise
@@ -505,6 +568,7 @@ class Client(Methods, BaseClient):
                     time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
+                raise
             else:
                 break
 
@@ -524,10 +588,23 @@ class Client(Methods, BaseClient):
             )
 
         while True:
+            if not phone_registered:
+                self.first_name = (
+                    input("First name: ") if self.first_name is None
+                    else str(self.first_name()) if callable(self.first_name)
+                    else str(self.first_name)
+                )
+
+                self.last_name = (
+                    input("Last name: ") if self.last_name is None
+                    else str(self.last_name()) if callable(self.last_name)
+                    else str(self.last_name)
+                )
+
             self.phone_code = (
                 input("Enter phone code: ") if self.phone_code is None
-                else self.phone_code if type(self.phone_code) is str
-                else str(self.phone_code(self.phone_number))
+                else str(self.phone_code(self.phone_number)) if callable(self.phone_code)
+                else str(self.phone_code)
             )
 
             try:
@@ -545,9 +622,6 @@ class Client(Methods, BaseClient):
                         phone_registered = False
                         continue
                 else:
-                    self.first_name = self.first_name if self.first_name is not None else input("First name: ")
-                    self.last_name = self.last_name if self.last_name is not None else input("Last name: ")
-
                     try:
                         r = self.send(
                             functions.auth.SignUp(
@@ -577,60 +651,62 @@ class Client(Methods, BaseClient):
             except SessionPasswordNeeded as e:
                 print(e.MESSAGE)
 
+                def default_password_callback(password_hint: str) -> str:
+                    print("Hint: {}".format(password_hint))
+                    return input("Enter password (empty to recover): ")
+
+                def default_recovery_callback(email_pattern: str) -> str:
+                    print("An e-mail containing the recovery code has been sent to {}".format(email_pattern))
+                    return input("Enter password recovery code: ")
+
                 while True:
                     try:
                         r = self.send(functions.account.GetPassword())
 
-                        if self.password is None:
-                            print("Hint: {}".format(r.hint))
+                        self.password = (
+                            default_password_callback(r.hint) if self.password is None
+                            else str(self.password(r.hint) or "") if callable(self.password)
+                            else str(self.password)
+                        )
 
-                            self.password = input("Enter password (empty to recover): ")
+                        if self.password == "":
+                            r = self.send(functions.auth.RequestPasswordRecovery())
 
-                            if self.password == "":
-                                r = self.send(functions.auth.RequestPasswordRecovery())
+                            self.recovery_code = (
+                                default_recovery_callback(r.email_pattern) if self.recovery_code is None
+                                else str(self.recovery_code(r.email_pattern)) if callable(self.recovery_code)
+                                else str(self.recovery_code)
+                            )
 
-                                print("An e-mail containing the recovery code has been sent to {}".format(
-                                    r.email_pattern
-                                ))
-
-                                r = self.send(
-                                    functions.auth.RecoverPassword(
-                                        code=input("Enter password recovery code: ")
-                                    )
+                            r = self.send(
+                                functions.auth.RecoverPassword(
+                                    code=self.recovery_code
                                 )
-                            else:
-                                r = self.send(
-                                    functions.auth.CheckPassword(
-                                        password=compute_check(r, self.password)
-                                    )
+                            )
+                        else:
+                            r = self.send(
+                                functions.auth.CheckPassword(
+                                    password=compute_check(r, self.password)
                                 )
-                    except PasswordEmpty as e:
-                        if password_hash_invalid_raises:
+                            )
+                    except (PasswordEmpty, PasswordRecoveryNa, PasswordHashInvalid) as e:
+                        if password_invalid_raises:
                             raise
                         else:
                             print(e.MESSAGE)
                             self.password = None
-                    except PasswordRecoveryNa as e:
-                        if password_hash_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
-                    except PasswordHashInvalid as e:
-                        if password_hash_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
+                            self.recovery_code = None
                     except FloodWait as e:
-                        if password_hash_invalid_raises:
+                        if password_invalid_raises:
                             raise
                         else:
                             print(e.MESSAGE.format(x=e.x))
                             time.sleep(e.x)
                             self.password = None
+                            self.recovery_code = None
                     except Exception as e:
                         log.error(e, exc_info=True)
+                        raise
                     else:
                         break
                 break
@@ -642,6 +718,7 @@ class Client(Methods, BaseClient):
                     time.sleep(e.x)
             except Exception as e:
                 log.error(e, exc_info=True)
+                raise
             else:
                 break
 
@@ -943,6 +1020,12 @@ class Client(Methods, BaseClient):
         if not self.is_started:
             raise ConnectionError("Client has not been started")
 
+        if self.no_updates:
+            data = functions.InvokeWithoutUpdates(data)
+
+        if self.takeout_id:
+            data = functions.InvokeWithTakeout(self.takeout_id, data)
+
         r = self.session.send(data, retries, timeout)
 
         self.fetch_peers(getattr(r, "users", []))
@@ -980,16 +1063,41 @@ class Client(Methods, BaseClient):
                     setattr(self, option, getattr(Client, option.upper()))
 
         if self._proxy:
-            self._proxy["enabled"] = True
+            self._proxy["enabled"] = bool(self._proxy.get("enabled", True))
         else:
             self._proxy = {}
 
             if parser.has_section("proxy"):
-                self._proxy["enabled"] = parser.getboolean("proxy", "enabled")
+                self._proxy["enabled"] = parser.getboolean("proxy", "enabled", fallback=True)
                 self._proxy["hostname"] = parser.get("proxy", "hostname")
                 self._proxy["port"] = parser.getint("proxy", "port")
                 self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
                 self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
+
+        if self.plugins:
+            self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
+            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
+            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
+        else:
+            try:
+                section = parser["plugins"]
+
+                self.plugins = {
+                    "enabled": section.getboolean("enabled", True),
+                    "root": section.get("root"),
+                    "include": section.get("include") or None,
+                    "exclude": section.get("exclude") or None
+                }
+            except KeyError:
+                self.plugins = {}
+
+        if self.plugins:
+            for option in ["include", "exclude"]:
+                if self.plugins[option] is not None:
+                    self.plugins[option] = [
+                        (i.split()[0], i.split()[1:] or None)
+                        for i in self.plugins[option].strip().split("\n")
+                    ]
 
     def load_session(self):
         try:
@@ -1022,43 +1130,108 @@ class Client(Methods, BaseClient):
                     self.peers_by_phone[k] = peer
 
     def load_plugins(self):
-        if self.plugins_dir is not None:
-            plugins_count = 0
+        if self.plugins.get("enabled", False):
+            root = self.plugins["root"]
+            include = self.plugins["include"]
+            exclude = self.plugins["exclude"]
 
-            for path in Path(self.plugins_dir).rglob("*.py"):
-                file_path = os.path.splitext(str(path))[0]
-                import_path = []
+            count = 0
 
-                while file_path:
-                    file_path, tail = os.path.split(file_path)
-                    import_path.insert(0, tail)
+            if include is None:
+                for path in sorted(Path(root).rglob("*.py")):
+                    module_path = os.path.splitext(str(path))[0].replace("/", ".")
+                    module = import_module(module_path)
 
-                import_path = ".".join(import_path)
-                module = import_module(import_path)
+                    for name in vars(module).keys():
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
 
-                for name in dir(module):
-                    # noinspection PyBroadException
-                    try:
-                        handler, group = getattr(module, name)
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
 
-                        if isinstance(handler, Handler) and isinstance(group, int):
-                            self.add_handler(handler, group)
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
 
-                            log.info('{}("{}") from "{}" loaded in group {}'.format(
-                                type(handler).__name__, name, import_path, group))
-
-                            plugins_count += 1
-                    except Exception:
-                        pass
-
-            if plugins_count > 0:
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                    plugins_count,
-                    "s" if plugins_count > 1 else "",
-                    self.plugins_dir
-                ))
+                                count += 1
+                        except Exception:
+                            pass
             else:
-                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+                for path, handlers in include:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[LOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
+
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count += 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if exclude is not None:
+                for path, handlers in exclude:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[UNLOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.remove_handler(handler, group)
+
+                                log.info('[UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count -= 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(count, "s" if count > 1 else "", root))
+            else:
+                log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
@@ -1292,6 +1465,8 @@ class Client(Methods, BaseClient):
 
                     if progress:
                         progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+        except Client.StopTransmission:
+            raise
         except Exception as e:
             log.error(e, exc_info=True)
         else:
@@ -1493,7 +1668,8 @@ class Client(Methods, BaseClient):
                 except Exception as e:
                     raise e
         except Exception as e:
-            log.error(e, exc_info=True)
+            if not isinstance(e, Client.StopTransmission):
+                log.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)

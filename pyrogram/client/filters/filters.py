@@ -61,6 +61,9 @@ class Filters:
 
     create = create
 
+    me = create("Me", lambda _, m: bool(m.from_user and m.from_user.is_self))
+    """Filter messages coming from you yourself"""
+
     bot = create("Bot", lambda _, m: bool(m.from_user and m.from_user.is_bot))
     """Filter messages coming from bots"""
 
@@ -97,11 +100,17 @@ class Filters:
     sticker = create("Sticker", lambda _, m: bool(m.sticker))
     """Filter messages that contain :obj:`Sticker <pyrogram.Sticker>` objects."""
 
-    animation = create("GIF", lambda _, m: bool(m.animation))
+    animation = create("Animation", lambda _, m: bool(m.animation))
     """Filter messages that contain :obj:`Animation <pyrogram.Animation>` objects."""
+
+    game = create("Game", lambda _, m: bool(m.game))
+    """Filter messages that contain :obj:`Game <pyrogram.Game>` objects."""
 
     video = create("Video", lambda _, m: bool(m.video))
     """Filter messages that contain :obj:`Video <pyrogram.Video>` objects."""
+
+    media_group = create("MediaGroup", lambda _, m: bool(m.media_group_id))
+    """Filter messages containing photos or videos being part of an album."""
 
     voice = create("Voice", lambda _, m: bool(m.voice))
     """Filter messages that contain :obj:`Voice <pyrogram.Voice>` note objects."""
@@ -166,6 +175,9 @@ class Filters:
     pinned_message = create("PinnedMessage", lambda _, m: bool(m.pinned_message))
     """Filter service messages for pinned messages."""
 
+    game_high_score = create("GameHighScore", lambda _, m: bool(m.game_high_score))
+    """Filter service messages for game high scores."""
+
     reply_keyboard = create("ReplyKeyboard", lambda _, m: isinstance(m.reply_markup, ReplyKeyboardMarkup))
     """Filter messages containing reply keyboard markups"""
 
@@ -190,7 +202,8 @@ class Filters:
     - channel_chat_created
     - migrate_to_chat_id
     - migrate_from_chat_id
-    - pinned_message"""
+    - pinned_message
+    - game_score"""
 
     media = create("Media", lambda _, m: bool(m.media))
     """Filter media messages. A media message contains any of the following fields set
@@ -205,7 +218,8 @@ class Filters:
     - video_note
     - contact
     - location
-    - venue"""
+    - venue
+    - poll"""
 
     @staticmethod
     def command(command: str or list,
@@ -276,7 +290,7 @@ class Filters:
         """
 
         def f(_, m):
-            m.matches = [i for i in _.p.finditer(m.text or "")]
+            m.matches = [i for i in _.p.finditer(m.text or m.caption or "")]
             return bool(m.matches)
 
         return create("Regex", f, p=re.compile(pattern, flags))

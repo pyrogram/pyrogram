@@ -16,7 +16,6 @@ class {class_name}(Object):
 
     @staticmethod
     def read(b: BytesIO, *args) -> "{class_name}":
-        {read_flags}
         {read_types}
         return {class_name}({return_arguments})
 
@@ -24,6 +23,5 @@ class {class_name}(Object):
         b = BytesIO()
         b.write(Int(self.ID, False))
 
-        {write_flags}
         {write_types}
         return b.getvalue()

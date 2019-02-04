@@ -16,8 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .callback_game import CallbackGame
 from .callback_query import CallbackQuery
 from .force_reply import ForceReply
+from .game_high_score import GameHighScore
+from .game_high_scores import GameHighScores
 from .inline_keyboard_button import InlineKeyboardButton
 from .inline_keyboard_markup import InlineKeyboardMarkup
 from .keyboard_button import KeyboardButton

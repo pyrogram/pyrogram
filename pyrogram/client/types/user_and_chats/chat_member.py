@@ -33,6 +33,19 @@ class ChatMember(PyrogramType):
             The member's status in the chat. Can be "creator", "administrator", "member", "restricted",
             "left" or "kicked".
 
+        date (``int``, *optional*):
+            Date when the user joined, unix time. Not available for creator.
+
+        invited_by (:obj:`User <pyrogram.User>`, *optional*):
+            Administrators and self member only. Information about the user who invited this member.
+            In case the user joined by himself this will be the same as "user".
+
+        promoted_by (:obj:`User <pyrogram.User>`, *optional*):
+            Administrators only. Information about the user who promoted this member as administrator.
+
+        restricted_by (:obj:`User <pyrogram.User>`, *optional*):
+            Restricted and kicked only. Information about the user who restricted or kicked this member.
+
         until_date (``int``, *optional*):
             Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
 
@@ -86,6 +99,10 @@ class ChatMember(PyrogramType):
                  client: "pyrogram.client.ext.BaseClient",
                  user: "pyrogram.User",
                  status: str,
+                 date: int = None,
+                 invited_by: "pyrogram.User" = None,
+                 promoted_by: "pyrogram.User" = None,
+                 restricted_by: "pyrogram.User" = None,
                  until_date: int = None,
                  can_be_edited: bool = None,
                  can_change_info: bool = None,
@@ -104,6 +121,10 @@ class ChatMember(PyrogramType):
 
         self.user = user
         self.status = status
+        self.date = date
+        self.invited_by = invited_by
+        self.promoted_by = promoted_by
+        self.restricted_by = restricted_by
         self.until_date = until_date
         self.can_be_edited = can_be_edited
         self.can_change_info = can_change_info
@@ -120,17 +141,18 @@ class ChatMember(PyrogramType):
         self.can_add_web_page_previews = can_add_web_page_previews
 
     @staticmethod
-    def _parse(client, member, user) -> "ChatMember":
-        user = pyrogram.User._parse(client, user)
+    def _parse(client, member, users) -> "ChatMember":
+        user = pyrogram.User._parse(client, users[member.user_id])
+        invited_by = pyrogram.User._parse(client, users[member.inviter_id]) if hasattr(member, "inviter_id") else None
 
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
-            return ChatMember(user=user, status="member", client=client)
+            return ChatMember(user=user, status="member", date=member.date, invited_by=invited_by, client=client)
 
         if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
             return ChatMember(user=user, status="creator", client=client)
 
         if isinstance(member, types.ChatParticipantAdmin):
-            return ChatMember(user=user, status="administrator", client=client)
+            return ChatMember(user=user, status="administrator", date=member.date, invited_by=invited_by, client=client)
 
         if isinstance(member, types.ChannelParticipantAdmin):
             rights = member.admin_rights
@@ -138,6 +160,9 @@ class ChatMember(PyrogramType):
             return ChatMember(
                 user=user,
                 status="administrator",
+                date=member.date,
+                invited_by=invited_by,
+                promoted_by=pyrogram.User._parse(client, users[member.promoted_by]),
                 can_be_edited=member.can_edit,
                 can_change_info=rights.change_info,
                 can_post_messages=rights.post_messages,
@@ -155,7 +180,13 @@ class ChatMember(PyrogramType):
 
             chat_member = ChatMember(
                 user=user,
-                status="kicked" if rights.view_messages else "restricted",
+                status=(
+                    "kicked" if rights.view_messages
+                    else "left" if member.left
+                    else "restricted"
+                ),
+                date=member.date,
+                restricted_by=pyrogram.User._parse(client, users[member.kicked_by]),
                 until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date,
                 client=client
             )

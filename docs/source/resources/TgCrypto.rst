@@ -1,5 +1,5 @@
-TgCrypto
-========
+Fast Crypto
+===========
 
 Pyrogram's speed can be *dramatically* boosted up by TgCrypto_, a high-performance, easy-to-install Telegram Crypto
 Library specifically written in C for Pyrogram [#f1]_ as a Python extension.

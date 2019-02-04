@@ -16,9 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
+
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.api.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class GetDialogs(BaseClient):
@@ -26,9 +32,10 @@ class GetDialogs(BaseClient):
                     offset_date: int = 0,
                     limit: int = 100,
                     pinned_only: bool = False) -> "pyrogram.Dialogs":
-        """Use this method to get the user's dialogs
+        """Use this method to get a chunk of the user's dialogs
 
         You can get up to 100 dialogs at once.
+        For a more convenient way of getting a user's dialogs see :meth:`iter_dialogs`.
 
         Args:
             offset_date (``int``):
@@ -50,18 +57,25 @@ class GetDialogs(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        if pinned_only:
-            r = self.send(functions.messages.GetPinnedDialogs())
-        else:
-            r = self.send(
-                functions.messages.GetDialogs(
-                    offset_date=offset_date,
-                    offset_id=0,
-                    offset_peer=types.InputPeerEmpty(),
-                    limit=limit,
-                    hash=0,
-                    exclude_pinned=True
-                )
-            )
+        while True:
+            try:
+                if pinned_only:
+                    r = self.send(functions.messages.GetPinnedDialogs())
+                else:
+                    r = self.send(
+                        functions.messages.GetDialogs(
+                            offset_date=offset_date,
+                            offset_id=0,
+                            offset_peer=types.InputPeerEmpty(),
+                            limit=limit,
+                            hash=0,
+                            exclude_pinned=True
+                        )
+                    )
+            except FloodWait as e:
+                log.warning("Sleeping {}s".format(e.x))
+                time.sleep(e.x)
+            else:
+                break
 
         return pyrogram.Dialogs._parse(self, r)

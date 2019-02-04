@@ -18,11 +18,8 @@
 
 from .bots import (
     CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
-)
-from .bots import (
-    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, CallbackGame,
+    GameHighScore, GameHighScores
 )
 from .input_media import (
     InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
@@ -31,10 +28,10 @@ from .input_media import (
 from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
     Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
-    Message, Messages, MessageEntity, Poll, PollOption
+    Message, Messages, MessageEntity, Poll, PollOption, Game
 )
+from .update import StopPropagation, ContinuePropagation
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
     Dialog, Dialogs, User, UserStatus, ChatPreview
 )
-from .update import StopPropagation

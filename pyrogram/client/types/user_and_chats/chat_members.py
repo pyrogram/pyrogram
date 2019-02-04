@@ -59,7 +59,7 @@ class ChatMembers(PyrogramType):
             total_count = len(members)
 
         for member in members:
-            chat_members.append(ChatMember._parse(client, member, users[member.user_id]))
+            chat_members.append(ChatMember._parse(client, member, users))
 
         return ChatMembers(
             total_count=total_count,
