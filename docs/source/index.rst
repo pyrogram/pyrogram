@@ -99,6 +99,7 @@ To get started, press the Next button.
     resources/ErrorHandling
     resources/TestServers
     resources/AdvancedUsage
+    resources/VoiceCalls
     resources/Changelog
 
 .. toctree::
