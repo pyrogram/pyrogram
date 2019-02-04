@@ -6,13 +6,15 @@ to make it only work for specific messages in a specific chat.
 
 from pyrogram import Client, Emoji, Filters
 
-MENTION = "[{}](tg://user?id={})"
-MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.ml/)'s group chat {}!"
+TARGET = "PyrogramChat"  # Target chat. Can also be a list of multiple chat ids/usernames
+MENTION = "[{}](tg://user?id={})"  # User mention markup
+MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.ml/)'s group chat {}!"  # Welcome message
 
 app = Client("my_account")
 
 
-@app.on_message(Filters.chat("PyrogramChat") & Filters.new_chat_members)
+# Filter in only new_chat_members updates generated in TARGET chat
+@app.on_message(Filters.chat(TARGET) & Filters.new_chat_members)
 def welcome(client, message):
     # Build the new members list (with mentions) by using their first_name
     new_members = [MENTION.format(i.first_name, i.id) for i in message.new_chat_members]

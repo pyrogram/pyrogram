@@ -16,11 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
+from pyrogram.api.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
@@ -66,21 +71,28 @@ class GetHistory(BaseClient):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
 
-        messages = await pyrogram.Messages._parse(
-            self,
-            await self.send(
-                functions.messages.GetHistory(
-                    peer=await self.resolve_peer(chat_id),
-                    offset_id=offset_id,
-                    offset_date=offset_date,
-                    add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
-                    limit=limit,
-                    max_id=0,
-                    min_id=0,
-                    hash=0
+        while True:
+            try:
+                messages = await pyrogram.Messages._parse(
+                    self,
+                    await self.send(
+                        functions.messages.GetHistory(
+                            peer=await self.resolve_peer(chat_id),
+                            offset_id=offset_id,
+                            offset_date=offset_date,
+                            add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
+                            limit=limit,
+                            max_id=0,
+                            min_id=0,
+                            hash=0
+                        )
+                    )
                 )
-            )
-        )
+            except FloodWait as e:
+                log.warning("Sleeping for {}s".format(e.x))
+                await asyncio.sleep(e.x)
+            else:
+                break
 
         if reverse:
             messages.messages.reverse()

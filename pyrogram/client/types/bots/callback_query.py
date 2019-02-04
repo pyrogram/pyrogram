@@ -40,15 +40,15 @@ class CallbackQuery(PyrogramType, Update):
             Sender.
 
         chat_instance (``str``, *optional*):
+            Global identifier, uniquely corresponding to the chat to which the message with the callback button was
+            sent. Useful for high scores in games.
+
+        message (:obj:`Message <pyrogram.Message>`, *optional*):
             Message with the callback button that originated the query. Note that message content and message date will
             not be available if the message is too old.
 
-        message (:obj:`Message <pyrogram.Message>`, *optional*):
-            Identifier of the message sent via the bot in inline mode, that originated the query.
-
         inline_message_id (``str``):
-            Global identifier, uniquely corresponding to the chat to which the message with the callback button was
-            sent. Useful for high scores in games.
+            Identifier of the message sent via the bot in inline mode, that originated the query.
 
         data (``bytes``, *optional*):
             Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field.
@@ -72,9 +72,9 @@ class CallbackQuery(PyrogramType, Update):
 
         self.id = id
         self.from_user = from_user
+        self.chat_instance = chat_instance
         self.message = message
         self.inline_message_id = inline_message_id
-        self.chat_instance = chat_instance
         self.data = data
         self.game_short_name = game_short_name
 
