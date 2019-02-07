@@ -19,10 +19,11 @@
 import asyncio
 import sys
 
-from .vendor import typing
+if sys.version_info[:3] in [(3, 5, 0), (3, 5, 1), (3, 5, 2)]:
+    from .vendor import typing
 
-# Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
-sys.modules["typing"] = typing
+    # Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
+    sys.modules["typing"] = typing
 
 try:
     import uvloop
