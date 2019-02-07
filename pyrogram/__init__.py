@@ -19,6 +19,11 @@
 import asyncio
 import sys
 
+from .vendor import typing
+
+# Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
+sys.modules["typing"] = typing
+
 try:
     import uvloop
 except ImportError:
@@ -31,7 +36,7 @@ __copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.11.0.asyncio"
+__version__ = "0.11.1.asyncio"
 
 from .api.errors import Error
 from .client.types import (
