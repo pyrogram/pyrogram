@@ -18,6 +18,11 @@
 
 import sys
 
+from .vendor import typing
+
+# Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
+sys.modules["typing"] = typing
+
 __copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
