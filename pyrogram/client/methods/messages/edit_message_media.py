@@ -123,6 +123,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -179,6 +180,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "audio/mpeg"),
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
@@ -234,6 +236,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map[".mp4"],
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -291,6 +294,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "text/plain"),
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(os.path.basename(media.media))
