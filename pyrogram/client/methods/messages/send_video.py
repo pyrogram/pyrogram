@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 from typing import Union
@@ -136,7 +135,7 @@ class SendVideo(BaseClient):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map[".mp4"],
+                    mime_type="video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
