@@ -15,19 +15,3 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
-
-class StopPropagation(StopIteration):
-    pass
-
-
-class ContinuePropagation(StopIteration):
-    pass
-
-
-class Update:
-    def stop_propagation(self):
-        raise StopPropagation
-
-    def continue_propagation(self):
-        raise ContinuePropagation

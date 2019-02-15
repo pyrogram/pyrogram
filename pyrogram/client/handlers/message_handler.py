@@ -46,10 +46,3 @@ class MessageHandler(Handler):
 
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
-
-    def check(self, message):
-        return (
-            self.filters(message)
-            if callable(self.filters)
-            else True
-        )

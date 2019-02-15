@@ -48,8 +48,4 @@ class DeletedMessagesHandler(Handler):
         super().__init__(callback, filters)
 
     def check(self, messages):
-        return (
-            self.filters(messages.messages[0])
-            if callable(self.filters)
-            else True
-        )
+        return super().check(messages.messages[0])

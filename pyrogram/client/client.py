@@ -1439,21 +1439,25 @@ class Client(Methods, BaseClient):
                             md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
-                    if is_big:
-                        rpc = functions.upload.SaveBigFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            file_total_parts=file_total_parts,
-                            bytes=chunk
-                        )
-                    else:
-                        rpc = functions.upload.SaveFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            bytes=chunk
-                        )
+                    for _ in range(3):
+                        if is_big:
+                            rpc = functions.upload.SaveBigFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                file_total_parts=file_total_parts,
+                                bytes=chunk
+                            )
+                        else:
+                            rpc = functions.upload.SaveFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                bytes=chunk
+                            )
 
-                    assert session.send(rpc), "Couldn't upload file"
+                        if session.send(rpc):
+                            break
+                    else:
+                        raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
 
                     if is_missing_part:
                         return
