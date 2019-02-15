@@ -22,3 +22,4 @@ from .disconnect_handler import DisconnectHandler
 from .message_handler import MessageHandler
 from .raw_update_handler import RawUpdateHandler
 from .user_status_handler import UserStatusHandler
+from .phone_call_handler import PhoneCallHandler

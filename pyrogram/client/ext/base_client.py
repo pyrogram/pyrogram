@@ -98,6 +98,9 @@ class BaseClient:
         self.download_queue = Queue()
         self.download_workers_list = []
 
+        self.incoming_call_handlers = []
+        self.calls = []
+
         self.disconnect_handler = None
 
     def send(self, *args, **kwargs):

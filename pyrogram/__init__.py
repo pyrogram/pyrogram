@@ -39,10 +39,11 @@ from .client.types import (
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
     Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore,
-    GameHighScores
+    GameHighScores,
+    BaseCall, FileCallMixin, IncomingCall, IncomingFileCall, OutgoingCall, OutgoingFileCall
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters
+    RawUpdateHandler, DisconnectHandler, UserStatusHandler, PhoneCallHandler, Filters
 )

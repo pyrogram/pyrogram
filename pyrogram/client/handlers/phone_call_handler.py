@@ -16,22 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .on_callback_query import OnCallbackQuery
-from .on_deleted_messages import OnDeletedMessages
-from .on_disconnect import OnDisconnect
-from .on_message import OnMessage
-from .on_raw_update import OnRawUpdate
-from .on_user_status import OnUserStatus
-from .on_incoming_call import OnIncomingCall
+from .handler import Handler
 
 
-class Decorators(
-    OnMessage,
-    OnDeletedMessages,
-    OnCallbackQuery,
-    OnRawUpdate,
-    OnDisconnect,
-    OnUserStatus,
-    OnIncomingCall,
-):
-    pass
+class PhoneCallHandler(Handler):
+    def __init__(self, callback: callable, filters=None):
+        super().__init__(callback, filters)

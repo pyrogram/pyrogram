@@ -48,7 +48,7 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers import DisconnectHandler, PhoneCallHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
@@ -199,7 +199,8 @@ class Client(Methods, BaseClient):
                  config_file: str = BaseClient.CONFIG_FILE,
                  plugins: dict = None,
                  no_updates: bool = None,
-                 takeout: bool = None):
+                 takeout: bool = None,
+                 receive_phone_calls: bool = False):
         super().__init__()
 
         self.session_name = session_name
@@ -226,6 +227,7 @@ class Client(Methods, BaseClient):
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
+        self.receive_phone_calls = receive_phone_calls
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -336,6 +338,20 @@ class Client(Methods, BaseClient):
         mimetypes.init()
         Syncer.add(self)
 
+        if self.receive_phone_calls:
+            def _(client, call):
+                from pyrogram import ContinuePropagation, StopPropagation
+                if isinstance(call, types.PhoneCallRequested):
+                    from pyrogram.client.types import IncomingFileCall
+                    incoming_call = IncomingFileCall(client, call)
+                    self.calls.append(incoming_call)
+                    for handler in self.incoming_call_handlers:
+                        callable(handler) and handler(client, incoming_call)
+                    raise StopPropagation
+                raise ContinuePropagation
+
+            self.add_handler(PhoneCallHandler(_))
+
         return self
 
     def stop(self):
@@ -375,6 +391,9 @@ class Client(Methods, BaseClient):
             i.stop()
 
         self.media_sessions.clear()
+
+        for i in self.calls:
+            i.discard()
 
         self.is_started = False
         self.session.stop()

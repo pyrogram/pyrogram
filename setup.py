@@ -176,6 +176,7 @@ setup(
     extras_require={
         "tgcrypto": ["tgcrypto==1.1.1"],  # TODO: Remove soon
         "fast": ["tgcrypto==1.1.1"],
+        "voip": ["tgvoip==0.0.1"],
     },
     cmdclass={
         "clean": Clean,

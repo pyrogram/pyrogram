@@ -23,6 +23,7 @@ from .decorators import Decorators
 from .messages import Messages
 from .password import Password
 from .users import Users
+from .voip import VoIP
 
 
 class Methods(
@@ -32,6 +33,7 @@ class Methods(
     Chats,
     Users,
     Messages,
-    Decorators
+    Decorators,
+    VoIP
 ):
     pass

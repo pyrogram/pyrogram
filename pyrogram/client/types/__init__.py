@@ -35,3 +35,10 @@ from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
     Dialog, Dialogs, User, UserStatus, ChatPreview
 )
+
+try:
+    from .voip import (
+        IncomingCall, IncomingFileCall, OutgoingCall, OutgoingFileCall, BaseCall, FileCallMixin
+    )
+except ImportError:
+    pass

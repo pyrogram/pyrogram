@@ -16,22 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .on_callback_query import OnCallbackQuery
-from .on_deleted_messages import OnDeletedMessages
-from .on_disconnect import OnDisconnect
-from .on_message import OnMessage
-from .on_raw_update import OnRawUpdate
-from .on_user_status import OnUserStatus
-from .on_incoming_call import OnIncomingCall
+from typing import Union
+
+import pyrogram
+from ...ext import BaseClient
 
 
-class Decorators(
-    OnMessage,
-    OnDeletedMessages,
-    OnCallbackQuery,
-    OnRawUpdate,
-    OnDisconnect,
-    OnUserStatus,
-    OnIncomingCall,
-):
-    pass
+class StartCall(BaseClient):
+    def start_call(self,
+                   user_id: Union[int, str]) -> "pyrogram.OutgoingFileCall":
+        call = pyrogram.OutgoingFileCall(client=self, user_id=user_id)
+        self.calls.append(call)
+        return call
