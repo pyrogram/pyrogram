@@ -21,7 +21,7 @@ from pyrogram.api import types, functions, errors
 from ..pyrogram_type import PyrogramType
 from ..update import Update
 from tgvoip import VoIPController, CallState, CallError, VoIPServerConfig, DataSaving, Endpoint
-from tgvoip.utils import b2i, i2b, twoe1984, get_real_elapsed_time
+from tgvoip.utils import b2i, i2b, get_real_elapsed_time, check_g
 
 
 class DH:
@@ -89,12 +89,11 @@ class BaseCall(Update, PyrogramType):
         return DH(dhc.p, dhc.g)
 
     def check_g(self, g_x: int, p: int) -> None:
-        if not (1 < g_x < p - 1):
+        try:
+            check_g(g_x, p)
+        except RuntimeError:
             self.call_discarded()
-            raise RuntimeError('g_x is invalid (1 < g_x < p - 1 is false)')
-        if not (twoe1984 < g_x < p - twoe1984):
-            self.stop()
-            raise RuntimeError('g_x is invalid (2^1984 < g_x < p - 2^1984 is false)')
+            raise
 
     def stop(self) -> None:
         try:
@@ -113,7 +112,7 @@ class BaseCall(Update, PyrogramType):
 
     def update_state(self, val: CallState) -> None:
         self.state = val
-        self.ctrl.handle_state_change(val)
+        self.ctrl.update_state(val)
 
     def call_ended(self) -> None:
         self.update_state(CallState.ENDED)
