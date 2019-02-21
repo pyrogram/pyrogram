@@ -16,9 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import base64
 import binascii
-import json
 import logging
 import math
 import mimetypes
@@ -1105,7 +1103,10 @@ class Client(Methods, BaseClient):
         try:
             self.session_storage.load_session(self.session_name)
         except SessionDoesNotExist:
-            log.info('Session {} was not found, initializing new one')
+            session_name = self.session_name[:32]
+            if session_name != self.session_name:
+                session_name += '...'
+            log.info('Could not load session "{}", initializing new one'.format(self.session_name))
             self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
 
     def load_plugins(self):
