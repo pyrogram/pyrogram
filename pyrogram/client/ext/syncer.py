@@ -83,10 +83,10 @@ class Syncer:
     def sync(cls, client):
         client.date = int(time.time())
         try:
-            client.session_storage.save_session(client.session_name, sync=True)
+            client.session_storage.save_session(sync=True)
         except Exception as e:
             log.critical(e, exc_info=True)
         else:
             log.info("Synced {}".format(client.session_name))
         finally:
-            client.session_storage.sync_cleanup(client.session_name)
+            client.session_storage.sync_cleanup()

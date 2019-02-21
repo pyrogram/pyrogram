@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import abc
+from typing import Type
 
 import pyrogram
 
@@ -26,8 +27,9 @@ class SessionDoesNotExist(Exception):
 
 
 class BaseSessionStorage(abc.ABC):
-    def __init__(self, client: 'pyrogram.client.BaseClient'):
+    def __init__(self, client: 'pyrogram.client.BaseClient', session_data):
         self.client = client
+        self.session_data = session_data
         self.dc_id = 1
         self.test_mode = None
         self.auth_key = None
@@ -38,13 +40,20 @@ class BaseSessionStorage(abc.ABC):
         self.peers_by_phone = {}
 
     @abc.abstractmethod
-    def load_session(self, name: str):
+    def load_session(self):
         ...
 
     @abc.abstractmethod
-    def save_session(self, name: str, sync=False):
+    def save_session(self, sync=False):
         ...
 
     @abc.abstractmethod
-    def sync_cleanup(self, name: str):
+    def sync_cleanup(self):
+        ...
+
+
+class BaseSessionConfig(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def session_storage_cls(self) -> Type[BaseSessionStorage]:
         ...

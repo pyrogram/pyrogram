@@ -35,8 +35,8 @@ class JsonSessionStorage(BaseSessionStorage):
             name += '.session'
         return os.path.join(self.client.workdir, name)
 
-    def load_session(self, name: str):
-        file_path = self._get_file_name(name)
+    def load_session(self):
+        file_path = self._get_file_name(self.session_data)
         log.info('Loading JSON session from {}'.format(file_path))
 
         try:
@@ -66,8 +66,8 @@ class JsonSessionStorage(BaseSessionStorage):
             if peer:
                 self.peers_by_phone[k] = peer
 
-    def save_session(self, name: str, sync=False):
-        file_path = self._get_file_name(name)
+    def save_session(self, sync=False):
+        file_path = self._get_file_name(self.session_data)
 
         if sync:
             file_path += '.tmp'
@@ -107,10 +107,10 @@ class JsonSessionStorage(BaseSessionStorage):
 
         # execution won't be here if an error has occurred earlier
         if sync:
-            shutil.move(file_path, self._get_file_name(name))
+            shutil.move(file_path, self._get_file_name(self.session_data))
 
-    def sync_cleanup(self, name: str):
+    def sync_cleanup(self):
         try:
-            os.remove(self._get_file_name(name) + '.tmp')
+            os.remove(self._get_file_name(self.session_data) + '.tmp')
         except OSError:
             pass
