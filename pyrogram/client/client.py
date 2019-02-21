@@ -27,6 +27,7 @@ import struct
 import tempfile
 import threading
 import time
+import warnings
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -69,9 +70,8 @@ class Client(Methods, BaseClient):
 
     Args:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot.
-            For Users: pass a string of your choice, e.g.: "my_main_account".
-            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_main_account".
+            You still can use bot token here, but it will be deprecated in next release.
             Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
 
         api_id (``int``, *optional*):
@@ -146,6 +146,10 @@ class Client(Methods, BaseClient):
             a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
+        bot_token (``str``, *optional*):
+            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Only applicable for new sessions.
+
         last_name (``str``, *optional*):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: "". Only applicable for new sessions.
@@ -194,6 +198,7 @@ class Client(Methods, BaseClient):
                  password: str = None,
                  recovery_code: callable = None,
                  force_sms: bool = False,
+                 bot_token: str = None,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = BaseClient.WORKERS,
@@ -231,6 +236,7 @@ class Client(Methods, BaseClient):
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
+        self.bot_token = bot_token
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
@@ -276,8 +282,13 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
+            self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
+            warnings.warn('\nYou are using a bot token as session name.\n'
+                          'It will be deprecated in next update, please use session file name to load '
+                          'existing sessions and bot_token argument to create new sessions.',
+                          DeprecationWarning, stacklevel=2)
 
         self.load_config()
         self.load_session()
@@ -297,11 +308,12 @@ class Client(Methods, BaseClient):
                 if self.bot_token is None:
                     self.authorize_user()
                 else:
+                    self.is_bot = True
                     self.authorize_bot()
 
                 self.save_session()
 
-            if self.bot_token is None:
+            if not self.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
