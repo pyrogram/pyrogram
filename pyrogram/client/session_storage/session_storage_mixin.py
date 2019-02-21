@@ -61,6 +61,14 @@ class SessionStorageMixin:
         self.session_storage.date = val
 
     @property
+    def is_bot(self):
+        return self.session_storage.is_bot
+
+    @is_bot.setter
+    def is_bot(self, val) -> int:
+        self.session_storage.is_bot = val
+
+    @property
     def peers_by_id(self) -> Dict[str, int]:
         return self.session_storage.peers_by_id
 

@@ -35,6 +35,7 @@ class BaseSessionStorage(abc.ABC):
         self.auth_key = None
         self.user_id = None
         self.date = 0
+        self.is_bot = False
         self.peers_by_id = {}
         self.peers_by_username = {}
         self.peers_by_phone = {}

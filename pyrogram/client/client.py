@@ -281,14 +281,15 @@ class Client(Methods, BaseClient):
         if self.is_started:
             raise ConnectionError("Client has already been started")
 
-        if self.BOT_TOKEN_RE.match(self.session_name):
-            self.is_bot = True
-            self.bot_token = self.session_name
-            self.session_name = self.session_name.split(":")[0]
-            warnings.warn('\nYou are using a bot token as session name.\n'
-                          'It will be deprecated in next update, please use session file name to load '
-                          'existing sessions and bot_token argument to create new sessions.',
-                          DeprecationWarning, stacklevel=2)
+        if isinstance(self.session_storage, JsonSessionStorage):
+            if self.BOT_TOKEN_RE.match(self.session_storage.session_data):
+                self.is_bot = True
+                self.bot_token = self.session_storage.session_data
+                self.session_storage.session_data = self.session_storage.session_data.split(":")[0]
+                warnings.warn('\nYou are using a bot token as session name.\n'
+                              'It will be deprecated in next update, please use session file name to load '
+                              'existing sessions and bot_token argument to create new sessions.',
+                              DeprecationWarning, stacklevel=2)
 
         self.load_config()
         self.load_session()

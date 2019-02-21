@@ -70,7 +70,6 @@ class BaseClient(SessionStorageMixin):
 
     def __init__(self, session_storage: BaseSessionStorage):
         self.session_storage = session_storage
-        self.is_bot = False
 
         self.rnd_id = MsgId
         self.channels_pts = {}

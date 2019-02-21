@@ -50,6 +50,7 @@ class JsonSessionStorage(BaseSessionStorage):
         self.auth_key = base64.b64decode("".join(s["auth_key"]))  # join split key
         self.user_id = s["user_id"]
         self.date = s.get("date", 0)
+        self.is_bot = s.get('is_bot', self.client.is_bot)
 
         for k, v in s.get("peers_by_id", {}).items():
             self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
@@ -85,6 +86,7 @@ class JsonSessionStorage(BaseSessionStorage):
             'auth_key': auth_key,
             'user_id': self.user_id,
             'date': self.date,
+            'is_bot': self.is_bot,
             'peers_by_id': {
                 k: getattr(v, "access_hash", None)
                 for k, v in self.peers_by_id.copy().items()
