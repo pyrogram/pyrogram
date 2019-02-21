@@ -22,7 +22,7 @@ It enables you to easily create custom apps using both user and bot identities (
 
     `Pyrogram in fully-asynchronous mode is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
     
-    `Working PoC of Telegram voice calls using Pyrogram » <https://github.com/bakatrouble/pylibtgvoip>`_
+    `Working PoC of Telegram voice calls using Pyrogram » <https://github.com/bakatrouble/pytgvoip>`_
 
 Features
 --------
