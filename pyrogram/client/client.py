@@ -36,7 +36,7 @@ from importlib import import_module
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
-from typing import Union, List
+from typing import Union, List, Type
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -56,6 +56,7 @@ from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
 from .ext import utils, Syncer, BaseClient
 from .methods import Methods
+from .session_storage import BaseSessionStorage, JsonSessionStorage, SessionDoesNotExist
 
 log = logging.getLogger(__name__)
 
@@ -199,8 +200,9 @@ class Client(Methods, BaseClient):
                  config_file: str = BaseClient.CONFIG_FILE,
                  plugins: dict = None,
                  no_updates: bool = None,
-                 takeout: bool = None):
-        super().__init__()
+                 takeout: bool = None,
+                 session_storage_cls: Type[BaseSessionStorage] = JsonSessionStorage):
+        super().__init__(session_storage_cls(self))
 
         self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
@@ -296,8 +298,8 @@ class Client(Methods, BaseClient):
                 now = time.time()
 
                 if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                    self.peers_by_username = {}
-                    self.peers_by_phone = {}
+                    self.peers_by_username.clear()
+                    self.peers_by_phone.clear()
 
                     self.get_initial_dialogs()
                     self.get_contacts()
@@ -1101,33 +1103,10 @@ class Client(Methods, BaseClient):
 
     def load_session(self):
         try:
-            with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
-                s = json.load(f)
-        except FileNotFoundError:
-            self.dc_id = 1
-            self.date = 0
+            self.session_storage.load_session(self.session_name)
+        except SessionDoesNotExist:
+            log.info('Session {} was not found, initializing new one')
             self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
-        else:
-            self.dc_id = s["dc_id"]
-            self.test_mode = s["test_mode"]
-            self.auth_key = base64.b64decode("".join(s["auth_key"]))
-            self.user_id = s["user_id"]
-            self.date = s.get("date", 0)
-
-            for k, v in s.get("peers_by_id", {}).items():
-                self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
-
-            for k, v in s.get("peers_by_username", {}).items():
-                peer = self.peers_by_id.get(v, None)
-
-                if peer:
-                    self.peers_by_username[k] = peer
-
-            for k, v in s.get("peers_by_phone", {}).items():
-                peer = self.peers_by_id.get(v, None)
-
-                if peer:
-                    self.peers_by_phone[k] = peer
 
     def load_plugins(self):
         if self.plugins.get("enabled", False):
@@ -1234,23 +1213,7 @@ class Client(Methods, BaseClient):
                 log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
-        auth_key = base64.b64encode(self.auth_key).decode()
-        auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
-
-        os.makedirs(self.workdir, exist_ok=True)
-
-        with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), "w", encoding="utf-8") as f:
-            json.dump(
-                dict(
-                    dc_id=self.dc_id,
-                    test_mode=self.test_mode,
-                    auth_key=auth_key,
-                    user_id=self.user_id,
-                    date=self.date
-                ),
-                f,
-                indent=4
-            )
+        self.session_storage.save_session(self.session_name)
 
     def get_initial_dialogs_chunk(self,
                                   offset_date: int = 0):
