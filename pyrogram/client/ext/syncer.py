@@ -81,9 +81,9 @@ class Syncer:
 
     @classmethod
     def sync(cls, client):
-        client.date = int(time.time())
+        client.session_storage.date = int(time.time())
         try:
-            client.session_storage.save_session(sync=True)
+            client.session_storage.save(sync=True)
         except Exception as e:
             log.critical(e, exc_info=True)
         else:

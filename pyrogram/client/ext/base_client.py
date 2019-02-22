@@ -24,10 +24,10 @@ from threading import Lock
 from pyrogram import __version__
 from ..style import Markdown, HTML
 from ...session.internals import MsgId
-from ..session_storage import SessionStorageMixin, BaseSessionStorage
+from ..session_storage import SessionStorage
 
 
-class BaseClient(SessionStorageMixin):
+class BaseClient:
     class StopTransmission(StopIteration):
         pass
 
@@ -68,14 +68,14 @@ class BaseClient(SessionStorageMixin):
         13: "video_note"
     }
 
-    def __init__(self, session_storage: BaseSessionStorage):
+    def __init__(self, session_storage: SessionStorage):
         self.session_storage = session_storage
 
         self.rnd_id = MsgId
         self.channels_pts = {}
 
-        self.markdown = Markdown(self.peers_by_id)
-        self.html = HTML(self.peers_by_id)
+        self.markdown = Markdown(self.session_storage.peers_by_id)
+        self.html = HTML(self.session_storage.peers_by_id)
 
         self.session = None
         self.media_sessions = {}

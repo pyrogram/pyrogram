@@ -112,7 +112,8 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
+            self.connection = Connection(self.dc_id, self.client.session_storage.test_mode,
+                                         self.client.ipv6, self.client.proxy)
 
             try:
                 self.connection.connect()

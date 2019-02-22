@@ -16,66 +16,103 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Dict
+import abc
+from typing import Type
+
+import pyrogram
 
 
-class SessionStorageMixin:
+class SessionDoesNotExist(Exception):
+    pass
+
+
+class SessionStorage(abc.ABC):
+    def __init__(self, client: 'pyrogram.client.BaseClient'):
+        self._client = client
+
+    @abc.abstractmethod
+    def load(self):
+        ...
+
+    @abc.abstractmethod
+    def save(self, sync=False):
+        ...
+
+    @abc.abstractmethod
+    def sync_cleanup(self):
+        ...
+    
     @property
-    def dc_id(self) -> int:
-        return self.session_storage.dc_id
+    @abc.abstractmethod
+    def dc_id(self):
+        ...
 
     @dc_id.setter
+    @abc.abstractmethod
     def dc_id(self, val):
-        self.session_storage.dc_id = val
+        ...
 
     @property
-    def test_mode(self) -> bool:
-        return self.session_storage.test_mode
+    @abc.abstractmethod
+    def test_mode(self):
+        ...
 
     @test_mode.setter
+    @abc.abstractmethod
     def test_mode(self, val):
-        self.session_storage.test_mode = val
+        ...
 
     @property
-    def auth_key(self) -> bytes:
-        return self.session_storage.auth_key
+    @abc.abstractmethod
+    def auth_key(self):
+        ...
 
     @auth_key.setter
+    @abc.abstractmethod
     def auth_key(self, val):
-        self.session_storage.auth_key = val
+        ...
 
     @property
+    @abc.abstractmethod
     def user_id(self):
-        return self.session_storage.user_id
+        ...
 
     @user_id.setter
-    def user_id(self, val) -> int:
-        self.session_storage.user_id = val
+    @abc.abstractmethod
+    def user_id(self, val):
+        ...
 
     @property
-    def date(self) -> int:
-        return self.session_storage.date
+    @abc.abstractmethod
+    def date(self):
+        ...
 
     @date.setter
+    @abc.abstractmethod
     def date(self, val):
-        self.session_storage.date = val
+        ...
 
     @property
+    @abc.abstractmethod
     def is_bot(self):
-        return self.session_storage.is_bot
+        ...
 
     @is_bot.setter
-    def is_bot(self, val) -> int:
-        self.session_storage.is_bot = val
+    @abc.abstractmethod
+    def is_bot(self, val):
+        ...
 
     @property
-    def peers_by_id(self) -> Dict[str, int]:
-        return self.session_storage.peers_by_id
+    @abc.abstractmethod
+    def peers_by_id(self):
+        ...
 
     @property
-    def peers_by_username(self) -> Dict[str, int]:
-        return self.session_storage.peers_by_username
+    @abc.abstractmethod
+    def peers_by_username(self):
+        ...
 
     @property
-    def peers_by_phone(self) -> Dict[str, int]:
-        return self.session_storage.peers_by_phone
+    @abc.abstractmethod
+    def peers_by_phone(self):
+        ...

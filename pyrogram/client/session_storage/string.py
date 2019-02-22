@@ -2,10 +2,11 @@ import base64
 import binascii
 import struct
 
-from . import BaseSessionStorage, SessionDoesNotExist
+import pyrogram
+from . import MemorySessionStorage, SessionDoesNotExist
 
 
-class StringSessionStorage(BaseSessionStorage):
+class StringSessionStorage(MemorySessionStorage):
     """
     Packs session data as following (forcing little-endian byte order):
     Char dc_id (1 byte, unsigned)
@@ -18,22 +19,26 @@ class StringSessionStorage(BaseSessionStorage):
     """
     PACK_FORMAT = '<B?q?256s'
 
+    def __init__(self, client: 'pyrogram.client.ext.BaseClient', session_string: str):
+        super(StringSessionStorage, self).__init__(client)
+        self._session_string = session_string
+
     def _unpack(self, data):
         return struct.unpack(self.PACK_FORMAT, data)
 
     def _pack(self):
-        return struct.pack(self.PACK_FORMAT, self.dc_id, self.test_mode, self.user_id, self.is_bot, self.auth_key)
+        return struct.pack(self.PACK_FORMAT, self._dc_id, self._test_mode, self._user_id, self._is_bot, self._auth_key)
 
-    def load_session(self):
+    def load(self):
         try:
-            session_string = self.session_data[1:]
+            session_string = self._session_string[1:]
             session_string += '=' * (4 - len(session_string) % 4)  # restore padding
             decoded = base64.b64decode(session_string, b'-_')
-            self.dc_id, self.test_mode, self.user_id, self.is_bot, self.auth_key = self._unpack(decoded)
+            self._dc_id, self._test_mode, self._user_id, self._is_bot, self._auth_key = self._unpack(decoded)
         except (struct.error, binascii.Error):
             raise SessionDoesNotExist()
 
-    def save_session(self, sync=False):
+    def save(self, sync=False):
         if not sync:
             packed = self._pack()
             encoded = ':' + base64.b64encode(packed, b'-_').decode('latin-1').rstrip('=')

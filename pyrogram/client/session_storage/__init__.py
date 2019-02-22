@@ -16,5 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .session_storage_mixin import SessionStorageMixin
-from .base_session_storage import BaseSessionStorage, BaseSessionConfig, SessionDoesNotExist
+from .abstract import SessionStorage, SessionDoesNotExist
+from .memory import MemorySessionStorage
+from .json import JsonSessionStorage
+from .string import StringSessionStorage

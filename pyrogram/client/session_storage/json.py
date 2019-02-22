@@ -22,21 +22,26 @@ import logging
 import os
 import shutil
 
+import pyrogram
 from ..ext import utils
-from . import BaseSessionStorage, SessionDoesNotExist
+from . import MemorySessionStorage, SessionDoesNotExist
 
 
 log = logging.getLogger(__name__)
 
 
-class JsonSessionStorage(BaseSessionStorage):
+class JsonSessionStorage(MemorySessionStorage):
+    def __init__(self, client: 'pyrogram.client.ext.BaseClient', session_name: str):
+        super(JsonSessionStorage, self).__init__(client)
+        self._session_name = session_name
+
     def _get_file_name(self, name: str):
         if not name.endswith('.session'):
             name += '.session'
-        return os.path.join(self.client.workdir, name)
+        return os.path.join(self._client.workdir, name)
 
-    def load_session(self):
-        file_path = self._get_file_name(self.session_data)
+    def load(self):
+        file_path = self._get_file_name(self._session_name)
         log.info('Loading JSON session from {}'.format(file_path))
 
         try:
@@ -45,59 +50,59 @@ class JsonSessionStorage(BaseSessionStorage):
         except FileNotFoundError:
             raise SessionDoesNotExist()
 
-        self.dc_id = s["dc_id"]
-        self.test_mode = s["test_mode"]
-        self.auth_key = base64.b64decode("".join(s["auth_key"]))  # join split key
-        self.user_id = s["user_id"]
-        self.date = s.get("date", 0)
-        self.is_bot = s.get('is_bot', self.client.is_bot)
+        self._dc_id = s["dc_id"]
+        self._test_mode = s["test_mode"]
+        self._auth_key = base64.b64decode("".join(s["auth_key"]))  # join split key
+        self._user_id = s["user_id"]
+        self._date = s.get("date", 0)
+        self._is_bot = s.get('is_bot', self._is_bot)
 
         for k, v in s.get("peers_by_id", {}).items():
-            self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
+            self._peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
 
         for k, v in s.get("peers_by_username", {}).items():
-            peer = self.peers_by_id.get(v, None)
+            peer = self._peers_by_id.get(v, None)
 
             if peer:
-                self.peers_by_username[k] = peer
+                self._peers_by_username[k] = peer
 
         for k, v in s.get("peers_by_phone", {}).items():
-            peer = self.peers_by_id.get(v, None)
+            peer = self._peers_by_id.get(v, None)
 
             if peer:
-                self.peers_by_phone[k] = peer
+                self._peers_by_phone[k] = peer
 
-    def save_session(self, sync=False):
-        file_path = self._get_file_name(self.session_data)
+    def save(self, sync=False):
+        file_path = self._get_file_name(self._session_name)
 
         if sync:
             file_path += '.tmp'
 
         log.info('Saving JSON session to {}, sync={}'.format(file_path, sync))
 
-        auth_key = base64.b64encode(self.auth_key).decode()
+        auth_key = base64.b64encode(self._auth_key).decode()
         auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]  # split key in lines of 43 chars
 
-        os.makedirs(self.client.workdir, exist_ok=True)
+        os.makedirs(self._client.workdir, exist_ok=True)
 
         data = {
-            'dc_id': self.dc_id,
-            'test_mode': self.test_mode,
+            'dc_id': self._dc_id,
+            'test_mode': self._test_mode,
             'auth_key': auth_key,
-            'user_id': self.user_id,
-            'date': self.date,
-            'is_bot': self.is_bot,
+            'user_id': self._user_id,
+            'date': self._date,
+            'is_bot': self._is_bot,
             'peers_by_id': {
                 k: getattr(v, "access_hash", None)
-                for k, v in self.peers_by_id.copy().items()
+                for k, v in self._peers_by_id.copy().items()
             },
             'peers_by_username': {
                 k: utils.get_peer_id(v)
-                for k, v in self.peers_by_username.copy().items()
+                for k, v in self._peers_by_username.copy().items()
             },
             'peers_by_phone': {
                 k: utils.get_peer_id(v)
-                for k, v in self.peers_by_phone.copy().items()
+                for k, v in self._peers_by_phone.copy().items()
             }
         }
 
@@ -109,10 +114,10 @@ class JsonSessionStorage(BaseSessionStorage):
 
         # execution won't be here if an error has occurred earlier
         if sync:
-            shutil.move(file_path, self._get_file_name(self.session_data))
+            shutil.move(file_path, self._get_file_name(self._session_name))
 
     def sync_cleanup(self):
         try:
-            os.remove(self._get_file_name(self.session_data) + '.tmp')
+            os.remove(self._get_file_name(self._session_name) + '.tmp')
         except OSError:
             pass

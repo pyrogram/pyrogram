@@ -50,15 +50,15 @@ from pyrogram.api.errors import (
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
-from pyrogram.client.session_storage import BaseSessionConfig
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .dispatcher import Dispatcher
 from .ext import utils, Syncer, BaseClient
 from .methods import Methods
-from .session_storage import SessionDoesNotExist
-from .session_storage.json_session_storage import JsonSessionStorage
-from .session_storage.string_session_storage import StringSessionStorage
+from .session_storage import (
+    SessionDoesNotExist, SessionStorage, MemorySessionStorage, JsonSessionStorage,
+    StringSessionStorage
+)
 
 log = logging.getLogger(__name__)
 
@@ -183,7 +183,7 @@ class Client(Methods, BaseClient):
     """
 
     def __init__(self,
-                 session_name: Union[str, BaseSessionConfig],
+                 session_name: Union[str, SessionStorage],
                  api_id: Union[int, str] = None,
                  api_hash: str = None,
                  app_version: str = None,
@@ -209,14 +209,16 @@ class Client(Methods, BaseClient):
                  takeout: bool = None):
 
         if isinstance(session_name, str):
-            if session_name.startswith(':'):
+            if session_name == ':memory:':
+                session_storage = MemorySessionStorage(self)
+            elif session_name.startswith(':'):
                 session_storage = StringSessionStorage(self, session_name)
             else:
                 session_storage = JsonSessionStorage(self, session_name)
-        elif isinstance(session_name, BaseSessionConfig):
-            session_storage = session_name.session_storage_cls(self, session_name)
+        elif isinstance(session_name, SessionStorage):
+            session_storage = session_name
         else:
-            raise RuntimeError('Wrong session_name passed, expected str or BaseSessionConfig subclass')
+            raise RuntimeError('Wrong session_name passed, expected str or SessionConfig subclass')
 
         super().__init__(session_storage)
 
@@ -230,7 +232,7 @@ class Client(Methods, BaseClient):
         self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
-        self.test_mode = test_mode
+        self.session_storage.test_mode = test_mode
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
@@ -282,10 +284,10 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if isinstance(self.session_storage, JsonSessionStorage):
-            if self.BOT_TOKEN_RE.match(self.session_storage.session_data):
-                self.is_bot = True
-                self.bot_token = self.session_storage.session_data
-                self.session_storage.session_data = self.session_storage.session_data.split(":")[0]
+            if self.BOT_TOKEN_RE.match(self.session_storage._session_name):
+                self.session_storage.is_bot = True
+                self.bot_token = self.session_storage._session_name
+                self.session_storage._session_name = self.session_storage._session_name.split(":")[0]
                 warnings.warn('\nYou are using a bot token as session name.\n'
                               'It will be deprecated in next update, please use session file name to load '
                               'existing sessions and bot_token argument to create new sessions.',
@@ -297,33 +299,33 @@ class Client(Methods, BaseClient):
 
         self.session = Session(
             self,
-            self.dc_id,
-            self.auth_key
+            self.session_storage.dc_id,
+            self.session_storage.auth_key
         )
 
         self.session.start()
         self.is_started = True
 
         try:
-            if self.user_id is None:
+            if self.session_storage.user_id is None:
                 if self.bot_token is None:
                     self.authorize_user()
                 else:
-                    self.is_bot = True
+                    self.session_storage.is_bot = True
                     self.authorize_bot()
 
                 self.save_session()
 
-            if not self.is_bot:
+            if not self.session_storage.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
 
                 now = time.time()
 
-                if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                    self.peers_by_username.clear()
-                    self.peers_by_phone.clear()
+                if abs(now - self.session_storage.date) > Client.OFFLINE_SLEEP:
+                    self.session_storage.peers_by_username.clear()
+                    self.session_storage.peers_by_phone.clear()
 
                     self.get_initial_dialogs()
                     self.get_contacts()
@@ -512,19 +514,20 @@ class Client(Methods, BaseClient):
         except UserMigrate as e:
             self.session.stop()
 
-            self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
+            self.session_storage.dc_id = e.x
+            self.session_storage.auth_key = Auth(self.session_storage.dc_id, self.session_storage.test_mode,
+                                 self.ipv6, self._proxy).create()
 
             self.session = Session(
                 self,
-                self.dc_id,
-                self.auth_key
+                self.session_storage.dc_id,
+                self.session_storage.auth_key
             )
 
             self.session.start()
             self.authorize_bot()
         else:
-            self.user_id = r.user.id
+            self.session_storage.user_id = r.user.id
 
             print("Logged in successfully as @{}".format(r.user.username))
 
@@ -564,19 +567,19 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 self.session.stop()
 
-                self.dc_id = e.x
+                self.session_storage.dc_id = e.x
 
-                self.auth_key = Auth(
-                    self.dc_id,
-                    self.test_mode,
+                self.session_storage.auth_key = Auth(
+                    self.session_storage.dc_id,
+                    self.session_storage.test_mode,
                     self.ipv6,
                     self._proxy
                 ).create()
 
                 self.session = Session(
                     self,
-                    self.dc_id,
-                    self.auth_key
+                    self.session_storage.dc_id,
+                    self.session_storage.auth_key
                 )
 
                 self.session.start()
@@ -752,7 +755,7 @@ class Client(Methods, BaseClient):
             assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
 
         self.password = None
-        self.user_id = r.user.id
+        self.session_storage.user_id = r.user.id
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
@@ -776,13 +779,13 @@ class Client(Methods, BaseClient):
                     access_hash=access_hash
                 )
 
-                self.peers_by_id[user_id] = input_peer
+                self.session_storage.peers_by_id[user_id] = input_peer
 
                 if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
+                    self.session_storage.peers_by_username[username.lower()] = input_peer
 
                 if phone is not None:
-                    self.peers_by_phone[phone] = input_peer
+                    self.session_storage.peers_by_phone[phone] = input_peer
 
             if isinstance(entity, (types.Chat, types.ChatForbidden)):
                 chat_id = entity.id
@@ -792,7 +795,7 @@ class Client(Methods, BaseClient):
                     chat_id=chat_id
                 )
 
-                self.peers_by_id[peer_id] = input_peer
+                self.session_storage.peers_by_id[peer_id] = input_peer
 
             if isinstance(entity, (types.Channel, types.ChannelForbidden)):
                 channel_id = entity.id
@@ -810,10 +813,10 @@ class Client(Methods, BaseClient):
                     access_hash=access_hash
                 )
 
-                self.peers_by_id[peer_id] = input_peer
+                self.session_storage.peers_by_id[peer_id] = input_peer
 
                 if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
+                    self.session_storage.peers_by_username[username.lower()] = input_peer
 
     def download_worker(self):
         name = threading.current_thread().name
@@ -1127,10 +1130,11 @@ class Client(Methods, BaseClient):
 
     def load_session(self):
         try:
-            self.session_storage.load_session()
+            self.session_storage.load()
         except SessionDoesNotExist:
             log.info('Could not load session "{}", initiate new one'.format(self.session_name))
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
+            self.session_storage.auth_key = Auth(self.session_storage.dc_id, self.session_storage.test_mode,
+                                                 self.ipv6, self._proxy).create()
 
     def load_plugins(self):
         if self.plugins.get("enabled", False):
@@ -1237,7 +1241,7 @@ class Client(Methods, BaseClient):
                 log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
-        self.session_storage.save_session()
+        self.session_storage.save()
 
     def get_initial_dialogs_chunk(self,
                                   offset_date: int = 0):
@@ -1257,7 +1261,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(len(self.peers_by_id)))
+                log.info("Total peers: {}".format(len(self.session_storage.peers_by_id)))
                 return r
 
     def get_initial_dialogs(self):
@@ -1293,7 +1297,7 @@ class Client(Methods, BaseClient):
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         try:
-            return self.peers_by_id[peer_id]
+            return self.session_storage.peers_by_id[peer_id]
         except KeyError:
             if type(peer_id) is str:
                 if peer_id in ("self", "me"):
@@ -1304,17 +1308,17 @@ class Client(Methods, BaseClient):
                 try:
                     int(peer_id)
                 except ValueError:
-                    if peer_id not in self.peers_by_username:
+                    if peer_id not in self.session_storage.peers_by_username:
                         self.send(
                             functions.contacts.ResolveUsername(
                                 username=peer_id
                             )
                         )
 
-                    return self.peers_by_username[peer_id]
+                    return self.session_storage.peers_by_username[peer_id]
                 else:
                     try:
-                        return self.peers_by_phone[peer_id]
+                        return self.session_storage.peers_by_phone[peer_id]
                     except KeyError:
                         raise PeerIdInvalid
 
@@ -1341,7 +1345,7 @@ class Client(Methods, BaseClient):
                     )
 
             try:
-                return self.peers_by_id[peer_id]
+                return self.session_storage.peers_by_id[peer_id]
             except KeyError:
                 raise PeerIdInvalid
 
@@ -1411,7 +1415,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self, self.dc_id, self.auth_key, is_media=True)
+        session = Session(self, self.session_storage.dc_id, self.session_storage.auth_key, is_media=True)
         session.start()
 
         try:
@@ -1492,7 +1496,7 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.dc_id:
+                if dc_id != self.session_storage.dc_id:
                     exported_auth = self.send(
                         functions.auth.ExportAuthorization(
                             dc_id=dc_id
@@ -1502,7 +1506,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
+                        Auth(dc_id, self.session_storage.test_mode, self.ipv6, self._proxy).create(),
                         is_media=True
                     )
 
@@ -1520,7 +1524,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        self.auth_key,
+                        self.session_storage.auth_key,
                         is_media=True
                     )
 
@@ -1588,7 +1592,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
+                            Auth(r.dc_id, self.session_storage.test_mode, self.ipv6, self._proxy).create(),
                             is_media=True,
                             is_cdn=True
                         )
