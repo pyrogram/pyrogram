@@ -576,7 +576,7 @@ class Client(Methods, BaseClient):
                 else:
                     break
 
-        if phone_code_hash is None:
+        if self.phone_code_hash is None:
             phone_code_hash = r.phone_code_hash
         
         phone_registered = r.phone_registered
