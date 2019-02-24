@@ -530,7 +530,7 @@ class Client(Methods, BaseClient):
 
             self.phone_number = self.phone_number.strip("+")
 
-            if phone_code is None or phone_code_hash is None:
+            if self.phone_code is None or self.phone_code_hash is None:
                 try:
                     r = self.send(
                         functions.auth.SendCode(
