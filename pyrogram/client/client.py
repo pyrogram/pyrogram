@@ -189,6 +189,7 @@ class Client(Methods, BaseClient):
                  test_mode: bool = False,
                  phone_number: str = None,
                  phone_code: Union[str, callable] = None,
+                 phone_code_hash: str = None,
                  password: str = None,
                  recovery_code: callable = None,
                  force_sms: bool = False,
@@ -215,6 +216,7 @@ class Client(Methods, BaseClient):
         self.test_mode = test_mode
         self.phone_number = phone_number
         self.phone_code = phone_code
+        self.phone_code_hash = phone_code_hash
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
@@ -505,6 +507,7 @@ class Client(Methods, BaseClient):
     def authorize_user(self):
         phone_number_invalid_raises = self.phone_number is not None
         phone_code_invalid_raises = self.phone_code is not None
+        phone_code_hash_invalid_raises = self.phone_code_hash is not None
         password_invalid_raises = self.password is not None
         first_name_invalid_raises = self.first_name is not None
 
@@ -527,53 +530,56 @@ class Client(Methods, BaseClient):
 
             self.phone_number = self.phone_number.strip("+")
 
-            try:
-                r = self.send(
-                    functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
+            if phone_code is None or phone_code_hash is None:
+                try:
+                    r = self.send(
+                        functions.auth.SendCode(
+                            self.phone_number,
+                            self.api_id,
+                            self.api_hash
+                        )
                     )
-                )
-            except (PhoneMigrate, NetworkMigrate) as e:
-                self.session.stop()
+                except (PhoneMigrate, NetworkMigrate) as e:
+                    self.session.stop()
 
-                self.dc_id = e.x
+                    self.dc_id = e.x
 
-                self.auth_key = Auth(
-                    self.dc_id,
-                    self.test_mode,
-                    self.ipv6,
-                    self._proxy
-                ).create()
+                    self.auth_key = Auth(
+                        self.dc_id,
+                        self.test_mode,
+                        self.ipv6,
+                        self._proxy
+                    ).create()
 
-                self.session = Session(
-                    self,
-                    self.dc_id,
-                    self.auth_key
-                )
+                    self.session = Session(
+                        self,
+                        self.dc_id,
+                        self.auth_key
+                    )
 
-                self.session.start()
-            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
-                if phone_number_invalid_raises:
+                    self.session.start()
+                except (PhoneNumberInvalid, PhoneNumberBanned) as e:
+                    if phone_number_invalid_raises:
+                        raise
+                    else:
+                        print(e.MESSAGE)
+                        self.phone_number = None
+                except FloodWait as e:
+                    if phone_number_invalid_raises:
+                        raise
+                    else:
+                        print(e.MESSAGE.format(x=e.x))
+                        time.sleep(e.x)
+                except Exception as e:
+                    log.error(e, exc_info=True)
                     raise
                 else:
-                    print(e.MESSAGE)
-                    self.phone_number = None
-            except FloodWait as e:
-                if phone_number_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE.format(x=e.x))
-                    time.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
-                raise
-            else:
-                break
+                    break
 
+        if phone_code_hash is None:
+            phone_code_hash = r.phone_code_hash
+        
         phone_registered = r.phone_registered
-        phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
         if terms_of_service:

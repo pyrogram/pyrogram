@@ -11,6 +11,9 @@ pyrogram/api/all.py
 # PyCharm stuff
 .idea/
 
+# Visual Studio Code stuff
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
