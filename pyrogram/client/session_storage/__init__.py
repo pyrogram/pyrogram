@@ -20,3 +20,4 @@ from .abstract import SessionStorage, SessionDoesNotExist
 from .memory import MemorySessionStorage
 from .json import JsonSessionStorage
 from .string import StringSessionStorage
+from .sqlite import SQLiteSessionStorage

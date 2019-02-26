@@ -29,6 +29,8 @@ from . import MemorySessionStorage, SessionDoesNotExist
 
 log = logging.getLogger(__name__)
 
+EXTENSION = '.session'
+
 
 class JsonSessionStorage(MemorySessionStorage):
     def __init__(self, client: 'pyrogram.client.ext.BaseClient', session_name: str):
@@ -36,8 +38,8 @@ class JsonSessionStorage(MemorySessionStorage):
         self._session_name = session_name
 
     def _get_file_name(self, name: str):
-        if not name.endswith('.session'):
-            name += '.session'
+        if not name.endswith(EXTENSION):
+            name += EXTENSION
         return os.path.join(self._client.workdir, name)
 
     def load(self):

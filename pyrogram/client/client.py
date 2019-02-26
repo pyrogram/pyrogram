@@ -57,7 +57,7 @@ from .ext import utils, Syncer, BaseClient
 from .methods import Methods
 from .session_storage import (
     SessionDoesNotExist, SessionStorage, MemorySessionStorage, JsonSessionStorage,
-    StringSessionStorage
+    StringSessionStorage, SQLiteSessionStorage
 )
 
 log = logging.getLogger(__name__)
