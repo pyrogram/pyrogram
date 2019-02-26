@@ -214,7 +214,7 @@ class Client(Methods, BaseClient):
             elif session_name.startswith(':'):
                 session_storage = StringSessionStorage(self, session_name)
             else:
-                session_storage = JsonSessionStorage(self, session_name)
+                session_storage = SQLiteSessionStorage(self, session_name)
         elif isinstance(session_name, SessionStorage):
             session_storage = session_name
         else:

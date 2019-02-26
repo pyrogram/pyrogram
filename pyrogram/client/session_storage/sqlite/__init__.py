@@ -18,17 +18,18 @@
 
 import logging
 import os
+import shutil
 import sqlite3
 
 import pyrogram
 from ....api import types
 from ...ext import utils
-from .. import MemorySessionStorage, SessionDoesNotExist
+from .. import MemorySessionStorage, SessionDoesNotExist, JsonSessionStorage
 
 
 log = logging.getLogger(__name__)
 
-EXTENSION = '.session.sqlite3'
+EXTENSION = '.session'
 MIGRATIONS = ['0001']
 
 
@@ -54,13 +55,32 @@ class SQLiteSessionStorage(MemorySessionStorage):
             with open(os.path.join(os.path.dirname(__file__), '{}.sql'.format(name))) as script:
                 self._conn.executescript(script.read())
 
+    def _migrate_from_json(self):
+        jss = JsonSessionStorage(self._client, self._session_name)
+        jss.load()
+        file_path = self._get_file_name(self._session_name)
+        self._conn = sqlite3.connect(file_path + '.tmp')
+        self._apply_migrations(new_db=True)
+        self._dc_id, self._test_mode, self._auth_key, self._user_id, self._date, self._is_bot = \
+          jss.dc_id,   jss.test_mode,   jss.auth_key,   jss.user_id,   jss.date,   jss.is_bot
+        self.save()
+        self._conn.close()
+        shutil.move(file_path + '.tmp', file_path)
+        log.warning('Session was migrated from JSON, loading...')
+        self.load()
+
     def load(self):
         file_path = self._get_file_name(self._session_name)
         log.info('Loading SQLite session from {}'.format(file_path))
 
         if os.path.isfile(file_path):
-            self._conn = sqlite3.connect(file_path)
-            self._apply_migrations()
+            try:
+                self._conn = sqlite3.connect(file_path)
+                self._apply_migrations()
+            except sqlite3.DatabaseError:
+                log.warning('Trying to migrate session from JSON...')
+                self._migrate_from_json()
+                return
         else:
             self._conn = sqlite3.connect(file_path)
             self._apply_migrations(new_db=True)
@@ -88,7 +108,6 @@ class SQLiteSessionStorage(MemorySessionStorage):
             access_hash = entity.access_hash
         elif isinstance(entity, (types.Chat, types.ChatForbidden)):
             peer_id = -entity.id
-            # input_peer = types.InputPeerChat(chat_id=entity.id)
         elif isinstance(entity, (types.Channel, types.ChannelForbidden)):
             peer_id = int('-100' + str(entity.id))
             username = entity.username.lower() if hasattr(entity, 'username') and entity.username else None

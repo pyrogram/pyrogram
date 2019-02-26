@@ -18,4 +18,7 @@ create table migrations (
   name text primary key
 );
 
+create index username_idx on peers_cache(username);
+create index phone_idx on peers_cache(phone);
+
 insert into migrations (name) values ('0001');
