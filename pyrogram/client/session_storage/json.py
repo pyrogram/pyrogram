@@ -58,19 +58,19 @@ class JsonSessionStorage(MemorySessionStorage):
         self._is_bot = s.get('is_bot', self._is_bot)
 
         for k, v in s.get("peers_by_id", {}).items():
-            self._peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
+            self._peers_cache['i' + k] = utils.get_input_peer(int(k), v)
 
         for k, v in s.get("peers_by_username", {}).items():
-            peer = self._peers_by_id.get(v, None)
-
-            if peer:
-                self._peers_by_username[k] = peer
+            try:
+                self._peers_cache['u' + k] = self.get_peer_by_id(v)
+            except KeyError:
+                pass
 
         for k, v in s.get("peers_by_phone", {}).items():
-            peer = self._peers_by_id.get(v, None)
-
-            if peer:
-                self._peers_by_phone[k] = peer
+            try:
+                self._peers_cache['p' + k] = self.get_peer_by_id(v)
+            except KeyError:
+                pass
 
     def save(self, sync=False):
         file_path = self._get_file_name(self._session_name)
@@ -93,16 +93,19 @@ class JsonSessionStorage(MemorySessionStorage):
             'date': self._date,
             'is_bot': self._is_bot,
             'peers_by_id': {
-                k: getattr(v, "access_hash", None)
-                for k, v in self._peers_by_id.copy().items()
+                k[1:]: getattr(v, "access_hash", None)
+                for k, v in self._peers_cache.copy().items()
+                if k[0] == 'i'
             },
             'peers_by_username': {
-                k: utils.get_peer_id(v)
-                for k, v in self._peers_by_username.copy().items()
+                k[1:]: utils.get_peer_id(v)
+                for k, v in self._peers_cache.copy().items()
+                if k[0] == 'u'
             },
             'peers_by_phone': {
-                k: utils.get_peer_id(v)
-                for k, v in self._peers_by_phone.copy().items()
+                k[1:]: utils.get_peer_id(v)
+                for k, v in self._peers_cache.copy().items()
+                if k[0] == 'p'
             }
         }
 

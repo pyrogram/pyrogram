@@ -1,4 +1,5 @@
 import pyrogram
+from pyrogram.api import types
 from . import SessionStorage, SessionDoesNotExist
 
 
@@ -11,9 +12,7 @@ class MemorySessionStorage(SessionStorage):
         self._user_id = None
         self._date = 0
         self._is_bot = False
-        self._peers_by_id = {}
-        self._peers_by_username = {}
-        self._peers_by_phone = {}
+        self._peers_cache = {}
 
     def load(self):
         raise SessionDoesNotExist()
@@ -72,14 +71,48 @@ class MemorySessionStorage(SessionStorage):
     def is_bot(self, val):
         self._is_bot = val
 
-    @property
-    def peers_by_id(self):
-        return self._peers_by_id
+    def clear_cache(self):
+        keys = list(filter(lambda k: k[0] in 'up', self._peers_cache.keys()))
+        for key in keys:
+            try:
+                del self._peers_cache[key]
+            except KeyError:
+                pass
 
-    @property
-    def peers_by_username(self):
-        return self._peers_by_username
+    def cache_peer(self, entity):
+        if isinstance(entity, types.User):
+            input_peer = types.InputPeerUser(
+                user_id=entity.id,
+                access_hash=entity.access_hash
+            )
+            self._peers_cache['i' + str(entity.id)] = input_peer
+            if entity.username:
+                self._peers_cache['u' + entity.username.lower()] = input_peer
+            if entity.phone:
+                self._peers_cache['p' + entity.phone] = input_peer
+        elif isinstance(entity, (types.Chat, types.ChatForbidden)):
+            self._peers_cache['i-' + str(entity.id)] = types.InputPeerChat(chat_id=entity.id)
+        elif isinstance(entity, (types.Channel, types.ChannelForbidden)):
+            input_peer = types.InputPeerChannel(
+                channel_id=entity.id,
+                access_hash=entity.access_hash
+            )
+            self._peers_cache['i-100' + str(entity.id)] = input_peer
+            username = getattr(entity, "username", None)
+            if username:
+                self._peers_cache['u' + username.lower()] = input_peer
 
-    @property
-    def peers_by_phone(self):
-        return self._peers_by_phone
+    def get_peer_by_id(self, val):
+        return self._peers_cache['i' + str(val)]
+
+    def get_peer_by_username(self, val):
+        return self._peers_cache['u' + val.lower()]
+
+    def get_peer_by_phone(self, val):
+        return self._peers_cache['p' + val]
+
+    def peers_count(self):
+        return len(list(filter(lambda k: k[0] == 'i', self._peers_cache.keys())))
+
+    def contacts_count(self):
+        return len(list(filter(lambda k: k[0] == 'p', self._peers_cache.keys())))

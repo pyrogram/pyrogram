@@ -324,8 +324,7 @@ class Client(Methods, BaseClient):
                 now = time.time()
 
                 if abs(now - self.session_storage.date) > Client.OFFLINE_SLEEP:
-                    self.session_storage.peers_by_username.clear()
-                    self.session_storage.peers_by_phone.clear()
+                    self.session_storage.clear_cache()
 
                     self.get_initial_dialogs()
                     self.get_contacts()
@@ -763,60 +762,7 @@ class Client(Methods, BaseClient):
                                                types.Chat, types.ChatForbidden,
                                                types.Channel, types.ChannelForbidden]]):
         for entity in entities:
-            if isinstance(entity, types.User):
-                user_id = entity.id
-
-                access_hash = entity.access_hash
-
-                if access_hash is None:
-                    continue
-
-                username = entity.username
-                phone = entity.phone
-
-                input_peer = types.InputPeerUser(
-                    user_id=user_id,
-                    access_hash=access_hash
-                )
-
-                self.session_storage.peers_by_id[user_id] = input_peer
-
-                if username is not None:
-                    self.session_storage.peers_by_username[username.lower()] = input_peer
-
-                if phone is not None:
-                    self.session_storage.peers_by_phone[phone] = input_peer
-
-            if isinstance(entity, (types.Chat, types.ChatForbidden)):
-                chat_id = entity.id
-                peer_id = -chat_id
-
-                input_peer = types.InputPeerChat(
-                    chat_id=chat_id
-                )
-
-                self.session_storage.peers_by_id[peer_id] = input_peer
-
-            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
-                channel_id = entity.id
-                peer_id = int("-100" + str(channel_id))
-
-                access_hash = entity.access_hash
-
-                if access_hash is None:
-                    continue
-
-                username = getattr(entity, "username", None)
-
-                input_peer = types.InputPeerChannel(
-                    channel_id=channel_id,
-                    access_hash=access_hash
-                )
-
-                self.session_storage.peers_by_id[peer_id] = input_peer
-
-                if username is not None:
-                    self.session_storage.peers_by_username[username.lower()] = input_peer
+            self.session_storage.cache_peer(entity)
 
     def download_worker(self):
         name = threading.current_thread().name
@@ -1261,7 +1207,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(len(self.session_storage.peers_by_id)))
+                log.info("Total peers: {}".format(self.session_storage.peers_count()))
                 return r
 
     def get_initial_dialogs(self):
@@ -1297,7 +1243,7 @@ class Client(Methods, BaseClient):
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         try:
-            return self.session_storage.peers_by_id[peer_id]
+            return self.session_storage.get_peer_by_id(peer_id)
         except KeyError:
             if type(peer_id) is str:
                 if peer_id in ("self", "me"):
@@ -1308,17 +1254,19 @@ class Client(Methods, BaseClient):
                 try:
                     int(peer_id)
                 except ValueError:
-                    if peer_id not in self.session_storage.peers_by_username:
+                    try:
+                        self.session_storage.get_peer_by_username(peer_id)
+                    except KeyError:
                         self.send(
                             functions.contacts.ResolveUsername(
                                 username=peer_id
                             )
                         )
 
-                    return self.session_storage.peers_by_username[peer_id]
+                    return self.session_storage.get_peer_by_username(peer_id)
                 else:
                     try:
-                        return self.session_storage.peers_by_phone[peer_id]
+                        return self.session_storage.get_peer_by_phone(peer_id)
                     except KeyError:
                         raise PeerIdInvalid
 
@@ -1345,7 +1293,7 @@ class Client(Methods, BaseClient):
                     )
 
             try:
-                return self.session_storage.peers_by_id[peer_id]
+                return self.session_storage.get_peer_by_id(peer_id)
             except KeyError:
                 raise PeerIdInvalid
 

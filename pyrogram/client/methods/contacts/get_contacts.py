@@ -44,5 +44,5 @@ class GetContacts(BaseClient):
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total contacts: {}".format(len(self.session_storage.peers_by_phone)))
+                log.info("Total contacts: {}".format(self.session_storage.contacts_count()))
                 return [pyrogram.User._parse(self, user) for user in contacts.users]

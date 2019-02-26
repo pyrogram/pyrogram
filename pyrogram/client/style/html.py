@@ -29,14 +29,15 @@ from pyrogram.api.types import (
     InputMessageEntityMentionName as Mention,
 )
 from . import utils
+from ..session_storage import SessionStorage
 
 
 class HTML:
     HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])([^<]+)\2)?>([^>]+)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, peers_by_id):
-        self.peers_by_id = peers_by_id
+    def __init__(self, session_storage: SessionStorage):
+        self.session_storage = session_storage
 
     def parse(self, message: str):
         entities = []
@@ -52,7 +53,10 @@ class HTML:
 
                 if mention:
                     user_id = int(mention.group(1))
-                    input_user = self.peers_by_id.get(user_id, None)
+                    try:
+                        input_user = self.session_storage.get_peer_by_id(user_id)
+                    except KeyError:
+                        input_user = None
 
                     entity = (
                         Mention(start, len(body), input_user)

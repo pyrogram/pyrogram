@@ -17,9 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import abc
-from typing import Type
+from typing import Type, Union
 
 import pyrogram
+from pyrogram.api import types
 
 
 class SessionDoesNotExist(Exception):
@@ -102,17 +103,41 @@ class SessionStorage(abc.ABC):
     def is_bot(self, val):
         ...
 
-    @property
     @abc.abstractmethod
-    def peers_by_id(self):
+    def clear_cache(self):
         ...
 
-    @property
     @abc.abstractmethod
-    def peers_by_username(self):
+    def cache_peer(self, entity: Union[types.User,
+                                       types.Chat, types.ChatForbidden,
+                                       types.Channel, types.ChannelForbidden]):
         ...
 
-    @property
     @abc.abstractmethod
-    def peers_by_phone(self):
+    def get_peer_by_id(self, val: int):
+        ...
+
+    @abc.abstractmethod
+    def get_peer_by_username(self, val: str):
+        ...
+
+    @abc.abstractmethod
+    def get_peer_by_phone(self, val: str):
+        ...
+
+    def get_peer(self, peer_id: Union[int, str]):
+        if isinstance(peer_id, int):
+            return self.get_peer_by_id(peer_id)
+        else:
+            peer_id = peer_id.lstrip('+@')
+            if peer_id.isdigit():
+                return self.get_peer_by_phone(peer_id)
+            return self.get_peer_by_username(peer_id)
+
+    @abc.abstractmethod
+    def peers_count(self):
+        ...
+
+    @abc.abstractmethod
+    def contacts_count(self):
         ...

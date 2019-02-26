@@ -74,8 +74,8 @@ class BaseClient:
         self.rnd_id = MsgId
         self.channels_pts = {}
 
-        self.markdown = Markdown(self.session_storage.peers_by_id)
-        self.html = HTML(self.session_storage.peers_by_id)
+        self.markdown = Markdown(self.session_storage)
+        self.html = HTML(self.session_storage)
 
         self.session = None
         self.media_sessions = {}
