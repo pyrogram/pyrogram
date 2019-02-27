@@ -45,10 +45,3 @@ class UserStatusHandler(Handler):
 
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
-
-    def check(self, user_status):
-        return (
-            self.filters(user_status)
-            if callable(self.filters)
-            else True
-        )

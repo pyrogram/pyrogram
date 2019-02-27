@@ -45,10 +45,3 @@ class CallbackQueryHandler(Handler):
 
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
-
-    def check(self, callback_query):
-        return (
-            self.filters(callback_query)
-            if callable(self.filters)
-            else True
-        )
