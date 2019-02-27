@@ -38,10 +38,6 @@ class SessionStorage(abc.ABC):
     @abc.abstractmethod
     def save(self, sync=False):
         ...
-
-    @abc.abstractmethod
-    def sync_cleanup(self):
-        ...
     
     @property
     @abc.abstractmethod

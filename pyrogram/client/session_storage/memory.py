@@ -20,9 +20,6 @@ class MemorySessionStorage(SessionStorage):
     def save(self, sync=False):
         pass
 
-    def sync_cleanup(self):
-        pass
-
     @property
     def dc_id(self):
         return self._dc_id

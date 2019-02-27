@@ -88,5 +88,3 @@ class Syncer:
             log.critical(e, exc_info=True)
         else:
             log.info("Synced {}".format(client.session_name))
-        finally:
-            client.session_storage.sync_cleanup()

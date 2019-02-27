@@ -44,6 +44,3 @@ class StringSessionStorage(MemorySessionStorage):
             encoded = ':' + base64.b64encode(packed, b'-_').decode('latin-1').rstrip('=')
             split = '\n'.join(['"{}"'.format(encoded[i: i + 50]) for i in range(0, len(encoded), 50)])
             print('Created session string:\n{}'.format(split))
-
-    def sync_cleanup(self):
-        pass

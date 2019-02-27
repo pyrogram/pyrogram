@@ -146,6 +146,3 @@ class SQLiteSessionStorage(MemorySessionStorage):
         self._conn.execute('insert into sessions values (?, ?, ?, ?, ?, ?)',
                            (self._dc_id, self._test_mode, self._auth_key, self._user_id, self._date, self._is_bot))
         self._conn.commit()
-
-    def sync_cleanup(self):
-        pass
