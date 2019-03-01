@@ -293,6 +293,7 @@ class Client(Methods, BaseClient):
         try:
             if self.user_id is None:
                 if self.bot_token is None:
+                    self.is_bot = False
                     self.authorize_user()
                 else:
                     self.is_bot = True
