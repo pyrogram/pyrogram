@@ -26,13 +26,15 @@ class UpdateChatUsername(BaseClient):
     def update_chat_username(self,
                              chat_id: Union[int, str],
                              username: Union[str, None]) -> bool:
-        """Use this method to update a channel or supergroup username.
+        """Use this method to update a channel or a supergroup username.
+        
+        To update your own username (for users only, not bots) you can use :meth:`update_username`.
 
         Args:
             chat_id (``int`` | ``str``)
                 Unique identifier (int) or username (str) of the target chat.
             username (``str`` | ``None``):
-                Username to set. Empty or ``None`` to remove username.
+                Username to set. Pass "" (empty string) or None to remove the username.
 
         Returns:
             True on success.
@@ -43,10 +45,14 @@ class UpdateChatUsername(BaseClient):
         """
 
         peer = self.resolve_peer(chat_id)
+        
         if isinstance(peer, types.InputPeerChannel):
             return bool(
                 self.send(
-                    functions.channels.UpdateUsername(peer, username or '')
+                    functions.channels.UpdateUsername(
+                        channel=peer,
+                        username=username or ""
+                    )
                 )
             )
         else:
