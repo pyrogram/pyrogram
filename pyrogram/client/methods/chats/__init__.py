@@ -37,6 +37,7 @@ from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
+from .update_chat_username import UpdateChatUsername
 
 
 class Chats(
@@ -60,6 +61,7 @@ class Chats(
     GetChatMembersCount,
     GetChatPreview,
     IterDialogs,
-    IterChatMembers
+    IterChatMembers,
+    UpdateChatUsername
 ):
     pass
