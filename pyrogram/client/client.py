@@ -762,6 +762,8 @@ class Client(Methods, BaseClient):
                                                types.Chat, types.ChatForbidden,
                                                types.Channel, types.ChannelForbidden]]):
         for entity in entities:
+            if isinstance(entity, (types.User, types.Channel, types.ChannelForbidden)) and not entity.access_hash:
+                continue
             self.session_storage.cache_peer(entity)
 
     def download_worker(self):
