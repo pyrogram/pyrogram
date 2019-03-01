@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 from typing import Union
@@ -122,7 +121,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
+                            mime_type="video/mp4",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -178,7 +178,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "audio/mpeg"),
+                            mime_type="audio/mpeg",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
@@ -233,7 +234,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
+                            mime_type="video/mp4",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -290,7 +292,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "text/plain"),
+                            mime_type="application/zip",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(os.path.basename(media.media))

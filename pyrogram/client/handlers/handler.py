@@ -21,3 +21,10 @@ class Handler:
     def __init__(self, callback: callable, filters=None):
         self.callback = callback
         self.filters = filters
+
+    def check(self, update):
+        return (
+            self.filters(update)
+            if callable(self.filters)
+            else True
+        )

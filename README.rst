@@ -17,18 +17,24 @@ Pyrogram
 
     app.run()
 
-**Pyrogram** is a brand new Telegram_ Client Library written from the ground up in Python and C. It can be used for
-building custom Telegram applications that interact with the MTProto API as both User and Bot.
+**Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and C.
+It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the `MTProto API`_.
+
+    `Pyrogram in fully-asynchronous mode is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
+    
+    `Working PoC of Telegram voice calls using Pyrogram » <https://github.com/bakatrouble/pytgvoip>`_
 
 Features
 --------
 
--   **Easy to use**: You can easily install Pyrogram using pip and start building your app right away.
--   **High-level**: The low-level details of MTProto are abstracted and automatically handled.
+-   **Easy**: You can install Pyrogram with pip and start building your applications right away.
+-   **Elegant**: Low-level details are abstracted and re-presented in a much nicer and easier way.
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Updated** to the latest Telegram API version, currently Layer 91 on top of MTProto 2.0.
--   **Documented**: The Pyrogram API is well documented and resembles the Telegram Bot API.
--   **Full API**, allowing to execute any advanced action an official client is able to do, and more.
+-   **Documented**: Pyrogram API methods, types and public interfaces are well documented.
+-   **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
+-   **Updated**, to the latest Telegram API version, currently Layer 91 on top of `MTProto 2.0`_.
+-   **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
+-   **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
 
 Requirements
 ------------
@@ -43,11 +49,11 @@ Installing
 
     pip3 install pyrogram
 
-Getting Started
----------------
+Resources
+---------
 
 -   The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.ml.
--   Reading Examples_ in this repository is also a good way for learning how things work.
+-   Reading `Examples in this repository`_ is also a good way for learning how Pyrogram works.
 -   Seeking extra help? Don't be shy, come join and ask our Community_!
 -   For other requests you can send an Email_ or a Message_.
 
@@ -65,13 +71,15 @@ Copyright & License
 -   Licensed under the terms of the `GNU Lesser General Public License v3 or later (LGPLv3+)`_
 
 .. _`Telegram`: https://telegram.org/
+.. _`MTProto API`: https://core.telegram.org/api#telegram-api
 .. _`Telegram API key`: https://docs.pyrogram.ml/start/ProjectSetup#api-keys
 .. _`Community`: https://t.me/PyrogramChat
-.. _`Examples`: https://github.com/pyrogram/pyrogram/tree/master/examples
+.. _`Examples in this repository`: https://github.com/pyrogram/pyrogram/tree/master/examples
 .. _`GitHub`: https://github.com/pyrogram/pyrogram/issues
 .. _`Email`: admin@pyrogram.ml
 .. _`Message`: https://t.me/haskell
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
+.. _`MTProto 2.0`: https://core.telegram.org/mtproto
 .. _`GNU Lesser General Public License v3 or later (LGPLv3+)`: COPYING.lesser
 
 .. |header| raw:: html
@@ -83,15 +91,15 @@ Copyright & License
     </h1>
 
     <p align="center">
-        <b>Telegram MTProto API Client Library for Python</b>
+        <b>Telegram MTProto API Framework for Python</b>
 
         <br>
-        <a href="https://github.com/pyrogram/pyrogram/releases/latest">
-            Download
-        </a>
-        •
         <a href="https://docs.pyrogram.ml">
             Documentation
+        </a>
+        •
+        <a href="https://github.com/pyrogram/pyrogram/releases">
+            Changelog
         </a>
         •
         <a href="https://t.me/PyrogramChat">
@@ -104,7 +112,7 @@ Copyright & License
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
             <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
-                alt="TgCrypto">
+                alt="TgCrypto Version">
         </a>
     </p>
 
@@ -112,12 +120,12 @@ Copyright & License
     :target: https://pyrogram.ml
     :alt: Pyrogram
 
-.. |description| replace:: **Telegram MTProto API Client Library for Python**
+.. |description| replace:: **Telegram MTProto API Framework for Python**
 
-.. |scheme| image:: "https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
+.. |schema| image:: https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30
     :target: compiler/api/source/main_api.tl
-    :alt: Scheme Layer
+    :alt: Schema Layer
 
-.. |tgcrypto| image:: "https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
+.. |tgcrypto| image:: https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30
     :target: https://github.com/pyrogram/tgcrypto
-    :alt: TgCrypto
+    :alt: TgCrypto Version

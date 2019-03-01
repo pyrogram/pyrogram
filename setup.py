@@ -39,10 +39,10 @@ def get_version():
 
 
 def get_readme():
-    # PyPI doesn"t like raw html
+    # PyPI doesn't like raw html
     with open("README.rst", encoding="utf-8") as f:
         readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
-        return re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|scheme| |tgcrypto|", readme)
+        return re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|schema| |tgcrypto|", readme)
 
 
 class Clean(Command):
@@ -127,7 +127,7 @@ class Generate(Command):
             docs_compiler.start()
 
 
-if len(argv) > 1 and argv[1] in ["bdist_wheel", "install"]:
+if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     error_compiler.start()
     api_compiler.start()
     docs_compiler.start()

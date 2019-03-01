@@ -91,13 +91,14 @@ Stop Propagation
 In order to prevent further propagation of an update in the dispatching phase, you can do *one* of the following:
 
 - Call the update's bound-method ``.stop_propagation()`` (preferred way).
-- Manually ``raise StopPropagation`` error (more suitable for raw updates only).
+- Manually ``raise StopPropagation`` exception (more suitable for raw updates only).
 
 .. note::
 
-    Note that ``.stop_propagation()`` is just an elegant and intuitive way to raise a ``StopPropagation`` error;
-    this means that any code coming *after* calling it won't be executed as your function just raised a custom exception
-    to signal the dispatcher not to propagate the update anymore.
+    Internally, the propagation is stopped by handling a custom exception. ``.stop_propagation()`` is just an elegant
+    and intuitive way to ``raise StopPropagation``; this also means that any code coming *after* calling the method
+    won't be executed as your function just raised an exception to signal the dispatcher not to propagate the
+    update anymore.
 
 Example with ``stop_propagation()``:
 
@@ -139,10 +140,82 @@ Example with ``raise StopPropagation``:
     def _(client, message):
         print(2)
 
-The handler in group number 2 will never be executed because the propagation was stopped before. The output of both
-examples will be:
+Each handler is registered in a different group, but the handler in group number 2 will never be executed because the
+propagation was stopped earlier. The output of both (equivalent) examples will be:
 
 .. code-block:: text
 
     0
     1
+
+Continue Propagation
+^^^^^^^^^^^^^^^^^^^^
+
+As opposed to `stopping the update propagation <#stop-propagation>`_ and also as an alternative to the
+`handler groups <#handler-groups>`_, you can signal the internal dispatcher to continue the update propagation within
+the group regardless of the next handler's filters. This allows you to register multiple handlers with overlapping
+filters in the same group; to let the dispatcher process the next handler you can do *one* of the following in each
+handler you want to grant permission to continue:
+
+- Call the update's bound-method ``.continue_propagation()`` (preferred way).
+- Manually ``raise ContinuePropagation`` exception (more suitable for raw updates only).
+
+.. note::
+
+    Internally, the propagation is continued by handling a custom exception. ``.continue_propagation()`` is just an
+    elegant and intuitive way to ``raise ContinuePropagation``; this also means that any code coming *after* calling the
+    method won't be executed as your function just raised an exception to signal the dispatcher to continue with the
+    next available handler.
+
+
+Example with ``continue_propagation()``:
+
+.. code-block:: python
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(0)
+        message.continue_propagation()
+
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(1)
+        message.continue_propagation()
+
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(2)
+
+Example with ``raise ContinuePropagation``:
+
+.. code-block:: python
+
+    from pyrogram import ContinuePropagation
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(0)
+        raise ContinuePropagation
+
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(1)
+        raise ContinuePropagation
+
+
+    @app.on_message(Filters.private)
+    def _(client, message):
+        print(2)
+
+Three handlers are registered in the same group, and all of them will be executed because the propagation was continued
+in each handler (except in the last one, where is useless to do so since there is no more handlers after).
+The output of both (equivalent) examples will be:
+
+.. code-block:: text
+
+    0
+    1
+    2

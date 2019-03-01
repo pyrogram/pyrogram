@@ -29,6 +29,7 @@ import struct
 import tempfile
 import threading
 import time
+import warnings
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -67,10 +68,10 @@ class Client(Methods, BaseClient):
 
     Args:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot.
-            For Users: pass a string of your choice, e.g.: "my_main_account".
-            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
+            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
+            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Note for bots: You can pass a bot token here, but this usage will be deprecated in next releases.
+            Use *bot_token* instead.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
@@ -139,8 +140,13 @@ class Client(Methods, BaseClient):
             Only applicable for new sessions.
 
         first_name (``str``, *optional*):
-            Pass a First Name to avoid entering it manually. It will be used to automatically
-            create a new Telegram account in case the phone number you passed is not registered yet.
+            Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
+            arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
+            a new Telegram account in case the phone number you passed is not registered yet.
+            Only applicable for new sessions.
+
+        bot_token (``str``, *optional*):
+            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
 
         last_name (``str``, *optional*):
@@ -157,10 +163,9 @@ class Client(Methods, BaseClient):
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
 
-        plugins_dir (``str``, *optional*):
-            Define a custom directory for your plugins. The plugins directory is the location in your
-            filesystem where Pyrogram will automatically load your update handlers.
-            Defaults to None (plugins disabled).
+        plugins (``dict``, *optional*):
+            Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -192,12 +197,13 @@ class Client(Methods, BaseClient):
                  password: str = None,
                  recovery_code: callable = None,
                  force_sms: bool = False,
+                 bot_token: str = None,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = BaseClient.WORKERS,
                  workdir: str = BaseClient.WORKDIR,
                  config_file: str = BaseClient.CONFIG_FILE,
-                 plugins_dir: str = None,
+                 plugins: dict = None,
                  no_updates: bool = None,
                  takeout: bool = None):
         super().__init__()
@@ -218,12 +224,13 @@ class Client(Methods, BaseClient):
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
+        self.bot_token = bot_token
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
         self.workdir = workdir
         self.config_file = config_file
-        self.plugins_dir = plugins_dir
+        self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
 
@@ -263,8 +270,13 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
+            self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
+            warnings.warn('\nYou are using a bot token as session name.\n'
+                          'It will be deprecated in next update, please use session file name to load '
+                          'existing sessions and bot_token argument to create new sessions.',
+                          DeprecationWarning, stacklevel=2)
 
         self.load_config()
         self.load_session()
@@ -282,13 +294,15 @@ class Client(Methods, BaseClient):
         try:
             if self.user_id is None:
                 if self.bot_token is None:
+                    self.is_bot = False
                     self.authorize_user()
                 else:
+                    self.is_bot = True
                     self.authorize_bot()
 
                 self.save_session()
 
-            if self.bot_token is None:
+            if not self.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
@@ -1075,6 +1089,31 @@ class Client(Methods, BaseClient):
                 self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
                 self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
+        if self.plugins:
+            self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
+            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
+            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
+        else:
+            try:
+                section = parser["plugins"]
+
+                self.plugins = {
+                    "enabled": section.getboolean("enabled", True),
+                    "root": section.get("root"),
+                    "include": section.get("include") or None,
+                    "exclude": section.get("exclude") or None
+                }
+            except KeyError:
+                self.plugins = {}
+
+        if self.plugins:
+            for option in ["include", "exclude"]:
+                if self.plugins[option] is not None:
+                    self.plugins[option] = [
+                        (i.split()[0], i.split()[1:] or None)
+                        for i in self.plugins[option].strip().split("\n")
+                    ]
+
     def load_session(self):
         try:
             with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
@@ -1089,6 +1128,8 @@ class Client(Methods, BaseClient):
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
             self.date = s.get("date", 0)
+            # TODO: replace default with False once token session name will be deprecated
+            self.is_bot = s.get("is_bot", self.is_bot)
 
             for k, v in s.get("peers_by_id", {}).items():
                 self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
@@ -1106,43 +1147,108 @@ class Client(Methods, BaseClient):
                     self.peers_by_phone[k] = peer
 
     def load_plugins(self):
-        if self.plugins_dir is not None:
-            plugins_count = 0
+        if self.plugins.get("enabled", False):
+            root = self.plugins["root"]
+            include = self.plugins["include"]
+            exclude = self.plugins["exclude"]
 
-            for path in Path(self.plugins_dir).rglob("*.py"):
-                file_path = os.path.splitext(str(path))[0]
-                import_path = []
+            count = 0
 
-                while file_path:
-                    file_path, tail = os.path.split(file_path)
-                    import_path.insert(0, tail)
+            if include is None:
+                for path in sorted(Path(root).rglob("*.py")):
+                    module_path = '.'.join(path.parent.parts + (path.stem,))
+                    module = import_module(module_path)
 
-                import_path = ".".join(import_path)
-                module = import_module(import_path)
+                    for name in vars(module).keys():
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
 
-                for name in dir(module):
-                    # noinspection PyBroadException
-                    try:
-                        handler, group = getattr(module, name)
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
 
-                        if isinstance(handler, Handler) and isinstance(group, int):
-                            self.add_handler(handler, group)
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
 
-                            log.info('{}("{}") from "{}" loaded in group {}'.format(
-                                type(handler).__name__, name, import_path, group))
-
-                            plugins_count += 1
-                    except Exception:
-                        pass
-
-            if plugins_count > 0:
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(
-                    plugins_count,
-                    "s" if plugins_count > 1 else "",
-                    self.plugins_dir
-                ))
+                                count += 1
+                        except Exception:
+                            pass
             else:
-                log.warning('No plugin loaded: "{}" doesn\'t contain any valid plugin'.format(self.plugins_dir))
+                for path, handlers in include:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[LOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.add_handler(handler, group)
+
+                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count += 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if exclude is not None:
+                for path, handlers in exclude:
+                    module_path = root + "." + path
+                    warn_non_existent_functions = True
+
+                    try:
+                        module = import_module(module_path)
+                    except ModuleNotFoundError:
+                        log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        continue
+
+                    if "__path__" in dir(module):
+                        log.warning('[UNLOAD] Ignoring namespace "{}"'.format(module_path))
+                        continue
+
+                    if handlers is None:
+                        handlers = vars(module).keys()
+                        warn_non_existent_functions = False
+
+                    for name in handlers:
+                        # noinspection PyBroadException
+                        try:
+                            handler, group = getattr(module, name)
+
+                            if isinstance(handler, Handler) and isinstance(group, int):
+                                self.remove_handler(handler, group)
+
+                                log.info('[UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                    type(handler).__name__, name, group, module_path))
+
+                                count -= 1
+                        except Exception:
+                            if warn_non_existent_functions:
+                                log.warning('[UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    name, module_path))
+
+            if count > 0:
+                log.warning('Successfully loaded {} plugin{} from "{}"'.format(count, "s" if count > 1 else "", root))
+            else:
+                log.warning('No plugin loaded from "{}"'.format(root))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
@@ -1157,7 +1263,8 @@ class Client(Methods, BaseClient):
                     test_mode=self.test_mode,
                     auth_key=auth_key,
                     user_id=self.user_id,
-                    date=self.date
+                    date=self.date,
+                    is_bot=self.is_bot,
                 ),
                 f,
                 indent=4
@@ -1350,21 +1457,25 @@ class Client(Methods, BaseClient):
                             md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
-                    if is_big:
-                        rpc = functions.upload.SaveBigFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            file_total_parts=file_total_parts,
-                            bytes=chunk
-                        )
-                    else:
-                        rpc = functions.upload.SaveFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            bytes=chunk
-                        )
+                    for _ in range(3):
+                        if is_big:
+                            rpc = functions.upload.SaveBigFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                file_total_parts=file_total_parts,
+                                bytes=chunk
+                            )
+                        else:
+                            rpc = functions.upload.SaveFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                bytes=chunk
+                            )
 
-                    assert session.send(rpc), "Couldn't upload file"
+                        if session.send(rpc):
+                            break
+                    else:
+                        raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
 
                     if is_missing_part:
                         return

@@ -16,33 +16,36 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-import time
+from typing import Union
 
-import pyrogram
 from pyrogram.api import functions
-from pyrogram.api.errors import FloodWait
 from ...ext import BaseClient
 
-log = logging.getLogger(__name__)
 
+class UpdateUsername(BaseClient):
+    def update_username(self,
+                        username: Union[str, None]) -> bool:
+        """Use this method to update your own username.
+        
+        This method only works for users, not bots. Bot usernames must be changed via Bot Support or by recreating
+        them from scratch using BotFather. To update a channel or supergroup username you can use
+        :meth:`update_chat_username`.
 
-class GetContacts(BaseClient):
-    def get_contacts(self):
-        """Use this method to get contacts from your Telegram address book.
+        Args:
+            username (``str`` | ``None``):
+                Username to set. "" (empty string) or None to remove the username.
 
         Returns:
-            On success, a list of :obj:`User` objects is returned.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        while True:
-            try:
-                contacts = self.send(functions.contacts.GetContacts(0))
-            except FloodWait as e:
-                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
-                time.sleep(e.x)
-            else:
-                log.info("Total contacts: {}".format(len(self.peers_by_phone)))
-                return [pyrogram.User._parse(self, user) for user in contacts.users]
+
+        return bool(
+            self.send(
+                functions.account.UpdateUsername(
+                    username=username or ""
+                )
+            )
+        )
