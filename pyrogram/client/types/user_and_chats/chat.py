@@ -211,7 +211,9 @@ class Chat(PyrogramType):
         return parsed_chat
 
     @staticmethod
-    def _parse_mtproto_chat(client, chat):
+    def _parse_chat(client, chat):
+        # A wrapper around each entity parser: User, Chat and Channel.
+        # Currently unused, might become useful in future.
         if isinstance(chat, types.Chat):
             return Chat._parse_chat_chat(client, chat)
         elif isinstance(chat, types.User):
