@@ -22,17 +22,18 @@ from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class UpdateUserUsername(BaseClient):
-    def update_user_username(self,
-                             username: Union[str, None]) -> bool:
-        """Use this method to update a username.
-
-        This method only works for Users.
-        Bots usernames must be changed via Bot Support.
+class UpdateUsername(BaseClient):
+    def update_username(self,
+                        username: Union[str, None]) -> bool:
+        """Use this method to update your own username.
+        
+        This method only works for users, not bots. Bot usernames must be changed via Bot Support or by recreating
+        them from scratch using BotFather. To update a channel or supergroup username you can use
+        :meth:`update_chat_username`.
 
         Args:
             username (``str`` | ``None``):
-                Username to set. Empty or ``None`` to remove username.
+                Username to set. "" (empty string) or None to remove the username.
 
         Returns:
             True on success.
@@ -43,6 +44,8 @@ class UpdateUserUsername(BaseClient):
 
         return bool(
             self.send(
-                functions.account.UpdateUsername(username or '')
+                functions.account.UpdateUsername(
+                    username=username or ""
+                )
             )
         )
