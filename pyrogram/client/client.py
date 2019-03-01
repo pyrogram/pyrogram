@@ -68,9 +68,10 @@ class Client(Methods, BaseClient):
 
     Args:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_main_account".
-            You still can use bot token here, but it will be deprecated in next release.
-            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
+            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
+            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Note for bots: You can pass a bot token here, but this usage will be deprecated in next releases.
+            Use *bot_token* instead.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
