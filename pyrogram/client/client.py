@@ -29,6 +29,7 @@ import struct
 import tempfile
 import threading
 import time
+import warnings
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -67,10 +68,10 @@ class Client(Methods, BaseClient):
 
     Args:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot.
-            For Users: pass a string of your choice, e.g.: "my_main_account".
-            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
+            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
+            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Note for bots: You can pass a bot token here, but this usage will be deprecated in next releases.
+            Use *bot_token* instead.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
@@ -144,6 +145,10 @@ class Client(Methods, BaseClient):
             a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
+        bot_token (``str``, *optional*):
+            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Only applicable for new sessions.
+
         last_name (``str``, *optional*):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: "". Only applicable for new sessions.
@@ -192,6 +197,7 @@ class Client(Methods, BaseClient):
                  password: str = None,
                  recovery_code: callable = None,
                  force_sms: bool = False,
+                 bot_token: str = None,
                  first_name: str = None,
                  last_name: str = None,
                  workers: int = BaseClient.WORKERS,
@@ -218,6 +224,7 @@ class Client(Methods, BaseClient):
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
+        self.bot_token = bot_token
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
@@ -263,8 +270,13 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
+            self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
+            warnings.warn('\nYou are using a bot token as session name.\n'
+                          'It will be deprecated in next update, please use session file name to load '
+                          'existing sessions and bot_token argument to create new sessions.',
+                          DeprecationWarning, stacklevel=2)
 
         self.load_config()
         self.load_session()
@@ -282,13 +294,15 @@ class Client(Methods, BaseClient):
         try:
             if self.user_id is None:
                 if self.bot_token is None:
+                    self.is_bot = False
                     self.authorize_user()
                 else:
+                    self.is_bot = True
                     self.authorize_bot()
 
                 self.save_session()
 
-            if self.bot_token is None:
+            if not self.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
@@ -1113,6 +1127,8 @@ class Client(Methods, BaseClient):
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
             self.date = s.get("date", 0)
+            # TODO: replace default with False once token session name will be deprecated
+            self.is_bot = s.get("is_bot", self.is_bot)
 
             for k, v in s.get("peers_by_id", {}).items():
                 self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
@@ -1246,7 +1262,8 @@ class Client(Methods, BaseClient):
                     test_mode=self.test_mode,
                     auth_key=auth_key,
                     user_id=self.user_id,
-                    date=self.date
+                    date=self.date,
+                    is_bot=self.is_bot,
                 ),
                 f,
                 indent=4
