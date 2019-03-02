@@ -20,7 +20,9 @@ Pyrogram
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and C.
 It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the `MTProto API`_.
 
-    `A fully-asynchronous variant is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
+    `Pyrogram in fully-asynchronous mode is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
+    
+    `Working PoC of Telegram voice calls using Pyrogram » <https://github.com/bakatrouble/pytgvoip>`_
 
 Features
 --------

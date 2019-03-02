@@ -18,7 +18,6 @@
 
 import binascii
 import logging
-import mimetypes
 import os
 import struct
 from typing import Union, List
@@ -130,7 +129,7 @@ class SendMediaGroup(BaseClient):
                                     media=types.InputMediaUploadedDocument(
                                         file=await self.save_file(i.media),
                                         thumb=None if i.thumb is None else self.save_file(i.thumb),
-                                        mime_type=mimetypes.types_map[".mp4"],
+                                        mime_type="video/mp4",
                                         attributes=[
                                             types.DocumentAttributeVideo(
                                                 supports_streaming=i.supports_streaming or None,

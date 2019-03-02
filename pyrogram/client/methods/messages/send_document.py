@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 from typing import Union
@@ -119,7 +118,7 @@ class SendDocument(BaseClient):
                 thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(document, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + document.split(".")[-1], "text/plain"),
+                    mime_type="application/zip",
                     file=file,
                     thumb=thumb,
                     attributes=[

@@ -63,7 +63,7 @@ class InlineKeyboardButton(PyrogramType):
                  callback_game: CallbackGame = None):
         super().__init__(None)
 
-        self.text = text
+        self.text = str(text)
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query

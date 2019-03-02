@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 from typing import Union
@@ -116,7 +115,7 @@ class SendVoice(BaseClient):
             if os.path.exists(voice):
                 file = await self.save_file(voice, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + voice.split(".")[-1], "audio/mpeg"),
+                    mime_type="audio/mpeg",
                     file=file,
                     attributes=[
                         types.DocumentAttributeAudio(
