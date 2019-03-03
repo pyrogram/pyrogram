@@ -1158,7 +1158,7 @@ class Client(Methods, BaseClient):
 
             if include is None:
                 for path in sorted(Path(root).rglob("*.py")):
-                    module_path = os.path.splitext(str(path))[0].replace("/", ".")
+                    module_path = '.'.join(path.parent.parts + (path.stem,))
                     module = import_module(module_path)
 
                     for name in vars(module).keys():
