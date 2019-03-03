@@ -44,6 +44,7 @@ class Result:
 class Session:
     INITIAL_SALT = 0x616e67656c696361
     NET_WORKERS = 1
+    START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -118,8 +119,14 @@ class Session:
                 self.recv_task = asyncio.ensure_future(self.recv())
 
                 self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
-                self.current_salt = FutureSalt(0, 0, (await self._send(functions.Ping(0))).new_server_salt)
-                self.current_salt = (await self._send(functions.GetFutureSalts(1))).salts[0]
+                self.current_salt = FutureSalt(
+                    0, 0,
+                    (await self._send(
+                        functions.Ping(0),
+                        timeout=self.START_TIMEOUT
+                    )).new_server_salt
+                )
+                self.current_salt = (await self._send(functions.GetFutureSalts(1), timeout=self.START_TIMEOUT)).salts[0]
 
                 self.next_salt_task = asyncio.ensure_future(self.next_salt())
 
@@ -137,7 +144,8 @@ class Session:
                                 lang_pack="",
                                 query=functions.help.GetConfig(),
                             )
-                        )
+                        ),
+                        timeout=self.START_TIMEOUT
                     )
 
                 self.ping_task = asyncio.ensure_future(self.ping())
