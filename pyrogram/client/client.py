@@ -1179,7 +1179,7 @@ class Client(Methods, BaseClient):
 
                     try:
                         module = import_module(module_path)
-                    except ModuleNotFoundError:
+                    except ImportError:
                         log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
                         continue
 
@@ -1215,7 +1215,7 @@ class Client(Methods, BaseClient):
 
                     try:
                         module = import_module(module_path)
-                    except ModuleNotFoundError:
+                    except ImportError:
                         log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
                         continue
 
