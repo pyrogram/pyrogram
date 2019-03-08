@@ -88,5 +88,7 @@ MEDIA_INVALID	The media is invalid
 BOT_SCORE_NOT_MODIFIED	The bot score was not modified
 USER_BOT_REQUIRED	The method can be used by bots only
 IMAGE_PROCESS_FAILED	The server failed to process your image
+USERNAME_NOT_MODIFIED	The username was not modified
 CALL_ALREADY_ACCEPTED	The call is already accepted
 CALL_ALREADY_DECLINED	The call is already declined
+PHOTO_EXT_INVALID	The photo extension is invalid
