@@ -721,7 +721,9 @@ class Message(PyrogramType, Update):
 
     def forward(self,
                 chat_id: int or str,
-                disable_notification: bool = None):
+                as_copy: bool = False,
+                disable_notification: bool = None,
+                no_caption: bool = False):
         """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -745,9 +747,17 @@ class Message(PyrogramType, Update):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
+            as_copy (``bool``, *optional*)
+                Whether to keep forward header on the message or resend the message without forward header
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
+
+            no_caption (``bool``, *optional*)
+                If set to ``True`` and :arg:`as_copy` is enabled as well, media caption is not preserved
+                when copying the message.
+                Has no effect if :arg:`as_copy` is not enabled.
 
         Returns:
             On success, the forwarded Message is returned.
@@ -755,12 +765,104 @@ class Message(PyrogramType, Update):
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self._client.forward_messages(
-            chat_id=chat_id,
-            from_chat_id=self.chat.id,
-            message_ids=self.message_id,
-            disable_notification=disable_notification
-        )
+        if as_copy:
+            if self.service:
+                raise ValueError('Unable to copy service messages')
+
+            if self.game and not self._client.is_bot:
+                raise ValueError('Users cannot send messages with Game media type')
+
+            if self.text:
+                return self._client.send_message(chat_id,
+                                                 text=self.text.html,
+                                                 parse_mode='html',
+                                                 disable_web_page_preview=not self.web_page,
+                                                 disable_notification=disable_notification)
+            elif self.media:
+                caption = self.caption.html if self.caption and not no_caption else None
+                if self.photo:
+                    size = self.photo.sizes[-1]
+                    return self._client.send_photo(chat_id,
+                                                   photo=size.file_id,
+                                                   caption=caption,
+                                                   parse_mode='html',
+                                                   disable_notification=disable_notification)
+                elif self.audio:
+                    return self._client.send_audio(chat_id,
+                                                   audio=self.audio.file_id,
+                                                   caption=caption,
+                                                   parse_mode='html',
+                                                   disable_notification=disable_notification)
+                elif self.document:
+                    return self._client.send_document(chat_id,
+                                                      document=self.document.file_id,
+                                                      caption=caption,
+                                                      parse_mode='html',
+                                                      disable_notification=disable_notification)
+                elif self.sticker:
+                    return self._client.send_sticker(chat_id,
+                                                     sticker=self.sticker.file_id,
+                                                     disable_notification=disable_notification)
+                elif self.video:
+                    return self._client.send_video(chat_id,
+                                                   video=self.video.file_id,
+                                                   caption=caption,
+                                                   parse_mode='html',
+                                                   disable_notification=disable_notification)
+                elif self.animation:
+                    return self._client.send_animation(chat_id,
+                                                       animation=self.animation.file_id,
+                                                       caption=caption,
+                                                       parse_mode='html',
+                                                       disable_notification=disable_notification)
+                elif self.voice:
+                    return self._client.send_voice(chat_id,
+                                                   voice=self.voice.file_id,
+                                                   caption=caption,
+                                                   parse_mode='html',
+                                                   disable_notification=disable_notification)
+                elif self.video_note:
+                    return self._client.send_video_note(chat_id,
+                                                        video_note=self.video_note.file_id,
+                                                        disable_notification=disable_notification)
+                elif self.contact:
+                    return self._client.send_contact(chat_id,
+                                                     phone_number=self.contact.phone_number,
+                                                     first_name=self.contact.first_name,
+                                                     last_name=self.contact.last_name or '',
+                                                     vcard=self.contact.vcard or '',
+                                                     disable_notification=disable_notification)
+                elif self.location:
+                    return self._client.send_location(chat_id,
+                                                      latitude=self.location.latitude,
+                                                      longitude=self.location.longitude,
+                                                      disable_notification=disable_notification)
+                elif self.venue:
+                    return self._client.send_venue(chat_id,
+                                                   latitude=self.venue.location.latitude,
+                                                   longitude=self.venue.location.longitude,
+                                                   title=self.venue.title,
+                                                   address=self.venue.address,
+                                                   foursquare_id=self.venue.foursquare_id,
+                                                   foursquare_type=self.venue.foursquare_type,
+                                                   disable_notification=disable_notification)
+                elif self.poll:
+                    return self._client.send_poll(chat_id,
+                                                  question=self.poll.question,
+                                                  options=[opt.text for opt in self.poll.options],
+                                                  disable_notification=disable_notification)
+                elif self.game:
+                    return self._client.send_game(chat_id,
+                                                  game_short_name=self.game.short_name,
+                                                  disable_notification=disable_notification)
+            raise ValueError('Can\'t copy this message')
+        else:
+            return self._client.forward_messages(
+                chat_id=chat_id,
+                from_chat_id=self.chat.id,
+                message_ids=self.message_id,
+                disable_notification=disable_notification
+            )
 
     def delete(self, revoke: bool = True):
         """Bound method *delete* of :obj:`Message <pyrogram.Message>`.

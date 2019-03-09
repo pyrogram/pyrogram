@@ -79,8 +79,8 @@ class SendContact(BaseClient):
                 media=types.InputMediaContact(
                     phone_number=phone_number,
                     first_name=first_name,
-                    last_name=last_name,
-                    vcard=vcard
+                    last_name=last_name or '',
+                    vcard=vcard or ''
                 ),
                 message="",
                 silent=disable_notification or None,

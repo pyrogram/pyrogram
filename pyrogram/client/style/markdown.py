@@ -56,7 +56,7 @@ class Markdown:
         self.peers_by_id = peers_by_id
 
     def parse(self, message: str):
-        message = utils.add_surrogates(str(message)).strip()
+        message = utils.add_surrogates(str(message or '')).strip()
         entities = []
         offset = 0
 
