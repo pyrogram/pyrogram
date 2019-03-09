@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Union
 
 import pyrogram
 from pyrogram.api import types
@@ -111,4 +111,49 @@ class Messages(PyrogramType, Update):
             total_count=len(parsed_messages),
             messages=parsed_messages,
             client=client
+        )
+
+    def forward(self,
+                chat_id: Union[int, str],
+                as_copy: bool = False,
+                disable_notification: bool = None,
+                no_captions: bool = False):
+        """Bound method *forward* of :obj:`Message <pyrogram.Messages>`.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            as_copy (``bool``, *optional*)
+                Whether to keep forward headers on messages or resend messages without forward headers
+
+            disable_notification (``bool``, *optional*):
+                Sends messages silently.
+                Users will receive a notification with no sound.
+
+            no_captions (``bool``, *optional*)
+                If set to ``True`` and :arg:`as_copy` is enabled as well, media captions are not preserved
+                when copying messages.
+                Has no effect if :arg:`as_copy` is not enabled.
+
+        Returns:
+            On success, a :class:`Messages <pyrogram.Messages>` containing forwarded messages is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        forwarded_messages = []
+        for message in self.messages:
+            forwarded_messages.append(message.forward(
+                chat_id=chat_id,
+                as_copy=as_copy,
+                disable_notification=disable_notification,
+                no_caption=no_captions
+            ))
+        return Messages(
+            total_count=len(forwarded_messages),
+            messages=forwarded_messages,
+            client=self._client
         )
