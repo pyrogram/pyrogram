@@ -30,6 +30,7 @@ from .iter_history import IterHistory
 from .retract_vote import RetractVote
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
+from .send_cached_media import SendCachedMedia
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
 from .send_document import SendDocument
@@ -74,6 +75,7 @@ class Messages(
     ClosePoll,
     RetractVote,
     DownloadMedia,
-    IterHistory
+    IterHistory,
+    SendCachedMedia
 ):
     pass

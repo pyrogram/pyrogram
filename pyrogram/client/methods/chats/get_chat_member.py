@@ -55,7 +55,7 @@ class GetChatMember(BaseClient):
             )
 
             for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
-                if member.user.id == user_id.user_id:
+                if member.user.is_self:
                     return member
             else:
                 raise errors.UserNotParticipant
