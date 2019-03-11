@@ -27,7 +27,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendCachedMedia(BaseClient):
-    def send_cached_media(
+    async def send_cached_media(
             self,
             chat_id: Union[int, str],
             file_id: str,
@@ -114,9 +114,9 @@ class SendCachedMedia(BaseClient):
                     )
                 )
 
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
@@ -128,7 +128,7 @@ class SendCachedMedia(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
