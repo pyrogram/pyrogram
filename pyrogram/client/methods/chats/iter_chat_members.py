@@ -86,7 +86,7 @@ class IterChatMembers(BaseClient):
         queries = [query] if query else QUERIES
         total = limit or (1 << 31) - 1
         limit = min(200, total)
-        resolved_chat_id = self.resolve_peer(chat_id)
+        resolved_chat_id = await self.resolve_peer(chat_id)
 
         filter = (
             Filters.RECENT
