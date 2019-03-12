@@ -22,6 +22,7 @@ from typing import Union, AsyncGenerator, Optional
 from async_generator import async_generator, yield_
 
 import pyrogram
+from pyrogram.api import types
 from ...ext import BaseClient
 
 
@@ -85,6 +86,7 @@ class IterChatMembers(BaseClient):
         queries = [query] if query else QUERIES
         total = limit or (1 << 31) - 1
         limit = min(200, total)
+        resolved_chat_id = self.resolve_peer(chat_id)
 
         filter = (
             Filters.RECENT
@@ -109,6 +111,9 @@ class IterChatMembers(BaseClient):
 
                 if not chat_members:
                     break
+
+                if isinstance(resolved_chat_id, types.InputPeerChat):
+                    total = len(chat_members)
 
                 offset += len(chat_members)
 
