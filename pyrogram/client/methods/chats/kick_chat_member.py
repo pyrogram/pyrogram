@@ -65,7 +65,7 @@ class KickChatMember(BaseClient):
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
-                    banned_rights=types.ChannelBannedRights(
+                    banned_rights=types.ChatBannedRights(
                         until_date=until_date,
                         view_messages=True,
                         send_messages=True,

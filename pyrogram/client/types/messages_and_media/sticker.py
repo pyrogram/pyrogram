@@ -127,7 +127,7 @@ class Sticker(PyrogramType):
             ),
             width=image_size_attributes.w if image_size_attributes else 0,
             height=image_size_attributes.h if image_size_attributes else 0,
-            thumb=PhotoSize._parse(client, sticker.thumb),
+            thumb=PhotoSize._parse(client, sticker.thumbs),
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

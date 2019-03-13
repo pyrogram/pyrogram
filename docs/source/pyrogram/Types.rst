@@ -16,6 +16,7 @@ Users & Chats
     ChatPhoto
     ChatMember
     ChatMembers
+    ChatPermissions
     Dialog
     Dialogs
 

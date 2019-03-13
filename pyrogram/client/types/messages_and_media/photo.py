@@ -61,7 +61,6 @@ class Photo(PyrogramType):
 
             for raw_size in raw_sizes:
                 if isinstance(raw_size, (types.PhotoSize, types.PhotoCachedSize)):
-
                     if isinstance(raw_size, types.PhotoSize):
                         file_size = raw_size.size
                     elif isinstance(raw_size, types.PhotoCachedSize):

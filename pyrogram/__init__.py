@@ -47,7 +47,7 @@ from .client.types import (
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
     Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore,
-    GameHighScores
+    GameHighScores, ChatPermissions
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,

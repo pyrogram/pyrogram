@@ -30,8 +30,8 @@ class ChatMember(PyrogramType):
             Information about the user.
 
         status (``str``):
-            The member's status in the chat. Can be "creator", "administrator", "member", "restricted",
-            "left" or "kicked".
+            The member's status in the chat.
+            Can be "creator", "administrator", "member", "restricted", "left" or "kicked".
 
         date (``int``, *optional*):
             Date when the user joined, unix time. Not available for creator.
@@ -46,52 +46,9 @@ class ChatMember(PyrogramType):
         restricted_by (:obj:`User <pyrogram.User>`, *optional*):
             Restricted and kicked only. Information about the user who restricted or kicked this member.
 
-        until_date (``int``, *optional*):
-            Restricted and kicked only. Date when restrictions will be lifted for this user, unix time.
-
-        can_be_edited (``bool``, *optional*):
-            Administrators only. True, if the bot is allowed to edit administrator privileges of that user.
-
-        can_change_info (``bool``, *optional*):
-            Administrators only. True, if the administrator can change the chat title, photo and other settings.
-
-        can_post_messages (``bool``, *optional*):
-            Administrators only. True, if the administrator can post in the channel, channels only.
-
-        can_edit_messages (``bool``, *optional*):
-            Administrators only. True, if the administrator can edit messages of other users and can pin messages,
-            channels only.
-
-        can_delete_messages (``bool``, *optional*):
-            Administrators only. True, if the administrator can delete messages of other users.
-
-        can_invite_users (``bool``, *optional*):
-            Administrators only. True, if the administrator can invite new users to the chat.
-
-        can_restrict_members (``bool``, *optional*):
-            Administrators only. True, if the administrator can restrict, ban or unban chat members.
-
-        can_pin_messages (``bool``, *optional*):
-            Administrators only. True, if the administrator can pin messages, supergroups only.
-
-        can_promote_members (``bool``, *optional*):
-            Administrators only. True, if the administrator can add new administrators with a subset of his
-            own privileges or demote administrators that he has promoted, directly or indirectly (promoted by
-            administrators that were appointed by the user).
-
-        can_send_messages (``bool``, *optional*):
-            Restricted only. True, if the user can send text messages, contacts, locations and venues.
-
-        can_send_media_messages (``bool``, *optional*):
-            Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes,
-            implies can_send_messages.
-
-        can_send_other_messages (``bool``, *optional*):
-            Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies
-            can_send_media_messages.
-
-        can_add_web_page_previews (``bool``, *optional*):
-            Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
+        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+            Administrators, restricted and kicked members only.
+            Information about the member permissions.
     """
 
     def __init__(self,
@@ -103,20 +60,7 @@ class ChatMember(PyrogramType):
                  invited_by: "pyrogram.User" = None,
                  promoted_by: "pyrogram.User" = None,
                  restricted_by: "pyrogram.User" = None,
-                 until_date: int = None,
-                 can_be_edited: bool = None,
-                 can_change_info: bool = None,
-                 can_post_messages: bool = None,
-                 can_edit_messages: bool = None,
-                 can_delete_messages: bool = None,
-                 can_invite_users: bool = None,
-                 can_restrict_members: bool = None,
-                 can_pin_messages: bool = None,
-                 can_promote_members: bool = None,
-                 can_send_messages: bool = None,
-                 can_send_media_messages: bool = None,
-                 can_send_other_messages: bool = None,
-                 can_add_web_page_previews: bool = None):
+                 permissions: "pyrogram.ChatPermissions" = None):
         super().__init__(client)
 
         self.user = user
@@ -125,79 +69,63 @@ class ChatMember(PyrogramType):
         self.invited_by = invited_by
         self.promoted_by = promoted_by
         self.restricted_by = restricted_by
-        self.until_date = until_date
-        self.can_be_edited = can_be_edited
-        self.can_change_info = can_change_info
-        self.can_post_messages = can_post_messages
-        self.can_edit_messages = can_edit_messages
-        self.can_delete_messages = can_delete_messages
-        self.can_invite_users = can_invite_users
-        self.can_restrict_members = can_restrict_members
-        self.can_pin_messages = can_pin_messages
-        self.can_promote_members = can_promote_members
-        self.can_send_messages = can_send_messages
-        self.can_send_media_messages = can_send_media_messages
-        self.can_send_other_messages = can_send_other_messages
-        self.can_add_web_page_previews = can_add_web_page_previews
+        self.permissions = permissions
 
     @staticmethod
     def _parse(client, member, users) -> "ChatMember":
         user = pyrogram.User._parse(client, users[member.user_id])
-        invited_by = pyrogram.User._parse(client, users[member.inviter_id]) if hasattr(member, "inviter_id") else None
+
+        invited_by = (
+            pyrogram.User._parse(client, users[member.inviter_id])
+            if getattr(member, "inviter_id", None) else None
+        )
 
         if isinstance(member, (types.ChannelParticipant, types.ChannelParticipantSelf, types.ChatParticipant)):
-            return ChatMember(user=user, status="member", date=member.date, invited_by=invited_by, client=client)
+            return ChatMember(
+                user=user,
+                status="member",
+                date=member.date,
+                invited_by=invited_by,
+                client=client
+            )
 
         if isinstance(member, (types.ChannelParticipantCreator, types.ChatParticipantCreator)):
-            return ChatMember(user=user, status="creator", client=client)
+            return ChatMember(
+                user=user,
+                status="creator",
+                client=client
+            )
 
         if isinstance(member, types.ChatParticipantAdmin):
-            return ChatMember(user=user, status="administrator", date=member.date, invited_by=invited_by, client=client)
+            return ChatMember(
+                user=user,
+                status="administrator",
+                date=member.date,
+                invited_by=invited_by,
+                client=client
+            )
 
         if isinstance(member, types.ChannelParticipantAdmin):
-            rights = member.admin_rights
-
             return ChatMember(
                 user=user,
                 status="administrator",
                 date=member.date,
                 invited_by=invited_by,
                 promoted_by=pyrogram.User._parse(client, users[member.promoted_by]),
-                can_be_edited=member.can_edit,
-                can_change_info=rights.change_info,
-                can_post_messages=rights.post_messages,
-                can_edit_messages=rights.edit_messages,
-                can_delete_messages=rights.delete_messages,
-                can_invite_users=rights.invite_users or rights.invite_link,
-                can_restrict_members=rights.ban_users,
-                can_pin_messages=rights.pin_messages,
-                can_promote_members=rights.add_admins,
+                permissions=pyrogram.ChatPermissions._parse(member),
                 client=client
             )
 
         if isinstance(member, types.ChannelParticipantBanned):
-            rights = member.banned_rights
-
-            chat_member = ChatMember(
+            return ChatMember(
                 user=user,
                 status=(
-                    "kicked" if rights.view_messages
+                    "kicked" if member.banned_rights.view_messages
                     else "left" if member.left
                     else "restricted"
                 ),
                 date=member.date,
                 restricted_by=pyrogram.User._parse(client, users[member.kicked_by]),
-                until_date=0 if rights.until_date == (1 << 31) - 1 else rights.until_date,
+                permissions=pyrogram.ChatPermissions._parse(member),
                 client=client
             )
-
-            if chat_member.status == "restricted":
-                chat_member.can_send_messages = not rights.send_messages
-                chat_member.can_send_media_messages = not rights.send_media
-                chat_member.can_send_other_messages = (
-                        not rights.send_stickers or not rights.send_gifs or
-                        not rights.send_games or not rights.send_inline
-                )
-                chat_member.can_add_web_page_previews = not rights.embed_links
-
-            return chat_member

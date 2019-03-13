@@ -97,7 +97,7 @@ class Animation(PyrogramType):
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),
-            thumb=PhotoSize._parse(client, animation.thumb),
+            thumb=PhotoSize._parse(client, animation.thumbs),
             mime_type=animation.mime_type,
             file_size=animation.size,
             file_name=file_name,

@@ -97,7 +97,7 @@ class Video(PyrogramType):
             width=video_attributes.w,
             height=video_attributes.h,
             duration=video_attributes.duration,
-            thumb=PhotoSize._parse(client, video.thumb),
+            thumb=PhotoSize._parse(client, video.thumbs),
             mime_type=video.mime_type,
             file_size=video.size,
             file_name=file_name,

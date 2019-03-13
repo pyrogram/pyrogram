@@ -48,7 +48,7 @@ class UnbanChatMember(BaseClient):
             functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
                 user_id=await self.resolve_peer(user_id),
-                banned_rights=types.ChannelBannedRights(
+                banned_rights=types.ChatBannedRights(
                     until_date=0
                 )
             )
