@@ -138,12 +138,18 @@ class ChatPermissions(PyrogramType):
         self.can_send_polls = can_send_polls
 
     @staticmethod
-    def _parse(member: Union[types.ChannelParticipantAdmin, types.ChannelParticipantBanned]) -> "ChatPermissions":
-        if isinstance(member, types.ChannelParticipantAdmin):
-            permissions = member.admin_rights
+    def _parse(
+            entity: Union[
+                types.ChannelParticipantAdmin,
+                types.ChannelParticipantBanned,
+                types.ChatBannedRights
+            ]
+    ) -> "ChatPermissions":
+        if isinstance(entity, types.ChannelParticipantAdmin):
+            permissions = entity.admin_rights
 
             return ChatPermissions(
-                can_be_edited=member.can_edit,
+                can_be_edited=entity.can_edit,
                 can_change_info=permissions.change_info,
                 can_post_messages=permissions.post_messages,
                 can_edit_messages=permissions.edit_messages,
@@ -154,8 +160,11 @@ class ChatPermissions(PyrogramType):
                 can_promote_members=permissions.add_admins
             )
 
-        if isinstance(member, types.ChannelParticipantBanned):
-            denied_permissions = member.banned_rights  # type: types.ChatBannedRights
+        if isinstance(entity, (types.ChannelParticipantBanned, types.ChatBannedRights)):
+            if isinstance(entity, types.ChannelParticipantBanned):
+                denied_permissions = entity.banned_rights  # type: types.ChatBannedRights
+            else:
+                denied_permissions = entity
 
             return ChatPermissions(
                 until_date=0 if denied_permissions.until_date == (1 << 31) - 1 else denied_permissions.until_date,
