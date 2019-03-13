@@ -91,3 +91,5 @@ IMAGE_PROCESS_FAILED	The server failed to process your image
 USERNAME_NOT_MODIFIED	The username was not modified
 CALL_ALREADY_ACCEPTED	The call is already accepted
 CALL_ALREADY_DECLINED	The call is already declined
+PHOTO_EXT_INVALID	The photo extension is invalid
+EXTERNAL_URL_INVALID	The external media URL is invalid
