@@ -20,6 +20,7 @@ from typing import Union
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient
+from ...types.user_and_chats import Chat
 
 
 class RestrictChatMember(BaseClient):
@@ -35,8 +36,8 @@ class RestrictChatMember(BaseClient):
             can_send_polls: bool = False,
             can_change_info: bool = False,
             can_invite_users: bool = False,
-            can_pin_messages: bool = False,
-    ) -> bool:
+            can_pin_messages: bool = False
+    ) -> Chat:
         """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
         this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift
         restrictions from a user.
@@ -79,8 +80,9 @@ class RestrictChatMember(BaseClient):
 
             can_pin_messages (``bool``, *optional*):
                 Pass True, if the user can pin messages.
+
         Returns:
-            True on success.
+            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -130,7 +132,7 @@ class RestrictChatMember(BaseClient):
         if can_pin_messages:
             pin_messages = None
 
-        self.send(
+        r = self.send(
             functions.channels.EditBanned(
                 channel=self.resolve_peer(chat_id),
                 user_id=self.resolve_peer(user_id),
@@ -151,4 +153,4 @@ class RestrictChatMember(BaseClient):
             )
         )
 
-        return True
+        return Chat._parse_chat(self, r.chats[0])
