@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import types
 from .chat_permissions import ChatPermissions
@@ -73,6 +75,9 @@ class Chat(PyrogramType):
 
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
+
+        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+            Information about the chat default permissions.
     """
 
     def __init__(self,
@@ -92,7 +97,7 @@ class Chat(PyrogramType):
                  can_set_sticker_set: bool = None,
                  members_count: int = None,
                  restriction_reason: str = None,
-                 default_permissions: "pyrogram.ChatPermissions" = None):
+                 permissions: "pyrogram.ChatPermissions" = None):
         super().__init__(client)
 
         self.id = id
@@ -109,7 +114,7 @@ class Chat(PyrogramType):
         self.can_set_sticker_set = can_set_sticker_set
         self.members_count = members_count
         self.restriction_reason = restriction_reason
-        self.default_permissions = default_permissions
+        self.permissions = permissions
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
@@ -131,7 +136,7 @@ class Chat(PyrogramType):
             type="group",
             title=chat.title,
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
-            default_permissions=ChatPermissions._parse(chat.default_banned_rights),
+            permissions=ChatPermissions._parse(chat.default_banned_rights),
             client=client
         )
 
@@ -144,7 +149,7 @@ class Chat(PyrogramType):
             username=getattr(channel, "username", None),
             photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
             restriction_reason=getattr(channel, "restriction_reason", None),
-            default_permissions=ChatPermissions._parse(channel.default_banned_rights),
+            permissions=ChatPermissions._parse(channel.default_banned_rights),
             client=client
         )
 
@@ -205,9 +210,7 @@ class Chat(PyrogramType):
         return parsed_chat
 
     @staticmethod
-    def _parse_chat(client, chat):
-        # A wrapper around each entity parser: User, Chat and Channel.
-        # Currently unused, might become useful in future.
+    def _parse_chat(client, chat: Union[types.Chat, types.User, types.Channel]) -> "Chat":
         if isinstance(chat, types.Chat):
             return Chat._parse_chat_chat(client, chat)
         elif isinstance(chat, types.User):
