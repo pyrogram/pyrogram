@@ -81,6 +81,6 @@ class PhotoSize(PyrogramType):
             ),
             width=getattr(photo_size, "w", 0),
             height=getattr(photo_size, "h", 0),
-            file_size=getattr(photo_size, "size", len(photo_size.bytes)),
+            file_size=getattr(photo_size, "size", len(getattr(photo_size, "bytes", b""))),
             client=client
         )
