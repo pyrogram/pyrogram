@@ -114,6 +114,20 @@ Examples
                     ]
                 )
             )
+-   Hide Forward Message Headers:
+
+    .. code-block:: python
+
+        from pyrogram import Client
+        from pyrogram.api import functions, types
+
+        with Client("my_account") as app:
+            app.send(
+                functions.account.SetPrivacy(
+                    key=types.inputPrivacyKeyForwards(),
+                    rules=[types.inputPrivacyValueDisallowAll()]
+                )
+            )
 
 
 .. _plenty of them: ../pyrogram/Client.html#messages
