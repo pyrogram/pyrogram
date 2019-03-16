@@ -24,17 +24,21 @@ from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
-    def send_message(self,
-                     chat_id: Union[int, str],
-                     text: str,
-                     parse_mode: str = "",
-                     disable_web_page_preview: bool = None,
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardRemove",
-                                         "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_message(
+        self,
+        chat_id: Union[int, str],
+        text: str,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send text messages.
 
         Args:

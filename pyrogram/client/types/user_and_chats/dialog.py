@@ -49,15 +49,15 @@ class Dialog(PyrogramType):
     __slots__ = ["chat", "top_message", "unread_messages_count", "unread_mentions_count", "unread_mark", "is_pinned"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            chat: Chat,
-            top_message: "pyrogram.Message",
-            unread_messages_count: int,
-            unread_mentions_count: int,
-            unread_mark: bool,
-            is_pinned: bool
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        chat: Chat,
+        top_message: "pyrogram.Message",
+        unread_messages_count: int,
+        unread_mentions_count: int,
+        unread_mark: bool,
+        is_pinned: bool
     ):
         super().__init__(client)
 

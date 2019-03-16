@@ -24,10 +24,12 @@ from ...ext import BaseClient
 
 
 class KickChatMember(BaseClient):
-    def kick_chat_member(self,
-                         chat_id: Union[int, str],
-                         user_id: Union[int, str],
-                         until_date: int = 0) -> Union["pyrogram.Message", bool]:
+    def kick_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str],
+        until_date: int = 0
+    ) -> Union["pyrogram.Message", bool]:
         """Use this method to kick a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must

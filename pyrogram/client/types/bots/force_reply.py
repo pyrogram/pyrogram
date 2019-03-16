@@ -36,8 +36,8 @@ class ForceReply(PyrogramType):
     __slots__ = ["selective"]
 
     def __init__(
-            self,
-            selective: bool = None
+        self,
+        selective: bool = None
     ):
         super().__init__(None)
 

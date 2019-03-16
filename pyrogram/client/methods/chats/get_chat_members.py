@@ -33,12 +33,14 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(self,
-                         chat_id: Union[int, str],
-                         offset: int = 0,
-                         limit: int = 200,
-                         query: str = "",
-                         filter: str = Filters.ALL) -> "pyrogram.ChatMembers":
+    def get_chat_members(
+        self,
+        chat_id: Union[int, str],
+        offset: int = 0,
+        limit: int = 200,
+        query: str = "",
+        filter: str = Filters.ALL
+    ) -> "pyrogram.ChatMembers":
         """Use this method to get a chunk of the members list of a chat.
 
         You can get up to 200 chat members at once.

@@ -76,23 +76,23 @@ class User(PyrogramType):
     ]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            id: int,
-            is_self: bool,
-            is_contact: bool,
-            is_mutual_contact: bool,
-            is_deleted: bool,
-            is_bot: bool,
-            first_name: str,
-            last_name: str = None,
-            status: UserStatus = None,
-            username: str = None,
-            language_code: str = None,
-            phone_number: str = None,
-            photo: ChatPhoto = None,
-            restriction_reason: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: int,
+        is_self: bool,
+        is_contact: bool,
+        is_mutual_contact: bool,
+        is_deleted: bool,
+        is_bot: bool,
+        first_name: str,
+        last_name: str = None,
+        status: UserStatus = None,
+        username: str = None,
+        language_code: str = None,
+        phone_number: str = None,
+        photo: ChatPhoto = None,
+        restriction_reason: str = None
     ):
         super().__init__(client)
 

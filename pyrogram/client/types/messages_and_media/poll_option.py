@@ -37,12 +37,12 @@ class PollOption(PyrogramType):
     __slots__ = ["text", "voters", "data"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            text: str,
-            voters: int,
-            data: bytes
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        text: str,
+        voters: int,
+        data: bytes
     ):
         super().__init__(client)
 

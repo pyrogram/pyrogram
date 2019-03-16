@@ -61,16 +61,16 @@ class CallbackQuery(PyrogramType, Update):
     __slots__ = ["id", "from_user", "chat_instance", "message", "inline_message_id", "data", "game_short_name"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            id: str,
-            from_user: User,
-            chat_instance: str,
-            message: "pyrogram.Message" = None,
-            inline_message_id: str = None,
-            data: bytes = None,
-            game_short_name: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: str,
+        from_user: User,
+        chat_instance: str,
+        message: "pyrogram.Message" = None,
+        inline_message_id: str = None,
+        data: bytes = None,
+        game_short_name: str = None
     ):
         super().__init__(client)
 

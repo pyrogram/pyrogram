@@ -51,15 +51,15 @@ class Game(PyrogramType):
     __slots__ = ["id", "title", "short_name", "description", "photo", "animation"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            id: int,
-            title: str,
-            short_name: str,
-            description: str,
-            photo: Photo,
-            animation: Animation = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: int,
+        title: str,
+        short_name: str,
+        description: str,
+        photo: Photo,
+        animation: Animation = None
     ):
         super().__init__(client)
 

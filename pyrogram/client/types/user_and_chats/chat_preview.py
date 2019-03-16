@@ -48,14 +48,14 @@ class ChatPreview(PyrogramType):
     __slots__ = ["title", "photo", "type", "members_count", "members"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            title: str,
-            photo: ChatPhoto,
-            type: str,
-            members_count: int,
-            members: List[User] = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        title: str,
+        photo: ChatPhoto,
+        type: str,
+        members_count: int,
+        members: List[User] = None
     ):
         super().__init__(client)
 

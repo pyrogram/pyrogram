@@ -34,8 +34,8 @@ class InlineKeyboardMarkup(PyrogramType):
     __slots__ = ["inline_keyboard"]
 
     def __init__(
-            self,
-            inline_keyboard: List[List[InlineKeyboardButton]]
+        self,
+        inline_keyboard: List[List[InlineKeyboardButton]]
     ):
         super().__init__(None)
 

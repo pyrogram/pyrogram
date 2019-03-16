@@ -40,12 +40,12 @@ class GameHighScore(PyrogramType):
     __slots__ = ["user", "score", "position"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            user: User,
-            score: int,
-            position: int = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        user: User,
+        score: int,
+        position: int = None
     ):
         super().__init__(client)
 

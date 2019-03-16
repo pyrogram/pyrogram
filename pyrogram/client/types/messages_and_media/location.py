@@ -36,11 +36,11 @@ class Location(PyrogramType):
     __slots__ = ["longitude", "latitude"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            longitude: float,
-            latitude: float
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        longitude: float,
+        latitude: float
     ):
         super().__init__(client)
 

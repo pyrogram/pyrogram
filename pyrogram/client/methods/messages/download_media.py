@@ -24,12 +24,14 @@ from pyrogram.client.ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
-    def download_media(self,
-                       message: Union["pyrogram.Message", str],
-                       file_name: str = "",
-                       block: bool = True,
-                       progress: callable = None,
-                       progress_args: tuple = ()) -> Union[str, None]:
+    def download_media(
+        self,
+        message: Union["pyrogram.Message", str],
+        file_name: str = "",
+        block: bool = True,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union[str, None]:
         """Use this method to download the media from a Message.
 
         Args:

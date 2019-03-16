@@ -60,18 +60,18 @@ class Animation(PyrogramType):
     __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "duration"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            file_id: str,
-            width: int,
-            height: int,
-            duration: int,
-            thumb: PhotoSize = None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        duration: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
     ):
         super().__init__(client)
 

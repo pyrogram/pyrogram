@@ -40,11 +40,11 @@ class Messages(PyrogramType, Update):
     __slots__ = ["total_count", "messages"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            total_count: int,
-            messages: List[Message]
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        messages: List[Message]
     ):
         super().__init__(client)
 

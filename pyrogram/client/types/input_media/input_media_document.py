@@ -46,11 +46,11 @@ class InputMediaDocument(InputMedia):
     __slots__ = ["thumb"]
 
     def __init__(
-            self,
-            media: str,
-            thumb: str = None,
-            caption: str = "",
-            parse_mode: str = ""
+        self,
+        media: str,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = ""
     ):
         super().__init__(media, caption, parse_mode)
 

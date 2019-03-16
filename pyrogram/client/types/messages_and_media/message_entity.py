@@ -66,14 +66,14 @@ class MessageEntity(PyrogramType):
     }
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            type: str,
-            offset: int,
-            length: int,
-            url: str = None,
-            user: User = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        type: str,
+        offset: int,
+        length: int,
+        url: str = None,
+        user: User = None
     ):
         super().__init__(client)
 

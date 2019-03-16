@@ -38,10 +38,10 @@ class InputPhoneContact:
     __slots__ = []
 
     def __init__(
-            self,
-            phone: str,
-            first_name: str,
-            last_name: str = ""
+        self,
+        phone: str,
+        first_name: str,
+        last_name: str = ""
     ):
         pass
 

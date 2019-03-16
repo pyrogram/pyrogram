@@ -37,11 +37,11 @@ class UserProfilePhotos(PyrogramType):
     __slots__ = ["total_count", "photos"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            total_count: int,
-            photos: List[Photo]
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        photos: List[Photo]
     ):
         super().__init__(client)
 

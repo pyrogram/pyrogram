@@ -23,9 +23,11 @@ from pyrogram.client.ext import BaseClient
 
 
 class ClosePoll(BaseClient):
-    def close_poll(self,
-                   chat_id: Union[int, str],
-                   message_id: id) -> bool:
+    def close_poll(
+        self,
+        chat_id: Union[int, str],
+        message_id: id
+    ) -> bool:
         """Use this method to close (stop) a poll.
 
         Closed polls can't be reopened and nobody will be able to vote in it anymore.

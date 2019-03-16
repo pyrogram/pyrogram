@@ -60,18 +60,18 @@ class Audio(PyrogramType):
     __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            file_id: str,
-            duration: int,
-            thumb: PhotoSize = None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None,
-            performer: str = None,
-            title: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        duration: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        performer: str = None,
+        title: str = None
     ):
         super().__init__(client)
 

@@ -29,11 +29,13 @@ log = logging.getLogger(__name__)
 
 
 class GetMessages(BaseClient):
-    def get_messages(self,
-                     chat_id: Union[int, str],
-                     message_ids: Union[int, Iterable[int]] = None,
-                     reply_to_message_ids: Union[int, Iterable[int]] = None,
-                     replies: int = 1) -> Union["pyrogram.Message", "pyrogram.Messages"]:
+    def get_messages(
+        self,
+        chat_id: Union[int, str],
+        message_ids: Union[int, Iterable[int]] = None,
+        reply_to_message_ids: Union[int, Iterable[int]] = None,
+        replies: int = 1
+    ) -> Union["pyrogram.Message", "pyrogram.Messages"]:
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 

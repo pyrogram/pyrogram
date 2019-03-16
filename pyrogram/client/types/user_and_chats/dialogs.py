@@ -39,11 +39,11 @@ class Dialogs(PyrogramType):
     __slots__ = ["total_count", "dialogs"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            total_count: int,
-            dialogs: List[Dialog]
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        dialogs: List[Dialog]
     ):
         super().__init__(client)
 

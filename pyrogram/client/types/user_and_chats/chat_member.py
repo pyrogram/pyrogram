@@ -54,16 +54,16 @@ class ChatMember(PyrogramType):
     __slots__ = ["user", "status", "date", "invited_by", "promoted_by", "restricted_by", "permissions"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            user: "pyrogram.User",
-            status: str,
-            date: int = None,
-            invited_by: "pyrogram.User" = None,
-            promoted_by: "pyrogram.User" = None,
-            restricted_by: "pyrogram.User" = None,
-            permissions: "pyrogram.ChatPermissions" = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        user: "pyrogram.User",
+        status: str,
+        date: int = None,
+        invited_by: "pyrogram.User" = None,
+        promoted_by: "pyrogram.User" = None,
+        restricted_by: "pyrogram.User" = None,
+        permissions: "pyrogram.ChatPermissions" = None
     ):
         super().__init__(client)
 

@@ -23,10 +23,12 @@ from pyrogram.client.ext import BaseClient, ChatAction
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(self,
-                         chat_id: Union[int, str],
-                         action: Union[ChatAction, str],
-                         progress: int = 0):
+    def send_chat_action(
+        self,
+        chat_id: Union[int, str],
+        action: Union[ChatAction, str],
+        progress: int = 0
+    ):
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:

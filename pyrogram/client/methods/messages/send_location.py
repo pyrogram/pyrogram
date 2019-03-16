@@ -24,16 +24,20 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendLocation(BaseClient):
-    def send_location(self,
-                      chat_id: Union[int, str],
-                      latitude: float,
-                      longitude: float,
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                          "pyrogram.ReplyKeyboardMarkup",
-                                          "pyrogram.ReplyKeyboardRemove",
-                                          "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_location(
+        self,
+        chat_id: Union[int, str],
+        latitude: float,
+        longitude: float,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send points on the map.
 
         Args:

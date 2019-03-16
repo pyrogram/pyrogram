@@ -38,11 +38,11 @@ class ChatPhoto(PyrogramType):
     __slots__ = ["small_file_id", "big_file_id"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            small_file_id: str,
-            big_file_id: str
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        small_file_id: str,
+        big_file_id: str
     ):
         super().__init__(client)
 

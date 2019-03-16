@@ -38,11 +38,11 @@ class ChatMembers(PyrogramType):
     __slots__ = ["total_count", "chat_members"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            total_count: int,
-            chat_members: List[ChatMember]
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        chat_members: List[ChatMember]
     ):
         super().__init__(client)
 

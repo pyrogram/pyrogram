@@ -59,13 +59,13 @@ class InlineKeyboardButton(PyrogramType):
     ]
 
     def __init__(
-            self,
-            text: str,
-            callback_data: bytes = None,
-            url: str = None,
-            switch_inline_query: str = None,
-            switch_inline_query_current_chat: str = None,
-            callback_game: CallbackGame = None
+        self,
+        text: str,
+        callback_data: bytes = None,
+        url: str = None,
+        switch_inline_query: str = None,
+        switch_inline_query_current_chat: str = None,
+        callback_game: CallbackGame = None
     ):
         super().__init__(None)
 

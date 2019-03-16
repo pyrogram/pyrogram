@@ -69,19 +69,19 @@ class Sticker(PyrogramType):
     ]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            file_id: str,
-            width: int,
-            height: int,
-            thumb: PhotoSize = None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None,
-            emoji: str = None,
-            set_name: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        emoji: str = None,
+        set_name: str = None
     ):
         super().__init__(client)
 

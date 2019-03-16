@@ -44,12 +44,12 @@ class Photo(PyrogramType):
     __slots__ = ["id", "date", "sizes"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            id: str,
-            date: int,
-            sizes: List[PhotoSize]
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: str,
+        date: int,
+        sizes: List[PhotoSize]
     ):
         super().__init__(client)
 

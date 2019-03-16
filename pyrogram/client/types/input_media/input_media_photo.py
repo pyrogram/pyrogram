@@ -42,9 +42,9 @@ class InputMediaPhoto(InputMedia):
     __slots__ = []
 
     def __init__(
-            self,
-            media: str,
-            caption: str = "",
-            parse_mode: str = ""
+        self,
+        media: str,
+        caption: str = "",
+        parse_mode: str = ""
     ):
         super().__init__(media, caption, parse_mode)

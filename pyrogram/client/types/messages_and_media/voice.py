@@ -50,15 +50,15 @@ class Voice(PyrogramType):
     __slots__ = ["file_id", "duration", "waveform", "mime_type", "file_size", "date"]
 
     def __init__(
-            self,
-            *,
-            client: "pyrogram.client.ext.BaseClient",
-            file_id: str,
-            duration: int,
-            waveform: bytes = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        duration: int,
+        waveform: bytes = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
     ):
         super().__init__(client)
 

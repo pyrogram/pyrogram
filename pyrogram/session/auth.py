@@ -45,10 +45,10 @@ class Auth:
     @staticmethod
     def pack(data: Object) -> bytes:
         return (
-                bytes(8)
-                + Long(MsgId())
-                + Int(len(data.write()))
-                + data.write()
+            bytes(8)
+            + Long(MsgId())
+            + Int(len(data.write()))
+            + data.write()
         )
 
     @staticmethod
@@ -144,13 +144,13 @@ class Auth:
                 new_nonce = new_nonce.to_bytes(32, "little", signed=True)
 
                 tmp_aes_key = (
-                        sha1(new_nonce + server_nonce).digest()
-                        + sha1(server_nonce + new_nonce).digest()[:12]
+                    sha1(new_nonce + server_nonce).digest()
+                    + sha1(server_nonce + new_nonce).digest()[:12]
                 )
 
                 tmp_aes_iv = (
-                        sha1(server_nonce + new_nonce).digest()[12:]
-                        + sha1(new_nonce + new_nonce).digest() + new_nonce[:4]
+                    sha1(server_nonce + new_nonce).digest()[12:]
+                    + sha1(new_nonce + new_nonce).digest() + new_nonce[:4]
                 )
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)

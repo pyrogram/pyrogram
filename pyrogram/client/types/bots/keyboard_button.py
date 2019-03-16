@@ -43,10 +43,10 @@ class KeyboardButton(PyrogramType):
     __slots__ = ["text", "request_contact", "request_location"]
 
     def __init__(
-            self,
-            text: str,
-            request_contact: bool = None,
-            request_location: bool = None
+        self,
+        text: str,
+        request_contact: bool = None,
+        request_location: bool = None
     ):
         super().__init__(None)
 
