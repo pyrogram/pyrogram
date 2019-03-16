@@ -106,15 +106,15 @@ class DownloadMedia(BaseClient):
             else:
                 raise ValueError(error_message)
         elif isinstance(message, (
-                pyrogram.Photo,
-                pyrogram.PhotoSize,
-                pyrogram.Audio,
-                pyrogram.Document,
-                pyrogram.Video,
-                pyrogram.Voice,
-                pyrogram.VideoNote,
-                pyrogram.Sticker,
-                pyrogram.Animation
+            pyrogram.Photo,
+            pyrogram.PhotoSize,
+            pyrogram.Audio,
+            pyrogram.Document,
+            pyrogram.Video,
+            pyrogram.Voice,
+            pyrogram.VideoNote,
+            pyrogram.Sticker,
+            pyrogram.Animation
         )):
             if isinstance(message, pyrogram.Photo):
                 media = pyrogram.Document(

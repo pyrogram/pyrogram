@@ -28,19 +28,19 @@ from pyrogram.client.ext import BaseClient, utils
 
 class SendCachedMedia(BaseClient):
     def send_cached_media(
-            self,
-            chat_id: Union[int, str],
-            file_id: str,
-            caption: str = "",
-            parse_mode: str = "",
-            disable_notification: bool = None,
-            reply_to_message_id: int = None,
-            reply_markup: Union[
-                "pyrogram.InlineKeyboardMarkup",
-                "pyrogram.ReplyKeyboardMarkup",
-                "pyrogram.ReplyKeyboardRemove",
-                "pyrogram.ForceReply"
-            ] = None
+        self,
+        chat_id: Union[int, str],
+        file_id: str,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
     ) -> Union["pyrogram.Message", None]:
         """Use this method to send any media stored on the Telegram servers using a file_id.
 
