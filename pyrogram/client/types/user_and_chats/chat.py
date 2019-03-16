@@ -80,24 +80,32 @@ class Chat(PyrogramType):
             Information about the chat default permissions.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 id: int,
-                 type: str,
-                 title: str = None,
-                 username: str = None,
-                 first_name: str = None,
-                 last_name: str = None,
-                 photo: ChatPhoto = None,
-                 description: str = None,
-                 invite_link: str = None,
-                 pinned_message=None,
-                 sticker_set_name: str = None,
-                 can_set_sticker_set: bool = None,
-                 members_count: int = None,
-                 restriction_reason: str = None,
-                 permissions: "pyrogram.ChatPermissions" = None):
+    __slots__ = [
+        "id", "type", "title", "username", "first_name", "last_name", "photo", "description", "invite_link",
+        "pinned_message", "sticker_set_name", "can_set_sticker_set", "members_count", "restriction_reason",
+        "permissions"
+    ]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            id: int,
+            type: str,
+            title: str = None,
+            username: str = None,
+            first_name: str = None,
+            last_name: str = None,
+            photo: ChatPhoto = None,
+            description: str = None,
+            invite_link: str = None,
+            pinned_message=None,
+            sticker_set_name: str = None,
+            can_set_sticker_set: bool = None,
+            members_count: int = None,
+            restriction_reason: str = None,
+            permissions: "pyrogram.ChatPermissions" = None
+    ):
         super().__init__(client)
 
         self.id = id

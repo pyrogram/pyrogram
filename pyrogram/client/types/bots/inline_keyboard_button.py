@@ -54,13 +54,19 @@ class InlineKeyboardButton(PyrogramType):
 
     # TODO: Add callback_game and pay fields
 
-    def __init__(self,
-                 text: str,
-                 callback_data: bytes = None,
-                 url: str = None,
-                 switch_inline_query: str = None,
-                 switch_inline_query_current_chat: str = None,
-                 callback_game: CallbackGame = None):
+    __slots__ = [
+        "text", "url", "callback_data", "switch_inline_query", "switch_inline_query_current_chat", "callback_game"
+    ]
+
+    def __init__(
+            self,
+            text: str,
+            callback_data: bytes = None,
+            url: str = None,
+            switch_inline_query: str = None,
+            switch_inline_query_current_chat: str = None,
+            callback_game: CallbackGame = None
+    ):
         super().__init__(None)
 
         self.text = str(text)

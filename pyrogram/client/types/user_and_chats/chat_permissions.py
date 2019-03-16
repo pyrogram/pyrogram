@@ -94,6 +94,13 @@ class ChatPermissions(PyrogramType):
             True, if polls can be sent, implies can_send_media_messages.
     """
 
+    __slots__ = [
+        "until_date", "can_be_edited", "can_change_info", "can_post_messages", "can_edit_messages",
+        "can_delete_messages", "can_restrict_members", "can_invite_users", "can_pin_messages", "can_promote_members",
+        "can_send_messages", "can_send_media_messages", "can_send_other_messages", "can_add_web_page_previews",
+        "can_send_polls"
+    ]
+
     def __init__(
             self,
             *,

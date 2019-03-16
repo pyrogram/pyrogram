@@ -37,11 +37,15 @@ class Messages(PyrogramType, Update):
             Requested messages.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 total_count: int,
-                 messages: List[Message]):
+    __slots__ = ["total_count", "messages"]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            total_count: int,
+            messages: List[Message]
+    ):
         super().__init__(client)
 
         self.total_count = total_count

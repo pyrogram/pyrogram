@@ -70,23 +70,30 @@ class User(PyrogramType):
             The reason why this bot might be unavailable to some users.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 id: int,
-                 is_self: bool,
-                 is_contact: bool,
-                 is_mutual_contact: bool,
-                 is_deleted: bool,
-                 is_bot: bool,
-                 first_name: str,
-                 last_name: str = None,
-                 status: UserStatus = None,
-                 username: str = None,
-                 language_code: str = None,
-                 phone_number: str = None,
-                 photo: ChatPhoto = None,
-                 restriction_reason: str = None):
+    __slots__ = [
+        "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "first_name", "last_name", "status",
+        "username", "language_code", "phone_number", "photo", "restriction_reason"
+    ]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            id: int,
+            is_self: bool,
+            is_contact: bool,
+            is_mutual_contact: bool,
+            is_deleted: bool,
+            is_bot: bool,
+            first_name: str,
+            last_name: str = None,
+            status: UserStatus = None,
+            username: str = None,
+            language_code: str = None,
+            phone_number: str = None,
+            photo: ChatPhoto = None,
+            restriction_reason: str = None
+    ):
         super().__init__(client)
 
         self.id = id
