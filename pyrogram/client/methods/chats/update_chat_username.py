@@ -45,7 +45,7 @@ class UpdateChatUsername(BaseClient):
         """
 
         peer = self.resolve_peer(chat_id)
-        
+
         if isinstance(peer, types.InputPeerChannel):
             return bool(
                 self.send(

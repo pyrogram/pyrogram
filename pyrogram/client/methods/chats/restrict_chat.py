@@ -25,16 +25,16 @@ from ...types.user_and_chats import Chat
 
 class RestrictChat(BaseClient):
     def restrict_chat(
-            self,
-            chat_id: Union[int, str],
-            can_send_messages: bool = False,
-            can_send_media_messages: bool = False,
-            can_send_other_messages: bool = False,
-            can_add_web_page_previews: bool = False,
-            can_send_polls: bool = False,
-            can_change_info: bool = False,
-            can_invite_users: bool = False,
-            can_pin_messages: bool = False
+        self,
+        chat_id: Union[int, str],
+        can_send_messages: bool = False,
+        can_send_media_messages: bool = False,
+        can_send_other_messages: bool = False,
+        can_add_web_page_previews: bool = False,
+        can_send_polls: bool = False,
+        can_change_info: bool = False,
+        can_invite_users: bool = False,
+        can_pin_messages: bool = False
     ) -> Chat:
         """Use this method to restrict a chat.
         Pass True for all boolean parameters to lift restrictions from a chat.

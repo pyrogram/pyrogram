@@ -25,18 +25,18 @@ from ...types.user_and_chats import Chat
 
 class RestrictChatMember(BaseClient):
     def restrict_chat_member(
-            self,
-            chat_id: Union[int, str],
-            user_id: Union[int, str],
-            until_date: int = 0,
-            can_send_messages: bool = False,
-            can_send_media_messages: bool = False,
-            can_send_other_messages: bool = False,
-            can_add_web_page_previews: bool = False,
-            can_send_polls: bool = False,
-            can_change_info: bool = False,
-            can_invite_users: bool = False,
-            can_pin_messages: bool = False
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str],
+        until_date: int = 0,
+        can_send_messages: bool = False,
+        can_send_media_messages: bool = False,
+        can_send_other_messages: bool = False,
+        can_add_web_page_previews: bool = False,
+        can_send_polls: bool = False,
+        can_change_info: bool = False,
+        can_invite_users: bool = False,
+        can_pin_messages: bool = False
     ) -> Chat:
         """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
         this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift

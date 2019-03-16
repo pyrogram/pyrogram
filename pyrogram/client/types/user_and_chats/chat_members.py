@@ -21,7 +21,6 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .chat_member import ChatMember
-from .user import User
 from ..pyrogram_type import PyrogramType
 
 
