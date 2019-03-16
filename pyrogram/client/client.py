@@ -243,6 +243,12 @@ class Client(Methods, BaseClient):
     def __exit__(self, *args):
         self.stop()
 
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __aexit__(self, *args):
+        await self.stop()
+
     @property
     def proxy(self):
         return self._proxy
