@@ -45,10 +45,10 @@ class Auth:
     @staticmethod
     def pack(data: Object) -> bytes:
         return (
-            bytes(8)
-            + Long(MsgId())
-            + Int(len(data.write()))
-            + data.write()
+                bytes(8)
+                + Long(MsgId())
+                + Int(len(data.write()))
+                + data.write()
         )
 
     @staticmethod
@@ -83,7 +83,7 @@ class Auth:
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
                 log.debug("Send req_pq: {}".format(nonce))
-                res_pq = self.send(functions.ReqPqMulti(nonce))
+                res_pq = self.send(functions.ReqPqMulti(nonce=nonce))
                 log.debug("Got ResPq: {}".format(res_pq.server_nonce))
                 log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
 
@@ -110,12 +110,12 @@ class Auth:
                 new_nonce = int.from_bytes(urandom(32), "little", signed=True)
 
                 data = types.PQInnerData(
-                    res_pq.pq,
-                    p.to_bytes(4, "big"),
-                    q.to_bytes(4, "big"),
-                    nonce,
-                    server_nonce,
-                    new_nonce,
+                    pq=res_pq.pq,
+                    p=p.to_bytes(4, "big"),
+                    q=q.to_bytes(4, "big"),
+                    nonce=nonce,
+                    server_nonce=server_nonce,
+                    new_nonce=new_nonce,
                 ).write()
 
                 sha = sha1(data).digest()
@@ -129,12 +129,12 @@ class Auth:
                 log.debug("Send req_DH_params")
                 server_dh_params = self.send(
                     functions.ReqDHParams(
-                        nonce,
-                        server_nonce,
-                        p.to_bytes(4, "big"),
-                        q.to_bytes(4, "big"),
-                        public_key_fingerprint,
-                        encrypted_data
+                        nonce=nonce,
+                        server_nonce=server_nonce,
+                        p=p.to_bytes(4, "big"),
+                        q=q.to_bytes(4, "big"),
+                        public_key_fingerprint=public_key_fingerprint,
+                        encrypted_data=encrypted_data
                     )
                 )
 
@@ -144,13 +144,13 @@ class Auth:
                 new_nonce = new_nonce.to_bytes(32, "little", signed=True)
 
                 tmp_aes_key = (
-                    sha1(new_nonce + server_nonce).digest()
-                    + sha1(server_nonce + new_nonce).digest()[:12]
+                        sha1(new_nonce + server_nonce).digest()
+                        + sha1(server_nonce + new_nonce).digest()[:12]
                 )
 
                 tmp_aes_iv = (
-                    sha1(server_nonce + new_nonce).digest()[12:]
-                    + sha1(new_nonce + new_nonce).digest() + new_nonce[:4]
+                        sha1(server_nonce + new_nonce).digest()[12:]
+                        + sha1(new_nonce + new_nonce).digest() + new_nonce[:4]
                 )
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
@@ -175,10 +175,10 @@ class Auth:
                 retry_id = 0
 
                 data = types.ClientDHInnerData(
-                    nonce,
-                    server_nonce,
-                    retry_id,
-                    g_b
+                    nonce=nonce,
+                    server_nonce=server_nonce,
+                    retry_id=retry_id,
+                    g_b=g_b
                 ).write()
 
                 sha = sha1(data).digest()
@@ -189,9 +189,9 @@ class Auth:
                 log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = self.send(
                     functions.SetClientDHParams(
-                        nonce,
-                        server_nonce,
-                        encrypted_data
+                        nonce=nonce,
+                        server_nonce=server_nonce,
+                        encrypted_data=encrypted_data
                     )
                 )
 

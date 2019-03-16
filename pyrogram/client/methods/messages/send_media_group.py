@@ -137,7 +137,7 @@ class SendMediaGroup(BaseClient):
                                                 w=i.width,
                                                 h=i.height
                                             ),
-                                            types.DocumentAttributeFilename(os.path.basename(i.media))
+                                            types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
                                         ]
                                     )
                                 )

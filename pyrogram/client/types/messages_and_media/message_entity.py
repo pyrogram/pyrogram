@@ -47,6 +47,8 @@ class MessageEntity(PyrogramType):
             For "text_mention" only, the mentioned user.
     """
 
+    __slots__ = ["type", "offset", "length", "url", "user"]
+
     ENTITIES = {
         types.MessageEntityMention.ID: "mention",
         types.MessageEntityHashtag.ID: "hashtag",
@@ -63,14 +65,16 @@ class MessageEntity(PyrogramType):
         types.MessageEntityPhone.ID: "phone_number"
     }
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 type: str,
-                 offset: int,
-                 length: int,
-                 url: str = None,
-                 user: User = None):
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            type: str,
+            offset: int,
+            length: int,
+            url: str = None,
+            user: User = None
+    ):
         super().__init__(client)
 
         self.type = type

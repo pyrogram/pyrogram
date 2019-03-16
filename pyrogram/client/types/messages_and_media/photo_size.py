@@ -42,13 +42,17 @@ class PhotoSize(PyrogramType):
             File size.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 width: int,
-                 height: int,
-                 file_size: int):
+    __slots__ = ["file_id", "width", "height", "file_size"]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            file_id: str,
+            width: int,
+            height: int,
+            file_size: int
+    ):
         super().__init__(client)
 
         self.file_id = file_id

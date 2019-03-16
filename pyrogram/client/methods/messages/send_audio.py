@@ -142,7 +142,7 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(audio))
                     ]
                 )
             elif audio.startswith("http"):

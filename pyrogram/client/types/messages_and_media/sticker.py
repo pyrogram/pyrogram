@@ -64,19 +64,25 @@ class Sticker(PyrogramType):
 
     # TODO: Add mask position
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 width: int,
-                 height: int,
-                 thumb: PhotoSize = None,
-                 file_name: str = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None,
-                 emoji: str = None,
-                 set_name: str = None):
+    __slots__ = [
+        "file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name"
+    ]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            file_id: str,
+            width: int,
+            height: int,
+            thumb: PhotoSize = None,
+            file_name: str = None,
+            mime_type: str = None,
+            file_size: int = None,
+            date: int = None,
+            emoji: str = None,
+            set_name: str = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -97,7 +103,10 @@ class Sticker(PyrogramType):
         try:
             return send(
                 functions.messages.GetStickerSet(
-                    types.InputStickerSetID(*input_sticker_set_id)
+                    stickerset=types.InputStickerSetID(
+                        id=input_sticker_set_id[0],
+                        access_hash=input_sticker_set_id[1]
+                    )
                 )
             ).set.short_name
         except StickersetInvalid:

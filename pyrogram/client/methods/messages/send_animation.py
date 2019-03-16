@@ -141,7 +141,7 @@ class SendAnimation(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(animation)),
+                        types.DocumentAttributeFilename(file_name=os.path.basename(animation)),
                         types.DocumentAttributeAnimated()
                     ]
                 )

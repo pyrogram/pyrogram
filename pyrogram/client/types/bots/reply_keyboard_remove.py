@@ -35,8 +35,12 @@ class ReplyKeyboardRemove(PyrogramType):
             keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
     """
 
-    def __init__(self,
-                 selective: bool = None):
+    __slots__ = ["selective"]
+
+    def __init__(
+            self,
+            selective: bool = None
+    ):
         super().__init__(None)
 
         self.selective = selective

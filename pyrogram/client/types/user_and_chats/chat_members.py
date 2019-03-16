@@ -35,11 +35,15 @@ class ChatMembers(PyrogramType):
             Requested chat members.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 total_count: int,
-                 chat_members: List[ChatMember]):
+    __slots__ = ["total_count", "chat_members"]
+
+    def __init__(
+            self,
+            *,
+            client: "pyrogram.client.ext.BaseClient",
+            total_count: int,
+            chat_members: List[ChatMember]
+    ):
         super().__init__(client)
 
         self.total_count = total_count

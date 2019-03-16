@@ -145,7 +145,7 @@ class SendVideo(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(video))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(video))
                     ]
                 )
             elif video.startswith("http"):

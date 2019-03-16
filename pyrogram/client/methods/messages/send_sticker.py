@@ -103,7 +103,7 @@ class SendSticker(BaseClient):
                     mime_type="image/webp",
                     file=file,
                     attributes=[
-                        types.DocumentAttributeFilename(os.path.basename(sticker))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
                     ]
                 )
             elif sticker.startswith("http"):

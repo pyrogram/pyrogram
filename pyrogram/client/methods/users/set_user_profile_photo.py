@@ -43,7 +43,7 @@ class SetUserProfilePhoto(BaseClient):
         return bool(
             self.send(
                 functions.photos.UploadProfilePhoto(
-                    self.save_file(photo)
+                    file=self.save_file(photo)
                 )
             )
         )
