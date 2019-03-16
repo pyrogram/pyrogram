@@ -41,11 +41,13 @@ QUERYABLE_FILTERS = (Filters.ALL, Filters.KICKED, Filters.RESTRICTED)
 
 class IterChatMembers(BaseClient):
     @async_generator
-    async def iter_chat_members(self,
-                                chat_id: Union[int, str],
-                                limit: int = 0,
-                                query: str = "",
-                                filter: str = Filters.ALL) -> Optional[AsyncGenerator["pyrogram.ChatMember", None]]:
+    async def iter_chat_members(
+        self,
+        chat_id: Union[int, str],
+        limit: int = 0,
+        query: str = "",
+        filter: str = Filters.ALL
+    ) -> Optional[AsyncGenerator["pyrogram.ChatMember", None]]:
         """Use this method to iterate through the members of a chat sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_chat_members` in a loop, thus saving you

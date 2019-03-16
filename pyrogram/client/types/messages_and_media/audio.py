@@ -57,18 +57,22 @@ class Audio(PyrogramType):
             Title of the audio as defined by sender or by audio tags.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 duration: int,
-                 thumb: PhotoSize = None,
-                 file_name: str = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None,
-                 performer: str = None,
-                 title: str = None):
+    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        duration: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        performer: str = None,
+        title: str = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id

@@ -26,9 +26,11 @@ from ...ext import BaseClient
 
 class IterDialogs(BaseClient):
     @async_generator
-    async def iter_dialogs(self,
-                           limit: int = 0,
-                           offset_date: int = 0) -> Optional[AsyncGenerator["pyrogram.Dialog", None]]:
+    async def iter_dialogs(
+        self,
+        limit: int = 0,
+        offset_date: int = 0
+    ) -> Optional[AsyncGenerator["pyrogram.Dialog", None]]:
         """Use this method to iterate through a user's dialogs sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from

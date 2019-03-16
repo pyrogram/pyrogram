@@ -39,7 +39,7 @@ class GetContacts(BaseClient):
         """
         while True:
             try:
-                contacts = await self.send(functions.contacts.GetContacts(0))
+                contacts = await self.send(functions.contacts.GetContacts(hash=0))
             except FloodWait as e:
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 await asyncio.sleep(e.x)

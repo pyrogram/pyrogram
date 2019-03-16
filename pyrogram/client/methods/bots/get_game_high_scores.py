@@ -24,10 +24,12 @@ from pyrogram.client.ext import BaseClient
 
 
 class GetGameHighScores(BaseClient):
-    async def get_game_high_scores(self,
-                                   user_id: Union[int, str],
-                                   chat_id: Union[int, str],
-                                   message_id: int = None):
+    async def get_game_high_scores(
+        self,
+        user_id: Union[int, str],
+        chat_id: Union[int, str],
+        message_id: int = None
+    ):
         """Use this method to get data for high score tables.
 
         Args:

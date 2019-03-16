@@ -23,8 +23,10 @@ from ...ext import BaseClient
 
 
 class GetChatMembersCount(BaseClient):
-    async def get_chat_members_count(self,
-                                     chat_id: Union[int, str]) -> int:
+    async def get_chat_members_count(
+        self,
+        chat_id: Union[int, str]
+    ) -> int:
         """Use this method to get the number of members in a chat.
 
         Args:

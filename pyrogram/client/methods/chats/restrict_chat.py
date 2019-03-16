@@ -23,12 +23,10 @@ from ...ext import BaseClient
 from ...types.user_and_chats import Chat
 
 
-class RestrictChatMember(BaseClient):
-    async def restrict_chat_member(
+class RestrictChat(BaseClient):
+    def restrict_chat(
         self,
         chat_id: Union[int, str],
-        user_id: Union[int, str],
-        until_date: int = 0,
         can_send_messages: bool = False,
         can_send_media_messages: bool = False,
         can_send_other_messages: bool = False,
@@ -38,22 +36,12 @@ class RestrictChatMember(BaseClient):
         can_invite_users: bool = False,
         can_pin_messages: bool = False
     ) -> Chat:
-        """Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for
-        this to work and must have the appropriate admin rights. Pass True for all boolean parameters to lift
-        restrictions from a user.
+        """Use this method to restrict a chat.
+        Pass True for all boolean parameters to lift restrictions from a chat.
 
         Args:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-
-            user_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target user.
-                For a contact that exists in your Telegram address book you can use his phone number (str).
-
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
-                If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
 
             can_send_messages (``bool``, *optional*):
                 Pass True, if the user can send text messages, contacts, locations and venues.
@@ -132,12 +120,11 @@ class RestrictChatMember(BaseClient):
         if can_pin_messages:
             pin_messages = None
 
-        r = await self.send(
-            functions.channels.EditBanned(
-                channel=await self.resolve_peer(chat_id),
-                user_id=await self.resolve_peer(user_id),
+        r = self.send(
+            functions.messages.EditChatDefaultBannedRights(
+                peer=self.resolve_peer(chat_id),
                 banned_rights=types.ChatBannedRights(
-                    until_date=until_date,
+                    until_date=0,
                     send_messages=send_messages,
                     send_media=send_media,
                     send_stickers=send_stickers,

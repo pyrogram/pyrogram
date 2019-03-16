@@ -51,16 +51,20 @@ class VideoNote(PyrogramType):
             Date the video note was sent in Unix time.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 length: int,
-                 duration: int,
-                 thumb: PhotoSize = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None):
+    __slots__ = ["file_id", "thumb", "mime_type", "file_size", "date", "length", "duration"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        length: int,
+        duration: int,
+        thumb: PhotoSize = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id

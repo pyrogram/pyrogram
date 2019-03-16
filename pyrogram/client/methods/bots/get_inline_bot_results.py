@@ -24,12 +24,14 @@ from pyrogram.client.ext import BaseClient
 
 
 class GetInlineBotResults(BaseClient):
-    async def get_inline_bot_results(self,
-                                     bot: Union[int, str],
-                                     query: str,
-                                     offset: str = "",
-                                     latitude: float = None,
-                                     longitude: float = None):
+    async def get_inline_bot_results(
+        self,
+        bot: Union[int, str],
+        query: str,
+        offset: str = "",
+        latitude: float = None,
+        longitude: float = None
+    ):
         """Use this method to get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 

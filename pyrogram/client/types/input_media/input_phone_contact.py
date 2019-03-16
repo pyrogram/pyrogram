@@ -35,10 +35,14 @@ class InputPhoneContact:
             Contact's last name
     """
 
-    def __init__(self,
-                 phone: str,
-                 first_name: str,
-                 last_name: str = ""):
+    __slots__ = []
+
+    def __init__(
+        self,
+        phone: str,
+        first_name: str,
+        last_name: str = ""
+    ):
         pass
 
     def __new__(cls,

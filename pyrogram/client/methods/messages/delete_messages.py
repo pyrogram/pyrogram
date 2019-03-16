@@ -23,10 +23,12 @@ from pyrogram.client.ext import BaseClient
 
 
 class DeleteMessages(BaseClient):
-    async def delete_messages(self,
-                              chat_id: Union[int, str],
-                              message_ids: Iterable[int],
-                              revoke: bool = True) -> bool:
+    async def delete_messages(
+        self,
+        chat_id: Union[int, str],
+        message_ids: Iterable[int],
+        revoke: bool = True
+    ) -> bool:
         """Use this method to delete messages, including service messages, with the following limitations:
 
         - A message can only be deleted if it was sent less than 48 hours ago.

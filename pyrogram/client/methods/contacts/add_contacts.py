@@ -24,8 +24,10 @@ from ...ext import BaseClient
 
 
 class AddContacts(BaseClient):
-    async def add_contacts(self,
-                     contacts: List["pyrogram.InputPhoneContact"]):
+    async def add_contacts(
+        self,
+        contacts: List["pyrogram.InputPhoneContact"]
+    ):
         """Use this method to add contacts to your Telegram address book.
 
         Args:

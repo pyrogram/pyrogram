@@ -24,13 +24,15 @@ from pyrogram.client.ext import BaseClient
 
 
 class SetGameScore(BaseClient):
-    async def set_game_score(self,
-                             user_id: Union[int, str],
-                             score: int,
-                             force: bool = None,
-                             disable_edit_message: bool = None,
-                             chat_id: Union[int, str] = None,
-                             message_id: int = None):
+    async def set_game_score(
+        self,
+        user_id: Union[int, str],
+        score: int,
+        force: bool = None,
+        disable_edit_message: bool = None,
+        chat_id: Union[int, str] = None,
+        message_id: int = None
+    ):
         # inline_message_id: str = None):  TODO Add inline_message_id
         """Use this method to set the score of the specified user in a game.
 

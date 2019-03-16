@@ -94,28 +94,35 @@ class ChatPermissions(PyrogramType):
             True, if polls can be sent, implies can_send_media_messages.
     """
 
+    __slots__ = [
+        "until_date", "can_be_edited", "can_change_info", "can_post_messages", "can_edit_messages",
+        "can_delete_messages", "can_restrict_members", "can_invite_users", "can_pin_messages", "can_promote_members",
+        "can_send_messages", "can_send_media_messages", "can_send_other_messages", "can_add_web_page_previews",
+        "can_send_polls"
+    ]
+
     def __init__(
-            self,
-            *,
-            until_date: int = None,
+        self,
+        *,
+        until_date: int = None,
 
-            # Admin permissions
-            can_be_edited: bool = None,
-            can_change_info: bool = None,
-            can_post_messages: bool = None,  # Channels only
-            can_edit_messages: bool = None,  # Channels only
-            can_delete_messages: bool = None,
-            can_restrict_members: bool = None,
-            can_invite_users: bool = None,
-            can_pin_messages: bool = None,  # Supergroups only
-            can_promote_members: bool = None,
+        # Admin permissions
+        can_be_edited: bool = None,
+        can_change_info: bool = None,
+        can_post_messages: bool = None,  # Channels only
+        can_edit_messages: bool = None,  # Channels only
+        can_delete_messages: bool = None,
+        can_restrict_members: bool = None,
+        can_invite_users: bool = None,
+        can_pin_messages: bool = None,  # Supergroups only
+        can_promote_members: bool = None,
 
-            # Restricted user permissions
-            can_send_messages: bool = None,  # Text, contacts, locations and venues
-            can_send_media_messages: bool = None,  # Audios, documents, photos, videos, video notes and voice notes
-            can_send_other_messages: bool = None,  # Animations (GIFs), games, stickers, inline bot results
-            can_add_web_page_previews: bool = None,
-            can_send_polls: bool = None
+        # Restricted user permissions
+        can_send_messages: bool = None,  # Text, contacts, locations and venues
+        can_send_media_messages: bool = None,  # Audios, documents, photos, videos, video notes and voice notes
+        can_send_other_messages: bool = None,  # Animations (GIFs), games, stickers, inline bot results
+        can_add_web_page_previews: bool = None,
+        can_send_polls: bool = None
     ):
         super().__init__(None)
 
@@ -139,11 +146,11 @@ class ChatPermissions(PyrogramType):
 
     @staticmethod
     def _parse(
-            entity: Union[
-                types.ChannelParticipantAdmin,
-                types.ChannelParticipantBanned,
-                types.ChatBannedRights
-            ]
+        entity: Union[
+            types.ChannelParticipantAdmin,
+            types.ChannelParticipantBanned,
+            types.ChatBannedRights
+        ]
     ) -> "ChatPermissions":
         if isinstance(entity, types.ChannelParticipantAdmin):
             permissions = entity.admin_rights
@@ -171,8 +178,8 @@ class ChatPermissions(PyrogramType):
                 can_send_messages=not denied_permissions.send_messages,
                 can_send_media_messages=not denied_permissions.send_media,
                 can_send_other_messages=(
-                        not denied_permissions.send_stickers or not denied_permissions.send_gifs or
-                        not denied_permissions.send_games or not denied_permissions.send_inline
+                    not denied_permissions.send_stickers or not denied_permissions.send_gifs or
+                    not denied_permissions.send_games or not denied_permissions.send_inline
                 ),
                 can_add_web_page_previews=not denied_permissions.embed_links,
                 can_send_polls=not denied_permissions.send_polls,

@@ -31,6 +31,7 @@ from .kick_chat_member import KickChatMember
 from .leave_chat import LeaveChat
 from .pin_chat_message import PinChatMessage
 from .promote_chat_member import PromoteChatMember
+from .restrict_chat import RestrictChat
 from .restrict_chat_member import RestrictChatMember
 from .set_chat_description import SetChatDescription
 from .set_chat_photo import SetChatPhoto
@@ -62,6 +63,7 @@ class Chats(
     GetChatPreview,
     IterDialogs,
     IterChatMembers,
-    UpdateChatUsername
+    UpdateChatUsername,
+    RestrictChat
 ):
     pass

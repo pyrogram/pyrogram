@@ -24,10 +24,12 @@ from ...ext import BaseClient
 
 
 class GetUserProfilePhotos(BaseClient):
-    async def get_user_profile_photos(self,
-                                      user_id: Union[int, str],
-                                      offset: int = 0,
-                                      limit: int = 100) -> "pyrogram.UserProfilePhotos":
+    async def get_user_profile_photos(
+        self,
+        user_id: Union[int, str],
+        offset: int = 0,
+        limit: int = 100
+    ) -> "pyrogram.UserProfilePhotos":
         """Use this method to get a list of profile pictures for a user.
 
         Args:

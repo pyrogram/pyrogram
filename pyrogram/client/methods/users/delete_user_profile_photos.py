@@ -25,8 +25,10 @@ from ...ext import BaseClient
 
 
 class DeleteUserProfilePhotos(BaseClient):
-    async def delete_user_profile_photos(self,
-                                   id: Union[str, List[str]]) -> bool:
+    async def delete_user_profile_photos(
+        self,
+        id: Union[str, List[str]]
+    ) -> bool:
         """Use this method to delete your own profile photos
 
         Args:

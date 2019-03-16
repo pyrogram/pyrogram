@@ -26,13 +26,15 @@ from ...ext import BaseClient
 
 class IterHistory(BaseClient):
     @async_generator
-    async def iter_history(self,
-                           chat_id: Union[int, str],
-                           limit: int = 0,
-                           offset: int = 0,
-                           offset_id: int = 0,
-                           offset_date: int = 0,
-                           reverse: bool = False) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
+    async def iter_history(
+        self,
+        chat_id: Union[int, str],
+        limit: int = 0,
+        offset: int = 0,
+        offset_id: int = 0,
+        offset_date: int = 0,
+        reverse: bool = False
+    ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
         """Use this method to iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from

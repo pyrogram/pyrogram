@@ -28,10 +28,12 @@ log = logging.getLogger(__name__)
 
 
 class GetDialogs(BaseClient):
-    async def get_dialogs(self,
-                          offset_date: int = 0,
-                          limit: int = 100,
-                          pinned_only: bool = False) -> "pyrogram.Dialogs":
+    async def get_dialogs(
+        self,
+        offset_date: int = 0,
+        limit: int = 100,
+        pinned_only: bool = False
+    ) -> "pyrogram.Dialogs":
         """Use this method to get a chunk of the user's dialogs
 
         You can get up to 100 dialogs at once.

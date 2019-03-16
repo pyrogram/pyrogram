@@ -73,7 +73,7 @@ def start():
                 f_init.write("from .{}_{} import *\n".format(name.lower(), code))
 
             with open("{}/source/{}".format(HOME, i), encoding="utf-8") as f_csv, \
-                    open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
+                open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
                 reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)

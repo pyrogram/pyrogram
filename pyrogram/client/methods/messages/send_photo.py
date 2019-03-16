@@ -28,20 +28,24 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendPhoto(BaseClient):
-    async def send_photo(self,
-                         chat_id: Union[int, str],
-                         photo: str,
-                         caption: str = "",
-                         parse_mode: str = "",
-                         ttl_seconds: int = None,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None,
-                         reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                             "pyrogram.ReplyKeyboardMarkup",
-                                             "pyrogram.ReplyKeyboardRemove",
-                                             "pyrogram.ForceReply"] = None,
-                         progress: callable = None,
-                         progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    async def send_photo(
+        self,
+        chat_id: Union[int, str],
+        photo: str,
+        caption: str = "",
+        parse_mode: str = "",
+        ttl_seconds: int = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send photos.
 
         Args:

@@ -22,8 +22,10 @@ from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    async def join_chat(self,
-                        chat_id: str):
+    async def join_chat(
+        self,
+        chat_id: str
+    ):
         """Use this method to join a group chat or channel.
 
         Args:

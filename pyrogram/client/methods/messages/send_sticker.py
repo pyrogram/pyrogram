@@ -28,17 +28,21 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendSticker(BaseClient):
-    async def send_sticker(self,
-                           chat_id: Union[int, str],
-                           sticker: str,
-                           disable_notification: bool = None,
-                           reply_to_message_id: int = None,
-                           reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                               "pyrogram.ReplyKeyboardMarkup",
-                                               "pyrogram.ReplyKeyboardRemove",
-                                               "pyrogram.ForceReply"] = None,
-                           progress: callable = None,
-                           progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    async def send_sticker(
+        self,
+        chat_id: Union[int, str],
+        sticker: str,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send .webp stickers.
 
         Args:
@@ -103,7 +107,7 @@ class SendSticker(BaseClient):
                     mime_type="image/webp",
                     file=file,
                     attributes=[
-                        types.DocumentAttributeFilename(os.path.basename(sticker))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
                     ]
                 )
             elif sticker.startswith("http"):

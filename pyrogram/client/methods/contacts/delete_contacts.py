@@ -24,8 +24,10 @@ from ...ext import BaseClient
 
 
 class DeleteContacts(BaseClient):
-    async def delete_contacts(self,
-                        ids: List[int]):
+    async def delete_contacts(
+        self,
+        ids: List[int]
+    ):
         """Use this method to delete contacts from your Telegram address book
 
         Args:

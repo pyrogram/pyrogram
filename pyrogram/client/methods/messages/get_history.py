@@ -29,13 +29,15 @@ log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
-    async def get_history(self,
-                          chat_id: Union[int, str],
-                          limit: int = 100,
-                          offset: int = 0,
-                          offset_id: int = 0,
-                          offset_date: int = 0,
-                          reverse: bool = False):
+    async def get_history(
+        self,
+        chat_id: Union[int, str],
+        limit: int = 100,
+        offset: int = 0,
+        offset_id: int = 0,
+        offset_date: int = 0,
+        reverse: bool = False
+    ):
         """Use this method to retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.

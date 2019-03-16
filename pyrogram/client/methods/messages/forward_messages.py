@@ -24,11 +24,13 @@ from ...ext import BaseClient
 
 
 class ForwardMessages(BaseClient):
-    async def forward_messages(self,
-                               chat_id: Union[int, str],
-                               from_chat_id: Union[int, str],
-                               message_ids: Iterable[int],
-                               disable_notification: bool = None) -> "pyrogram.Messages":
+    async def forward_messages(
+        self,
+        chat_id: Union[int, str],
+        from_chat_id: Union[int, str],
+        message_ids: Iterable[int],
+        disable_notification: bool = None
+    ) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
         Args:
