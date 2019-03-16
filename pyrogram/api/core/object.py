@@ -37,7 +37,7 @@ class Object:
         pass
 
     def __str__(self) -> str:
-        return dumps(self, indent=4, default=default)
+        return dumps(self, indent=4, default=default, ensure_ascii=False)
 
     def __bool__(self) -> bool:
         return True
