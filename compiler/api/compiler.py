@@ -456,7 +456,9 @@ def start():
                         fields=fields,
                         read_types=read_types,
                         write_types=write_types,
-                        return_arguments=", ".join([i[0] for i in sorted_args if i != ("flags", "#")])
+                        return_arguments=", ".join([i[0] for i in sorted_args if i != ("flags", "#")]),
+                        slots=", ".join(['"{}"'.format(i[0]) for i in sorted_args if i != ("flags", "#")]),
+                        qualname="{}{}".format("{}.".format(c.namespace) if c.namespace else "", c.name)
                     )
                 )
 
