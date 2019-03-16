@@ -75,8 +75,8 @@ class KeyboardButton(PyrogramType):
         # TODO: Enforce optional args mutual exclusiveness
 
         if self.request_contact:
-            return KeyboardButtonRequestPhone(self.text)
+            return KeyboardButtonRequestPhone(text=self.text)
         elif self.request_location:
-            return KeyboardButtonRequestGeoLocation(self.text)
+            return KeyboardButtonRequestGeoLocation(text=self.text)
         else:
-            return RawKeyboardButton(self.text)
+            return RawKeyboardButton(text=self.text)

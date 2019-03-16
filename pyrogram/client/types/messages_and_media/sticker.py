@@ -103,7 +103,10 @@ class Sticker(PyrogramType):
         try:
             return send(
                 functions.messages.GetStickerSet(
-                    types.InputStickerSetID(*input_sticker_set_id)
+                    stickerset=types.InputStickerSetID(
+                        id=input_sticker_set_id[0],
+                        access_hash=input_sticker_set_id[1]
+                    )
                 )
             ).set.short_name
         except StickersetInvalid:

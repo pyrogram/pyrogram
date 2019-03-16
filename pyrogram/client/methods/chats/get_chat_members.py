@@ -92,7 +92,7 @@ class GetChatMembers(BaseClient):
                 self,
                 self.send(
                     functions.messages.GetFullChat(
-                        peer.chat_id
+                        chat_id=peer.chat_id
                     )
                 )
             )

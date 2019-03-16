@@ -111,16 +111,20 @@ class InlineKeyboardButton(PyrogramType):
 
     def write(self):
         if self.callback_data:
-            return KeyboardButtonCallback(self.text, self.callback_data)
+            return KeyboardButtonCallback(text=self.text, data=self.callback_data)
 
         if self.url:
-            return KeyboardButtonUrl(self.text, self.url)
+            return KeyboardButtonUrl(text=self.text, url=self.url)
 
         if self.switch_inline_query:
-            return KeyboardButtonSwitchInline(self.text, self.switch_inline_query)
+            return KeyboardButtonSwitchInline(text=self.text, query=self.switch_inline_query)
 
         if self.switch_inline_query_current_chat:
-            return KeyboardButtonSwitchInline(self.text, self.switch_inline_query_current_chat, same_peer=True)
+            return KeyboardButtonSwitchInline(
+                text=self.text,
+                query=self.switch_inline_query_current_chat,
+                same_peer=True
+            )
 
         if self.callback_game:
-            return KeyboardButtonGame(self.text)
+            return KeyboardButtonGame(text=self.text)

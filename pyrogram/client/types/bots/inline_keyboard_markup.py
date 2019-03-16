@@ -59,7 +59,7 @@ class InlineKeyboardMarkup(PyrogramType):
 
     def write(self):
         return ReplyInlineMarkup(
-            [KeyboardButtonRow(
-                [j.write() for j in i]
+            rows=[KeyboardButtonRow(
+                buttons=[j.write() for j in i]
             ) for i in self.inline_keyboard]
         )

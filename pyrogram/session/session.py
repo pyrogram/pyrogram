@@ -134,11 +134,11 @@ class Session:
                 self.current_salt = FutureSalt(
                     0, 0,
                     self._send(
-                        functions.Ping(0),
+                        functions.Ping(ping_id=0),
                         timeout=self.START_TIMEOUT
                     ).new_server_salt
                 )
-                self.current_salt = self._send(functions.GetFutureSalts(1), timeout=self.START_TIMEOUT).salts[0]
+                self.current_salt = self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT).salts[0]
 
                 self.next_salt_thread = Thread(target=self.next_salt, name="NextSaltThread")
                 self.next_salt_thread.start()
@@ -146,8 +146,8 @@ class Session:
                 if not self.is_cdn:
                     self._send(
                         functions.InvokeWithLayer(
-                            layer,
-                            functions.InitConnection(
+                            layer=layer,
+                            query=functions.InitConnection(
                                 api_id=self.client.api_id,
                                 app_version=self.client.app_version,
                                 device_model=self.client.device_model,
@@ -314,7 +314,7 @@ class Session:
                     log.info("Send {} acks".format(len(self.pending_acks)))
 
                     try:
-                        self._send(types.MsgsAck(list(self.pending_acks)), False)
+                        self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
                     except (OSError, TimeoutError):
                         pass
                     else:
@@ -335,7 +335,7 @@ class Session:
 
             try:
                 self._send(functions.PingDelayDisconnect(
-                    0, self.WAIT_TIMEOUT + 10
+                    ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                 ), False)
             except (OSError, TimeoutError, Error):
                 pass
@@ -365,7 +365,7 @@ class Session:
                 break
 
             try:
-                self.current_salt = self._send(functions.GetFutureSalts(1)).salts[0]
+                self.current_salt = self._send(functions.GetFutureSalts(num=1)).salts[0]
             except (OSError, TimeoutError, Error):
                 self.connection.close()
                 break

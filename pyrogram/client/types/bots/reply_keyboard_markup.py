@@ -87,9 +87,11 @@ class ReplyKeyboardMarkup(PyrogramType):
     def write(self):
         return RawReplyKeyboardMarkup(
             rows=[KeyboardButtonRow(
-                [KeyboardButton(j).write()
-                 if isinstance(j, str) else j.write()
-                 for j in i]
+                buttons=[
+                    KeyboardButton(j).write()
+                    if isinstance(j, str) else j.write()
+                    for j in i
+                ]
             ) for i in self.keyboard],
             resize=self.resize_keyboard or None,
             single_use=self.one_time_keyboard or None,

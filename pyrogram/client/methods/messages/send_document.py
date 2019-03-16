@@ -123,7 +123,7 @@ class SendDocument(BaseClient):
                     file=file,
                     thumb=thumb,
                     attributes=[
-                        types.DocumentAttributeFilename(os.path.basename(document))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(document))
                     ]
                 )
             elif document.startswith("http"):

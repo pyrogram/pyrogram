@@ -69,9 +69,9 @@ class SendLocation(BaseClient):
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
-                    types.InputGeoPoint(
-                        latitude,
-                        longitude
+                    geo_point=types.InputGeoPoint(
+                        lat=latitude,
+                        long=longitude
                     )
                 ),
                 message="",

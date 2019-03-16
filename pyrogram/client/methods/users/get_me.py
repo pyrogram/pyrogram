@@ -35,7 +35,7 @@ class GetMe(BaseClient):
             self,
             self.send(
                 functions.users.GetFullUser(
-                    types.InputPeerSelf()
+                    id=types.InputPeerSelf()
                 )
             ).user
         )

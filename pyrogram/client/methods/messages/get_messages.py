@@ -76,7 +76,7 @@ class GetMessages(BaseClient):
 
         is_iterable = not isinstance(ids, int)
         ids = list(ids) if is_iterable else [ids]
-        ids = [ids_type(i) for i in ids]
+        ids = [ids_type(id=i) for i in ids]
 
         if isinstance(peer, types.InputPeerChannel):
             rpc = functions.channels.GetMessages(channel=peer, id=ids)

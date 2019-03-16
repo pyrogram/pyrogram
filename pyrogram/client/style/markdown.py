@@ -72,24 +72,24 @@ class Markdown:
                     input_user = self.peers_by_id.get(user_id, None)
 
                     entity = (
-                        Mention(start, len(text), input_user)
+                        Mention(offset=start, length=len(text), user_id=input_user)
                         if input_user
-                        else MentionInvalid(start, len(text), user_id)
+                        else MentionInvalid(offset=start, length=len(text), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(text), url)
+                    entity = Url(offset=start, length=len(text), url=url)
 
                 body = text
                 offset += len(url) + 4
             else:
                 if style == self.BOLD_DELIMITER:
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == self.ITALIC_DELIMITER:
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == self.CODE_DELIMITER:
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == self.PRE_DELIMITER:
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 

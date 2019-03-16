@@ -131,7 +131,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -187,7 +189,9 @@ class EditMessageMedia(BaseClient):
                                     performer=media.performer,
                                     title=media.title
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -244,7 +248,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media)),
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                ),
                                 types.DocumentAttributeAnimated()
                             ]
                         )
@@ -296,7 +302,9 @@ class EditMessageMedia(BaseClient):
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
