@@ -16,6 +16,7 @@ class IncomingCall(BaseCall):
         super(IncomingCall, self).__init__(client)
         self.update_state(CallState.WAITING_INCOMING)
         self.call = call
+        self.call_access_hash = call.access_hash
 
     def _process_update(self, client, call):
         super(IncomingCall, self)._process_update(client, call)
@@ -35,7 +36,7 @@ class IncomingCall(BaseCall):
         self.g_a_hash = self.call.g_a_hash
         try:
             self.call = self._client.send(functions.phone.AcceptCall(
-                peer=types.InputPhoneCall(self.call_id, self.call.access_hash),
+                peer=types.InputPhoneCall(id=self.call_id, access_hash=self.call_access_hash),
                 g_b=i2b(self.g_b),
                 protocol=self.protocol
             )).phone_call

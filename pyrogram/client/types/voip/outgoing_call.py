@@ -51,7 +51,7 @@ class OutgoingCall(BaseCall):
         self.key_fingerprint = calc_fingerprint(self.auth_key_bytes)
         self.call = self._client.send(functions.phone.ConfirmCall(
             key_fingerprint=self.key_fingerprint,
-            peer=types.InputPhoneCall(self.call.id, self.call.access_hash),
+            peer=types.InputPhoneCall(id=self.call.id, access_hash=self.call_access_hash),
             g_a=i2b(self.g_a),
             protocol=self.protocol,
         )).phone_call

@@ -34,7 +34,7 @@ class BaseCall(Update, PyrogramType):
     min_layer = 65
     max_layer = VoIPController.CONNECTION_MAX_LAYER
     outgoing = False
-    protocol = types.PhoneCallProtocol(min_layer, max_layer, True, True)
+    protocol = types.PhoneCallProtocol(min_layer=min_layer, max_layer=max_layer, udp_p2p=True, udp_reflector=True)
 
     def __init__(self,
                  client: "pyrogram.client.ext.BaseClient",
@@ -43,6 +43,7 @@ class BaseCall(Update, PyrogramType):
         self.ctrl = VoIPController()
         self.ctrl_started = False
         self.call = None
+        self.call_access_hash = None
         self.peer = None
         self.state = None
         self.dhc = self.get_dhc()
@@ -68,9 +69,9 @@ class BaseCall(Update, PyrogramType):
     def _process_update(self, client, call):
         if not self.call or not call or call.id != self.call.id:
             raise pyrogram.ContinuePropagation
-        if not hasattr(call, 'access_hash') or not call.access_hash:
-            call.access_hash = self.call.access_hash
         self.call = call
+        if hasattr(call, 'access_hash') and call.access_hash:
+            self.call_access_hash = call.access_hash
 
         if isinstance(call, types.PhoneCallDiscarded):
             self.call_discarded()
@@ -85,7 +86,7 @@ class BaseCall(Update, PyrogramType):
         return self.call.id if self.call else 0
 
     def get_dhc(self) -> DH:
-        dhc = self._client.send(functions.messages.GetDhConfig(0, 256))
+        dhc = self._client.send(functions.messages.GetDhConfig(version=0, random_length=256))
         return DH(dhc.p, dhc.g)
 
     def check_g(self, g_x: int, p: int) -> None:
@@ -143,7 +144,7 @@ class BaseCall(Update, PyrogramType):
         # TODO: rating
         try:
             self._client.send(functions.phone.DiscardCall(
-                peer=types.InputPhoneCall(self.call_id, self.call.access_hash),
+                peer=types.InputPhoneCall(id=self.call_id, access_hash=self.call_access_hash),
                 duration=int(get_real_elapsed_time() - (self.ctrl.start_time or 0)),
                 connection_id=self.ctrl.get_preferred_relay_id(),
                 reason=reason
