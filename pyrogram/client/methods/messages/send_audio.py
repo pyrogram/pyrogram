@@ -28,23 +28,27 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendAudio(BaseClient):
-    def send_audio(self,
-                   chat_id: Union[int, str],
-                   audio: str,
-                   caption: str = "",
-                   parse_mode: str = "",
-                   duration: int = 0,
-                   performer: str = None,
-                   title: str = None,
-                   thumb: str = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardRemove",
-                                       "pyrogram.ForceReply"] = None,
-                   progress: callable = None,
-                   progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    def send_audio(
+        self,
+        chat_id: Union[int, str],
+        audio: str,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        performer: str = None,
+        title: str = None,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice()` method instead.
@@ -142,7 +146,7 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(audio))
                     ]
                 )
             elif audio.startswith("http"):

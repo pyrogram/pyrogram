@@ -25,9 +25,11 @@ from ...ext import BaseClient
 
 
 class OnCallbackQuery(BaseClient):
-    def on_callback_query(self=None,
-                          filters=None,
-                          group: int = 0) -> callable:
+    def on_callback_query(
+        self=None,
+        filters=None,
+        group: int = 0
+    ) -> callable:
         """Use this decorator to automatically register a function for handling
         callback queries. This does the same thing as :meth:`add_handler` using the
         :class:`CallbackQueryHandler`.

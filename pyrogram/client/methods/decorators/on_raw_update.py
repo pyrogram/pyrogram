@@ -24,8 +24,10 @@ from ...ext import BaseClient
 
 
 class OnRawUpdate(BaseClient):
-    def on_raw_update(self=None,
-                      group: int = 0) -> callable:
+    def on_raw_update(
+        self=None,
+        group: int = 0
+    ) -> callable:
         """Use this decorator to automatically register a function for handling
         raw updates. This does the same thing as :meth:`add_handler` using the
         :class:`RawUpdateHandler`.

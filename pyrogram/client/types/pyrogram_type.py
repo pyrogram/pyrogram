@@ -17,15 +17,17 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-from json import dumps, JSONEncoder
+from json import dumps
 
 
 class PyrogramType:
+    __slots__ = ["_client"]
+
     def __init__(self, client):
         self._client = client
 
     def __str__(self):
-        return dumps(self, cls=Encoder, indent=4)
+        return dumps(self, indent=4, default=default, ensure_ascii=False)
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -40,15 +42,9 @@ def remove_none(obj):
         return obj
 
 
-class Encoder(JSONEncoder):
-    def default(self, o: PyrogramType):
-        try:
-            content = {
-                i: getattr(o, i)
-                for i in filter(lambda x: not x.startswith("_"), o.__dict__)
-            }
-        except AttributeError:
-            return repr(o)
+def default(o: PyrogramType):
+    try:
+        content = {i: getattr(o, i) for i in o.__slots__}
 
         return remove_none(
             OrderedDict(
@@ -56,3 +52,5 @@ class Encoder(JSONEncoder):
                 + [i for i in content.items()]
             )
         )
+    except AttributeError:
+        return repr(o)

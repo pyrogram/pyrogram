@@ -23,9 +23,11 @@ from ...ext import BaseClient
 
 
 class LeaveChat(BaseClient):
-    def leave_chat(self,
-                   chat_id: Union[int, str],
-                   delete: bool = False):
+    def leave_chat(
+        self,
+        chat_id: Union[int, str],
+        delete: bool = False
+    ):
         """Use this method to leave a group chat or channel.
 
         Args:

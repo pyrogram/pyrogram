@@ -24,8 +24,10 @@ from ...ext import BaseClient
 
 
 class GetChat(BaseClient):
-    def get_chat(self,
-                 chat_id: Union[int, str]) -> "pyrogram.Chat":
+    def get_chat(
+        self,
+        chat_id: Union[int, str]
+    ) -> "pyrogram.Chat":
         """Use this method to get up to date information about the chat (current name of the user for
         one-on-one conversations, current username of a user, group or channel, etc.)
 
@@ -67,10 +69,10 @@ class GetChat(BaseClient):
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            r = self.send(functions.channels.GetFullChannel(peer))
+            r = self.send(functions.channels.GetFullChannel(channel=peer))
         elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
-            r = self.send(functions.users.GetFullUser(peer))
+            r = self.send(functions.users.GetFullUser(id=peer))
         else:
-            r = self.send(functions.messages.GetFullChat(peer.chat_id))
+            r = self.send(functions.messages.GetFullChat(chat_id=peer.chat_id))
 
         return pyrogram.Chat._parse_full(self, r)

@@ -23,13 +23,15 @@ from ...ext import BaseClient
 
 
 class IterHistory(BaseClient):
-    def iter_history(self,
-                     chat_id: Union[int, str],
-                     limit: int = 0,
-                     offset: int = 0,
-                     offset_id: int = 0,
-                     offset_date: int = 0,
-                     reverse: bool = False) -> Generator["pyrogram.Message", None, None]:
+    def iter_history(
+        self,
+        chat_id: Union[int, str],
+        limit: int = 0,
+        offset: int = 0,
+        offset_id: int = 0,
+        offset_date: int = 0,
+        reverse: bool = False
+    ) -> Generator["pyrogram.Message", None, None]:
         """Use this method to iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from

@@ -33,11 +33,15 @@ class Location(PyrogramType):
             Latitude as defined by sender.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 longitude: float,
-                 latitude: float):
+    __slots__ = ["longitude", "latitude"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        longitude: float,
+        latitude: float
+    ):
         super().__init__(client)
 
         self.longitude = longitude

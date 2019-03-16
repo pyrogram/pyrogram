@@ -39,7 +39,7 @@ class GetContacts(BaseClient):
         """
         while True:
             try:
-                contacts = self.send(functions.contacts.GetContacts(0))
+                contacts = self.send(functions.contacts.GetContacts(hash=0))
             except FloodWait as e:
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)

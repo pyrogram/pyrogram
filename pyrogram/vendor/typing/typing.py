@@ -1,24 +1,24 @@
 import abc
-from abc import abstractmethod, abstractproperty
 import collections
 import contextlib
 import functools
 import re as stdlib_re  # Avoid confusion with the re we export.
 import sys
 import types
+from abc import abstractmethod, abstractproperty
+
 try:
     import collections.abc as collections_abc
 except ImportError:
     import collections as collections_abc  # Fallback for PY3.2.
 if sys.version_info[:2] >= (3, 6):
-    import _collections_abc  # Needed for private function _check_methods # noqa
+    pass
 try:
     from types import WrapperDescriptorType, MethodWrapperType, MethodDescriptorType
 except ImportError:
     WrapperDescriptorType = type(object.__init__)
     MethodWrapperType = type(object().__str__)
     MethodDescriptorType = type(str.join)
-
 
 # Please keep __all__ alphabetized within each category.
 __all__ = [
@@ -36,7 +36,7 @@ __all__ = [
     # ABCs (from collections.abc).
     'AbstractSet',  # collections.abc.Set.
     'GenericMeta',  # subclass of abc.ABCMeta and a metaclass
-                    # for 'Generic' and ABCs below.
+    # for 'Generic' and ABCs below.
     'ByteString',
     'Container',
     'ContextManager',
@@ -95,6 +95,7 @@ __all__ = [
     'Text',
     'TYPE_CHECKING',
 ]
+
 
 # The pseudo-submodules 're' and 'io' are part of the public
 # namespace, but excluded from __all__ because they might stomp on
@@ -173,8 +174,8 @@ class _TypingBase(metaclass=TypingMeta, _root=True):
         someone tries to subclass a special typing object (not a good idea).
         """
         if (len(args) == 3 and
-                isinstance(args[0], str) and
-                isinstance(args[1], tuple)):
+            isinstance(args[0], str) and
+            isinstance(args[1], tuple)):
             # Close enough.
             raise TypeError("Cannot subclass %r" % cls)
         return super().__new__(cls)
@@ -396,7 +397,7 @@ def _type_repr(obj):
             return _qualname(obj)
         return '%s.%s' % (obj.__module__, _qualname(obj))
     if obj is ...:
-        return('...')
+        return ('...')
     if isinstance(obj, types.FunctionType):
         return obj.__name__
     return repr(obj)
@@ -681,6 +682,7 @@ def _tp_cache(func):
         except TypeError:
             pass  # All real errors (not unhashable args) are raised below.
         return func(*args, **kwds)
+
     return inner
 
 
@@ -948,7 +950,7 @@ class GenericMeta(TypingMeta, abc.ABCMeta):
                 if base is Generic:
                     raise TypeError("Cannot inherit from plain Generic")
                 if (isinstance(base, GenericMeta) and
-                        base.__origin__ is Generic):
+                    base.__origin__ is Generic):
                     if gvars is not None:
                         raise TypeError(
                             "Cannot inherit from Generic[...] multiple types.")
@@ -1183,14 +1185,14 @@ def _generic_new(base_cls, cls, *args, **kwds):
     # but attempt to store it in __orig_class__
     if cls.__origin__ is None:
         if (base_cls.__new__ is object.__new__ and
-                cls.__init__ is not object.__init__):
+            cls.__init__ is not object.__init__):
             return base_cls.__new__(cls)
         else:
             return base_cls.__new__(cls, *args, **kwds)
     else:
         origin = cls._gorg
         if (base_cls.__new__ is object.__new__ and
-                cls.__init__ is not object.__init__):
+            cls.__init__ is not object.__init__):
             obj = base_cls.__new__(origin)
         else:
             obj = base_cls.__new__(origin, *args, **kwds)
@@ -1399,7 +1401,7 @@ class _ClassVar(_FinalTypingBase, _root=True):
         cls = type(self)
         if self.__type__ is None:
             return cls(_type_check(item,
-                       '{} accepts only single type.'.format(cls.__name__[1:])),
+                                   '{} accepts only single type.'.format(cls.__name__[1:])),
                        _root=True)
         raise TypeError('{} cannot be further subscripted'
                         .format(cls.__name__[1:]))
@@ -1671,26 +1673,26 @@ class _ProtocolMeta(GenericMeta):
                 # Include attributes not defined in any non-protocol bases.
                 for c in self.__mro__:
                     if (c is not base and attr in c.__dict__ and
-                            not getattr(c, '_is_protocol', False)):
+                        not getattr(c, '_is_protocol', False)):
                         break
                 else:
                     if (not attr.startswith('_abc_') and
-                            attr != '__abstractmethods__' and
-                            attr != '__annotations__' and
-                            attr != '__weakref__' and
-                            attr != '_is_protocol' and
-                            attr != '_gorg' and
-                            attr != '__dict__' and
-                            attr != '__args__' and
-                            attr != '__slots__' and
-                            attr != '_get_protocol_attrs' and
-                            attr != '__next_in_mro__' and
-                            attr != '__parameters__' and
-                            attr != '__origin__' and
-                            attr != '__orig_bases__' and
-                            attr != '__extra__' and
-                            attr != '__tree_hash__' and
-                            attr != '__module__'):
+                        attr != '__abstractmethods__' and
+                        attr != '__annotations__' and
+                        attr != '__weakref__' and
+                        attr != '_is_protocol' and
+                        attr != '_gorg' and
+                        attr != '__dict__' and
+                        attr != '__args__' and
+                        attr != '__slots__' and
+                        attr != '_get_protocol_attrs' and
+                        attr != '__next_in_mro__' and
+                        attr != '__parameters__' and
+                        attr != '__origin__' and
+                        attr != '__orig_bases__' and
+                        attr != '__extra__' and
+                        attr != '__tree_hash__' and
+                        attr != '__module__'):
                         attrs.add(attr)
 
         return attrs
@@ -1714,30 +1716,30 @@ class _Protocol(metaclass=_ProtocolMeta):
 
 Hashable = collections_abc.Hashable  # Not generic.
 
-
 if hasattr(collections_abc, 'Awaitable'):
     class Awaitable(Generic[T_co], extra=collections_abc.Awaitable):
         __slots__ = ()
 
-    __all__.append('Awaitable')
 
+    __all__.append('Awaitable')
 
 if hasattr(collections_abc, 'Coroutine'):
     class Coroutine(Awaitable[V_co], Generic[T_co, T_contra, V_co],
                     extra=collections_abc.Coroutine):
         __slots__ = ()
 
+
     __all__.append('Coroutine')
 
-
 if hasattr(collections_abc, 'AsyncIterable'):
-
     class AsyncIterable(Generic[T_co], extra=collections_abc.AsyncIterable):
         __slots__ = ()
+
 
     class AsyncIterator(AsyncIterable[T_co],
                         extra=collections_abc.AsyncIterator):
         __slots__ = ()
+
 
     __all__.append('AsyncIterable')
     __all__.append('AsyncIterator')
@@ -1810,7 +1812,6 @@ else:
         def __reversed__(self) -> 'Iterator[T_co]':
             pass
 
-
 Sized = collections_abc.Sized  # Not generic.
 
 
@@ -1823,8 +1824,8 @@ if hasattr(collections_abc, 'Collection'):
                      extra=collections_abc.Collection):
         __slots__ = ()
 
-    __all__.append('Collection')
 
+    __all__.append('Collection')
 
 # Callable was defined earlier.
 
@@ -1881,7 +1882,6 @@ class ByteString(Sequence[int], extra=collections_abc.ByteString):
 
 
 class List(list, MutableSequence[T], extra=list):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -1892,7 +1892,6 @@ class List(list, MutableSequence[T], extra=list):
 
 
 class Deque(collections.deque, MutableSequence[T], extra=collections.deque):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -1902,7 +1901,6 @@ class Deque(collections.deque, MutableSequence[T], extra=collections.deque):
 
 
 class Set(set, MutableSet[T], extra=set):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -1969,11 +1967,11 @@ else:
                     return True
             return NotImplemented
 
-
 if hasattr(contextlib, 'AbstractAsyncContextManager'):
     class AsyncContextManager(Generic[T_co],
                               extra=contextlib.AbstractAsyncContextManager):
         __slots__ = ()
+
 
     __all__.append('AsyncContextManager')
 elif sys.version_info[:2] >= (3, 5):
@@ -2003,7 +2001,6 @@ __all__.append('AsyncContextManager')
 
 
 class Dict(dict, MutableMapping[KT, VT], extra=dict):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -2015,7 +2012,6 @@ class Dict(dict, MutableMapping[KT, VT], extra=dict):
 
 class DefaultDict(collections.defaultdict, MutableMapping[KT, VT],
                   extra=collections.defaultdict):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -2025,7 +2021,6 @@ class DefaultDict(collections.defaultdict, MutableMapping[KT, VT],
 
 
 class Counter(collections.Counter, Dict[T, int], extra=collections.Counter):
-
     __slots__ = ()
 
     def __new__(cls, *args, **kwds):
@@ -2038,6 +2033,7 @@ if hasattr(collections, 'ChainMap'):
     # ChainMap only exists in 3.3+
     __all__.append('ChainMap')
 
+
     class ChainMap(collections.ChainMap, MutableMapping[KT, VT],
                    extra=collections.ChainMap):
 
@@ -2047,7 +2043,6 @@ if hasattr(collections, 'ChainMap'):
             if cls._gorg is ChainMap:
                 return collections.ChainMap(*args, **kwds)
             return _generic_new(collections.ChainMap, cls, *args, **kwds)
-
 
 # Determine what base class to use for Generator.
 if hasattr(collections_abc, 'Generator'):
@@ -2074,8 +2069,8 @@ if hasattr(collections_abc, 'AsyncGenerator'):
                          extra=collections_abc.AsyncGenerator):
         __slots__ = ()
 
-    __all__.append('AsyncGenerator')
 
+    __all__.append('AsyncGenerator')
 
 # Internal type variable used for Type[].
 CT_co = TypeVar('CT_co', covariant=True, bound=type)
@@ -2237,7 +2232,6 @@ def NewType(name, tp):
 # Python-version-specific alias (Python 2: unicode; Python 3: str)
 Text = str
 
-
 # Constant that's True when type checking, but False here.
 TYPE_CHECKING = False
 
@@ -2393,7 +2387,6 @@ class io:
 
 io.__name__ = __name__ + '.io'
 sys.modules[io.__name__] = io
-
 
 Pattern = _TypeAlias('Pattern', AnyStr, type(stdlib_re.compile('')),
                      lambda p: p.pattern)

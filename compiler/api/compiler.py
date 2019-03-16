@@ -171,8 +171,8 @@ def start():
     shutil.rmtree("{}/functions".format(DESTINATION), ignore_errors=True)
 
     with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
-            open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
-            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
+        open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
+        open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
         schema = (auth.read() + system.read() + api.read()).splitlines()
 
     with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
@@ -287,9 +287,11 @@ def start():
 
         sorted_args = sort_args(c.args)
 
-        arguments = ", " + ", ".join(
-            [get_argument_type(i) for i in sorted_args if i != ("flags", "#")]
-        ) if c.args else ""
+        arguments = (
+                ", "
+                + ("*, " if c.args else "")
+                + (", ".join([get_argument_type(i) for i in sorted_args if i != ("flags", "#")]) if c.args else "")
+        )
 
         fields = "\n        ".join(
             ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in c.args if i != ("flags", "#")]
@@ -456,7 +458,11 @@ def start():
                         fields=fields,
                         read_types=read_types,
                         write_types=write_types,
-                        return_arguments=", ".join([i[0] for i in sorted_args if i != ("flags", "#")])
+                        return_arguments=", ".join(
+                            ["{0}={0}".format(i[0]) for i in sorted_args if i != ("flags", "#")]
+                        ),
+                        slots=", ".join(['"{}"'.format(i[0]) for i in sorted_args if i != ("flags", "#")]),
+                        qualname="{}{}".format("{}.".format(c.namespace) if c.namespace else "", c.name)
                     )
                 )
 

@@ -101,4 +101,4 @@ def compute_check(r: types.account.Password, password: str) -> types.InputCheckP
         + K_bytes
     )
 
-    return types.InputCheckPasswordSRP(srp_id, A_bytes, M1_bytes)
+    return types.InputCheckPasswordSRP(srp_id=srp_id, A=A_bytes, M1=M1_bytes)

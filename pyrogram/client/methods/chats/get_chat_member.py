@@ -24,9 +24,11 @@ from ...ext import BaseClient
 
 
 class GetChatMember(BaseClient):
-    def get_chat_member(self,
-                        chat_id: Union[int, str],
-                        user_id: Union[int, str]) -> "pyrogram.ChatMember":
+    def get_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str]
+    ) -> "pyrogram.ChatMember":
         """Use this method to get information about one member of a chat.
 
         Args:
