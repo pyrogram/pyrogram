@@ -613,14 +613,16 @@ class Message(PyrogramType, Update):
 
             return parsed_message
 
-    def reply(self,
-              text: str,
-              quote: bool = None,
-              parse_mode: str = "",
-              disable_web_page_preview: bool = None,
-              disable_notification: bool = None,
-              reply_to_message_id: int = None,
-              reply_markup=None):
+    def reply(
+        self,
+        text: str,
+        quote: bool = None,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup=None
+    ) -> "Message":
         """Bound method *reply* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -688,25 +690,27 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_animation(self,
-                        animation: str,
-                        quote: bool = None,
-                        caption: str = "",
-                        parse_mode: str = "",
-                        duration: int = 0,
-                        width: int = 0,
-                        height: int = 0,
-                        thumb: str = None,
-                        disable_notification: bool = None,
-                        reply_markup: Union[
-                            "pyrogram.InlineKeyboardMarkup",
-                            "pyrogram.ReplyKeyboardMarkup",
-                            "pyrogram.ReplyKeyboardRemove",
-                            "pyrogram.ForceReply"
-                        ] = None,
-                        reply_to_message_id: int = None,
-                        progress: callable = None,
-                        progress_args: tuple = ()):
+    def reply_animation(
+        self,
+        animation: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        width: int = 0,
+        height: int = 0,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        reply_to_message_id: int = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_animation* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -715,14 +719,13 @@ class Message(PyrogramType, Update):
 
             client.send_animation(
                 chat_id=message.chat.id,
-                animation=animation,
-                reply_to_message_id=message.message_id
+                animation=animation
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_animation(animation, quote=True)
+                message.reply_animation(animation)
 
         Args:
             animation (``str``):
@@ -822,25 +825,27 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_audio(self,
-                    audio: str,
-                    quote: bool = None,
-                    caption: str = "",
-                    parse_mode: str = "",
-                    duration: int = 0,
-                    performer: str = None,
-                    title: str = None,
-                    thumb: str = None,
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup: Union[
-                        "pyrogram.InlineKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardRemove",
-                        "pyrogram.ForceReply"
-                    ] = None,
-                    progress: callable = None,
-                    progress_args: tuple = ()):
+    def reply_audio(
+        self,
+        audio: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        performer: str = None,
+        title: str = None,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_audio* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -849,14 +854,13 @@ class Message(PyrogramType, Update):
 
             client.send_audio(
                 chat_id=message.chat.id,
-                audio=audio,
-                reply_to_message_id=message.message_id
+                audio=audio
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_audio(audio, quote=True)
+                message.reply_audio(audio)
 
         Args:
             audio (``str``):
@@ -956,19 +960,21 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_cached_media(self,
-                           file_id: str,
-                           quote: bool = None,
-                           caption: str = "",
-                           parse_mode: str = "",
-                           disable_notification: bool = None,
-                           reply_to_message_id: int = None,
-                           reply_markup: Union[
-                               "pyrogram.InlineKeyboardMarkup",
-                               "pyrogram.ReplyKeyboardMarkup",
-                               "pyrogram.ReplyKeyboardRemove",
-                               "pyrogram.ForceReply"
-                           ] = None):
+    def reply_cached_media(
+        self,
+        file_id: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_cached_media* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -977,14 +983,13 @@ class Message(PyrogramType, Update):
 
             client.send_cached_media(
                 chat_id=message.chat.id,
-                file_id=file_id,
-                reply_to_message_id=message.message_id
+                file_id=file_id
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_cached_media(file_id, quote=True)
+                message.reply_cached_media(file_id)
 
         Args:
             file_id (``str``):
@@ -1037,9 +1042,11 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_chat_action(self,
-                          action: Union[ChatAction, str],
-                          progress: int = 0):
+    def reply_chat_action(
+        self,
+        action: Union[ChatAction, str],
+        progress: int = 0
+    ) -> "Message":
         """Bound method *reply_chat_action* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1074,27 +1081,28 @@ class Message(PyrogramType, Update):
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
             ``ValueError`` if the provided string is not a valid ChatAction.
         """
-        self._client: pyrogram.Client = self._client
         return self._client.send_chat_action(
             chat_id=self.chat.id,
             action=action,
             progress=progress
         )
 
-    def reply_contact(self,
-                      phone_number: str,
-                      first_name: str,
-                      quote: bool = None,
-                      last_name: str = "",
-                      vcard: str = "",
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup: Union[
-                          "pyrogram.InlineKeyboardMarkup",
-                          "pyrogram.ReplyKeyboardMarkup",
-                          "pyrogram.ReplyKeyboardRemove",
-                          "pyrogram.ForceReply"
-                      ] = None):
+    def reply_contact(
+        self,
+        phone_number: str,
+        first_name: str,
+        quote: bool = None,
+        last_name: str = "",
+        vcard: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_contact* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1103,14 +1111,14 @@ class Message(PyrogramType, Update):
 
             client.send_contact(
                 chat_id=message.chat.id,
-                file_id=file_id,
-                reply_to_message_id=message.message_id
+                phone_number=phone_number,
+                first_name=first_name
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_contact(phone_number, "Dan", quote=True)
+                message.reply_contact(phone_number, "Dan")
 
         Args:
             phone_number (``str``):
@@ -1164,22 +1172,24 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_document(self,
-                       document: str,
-                       quote: bool = None,
-                       thumb: str = None,
-                       caption: str = "",
-                       parse_mode: str = "",
-                       disable_notification: bool = None,
-                       reply_to_message_id: int = None,
-                       reply_markup: Union[
-                           "pyrogram.InlineKeyboardMarkup",
-                           "pyrogram.ReplyKeyboardMarkup",
-                           "pyrogram.ReplyKeyboardRemove",
-                           "pyrogram.ForceReply"
-                       ] = None,
-                       progress: callable = None,
-                       progress_args: tuple = ()):
+    def reply_document(
+        self,
+        document: str,
+        quote: bool = None,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_document* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1188,14 +1198,13 @@ class Message(PyrogramType, Update):
 
             client.send_document(
                 chat_id=message.chat.id,
-                document=document,
-                reply_to_message_id=message.message_id
+                document=document
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_document(document, quote=True)
+                message.reply_document(document)
 
         Args:
             document (``str``):
@@ -1283,17 +1292,19 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_game(self,
-                   game_short_name: str,
-                   quote: bool = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup: Union[
-                       "pyrogram.InlineKeyboardMarkup",
-                       "pyrogram.ReplyKeyboardMarkup",
-                       "pyrogram.ReplyKeyboardRemove",
-                       "pyrogram.ForceReply"
-                   ] = None):
+    def reply_game(
+        self,
+        game_short_name: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_game* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1302,14 +1313,13 @@ class Message(PyrogramType, Update):
 
             client.send_game(
                 chat_id=message.chat.id,
-                game_short_name="lumberjack",
-                reply_to_message_id=message.message_id
+                game_short_name="lumberjack"
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_game("lumberjack", quote=True)
+                message.reply_game("lumberjack")
 
         Args:
             game_short_name (``str``):
@@ -1351,13 +1361,15 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_inline_bot_result(self,
-                                query_id: int,
-                                result_id: str,
-                                quote: bool = None,
-                                disable_notification: bool = None,
-                                reply_to_message_id: int = None,
-                                hide_via: bool = None):
+    def reply_inline_bot_result(
+        self,
+        query_id: int,
+        result_id: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        hide_via: bool = None
+    ) -> "Message":
         """Bound method *reply_inline_bot_result* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1367,14 +1379,13 @@ class Message(PyrogramType, Update):
             client.send_inline_bot_result(
                 chat_id=message.chat.id,
                 query_id=query_id,
-                result_id=result_id,
-                reply_to_message_id=message.message_id
+                result_id=result_id
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_inline_bot_result(query_id, result_id, quote=True)
+                message.reply_inline_bot_result(query_id, result_id)
 
         Args:
             query_id (``int``):
@@ -1419,18 +1430,20 @@ class Message(PyrogramType, Update):
             hide_via=hide_via
         )
 
-    def reply_location(self,
-                       latitude: float,
-                       longitude: float,
-                       quote: bool = None,
-                       disable_notification: bool = None,
-                       reply_to_message_id: int = None,
-                       reply_markup: Union[
-                           "pyrogram.InlineKeyboardMarkup",
-                           "pyrogram.ReplyKeyboardMarkup",
-                           "pyrogram.ReplyKeyboardRemove",
-                           "pyrogram.ForceReply"
-                       ] = None):
+    def reply_location(
+        self,
+        latitude: float,
+        longitude: float,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_location* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1440,14 +1453,13 @@ class Message(PyrogramType, Update):
             client.send_location(
                 chat_id=message.chat.id,
                 latitude=41.890251,
-                longitude=12.492373,
-                reply_to_message_id=message.message_id
+                longitude=12.492373
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_location(41.890251, 12.492373, quote=True)
+                message.reply_location(41.890251, 12.492373)
 
         Args:
             latitude (``float``):
@@ -1493,11 +1505,13 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_media_group(self,
-                          media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
-                          quote: bool = None,
-                          disable_notification: bool = None,
-                          reply_to_message_id: int = None):
+    def reply_media_group(
+        self,
+        media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None
+    ) -> "Message":
         """Bound method *reply_media_group* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1506,14 +1520,13 @@ class Message(PyrogramType, Update):
 
             client.send_media_group(
                 chat_id=message.chat.id,
-                media=list_of_media,
-                reply_to_message_id=message.message_id
+                media=list_of_media
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_media_group(list_of_media, quote=True)
+                message.reply_media_group(list_of_media)
 
         Args:
             media (``list``):
@@ -1553,22 +1566,24 @@ class Message(PyrogramType, Update):
             reply_to_message_id=reply_to_message_id
         )
 
-    def reply_photo(self,
-                    photo: str,
-                    quote: bool = None,
-                    caption: str = "",
-                    parse_mode: str = "",
-                    ttl_seconds: int = None,
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup: Union[
-                        "pyrogram.InlineKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardRemove",
-                        "pyrogram.ForceReply"
-                    ] = None,
-                    progress: callable = None,
-                    progress_args: tuple = ()):
+    def reply_photo(
+        self,
+        photo: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        ttl_seconds: int = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_photo* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1577,14 +1592,13 @@ class Message(PyrogramType, Update):
 
             client.send_photo(
                 chat_id=message.chat.id,
-                photo=photo,
-                reply_to_message_id=message.message_id
+                photo=photo
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_photo(photo, quote=True)
+                message.reply_photo(photo)
 
         Args:
             photo (``str``):
@@ -1671,18 +1685,20 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_poll(self,
-                   question: str,
-                   options: List[str],
-                   quote: bool = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup: Union[
-                       "pyrogram.InlineKeyboardMarkup",
-                       "pyrogram.ReplyKeyboardMarkup",
-                       "pyrogram.ReplyKeyboardRemove",
-                       "pyrogram.ForceReply"
-                   ] = None):
+    def reply_poll(
+        self,
+        question: str,
+        options: List[str],
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_poll* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1692,14 +1708,13 @@ class Message(PyrogramType, Update):
             client.send_poll(
                 chat_id=message.chat.id,
                 question="Is Pyrogram the best?",
-                options=["Yes", "Yes"],
-                reply_to_message_id=message.message_id
+                options=["Yes", "Yes"]
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_poll("Is Pyrogram the best?", ["Yes", "Yes"], quote=True)
+                message.reply_poll("Is Pyrogram the best?", ["Yes", "Yes"])
 
         Args:
             question (``str``):
@@ -1745,19 +1760,21 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_sticker(self,
-                      sticker: str,
-                      quote: bool = None,
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup: Union[
-                          "pyrogram.InlineKeyboardMarkup",
-                          "pyrogram.ReplyKeyboardMarkup",
-                          "pyrogram.ReplyKeyboardRemove",
-                          "pyrogram.ForceReply"
-                      ] = None,
-                      progress: callable = None,
-                      progress_args: tuple = ()):
+    def reply_sticker(
+        self,
+        sticker: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_sticker* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1766,14 +1783,13 @@ class Message(PyrogramType, Update):
 
             client.send_sticker(
                 chat_id=message.chat.id,
-                sticker=sticker,
-                reply_to_message_id=message.message_id
+                sticker=sticker
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_sticker(sticker, quote=True)
+                message.reply_sticker(sticker)
 
         Args:
             sticker (``str``):
@@ -1844,22 +1860,24 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_venue(self,
-                    latitude: float,
-                    longitude: float,
-                    title: str,
-                    address: str,
-                    quote: bool = None,
-                    foursquare_id: str = "",
-                    foursquare_type: str = "",
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup: Union[
-                        "pyrogram.InlineKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardRemove",
-                        "pyrogram.ForceReply"
-                    ] = None):
+    def reply_venue(
+        self,
+        latitude: float,
+        longitude: float,
+        title: str,
+        address: str,
+        quote: bool = None,
+        foursquare_id: str = "",
+        foursquare_type: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *reply_venue* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1871,14 +1889,13 @@ class Message(PyrogramType, Update):
                 latitude=41.890251,
                 longitude=12.492373,
                 title="Coliseum",
-                address=""Piazza del Colosseo, 1, 00184 Roma RM"",
-                reply_to_message_id=message.message_id
+                address="Piazza del Colosseo, 1, 00184 Roma RM"
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_venue(41.890251, 12.492373, "Coliseum", "Piazza del Colosseo, 1, 00184 Roma RM", quote=True)
+                message.reply_venue(41.890251, 12.492373, "Coliseum", "Piazza del Colosseo, 1, 00184 Roma RM")
 
         Args:
             latitude (``float``):
@@ -1941,26 +1958,28 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_video(self,
-                    video: str,
-                    quote: bool = None,
-                    caption: str = "",
-                    parse_mode: str = "",
-                    duration: int = 0,
-                    width: int = 0,
-                    height: int = 0,
-                    thumb: str = None,
-                    supports_streaming: bool = True,
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup: Union[
-                        "pyrogram.InlineKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardRemove",
-                        "pyrogram.ForceReply"
-                    ] = None,
-                    progress: callable = None,
-                    progress_args: tuple = ()):
+    def reply_video(
+        self,
+        video: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        width: int = 0,
+        height: int = 0,
+        thumb: str = None,
+        supports_streaming: bool = True,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_video* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -1969,14 +1988,13 @@ class Message(PyrogramType, Update):
 
             client.send_video(
                 chat_id=message.chat.id,
-                video=video,
-                reply_to_message_id=message.message_id
+                video=video
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_video(video, quote=True)
+                message.reply_video(video)
 
         Args:
             video (``str``):
@@ -2080,22 +2098,24 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_video_note(self,
-                         video_note: str,
-                         quote: bool = None,
-                         duration: int = 0,
-                         length: int = 1,
-                         thumb: str = None,
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None,
-                         reply_markup: Union[
-                             "pyrogram.InlineKeyboardMarkup",
-                             "pyrogram.ReplyKeyboardMarkup",
-                             "pyrogram.ReplyKeyboardRemove",
-                             "pyrogram.ForceReply"
-                         ] = None,
-                         progress: callable = None,
-                         progress_args: tuple = ()):
+    def reply_video_note(
+        self,
+        video_note: str,
+        quote: bool = None,
+        duration: int = 0,
+        length: int = 1,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_video_note* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -2104,14 +2124,13 @@ class Message(PyrogramType, Update):
 
             client.send_video_note(
                 chat_id=message.chat.id,
-                video_note=video_note,
-                reply_to_message_id=message.message_id
+                video_note=video_note
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_video_note(video_note, quote=True)
+                message.reply_video_note(video_note)
 
         Args:
             video_note (``str``):
@@ -2197,22 +2216,24 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def reply_voice(self,
-                    voice: str,
-                    quote: bool = None,
-                    caption: str = "",
-                    parse_mode: str = "",
-                    duration: int = 0,
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup: Union[
-                        "pyrogram.InlineKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardMarkup",
-                        "pyrogram.ReplyKeyboardRemove",
-                        "pyrogram.ForceReply"
-                    ] = None,
-                    progress: callable = None,
-                    progress_args: tuple = ()):
+    def reply_voice(
+        self,
+        voice: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *reply_voice* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -2221,14 +2242,13 @@ class Message(PyrogramType, Update):
 
             client.send_voice(
                 chat_id=message.chat.id,
-                voice=voice,
-                reply_to_message_id=message.message_id
+                voice=voice
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_voice(voice, quote=True)
+                message.reply_voice(voice)
 
         Args:
             voice (``str``):
@@ -2313,7 +2333,18 @@ class Message(PyrogramType, Update):
             progress_args=progress_args
         )
 
-    def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
+    def edit(
+        self,
+        text: str,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *edit* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
@@ -2361,7 +2392,17 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def edit_caption(self, caption: str, parse_mode: str = "", reply_markup=None):
+    def edit_caption(
+        self,
+        caption: str,
+        parse_mode: str = "",
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *edit_caption* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
@@ -2405,7 +2446,7 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None):
+    def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
         """Bound method *edit_media* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
@@ -2415,13 +2456,13 @@ class Message(PyrogramType, Update):
             client.edit_message_media(
                 chat_id=message.chat.id,
                 message_id=message.message_id,
-                media=file_id
+                media=media
             )
 
         Example:
             .. code-block:: python
 
-                message.edit_media(file_id)
+                message.edit_media(media)
 
         Args:
             media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
@@ -2443,7 +2484,7 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def edit_reply_markup(self, reply_markup):
+    def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
         """Bound method *edit_reply_markup* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
@@ -2453,7 +2494,7 @@ class Message(PyrogramType, Update):
             client.edit_message_reply_markup(
                 chat_id=message.chat.id,
                 message_id=message.message_id,
-                reply_markup=inline_reply_markup,
+                reply_markup=inline_reply_markup
             )
 
         Example:
@@ -2478,9 +2519,7 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def forward(self,
-                chat_id: int or str,
-                disable_notification: bool = None):
+    def forward(self, chat_id: int or str, disable_notification: bool = None) -> "Message":
         """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -2490,7 +2529,7 @@ class Message(PyrogramType, Update):
             client.forward_messages(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
-                message_ids=message.message_id,
+                message_ids=message.message_id
             )
 
         Example:
@@ -2619,7 +2658,7 @@ class Message(PyrogramType, Update):
             ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, pyrogram.ReplyKeyboardMarkup):
-            return self.reply(x)
+            return self.reply(x, quote=quote)
         elif isinstance(self.reply_markup, pyrogram.InlineKeyboardMarkup):
             if isinstance(x, int) and y is None:
                 try:
@@ -2671,7 +2710,13 @@ class Message(PyrogramType, Update):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    def download(self, file_name: str = "", block: bool = True, progress: callable = None, progress_args: tuple = ()):
+    def download(
+        self,
+        file_name: str = "",
+        block: bool = True,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -2720,7 +2765,7 @@ class Message(PyrogramType, Update):
             progress_args=progress_args,
         )
 
-    def pin(self, disable_notification: bool = None):
+    def pin(self, disable_notification: bool = None) -> "Message":
         """Bound method *pin* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
