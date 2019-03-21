@@ -77,11 +77,13 @@ class ForwardMessages(BaseClient):
         message_ids = list(message_ids) if is_iterable else [message_ids]
 
         if as_copy:
-            sent_messages = []
+            forwarded_messages = []
+
             for chunk in [message_ids[i:i + 200] for i in range(0, len(message_ids), 200)]:
                 messages = self.get_messages(chat_id=from_chat_id, message_ids=chunk)  # type: pyrogram.Messages
+
                 for message in messages.messages:
-                    sent_messages.append(
+                    forwarded_messages.append(
                         message.forward(
                             chat_id,
                             disable_notification=disable_notification,
@@ -89,11 +91,12 @@ class ForwardMessages(BaseClient):
                             remove_caption=remove_caption
                         )
                     )
+
             return pyrogram.Messages(
                 client=self,
-                total_count=len(sent_messages),
-                messages=sent_messages
-            ) if is_iterable else sent_messages[0]
+                total_count=len(forwarded_messages),
+                messages=forwarded_messages
+            ) if is_iterable else forwarded_messages[0]
         else:
             r = self.send(
                 functions.messages.ForwardMessages(
