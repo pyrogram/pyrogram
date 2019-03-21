@@ -16,11 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from functools import partial
 from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
 from pyrogram.api.errors import MessageIdsEmpty
+from pyrogram.client.ext import ChatAction, ParseMode
+from pyrogram.client.types.input_media import InputMedia
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
@@ -29,6 +32,32 @@ from ..pyrogram_type import PyrogramType
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
+
+
+class Str(str):
+    def __init__(self, *args):
+        super().__init__()
+
+        self._client = None
+        self._entities = None
+
+    def init(self, client, entities):
+        self._client = client
+        self._entities = entities
+
+        return self
+
+    @property
+    def text(self):
+        return self
+
+    @property
+    def markdown(self):
+        return self._client.markdown.unparse(self, self._entities)
+
+    @property
+    def html(self):
+        return self._client.html.unparse(self, self._entities)
 
 
 class Message(PyrogramType, Update):
@@ -266,7 +295,7 @@ class Message(PyrogramType, Update):
         edit_date: int = None,
         media_group_id: str = None,
         author_signature: str = None,
-        text: str = None,
+        text: Str = None,
         entities: List["pyrogram.MessageEntity"] = None,
         caption_entities: List["pyrogram.MessageEntity"] = None,
         audio: "pyrogram.Audio" = None,
@@ -278,7 +307,7 @@ class Message(PyrogramType, Update):
         video: "pyrogram.Video" = None,
         voice: "pyrogram.Voice" = None,
         video_note: "pyrogram.VideoNote" = None,
-        caption: str = None,
+        caption: Str = None,
         contact: "pyrogram.Contact" = None,
         location: "pyrogram.Location" = None,
         venue: "pyrogram.Venue" = None,
@@ -611,14 +640,16 @@ class Message(PyrogramType, Update):
 
             return parsed_message
 
-    async def reply(self,
-                    text: str,
-                    quote: bool = None,
-                    parse_mode: str = "",
-                    disable_web_page_preview: bool = None,
-                    disable_notification: bool = None,
-                    reply_to_message_id: int = None,
-                    reply_markup=None):
+    async def reply(
+        self,
+        text: str,
+        quote: bool = None,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup=None
+    ) -> "Message":
         """Bound method *reply* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -686,7 +717,1661 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    async def edit(self, text: str, parse_mode: str = "", disable_web_page_preview: bool = None, reply_markup=None):
+    async def reply_animation(
+        self,
+        animation: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        width: int = 0,
+        height: int = 0,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        reply_to_message_id: int = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_animation* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_animation(
+                chat_id=message.chat.id,
+                animation=animation
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_animation(animation)
+
+        Args:
+            animation (``str``):
+                Animation to send.
+                Pass a file_id as string to send an animation that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
+                pass a file path as string to upload a new animation that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``str``, *optional*):
+                Animation caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            duration (``int``, *optional*):
+                Duration of sent animation in seconds.
+
+            width (``int``, *optional*):
+                Animation width.
+
+            height (``int``, *optional*):
+                Animation height.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the animation file sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_animation(
+            chat_id=self.chat.id,
+            animation=animation,
+            caption=caption,
+            parse_mode=parse_mode,
+            duration=duration,
+            width=width,
+            height=height,
+            thumb=thumb,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_audio(
+        self,
+        audio: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        performer: str = None,
+        title: str = None,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_audio* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_audio(
+                chat_id=message.chat.id,
+                audio=audio
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_audio(audio)
+
+        Args:
+            audio (``str``):
+                Audio file to send.
+                Pass a file_id as string to send an audio file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
+                pass a file path as string to upload a new audio file that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``str``, *optional*):
+                Audio caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            duration (``int``, *optional*):
+                Duration of the audio in seconds.
+
+            performer (``str``, *optional*):
+                Performer.
+
+            title (``str``, *optional*):
+                Track name.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the music file album cover.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_audio(
+            chat_id=self.chat.id,
+            audio=audio,
+            caption=caption,
+            parse_mode=parse_mode,
+            duration=duration,
+            performer=performer,
+            title=title,
+            thumb=thumb,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_cached_media(
+        self,
+        file_id: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_cached_media* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_cached_media(
+                chat_id=message.chat.id,
+                file_id=file_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_cached_media(file_id)
+
+        Args:
+            file_id (``str``):
+                Media to send.
+                Pass a file_id as string to send a media that exists on the Telegram servers.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``bool``, *optional*):
+                Media caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_cached_media(
+            chat_id=self.chat.id,
+            file_id=file_id,
+            caption=caption,
+            parse_mode=parse_mode,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_chat_action(
+        self,
+        action: Union[ChatAction, str],
+        progress: int = 0
+    ) -> "Message":
+        """Bound method *reply_chat_action* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_chat_action(
+                chat_id=message.chat.id,
+                action="typing"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_chat_action("typing")
+
+        Args:
+            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
+                Type of action to broadcast.
+                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
+                depending on what the user is about to receive.
+                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
+
+            progress (``int``, *optional*):
+                Progress of the upload process.
+                Currently useless because official clients don't seem to be handling this.
+
+        Returns:
+            On success, True is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` if the provided string is not a valid ChatAction.
+        """
+        return await self._client.send_chat_action(
+            chat_id=self.chat.id,
+            action=action,
+            progress=progress
+        )
+
+    async def reply_contact(
+        self,
+        phone_number: str,
+        first_name: str,
+        quote: bool = None,
+        last_name: str = "",
+        vcard: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_contact* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_contact(
+                chat_id=message.chat.id,
+                phone_number=phone_number,
+                first_name=first_name
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_contact(phone_number, "Dan")
+
+        Args:
+            phone_number (``str``):
+                Contact's phone number.
+
+            first_name (``str``):
+                Contact's first name.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            last_name (``str``, *optional*):
+                Contact's last name.
+
+            vcard (``str``, *optional*):
+                Additional data about the contact in the form of a vCard, 0-2048 bytes
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_contact(
+            chat_id=self.chat.id,
+            phone_number=phone_number,
+            first_name=first_name,
+            last_name=last_name,
+            vcard=vcard,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_document(
+        self,
+        document: str,
+        quote: bool = None,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_document* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_document(
+                chat_id=message.chat.id,
+                document=document
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_document(document)
+
+        Args:
+            document (``str``):
+                File to send.
+                Pass a file_id as string to send a file that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a file from the Internet, or
+                pass a file path as string to upload a new file that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the file sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
+            caption (``str``, *optional*):
+                Document caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_document(
+            chat_id=self.chat.id,
+            document=document,
+            thumb=thumb,
+            caption=caption,
+            parse_mode=parse_mode,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_game(
+        self,
+        game_short_name: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_game* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_game(
+                chat_id=message.chat.id,
+                game_short_name="lumberjack"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_game("lumberjack")
+
+        Args:
+            game_short_name (``str``):
+                Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An object for an inline keyboard. If empty, one ‘Play game_title’ button will be shown automatically.
+                If not empty, the first button must launch the game.
+
+        Returns:
+            On success, the sent :obj:`Message` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_game(
+            chat_id=self.chat.id,
+            game_short_name=game_short_name,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_inline_bot_result(
+        self,
+        query_id: int,
+        result_id: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        hide_via: bool = None
+    ) -> "Message":
+        """Bound method *reply_inline_bot_result* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_inline_bot_result(
+                chat_id=message.chat.id,
+                query_id=query_id,
+                result_id=result_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_inline_bot_result(query_id, result_id)
+
+        Args:
+            query_id (``int``):
+                Unique identifier for the answered query.
+
+            result_id (``str``):
+                Unique identifier for the result that was chosen.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``bool``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            hide_via (``bool``):
+                Sends the message with *via @bot* hidden.
+
+        Returns:
+            On success, the sent Message is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_inline_bot_result(
+            chat_id=self.chat.id,
+            query_id=query_id,
+            result_id=result_id,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            hide_via=hide_via
+        )
+
+    async def reply_location(
+        self,
+        latitude: float,
+        longitude: float,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_location* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_location(
+                chat_id=message.chat.id,
+                latitude=41.890251,
+                longitude=12.492373
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_location(41.890251, 12.492373)
+
+        Args:
+            latitude (``float``):
+                Latitude of the location.
+
+            longitude (``float``):
+                Longitude of the location.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_location(
+            chat_id=self.chat.id,
+            latitude=latitude,
+            longitude=longitude,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_media_group(
+        self,
+        media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None
+    ) -> "Message":
+        """Bound method *reply_media_group* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_media_group(
+                chat_id=message.chat.id,
+                media=list_of_media
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_media_group(list_of_media)
+
+        Args:
+            media (``list``):
+                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
+                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
+                describing photos and videos to be sent, must include 2–10 items.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, a :obj:`Messages <pyrogram.Messages>` object is returned containing all the
+            single messages sent.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_media_group(
+            chat_id=self.chat.id,
+            media=media,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id
+        )
+
+    async def reply_photo(
+        self,
+        photo: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        ttl_seconds: int = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_photo* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_photo(
+                chat_id=message.chat.id,
+                photo=photo
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_photo(photo)
+
+        Args:
+            photo (``str``):
+                Photo to send.
+                Pass a file_id as string to send a photo that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
+                pass a file path as string to upload a new photo that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``bool``, *optional*):
+                Photo caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            ttl_seconds (``int``, *optional*):
+                Self-Destruct Timer.
+                If you set a timer, the photo will self-destruct in *ttl_seconds*
+                seconds after it was viewed.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_photo(
+            chat_id=self.chat.id,
+            photo=photo,
+            caption=caption,
+            parse_mode=parse_mode,
+            ttl_seconds=ttl_seconds,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_poll(
+        self,
+        question: str,
+        options: List[str],
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_poll* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_poll(
+                chat_id=message.chat.id,
+                question="Is Pyrogram the best?",
+                options=["Yes", "Yes"]
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_poll("Is Pyrogram the best?", ["Yes", "Yes"])
+
+        Args:
+            question (``str``):
+                The poll question, as string.
+
+            options (List of ``str``):
+                The poll options, as list of strings (2 to 10 options are allowed).
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_poll(
+            chat_id=self.chat.id,
+            question=question,
+            options=options,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_sticker(
+        self,
+        sticker: str,
+        quote: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_sticker* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_sticker(
+                chat_id=message.chat.id,
+                sticker=sticker
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_sticker(sticker)
+
+        Args:
+            sticker (``str``):
+                Sticker to send.
+                Pass a file_id as string to send a sticker that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
+                pass a file path as string to upload a new sticker that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_sticker(
+            chat_id=self.chat.id,
+            sticker=sticker,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_venue(
+        self,
+        latitude: float,
+        longitude: float,
+        title: str,
+        address: str,
+        quote: bool = None,
+        foursquare_id: str = "",
+        foursquare_type: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *reply_venue* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_venue(
+                chat_id=message.chat.id,
+                latitude=41.890251,
+                longitude=12.492373,
+                title="Coliseum",
+                address="Piazza del Colosseo, 1, 00184 Roma RM"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_venue(41.890251, 12.492373, "Coliseum", "Piazza del Colosseo, 1, 00184 Roma RM")
+
+        Args:
+            latitude (``float``):
+                Latitude of the venue.
+
+            longitude (``float``):
+                Longitude of the venue.
+
+            title (``str``):
+                Name of the venue.
+
+            address (``str``):
+                Address of the venue.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            foursquare_id (``str``, *optional*):
+                Foursquare identifier of the venue.
+
+            foursquare_type (``str``, *optional*):
+                Foursquare type of the venue, if known.
+                (For example, "arts_entertainment/default", "arts_entertainment/aquarium" or "food/icecream".)
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_venue(
+            chat_id=self.chat.id,
+            latitude=latitude,
+            longitude=longitude,
+            title=title,
+            address=address,
+            foursquare_id=foursquare_id,
+            foursquare_type=foursquare_type,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+    async def reply_video(
+        self,
+        video: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        width: int = 0,
+        height: int = 0,
+        thumb: str = None,
+        supports_streaming: bool = True,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_video* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_video(
+                chat_id=message.chat.id,
+                video=video
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_video(video)
+
+        Args:
+            video (``str``):
+                Video to send.
+                Pass a file_id as string to send a video that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a video from the Internet, or
+                pass a file path as string to upload a new video that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``str``, *optional*):
+                Video caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            duration (``int``, *optional*):
+                Duration of sent video in seconds.
+
+            width (``int``, *optional*):
+                Video width.
+
+            height (``int``, *optional*):
+                Video height.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
+            supports_streaming (``bool``, *optional*):
+                Pass True, if the uploaded video is suitable for streaming.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_video(
+            chat_id=self.chat.id,
+            video=video,
+            caption=caption,
+            parse_mode=parse_mode,
+            duration=duration,
+            width=width,
+            height=height,
+            thumb=thumb,
+            supports_streaming=supports_streaming,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_video_note(
+        self,
+        video_note: str,
+        quote: bool = None,
+        duration: int = 0,
+        length: int = 1,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_video_note* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_video_note(
+                chat_id=message.chat.id,
+                video_note=video_note
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_video_note(video_note)
+
+        Args:
+            video_note (``str``):
+                Video note to send.
+                Pass a file_id as string to send a video note that exists on the Telegram servers, or
+                pass a file path as string to upload a new video note that exists on your local machine.
+                Sending video notes by a URL is currently unsupported.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            duration (``int``, *optional*):
+                Duration of sent video in seconds.
+
+            length (``int``, *optional*):
+                Video width and height.
+
+            thumb (``str``, *optional*):
+                Thumbnail of the video sent.
+                The thumbnail should be in JPEG format and less than 200 KB in size.
+                A thumbnail's width and height should not exceed 90 pixels.
+                Thumbnails can't be reused and can be only uploaded as a new file.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_video_note(
+            chat_id=self.chat.id,
+            video_note=video_note,
+            duration=duration,
+            length=length,
+            thumb=thumb,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def reply_voice(
+        self,
+        voice: str,
+        quote: bool = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
+        """Bound method *reply_voice* of :obj:`Message <pyrogram.Message>`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_voice(
+                chat_id=message.chat.id,
+                voice=voice
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_voice(voice)
+
+        Args:
+            voice (``str``):
+                Audio file to send.
+                Pass a file_id as string to send an audio that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
+                pass a file path as string to upload a new audio that exists on your local machine.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            caption (``str``, *optional*):
+                Voice message caption, 0-1024 characters.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
+                Defaults to Markdown.
+
+            duration (``int``, *optional*):
+                Duration of the voice message in seconds.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message
+
+            reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            progress (``callable``, *optional*):
+                Pass a callback function to view the upload progress.
+                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
+                below for a detailed description).
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
+                a chat_id and a message_id in order to edit a message with the updated progress.
+
+        Other Parameters:
+            client (:obj:`Client <pyrogram.Client>`):
+                The Client itself, useful when you want to call other API methods inside the callback function.
+
+            current (``int``):
+                The amount of bytes uploaded so far.
+
+            total (``int``):
+                The size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        return await self._client.send_voice(
+            chat_id=self.chat.id,
+            voice=voice,
+            caption=caption,
+            parse_mode=parse_mode,
+            duration=duration,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup,
+            progress=progress,
+            progress_args=progress_args
+        )
+
+    async def edit(
+        self,
+        text: str,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
         """Bound method *edit* of :obj:`Message <pyrogram.Message>`
 
         Use as a shortcut for:
@@ -696,7 +2381,7 @@ class Message(PyrogramType, Update):
             client.edit_message_text(
                 chat_id=message.chat.id,
                 message_id=message.message_id,
-                text="hello",
+                text="hello"
             )
 
         Example:
@@ -734,9 +2419,140 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    async def forward(self,
-                      chat_id: int or str,
-                      disable_notification: bool = None):
+    async def edit_caption(
+        self,
+        caption: str,
+        parse_mode: str = "",
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "Message":
+        """Bound method *edit_caption* of :obj:`Message <pyrogram.Message>`
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_caption(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                caption="hello"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit_caption("hello")
+
+        Args:
+            caption (``str``):
+                New caption of the message.
+
+            parse_mode (``str``, *optional*):
+                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                Defaults to Markdown.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return await self._client.edit_message_caption(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            caption=caption,
+            parse_mode=parse_mode,
+            reply_markup=reply_markup
+        )
+
+    async def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
+        """Bound method *edit_media* of :obj:`Message <pyrogram.Message>`
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_media(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                media=media
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit_media(media)
+
+        Args:
+            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return await self._client.edit_message_media(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            media=media,
+            reply_markup=reply_markup
+        )
+
+    async def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
+        """Bound method *edit_reply_markup* of :obj:`Message <pyrogram.Message>`
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.edit_message_reply_markup(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                reply_markup=inline_reply_markup
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.edit_reply_markup(inline_reply_markup)
+
+        Args:
+            reply_markup (:obj:`InlineKeyboardMarkup`):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            On success, if edited message is sent by the bot, the edited
+            :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
+
+        Raises:
+            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+        """
+        return await self._client.edit_message_reply_markup(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            reply_markup=reply_markup
+        )
+
+    async def forward(
+        self,
+        chat_id: int or str,
+        disable_notification: bool = None,
+        as_copy: bool = False,
+        remove_caption: bool = False
+    ) -> "Message":
         """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -746,7 +2562,7 @@ class Message(PyrogramType, Update):
             client.forward_messages(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
-                message_ids=message.message_id,
+                message_ids=message.message_id
             )
 
         Example:
@@ -764,18 +2580,120 @@ class Message(PyrogramType, Update):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            as_copy (``bool``, *optional*):
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Defaults to False.
+
+            remove_caption (``bool``, *optional*):
+                If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
+                message. Has no effect if *as_copy* is not enabled.
+                Defaults to False.
+
         Returns:
             On success, the forwarded Message is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return await self._client.forward_messages(
-            chat_id=chat_id,
-            from_chat_id=self.chat.id,
-            message_ids=self.message_id,
-            disable_notification=disable_notification
-        )
+        if as_copy:
+            if self.service:
+                raise ValueError("Unable to copy service messages")
+
+            if self.game and not self._client.is_bot:
+                raise ValueError("Users cannot send messages with Game media type")
+
+            # TODO: Improve markdown parser. Currently html appears to be more stable, thus we use it here because users
+            #       can"t choose.
+
+            if self.text:
+                return await self._client.send_message(
+                    chat_id,
+                    text=self.text.html,
+                    parse_mode="html",
+                    disable_web_page_preview=not self.web_page,
+                    disable_notification=disable_notification
+                )
+            elif self.media:
+                caption = self.caption.html if self.caption and not remove_caption else None
+
+                send_media = partial(
+                    self._client.send_cached_media,
+                    chat_id=chat_id,
+                    disable_notification=disable_notification
+                )
+
+                if self.photo:
+                    file_id = self.photo.sizes[-1].file_id
+                elif self.audio:
+                    file_id = self.audio.file_id
+                elif self.document:
+                    file_id = self.document.file_id
+                elif self.video:
+                    file_id = self.video.file_id
+                elif self.animation:
+                    file_id = self.animation.file_id
+                elif self.voice:
+                    file_id = self.voice.file_id
+                elif self.sticker:
+                    file_id = self.sticker.file_id
+                elif self.video_note:
+                    file_id = self.video_note.file_id
+                elif self.contact:
+                    return await self._client.send_contact(
+                        chat_id,
+                        phone_number=self.contact.phone_number,
+                        first_name=self.contact.first_name,
+                        last_name=self.contact.last_name,
+                        vcard=self.contact.vcard,
+                        disable_notification=disable_notification
+                    )
+                elif self.location:
+                    return await self._client.send_location(
+                        chat_id,
+                        latitude=self.location.latitude,
+                        longitude=self.location.longitude,
+                        disable_notification=disable_notification
+                    )
+                elif self.venue:
+                    return await self._client.send_venue(
+                        chat_id,
+                        latitude=self.venue.location.latitude,
+                        longitude=self.venue.location.longitude,
+                        title=self.venue.title,
+                        address=self.venue.address,
+                        foursquare_id=self.venue.foursquare_id,
+                        foursquare_type=self.venue.foursquare_type,
+                        disable_notification=disable_notification
+                    )
+                elif self.poll:
+                    return await self._client.send_poll(
+                        chat_id,
+                        question=self.poll.question,
+                        options=[opt.text for opt in self.poll.options],
+                        disable_notification=disable_notification
+                    )
+                elif self.game:
+                    return await self._client.send_game(
+                        chat_id,
+                        game_short_name=self.game.short_name,
+                        disable_notification=disable_notification
+                    )
+                else:
+                    raise ValueError("Unknown media type")
+
+                if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
+                    return await send_media(file_id)
+                else:
+                    return await send_media(file_id=file_id, caption=caption, parse_mode=ParseMode.HTML)
+            else:
+                raise ValueError("Can't copy this message")
+        else:
+            return await self._client.forward_messages(
+                chat_id=chat_id,
+                from_chat_id=self.chat.id,
+                message_ids=self.message_id,
+                disable_notification=disable_notification
+            )
 
     async def delete(self, revoke: bool = True):
         """Bound method *delete* of :obj:`Message <pyrogram.Message>`.
@@ -875,7 +2793,7 @@ class Message(PyrogramType, Update):
             ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
         if isinstance(self.reply_markup, pyrogram.ReplyKeyboardMarkup):
-            return await self.reply(x)
+            return await self.reply(x, quote=quote)
         elif isinstance(self.reply_markup, pyrogram.InlineKeyboardMarkup):
             if isinstance(x, int) and y is None:
                 try:
@@ -927,11 +2845,13 @@ class Message(PyrogramType, Update):
         else:
             raise ValueError("The message doesn't contain any keyboard")
 
-    async def download(self,
-                       file_name: str = "",
-                       block: bool = True,
-                       progress: callable = None,
-                       progress_args: tuple = ()):
+    async def download(
+        self,
+        file_name: str = "",
+        block: bool = True,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> "Message":
         """Bound method *download* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -980,28 +2900,36 @@ class Message(PyrogramType, Update):
             progress_args=progress_args,
         )
 
+    async def pin(self, disable_notification: bool = None) -> "Message":
+        """Bound method *pin* of :obj:`Message <pyrogram.Message>`.
 
-class Str(str):
-    def __init__(self, *args):
-        super().__init__()
+        Use as a shortcut for:
 
-        self.client = None
-        self.entities = None
+        .. code-block:: python
 
-    def init(self, client, entities):
-        self.client = client
-        self.entities = entities
+            client.pin_chat_message(
+                chat_id=message.chat.id,
+                message_id=message_id
+            )
 
-        return self
+        Example:
+            .. code-block:: python
 
-    @property
-    def text(self):
-        return self
+                message.pin()
 
-    @property
-    def markdown(self):
-        return self.client.markdown.unparse(self, self.entities)
+        Args:
+            disable_notification (``bool``):
+                Pass True, if it is not necessary to send a notification to all chat members about the new pinned
+                message. Notifications are always disabled in channels.
 
-    @property
-    def html(self):
-        return self.client.html.unparse(self, self.entities)
+        Returns:
+            True on success.
+
+        Raises:
+            :class:`Error <pyrogram.Error>`
+        """
+        return await self._client.pin_chat_message(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            disable_notification=disable_notification
+        )

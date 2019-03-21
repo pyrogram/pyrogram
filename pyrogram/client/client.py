@@ -182,6 +182,8 @@ class Client(Methods, BaseClient):
             Defaults to False (normal session).
     """
 
+    terms_of_service_displayed = False
+
     def __init__(self,
                  session_name: str,
                  api_id: Union[int, str] = None,
@@ -602,8 +604,9 @@ class Client(Methods, BaseClient):
         phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
-        if terms_of_service:
+        if terms_of_service and not Client.terms_of_service_displayed:
             print("\n" + terms_of_service.text + "\n")
+            Client.terms_of_service_displayed = True
 
         if self.force_sms:
             await self.send(
