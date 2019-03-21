@@ -16,12 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from functools import partial
 from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
 from pyrogram.api.errors import MessageIdsEmpty
-from pyrogram.client.ext import ChatAction
+from pyrogram.client.ext import ChatAction, ParseMode
 from pyrogram.client.types.input_media import InputMedia
 from .contact import Contact
 from .location import Location
@@ -31,6 +32,32 @@ from ..pyrogram_type import PyrogramType
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
+
+
+class Str(str):
+    def __init__(self, *args):
+        super().__init__()
+
+        self._client = None
+        self._entities = None
+
+    def init(self, client, entities):
+        self._client = client
+        self._entities = entities
+
+        return self
+
+    @property
+    def text(self):
+        return self
+
+    @property
+    def markdown(self):
+        return self._client.markdown.unparse(self, self._entities)
+
+    @property
+    def html(self):
+        return self._client.html.unparse(self, self._entities)
 
 
 class Message(PyrogramType, Update):
@@ -268,7 +295,7 @@ class Message(PyrogramType, Update):
         edit_date: int = None,
         media_group_id: str = None,
         author_signature: str = None,
-        text: str = None,
+        text: Str = None,
         entities: List["pyrogram.MessageEntity"] = None,
         caption_entities: List["pyrogram.MessageEntity"] = None,
         audio: "pyrogram.Audio" = None,
@@ -280,7 +307,7 @@ class Message(PyrogramType, Update):
         video: "pyrogram.Video" = None,
         voice: "pyrogram.Voice" = None,
         video_note: "pyrogram.VideoNote" = None,
-        caption: str = None,
+        caption: Str = None,
         contact: "pyrogram.Contact" = None,
         location: "pyrogram.Location" = None,
         venue: "pyrogram.Venue" = None,
@@ -2519,7 +2546,13 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def forward(self, chat_id: int or str, disable_notification: bool = None) -> "Message":
+    def forward(
+        self,
+        chat_id: int or str,
+        disable_notification: bool = None,
+        as_copy: bool = False,
+        remove_caption: bool = False
+    ) -> "Message":
         """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
@@ -2547,18 +2580,120 @@ class Message(PyrogramType, Update):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            as_copy (``bool``, *optional*):
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Defaults to False.
+
+            remove_caption (``bool``, *optional*):
+                If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
+                message. Has no effect if *as_copy* is not enabled.
+                Defaults to False.
+
         Returns:
             On success, the forwarded Message is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>`
         """
-        return self._client.forward_messages(
-            chat_id=chat_id,
-            from_chat_id=self.chat.id,
-            message_ids=self.message_id,
-            disable_notification=disable_notification
-        )
+        if as_copy:
+            if self.service:
+                raise ValueError("Unable to copy service messages")
+
+            if self.game and not self._client.is_bot:
+                raise ValueError("Users cannot send messages with Game media type")
+
+            # TODO: Improve markdown parser. Currently html appears to be more stable, thus we use it here because users
+            #       can"t choose.
+
+            if self.text:
+                return self._client.send_message(
+                    chat_id,
+                    text=self.text.html,
+                    parse_mode="html",
+                    disable_web_page_preview=not self.web_page,
+                    disable_notification=disable_notification
+                )
+            elif self.media:
+                caption = self.caption.html if self.caption and not remove_caption else None
+
+                send_media = partial(
+                    self._client.send_cached_media,
+                    chat_id=chat_id,
+                    disable_notification=disable_notification
+                )
+
+                if self.photo:
+                    file_id = self.photo.sizes[-1].file_id
+                elif self.audio:
+                    file_id = self.audio.file_id
+                elif self.document:
+                    file_id = self.document.file_id
+                elif self.video:
+                    file_id = self.video.file_id
+                elif self.animation:
+                    file_id = self.animation.file_id
+                elif self.voice:
+                    file_id = self.voice.file_id
+                elif self.sticker:
+                    file_id = self.sticker.file_id
+                elif self.video_note:
+                    file_id = self.video_note.file_id
+                elif self.contact:
+                    return self._client.send_contact(
+                        chat_id,
+                        phone_number=self.contact.phone_number,
+                        first_name=self.contact.first_name,
+                        last_name=self.contact.last_name,
+                        vcard=self.contact.vcard,
+                        disable_notification=disable_notification
+                    )
+                elif self.location:
+                    return self._client.send_location(
+                        chat_id,
+                        latitude=self.location.latitude,
+                        longitude=self.location.longitude,
+                        disable_notification=disable_notification
+                    )
+                elif self.venue:
+                    return self._client.send_venue(
+                        chat_id,
+                        latitude=self.venue.location.latitude,
+                        longitude=self.venue.location.longitude,
+                        title=self.venue.title,
+                        address=self.venue.address,
+                        foursquare_id=self.venue.foursquare_id,
+                        foursquare_type=self.venue.foursquare_type,
+                        disable_notification=disable_notification
+                    )
+                elif self.poll:
+                    return self._client.send_poll(
+                        chat_id,
+                        question=self.poll.question,
+                        options=[opt.text for opt in self.poll.options],
+                        disable_notification=disable_notification
+                    )
+                elif self.game:
+                    return self._client.send_game(
+                        chat_id,
+                        game_short_name=self.game.short_name,
+                        disable_notification=disable_notification
+                    )
+                else:
+                    raise ValueError("Unknown media type")
+
+                if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
+                    return send_media(file_id)
+                else:
+                    return send_media(file_id=file_id, caption=caption, parse_mode=ParseMode.HTML)
+            else:
+                raise ValueError("Can't copy this message")
+        else:
+            return self._client.forward_messages(
+                chat_id=chat_id,
+                from_chat_id=self.chat.id,
+                message_ids=self.message_id,
+                disable_notification=disable_notification
+            )
 
     def delete(self, revoke: bool = True):
         """Bound method *delete* of :obj:`Message <pyrogram.Message>`.
@@ -2798,29 +2933,3 @@ class Message(PyrogramType, Update):
             message_id=self.message_id,
             disable_notification=disable_notification
         )
-
-
-class Str(str):
-    def __init__(self, *args):
-        super().__init__()
-
-        self.client = None
-        self.entities = None
-
-    def init(self, client, entities):
-        self.client = client
-        self.entities = entities
-
-        return self
-
-    @property
-    def text(self):
-        return self
-
-    @property
-    def markdown(self):
-        return self.client.markdown.unparse(self, self.entities)
-
-    @property
-    def html(self):
-        return self.client.html.unparse(self, self.entities)
