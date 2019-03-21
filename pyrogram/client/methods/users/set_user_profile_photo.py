@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -21,7 +21,10 @@ from ...ext import BaseClient
 
 
 class SetUserProfilePhoto(BaseClient):
-    def set_user_profile_photo(self, photo: str):
+    def set_user_profile_photo(
+        self,
+        photo: str
+    ) -> bool:
         """Use this method to set a new profile photo.
 
         This method only works for Users.
@@ -42,7 +45,7 @@ class SetUserProfilePhoto(BaseClient):
         return bool(
             self.send(
                 functions.photos.UploadProfilePhoto(
-                    self.save_file(photo)
+                    file=self.save_file(photo)
                 )
             )
         )

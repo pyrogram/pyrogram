@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,18 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    def join_chat(self, chat_id: str):
+    def join_chat(
+        self,
+        chat_id: str
+    ):
         """Use this method to join a group chat or channel.
 
         Args:
             chat_id (``str``):
-                Unique identifier for the target chat in form of *t.me/joinchat/* links or username of the target
+                Unique identifier for the target chat in form of a *t.me/joinchat/* link or username of the target
                 channel/supergroup (in the format @username).
+
+        Returns:
+            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -35,11 +42,15 @@ class JoinChat(BaseClient):
         match = self.INVITE_LINK_RE.match(chat_id)
 
         if match:
-            return self.send(
+            chat = self.send(
                 functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
             )
+            if isinstance(chat.chats[0], types.Chat):
+                return pyrogram.Chat._parse_chat_chat(self, chat.chats[0])
+            elif isinstance(chat.chats[0], types.Channel):
+                return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
         else:
             resolved_peer = self.send(
                 functions.contacts.ResolveUsername(
@@ -52,8 +63,10 @@ class JoinChat(BaseClient):
                 access_hash=resolved_peer.chats[0].access_hash
             )
 
-            return self.send(
+            chat = self.send(
                 functions.channels.JoinChannel(
                     channel=channel
                 )
             )
+
+            return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])

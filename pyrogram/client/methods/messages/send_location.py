@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,18 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class SendLocation(BaseClient):
-    def send_location(self,
-                      chat_id: int or str,
-                      latitude: float,
-                      longitude: float,
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup=None):
+    def send_location(
+        self,
+        chat_id: Union[int, str],
+        latitude: float,
+        longitude: float,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send points on the map.
 
         Args:
@@ -63,9 +73,9 @@ class SendLocation(BaseClient):
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
-                    types.InputGeoPoint(
-                        latitude,
-                        longitude
+                    geo_point=types.InputGeoPoint(
+                        lat=latitude,
+                        long=longitude
                     )
                 ),
                 message="",
@@ -78,7 +88,7 @@ class SendLocation(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

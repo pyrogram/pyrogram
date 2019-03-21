@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from struct import pack
+
+import pyrogram
+from pyrogram.api import types
+from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
 
-class Audio(Object):
+class Audio(PyrogramType):
     """This object represents an audio file to be treated as music by the Telegram clients.
 
     Args:
@@ -51,20 +57,24 @@ class Audio(Object):
             Title of the audio as defined by sender or by audio tags.
     """
 
-    ID = 0xb0700006
+    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title"]
 
     def __init__(
-            self,
-            file_id: str,
-            duration: int,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None,
-            performer: str = None,
-            title: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        duration: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        performer: str = None,
+        title: str = None
     ):
+        super().__init__(client)
+
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -74,3 +84,27 @@ class Audio(Object):
         self.duration = duration
         self.performer = performer
         self.title = title
+
+    @staticmethod
+    def _parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio,
+               file_name: str) -> "Audio":
+        return Audio(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    9,
+                    audio.dc_id,
+                    audio.id,
+                    audio.access_hash
+                )
+            ),
+            duration=audio_attributes.duration,
+            performer=audio_attributes.performer,
+            title=audio_attributes.title,
+            mime_type=audio.mime_type,
+            file_size=audio.size,
+            thumb=PhotoSize._parse(client, audio.thumbs),
+            file_name=file_name,
+            date=audio.date,
+            client=client
+        )

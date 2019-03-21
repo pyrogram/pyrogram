@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,14 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types, errors
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetChatMember(BaseClient):
-    def get_chat_member(self,
-                        chat_id: int or str,
-                        user_id: int or str):
+    def get_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str]
+    ) -> "pyrogram.ChatMember":
         """Use this method to get information about one member of a chat.
 
         Args:
@@ -51,8 +56,8 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            for member in utils.parse_chat_members(full_chat).chat_members:
-                if member.user.id == user_id.user_id:
+            for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
+                if member.user.is_self:
                     return member
             else:
                 raise errors.UserNotParticipant
@@ -64,12 +69,8 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            return utils.parse_chat_members(
-                types.channels.ChannelParticipants(
-                    count=1,
-                    participants=[r.participant],
-                    users=r.users
-                )
-            ).chat_members[0]
+            users = {i.id: i for i in r.users}
+
+            return pyrogram.ChatMember._parse(self, r.participant, users)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

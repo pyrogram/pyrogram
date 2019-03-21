@@ -13,13 +13,15 @@ Utilities
 
     start
     stop
+    restart
     idle
     run
     add_handler
     remove_handler
     send
     resolve_peer
-    download_media
+    save_file
+    stop_transmission
 
 Decorators
 ----------
@@ -62,6 +64,11 @@ Messages
     delete_messages
     get_messages
     get_history
+    iter_history
+    send_poll
+    vote_poll
+    retract_vote
+    download_media
 
 Chats
 -----
@@ -83,10 +90,13 @@ Chats
     pin_chat_message
     unpin_chat_message
     get_chat
+    get_chat_preview
     get_chat_member
     get_chat_members
     get_chat_members_count
+    iter_chat_members
     get_dialogs
+    iter_dialogs
 
 Users
 -----
@@ -130,6 +140,9 @@ Bots
     send_inline_bot_result
     answer_callback_query
     request_callback_answer
+    send_game
+    set_game_score
+    get_game_high_scores
 
 
 .. autoclass:: pyrogram.Client

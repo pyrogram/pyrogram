@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from collections import OrderedDict
 
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
@@ -55,7 +56,7 @@ class Markdown:
         self.peers_by_id = peers_by_id or {}
 
     def parse(self, message: str):
-        message = utils.add_surrogates(message).strip()
+        message = utils.add_surrogates(str(message or "")).strip()
         entities = []
         offset = 0
 
@@ -71,24 +72,24 @@ class Markdown:
                     input_user = self.peers_by_id.get(user_id, None)
 
                     entity = (
-                        Mention(start, len(text), input_user)
+                        Mention(offset=start, length=len(text), user_id=input_user)
                         if input_user
-                        else MentionInvalid(start, len(text), user_id)
+                        else MentionInvalid(offset=start, length=len(text), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(text), url)
+                    entity = Url(offset=start, length=len(text), url=url)
 
                 body = text
                 offset += len(url) + 4
             else:
                 if style == self.BOLD_DELIMITER:
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == self.ITALIC_DELIMITER:
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == self.CODE_DELIMITER:
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == self.PRE_DELIMITER:
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 
@@ -97,10 +98,11 @@ class Markdown:
             entities.append(entity)
             message = message.replace(match.group(), body)
 
-        return dict(
-            message=utils.remove_surrogates(message),
-            entities=entities
-        )
+        # TODO: OrderedDict to be removed in Python3.6
+        return OrderedDict([
+            ("message", utils.remove_surrogates(message)),
+            ("entities", entities)
+        ])
 
     def unparse(self, message: str, entities: list):
         message = utils.add_surrogates(message).strip()

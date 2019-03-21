@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from functools import lru_cache
+from struct import pack
+
+import pyrogram
+from pyrogram.api import types, functions
+from pyrogram.api.errors import StickersetInvalid
+from .photo_size import PhotoSize
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
 
-class Sticker(Object):
+class Sticker(PyrogramType):
     """This object represents a sticker.
 
     Args:
@@ -55,22 +63,28 @@ class Sticker(Object):
     """
 
     # TODO: Add mask position
-    ID = 0xb0700017
+
+    __slots__ = [
+        "file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name"
+    ]
 
     def __init__(
-            self,
-            file_id: str,
-            width: int,
-            height: int,
-            thumb=None,
-            file_name: str = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None,
-            emoji: str = None,
-            set_name: str = None,
-            mask_position=None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        emoji: str = None,
+        set_name: str = None
     ):
+        super().__init__(client)
+
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -81,4 +95,53 @@ class Sticker(Object):
         self.height = height
         self.emoji = emoji
         self.set_name = set_name
-        self.mask_position = mask_position
+        # self.mask_position = mask_position
+
+    @staticmethod
+    @lru_cache(maxsize=256)
+    def get_sticker_set_name(send, input_sticker_set_id):
+        try:
+            return send(
+                functions.messages.GetStickerSet(
+                    stickerset=types.InputStickerSetID(
+                        id=input_sticker_set_id[0],
+                        access_hash=input_sticker_set_id[1]
+                    )
+                )
+            ).set.short_name
+        except StickersetInvalid:
+            return None
+
+    @staticmethod
+    def _parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
+               sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
+        sticker_set = sticker_attributes.stickerset
+
+        if isinstance(sticker_set, types.InputStickerSetID):
+            input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
+            set_name = Sticker.get_sticker_set_name(client.send, input_sticker_set_id)
+        else:
+            set_name = None
+
+        return Sticker(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    8,
+                    sticker.dc_id,
+                    sticker.id,
+                    sticker.access_hash
+                )
+            ),
+            width=image_size_attributes.w if image_size_attributes else 0,
+            height=image_size_attributes.h if image_size_attributes else 0,
+            thumb=PhotoSize._parse(client, sticker.thumbs),
+            # TODO: mask_position
+            set_name=set_name,
+            emoji=sticker_attributes.alt or None,
+            file_size=sticker.size,
+            mime_type=sticker.mime_type,
+            file_name=file_name,
+            date=sticker.date,
+            client=client
+        )

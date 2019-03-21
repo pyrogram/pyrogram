@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,17 +16,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
 
 class SendInlineBotResult(BaseClient):
-    def send_inline_bot_result(self,
-                               chat_id: int or str,
-                               query_id: int,
-                               result_id: str,
-                               disable_notification: bool = None,
-                               reply_to_message_id: int = None):
+    def send_inline_bot_result(
+        self,
+        chat_id: Union[int, str],
+        query_id: int,
+        result_id: str,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        hide_via: bool = None
+    ):
         """Use this method to send an inline bot result.
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
@@ -49,6 +54,9 @@ class SendInlineBotResult(BaseClient):
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            hide_via (``bool``):
+                Sends the message with *via @bot* hidden.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -62,6 +70,7 @@ class SendInlineBotResult(BaseClient):
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                reply_to_msg_id=reply_to_message_id,
+                hide_via=hide_via or None
             )
         )

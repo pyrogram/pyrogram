@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from struct import pack
+from typing import List, Union
+
+import pyrogram
+from pyrogram.api import types
+from pyrogram.client.ext.utils import encode
+from ..pyrogram_type import PyrogramType
 
 
-class PhotoSize(Object):
+class PhotoSize(PyrogramType):
     """This object represents one size of a photo or a file/sticker thumbnail.
 
     Args:
@@ -36,10 +42,49 @@ class PhotoSize(Object):
             File size.
     """
 
-    ID = 0xb0700005
+    __slots__ = ["file_id", "width", "height", "file_size"]
 
-    def __init__(self, file_id: str, width: int, height: int, file_size: int):
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        file_size: int
+    ):
+        super().__init__(client)
+
         self.file_id = file_id
         self.width = width
         self.height = height
         self.file_size = file_size
+
+    @staticmethod
+    def _parse(client, thumbs: List) -> Union["PhotoSize", None]:
+        if not thumbs:
+            return None
+
+        photo_size = thumbs[-1]
+
+        if not isinstance(photo_size, (types.PhotoSize, types.PhotoCachedSize, types.PhotoStrippedSize)):
+            return None
+
+        loc = photo_size.location
+
+        if not isinstance(loc, types.FileLocation):
+            return None
+
+        return PhotoSize(
+            file_id=encode(
+                pack(
+                    "<iiqqqqi",
+                    0, loc.dc_id, 0, 0,
+                    loc.volume_id, loc.secret, loc.local_id
+                )
+            ),
+            width=getattr(photo_size, "w", 0),
+            height=getattr(photo_size, "h", 0),
+            file_size=getattr(photo_size, "size", len(getattr(photo_size, "bytes", b""))),
+            client=client
+        )

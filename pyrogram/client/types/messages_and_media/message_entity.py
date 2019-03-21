@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ..user_and_chats.user import User
 
 
-class MessageEntity(Object):
+class MessageEntity(PyrogramType):
     """This object represents one special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
@@ -43,18 +47,54 @@ class MessageEntity(Object):
             For "text_mention" only, the mentioned user.
     """
 
-    ID = 0xb0700004
+    __slots__ = ["type", "offset", "length", "url", "user"]
+
+    ENTITIES = {
+        types.MessageEntityMention.ID: "mention",
+        types.MessageEntityHashtag.ID: "hashtag",
+        types.MessageEntityCashtag.ID: "cashtag",
+        types.MessageEntityBotCommand.ID: "bot_command",
+        types.MessageEntityUrl.ID: "url",
+        types.MessageEntityEmail.ID: "email",
+        types.MessageEntityBold.ID: "bold",
+        types.MessageEntityItalic.ID: "italic",
+        types.MessageEntityCode.ID: "code",
+        types.MessageEntityPre.ID: "pre",
+        types.MessageEntityTextUrl.ID: "text_link",
+        types.MessageEntityMentionName.ID: "text_mention",
+        types.MessageEntityPhone.ID: "phone_number"
+    }
 
     def __init__(
-            self,
-            type: str,
-            offset: int,
-            length: int,
-            url: str = None,
-            user=None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        type: str,
+        offset: int,
+        length: int,
+        url: str = None,
+        user: User = None
     ):
+        super().__init__(client)
+
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
         self.user = user
+
+    @staticmethod
+    def _parse(client, entity, users: dict) -> "MessageEntity" or None:
+        type = MessageEntity.ENTITIES.get(entity.ID, None)
+
+        if type is None:
+            return None
+
+        return MessageEntity(
+            type=type,
+            offset=entity.offset,
+            length=entity.length,
+            url=getattr(entity, "url", None),
+            user=User._parse(client, users.get(getattr(entity, "user_id", None), None)),
+            client=client
+        )

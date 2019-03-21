@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
 from pyrogram.api.types import ReplyKeyboardHide
+from ..pyrogram_type import PyrogramType
 
 
-class ReplyKeyboardRemove(Object):
+class ReplyKeyboardRemove(PyrogramType):
     """Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and
     display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent
     by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a
@@ -35,13 +35,18 @@ class ReplyKeyboardRemove(Object):
             keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
     """
 
-    ID = 0xb0700023
+    __slots__ = ["selective"]
 
-    def __init__(self, selective: bool = None):
+    def __init__(
+        self,
+        selective: bool = None
+    ):
+        super().__init__(None)
+
         self.selective = selective
 
     @staticmethod
-    def read(o, *args):
+    def read(o):
         return ReplyKeyboardRemove(
             selective=o.selective
         )

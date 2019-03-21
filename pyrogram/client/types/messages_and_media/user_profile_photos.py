@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from typing import List
+
+import pyrogram
+from .photo import Photo
+from ..pyrogram_type import PyrogramType
 
 
-class UserProfilePhotos(Object):
+class UserProfilePhotos(PyrogramType):
     """This object represents a user's profile pictures.
 
     Args:
@@ -30,8 +34,24 @@ class UserProfilePhotos(Object):
             Requested profile pictures.
     """
 
-    ID = 0xb0700014
+    __slots__ = ["total_count", "photos"]
 
-    def __init__(self, total_count: int, photos: list):
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        photos: List[Photo]
+    ):
+        super().__init__(client)
+
         self.total_count = total_count
         self.photos = photos
+
+    @staticmethod
+    def _parse(client, photos) -> "UserProfilePhotos":
+        return UserProfilePhotos(
+            total_count=getattr(photos, "count", len(photos.photos)),
+            photos=[Photo._parse(client, photo) for photo in photos.photos],
+            client=client
+        )

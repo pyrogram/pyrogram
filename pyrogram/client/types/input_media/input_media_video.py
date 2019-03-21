@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -57,15 +57,19 @@ class InputMediaVideo(InputMedia):
             Pass True, if the uploaded video is suitable for streaming.
     """
 
-    def __init__(self,
-                 media: str,
-                 thumb: str = None,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 width: int = 0,
-                 height: int = 0,
-                 duration: int = 0,
-                 supports_streaming: bool = True):
+    __slots__ = ["thumb", "width", "height", "duration", "supports_streaming"]
+
+    def __init__(
+        self,
+        media: str,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        width: int = 0,
+        height: int = 0,
+        duration: int = 0,
+        supports_streaming: bool = True
+    ):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -20,12 +20,15 @@ from .animation import Animation
 from .audio import Audio
 from .contact import Contact
 from .document import Document
+from .game import Game
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
 from .messages import Messages
 from .photo import Photo
 from .photo_size import PhotoSize
+from .poll import Poll
+from .poll_option import PollOption
 from .sticker import Sticker
 from .user_profile_photos import UserProfilePhotos
 from .venue import Venue

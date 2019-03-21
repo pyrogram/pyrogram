@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -17,17 +17,22 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from hashlib import sha256
 
 from pyrogram.api import functions, types
+from .utils import compute_hash, btoi, itob
 from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    def enable_cloud_password(self, password: str, hint: str = "", email: str = ""):
+    def enable_cloud_password(
+        self,
+        password: str,
+        hint: str = "",
+        email: str = None
+    ) -> bool:
         """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 
-        This password will be asked when you log in on a new device in addition to the SMS code.
+        This password will be asked when you log-in on a new device in addition to the SMS code.
 
         Args:
             password (``str``):
@@ -40,27 +45,31 @@ class EnableCloudPassword(BaseClient):
                 Recovery e-mail.
 
         Returns:
-            True on success, False otherwise.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` in case there is already a cloud password enabled.
         """
         r = self.send(functions.account.GetPassword())
 
-        if isinstance(r, types.account.NoPassword):
-            salt = r.new_salt + os.urandom(8)
-            password_hash = sha256(salt + password.encode() + salt).digest()
+        if r.has_password:
+            raise ValueError("There is already a cloud password enabled")
 
-            return self.send(
-                functions.account.UpdatePasswordSettings(
-                    current_password_hash=salt,
-                    new_settings=types.account.PasswordInputSettings(
-                        new_salt=salt,
-                        new_password_hash=password_hash,
-                        hint=hint,
-                        email=email
-                    )
+        r.new_algo.salt1 += os.urandom(32)
+        new_hash = btoi(compute_hash(r.new_algo, password))
+        new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
+
+        self.send(
+            functions.account.UpdatePasswordSettings(
+                password=types.InputCheckPasswordEmpty(),
+                new_settings=types.account.PasswordInputSettings(
+                    new_algo=r.new_algo,
+                    new_password_hash=new_hash,
+                    hint=hint,
+                    email=email
                 )
             )
-        else:
-            return False
+        )
+
+        return True

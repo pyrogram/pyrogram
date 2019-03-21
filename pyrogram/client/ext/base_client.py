@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -23,12 +23,13 @@ from threading import Lock
 
 from pyrogram import __version__
 from ..style import Markdown, HTML
-from ...api.core import Object
-from ...session import Session
 from ...session.internals import MsgId
 
 
 class BaseClient:
+    class StopTransmission(StopIteration):
+        pass
+
     APP_VERSION = "Pyrogram \U0001f525 {}".format(__version__)
 
     DEVICE_MODEL = "{} {}".format(
@@ -67,7 +68,7 @@ class BaseClient:
     }
 
     def __init__(self):
-        self.bot_token = None
+        self.is_bot = None
         self.dc_id = None
         self.auth_key = None
         self.user_id = None
@@ -90,6 +91,8 @@ class BaseClient:
         self.is_started = None
         self.is_idle = None
 
+        self.takeout_id = None
+
         self.updates_queue = Queue()
         self.updates_workers_list = []
         self.download_queue = Queue()
@@ -97,30 +100,32 @@ class BaseClient:
 
         self.disconnect_handler = None
 
-    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+    def send(self, *args, **kwargs):
         pass
 
-    def resolve_peer(self, peer_id: int or str):
+    def resolve_peer(self, *args, **kwargs):
         pass
 
-    def add_handler(self, handler, group: int = 0) -> tuple:
+    def fetch_peers(self, *args, **kwargs):
         pass
 
-    def save_file(
-            self,
-            path: str,
-            file_id: int = None,
-            file_part: int = 0,
-            progress: callable = None,
-            progress_args: tuple = ()
-    ):
+    def add_handler(self, *args, **kwargs):
         pass
 
-    def get_messages(
-            self,
-            chat_id: int or str,
-            message_ids: int or list = None,
-            reply_to_message_ids: int or list = None,
-            replies: int = 1
-    ):
+    def save_file(self, *args, **kwargs):
+        pass
+
+    def get_messages(self, *args, **kwargs):
+        pass
+
+    def get_history(self, *args, **kwargs):
+        pass
+
+    def get_dialogs(self, *args, **kwargs):
+        pass
+
+    def get_chat_members(self, *args, **kwargs):
+        pass
+
+    def get_chat_members_count(self, *args, **kwargs):
         pass

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -21,3 +21,10 @@ class Handler:
     def __init__(self, callback: callable, filters=None):
         self.callback = callback
         self.filters = filters
+
+    def check(self, update):
+        return (
+            self.filters(update)
+            if callable(self.filters)
+            else True
+        )

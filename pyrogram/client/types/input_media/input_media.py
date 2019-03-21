@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -18,7 +18,14 @@
 
 
 class InputMedia:
-    def __init__(self, media: str, caption: str, parse_mode: str):
+    __slots__ = ["media", "caption", "parse_mode"]
+
+    def __init__(
+        self,
+        media: str,
+        caption: str,
+        parse_mode: str
+    ):
         self.media = media
         self.caption = caption
         self.parse_mode = parse_mode

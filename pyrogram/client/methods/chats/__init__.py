@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -22,18 +22,23 @@ from .get_chat import GetChat
 from .get_chat_member import GetChatMember
 from .get_chat_members import GetChatMembers
 from .get_chat_members_count import GetChatMembersCount
+from .get_chat_preview import GetChatPreview
 from .get_dialogs import GetDialogs
+from .iter_chat_members import IterChatMembers
+from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
 from .kick_chat_member import KickChatMember
 from .leave_chat import LeaveChat
 from .pin_chat_message import PinChatMessage
 from .promote_chat_member import PromoteChatMember
+from .restrict_chat import RestrictChat
 from .restrict_chat_member import RestrictChatMember
 from .set_chat_description import SetChatDescription
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
+from .update_chat_username import UpdateChatUsername
 
 
 class Chats(
@@ -54,6 +59,11 @@ class Chats(
     PinChatMessage,
     UnpinChatMessage,
     GetDialogs,
-    GetChatMembersCount
+    GetChatMembersCount,
+    GetChatPreview,
+    IterDialogs,
+    IterChatMembers,
+    UpdateChatUsername,
+    RestrictChat
 ):
     pass

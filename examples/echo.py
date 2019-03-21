@@ -11,7 +11,7 @@ app = Client("my_account")
 
 @app.on_message(Filters.text & Filters.private)
 def echo(client, message):
-    message.reply(message.text, quote=True)
+    message.reply(message.text)
 
 
 app.run()  # Automatically start() and idle()

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -18,22 +18,30 @@
 
 import sys
 
-__copyright__ = "Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>".replace(
+if sys.version_info[:3] in [(3, 5, 0), (3, 5, 1), (3, 5, 2)]:
+    from .vendor import typing
+
+    # Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
+    sys.modules["typing"] = typing
+
+__copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8",
     "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
 )
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.9.2.dev1"
+__version__ = "0.12.0.develop"
 
 from .api.errors import Error
 from .client.types import (
     Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
-    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, Update, User, UserStatus,
+    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
     InlineQuery, InlineQueryResult, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent,
-    InlineQueryResultCachedAudio, InputMessageContent
+    InlineQueryResultCachedAudio, InputMessageContent, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton,
+    ReplyKeyboardMarkup, ReplyKeyboardRemove, Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation,
+    Game, CallbackGame, GameHighScore, GameHighScores, ChatPermissions
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,

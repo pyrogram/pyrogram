@@ -18,23 +18,23 @@ Install Pyrogram
 
     .. code-block:: text
 
-        $ pip3 install --upgrade pyrogram
+        $ pip3 install -U pyrogram
 
 -   or, with TgCrypto_ as extra requirement (recommended):
 
     .. code-block:: text
 
-        $ pip3 install --upgrade pyrogram[fast]
+        $ pip3 install -U pyrogram[fast]
 
 Bleeding Edge
 -------------
 
 If you want the latest development version of Pyrogram, you can install it straight from the develop_
-branch using this command (you might need to install **git** first):
+branch using this command (note "develop.zip" in the link):
 
 .. code-block:: text
 
-    $ pip3 install --upgrade git+https://github.com/pyrogram/pyrogram.git
+    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip
 
 Asynchronous
 ------------
@@ -43,11 +43,11 @@ Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging 
 where asyncio shines the most by providing extra performance while running on a single OS-level thread only.
 
 **A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5+ required).
-Use this command to install:
+Use this command to install (note "asyncio.zip" in the link):
 
 .. code-block:: text
 
-    $ pip3 install --upgrade git+https://github.com/pyrogram/pyrogram.git@asyncio
+    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/asyncio.zip
 
 
 Pyrogram API remains the same and features are kept up to date from the non-async, default develop branch, but you
@@ -82,7 +82,7 @@ If no error shows up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.9.1'
+    '0.12.0'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
 .. _develop: http://github.com/pyrogram/pyrogram

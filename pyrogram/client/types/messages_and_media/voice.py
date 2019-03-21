@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from struct import pack
+
+import pyrogram
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ...ext.utils import encode
 
 
-class Voice(Object):
+class Voice(PyrogramType):
     """This object represents a voice note.
 
     Args:
@@ -42,19 +47,44 @@ class Voice(Object):
             Date the voice was sent in Unix time.
     """
 
-    ID = 0xb0700009
+    __slots__ = ["file_id", "duration", "waveform", "mime_type", "file_size", "date"]
 
     def __init__(
-            self,
-            file_id: str,
-            duration: int,
-            waveform: bytes = None,
-            mime_type: str = None,
-            file_size: int = None,
-            date: int = None):
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        duration: int,
+        waveform: bytes = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
+    ):
+        super().__init__(client)
+
         self.file_id = file_id
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
+
+    @staticmethod
+    def _parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
+        return Voice(
+            file_id=encode(
+                pack(
+                    "<iiqq",
+                    3,
+                    voice.dc_id,
+                    voice.id,
+                    voice.access_hash
+                )
+            ),
+            duration=attributes.duration,
+            mime_type=voice.mime_type,
+            file_size=voice.size,
+            waveform=attributes.waveform,
+            date=voice.date,
+            client=client
+        )

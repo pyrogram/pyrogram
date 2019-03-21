@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -23,7 +23,8 @@ from .bots import (
 )
 from .bots import (
     ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, CallbackGame,
+    GameHighScore, GameHighScores
 )
 from .input_media import (
     InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
@@ -32,10 +33,10 @@ from .input_media import (
 from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
     Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
-    Message, Messages, MessageEntity
+    Message, Messages, MessageEntity, Poll, PollOption, Game
 )
-from .update import Update
+from .update import StopPropagation, ContinuePropagation
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User, UserStatus
+    Dialog, Dialogs, User, UserStatus, ChatPreview, ChatPermissions
 )

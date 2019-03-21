@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -20,7 +20,7 @@ from . import InputMedia
 
 
 class InputMediaAudio(InputMedia):
-    """This object represents a video to be sent inside an album.
+    """This object represents an audio to be sent inside an album.
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
     Args:
@@ -53,14 +53,18 @@ class InputMediaAudio(InputMedia):
             Title of the audio
     """
 
-    def __init__(self,
-                 media: str,
-                 thumb: str = None,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 duration: int = 0,
-                 performer: int = "",
-                 title: str = ""):
+    __slots__ = ["thumb", "duration", "performer", "title"]
+
+    def __init__(
+        self,
+        media: str,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        performer: int = "",
+        title: str = ""
+    ):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb

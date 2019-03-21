@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,12 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class GetMe(BaseClient):
-    def get_me(self):
+    def get_me(self) -> "pyrogram.User":
         """A simple method for testing your authorization. Requires no parameters.
 
         Returns:
@@ -30,10 +31,11 @@ class GetMe(BaseClient):
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
-        return utils.parse_user(
+        return pyrogram.User._parse(
+            self,
             self.send(
                 functions.users.GetFullUser(
-                    types.InputPeerSelf()
+                    id=types.InputPeerSelf()
                 )
             ).user
         )

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -17,10 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
+from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
@@ -28,14 +29,17 @@ from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
     InputMediaAnimation, InputMediaDocument
 )
+from pyrogram.client.types.input_media import InputMedia
 
 
 class EditMessageMedia(BaseClient):
-    def edit_message_media(self,
-                           chat_id: int or str,
-                           message_id: int,
-                           media,
-                           reply_markup=None):
+    def edit_message_media(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        media: InputMedia,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> "pyrogram.Message":
         """Use this method to edit audio, document, photo, or video messages.
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
@@ -81,7 +85,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaPhoto(
                     id=types.InputPhoto(
                         id=media.photo.id,
-                        access_hash=media.photo.access_hash
+                        access_hash=media.photo.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -107,7 +112,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaPhoto(
                         id=types.InputPhoto(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -117,7 +123,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
+                            mime_type="video/mp4",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -126,7 +133,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -135,7 +144,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -161,7 +171,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -171,7 +182,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "audio/mpeg"),
+                            mime_type="audio/mpeg",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
@@ -179,7 +191,9 @@ class EditMessageMedia(BaseClient):
                                     performer=media.performer,
                                     title=media.title
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -188,7 +202,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -214,7 +229,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -224,7 +240,8 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map[".mp4"],
+                            mime_type="video/mp4",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -233,7 +250,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media)),
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                ),
                                 types.DocumentAttributeAnimated()
                             ]
                         )
@@ -243,7 +262,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -269,7 +289,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -279,10 +300,13 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type=mimetypes.types_map.get("." + media.media.split(".")[-1], "text/plain"),
+                            mime_type="application/zip",
+                            thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -291,7 +315,8 @@ class EditMessageMedia(BaseClient):
                 media = types.InputMediaDocument(
                     id=types.InputDocument(
                         id=media.document.id,
-                        access_hash=media.document.access_hash
+                        access_hash=media.document.access_hash,
+                        file_reference=b""
                     )
                 )
             elif media.media.startswith("http"):
@@ -317,7 +342,8 @@ class EditMessageMedia(BaseClient):
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
                             id=unpacked[2],
-                            access_hash=unpacked[3]
+                            access_hash=unpacked[3],
+                            file_reference=b""
                         )
                     )
 
@@ -333,7 +359,7 @@ class EditMessageMedia(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

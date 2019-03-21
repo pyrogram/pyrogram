@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -41,9 +41,7 @@ class TCPIntermediateO(TCP):
         while True:
             nonce = bytearray(os.urandom(64))
 
-            if (nonce[0] != b"\xef"
-                    and nonce[:4] not in self.RESERVED
-                    and nonce[4:4] != b"\x00" * 4):
+            if nonce[0] != b"\xef" and nonce[:4] not in self.RESERVED and nonce[4:4] != b"\x00" * 4:
                 nonce[56] = nonce[57] = nonce[58] = nonce[59] = 0xee
                 break
 

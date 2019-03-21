@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
 from pyrogram.api.types import ReplyKeyboardForceReply
+from ..pyrogram_type import PyrogramType
 
 
-class ForceReply(Object):
+class ForceReply(PyrogramType):
     """Upon receiving a message with this object, Telegram clients will display a reply interface to the user
     (act as if the user has selected the bot's message and tapped 'Reply').
     This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to
@@ -33,13 +33,18 @@ class ForceReply(Object):
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
     """
 
-    ID = 0xb0700018
+    __slots__ = ["selective"]
 
-    def __init__(self, selective: bool = None):
+    def __init__(
+        self,
+        selective: bool = None
+    ):
+        super().__init__(None)
+
         self.selective = selective
 
     @staticmethod
-    def read(o, *args):
+    def read(o):
         return ForceReply(
             selective=o.selective
         )

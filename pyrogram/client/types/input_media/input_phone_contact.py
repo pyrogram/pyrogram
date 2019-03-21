@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -35,10 +35,20 @@ class InputPhoneContact:
             Contact's last name
     """
 
-    def __init__(self, phone: str, first_name: str, last_name: str = ""):
+    __slots__ = []
+
+    def __init__(
+        self,
+        phone: str,
+        first_name: str,
+        last_name: str = ""
+    ):
         pass
 
-    def __new__(cls, phone: str, first_name: str, last_name: str = ""):
+    def __new__(cls,
+                phone: str,
+                first_name: str,
+                last_name: str = ""):
         return RawInputPhoneContact(
             client_id=MsgId(),
             phone="+" + phone.strip("+"),

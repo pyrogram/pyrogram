@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,14 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from hashlib import sha256
-
 from pyrogram.api import functions, types
+from .utils import compute_check
 from ...ext import BaseClient
 
 
 class RemoveCloudPassword(BaseClient):
-    def remove_cloud_password(self, password: str):
+    def remove_cloud_password(
+        self,
+        password: str
+    ) -> bool:
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
@@ -31,25 +33,26 @@ class RemoveCloudPassword(BaseClient):
                 Your current password.
 
         Returns:
-            True on success, False otherwise.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` in case there is no cloud password to remove.
         """
         r = self.send(functions.account.GetPassword())
 
-        if isinstance(r, types.account.Password):
-            password_hash = sha256(r.current_salt + password.encode() + r.current_salt).digest()
+        if not r.has_password:
+            raise ValueError("There is no cloud password to remove")
 
-            return self.send(
-                functions.account.UpdatePasswordSettings(
-                    current_password_hash=password_hash,
-                    new_settings=types.account.PasswordInputSettings(
-                        new_salt=b"",
-                        new_password_hash=b"",
-                        hint=""
-                    )
+        self.send(
+            functions.account.UpdatePasswordSettings(
+                password=compute_check(r, password),
+                new_settings=types.account.PasswordInputSettings(
+                    new_algo=types.PasswordKdfAlgoUnknown(),
+                    new_password_hash=b"",
+                    hint=""
                 )
             )
-        else:
-            return False
+        )
+
+        return True

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,8 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient, utils
+from ...ext import BaseClient
 
 
 class Filters:
@@ -30,16 +33,20 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(self,
-                         chat_id: int or str,
-                         offset: int = 0,
-                         limit: int = 200,
-                         query: str = "",
-                         filter: str = Filters.ALL):
-        """Use this method to get the members list of a chat.
+    def get_chat_members(
+        self,
+        chat_id: Union[int, str],
+        offset: int = 0,
+        limit: int = 200,
+        query: str = "",
+        filter: str = Filters.ALL
+    ) -> "pyrogram.ChatMembers":
+        """Use this method to get a chunk of the members list of a chat.
 
+        You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.
         You must be admin to retrieve the members list of a channel (also known as "subscribers").
+        For a more convenient way of getting chat members see :meth:`iter_chat_members`.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -83,10 +90,11 @@ class GetChatMembers(BaseClient):
         peer = self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers._parse(
+                self,
                 self.send(
                     functions.messages.GetFullChat(
-                        peer.chat_id
+                        chat_id=peer.chat_id
                     )
                 )
             )
@@ -108,7 +116,8 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return utils.parse_chat_members(
+            return pyrogram.ChatMembers._parse(
+                self,
                 self.send(
                     functions.channels.GetParticipants(
                         channel=peer,

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -21,6 +21,7 @@ from .get_me import GetMe
 from .get_user_profile_photos import GetUserProfilePhotos
 from .get_users import GetUsers
 from .set_user_profile_photo import SetUserProfilePhoto
+from .update_username import UpdateUsername
 
 
 class Users(
@@ -28,6 +29,7 @@ class Users(
     SetUserProfilePhoto,
     DeleteUserProfilePhotos,
     GetUsers,
-    GetMe
+    GetMe,
+    UpdateUsername
 ):
     pass

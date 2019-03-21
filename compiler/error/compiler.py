@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -73,7 +73,7 @@ def start():
                 f_init.write("from .{}_{} import *\n".format(name.lower(), code))
 
             with open("{}/source/{}".format(HOME, i), encoding="utf-8") as f_csv, \
-                    open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
+                open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
                 reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)

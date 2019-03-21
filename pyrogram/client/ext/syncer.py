@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -94,6 +94,7 @@ class Syncer:
                 auth_key=auth_key,
                 user_id=client.user_id,
                 date=int(time.time()),
+                is_bot=client.is_bot,
                 peers_by_id={
                     k: getattr(v, "access_hash", None)
                     for k, v in client.peers_by_id.copy().items()

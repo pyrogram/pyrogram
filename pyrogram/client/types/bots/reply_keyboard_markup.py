@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,15 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from typing import List, Union
 
 from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
-
 from . import KeyboardButton
+from ..pyrogram_type import PyrogramType
 
 
-class ReplyKeyboardMarkup(Object):
+class ReplyKeyboardMarkup(PyrogramType):
     """This object represents a custom keyboard with reply options.
 
     Args:
@@ -49,22 +49,24 @@ class ReplyKeyboardMarkup(Object):
             select the new language. Other users in the group don't see the keyboard.
     """
 
-    ID = 0xb0700022
+    __slots__ = ["keyboard", "resize_keyboard", "one_time_keyboard", "selective"]
 
     def __init__(
-            self,
-            keyboard: list,
-            resize_keyboard: bool = None,
-            one_time_keyboard: bool = None,
-            selective: bool = None
+        self,
+        keyboard: List[List[Union[KeyboardButton, str]]],
+        resize_keyboard: bool = None,
+        one_time_keyboard: bool = None,
+        selective: bool = None
     ):
+        super().__init__(None)
+
         self.keyboard = keyboard
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
 
     @staticmethod
-    def read(kb, *args):
+    def read(kb):
         keyboard = []
 
         for i in kb.rows:
@@ -85,9 +87,11 @@ class ReplyKeyboardMarkup(Object):
     def write(self):
         return RawReplyKeyboardMarkup(
             rows=[KeyboardButtonRow(
-                [KeyboardButton(j).write()
-                 if isinstance(j, str) else j.write()
-                 for j in i]
+                buttons=[
+                    KeyboardButton(j).write()
+                    if isinstance(j, str) else j.write()
+                    for j in i
+                ]
             ) for i in self.keyboard],
             resize=self.resize_keyboard or None,
             single_use=self.one_time_keyboard or None,

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,12 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
 class GetChatMembersCount(BaseClient):
-    def get_chat_members_count(self, chat_id: int or str):
+    def get_chat_members_count(
+        self,
+        chat_id: Union[int, str]
+    ) -> int:
         """Use this method to get the number of members in a chat.
 
         Args:

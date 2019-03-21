@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,13 +16,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
-
 from pyrogram.api.types import KeyboardButton as RawKeyboardButton
 from pyrogram.api.types import KeyboardButtonRequestPhone, KeyboardButtonRequestGeoLocation
+from ..pyrogram_type import PyrogramType
 
 
-class KeyboardButton(Object):
+class KeyboardButton(PyrogramType):
     """This object represents one button of the reply keyboard.
     For simple text buttons String can be used instead of this object to specify text of the button.
     Optional fields are mutually exclusive.
@@ -41,27 +40,34 @@ class KeyboardButton(Object):
             Available in private chats only.
     """
 
-    ID = 0xb0700021
+    __slots__ = ["text", "request_contact", "request_location"]
 
-    def __init__(self, text: str, request_contact: bool = None, request_location: bool = None):
-        self.text = text
+    def __init__(
+        self,
+        text: str,
+        request_contact: bool = None,
+        request_location: bool = None
+    ):
+        super().__init__(None)
+
+        self.text = str(text)
         self.request_contact = request_contact
         self.request_location = request_location
 
     @staticmethod
-    def read(b, *args):
-        if isinstance(b, RawKeyboardButton):
-            return b.text
+    def read(o):
+        if isinstance(o, RawKeyboardButton):
+            return o.text
 
-        if isinstance(b, KeyboardButtonRequestPhone):
+        if isinstance(o, KeyboardButtonRequestPhone):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_contact=True
             )
 
-        if isinstance(b, KeyboardButtonRequestGeoLocation):
+        if isinstance(o, KeyboardButtonRequestGeoLocation):
             return KeyboardButton(
-                text=b.text,
+                text=o.text,
                 request_location=True
             )
 
@@ -69,8 +75,8 @@ class KeyboardButton(Object):
         # TODO: Enforce optional args mutual exclusiveness
 
         if self.request_contact:
-            return KeyboardButtonRequestPhone(self.text)
+            return KeyboardButtonRequestPhone(text=self.text)
         elif self.request_location:
-            return KeyboardButtonRequestGeoLocation(self.text)
+            return KeyboardButtonRequestGeoLocation(text=self.text)
         else:
-            return RawKeyboardButton(self.text)
+            return RawKeyboardButton(text=self.text)

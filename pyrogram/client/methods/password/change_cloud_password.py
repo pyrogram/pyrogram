@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -17,14 +17,19 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from hashlib import sha256
 
 from pyrogram.api import functions, types
+from .utils import compute_hash, compute_check, btoi, itob
 from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(self, current_password: str, new_password: str, new_hint: str = ""):
+    def change_cloud_password(
+        self,
+        current_password: str,
+        new_password: str,
+        new_hint: str = ""
+    ) -> bool:
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
@@ -38,28 +43,30 @@ class ChangeCloudPassword(BaseClient):
                 A new password hint.
 
         Returns:
-            True on success, False otherwise.
+            True on success.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            ``ValueError`` in case there is no cloud password to change.
         """
         r = self.send(functions.account.GetPassword())
 
-        if isinstance(r, types.account.Password):
-            current_password_hash = sha256(r.current_salt + current_password.encode() + r.current_salt).digest()
+        if not r.has_password:
+            raise ValueError("There is no cloud password to change")
 
-            new_salt = r.new_salt + os.urandom(8)
-            new_password_hash = sha256(new_salt + new_password.encode() + new_salt).digest()
+        r.new_algo.salt1 += os.urandom(32)
+        new_hash = btoi(compute_hash(r.new_algo, new_password))
+        new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-            return self.send(
-                functions.account.UpdatePasswordSettings(
-                    current_password_hash=current_password_hash,
-                    new_settings=types.account.PasswordInputSettings(
-                        new_salt=new_salt,
-                        new_password_hash=new_password_hash,
-                        hint=new_hint
-                    )
+        self.send(
+            functions.account.UpdatePasswordSettings(
+                password=compute_check(r, current_password),
+                new_settings=types.account.PasswordInputSettings(
+                    new_algo=r.new_algo,
+                    new_password_hash=new_hash,
+                    hint=new_hint
                 )
             )
-        else:
-            return False
+        )
+
+        return True

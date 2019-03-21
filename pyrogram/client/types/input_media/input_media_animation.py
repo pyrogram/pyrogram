@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -52,14 +52,18 @@ class InputMediaAnimation(InputMedia):
             Animation duration.
     """
 
-    def __init__(self,
-                 media: str,
-                 thumb: str = None,
-                 caption: str = "",
-                 parse_mode: str = "",
-                 width: int = 0,
-                 height: int = 0,
-                 duration: int = 0):
+    __slots__ = ["thumb", "width", "height", "duration"]
+
+    def __init__(
+        self,
+        media: str,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        width: int = 0,
+        height: int = 0,
+        duration: int = 0
+    ):
         super().__init__(media, caption, parse_mode)
 
         self.thumb = thumb

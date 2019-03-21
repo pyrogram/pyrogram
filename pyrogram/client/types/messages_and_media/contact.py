@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
 
 
-class Contact(Object):
+class Contact(PyrogramType):
     """This object represents a phone contact.
 
     Args:
@@ -39,18 +42,33 @@ class Contact(Object):
             Additional data about the contact in the form of a vCard.
     """
 
-    ID = 0xb0700011
+    __slots__ = ["phone_number", "first_name", "last_name", "user_id", "vcard"]
 
     def __init__(
-            self,
-            phone_number: str,
-            first_name: str,
-            last_name: str = None,
-            user_id: int = None,
-            vcard: str = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        phone_number: str,
+        first_name: str,
+        last_name: str = None,
+        user_id: int = None,
+        vcard: str = None
     ):
+        super().__init__(client)
+
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
         self.user_id = user_id
         self.vcard = vcard
+
+    @staticmethod
+    def _parse(client, contact: types.MessageMediaContact) -> "Contact":
+        return Contact(
+            phone_number=contact.phone_number,
+            first_name=contact.first_name,
+            last_name=contact.last_name or None,
+            vcard=contact.vcard or None,
+            user_id=contact.user_id or None,
+            client=client
+        )

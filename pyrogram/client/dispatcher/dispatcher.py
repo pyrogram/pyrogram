@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -22,6 +22,7 @@ from collections import OrderedDict
 from queue import Queue
 from threading import Thread
 
+import pyrogram
 from pyrogram.api import types
 from ..ext import utils
 from ..handlers import (
@@ -43,7 +44,7 @@ class Dispatcher:
         types.UpdateEditChannelMessage
     )
 
-    DELETE_MESSAGE_UPDATES = (
+    DELETE_MESSAGES_UPDATES = (
         types.UpdateDeleteMessages,
         types.UpdateDeleteChannelMessages
     )
@@ -55,34 +56,34 @@ class Dispatcher:
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
 
-    UPDATES = None
-
     def __init__(self, client, workers: int):
         self.client = client
         self.workers = workers
 
         self.workers_list = []
-        self.updates = Queue()
+        self.updates_queue = Queue()
         self.groups = OrderedDict()
 
-        Dispatcher.UPDATES = {
+        self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_messages(self.client, upd.message, usr, cht), MessageHandler),
+                lambda upd, usr, cht: (pyrogram.Message._parse(self.client, upd.message, usr, cht), MessageHandler),
 
-            Dispatcher.DELETE_MESSAGE_UPDATES:
-                lambda upd, usr, cht: (utils.parse_deleted_messages(upd), DeletedMessagesHandler),
+            Dispatcher.DELETE_MESSAGES_UPDATES:
+                lambda upd, usr, cht: (pyrogram.Messages._parse_deleted(self.client, upd), DeletedMessagesHandler),
 
             Dispatcher.CALLBACK_QUERY_UPDATES:
-                lambda upd, usr, cht: (utils.parse_callback_query(self.client, upd, usr), CallbackQueryHandler),
+                lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
 
             (types.UpdateUserStatus,):
-                lambda upd, usr, cht: (utils.parse_user_status(upd.status, upd.user_id), UserStatusHandler),
+                lambda upd, usr, cht: (
+                    pyrogram.UserStatus._parse(self.client, upd.status, upd.user_id), UserStatusHandler
+                ),
 
             (types.UpdateBotInlineQuery,):
                 lambda upd, usr, cht: (utils.parse_inline_query(self.client, upd, usr), InlineQueryHandler)
         }
 
-        Dispatcher.UPDATES = {key: value for key_tuple, value in Dispatcher.UPDATES.items() for key in key_tuple}
+        self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
     def start(self):
         for i in range(self.workers):
@@ -97,7 +98,7 @@ class Dispatcher:
 
     def stop(self):
         for _ in range(self.workers):
-            self.updates.put(None)
+            self.updates_queue.put(None)
 
         for worker in self.workers_list:
             worker.join()
@@ -122,7 +123,7 @@ class Dispatcher:
         log.debug("{} started".format(name))
 
         while True:
-            update = self.updates.get()
+            update = self.updates_queue.get()
 
             if update is None:
                 break
@@ -132,32 +133,39 @@ class Dispatcher:
                 chats = {i.id: i for i in update[2]}
                 update = update[0]
 
-                parser = Dispatcher.UPDATES.get(type(update), None)
+                parser = self.update_parsers.get(type(update), None)
 
-                if parser is None:
-                    continue
-
-                update, handler_type = parser(update, users, chats)
+                parsed_update, handler_type = (
+                    parser(update, users, chats)
+                    if parser is not None
+                    else (None, type(None))
+                )
 
                 for group in self.groups.values():
                     for handler in group:
                         args = None
 
-                        if isinstance(handler, RawUpdateHandler):
+                        if isinstance(handler, handler_type):
+                            if handler.check(parsed_update):
+                                args = (parsed_update,)
+                        elif isinstance(handler, RawUpdateHandler):
                             args = (update, users, chats)
-                        elif isinstance(handler, handler_type):
-                            if handler.check(update):
-                                args = (update,)
 
                         if args is None:
                             continue
 
                         try:
                             handler.callback(self.client, *args)
+                        except pyrogram.StopPropagation:
+                            raise
+                        except pyrogram.ContinuePropagation:
+                            continue
                         except Exception as e:
                             log.error(e, exc_info=True)
-                        finally:
-                            break
+
+                        break
+            except pyrogram.StopPropagation:
+                pass
             except Exception as e:
                 log.error(e, exc_info=True)
 

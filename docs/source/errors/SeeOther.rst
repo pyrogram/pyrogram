@@ -1,5 +1,5 @@
-See Other
-=========
+303 - See Other
+===============
 
 .. module:: pyrogram.api.errors.SeeOther
 

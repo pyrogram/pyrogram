@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from collections import OrderedDict
 
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
@@ -37,12 +38,12 @@ class HTML:
     def __init__(self, peers_by_id: dict = None):
         self.peers_by_id = peers_by_id or {}
 
-    def parse(self, text):
+    def parse(self, message: str):
         entities = []
-        text = utils.add_surrogates(text)
+        message = utils.add_surrogates(str(message or ""))
         offset = 0
 
-        for match in self.HTML_RE.finditer(text):
+        for match in self.HTML_RE.finditer(message):
             start = match.start() - offset
             style, url, body = match.group(1, 3, 4)
 
@@ -54,31 +55,32 @@ class HTML:
                     input_user = self.peers_by_id.get(user_id, None)
 
                     entity = (
-                        Mention(start, len(body), input_user)
-                        if input_user else MentionInvalid(start, len(body), user_id)
+                        Mention(offset=start, length=len(body), user_id=input_user)
+                        if input_user else MentionInvalid(offset=start, length=len(body), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(body), url)
+                    entity = Url(offset=start, length=len(body), url=url)
             else:
                 if style == "b" or style == "strong":
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == "i" or style == "em":
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == "code":
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == "pre":
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 
             entities.append(entity)
-            text = text.replace(match.group(), body)
+            message = message.replace(match.group(), body)
             offset += len(style) * 2 + 5 + (len(url) + 8 if url else 0)
 
-        return dict(
-            message=utils.remove_surrogates(text),
-            entities=entities
-        )
+        # TODO: OrderedDict to be removed in Python3.6
+        return OrderedDict([
+            ("message", utils.remove_surrogates(message)),
+            ("entities", entities)
+        ])
 
     def unparse(self, message: str, entities: list):
         message = utils.add_surrogates(message).strip()

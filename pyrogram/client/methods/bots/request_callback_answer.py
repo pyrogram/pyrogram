@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,15 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
 
 class RequestCallbackAnswer(BaseClient):
-    def request_callback_answer(self,
-                                chat_id: int or str,
-                                message_id: int,
-                                callback_data: str):
+    def request_callback_answer(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        callback_data: bytes
+    ):
         """Use this method to request a callback answer from bots. This is the equivalent of clicking an
         inline button containing callback data.
 
@@ -37,7 +41,7 @@ class RequestCallbackAnswer(BaseClient):
             message_id (``int``):
                 The message id the inline keyboard is attached on.
 
-            callback_data (``str``):
+            callback_data (``bytes``):
                 Callback data associated with the inline button you want to get the answer from.
 
         Returns:
@@ -52,7 +56,7 @@ class RequestCallbackAnswer(BaseClient):
             functions.messages.GetBotCallbackAnswer(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                data=callback_data.encode()
+                data=callback_data
             ),
             retries=0,
             timeout=10

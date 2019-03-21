@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+import pyrogram
+
+from pyrogram.api import types
+from ..pyrogram_type import PyrogramType
+from ..update import Update
 
 
-class UserStatus(Object):
+class UserStatus(PyrogramType, Update):
     """This object represents a User status (Last Seen privacy).
 
     .. note::
@@ -28,8 +32,8 @@ class UserStatus(Object):
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
     Args:
-        user_id (``int``, *optional*):
-            User's id. Only available for incoming UserStatus updates.
+        user_id (``int``):
+            User's id.
 
         online (``bool``, *optional*):
             True if the user is online in this very moment, None otherwise.
@@ -61,19 +65,23 @@ class UserStatus(Object):
             always shown to blocked users), None otherwise.
     """
 
-    ID = 0xb0700031
+    __slots__ = ["user_id", "online", "offline", "date", "recently", "within_week", "within_month", "long_time_ago"]
 
     def __init__(
-            self,
-            user_id: int = None,
-            online: bool = None,
-            offline: bool = None,
-            date: int = None,
-            recently: bool = None,
-            within_week: bool = None,
-            within_month: bool = None,
-            long_time_ago: bool = None
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        user_id: int,
+        online: bool = None,
+        offline: bool = None,
+        date: int = None,
+        recently: bool = None,
+        within_week: bool = None,
+        within_month: bool = None,
+        long_time_ago: bool = None
     ):
+        super().__init__(client)
+
         self.user_id = user_id
         self.online = online
         self.offline = offline
@@ -82,3 +90,27 @@ class UserStatus(Object):
         self.within_week = within_week
         self.within_month = within_month
         self.long_time_ago = long_time_ago
+
+    @staticmethod
+    def _parse(client, user_status, user_id: int, is_bot: bool = False):
+        if is_bot:
+            return None
+
+        status = UserStatus(user_id=user_id, client=client)
+
+        if isinstance(user_status, types.UserStatusOnline):
+            status.online = True
+            status.date = user_status.expires
+        elif isinstance(user_status, types.UserStatusOffline):
+            status.offline = True
+            status.date = user_status.was_online
+        elif isinstance(user_status, types.UserStatusRecently):
+            status.recently = True
+        elif isinstance(user_status, types.UserStatusLastWeek):
+            status.within_week = True
+        elif isinstance(user_status, types.UserStatusLastMonth):
+            status.within_month = True
+        else:
+            status.long_time_ago = True
+
+        return status

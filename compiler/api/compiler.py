@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -26,7 +26,7 @@ NOTICE_PATH = "NOTICE"
 SECTION_RE = re.compile(r"---(\w+)---")
 LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
 COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);(?: // Docs: (.+))?$", re.MULTILINE)
-ARGS_RE = re.compile("[^{](\w+):([\w?!.<>]+)")
+ARGS_RE = re.compile("[^{](\w+):([\w?!.<>#]+)")
 FLAGS_RE = re.compile(r"flags\.(\d+)\?")
 FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
 FLAGS_RE_3 = re.compile(r"flags:#")
@@ -171,8 +171,8 @@ def start():
     shutil.rmtree("{}/functions".format(DESTINATION), ignore_errors=True)
 
     with open("{}/source/auth_key.tl".format(HOME), encoding="utf-8") as auth, \
-            open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
-            open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
+        open("{}/source/sys_msgs.tl".format(HOME), encoding="utf-8") as system, \
+        open("{}/source/main_api.tl".format(HOME), encoding="utf-8") as api:
         schema = (auth.read() + system.read() + api.read()).splitlines()
 
     with open("{}/template/mtproto.txt".format(HOME), encoding="utf-8") as f:
@@ -287,18 +287,23 @@ def start():
 
         sorted_args = sort_args(c.args)
 
-        arguments = ", " + ", ".join(
-            [get_argument_type(i) for i in sorted_args]
-        ) if c.args else ""
+        arguments = (
+                ", "
+                + ("*, " if c.args else "")
+                + (", ".join([get_argument_type(i) for i in sorted_args if i != ("flags", "#")]) if c.args else "")
+        )
 
         fields = "\n        ".join(
-            ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in c.args]
+            ["self.{0} = {0}  # {1}".format(i[0], i[1]) for i in c.args if i != ("flags", "#")]
         ) if c.args else "pass"
 
         docstring_args = []
         docs = c.docs.split("|")[1:] if c.docs else None
 
         for i, arg in enumerate(sorted_args):
+            if arg == ("flags", "#"):
+                continue
+
             arg_name, arg_type = arg
             is_optional = FLAGS_RE.match(arg_type)
             flag_number = is_optional.group(1) if is_optional else -1
@@ -338,27 +343,30 @@ def start():
             if references:
                 docstring_args += "\n\n    See Also:\n        This object can be returned by " + references + "."
 
-        if c.has_flags:
-            write_flags = []
-            for i in c.args:
-                flag = FLAGS_RE.match(i[1])
-                if flag:
-                    write_flags.append("flags |= (1 << {}) if self.{} is not None else 0".format(flag.group(1), i[0]))
-
-            write_flags = "\n        ".join([
-                "flags = 0",
-                "\n        ".join(write_flags),
-                "b.write(Int(flags))"
-            ])
-        else:
-            write_flags = "# No flags"
-
-        read_flags = "flags = Int.read(b)" if c.has_flags else "# No flags"
-
-        write_types = read_types = ""
+        write_types = read_types = "" if c.has_flags else "# No flags\n        "
 
         for arg_name, arg_type in c.args:
             flag = FLAGS_RE_2.findall(arg_type)
+
+            if arg_name == "flags" and arg_type == "#":
+                write_flags = []
+
+                for i in c.args:
+                    flag = FLAGS_RE.match(i[1])
+                    if flag:
+                        write_flags.append(
+                            "flags |= (1 << {}) if self.{} is not None else 0".format(flag.group(1), i[0]))
+
+                write_flags = "\n        ".join([
+                    "flags = 0",
+                    "\n        ".join(write_flags),
+                    "b.write(Int(flags))\n        "
+                ])
+
+                write_types += write_flags
+                read_types += "flags = Int.read(b)\n        "
+
+                continue
 
             if flag:
                 index, flag_type = flag[0]
@@ -448,11 +456,13 @@ def start():
                         object_id=c.id,
                         arguments=arguments,
                         fields=fields,
-                        read_flags=read_flags,
                         read_types=read_types,
-                        write_flags=write_flags,
                         write_types=write_types,
-                        return_arguments=", ".join([i[0] for i in sorted_args])
+                        return_arguments=", ".join(
+                            ["{0}={0}".format(i[0]) for i in sorted_args if i != ("flags", "#")]
+                        ),
+                        slots=", ".join(['"{}"'.format(i[0]) for i in sorted_args if i != ("flags", "#")]),
+                        qualname="{}{}".format("{}.".format(c.namespace) if c.namespace else "", c.name)
                     )
                 )
 
@@ -474,40 +484,6 @@ def start():
         f.write("\n    0x0949d9dc: \"pyrogram.api.core.FutureSalt\",")
         f.write("\n    0x3072cfa1: \"pyrogram.api.core.GzipPacked\",")
         f.write("\n    0x5bb8e511: \"pyrogram.api.core.Message\",")
-
-        f.write("\n    0xb0700000: \"pyrogram.client.types.Update\",")
-        f.write("\n    0xb0700001: \"pyrogram.client.types.User\",")
-        f.write("\n    0xb0700002: \"pyrogram.client.types.Chat\",")
-        f.write("\n    0xb0700003: \"pyrogram.client.types.Message\",")
-        f.write("\n    0xb0700004: \"pyrogram.client.types.MessageEntity\",")
-        f.write("\n    0xb0700005: \"pyrogram.client.types.PhotoSize\",")
-        f.write("\n    0xb0700006: \"pyrogram.client.types.Audio\",")
-        f.write("\n    0xb0700007: \"pyrogram.client.types.Document\",")
-        f.write("\n    0xb0700008: \"pyrogram.client.types.Video\",")
-        f.write("\n    0xb0700009: \"pyrogram.client.types.Voice\",")
-        f.write("\n    0xb0700010: \"pyrogram.client.types.VideoNote\",")
-        f.write("\n    0xb0700011: \"pyrogram.client.types.Contact\",")
-        f.write("\n    0xb0700012: \"pyrogram.client.types.Location\",")
-        f.write("\n    0xb0700013: \"pyrogram.client.types.Venue\",")
-        f.write("\n    0xb0700014: \"pyrogram.client.types.UserProfilePhotos\",")
-        f.write("\n    0xb0700015: \"pyrogram.client.types.ChatPhoto\",")
-        f.write("\n    0xb0700016: \"pyrogram.client.types.ChatMember\",")
-        f.write("\n    0xb0700017: \"pyrogram.client.types.Sticker\",")
-        f.write("\n    0xb0700018: \"pyrogram.client.types.bots.ForceReply\",")
-        f.write("\n    0xb0700019: \"pyrogram.client.types.bots.InlineKeyboardButton\",")
-        f.write("\n    0xb0700020: \"pyrogram.client.types.bots.InlineKeyboardMarkup\",")
-        f.write("\n    0xb0700021: \"pyrogram.client.types.bots.KeyboardButton\",")
-        f.write("\n    0xb0700022: \"pyrogram.client.types.bots.ReplyKeyboardMarkup\",")
-        f.write("\n    0xb0700023: \"pyrogram.client.types.bots.ReplyKeyboardRemove\",")
-        f.write("\n    0xb0700024: \"pyrogram.client.types.CallbackQuery\",")
-        f.write("\n    0xb0700025: \"pyrogram.client.types.Animation\",")
-        f.write("\n    0xb0700026: \"pyrogram.client.types.Messages\",")
-        f.write("\n    0xb0700027: \"pyrogram.client.types.Photo\",")
-        f.write("\n    0xb0700028: \"pyrogram.client.types.Dialog\",")
-        f.write("\n    0xb0700029: \"pyrogram.client.types.Dialogs\",")
-        f.write("\n    0xb0700030: \"pyrogram.client.types.ChatMembers\",")
-        f.write("\n    0xb0700031: \"pyrogram.client.types.UserStatus\",")
-        f.write("\n    0xb0700032: \"pyrogram.client.types.InlineQuery\"")
 
         f.write("\n}\n")
 

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,18 +16,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import functions, types
 from pyrogram.api.errors import UnknownError
 from pyrogram.client.ext import BaseClient
 
 
 class GetInlineBotResults(BaseClient):
-    def get_inline_bot_results(self,
-                               bot: int or str,
-                               query: str,
-                               offset: str = "",
-                               latitude: float = None,
-                               longitude: float = None):
+    def get_inline_bot_results(
+        self,
+        bot: Union[int, str],
+        query: str,
+        offset: str = "",
+        latitude: float = None,
+        longitude: float = None
+    ):
         """Use this method to get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 

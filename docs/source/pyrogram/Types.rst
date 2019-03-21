@@ -12,9 +12,11 @@ Users & Chats
     User
     UserStatus
     Chat
+    ChatPreview
     ChatPhoto
     ChatMember
     ChatMembers
+    ChatPermissions
     Dialog
     Dialogs
 
@@ -40,6 +42,8 @@ Messages & Media
     Location
     Venue
     Sticker
+    Poll
+    PollOption
 
 Bots
 ----
@@ -54,6 +58,7 @@ Bots
     InlineKeyboardButton
     ForceReply
     CallbackQuery
+    Game
 
 Input Media
 -----------
@@ -89,6 +94,9 @@ Inline Mode
     :members:
 
 .. autoclass:: Chat
+    :members:
+
+.. autoclass:: ChatPreview
     :members:
 
 .. autoclass:: ChatPhoto
@@ -157,6 +165,12 @@ Inline Mode
 .. autoclass:: Sticker
     :members:
 
+.. autoclass:: Poll
+    :members:
+
+.. autoclass:: PollOption
+    :members:
+
 ..  Bots
     ----
 
@@ -179,6 +193,15 @@ Inline Mode
     :members:
 
 .. autoclass:: CallbackQuery
+    :members:
+
+.. autoclass:: Game
+    :members:
+
+.. autoclass:: GameHighScore
+    :members:
+
+.. autoclass:: GameHighScores
     :members:
 
 ..  Input Media

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,16 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
 
 class KickChatMember(BaseClient):
-    def kick_chat_member(self,
-                         chat_id: int or str,
-                         user_id: int or str,
-                         until_date: int = 0):
+    def kick_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str],
+        until_date: int = 0
+    ) -> Union["pyrogram.Message", bool]:
         """Use this method to kick a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must
@@ -50,7 +54,7 @@ class KickChatMember(BaseClient):
                 considered to be banned forever. Defaults to 0 (ban forever).
 
         Returns:
-            True on success.
+            On success, either True or a service :obj:`Message <pyrogram.Message>` will be returned (when applicable).
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
@@ -63,7 +67,7 @@ class KickChatMember(BaseClient):
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
-                    banned_rights=types.ChannelBannedRights(
+                    banned_rights=types.ChatBannedRights(
                         until_date=until_date,
                         view_messages=True,
                         send_messages=True,
@@ -86,8 +90,10 @@ class KickChatMember(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return utils.parse_messages(
+                return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
                 )
+        else:
+            return True

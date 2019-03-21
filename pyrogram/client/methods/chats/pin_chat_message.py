@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -16,13 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api import functions, types
+from typing import Union
+
+from pyrogram.api import functions
 from ...ext import BaseClient
 
 
 class PinChatMessage(BaseClient):
-    def pin_chat_message(self, chat_id: int or str, message_id: int, disable_notification: bool = None):
-        """Use this method to pin a message in a supergroup or a channel.
+    def pin_chat_message(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        disable_notification: bool = None
+    ) -> bool:
+        """Use this method to pin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin right in
         the supergroup or "can_edit_messages" admin right in the channel.
 
@@ -42,21 +49,13 @@ class PinChatMessage(BaseClient):
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
-        peer = self.resolve_peer(chat_id)
-
-        if isinstance(peer, types.InputPeerChannel):
-            self.send(
-                functions.channels.UpdatePinnedMessage(
-                    channel=peer,
-                    id=message_id,
-                    silent=disable_notification or None
-                )
+        self.send(
+            functions.messages.UpdatePinnedMessage(
+                peer=self.resolve_peer(chat_id),
+                id=message_id,
+                silent=disable_notification or None
             )
-        elif isinstance(peer, types.InputPeerChat):
-            raise ValueError("The chat_id \"{}\" belongs to a basic group".format(chat_id))
-        else:
-            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
+        )
 
         return True
