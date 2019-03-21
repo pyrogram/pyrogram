@@ -115,7 +115,7 @@ To get started, press the Next button.
     functions/index
     types/index
 
-.. _`Telegram`: https://telegram.org/
-.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto/
+.. _`Telegram`: https://telegram.org
+.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
 .. _`MTProto API`: https://core.telegram.org/api#telegram-api
 .. _`MTProto 2.0`: https://core.telegram.org/mtproto
