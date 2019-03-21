@@ -2682,7 +2682,7 @@ class Message(PyrogramType, Update):
                     raise ValueError("Unknown media type")
 
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
-                    return await send_media(file_id)
+                    return await send_media(file_id=file_id)
                 else:
                     return await send_media(file_id=file_id, caption=caption, parse_mode=ParseMode.HTML)
             else:
