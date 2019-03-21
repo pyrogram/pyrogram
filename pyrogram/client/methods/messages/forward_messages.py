@@ -29,9 +29,9 @@ class ForwardMessages(BaseClient):
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_ids: Iterable[int],
-        as_copy: bool = False,
         disable_notification: bool = None,
-        no_captions: bool = False
+        as_copy: bool = False,
+        remove_caption: bool = False
     ) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
@@ -50,17 +50,18 @@ class ForwardMessages(BaseClient):
                 A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
                 Iterators and Generators are also accepted.
 
-            as_copy (``bool``, *optional*)
-                Whether to keep forward headers on messages or resend messages without forward headers.
-
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            no_captions (``bool``, *optional*)
-                If set to ``True`` and :arg:`as_copy` is enabled as well, media captions are not preserved
-                when copying the message.
-                Has no effect if :arg:`as_copy` is not enabled.
+            as_copy (``bool``, *optional*):
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Defaults to False.
+
+            remove_caption (``bool``, *optional*):
+                If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
+                message. Has no effect if *as_copy* is not enabled.
+                Defaults to False.
 
         Returns:
             On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
@@ -77,15 +78,17 @@ class ForwardMessages(BaseClient):
 
         if as_copy:
             sent_messages = []
-            for chunk in [message_ids[i:i+200] for i in range(0, len(message_ids), 200)]:
+            for chunk in [message_ids[i:i + 200] for i in range(0, len(message_ids), 200)]:
                 messages = self.get_messages(chat_id=from_chat_id, message_ids=chunk)  # type: pyrogram.Messages
                 for message in messages.messages:
-                    sent_messages.append(message.forward(
-                        chat_id,
-                        as_copy=True,
-                        disable_notification=disable_notification,
-                        no_caption=no_captions
-                    ))
+                    sent_messages.append(
+                        message.forward(
+                            chat_id,
+                            disable_notification=disable_notification,
+                            as_copy=True,
+                            remove_caption=remove_caption
+                        )
+                    )
             return pyrogram.Messages(
                 client=self,
                 total_count=len(sent_messages),

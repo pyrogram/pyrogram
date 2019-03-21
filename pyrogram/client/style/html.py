@@ -40,7 +40,7 @@ class HTML:
 
     def parse(self, message: str):
         entities = []
-        message = utils.add_surrogates(str(message or ''))
+        message = utils.add_surrogates(str(message or ""))
         offset = 0
 
         for match in self.HTML_RE.finditer(message):

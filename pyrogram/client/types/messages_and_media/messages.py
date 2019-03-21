@@ -117,11 +117,13 @@ class Messages(PyrogramType, Update):
             client=client
         )
 
-    def forward(self,
-                chat_id: Union[int, str],
-                as_copy: bool = False,
-                disable_notification: bool = None,
-                no_captions: bool = False):
+    def forward(
+        self,
+        chat_id: Union[int, str],
+        disable_notification: bool = None,
+        as_copy: bool = False,
+        remove_caption: bool = False
+    ):
         """Bound method *forward* of :obj:`Message <pyrogram.Messages>`.
 
         Args:
@@ -130,17 +132,18 @@ class Messages(PyrogramType, Update):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            as_copy (``bool``, *optional*)
-                Whether to keep forward headers on messages or resend messages without forward headers
-
             disable_notification (``bool``, *optional*):
                 Sends messages silently.
                 Users will receive a notification with no sound.
 
-            no_captions (``bool``, *optional*)
-                If set to ``True`` and :arg:`as_copy` is enabled as well, media captions are not preserved
-                when copying messages.
-                Has no effect if :arg:`as_copy` is not enabled.
+            as_copy (``bool``, *optional*):
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Defaults to False.
+
+            remove_caption (``bool``, *optional*):
+                If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
+                message. Has no effect if *as_copy* is not enabled.
+                Defaults to False.
 
         Returns:
             On success, a :class:`Messages <pyrogram.Messages>` containing forwarded messages is returned.
@@ -149,13 +152,17 @@ class Messages(PyrogramType, Update):
             :class:`Error <pyrogram.Error>`
         """
         forwarded_messages = []
+
         for message in self.messages:
-            forwarded_messages.append(message.forward(
-                chat_id=chat_id,
-                as_copy=as_copy,
-                disable_notification=disable_notification,
-                no_caption=no_captions
-            ))
+            forwarded_messages.append(
+                message.forward(
+                    chat_id=chat_id,
+                    as_copy=as_copy,
+                    disable_notification=disable_notification,
+                    remove_caption=remove_caption
+                )
+            )
+
         return Messages(
             total_count=len(forwarded_messages),
             messages=forwarded_messages,
