@@ -144,7 +144,7 @@ class Chat(PyrogramType):
             type="group",
             title=chat.title,
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
-            permissions=ChatPermissions._parse(chat.default_banned_rights),
+            permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             client=client
         )
 
@@ -157,7 +157,7 @@ class Chat(PyrogramType):
             username=getattr(channel, "username", None),
             photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
             restriction_reason=getattr(channel, "restriction_reason", None),
-            permissions=ChatPermissions._parse(channel.default_banned_rights),
+            permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             client=client
         )
 
