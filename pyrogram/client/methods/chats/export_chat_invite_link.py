@@ -23,8 +23,10 @@ from ...ext import BaseClient
 
 
 class ExportChatInviteLink(BaseClient):
-    def export_chat_invite_link(self,
-                                chat_id: Union[int, str]) -> str:
+    def export_chat_invite_link(
+        self,
+        chat_id: Union[int, str]
+    ) -> str:
         """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
@@ -45,7 +47,7 @@ class ExportChatInviteLink(BaseClient):
         if isinstance(peer, types.InputPeerChat):
             return self.send(
                 functions.messages.ExportChatInvite(
-                    chat_id=peer.chat_id
+                    peer=peer.chat_id
                 )
             ).link
         elif isinstance(peer, types.InputPeerChannel):

@@ -23,10 +23,12 @@ from ...ext import BaseClient
 
 
 class PinChatMessage(BaseClient):
-    def pin_chat_message(self,
-                         chat_id: Union[int, str],
-                         message_id: int,
-                         disable_notification: bool = None) -> bool:
+    def pin_chat_message(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        disable_notification: bool = None
+    ) -> bool:
         """Use this method to pin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin right in
         the supergroup or "can_edit_messages" admin right in the channel.
@@ -55,3 +57,5 @@ class PinChatMessage(BaseClient):
                 silent=disable_notification or None
             )
         )
+
+        return True

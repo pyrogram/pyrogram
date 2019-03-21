@@ -28,20 +28,24 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SendVoice(BaseClient):
-    def send_voice(self,
-                   chat_id: Union[int, str],
-                   voice: str,
-                   caption: str = "",
-                   parse_mode: str = "",
-                   duration: int = 0,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardRemove",
-                                       "pyrogram.ForceReply"] = None,
-                   progress: callable = None,
-                   progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    def send_voice(
+        self,
+        chat_id: Union[int, str],
+        voice: str,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send audio files.
 
         Args:

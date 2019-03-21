@@ -33,8 +33,12 @@ class ForceReply(PyrogramType):
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
     """
 
-    def __init__(self,
-                 selective: bool = None):
+    __slots__ = ["selective"]
+
+    def __init__(
+        self,
+        selective: bool = None
+    ):
         super().__init__(None)
 
         self.selective = selective

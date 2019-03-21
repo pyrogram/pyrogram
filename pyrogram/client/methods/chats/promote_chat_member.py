@@ -23,18 +23,21 @@ from ...ext import BaseClient
 
 
 class PromoteChatMember(BaseClient):
-    def promote_chat_member(self,
-                            chat_id: Union[int, str],
-                            user_id: Union[int, str],
-                            can_change_info: bool = True,
-                            can_post_messages: bool = False,
-                            can_edit_messages: bool = False,
-                            can_delete_messages: bool = True,
-                            can_invite_users: bool = True,
-                            can_restrict_members: bool = True,
-                            can_pin_messages: bool = False,
-                            can_promote_members: bool = False) -> bool:
+    def promote_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str],
+        can_change_info: bool = True,
+        can_post_messages: bool = False,
+        can_edit_messages: bool = False,
+        can_delete_messages: bool = True,
+        can_restrict_members: bool = True,
+        can_invite_users: bool = True,
+        can_pin_messages: bool = False,
+        can_promote_members: bool = False
+    ) -> bool:
         """Use this method to promote or demote a user in a supergroup or a channel.
+
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.
 
@@ -58,11 +61,11 @@ class PromoteChatMember(BaseClient):
             can_delete_messages (``bool``, *optional*):
                 Pass True, if the administrator can delete messages of other users.
 
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the administrator can invite new users to the chat.
-
             can_restrict_members (``bool``, *optional*):
                 Pass True, if the administrator can restrict, ban or unban chat members.
+
+            can_invite_users (``bool``, *optional*):
+                Pass True, if the administrator can invite new users to the chat.
 
             can_pin_messages (``bool``, *optional*):
                 Pass True, if the administrator can pin messages, supergroups only.
@@ -82,17 +85,15 @@ class PromoteChatMember(BaseClient):
             functions.channels.EditAdmin(
                 channel=self.resolve_peer(chat_id),
                 user_id=self.resolve_peer(user_id),
-                admin_rights=types.ChannelAdminRights(
+                admin_rights=types.ChatAdminRights(
                     change_info=can_change_info or None,
                     post_messages=can_post_messages or None,
                     edit_messages=can_edit_messages or None,
                     delete_messages=can_delete_messages or None,
                     ban_users=can_restrict_members or None,
                     invite_users=can_invite_users or None,
-                    invite_link=can_invite_users or None,
                     pin_messages=can_pin_messages or None,
                     add_admins=can_promote_members or None,
-                    manage_call=None
                 )
             )
         )

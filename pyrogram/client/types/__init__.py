@@ -33,5 +33,5 @@ from .messages_and_media import (
 from .update import StopPropagation, ContinuePropagation
 from .user_and_chats import (
     Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User, UserStatus, ChatPreview
+    Dialog, Dialogs, User, UserStatus, ChatPreview, ChatPermissions
 )

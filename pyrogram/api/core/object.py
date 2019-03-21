@@ -19,13 +19,15 @@
 from collections import OrderedDict
 from datetime import datetime
 from io import BytesIO
-from json import JSONEncoder, dumps
-
-from ..all import objects
+from json import dumps
 
 
 class Object:
     all = {}
+
+    __slots__ = []
+
+    QUALNAME = "Base"
 
     @staticmethod
     def read(b: BytesIO, *args):
@@ -35,7 +37,7 @@ class Object:
         pass
 
     def __str__(self) -> str:
-        return dumps(self, cls=Encoder, indent=4)
+        return dumps(self, indent=4, default=default, ensure_ascii=False)
 
     def __bool__(self) -> bool:
         return True
@@ -62,29 +64,18 @@ def remove_none(obj):
         return obj
 
 
-class Encoder(JSONEncoder):
-    def default(self, o: Object):
-        try:
-            content = o.__dict__
-        except AttributeError:
-            if isinstance(o, datetime):
-                return o.strftime("%d-%b-%Y %H:%M:%S")
-            else:
-                return repr(o)
+def default(o: "Object"):
+    try:
+        content = {i: getattr(o, i) for i in o.__slots__}
 
-        name = o.__class__.__name__
-        o = objects.get(getattr(o, "ID", None), None)
-
-        if o is not None:
-            if o.startswith("pyrogram.client"):
-                r = remove_none(OrderedDict([("_", "pyrogram:" + name)] + [i for i in content.items()]))
-                r.pop("_client", None)
-
-                return r
-            else:
-                return OrderedDict(
-                    [("_", o.replace("pyrogram.api.types.", "telegram:"))]
-                    + [i for i in content.items()]
-                )
+        return remove_none(
+            OrderedDict(
+                [("_", o.QUALNAME)]
+                + [i for i in content.items()]
+            )
+        )
+    except AttributeError:
+        if isinstance(o, datetime):
+            return o.strftime("%d-%b-%Y %H:%M:%S")
         else:
-            return None
+            return repr(o)

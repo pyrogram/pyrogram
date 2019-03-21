@@ -24,12 +24,14 @@ from pyrogram.client.ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
-    def download_media(self,
-                       message: Union["pyrogram.Message", str],
-                       file_name: str = "",
-                       block: bool = True,
-                       progress: callable = None,
-                       progress_args: tuple = ()) -> Union[str, None]:
+    def download_media(
+        self,
+        message: Union["pyrogram.Message", str],
+        file_name: str = "",
+        block: bool = True,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union[str, None]:
         """Use this method to download the media from a Message.
 
         Args:
@@ -106,15 +108,15 @@ class DownloadMedia(BaseClient):
             else:
                 raise ValueError(error_message)
         elif isinstance(message, (
-                pyrogram.Photo,
-                pyrogram.PhotoSize,
-                pyrogram.Audio,
-                pyrogram.Document,
-                pyrogram.Video,
-                pyrogram.Voice,
-                pyrogram.VideoNote,
-                pyrogram.Sticker,
-                pyrogram.Animation
+            pyrogram.Photo,
+            pyrogram.PhotoSize,
+            pyrogram.Audio,
+            pyrogram.Document,
+            pyrogram.Video,
+            pyrogram.Voice,
+            pyrogram.VideoNote,
+            pyrogram.Sticker,
+            pyrogram.Animation
         )):
             if isinstance(message, pyrogram.Photo):
                 media = pyrogram.Document(

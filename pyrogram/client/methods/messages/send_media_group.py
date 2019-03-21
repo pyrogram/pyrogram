@@ -34,11 +34,13 @@ log = logging.getLogger(__name__)
 class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
     # TODO: Figure out how to send albums using URLs
-    def send_media_group(self,
-                         chat_id: Union[int, str],
-                         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
+    def send_media_group(
+        self,
+        chat_id: Union[int, str],
+        media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
+        disable_notification: bool = None,
+        reply_to_message_id: int = None
+    ):
         """Use this method to send a group of photos or videos as an album.
 
         Args:
@@ -137,7 +139,7 @@ class SendMediaGroup(BaseClient):
                                                 w=i.width,
                                                 h=i.height
                                             ),
-                                            types.DocumentAttributeFilename(os.path.basename(i.media))
+                                            types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
                                         ]
                                     )
                                 )

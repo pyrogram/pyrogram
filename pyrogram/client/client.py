@@ -181,6 +181,8 @@ class Client(Methods, BaseClient):
             Defaults to False (normal session).
     """
 
+    terms_of_service_displayed = False
+
     def __init__(self,
                  session_name: str,
                  api_id: Union[int, str] = None,
@@ -544,9 +546,10 @@ class Client(Methods, BaseClient):
             try:
                 r = self.send(
                     functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
+                        phone_number=self.phone_number,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        settings=types.CodeSettings()
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -590,8 +593,9 @@ class Client(Methods, BaseClient):
         phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
-        if terms_of_service:
+        if terms_of_service and not Client.terms_of_service_displayed:
             print("\n" + terms_of_service.text + "\n")
+            Client.terms_of_service_displayed = True
 
         if self.force_sms:
             self.send(
@@ -626,9 +630,9 @@ class Client(Methods, BaseClient):
                     try:
                         r = self.send(
                             functions.auth.SignIn(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code
                             )
                         )
                     except PhoneNumberUnoccupied:
@@ -639,11 +643,11 @@ class Client(Methods, BaseClient):
                     try:
                         r = self.send(
                             functions.auth.SignUp(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code,
-                                self.first_name,
-                                self.last_name
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code,
+                                first_name=self.first_name,
+                                last_name=self.last_name
                             )
                         )
                     except PhoneNumberOccupied:
@@ -737,7 +741,11 @@ class Client(Methods, BaseClient):
                 break
 
         if terms_of_service:
-            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
+            assert self.send(
+                functions.help.AcceptTermsOfService(
+                    id=terms_of_service.id
+                )
+            )
 
         self.password = None
         self.user_id = r.user.id
@@ -1035,10 +1043,10 @@ class Client(Methods, BaseClient):
             raise ConnectionError("Client has not been started")
 
         if self.no_updates:
-            data = functions.InvokeWithoutUpdates(data)
+            data = functions.InvokeWithoutUpdates(query=data)
 
         if self.takeout_id:
-            data = functions.InvokeWithTakeout(self.takeout_id, data)
+            data = functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
 
         r = self.session.send(data, retries, timeout)
 
@@ -1352,7 +1360,7 @@ class Client(Methods, BaseClient):
                 self.fetch_peers(
                     self.send(
                         functions.users.GetUsers(
-                            id=[types.InputUser(peer_id, 0)]
+                            id=[types.InputUser(user_id=peer_id, access_hash=0)]
                         )
                     )
                 )
@@ -1360,7 +1368,7 @@ class Client(Methods, BaseClient):
                 if str(peer_id).startswith("-100"):
                     self.send(
                         functions.channels.GetChannels(
-                            id=[types.InputChannel(int(str(peer_id)[4:]), 0)]
+                            id=[types.InputChannel(channel_id=int(str(peer_id)[4:]), access_hash=0)]
                         )
                     )
                 else:
@@ -1667,8 +1675,8 @@ class Client(Methods, BaseClient):
 
                             hashes = session.send(
                                 functions.upload.GetCdnFileHashes(
-                                    r.file_token,
-                                    offset
+                                    file_token=r.file_token,
+                                    offset=offset
                                 )
                             )
 

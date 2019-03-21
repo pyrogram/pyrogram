@@ -55,20 +55,20 @@ class HTML:
                     input_user = self.peers_by_id.get(user_id, None)
 
                     entity = (
-                        Mention(start, len(body), input_user)
-                        if input_user else MentionInvalid(start, len(body), user_id)
+                        Mention(offset=start, length=len(body), user_id=input_user)
+                        if input_user else MentionInvalid(offset=start, length=len(body), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(body), url)
+                    entity = Url(offset=start, length=len(body), url=url)
             else:
                 if style == "b" or style == "strong":
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == "i" or style == "em":
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == "code":
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == "pre":
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 

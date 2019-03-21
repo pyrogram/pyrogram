@@ -25,9 +25,11 @@ from ...ext import BaseClient
 
 
 class OnDeletedMessages(BaseClient):
-    def on_deleted_messages(self=None,
-                            filters=None,
-                            group: int = 0) -> callable:
+    def on_deleted_messages(
+        self=None,
+        filters=None,
+        group: int = 0
+    ) -> callable:
         """Use this decorator to automatically register a function for handling
         deleted messages. This does the same thing as :meth:`add_handler` using the
         :class:`DeletedMessagesHandler`.

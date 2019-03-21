@@ -48,15 +48,19 @@ class Document(PyrogramType):
             Date the document was sent in Unix time.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 thumb: PhotoSize = None,
-                 file_name: str = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None):
+    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -78,7 +82,7 @@ class Document(PyrogramType):
                     document.access_hash
                 )
             ),
-            thumb=PhotoSize._parse(client, document.thumb),
+            thumb=PhotoSize._parse(client, document.thumbs),
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,

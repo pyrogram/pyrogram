@@ -24,10 +24,12 @@ from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(self,
-                              current_password: str,
-                              new_password: str,
-                              new_hint: str = "") -> bool:
+    def change_cloud_password(
+        self,
+        current_password: str,
+        new_password: str,
+        new_hint: str = ""
+    ) -> bool:
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:

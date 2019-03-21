@@ -16,20 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import binascii
+import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from pyrogram.api.errors import FileIdInvalid
+from pyrogram.client.ext import BaseClient, utils
 
 
-class SendMessage(BaseClient):
-    def send_message(
+class SendCachedMedia(BaseClient):
+    def send_cached_media(
         self,
         chat_id: Union[int, str],
-        text: str,
+        file_id: str,
+        caption: str = "",
         parse_mode: str = "",
-        disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -38,8 +41,12 @@ class SendMessage(BaseClient):
             "pyrogram.ReplyKeyboardRemove",
             "pyrogram.ForceReply"
         ] = None
-    ) -> "pyrogram.Message":
-        """Use this method to send text messages.
+    ) -> Union["pyrogram.Message", None]:
+        """Use this method to send any media stored on the Telegram servers using a file_id.
+
+        This convenience method works with any valid file_id only.
+        It does the same as calling the relevant method for sending media using a file_id, thus saving you from the
+        hassle of using the correct method for the media the file_id is pointing to.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -47,16 +54,17 @@ class SendMessage(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            text (``str``):
-                Text of the message to be sent.
+            file_id (``str``):
+                Media to send.
+                Pass a file_id as string to send a media that exists on the Telegram servers.
+
+            caption (``bool``, *optional*):
+                Media caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
                 Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
+                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
                 Defaults to Markdown.
-
-            disable_web_page_preview (``bool``, *optional*):
-                Disables link previews for links in this message.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -70,49 +78,53 @@ class SendMessage(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message` is returned.
+            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
             :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        message, entities = style.parse(text).values()
+
+        try:
+            decoded = utils.decode(file_id)
+            fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
+            unpacked = struct.unpack(fmt, decoded)
+        except (AssertionError, binascii.Error, struct.error):
+            raise FileIdInvalid from None
+        else:
+            media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
+
+            if not media_type:
+                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
+
+            if media_type == "photo":
+                media = types.InputMediaPhoto(
+                    id=types.InputPhoto(
+                        id=unpacked[2],
+                        access_hash=unpacked[3],
+                        file_reference=b""
+                    )
+                )
+            else:
+                media = types.InputMediaDocument(
+                    id=types.InputDocument(
+                        id=unpacked[2],
+                        access_hash=unpacked[3],
+                        file_reference=b""
+                    )
+                )
 
         r = self.send(
-            functions.messages.SendMessage(
+            functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                no_webpage=disable_web_page_preview or None,
+                media=media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 reply_markup=reply_markup.write() if reply_markup else None,
-                message=message,
-                entities=entities
+                **style.parse(caption)
             )
         )
-
-        if isinstance(r, types.UpdateShortSentMessage):
-            peer = self.resolve_peer(chat_id)
-
-            peer_id = (
-                peer.user_id
-                if isinstance(peer, types.InputPeerUser)
-                else -peer.chat_id
-            )
-
-            return pyrogram.Message(
-                message_id=r.id,
-                chat=pyrogram.Chat(
-                    id=peer_id,
-                    type="private",
-                    client=self
-                ),
-                text=message,
-                date=r.date,
-                outgoing=r.out,
-                entities=entities,
-                client=self
-            )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
