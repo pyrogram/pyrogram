@@ -21,14 +21,16 @@ from pyrogram.client.ext import BaseClient
 
 
 class AnswerInlineQuery(BaseClient):
-    def answer_inline_query(self,
-                            inline_query_id: str,
-                            results: list,
-                            cache_time: int = 300,
-                            is_personal: bool = None,
-                            next_offset: str = "",
-                            switch_pm_text: str = "",
-                            switch_pm_parameter: str = ""):
+    def answer_inline_query(
+        self,
+        inline_query_id: str,
+        results: list,
+        cache_time: int = 300,
+        is_personal: bool = None,
+        next_offset: str = "",
+        switch_pm_text: str = "",
+        switch_pm_parameter: str = ""
+    ):
         # TODO: Docs
         return self.send(
             functions.messages.SetInlineBotResults(
@@ -39,8 +41,8 @@ class AnswerInlineQuery(BaseClient):
                 private=is_personal or None,
                 next_offset=next_offset or None,
                 switch_pm=types.InlineBotSwitchPM(
-                    switch_pm_text,
-                    switch_pm_parameter
+                    text=switch_pm_text,
+                    start_param=switch_pm_parameter
                 ) if switch_pm_text else None
             )
         )

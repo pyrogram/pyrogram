@@ -80,7 +80,7 @@ class Dispatcher:
                 ),
 
             (types.UpdateBotInlineQuery,):
-                lambda upd, usr, cht: (utils.parse_inline_query(self.client, upd, usr), InlineQueryHandler)
+                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler)
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

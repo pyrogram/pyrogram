@@ -16,13 +16,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Tuple
+
 import pyrogram
 from pyrogram.client.filters.filter import Filter
+from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
 class OnInlineQuery(BaseClient):
-    def on_inline_query(self, filters=None, group: int = 0):
+    def on_inline_query(
+        self=None,
+        filters=None,
+        group: int = 0
+    ) -> callable:
         """Use this decorator to automatically register a function for handling
         inline queries. This does the same thing as :meth:`add_handler` using the
         :class:`InlineQueryHandler`.
@@ -36,7 +43,10 @@ class OnInlineQuery(BaseClient):
                 The group identifier, defaults to 0.
         """
 
-        def decorator(func):
+        def decorator(func: callable) -> Tuple[Handler, int]:
+            if isinstance(func, tuple):
+                func = func[0].callback
+
             handler = pyrogram.InlineQueryHandler(func, filters)
 
             if isinstance(self, Filter):
