@@ -24,7 +24,7 @@ from ...types.inline_mode import InlineQueryResult
 
 
 class AnswerInlineQuery(BaseClient):
-    def answer_inline_query(
+    async def answer_inline_query(
         self,
         inline_query_id: str,
         results: List[InlineQueryResult],
@@ -75,7 +75,7 @@ class AnswerInlineQuery(BaseClient):
         Returns:
             On success, True is returned.
         """
-        return self.send(
+        return await self.send(
             functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
                 results=[r.write() for r in results],

@@ -129,5 +129,5 @@ class BaseClient:
     async def get_chat_members_count(self, *args, **kwargs):
         pass
 
-    def answer_inline_query(self, *args, **kwargs):
+    async def answer_inline_query(self, *args, **kwargs):
         pass
