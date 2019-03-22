@@ -23,9 +23,10 @@ from pyrogram.api import types
 from pyrogram.api.errors import FileIdInvalid
 from pyrogram.client.ext import utils, BaseClient
 from pyrogram.client.style import HTML, Markdown
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultCachedAudio:
+class InlineQueryResultCachedAudio(PyrogramType):
     """Represents a link to an audio file stored on the Telegram servers.
     By default, this audio file will be sent by the user. Alternatively, you can use *input_message_content* to send a
     message with the specified content instead of the audio.
@@ -53,13 +54,13 @@ class InlineQueryResultCachedAudio:
     """
 
     def __init__(
-            self,
-            id: str,
-            audio_file_id: str,
-            caption: str = "",
-            parse_mode: str = "",
-            reply_markup=None,
-            input_message_content=None
+        self,
+        id: str,
+        audio_file_id: str,
+        caption: str = "",
+        parse_mode: str = "",
+        reply_markup=None,
+        input_message_content=None
     ):
         self.id = id
         self.audio_file_id = audio_file_id

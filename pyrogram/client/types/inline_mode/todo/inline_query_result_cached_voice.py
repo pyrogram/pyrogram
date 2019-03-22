@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultCachedVoice(Object):
+class InlineQueryResultCachedVoice(PyrogramType):
     """Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message.
 
     Attributes:

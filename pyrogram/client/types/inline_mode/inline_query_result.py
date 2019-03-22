@@ -16,12 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from ..pyrogram_type import PyrogramType
 
-class InlineQueryResult:
-    """This object represents one result of an inline query.
-    Pyrogram currently supports results of the following 20 types:
-
-    - :obj:`InlineQueryResultCachedAudio`
+"""- :obj:`InlineQueryResultCachedAudio`
     - :obj:`InlineQueryResultCachedDocument`
     - :obj:`InlineQueryResultCachedGif`
     - :obj:`InlineQueryResultCachedMpeg4Gif`
@@ -29,7 +26,6 @@ class InlineQueryResult:
     - :obj:`InlineQueryResultCachedSticker`
     - :obj:`InlineQueryResultCachedVideo`
     - :obj:`InlineQueryResultCachedVoice`
-    - :obj:`InlineQueryResultArticle`
     - :obj:`InlineQueryResultAudio`
     - :obj:`InlineQueryResultContact`
     - :obj:`InlineQueryResultGame`
@@ -40,9 +36,24 @@ class InlineQueryResult:
     - :obj:`InlineQueryResultPhoto`
     - :obj:`InlineQueryResultVenue`
     - :obj:`InlineQueryResultVideo`
-    - :obj:`InlineQueryResultVoice`
+    - :obj:`InlineQueryResultVoice`"""
+
+
+class InlineQueryResult(PyrogramType):
+    """This object represents one result of an inline query.
+
+    Pyrogram currently supports results of the following 20 types:
+
+    - :obj:`InlineQueryResultArticle`
     """
 
+    __slots__ = ["type", "id"]
+
     def __init__(self, type: str, id: str):
+        super().__init__(None)
+
         self.type = type
         self.id = id
+
+    def write(self):
+        pass

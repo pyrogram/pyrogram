@@ -16,33 +16,37 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultGame(Object):
-    """Represents a Game.
+class InlineQueryResultCachedSticker(PyrogramType):
+    """Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
 
     Attributes:
-        ID: ``0xb0700010``
+        ID: ``0xb0700014``
 
     Args:
         type (``str``):
-            Type of the result, must be game.
+            Type of the result, must be sticker.
 
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 
-        game_short_name (``str``):
-            Short name of the game.
+        sticker_file_id (``str``):
+            A valid file identifier of the sticker.
 
         reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
             Inline keyboard attached to the message.
 
-    """
-    ID = 0xb0700010
+        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+            Content of the message to be sent instead of the sticker.
 
-    def __init__(self, type: str, id: str, game_short_name: str, reply_markup=None):
+    """
+    ID = 0xb0700014
+
+    def __init__(self, type: str, id: str, sticker_file_id: str, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
-        self.game_short_name = game_short_name  # string
+        self.sticker_file_id = sticker_file_id  # string
         self.reply_markup = reply_markup  # flags.0?InlineKeyboardMarkup
+        self.input_message_content = input_message_content  # flags.1?InputMessageContent

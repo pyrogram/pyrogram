@@ -143,6 +143,7 @@ Bots
     send_game
     set_game_score
     get_game_high_scores
+    answer_inline_query
 
 
 .. autoclass:: pyrogram.Client

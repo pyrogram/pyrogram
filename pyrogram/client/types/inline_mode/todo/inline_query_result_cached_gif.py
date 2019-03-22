@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultCachedGif(Object):
+class InlineQueryResultCachedGif(PyrogramType):
     """Represents a link to an animated GIF file stored on the Telegram servers. By default, this animated GIF file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with specified content instead of the animation.
 
     Attributes:

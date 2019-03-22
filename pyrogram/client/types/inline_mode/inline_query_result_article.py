@@ -32,40 +32,44 @@ class InlineQueryResultArticle(InlineQueryResult):
         title (``str``):
             Title for the result.
 
-        input_message_content (``TODO``):
+        input_message_content (:obj:`InputMessageContent <pyrogram.InputMessageContent>`):
             Content of the message to be sent.
 
         reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.InlineKeyboardMarkup>`, *optional*):
-            Inline keyboard attached to the message
+            Inline keyboard attached to the message.
 
         url (``str``, *optional*):
-            URL of the result
+            URL of the result.
 
-        description (``str``, optional):
-            Short description of the result
+        description (``str``, *optional*):
+            Short description of the result.
 
-        thumb_url (``str``, optional):
-            Url of the thumbnail for the result
+        thumb_url (``str``, *optional*):
+            Url of the thumbnail for the result.
 
         thumb_width (``int``, *optional*):
             Thumbnail width.
 
         thumb_height (``int``, *optional*):
             Thumbnail height.
-
     """
 
+    __slots__ = [
+        "title", "input_message_content", "reply_markup", "url", "description", "thumb_url", "thumb_width",
+        "thumb_height"
+    ]
+
     def __init__(
-            self,
-            id: str,
-            title: str,
-            input_message_content,
-            reply_markup=None,
-            url: str = None,
-            description: str = None,
-            thumb_url: str = None,
-            thumb_width: int = 0,
-            thumb_height: int = 0
+        self,
+        id: str,
+        title: str,
+        input_message_content,
+        reply_markup=None,
+        url: str = None,
+        description: str = None,
+        thumb_url: str = None,
+        thumb_width: int = 0,
+        thumb_height: int = 0
     ):
         super().__init__("article", id)
 

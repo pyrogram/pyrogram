@@ -16,42 +16,42 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultMpeg4Gif(Object):
-    """Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
+class InlineQueryResultGif(PyrogramType):
+    """Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
     Attributes:
-        ID: ``0xb0700002``
+        ID: ``0xb0700001``
 
     Args:
         type (``str``):
-            Type of the result, must be mpeg4_gif.
+            Type of the result, must be gif.
 
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 
-        mpeg4_url (``str``):
-            A valid URL for the MP4 file. File size must not exceed 1MB.
+        gif_url (``str``):
+            A valid URL for the GIF file. File size must not exceed 1MB.
 
         thumb_url (``str``, optional):
-            Video width.
+            Width of the GIF.
 
-        mpeg4_width (``int`` ``32-bit``, optional):
-            Video height.
+        gif_width (``int`` ``32-bit``, optional):
+            Height of the GIF.
 
-        mpeg4_height (``int`` ``32-bit``, optional):
-            Video duration.
+        gif_height (``int`` ``32-bit``, optional):
+            Duration of the GIF.
 
-        mpeg4_duration (``int`` ``32-bit``):
-            URL of the static thumbnail (jpeg or gif) for the result.
+        gif_duration (``int`` ``32-bit``):
+            URL of the static thumbnail for the result (jpeg or gif).
 
         title (``str``, optional):
             Title for the result.
 
         caption (``str``, optional):
-            Caption of the MPEG-4 file to be sent, 0-200 characters.
+            Caption of the GIF file to be sent, 0-200 characters.
 
         parse_mode (``str``, optional):
             Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in the media caption.
@@ -60,18 +60,18 @@ class InlineQueryResultMpeg4Gif(Object):
             Inline keyboard attached to the message.
 
         input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
-            Content of the message to be sent instead of the video animation.
+            Content of the message to be sent instead of the GIF animation.
 
     """
-    ID = 0xb0700002
+    ID = 0xb0700001
 
-    def __init__(self, type: str, id: str, mpeg4_url: str, thumb_url: str, mpeg4_width: int = None, mpeg4_height: int = None, mpeg4_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, gif_url: str, thumb_url: str, gif_width: int = None, gif_height: int = None, gif_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
-        self.mpeg4_url = mpeg4_url  # string
-        self.mpeg4_width = mpeg4_width  # flags.0?int
-        self.mpeg4_height = mpeg4_height  # flags.1?int
-        self.mpeg4_duration = mpeg4_duration  # flags.2?int
+        self.gif_url = gif_url  # string
+        self.gif_width = gif_width  # flags.0?int
+        self.gif_height = gif_height  # flags.1?int
+        self.gif_duration = gif_duration  # flags.2?int
         self.thumb_url = thumb_url  # string
         self.title = title  # flags.3?string
         self.caption = caption  # flags.4?string

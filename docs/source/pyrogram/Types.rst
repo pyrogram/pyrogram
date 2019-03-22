@@ -79,8 +79,16 @@ Inline Mode
 .. autosummary::
     :nosignatures:
 
+    InlineQuery
     InlineQueryResult
     InlineQueryResultArticle
+
+InputMessageContent
+-------------------
+
+.. autosummary::
+    :nosignatures:
+
     InputMessageContent
     InputTextMessageContent
 
@@ -229,11 +237,17 @@ Inline Mode
 ..  Inline Mode
     -----------
 
+.. autoclass:: InlineQuery
+    :members:
+
 .. autoclass:: InlineQueryResult
     :members:
 
 .. autoclass:: InlineQueryResultArticle
     :members:
+
+..  InputMessageContent
+    -------------------
 
 .. autoclass:: InputMessageContent
     :members:

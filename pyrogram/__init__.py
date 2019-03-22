@@ -38,10 +38,10 @@ from .client.types import (
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    InlineQuery, InlineQueryResult, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent,
-    InlineQueryResultCachedAudio, InputMessageContent, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton,
-    ReplyKeyboardMarkup, ReplyKeyboardRemove, Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation,
-    Game, CallbackGame, GameHighScore, GameHighScores, ChatPermissions
+    InlineQuery, InlineQueryResult, InlineQueryResultArticle, InputMessageContent, InputTextMessageContent,
+    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Poll,
+    PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore, GameHighScores,
+    ChatPermissions
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,

@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Object
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultLocation(Object):
+class InlineQueryResultLocation(PyrogramType):
     """Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
 
     Attributes:

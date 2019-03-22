@@ -18,9 +18,10 @@
 
 from pyrogram.api import types
 from pyrogram.client.style import HTML, Markdown
+from pyrogram.client.types.pyrogram_type import PyrogramType
 
 
-class InlineQueryResultPhoto:
+class InlineQueryResultPhoto(PyrogramType):
     """Represents a link to a photo. By default, this photo will be sent by the user with optional caption.
     Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
