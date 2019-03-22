@@ -33,16 +33,19 @@ __version__ = "0.12.0.develop"
 
 from .api.errors import Error
 from .client.types import (
-    Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
+    Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMedia, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
     InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore,
-    GameHighScores, ChatPermissions
+    InlineQuery, InlineQueryResult, InlineQueryResultArticle, InputMessageContent, InputTextMessageContent,
+    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Poll,
+    PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore, GameHighScores,
+    ChatPermissions
 )
 from .client import (
     Client, ChatAction, ParseMode, Emoji,
     MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters
+    RawUpdateHandler, DisconnectHandler, UserStatusHandler, Filters,
+    InlineQueryHandler
 )

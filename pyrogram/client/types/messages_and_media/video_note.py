@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class VideoNote(PyrogramType):
-    """This object represents a video message (available in Telegram apps as of v.4.0).
+    """This object represents a video note.
 
     Args:
         file_id (``str``):

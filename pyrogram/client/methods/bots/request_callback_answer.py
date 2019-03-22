@@ -29,8 +29,8 @@ class RequestCallbackAnswer(BaseClient):
         message_id: int,
         callback_data: bytes
     ):
-        """Use this method to request a callback answer from bots. This is the equivalent of clicking an
-        inline button containing callback data.
+        """Use this method to request a callback answer from bots.
+        This is the equivalent of clicking an inline button containing callback data.
 
         Args:
             chat_id (``int`` | ``str``):

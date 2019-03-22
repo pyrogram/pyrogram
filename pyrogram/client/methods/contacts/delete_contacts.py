@@ -28,7 +28,7 @@ class DeleteContacts(BaseClient):
         self,
         ids: List[int]
     ):
-        """Use this method to delete contacts from your Telegram address book
+        """Use this method to delete contacts from your Telegram address book.
 
         Args:
             ids (List of ``int``):

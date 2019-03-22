@@ -56,7 +56,7 @@ class EditMessageMedia(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+            media (:obj:`InputMedia`)
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
