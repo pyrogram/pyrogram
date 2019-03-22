@@ -184,31 +184,33 @@ class Client(Methods, BaseClient):
 
     terms_of_service_displayed = False
 
-    def __init__(self,
-                 session_name: str,
-                 api_id: Union[int, str] = None,
-                 api_hash: str = None,
-                 app_version: str = None,
-                 device_model: str = None,
-                 system_version: str = None,
-                 lang_code: str = None,
-                 ipv6: bool = False,
-                 proxy: dict = None,
-                 test_mode: bool = False,
-                 phone_number: str = None,
-                 phone_code: Union[str, callable] = None,
-                 password: str = None,
-                 recovery_code: callable = None,
-                 force_sms: bool = False,
-                 bot_token: str = None,
-                 first_name: str = None,
-                 last_name: str = None,
-                 workers: int = BaseClient.WORKERS,
-                 workdir: str = BaseClient.WORKDIR,
-                 config_file: str = BaseClient.CONFIG_FILE,
-                 plugins: dict = None,
-                 no_updates: bool = None,
-                 takeout: bool = None):
+    def __init__(
+        self,
+        session_name: str,
+        api_id: Union[int, str] = None,
+        api_hash: str = None,
+        app_version: str = None,
+        device_model: str = None,
+        system_version: str = None,
+        lang_code: str = None,
+        ipv6: bool = False,
+        proxy: dict = None,
+        test_mode: bool = False,
+        phone_number: str = None,
+        phone_code: Union[str, callable] = None,
+        password: str = None,
+        recovery_code: callable = None,
+        force_sms: bool = False,
+        bot_token: str = None,
+        first_name: str = None,
+        last_name: str = None,
+        workers: int = BaseClient.WORKERS,
+        workdir: str = BaseClient.WORKDIR,
+        config_file: str = BaseClient.CONFIG_FILE,
+        plugins: dict = None,
+        no_updates: bool = None,
+        takeout: bool = None
+    ):
         super().__init__()
 
         self.session_name = session_name

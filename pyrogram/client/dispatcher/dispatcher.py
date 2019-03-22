@@ -22,7 +22,11 @@ from collections import OrderedDict
 
 import pyrogram
 from pyrogram.api import types
-from ..handlers import CallbackQueryHandler, MessageHandler, RawUpdateHandler, UserStatusHandler, DeletedMessagesHandler
+from ..ext import utils
+from ..handlers import (
+    CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
+    UserStatusHandler, RawUpdateHandler, InlineQueryHandler
+)
 
 log = logging.getLogger(__name__)
 
@@ -70,11 +74,15 @@ class Dispatcher:
         async def user_status_parser(update, users, chats):
             return pyrogram.UserStatus._parse(self.client, update.status, update.user_id), UserStatusHandler
 
+        async def inline_query_parser(update, users, chats):
+            return pyrogram.InlineQuery._parse(self.client, update.status, update.user_id), UserStatusHandler
+
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
             Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
             Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
-            (types.UpdateUserStatus,): user_status_parser
+            (types.UpdateUserStatus,): user_status_parser,
+            (types.UpdateBotInlineQuery,): inline_query_parser
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

@@ -49,10 +49,8 @@ class SendMediaGroup(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (``list``):
-                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
-                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
-                describing photos and videos to be sent, must include 2–10 items.
+            media (List of :obj:`InputMediaPhoto` and :obj:`InputMediaVideo`):
+                A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

@@ -29,7 +29,9 @@ class DeleteMessages(BaseClient):
         message_ids: Iterable[int],
         revoke: bool = True
     ) -> bool:
-        """Use this method to delete messages, including service messages, with the following limitations:
+        """Use this method to delete messages, including service messages.
+
+        Deleting messages have the following limitations:
 
         - A message can only be deleted if it was sent less than 48 hours ago.
         - Users can delete outgoing messages in groups and supergroups.

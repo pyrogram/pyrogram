@@ -17,13 +17,19 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .bots import (
-    CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
+    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
     KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, CallbackGame,
-    GameHighScore, GameHighScores
+    GameHighScore, GameHighScores, CallbackQuery
+)
+from .inline_mode import (
+    InlineQuery, InlineQueryResult, InlineQueryResultArticle
 )
 from .input_media import (
-    InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
+    InputMedia, InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
     InputMediaDocument, InputMediaAnimation
+)
+from .input_message_content import (
+    InputMessageContent, InputTextMessageContent
 )
 from .messages_and_media import (
     Audio, Contact, Document, Animation, Location, Photo, PhotoSize,

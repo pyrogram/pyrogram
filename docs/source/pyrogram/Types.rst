@@ -66,12 +66,32 @@ Input Media
 .. autosummary::
     :nosignatures:
 
+    InputMedia
     InputMediaPhoto
     InputMediaVideo
     InputMediaAudio
     InputMediaAnimation
     InputMediaDocument
     InputPhoneContact
+
+Inline Mode
+------------
+
+.. autosummary::
+    :nosignatures:
+
+    InlineQuery
+    InlineQueryResult
+    InlineQueryResultArticle
+
+InputMessageContent
+-------------------
+
+.. autosummary::
+    :nosignatures:
+
+    InputMessageContent
+    InputTextMessageContent
 
 ..  User & Chats
     ------------
@@ -196,6 +216,9 @@ Input Media
 ..  Input Media
     -----------
 
+.. autoclass:: InputMedia
+    :members:
+
 .. autoclass:: InputMediaPhoto
     :members:
 
@@ -212,4 +235,26 @@ Input Media
     :members:
 
 .. autoclass:: InputPhoneContact
+    :members:
+
+
+..  Inline Mode
+    -----------
+
+.. autoclass:: InlineQuery
+    :members:
+
+.. autoclass:: InlineQueryResult
+    :members:
+
+.. autoclass:: InlineQueryResultArticle
+    :members:
+
+..  InputMessageContent
+    -------------------
+
+.. autoclass:: InputMessageContent
+    :members:
+
+.. autoclass:: InputTextMessageContent
     :members:

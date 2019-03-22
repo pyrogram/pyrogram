@@ -94,3 +94,5 @@ CALL_ALREADY_DECLINED	The call is already declined
 PHOTO_EXT_INVALID	The photo extension is invalid
 EXTERNAL_URL_INVALID	The external media URL is invalid
 CHAT_NOT_MODIFIED	The chat settings were not modified
+RESULTS_TOO_MUCH	The result contains too many items
+RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers

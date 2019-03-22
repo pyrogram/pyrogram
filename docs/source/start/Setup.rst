@@ -92,18 +92,19 @@ and as long as you keep the session alive, Pyrogram won't ask you again to enter
 Bot Authorization
 -----------------
 
-Bots are a special kind of users and are authorized via their tokens (instead of phone numbers), which are created by
+Bots are a special kind of users that are authorized via their tokens (instead of phone numbers), which are created by
 BotFather_. Bot tokens replace the Users' phone numbers only — you still need to
 `configure a Telegram API key <#configuration>`_ with Pyrogram, even when using Bots.
 
-The authorization process is automatically managed. All you need to do is pass the bot token as ``session_name``.
-The session file will be named after the Bot user_id, which is ``123456.session`` for the example below.
+The authorization process is automatically managed. All you need to do is choose a ``session_name`` (can be anything,
+but is usually your bot username) and pass your bot token using the ``bot_token`` parameter.
+The session file will be named after the session name, which will be ``pyrogrambot.session`` for the example below.
 
 .. code-block:: python
 
     from pyrogram import Client
 
-    app = Client("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
+    app = Client("pyrogrambot", bot_token="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
     app.run()
 
 .. _installed Pyrogram: Installation.html
