@@ -25,7 +25,7 @@ from .inline_mode import (
     InlineQuery, InlineQueryResult, InlineQueryResultArticle
 )
 from .input_media import (
-    InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
+    InputMedia, InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
     InputMediaDocument, InputMediaAnimation
 )
 from .input_message_content import (

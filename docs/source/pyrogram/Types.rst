@@ -66,6 +66,7 @@ Input Media
 .. autosummary::
     :nosignatures:
 
+    InputMedia
     InputMediaPhoto
     InputMediaVideo
     InputMediaAudio
@@ -214,6 +215,9 @@ InputMessageContent
 
 ..  Input Media
     -----------
+
+.. autoclass:: InputMedia
+    :members:
 
 .. autoclass:: InputMediaPhoto
     :members:

@@ -33,7 +33,7 @@ __version__ = "0.12.0.develop"
 
 from .api.errors import Error
 from .client.types import (
-    Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
+    Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMedia, InputMediaPhoto,
     InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
     Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
     UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
