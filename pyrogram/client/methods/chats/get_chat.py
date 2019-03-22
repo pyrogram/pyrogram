@@ -28,8 +28,9 @@ class GetChat(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> "pyrogram.Chat":
-        """Use this method to get up to date information about the chat (current name of the user for
-        one-on-one conversations, current username of a user, group or channel, etc.)
+        """Use this method to get up to date information about the chat.
+        Information include current name of the user for one-on-one conversations, current username of a user, group or
+        channel, etc.
 
         Args:
             chat_id (``int`` | ``str``):

@@ -30,9 +30,8 @@ class OnCallbackQuery(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling
-        callback queries. This does the same thing as :meth:`add_handler` using the
-        :class:`CallbackQueryHandler`.
+        """Use this decorator to automatically register a function for handling callback queries.
+        This does the same thing as :meth:`add_handler` using the :class:`CallbackQueryHandler`.
 
         .. note::
             This decorator will wrap your defined function in a tuple consisting of *(Handler, group)*.
