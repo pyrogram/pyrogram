@@ -99,7 +99,7 @@ class Sticker(PyrogramType):
 
     @staticmethod
     @lru_cache(maxsize=256)
-    def get_sticker_set_name(send, input_sticker_set_id):
+    def _get_sticker_set_name(send, input_sticker_set_id):
         try:
             return send(
                 functions.messages.GetStickerSet(
@@ -119,7 +119,7 @@ class Sticker(PyrogramType):
 
         if isinstance(sticker_set, types.InputStickerSetID):
             input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
-            set_name = Sticker.get_sticker_set_name(client.send, input_sticker_set_id)
+            set_name = Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
         else:
             set_name = None
 
