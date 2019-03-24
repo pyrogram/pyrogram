@@ -26,7 +26,7 @@ Welcome to Pyrogram
         </a>
         <br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2095-eda738.svg?longCache=true&colorA=262b30"
+            <img src="https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30"
                 alt="Schema Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
@@ -67,7 +67,7 @@ Features
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
 -   **Documented**: Pyrogram API methods, types and public interfaces are well documented.
 -   **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
--   **Updated**, to the latest Telegram API version, currently Layer 95 on top of `MTProto 2.0`_.
+-   **Updated**, to the latest Telegram API version, currently Layer 97 on top of `MTProto 2.0`_.
 -   **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
 -   **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
 
