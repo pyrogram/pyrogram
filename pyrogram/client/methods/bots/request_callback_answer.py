@@ -49,7 +49,7 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``TimeoutError`` if the bot fails to answer within 10 seconds.
         """
         return await self.send(

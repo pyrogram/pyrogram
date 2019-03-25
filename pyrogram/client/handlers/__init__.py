@@ -23,3 +23,8 @@ from .inline_query_handler import InlineQueryHandler
 from .message_handler import MessageHandler
 from .raw_update_handler import RawUpdateHandler
 from .user_status_handler import UserStatusHandler
+
+__all__ = [
+    "MessageHandler", "DeletedMessagesHandler", "CallbackQueryHandler", "RawUpdateHandler", "DisconnectHandler",
+    "UserStatusHandler", "InlineQueryHandler"
+]

@@ -77,7 +77,7 @@ class DownloadMedia(BaseClient):
             In case the download is deliberately stopped with :meth:`stop_transmission`, None is returned as well.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"

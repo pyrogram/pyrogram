@@ -1,9 +1,8 @@
-Error
-=====
+RPCError
+========
 
-.. autoexception:: pyrogram.Error
+.. autoexception:: pyrogram.RPCError
     :members:
-    :show-inheritance:
 
 .. toctree::
     ../errors/SeeOther

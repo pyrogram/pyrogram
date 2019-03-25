@@ -70,7 +70,7 @@ class ForwardMessages(BaseClient):
             is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
 
         is_iterable = not isinstance(message_ids, int)

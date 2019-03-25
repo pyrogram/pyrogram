@@ -42,7 +42,7 @@ class SetChatDescription(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
         peer = await self.resolve_peer(chat_id)

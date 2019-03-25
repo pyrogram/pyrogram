@@ -29,7 +29,7 @@ class GetMe(BaseClient):
             Basic information about the user or bot in form of a :obj:`User` object
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return pyrogram.User._parse(
             self,

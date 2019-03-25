@@ -57,7 +57,7 @@ class KickChatMember(BaseClient):
             On success, either True or a service :obj:`Message <pyrogram.Message>` will be returned (when applicable).
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         chat_peer = await self.resolve_peer(chat_id)
         user_peer = await self.resolve_peer(user_id)

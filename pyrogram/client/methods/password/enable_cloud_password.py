@@ -48,7 +48,7 @@ class EnableCloudPassword(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case there is already a cloud password enabled.
         """
         r = await self.send(functions.account.GetPassword())

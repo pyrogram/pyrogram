@@ -21,7 +21,7 @@ import logging
 
 import pyrogram
 from pyrogram.api import functions
-from pyrogram.api.errors import FloodWait
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class GetContacts(BaseClient):
             On success, a list of :obj:`User` objects is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         while True:
             try:

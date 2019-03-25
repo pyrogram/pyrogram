@@ -22,7 +22,7 @@ from async_lru import alru_cache
 
 import pyrogram
 from pyrogram.api import types, functions
-from pyrogram.api.errors import StickersetInvalid
+from pyrogram.errors import StickersetInvalid
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode

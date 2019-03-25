@@ -38,7 +38,7 @@ class GetChatPreview(BaseClient):
             Either :obj:`Chat` or :obj:`ChatPreview`, depending on whether you already joined the chat or not.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case of an invalid invite_link.
         """
         match = self.INVITE_LINK_RE.match(invite_link)

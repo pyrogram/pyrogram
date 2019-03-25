@@ -23,7 +23,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid
+from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
@@ -66,7 +66,7 @@ class EditMessageMedia(BaseClient):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption

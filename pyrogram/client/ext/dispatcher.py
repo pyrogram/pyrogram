@@ -22,7 +22,6 @@ from collections import OrderedDict
 
 import pyrogram
 from pyrogram.api import types
-from ..ext import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler

@@ -22,7 +22,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid
+from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -81,7 +81,7 @@ class SendCachedMedia(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 

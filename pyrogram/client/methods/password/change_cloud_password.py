@@ -46,7 +46,7 @@ class ChangeCloudPassword(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case there is no cloud password to change.
         """
         r = await self.send(functions.account.GetPassword())

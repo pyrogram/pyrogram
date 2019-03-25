@@ -35,3 +35,8 @@ from .venue import Venue
 from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
+
+__all__ = [
+    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Messages", "Photo",
+    "PhotoSize", "Poll", "PollOption", "Sticker", "UserProfilePhotos", "Venue", "Video", "VideoNote", "Voice"
+]

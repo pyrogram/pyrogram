@@ -97,7 +97,7 @@ BotFather_. Bot tokens replace the Users' phone numbers only — you still need 
 `configure a Telegram API key <#configuration>`_ with Pyrogram, even when using Bots.
 
 The authorization process is automatically managed. All you need to do is choose a ``session_name`` (can be anything,
-but is usually your bot username) and pass your bot token using the ``bot_token`` parameter.
+usually your bot username) and pass your bot token using the ``bot_token`` parameter.
 The session file will be named after the session name, which will be ``pyrogrambot.session`` for the example below.
 
 .. code-block:: python

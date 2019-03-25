@@ -22,7 +22,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
-from pyrogram.api.errors import FloodWait
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class GetHistory(BaseClient):
             On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
 
         while True:

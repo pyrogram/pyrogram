@@ -19,3 +19,7 @@
 from .inline_query import InlineQuery
 from .inline_query_result import InlineQueryResult
 from .inline_query_result_article import InlineQueryResultArticle
+
+__all__ = [
+    "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle"
+]

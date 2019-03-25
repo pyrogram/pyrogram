@@ -1,8 +1,7 @@
 403 - Forbidden
 ===============
 
-.. module:: pyrogram.api.errors.Forbidden
+.. module:: pyrogram.errors.Forbidden
 
-.. automodule:: pyrogram.api.errors.exceptions.forbidden_403
+.. automodule:: pyrogram.errors.exceptions.forbidden_403
     :members:
-    :show-inheritance:

@@ -48,7 +48,7 @@ class PinChatMessage(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         await self.send(
             functions.messages.UpdatePinnedMessage(

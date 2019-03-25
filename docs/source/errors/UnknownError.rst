@@ -1,8 +1,7 @@
 520 - Unknown Error
 ===================
 
-.. module:: pyrogram.api.errors.UnknownError
+.. module:: pyrogram.errors.UnknownError
 
-.. autoexception:: pyrogram.api.errors.error.UnknownError
+.. autoexception:: pyrogram.errors.rpc_error.UnknownError
     :members:
-    :show-inheritance:

@@ -23,7 +23,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid, FilePartMissing
+from pyrogram.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -112,7 +112,7 @@ class SendPhoto(BaseClient):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
