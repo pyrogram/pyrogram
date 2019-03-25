@@ -73,7 +73,7 @@ class RestrictChat(BaseClient):
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         send_messages = True
         send_media = True

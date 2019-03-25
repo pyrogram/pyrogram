@@ -84,7 +84,7 @@ class GetChatMembers(BaseClient):
             On success, a :obj:`ChatMembers` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if you used an invalid filter or a chat_id that belongs to a user.
         """
         peer = self.resolve_peer(chat_id)

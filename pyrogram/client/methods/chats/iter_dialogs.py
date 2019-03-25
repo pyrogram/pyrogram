@@ -46,7 +46,7 @@ class IterDialogs(BaseClient):
             A generator yielding :obj:`Dialog <pyrogram.Dialog>` objects.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         current = 0
         total = limit or (1 << 31) - 1

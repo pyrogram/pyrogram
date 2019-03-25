@@ -42,7 +42,7 @@ class GetChat(BaseClient):
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case the chat invite link refers to a chat you haven't joined yet.
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))

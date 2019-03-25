@@ -41,7 +41,7 @@ from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
-from pyrogram.api.errors import (
+from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
@@ -54,8 +54,7 @@ from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
-from .dispatcher import Dispatcher
-from .ext import utils, Syncer, BaseClient
+from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
 
 log = logging.getLogger(__name__)
@@ -267,7 +266,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
@@ -437,7 +436,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
@@ -1039,7 +1038,7 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
@@ -1329,7 +1328,7 @@ class Client(Methods, BaseClient):
             On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         try:
@@ -1434,7 +1433,7 @@ class Client(Methods, BaseClient):
             On success, the uploaded file is returned in form of an InputFile object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         part_size = 512 * 1024
         file_size = os.path.getsize(path)

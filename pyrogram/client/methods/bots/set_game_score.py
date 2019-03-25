@@ -67,7 +67,7 @@ class SetGameScore(BaseClient):
             otherwise returns True.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             :class:`BotScoreNotModified` if the new score is not greater than the user's current score in the chat and force is False.
         """
         r = self.send(

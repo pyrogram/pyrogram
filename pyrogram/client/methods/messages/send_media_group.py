@@ -25,7 +25,7 @@ from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid, FloodWait
+from pyrogram.errors import FileIdInvalid, FloodWait
 from pyrogram.client.ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
@@ -64,7 +64,7 @@ class SendMediaGroup(BaseClient):
             single messages sent.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         multi_media = []
 

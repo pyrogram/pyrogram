@@ -78,7 +78,7 @@ class IterChatMembers(BaseClient):
             A generator yielding :obj:`ChatMember <pyrogram.ChatMember>` objects.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         current = 0
         yielded = set()

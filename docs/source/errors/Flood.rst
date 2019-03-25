@@ -1,8 +1,7 @@
 420 - Flood
 ===========
 
-.. module:: pyrogram.api.errors.Flood
+.. module:: pyrogram.errors.Flood
 
-.. automodule:: pyrogram.api.errors.exceptions.flood_420
+.. automodule:: pyrogram.errors.exceptions.flood_420
     :members:
-    :show-inheritance:

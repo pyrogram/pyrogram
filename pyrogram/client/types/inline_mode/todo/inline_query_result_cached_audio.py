@@ -20,7 +20,7 @@ import binascii
 import struct
 
 from pyrogram.api import types
-from pyrogram.api.errors import FileIdInvalid
+from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import utils, BaseClient
 from pyrogram.client.style import HTML, Markdown
 from pyrogram.client.types.pyrogram_type import PyrogramType

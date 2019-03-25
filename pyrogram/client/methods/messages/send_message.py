@@ -73,7 +73,7 @@ class SendMessage(BaseClient):
             On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         message, entities = style.parse(text).values()

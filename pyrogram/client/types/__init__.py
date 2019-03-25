@@ -16,28 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .bots import (
-    ForceReply, InlineKeyboardButton, InlineKeyboardMarkup,
-    KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, CallbackGame,
-    GameHighScore, GameHighScores, CallbackQuery
-)
-from .inline_mode import (
-    InlineQuery, InlineQueryResult, InlineQueryResultArticle
-)
-from .input_media import (
-    InputMedia, InputMediaAudio, InputPhoneContact, InputMediaVideo, InputMediaPhoto,
-    InputMediaDocument, InputMediaAnimation
-)
-from .input_message_content import (
-    InputMessageContent, InputTextMessageContent
-)
-from .messages_and_media import (
-    Audio, Contact, Document, Animation, Location, Photo, PhotoSize,
-    Sticker, Venue, Video, VideoNote, Voice, UserProfilePhotos,
-    Message, Messages, MessageEntity, Poll, PollOption, Game
-)
-from .update import StopPropagation, ContinuePropagation
-from .user_and_chats import (
-    Chat, ChatMember, ChatMembers, ChatPhoto,
-    Dialog, Dialogs, User, UserStatus, ChatPreview, ChatPermissions
-)
+from .bots import *
+from .inline_mode import *
+from .input_media import *
+from .input_message_content import *
+from .messages_and_media import *
+from .update import *
+from .user_and_chats import *

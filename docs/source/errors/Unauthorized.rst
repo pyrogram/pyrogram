@@ -1,8 +1,7 @@
 401 - Unauthorized
 ==================
 
-.. module:: pyrogram.api.errors.Unauthorized
+.. module:: pyrogram.errors.Unauthorized
 
-.. automodule:: pyrogram.api.errors.exceptions.unauthorized_401
+.. automodule:: pyrogram.errors.exceptions.unauthorized_401
     :members:
-    :show-inheritance:

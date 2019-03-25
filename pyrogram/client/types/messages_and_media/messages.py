@@ -149,7 +149,7 @@ class Messages(PyrogramType, Update):
             On success, a :class:`Messages <pyrogram.Messages>` containing forwarded messages is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         forwarded_messages = []
 

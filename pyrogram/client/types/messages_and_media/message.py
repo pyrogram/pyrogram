@@ -21,7 +21,7 @@ from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.api.errors import MessageIdsEmpty
+from pyrogram.errors import MessageIdsEmpty
 from pyrogram.client.ext import ChatAction, ParseMode
 from pyrogram.client.types.input_media import InputMedia
 from .contact import Contact
@@ -708,7 +708,7 @@ class Message(PyrogramType, Update):
             On success, the sent Message is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -837,7 +837,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -972,7 +972,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1060,7 +1060,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1114,7 +1114,7 @@ class Message(PyrogramType, Update):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the provided string is not a valid ChatAction.
         """
         return self._client.send_chat_action(
@@ -1189,7 +1189,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1307,7 +1307,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1381,7 +1381,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1449,7 +1449,7 @@ class Message(PyrogramType, Update):
             On success, the sent Message is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1524,7 +1524,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1587,7 +1587,7 @@ class Message(PyrogramType, Update):
             single messages sent.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1700,7 +1700,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1779,7 +1779,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1878,7 +1878,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1973,7 +1973,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2109,7 +2109,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2231,7 +2231,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2348,7 +2348,7 @@ class Message(PyrogramType, Update):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2417,7 +2417,7 @@ class Message(PyrogramType, Update):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return self._client.edit_message_text(
             chat_id=self.chat.id,
@@ -2472,7 +2472,7 @@ class Message(PyrogramType, Update):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return self._client.edit_message_caption(
             chat_id=self.chat.id,
@@ -2511,7 +2511,7 @@ class Message(PyrogramType, Update):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return self._client.edit_message_media(
             chat_id=self.chat.id,
@@ -2547,7 +2547,7 @@ class Message(PyrogramType, Update):
             :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return self._client.edit_message_reply_markup(
             chat_id=self.chat.id,
@@ -2602,7 +2602,7 @@ class Message(PyrogramType, Update):
             On success, the forwarded Message is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         if as_copy:
             if self.service:
@@ -2732,7 +2732,7 @@ class Message(PyrogramType, Update):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         self._client.delete_messages(
             chat_id=self.chat.id,
@@ -2797,7 +2797,7 @@ class Message(PyrogramType, Update):
                 button.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
             ``ValueError``: If the provided index or position is out of range or the button label was not found
             ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
         """
@@ -2898,7 +2898,7 @@ class Message(PyrogramType, Update):
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
             ``ValueError``: If the message doesn't contain any downloadable media
         """
         return self._client.download_media(
@@ -2935,7 +2935,7 @@ class Message(PyrogramType, Update):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>`
+            :class:`RPCError <pyrogram.RPCError>`
         """
         return self._client.pin_chat_message(
             chat_id=self.chat.id,

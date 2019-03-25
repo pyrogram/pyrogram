@@ -1,7 +1,7 @@
 class {sub_class}({super_class}):
     {docstring}
     ID = {id}
-    """``str``: Error ID"""
+    """``str``: RPC Error ID"""
     MESSAGE = __doc__
 
 
