@@ -19,6 +19,7 @@
 import re
 from collections import OrderedDict
 
+import pyrogram
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
     MessageEntityItalic as Italic,
@@ -28,6 +29,7 @@ from pyrogram.api.types import (
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention
 )
+from pyrogram.errors import PeerIdInvalid
 from . import utils
 
 
@@ -52,8 +54,8 @@ class Markdown:
     ))
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, peers_by_id: dict = None):
-        self.peers_by_id = peers_by_id or {}
+    def __init__(self, client: "pyrogram.BaseClient" = None):
+        self.client = client
 
     def parse(self, message: str):
         message = utils.add_surrogates(str(message or "")).strip()
@@ -69,12 +71,15 @@ class Markdown:
 
                 if mention:
                     user_id = int(mention.group(1))
-                    input_user = self.peers_by_id.get(user_id, None)
+
+                    try:
+                        input_user = self.client.resolve_peer(user_id)
+                    except PeerIdInvalid:
+                        input_user = None
 
                     entity = (
                         Mention(offset=start, length=len(text), user_id=input_user)
-                        if input_user
-                        else MentionInvalid(offset=start, length=len(text), user_id=user_id)
+                        if input_user else MentionInvalid(offset=start, length=len(text), user_id=user_id)
                     )
                 else:
                     entity = Url(offset=start, length=len(text), url=url)
