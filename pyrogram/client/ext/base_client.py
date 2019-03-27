@@ -26,7 +26,7 @@ from ...session.internals import MsgId
 
 
 class BaseClient:
-    class StopTransmission(StopIteration):
+    class StopTransmission(StopAsyncIteration):
         pass
 
     APP_VERSION = "Pyrogram \U0001f525 {}".format(__version__)
