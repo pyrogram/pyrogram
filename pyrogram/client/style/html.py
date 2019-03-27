@@ -40,9 +40,9 @@ class HTML:
     def __init__(self, client: "pyrogram.BaseClient" = None):
         self.client = client
 
-    def parse(self, message: str):
-        entities = []
+    async def parse(self, message: str):
         message = utils.add_surrogates(str(message or ""))
+        entities = []
         offset = 0
 
         for match in self.HTML_RE.finditer(message):
@@ -56,7 +56,7 @@ class HTML:
                     user_id = int(mention.group(1))
 
                     try:
-                        input_user = self.client.resolve_peer(user_id)
+                        input_user = await self.client.resolve_peer(user_id)
                     except PeerIdInvalid:
                         input_user = None
 

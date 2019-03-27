@@ -57,7 +57,7 @@ class Markdown:
     def __init__(self, client: "pyrogram.BaseClient" = None):
         self.client = client
 
-    def parse(self, message: str):
+    async def parse(self, message: str):
         message = utils.add_surrogates(str(message or "")).strip()
         entities = []
         offset = 0
@@ -73,7 +73,7 @@ class Markdown:
                     user_id = int(mention.group(1))
 
                     try:
-                        input_user = self.client.resolve_peer(user_id)
+                        input_user = await self.client.resolve_peer(user_id)
                     except PeerIdInvalid:
                         input_user = None
 

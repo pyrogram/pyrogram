@@ -72,7 +72,7 @@ class EditMessageText(BaseClient):
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(text)
+                **await style.parse(text)
             )
         )
 

@@ -76,7 +76,7 @@ class SendMessage(BaseClient):
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-        message, entities = style.parse(text).values()
+        message, entities = (await style.parse(text)).values()
 
         r = await self.send(
             functions.messages.SendMessage(

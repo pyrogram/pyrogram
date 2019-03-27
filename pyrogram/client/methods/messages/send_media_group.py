@@ -183,7 +183,7 @@ class SendMediaGroup(BaseClient):
                 types.InputSingleMedia(
                     media=media,
                     random_id=self.rnd_id(),
-                    **style.parse(i.caption)
+                    **await style.parse(i.caption)
                 )
             )
 

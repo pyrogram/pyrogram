@@ -353,7 +353,7 @@ class EditMessageMedia(BaseClient):
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 media=media,
-                **style.parse(caption)
+                **await style.parse(caption)
             )
         )
 

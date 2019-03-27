@@ -1362,7 +1362,7 @@ class Client(Methods, BaseClient):
 
             if peer_id > 0:
                 self.fetch_peers(
-                    self.send(
+                    await self.send(
                         functions.users.GetUsers(
                             id=[types.InputUser(user_id=peer_id, access_hash=0)]
                         )
@@ -1370,13 +1370,13 @@ class Client(Methods, BaseClient):
                 )
             else:
                 if str(peer_id).startswith("-100"):
-                    self.send(
+                    await self.send(
                         functions.channels.GetChannels(
                             id=[types.InputChannel(channel_id=int(str(peer_id)[4:]), access_hash=0)]
                         )
                     )
                 else:
-                    self.send(
+                    await self.send(
                         functions.messages.GetChats(
                             id=[-peer_id]
                         )

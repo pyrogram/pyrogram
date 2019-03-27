@@ -187,7 +187,7 @@ class SendAnimation(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **style.parse(caption)
+                            **await style.parse(caption)
                         )
                     )
                 except FilePartMissing as e:

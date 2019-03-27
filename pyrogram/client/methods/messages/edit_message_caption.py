@@ -67,7 +67,7 @@ class EditMessageCaption(BaseClient):
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(caption)
+                **await style.parse(caption)
             )
         )
 
