@@ -29,6 +29,7 @@ class PollOption(PyrogramType):
 
         voters (``int``):
             The number of users who voted this option.
+            It will be 0 until you vote for the poll.
 
         data (``bytes``):
             Unique data that identifies this option among all the other options in a poll.
