@@ -27,6 +27,10 @@ from .primitives import Int, Long
 class FutureSalts(Object):
     ID = 0xae500895
 
+    __slots__ = ["req_msg_id", "now", "salts"]
+
+    QUALNAME = "FutureSalts"
+
     def __init__(self, req_msg_id: int, now: int or datetime, salts: list):
         self.req_msg_id = req_msg_id
         self.now = now

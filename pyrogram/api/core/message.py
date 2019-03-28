@@ -25,6 +25,10 @@ from .primitives import Int, Long
 class Message(Object):
     ID = 0x5bb8e511  # hex(crc32(b"message msg_id:long seqno:int bytes:int body:Object = Message"))
 
+    __slots__ = ["msg_id", "seq_no", "length", "body"]
+
+    QUALNAME = "Message"
+
     def __init__(self, body: Object, msg_id: int, seq_no: int, length: int):
         self.msg_id = msg_id
         self.seq_no = seq_no
