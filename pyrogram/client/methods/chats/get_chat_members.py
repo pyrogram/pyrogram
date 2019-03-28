@@ -16,11 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class Filters:
@@ -116,17 +121,22 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return pyrogram.ChatMembers._parse(
-                self,
-                self.send(
-                    functions.channels.GetParticipants(
-                        channel=peer,
-                        filter=filter,
-                        offset=offset,
-                        limit=limit,
-                        hash=0
+            while True:
+                try:
+                    return pyrogram.ChatMembers._parse(
+                        self,
+                        self.send(
+                            functions.channels.GetParticipants(
+                                channel=peer,
+                                filter=filter,
+                                offset=offset,
+                                limit=limit,
+                                hash=0
+                            )
+                        )
                     )
-                )
-            )
+                except FloodWait as e:
+                    log.warning("Sleeping for {}s".format(e.x))
+                    time.sleep(e.x)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
