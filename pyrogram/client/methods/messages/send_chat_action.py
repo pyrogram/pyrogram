@@ -62,7 +62,7 @@ class SendChatAction(BaseClient):
             action = action.value
 
         if "Upload" in action.__name__:
-            action = action(progress)
+            action = action(progress=progress)
         else:
             action = action()
 
