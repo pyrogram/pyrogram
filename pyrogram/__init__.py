@@ -18,7 +18,7 @@
 
 import sys
 
-__version__ = "0.12.0.develop"
+__version__ = "0.12.0.async"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8", "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
