@@ -1,24 +1,22 @@
 More on Updates
 ===============
 
-Here we'll show some advanced usages when working with updates.
-
-.. note::
-    This page makes use of Handlers and Filters to show you how to handle updates.
-    Learn more at `Update Handling <UpdateHandling.html>`_ and `Using Filters <UsingFilters.html>`_.
+Here we'll show some advanced usages when working with `update handlers`_ and `filters`_.
 
 Handler Groups
 --------------
 
-If you register handlers with overlapping filters, only the first one is executed and any other handler will be ignored.
+If you register handlers with overlapping (conflicting) filters, only the first one is executed and any other handler
+will be ignored. This is intended by design.
 
-In order to process the same update more than once, you can register your handler in a different group.
-Groups are identified by a number (number 0 being the default) and are sorted, that is, a lower group number has a
-higher priority.
+In order to handle the very same update more than once, you have to register your handler in a different dispatching
+group. Dispatching groups hold one or more handlers and are processed sequentially, they are identified by a number
+(number 0 being the default) and sorted, that is, a lower group number has a higher priority:
 
-For example, in:
+For example, take these two handlers:
 
 .. code-block:: python
+    :emphasize-lines: 1, 6
 
     @app.on_message(Filters.text | Filters.sticker)
     def text_or_sticker(client, message):
@@ -29,8 +27,8 @@ For example, in:
     def just_text(client, message):
         print("Just Text")
 
-``just_text`` is never executed because ``text_or_sticker`` already handles texts. To enable it, simply register the
-function using a different group:
+Here, ``just_text`` is never executed because ``text_or_sticker``, which has been registered first, already handles
+texts (``Filters.text`` is shared and conflicting). To enable it, register the function using a different group:
 
 .. code-block:: python
 
@@ -69,7 +67,7 @@ continue to propagate the same update to the next groups until all the handlers 
 
     @app.on_message(Filters.private, group=1)
     def _(client, message):
-        print(1 / 0)  # Unhandled exception: ZeroDivisionError
+        raise Exception("Unhandled exception!")  # Simulate an unhandled exception
 
 
     @app.on_message(Filters.private, group=2)
@@ -82,7 +80,7 @@ The output for each incoming update will therefore be:
 .. code-block:: text
 
     0
-    ZeroDivisionError: division by zero
+    Exception: Unhandled exception!
     2
 
 Stop Propagation
@@ -153,9 +151,9 @@ Continue Propagation
 
 As opposed to `stopping the update propagation <#stop-propagation>`_ and also as an alternative to the
 `handler groups <#handler-groups>`_, you can signal the internal dispatcher to continue the update propagation within
-the group regardless of the next handler's filters. This allows you to register multiple handlers with overlapping
-filters in the same group; to let the dispatcher process the next handler you can do *one* of the following in each
-handler you want to grant permission to continue:
+**the same group** regardless of the next handler's filters. This allows you to register multiple handlers with
+overlapping filters in the same group; to let the dispatcher process the next handler you can do *one* of the following
+in each handler you want to grant permission to continue:
 
 - Call the update's bound-method ``.continue_propagation()`` (preferred way).
 - Manually ``raise ContinuePropagation`` exception (more suitable for raw updates only).
@@ -219,3 +217,6 @@ The output of both (equivalent) examples will be:
     0
     1
     2
+
+.. _`update handlers`: UpdateHandling.html
+.. _`filters`: UsingFilters.html
