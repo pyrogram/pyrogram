@@ -222,14 +222,16 @@ class Filters:
     - poll"""
 
     @staticmethod
-    def command(command: str or list,
-                prefix: str or list = "/",
-                separator: str = " ",
-                case_sensitive: bool = False):
+    def command(
+        commands: str or list,
+        prefix: str or list = "/",
+        separator: str = " ",
+        case_sensitive: bool = False
+    ):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
         Args:
-            command (``str`` | ``list``):
+            commands (``str`` | ``list``):
                 The command or list of commands as string the filter should look for.
                 Examples: "start", ["start", "help", "settings"]. When a message text containing
                 a command arrives, the command itself and its arguments will be stored in the *command*
@@ -249,31 +251,25 @@ class Filters:
                 Examples: when True, command="Start" would trigger /Start but not /start.
         """
 
-        def f(_, m):
-            if m.text:
-                for i in _.p:
-                    if m.text.startswith(i):
-                        t = m.text.split(_.s)
-                        c, a = t[0][len(i):], t[1:]
-                        c = c if _.cs else c.lower()
-                        m.command = ([c] + a) if c in _.c else None
+        def func(flt, message):
+            text = message.text or message.caption
+
+            if text:
+                for p in flt.p:
+                    if text.startswith(p):
+                        s = text.split(flt.s)
+                        c, a = s[0][len(p):], s[1:]
+                        c = c if flt.cs else c.lower()
+                        message.command = ([c] + a) if c in flt.c else None
                         break
 
-            return bool(m.command)
+            return bool(message.command)
 
-        return create(
-            "Command",
-            f,
-            c={command if case_sensitive
-               else command.lower()}
-            if not isinstance(command, list)
-            else {c if case_sensitive
-                  else c.lower()
-                  for c in command},
-            p=set(prefix) if prefix else {""},
-            s=separator,
-            cs=case_sensitive
-        )
+        commands = commands if type(commands) is list else [commands]
+        commands = {c if case_sensitive else c.lower() for c in commands}
+        prefixes = set(prefix) if prefix else {""}
+
+        return create("Command", func=func, c=commands, p=prefixes, s=separator, cs=case_sensitive)
 
     @staticmethod
     def regex(pattern, flags: int = 0):
