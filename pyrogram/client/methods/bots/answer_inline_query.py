@@ -75,10 +75,15 @@ class AnswerInlineQuery(BaseClient):
         Returns:
             On success, True is returned.
         """
+        written_results = []  # Py 3.5 doesn't support await inside comprehensions
+
+        for r in results:
+            written_results.append(await r.write())
+
         return await self.send(
             functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
-                results=[r.write() for r in results],
+                results=written_results,
                 cache_time=cache_time,
                 gallery=None,
                 private=is_personal or None,

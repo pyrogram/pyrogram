@@ -84,11 +84,11 @@ class InlineQueryResultArticle(InlineQueryResult):
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
 
-    def write(self):
+    async def write(self):
         return types.InputBotInlineResult(
             id=str(self.id),
             type=self.type,
-            send_message=self.input_message_content.write(self.reply_markup),
+            send_message=await self.input_message_content.write(self.reply_markup),
             title=self.title,
             description=self.description,
             url=self.url,

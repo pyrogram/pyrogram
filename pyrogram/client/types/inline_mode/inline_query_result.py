@@ -55,5 +55,5 @@ class InlineQueryResult(PyrogramType):
         self.type = type
         self.id = id
 
-    def write(self):
+    async def write(self):
         pass
