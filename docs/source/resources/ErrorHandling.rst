@@ -4,7 +4,7 @@ Error Handling
 Errors are inevitable when working with the API, and they must be correctly handled with ``try..except`` blocks.
 
 There are many errors that Telegram could return, but they all fall in one of these categories
-(which are in turn children of the :obj:`RPCError <pyrogram.RPCError>` superclass)
+(which are in turn children of the :obj:`RPCError <pyrogram.RPCError>` superclass):
 
 -   :obj:`303 - See Other <pyrogram.errors.SeeOther>`
 -   :obj:`400 - Bad Request <pyrogram.errors.BadRequest>`

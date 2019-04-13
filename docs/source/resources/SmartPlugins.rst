@@ -13,8 +13,8 @@ Introduction
 ------------
 
 Prior to the Smart Plugin system, pluggable handlers were already possible. For example, if you wanted to modularize
-your applications, you had to put your function definitions in separate files and register them inside your main script,
-like this:
+your applications, you had to put your function definitions in separate files and register them inside your main script
+after importing your modules, like this:
 
 .. note::
 
@@ -72,7 +72,7 @@ functions. So, what if you could? Smart Plugins solve this issue by taking care 
 Using Smart Plugins
 -------------------
 
-Setting up your Pyrogram project to accommodate Smart Plugins is straightforward:
+Setting up your Pyrogram project to accommodate Smart Plugins is pretty straightforward:
 
 #. Create a new folder to store all the plugins (e.g.: "plugins", "handlers", ...).
 #. Put your python files full of plugins inside. Organize them as you wish.
@@ -129,18 +129,17 @@ Setting up your Pyrogram project to accommodate Smart Plugins is straightforward
 
         from pyrogram import Client
 
-        plugins = dict(
-            root="plugins"
-        )
+        plugins = dict(root="plugins")
 
         Client("my_account", plugins=plugins).run()
+
 
 The first important thing to note is the new ``plugins`` folder. You can put *any python file* in *any subfolder* and
 each file can contain *any decorated function* (handlers) with one limitation: within a single module (file) you must
 use different names for each decorated function.
 
 The second thing is telling Pyrogram where to look for your plugins: you can either use the *config.ini* file or
-the Client parameter "plugins"; the *root* value must match the name of your plugins folder. Your Pyrogram Client
+the Client parameter "plugins"; the *root* value must match the name of your plugins root folder. Your Pyrogram Client
 instance will **automatically** scan the folder upon starting to search for valid handlers and register them for you.
 
 Then you'll notice you can now use decorators. That's right, you can apply the usual decorators to your callback
@@ -161,7 +160,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``
-keys, either in the *config.ini* file or in the dictionary passed as Client argument. Here's how they work:
+directives, either in the *config.ini* file or in the dictionary passed as Client argument. Here's how they work:
 
 - If both ``include`` and ``exclude`` are omitted, all plugins are loaded as described above.
 - If ``include`` is given, only the specified plugins will be loaded, in the order they are passed.
@@ -214,9 +213,7 @@ also organized in subfolders:
 
     .. code-block:: python
 
-        plugins = dict(
-            root="plugins"
-        )
+        plugins = dict(root="plugins")
 
         Client("my_account", plugins=plugins).run()
 
@@ -293,7 +290,7 @@ Load/Unload Plugins at Runtime
 
 In the `previous section <#specifying-the-plugins-to-include>`_ we've explained how to specify which plugins to load and
 which to ignore before your Client starts. Here we'll show, instead, how to unload and load again a previously
-registered plugins at runtime.
+registered plugin at runtime.
 
 Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram updates
 ) will be modified in such a way that, when you reference them later on, they will be actually pointing to a tuple of
@@ -314,14 +311,14 @@ attribute. Here's an example:
 
 -   Printing ``echo`` will show something like ``(<MessageHandler object at 0x10e3abc50>, 0)``.
 
--   Printing ``echo[0].callback``, that is, the *callback* attribute of the first eleent of the tuple, which is an
+-   Printing ``echo[0].callback``, that is, the *callback* attribute of the first element of the tuple, which is an
     Handler, will reveal the actual callback ``<function echo at 0x10e3b6598>``.
 
 Unloading
 ^^^^^^^^^
 
-In order to unload a plugin, or any other handler, all you need to do is obtain a reference to it (by importing the
-relevant module) and call :meth:`remove_handler <pyrogram.Client.remove_handler>` Client's method with your function
+In order to unload a plugin, or any other handler, all you need to do is obtain a reference to it by importing the
+relevant module and call :meth:`remove_handler() <pyrogram.Client.remove_handler>` Client's method with your function
 name preceded by the star ``*`` operator as argument. Example:
 
 - ``main.py``
@@ -346,7 +343,7 @@ Loading
 ^^^^^^^
 
 Similarly to the unloading process, in order to load again a previously unloaded plugin you do the same, but this time
-using :meth:`add_handler <pyrogram.Client.add_handler>` instead. Example:
+using :meth:`add_handler() <pyrogram.Client.add_handler>` instead. Example:
 
 - ``main.py``
 
