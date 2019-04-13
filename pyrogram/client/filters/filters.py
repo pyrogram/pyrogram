@@ -311,21 +311,20 @@ class Filters:
 
         def __init__(self, users: int or str or list = None):
             users = [] if users is None else users if type(users) is list else [users]
+
             super().__init__(
-                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in users}
-                if type(users) is list else
-                {"me" if users in ["me", "self"] else users.lower().strip("@") if type(users) is str else users}
+                "me" if u in ["me", "self"]
+                else u.lower().strip("@") if type(u) is str
+                else u for u in users
             )
 
         def __call__(self, message):
-            return bool(
-                message.from_user
-                and (message.from_user.id in self
-                     or (message.from_user.username
-                         and message.from_user.username.lower() in self)
-                     or ("me" in self
-                         and message.from_user.is_self))
-            )
+            return (message.from_user
+                    and (message.from_user.id in self
+                         or (message.from_user.username
+                             and message.from_user.username.lower() in self)
+                         or ("me" in self
+                             and message.from_user.is_self)))
 
     # noinspection PyPep8Naming
     class chat(Filter, set):
@@ -343,21 +342,21 @@ class Filters:
 
         def __init__(self, chats: int or str or list = None):
             chats = [] if chats is None else chats if type(chats) is list else [chats]
+
             super().__init__(
-                {"me" if i in ["me", "self"] else i.lower().strip("@") if type(i) is str else i for i in chats}
-                if type(chats) is list else
-                {"me" if chats in ["me", "self"] else chats.lower().strip("@") if type(chats) is str else chats}
+                "me" if c in ["me", "self"]
+                else c.lower().strip("@") if type(c) is str
+                else c for c in chats
             )
 
         def __call__(self, message):
-            return bool(
-                message.chat
-                and (message.chat.id in self
-                     or (message.chat.username
-                         and message.chat.username.lower() in self)
-                     or ("me" in self and message.from_user
-                         and message.from_user.is_self
-                         and not message.outgoing))
-            )
+            return (message.chat
+                    and (message.chat.id in self
+                         or (message.chat.username
+                             and message.chat.username.lower() in self)
+                         or ("me" in self
+                             and message.from_user
+                             and message.from_user.is_self
+                             and not message.outgoing)))
 
     dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
