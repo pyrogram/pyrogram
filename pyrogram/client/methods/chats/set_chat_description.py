@@ -47,15 +47,13 @@ class SetChatDescription(BaseClient):
         """
         peer = await self.resolve_peer(chat_id)
 
-        if isinstance(peer, types.InputPeerChannel):
+        if isinstance(peer, (types.InputPeerChannel, types.InputPeerChat)):
             await self.send(
-                functions.channels.EditAbout(
-                    channel=peer,
+                functions.messages.EditChatAbout(
+                    peer=peer,
                     about=description
                 )
             )
-        elif isinstance(peer, types.InputPeerChat):
-            raise ValueError("The chat_id \"{}\" belongs to a basic group".format(chat_id))
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
 

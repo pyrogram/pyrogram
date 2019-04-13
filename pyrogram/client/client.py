@@ -30,7 +30,6 @@ import shutil
 import struct
 import tempfile
 import time
-import warnings
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -41,6 +40,10 @@ from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
+from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
+from pyrogram.crypto import AES
 from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
@@ -49,10 +52,6 @@ from pyrogram.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler
-from pyrogram.client.handlers.handler import Handler
-from pyrogram.client.methods.password.utils import compute_check
-from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
 from .ext.utils import ainput
 from .ext import utils, Syncer, BaseClient, Dispatcher
@@ -283,10 +282,10 @@ class Client(Methods, BaseClient):
             self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
-            warnings.warn('\nYou are using a bot token as session name.\n'
-                          'It will be deprecated in next update, please use session file name to load '
-                          'existing sessions and bot_token argument to create new sessions.',
-                          DeprecationWarning, stacklevel=2)
+            log.warning('\nWARNING: You are using a bot token as session name!\n'
+                        'This usage will be deprecated soon. Please use a session file name to load '
+                        'an existing session and the bot_token argument to create new sessions.\n'
+                        'More info: https://docs.pyrogram.ml/start/Setup#bot-authorization\n')
 
         self.load_config()
         await self.load_session()
