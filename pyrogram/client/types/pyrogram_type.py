@@ -51,7 +51,7 @@ def default(o: PyrogramType):
         return remove_none(
             OrderedDict(
                 [("_", "pyrogram." + o.__class__.__name__)]
-                + [i for i in content.items()]
+                + [i for i in content.items() if not i[0].startswith("_")]
             )
         )
     except AttributeError:
