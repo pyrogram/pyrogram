@@ -2,7 +2,7 @@ import hashlib
 from random import randint
 
 import pyrogram
-from pyrogram.api import types, functions, errors
+from pyrogram.api import types, functions
 from tgvoip import CallState
 from tgvoip.utils import i2b, b2i, calc_fingerprint
 
@@ -40,10 +40,10 @@ class IncomingCall(BaseCall):
                 g_b=i2b(self.g_b),
                 protocol=self.protocol
             )).phone_call
-        except errors.CallAlreadyAccepted:
+        except pyrogram.errors.CallAlreadyAccepted:
             self.stop()
             return True
-        except errors.CallAlreadyDeclined:
+        except pyrogram.errors.CallAlreadyDeclined:
             self.call_discarded()
             return False
         if isinstance(self.call, types.PhoneCallDiscarded):

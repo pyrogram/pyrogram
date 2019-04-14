@@ -79,11 +79,14 @@ class Dispatcher:
                 ),
 
             (types.UpdateBotInlineQuery,):
-                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler)
+                lambda upd, usr, cht: (
+                    pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler
                 ),
 
             (types.UpdatePhoneCall,):
-                lambda upd, usr, cht: (upd.phone_call, PhoneCallHandler),
+                lambda upd, usr, cht: (
+                    upd.phone_call, PhoneCallHandler
+                ),
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

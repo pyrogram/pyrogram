@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from pyrogram.api import types, functions, errors
+from pyrogram.api import types, functions
 from ..pyrogram_type import PyrogramType
 from ..update import Update
 from tgvoip import VoIPController, CallState, CallError, VoIPServerConfig, DataSaving, Endpoint
@@ -149,7 +149,7 @@ class BaseCall(Update, PyrogramType):
                 connection_id=self.ctrl.get_preferred_relay_id(),
                 reason=reason
             ))
-        except (errors.CallAlreadyDeclined, errors.CallAlreadyAccepted):
+        except (pyrogram.errors.CallAlreadyDeclined, pyrogram.errors.CallAlreadyAccepted):
             pass
         self.call_ended()
 
