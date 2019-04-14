@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class SetUserProfilePhoto(BaseClient):
-    def set_user_profile_photo(
+    async def set_user_profile_photo(
         self,
         photo: str
     ) -> bool:
@@ -43,9 +43,9 @@ class SetUserProfilePhoto(BaseClient):
         """
 
         return bool(
-            self.send(
+            await self.send(
                 functions.photos.UploadProfilePhoto(
-                    file=self.save_file(photo)
+                    file=await self.save_file(photo)
                 )
             )
         )
