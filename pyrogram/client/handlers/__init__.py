@@ -21,10 +21,11 @@ from .deleted_messages_handler import DeletedMessagesHandler
 from .disconnect_handler import DisconnectHandler
 from .inline_query_handler import InlineQueryHandler
 from .message_handler import MessageHandler
+from .poll_handler import PollHandler
 from .raw_update_handler import RawUpdateHandler
 from .user_status_handler import UserStatusHandler
 
 __all__ = [
     "MessageHandler", "DeletedMessagesHandler", "CallbackQueryHandler", "RawUpdateHandler", "DisconnectHandler",
-    "UserStatusHandler", "InlineQueryHandler"
+    "UserStatusHandler", "InlineQueryHandler", "PollHandler"
 ]

@@ -22,9 +22,10 @@ import pyrogram
 from pyrogram.api import types
 from .poll_option import PollOption
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 
 
-class Poll(PyrogramType):
+class Poll(PyrogramType, Update):
     """This object represents a Poll.
 
     Args:
