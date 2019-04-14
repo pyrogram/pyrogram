@@ -3,7 +3,7 @@
 config.ini
 
 # Pyrogram generated code
-pyrogram/api/errors/exceptions/
+pyrogram/errors/exceptions/
 pyrogram/api/functions/
 pyrogram/api/types/
 pyrogram/api/all.py
