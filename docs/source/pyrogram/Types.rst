@@ -117,6 +117,9 @@ InputMessageContent
 .. autoclass:: ChatMembers
     :members:
 
+.. autoclass:: ChatPermissions
+    :members:
+
 .. autoclass:: Dialog
     :members:
 
