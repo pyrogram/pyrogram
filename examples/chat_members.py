@@ -2,7 +2,7 @@
 
 from pyrogram import Client
 
-app = Client("my_count")
+app = Client("my_account")
 target = "pyrogramchat"  # Target channel/supergroup
 
 with app:

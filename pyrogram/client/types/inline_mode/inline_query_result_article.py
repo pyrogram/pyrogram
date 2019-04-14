@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any
+
 from pyrogram.api import types
 from .inline_query_result import InlineQueryResult
 
@@ -61,7 +63,7 @@ class InlineQueryResultArticle(InlineQueryResult):
 
     def __init__(
         self,
-        id: str,
+        id: Any,
         title: str,
         input_message_content,
         reply_markup=None,
@@ -84,7 +86,7 @@ class InlineQueryResultArticle(InlineQueryResult):
 
     def write(self):
         return types.InputBotInlineResult(
-            id=self.id,
+            id=str(self.id),
             type=self.type,
             send_message=self.input_message_content.write(self.reply_markup),
             title=self.title,
