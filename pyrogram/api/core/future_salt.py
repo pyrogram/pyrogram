@@ -26,6 +26,10 @@ from .primitives import Int, Long
 class FutureSalt(Object):
     ID = 0x0949d9dc
 
+    __slots__ = ["valid_since", "valid_until", "salt"]
+
+    QUALNAME = "FutureSalt"
+
     def __init__(self, valid_since: int or datetime, valid_until: int or datetime, salt: int):
         self.valid_since = valid_since
         self.valid_until = valid_until

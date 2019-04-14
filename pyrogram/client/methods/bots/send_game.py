@@ -24,15 +24,19 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendGame(BaseClient):
-    def send_game(self,
-                  chat_id: Union[int, str],
-                  game_short_name: str,
-                  disable_notification: bool = None,
-                  reply_to_message_id: int = None,
-                  reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardRemove",
-                                      "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_game(
+        self,
+        chat_id: Union[int, str],
+        game_short_name: str,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send a game.
 
         Args:
@@ -59,7 +63,7 @@ class SendGame(BaseClient):
             On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(

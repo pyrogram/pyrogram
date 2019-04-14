@@ -23,9 +23,11 @@ from ...ext import BaseClient
 
 
 class IterDialogs(BaseClient):
-    def iter_dialogs(self,
-                     offset_date: int = 0,
-                     limit: int = 0) -> Generator["pyrogram.Dialog", None, None]:
+    def iter_dialogs(
+        self,
+        offset_date: int = 0,
+        limit: int = 0
+    ) -> Generator["pyrogram.Dialog", None, None]:
         """Use this method to iterate through a user's dialogs sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from
@@ -44,7 +46,7 @@ class IterDialogs(BaseClient):
             A generator yielding :obj:`Dialog <pyrogram.Dialog>` objects.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         current = 0
         total = limit or (1 << 31) - 1

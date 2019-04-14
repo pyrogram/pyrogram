@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class VideoNote(PyrogramType):
-    """This object represents a video message (available in Telegram apps as of v.4.0).
+    """This object represents a video note.
 
     Args:
         file_id (``str``):
@@ -51,16 +51,20 @@ class VideoNote(PyrogramType):
             Date the video note was sent in Unix time.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 length: int,
-                 duration: int,
-                 thumb: PhotoSize = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None):
+    __slots__ = ["file_id", "thumb", "mime_type", "file_size", "date", "length", "duration"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        length: int,
+        duration: int,
+        thumb: PhotoSize = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -85,7 +89,7 @@ class VideoNote(PyrogramType):
             ),
             length=video_attributes.w,
             duration=video_attributes.duration,
-            thumb=PhotoSize._parse(client, video_note.thumb),
+            thumb=PhotoSize._parse(client, video_note.thumbs),
             file_size=video_note.size,
             mime_type=video_note.mime_type,
             date=video_note.date,

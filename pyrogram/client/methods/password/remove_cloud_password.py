@@ -22,8 +22,10 @@ from ...ext import BaseClient
 
 
 class RemoveCloudPassword(BaseClient):
-    def remove_cloud_password(self,
-                              password: str) -> bool:
+    def remove_cloud_password(
+        self,
+        password: str
+    ) -> bool:
         """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Args:
@@ -34,7 +36,7 @@ class RemoveCloudPassword(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case there is no cloud password to remove.
         """
         r = self.send(functions.account.GetPassword())

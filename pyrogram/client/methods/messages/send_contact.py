@@ -24,18 +24,22 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendContact(BaseClient):
-    def send_contact(self,
-                     chat_id: Union[int, str],
-                     phone_number: str,
-                     first_name: str,
-                     last_name: str = "",
-                     vcard: str = "",
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardRemove",
-                                         "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_contact(
+        self,
+        chat_id: Union[int, str],
+        phone_number: str,
+        first_name: str,
+        last_name: str = None,
+        vcard: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send phone contacts.
 
         Args:
@@ -71,7 +75,7 @@ class SendContact(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(
@@ -79,8 +83,8 @@ class SendContact(BaseClient):
                 media=types.InputMediaContact(
                     phone_number=phone_number,
                     first_name=first_name,
-                    last_name=last_name,
-                    vcard=vcard
+                    last_name=last_name or "",
+                    vcard=vcard or ""
                 ),
                 message="",
                 silent=disable_notification or None,

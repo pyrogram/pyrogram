@@ -23,7 +23,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid
+from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
@@ -33,11 +33,13 @@ from pyrogram.client.types.input_media import InputMedia
 
 
 class EditMessageMedia(BaseClient):
-    def edit_message_media(self,
-                           chat_id: Union[int, str],
-                           message_id: int,
-                           media: InputMedia,
-                           reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
+    def edit_message_media(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        media: InputMedia,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> "pyrogram.Message":
         """Use this method to edit audio, document, photo, or video messages.
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
@@ -54,7 +56,7 @@ class EditMessageMedia(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+            media (:obj:`InputMedia`)
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
@@ -64,7 +66,7 @@ class EditMessageMedia(BaseClient):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption
@@ -131,7 +133,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -187,7 +191,9 @@ class EditMessageMedia(BaseClient):
                                     performer=media.performer,
                                     title=media.title
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )
@@ -244,7 +250,9 @@ class EditMessageMedia(BaseClient):
                                     w=media.width,
                                     h=media.height
                                 ),
-                                types.DocumentAttributeFilename(os.path.basename(media.media)),
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                ),
                                 types.DocumentAttributeAnimated()
                             ]
                         )
@@ -296,7 +304,9 @@ class EditMessageMedia(BaseClient):
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
-                                types.DocumentAttributeFilename(os.path.basename(media.media))
+                                types.DocumentAttributeFilename(
+                                    file_name=os.path.basename(media.media)
+                                )
                             ]
                         )
                     )

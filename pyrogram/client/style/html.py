@@ -19,6 +19,7 @@
 import re
 from collections import OrderedDict
 
+import pyrogram
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
     MessageEntityItalic as Italic,
@@ -28,6 +29,7 @@ from pyrogram.api.types import (
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention,
 )
+from pyrogram.errors import PeerIdInvalid
 from . import utils
 from ..session_storage import SessionStorage
 
@@ -36,12 +38,13 @@ class HTML:
     HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])([^<]+)\2)?>([^>]+)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, session_storage: SessionStorage):
+    def __init__(self, session_storage: SessionStorage, client: "pyrogram.BaseClient" = None):
+        self.client = client
         self.session_storage = session_storage
 
     def parse(self, message: str):
         entities = []
-        message = utils.add_surrogates(str(message))
+        message = utils.add_surrogates(str(message or ""))
         offset = 0
 
         for match in self.HTML_RE.finditer(message):
@@ -59,20 +62,20 @@ class HTML:
                         input_user = None
 
                     entity = (
-                        Mention(start, len(body), input_user)
-                        if input_user else MentionInvalid(start, len(body), user_id)
+                        Mention(offset=start, length=len(body), user_id=input_user)
+                        if input_user else MentionInvalid(offset=start, length=len(body), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(body), url)
+                    entity = Url(offset=start, length=len(body), url=url)
             else:
                 if style == "b" or style == "strong":
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == "i" or style == "em":
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == "code":
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == "pre":
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 

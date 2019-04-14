@@ -22,20 +22,22 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
-from pyrogram.api.errors import FloodWait
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
-    def get_history(self,
-                    chat_id: Union[int, str],
-                    limit: int = 100,
-                    offset: int = 0,
-                    offset_id: int = 0,
-                    offset_date: int = 0,
-                    reverse: bool = False):
+    def get_history(
+        self,
+        chat_id: Union[int, str],
+        limit: int = 100,
+        offset: int = 0,
+        offset_id: int = 0,
+        offset_date: int = 0,
+        reverse: bool = False
+    ):
         """Use this method to retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
@@ -68,7 +70,7 @@ class GetHistory(BaseClient):
             On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
 
         while True:

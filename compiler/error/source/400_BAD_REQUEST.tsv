@@ -88,5 +88,12 @@ MEDIA_INVALID	The media is invalid
 BOT_SCORE_NOT_MODIFIED	The bot score was not modified
 USER_BOT_REQUIRED	The method can be used by bots only
 IMAGE_PROCESS_FAILED	The server failed to process your image
+USERNAME_NOT_MODIFIED	The username was not modified
 CALL_ALREADY_ACCEPTED	The call is already accepted
 CALL_ALREADY_DECLINED	The call is already declined
+PHOTO_EXT_INVALID	The photo extension is invalid
+EXTERNAL_URL_INVALID	The external media URL is invalid
+CHAT_NOT_MODIFIED	The chat settings were not modified
+RESULTS_TOO_MUCH	The result contains too many items
+RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers
+ACCESS_TOKEN_INVALID	The bot access token is invalid

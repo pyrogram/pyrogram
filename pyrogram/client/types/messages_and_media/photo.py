@@ -41,12 +41,16 @@ class Photo(PyrogramType):
             Available sizes of this photo.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 id: str,
-                 date: int,
-                 sizes: List[PhotoSize]):
+    __slots__ = ["id", "date", "sizes"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: str,
+        date: int,
+        sizes: List[PhotoSize]
+    ):
         super().__init__(client)
 
         self.id = id
@@ -61,7 +65,6 @@ class Photo(PyrogramType):
 
             for raw_size in raw_sizes:
                 if isinstance(raw_size, (types.PhotoSize, types.PhotoCachedSize)):
-
                     if isinstance(raw_size, types.PhotoSize):
                         file_size = raw_size.size
                     elif isinstance(raw_size, types.PhotoCachedSize):

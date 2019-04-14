@@ -16,4 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .dispatcher import Dispatcher
+from .inline_query import InlineQuery
+from .inline_query_result import InlineQueryResult
+from .inline_query_result_article import InlineQueryResultArticle
+
+__all__ = [
+    "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle"
+]

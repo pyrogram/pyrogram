@@ -24,10 +24,12 @@ from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    def enable_cloud_password(self,
-                              password: str,
-                              hint: str = "",
-                              email: str = None) -> bool:
+    def enable_cloud_password(
+        self,
+        password: str,
+        hint: str = "",
+        email: str = None
+    ) -> bool:
         """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
 
         This password will be asked when you log-in on a new device in addition to the SMS code.
@@ -46,7 +48,7 @@ class EnableCloudPassword(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case there is already a cloud password enabled.
         """
         r = self.send(functions.account.GetPassword())

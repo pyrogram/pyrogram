@@ -25,7 +25,7 @@ from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid, FloodWait
+from pyrogram.errors import FileIdInvalid, FloodWait
 from pyrogram.client.ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
@@ -34,11 +34,13 @@ log = logging.getLogger(__name__)
 class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
     # TODO: Figure out how to send albums using URLs
-    def send_media_group(self,
-                         chat_id: Union[int, str],
-                         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
+    def send_media_group(
+        self,
+        chat_id: Union[int, str],
+        media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
+        disable_notification: bool = None,
+        reply_to_message_id: int = None
+    ):
         """Use this method to send a group of photos or videos as an album.
 
         Args:
@@ -47,10 +49,8 @@ class SendMediaGroup(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (``list``):
-                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
-                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
-                describing photos and videos to be sent, must include 2–10 items.
+            media (List of :obj:`InputMediaPhoto` and :obj:`InputMediaVideo`):
+                A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -64,7 +64,7 @@ class SendMediaGroup(BaseClient):
             single messages sent.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         multi_media = []
 
@@ -137,7 +137,7 @@ class SendMediaGroup(BaseClient):
                                                 w=i.width,
                                                 h=i.height
                                             ),
-                                            types.DocumentAttributeFilename(os.path.basename(i.media))
+                                            types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
                                         ]
                                     )
                                 )

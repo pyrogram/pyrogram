@@ -23,12 +23,14 @@ from pyrogram.client.ext import BaseClient
 
 
 class RequestCallbackAnswer(BaseClient):
-    def request_callback_answer(self,
-                                chat_id: Union[int, str],
-                                message_id: int,
-                                callback_data: bytes):
-        """Use this method to request a callback answer from bots. This is the equivalent of clicking an
-        inline button containing callback data.
+    def request_callback_answer(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        callback_data: bytes
+    ):
+        """Use this method to request a callback answer from bots.
+        This is the equivalent of clicking an inline button containing callback data.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -47,7 +49,7 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``TimeoutError`` if the bot fails to answer within 10 seconds.
         """
         return self.send(

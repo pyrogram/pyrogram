@@ -1,19 +1,19 @@
 Customize Sessions
 ==================
 
-As you may probably know, Telegram allows Users (and Bots) having more than one session (authorizations) registered
+As you may probably know, Telegram allows users (and bots) having more than one session (authorizations) registered
 in the system at the same time.
 
 Briefly explaining, sessions are simply new logins in your account. They can be reviewed in the settings of an official
-app (or by invoking `GetAuthorizations <../functions/account/GetAuthorizations.html>`_ with Pyrogram) and store some useful
-information about the client who generated them.
+app (or by invoking `GetAuthorizations <../functions/account/GetAuthorizations.html>`_ with Pyrogram). They store some
+useful information such as the client who's using them and from which country and IP address.
 
 
 .. figure:: https://i.imgur.com/lzGPCdZ.png
     :width: 70%
     :align: center
 
-    A Pyrogram session running on Linux, Python 3.6.
+    **A Pyrogram session running on Linux, Python 3.6.**
 
 That's how a session looks like on the Android app, showing the three main pieces of information.
 

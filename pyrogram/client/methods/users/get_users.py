@@ -24,8 +24,10 @@ from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
-    def get_users(self,
-                  user_ids: Iterable[Union[int, str]]) -> Union["pyrogram.User", List["pyrogram.User"]]:
+    def get_users(
+        self,
+        user_ids: Iterable[Union[int, str]]
+    ) -> Union["pyrogram.User", List["pyrogram.User"]]:
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
@@ -41,7 +43,7 @@ class GetUsers(BaseClient):
             *user_ids* was an integer or string, the single requested :obj:`User` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]

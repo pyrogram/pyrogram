@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List, Union
 
 import pyrogram
 from pyrogram.api import types
@@ -41,13 +42,17 @@ class PhotoSize(PyrogramType):
             File size.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 width: int,
-                 height: int,
-                 file_size: int):
+    __slots__ = ["file_id", "width", "height", "file_size"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        file_size: int
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -56,27 +61,30 @@ class PhotoSize(PyrogramType):
         self.file_size = file_size
 
     @staticmethod
-    def _parse(client, photo_size: types.PhotoSize or types.PhotoCachedSize):
-        if isinstance(photo_size, (types.PhotoSize, types.PhotoCachedSize)):
+    def _parse(client, thumbs: List) -> Union["PhotoSize", None]:
+        if not thumbs:
+            return None
 
-            if isinstance(photo_size, types.PhotoSize):
-                file_size = photo_size.size
-            elif isinstance(photo_size, types.PhotoCachedSize):
-                file_size = len(photo_size.bytes)
-            else:
-                file_size = 0
+        photo_size = thumbs[-1]
 
-            loc = photo_size.location
+        if not isinstance(photo_size, (types.PhotoSize, types.PhotoCachedSize, types.PhotoStrippedSize)):
+            return None
 
-            if isinstance(loc, types.FileLocation):
-                return PhotoSize(
-                    file_id=encode(
-                        pack(
-                            "<iiqqqqi",
-                            0, loc.dc_id, 0, 0,
-                            loc.volume_id, loc.secret, loc.local_id)),
-                    width=photo_size.w,
-                    height=photo_size.h,
-                    file_size=file_size,
-                    client=client
+        loc = photo_size.location
+
+        if not isinstance(loc, types.FileLocation):
+            return None
+
+        return PhotoSize(
+            file_id=encode(
+                pack(
+                    "<iiqqqqi",
+                    0, loc.dc_id, 0, 0,
+                    loc.volume_id, loc.secret, loc.local_id
                 )
+            ),
+            width=getattr(photo_size, "w", 0),
+            height=getattr(photo_size, "h", 0),
+            file_size=getattr(photo_size, "size", len(getattr(photo_size, "bytes", b""))),
+            client=client
+        )

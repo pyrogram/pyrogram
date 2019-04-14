@@ -23,25 +23,29 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid, FilePartMissing
+from pyrogram.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
 
 
 class SendDocument(BaseClient):
-    def send_document(self,
-                      chat_id: Union[int, str],
-                      document: str,
-                      thumb: str = None,
-                      caption: str = "",
-                      parse_mode: str = "",
-                      disable_notification: bool = None,
-                      reply_to_message_id: int = None,
-                      reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                          "pyrogram.ReplyKeyboardMarkup",
-                                          "pyrogram.ReplyKeyboardRemove",
-                                          "pyrogram.ForceReply"] = None,
-                      progress: callable = None,
-                      progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    def send_document(
+        self,
+        chat_id: Union[int, str],
+        document: str,
+        thumb: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send general files.
 
         Args:
@@ -56,7 +60,7 @@ class SendDocument(BaseClient):
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
 
-            thumb (``str``):
+            thumb (``str``, *optional*):
                 Thumbnail of the file sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 90 pixels.
@@ -109,7 +113,7 @@ class SendDocument(BaseClient):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
@@ -123,7 +127,7 @@ class SendDocument(BaseClient):
                     file=file,
                     thumb=thumb,
                     attributes=[
-                        types.DocumentAttributeFilename(os.path.basename(document))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(document))
                     ]
                 )
             elif document.startswith("http"):

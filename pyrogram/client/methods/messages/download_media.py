@@ -24,13 +24,15 @@ from pyrogram.client.ext import BaseClient
 
 
 class DownloadMedia(BaseClient):
-    def download_media(self,
-                       message: Union["pyrogram.Message", str],
-                       file_name: str = "",
-                       block: bool = True,
-                       progress: callable = None,
-                       progress_args: tuple = ()) -> Union[str, None]:
-        """Use this method to download the media from a Message.
+    def download_media(
+        self,
+        message: Union["pyrogram.Message", str],
+        file_name: str = "",
+        block: bool = True,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union[str, None]:
+        """Use this method to download the media from a message.
 
         Args:
             message (:obj:`Message <pyrogram.Message>` | ``str``):
@@ -75,7 +77,7 @@ class DownloadMedia(BaseClient):
             In case the download is deliberately stopped with :meth:`stop_transmission`, None is returned as well.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"
@@ -106,15 +108,15 @@ class DownloadMedia(BaseClient):
             else:
                 raise ValueError(error_message)
         elif isinstance(message, (
-                pyrogram.Photo,
-                pyrogram.PhotoSize,
-                pyrogram.Audio,
-                pyrogram.Document,
-                pyrogram.Video,
-                pyrogram.Voice,
-                pyrogram.VideoNote,
-                pyrogram.Sticker,
-                pyrogram.Animation
+            pyrogram.Photo,
+            pyrogram.PhotoSize,
+            pyrogram.Audio,
+            pyrogram.Document,
+            pyrogram.Video,
+            pyrogram.Voice,
+            pyrogram.VideoNote,
+            pyrogram.Sticker,
+            pyrogram.Animation
         )):
             if isinstance(message, pyrogram.Photo):
                 media = pyrogram.Document(

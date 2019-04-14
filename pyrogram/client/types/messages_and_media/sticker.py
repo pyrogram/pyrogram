@@ -21,7 +21,7 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types, functions
-from pyrogram.api.errors import StickersetInvalid
+from pyrogram.errors import StickersetInvalid
 from .photo_size import PhotoSize
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
@@ -64,19 +64,25 @@ class Sticker(PyrogramType):
 
     # TODO: Add mask position
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 width: int,
-                 height: int,
-                 thumb: PhotoSize = None,
-                 file_name: str = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None,
-                 emoji: str = None,
-                 set_name: str = None):
+    __slots__ = [
+        "file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name"
+    ]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None,
+        emoji: str = None,
+        set_name: str = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -93,11 +99,14 @@ class Sticker(PyrogramType):
 
     @staticmethod
     @lru_cache(maxsize=256)
-    def get_sticker_set_name(send, input_sticker_set_id):
+    def _get_sticker_set_name(send, input_sticker_set_id):
         try:
             return send(
                 functions.messages.GetStickerSet(
-                    types.InputStickerSetID(*input_sticker_set_id)
+                    stickerset=types.InputStickerSetID(
+                        id=input_sticker_set_id[0],
+                        access_hash=input_sticker_set_id[1]
+                    )
                 )
             ).set.short_name
         except StickersetInvalid:
@@ -110,7 +119,7 @@ class Sticker(PyrogramType):
 
         if isinstance(sticker_set, types.InputStickerSetID):
             input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
-            set_name = Sticker.get_sticker_set_name(client.send, input_sticker_set_id)
+            set_name = Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
         else:
             set_name = None
 
@@ -126,7 +135,7 @@ class Sticker(PyrogramType):
             ),
             width=image_size_attributes.w if image_size_attributes else 0,
             height=image_size_attributes.h if image_size_attributes else 0,
-            thumb=PhotoSize._parse(client, sticker.thumb),
+            thumb=PhotoSize._parse(client, sticker.thumbs),
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

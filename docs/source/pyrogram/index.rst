@@ -15,6 +15,6 @@ after the well established `Telegram Bot API`_ methods, thus offering a familiar
     Filters
     ChatAction
     ParseMode
-    Error
+    RPCError
 
 .. _Telegram Bot API: https://core.telegram.org/bots/api#available-methods

@@ -67,10 +67,10 @@ def get_peer_id(input_peer) -> int:
 
 def get_input_peer(peer_id: int, access_hash: int):
     return (
-        types.InputPeerUser(peer_id, access_hash) if peer_id > 0
-        else types.InputPeerChannel(int(str(peer_id)[4:]), access_hash)
+        types.InputPeerUser(user_id=peer_id, access_hash=access_hash) if peer_id > 0
+        else types.InputPeerChannel(channel_id=int(str(peer_id)[4:]), access_hash=access_hash)
         if (str(peer_id).startswith("-100") and access_hash)
-        else types.InputPeerChat(-peer_id)
+        else types.InputPeerChat(chat_id=-peer_id)
     )
 
 

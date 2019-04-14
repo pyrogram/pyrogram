@@ -23,8 +23,10 @@ from ...ext import BaseClient
 
 
 class DeleteChatPhoto(BaseClient):
-    def delete_chat_photo(self,
-                          chat_id: Union[int, str]) -> bool:
+    def delete_chat_photo(
+        self,
+        chat_id: Union[int, str]
+    ) -> bool:
         """Use this method to delete a chat photo.
         Photos can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -41,7 +43,7 @@ class DeleteChatPhoto(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)

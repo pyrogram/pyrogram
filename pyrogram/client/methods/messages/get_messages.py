@@ -22,18 +22,20 @@ from typing import Union, Iterable
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FloodWait
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
 
 
 class GetMessages(BaseClient):
-    def get_messages(self,
-                     chat_id: Union[int, str],
-                     message_ids: Union[int, Iterable[int]] = None,
-                     reply_to_message_ids: Union[int, Iterable[int]] = None,
-                     replies: int = 1) -> Union["pyrogram.Message", "pyrogram.Messages"]:
+    def get_messages(
+        self,
+        chat_id: Union[int, str],
+        message_ids: Union[int, Iterable[int]] = None,
+        reply_to_message_ids: Union[int, Iterable[int]] = None,
+        replies: int = 1
+    ) -> Union["pyrogram.Message", "pyrogram.Messages"]:
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -61,7 +63,7 @@ class GetMessages(BaseClient):
             *reply_to_message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids
@@ -76,7 +78,7 @@ class GetMessages(BaseClient):
 
         is_iterable = not isinstance(ids, int)
         ids = list(ids) if is_iterable else [ids]
-        ids = [ids_type(i) for i in ids]
+        ids = [ids_type(id=i) for i in ids]
 
         if isinstance(peer, types.InputPeerChannel):
             rpc = functions.channels.GetMessages(channel=peer, id=ids)

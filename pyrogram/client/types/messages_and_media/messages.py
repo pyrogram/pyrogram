@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Union
 
 import pyrogram
 from pyrogram.api import types
@@ -37,11 +37,15 @@ class Messages(PyrogramType, Update):
             Requested messages.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 total_count: int,
-                 messages: List[Message]):
+    __slots__ = ["total_count", "messages"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        messages: List[Message]
+    ):
         super().__init__(client)
 
         self.total_count = total_count
@@ -111,4 +115,56 @@ class Messages(PyrogramType, Update):
             total_count=len(parsed_messages),
             messages=parsed_messages,
             client=client
+        )
+
+    def forward(
+        self,
+        chat_id: Union[int, str],
+        disable_notification: bool = None,
+        as_copy: bool = False,
+        remove_caption: bool = False
+    ):
+        """Bound method *forward* of :obj:`Message <pyrogram.Messages>`.
+
+        Args:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            disable_notification (``bool``, *optional*):
+                Sends messages silently.
+                Users will receive a notification with no sound.
+
+            as_copy (``bool``, *optional*):
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Defaults to False.
+
+            remove_caption (``bool``, *optional*):
+                If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
+                message. Has no effect if *as_copy* is not enabled.
+                Defaults to False.
+
+        Returns:
+            On success, a :class:`Messages <pyrogram.Messages>` containing forwarded messages is returned.
+
+        Raises:
+            :class:`RPCError <pyrogram.RPCError>`
+        """
+        forwarded_messages = []
+
+        for message in self.messages:
+            forwarded_messages.append(
+                message.forward(
+                    chat_id=chat_id,
+                    as_copy=as_copy,
+                    disable_notification=disable_notification,
+                    remove_caption=remove_caption
+                )
+            )
+
+        return Messages(
+            total_count=len(forwarded_messages),
+            messages=forwarded_messages,
+            client=self._client
         )

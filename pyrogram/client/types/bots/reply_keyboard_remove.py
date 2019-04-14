@@ -21,10 +21,9 @@ from ..pyrogram_type import PyrogramType
 
 
 class ReplyKeyboardRemove(PyrogramType):
-    """Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and
-    display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent
-    by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a
-    button (see ReplyKeyboardMarkup).
+    """Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard.
+    By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time
+    keyboards that are hidden immediately after the user presses a button (see ReplyKeyboardMarkup).
 
     Args:
         selective (``bool``, *optional*):
@@ -35,8 +34,12 @@ class ReplyKeyboardRemove(PyrogramType):
             keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
     """
 
-    def __init__(self,
-                 selective: bool = None):
+    __slots__ = ["selective"]
+
+    def __init__(
+        self,
+        selective: bool = None
+    ):
         super().__init__(None)
 
         self.selective = selective

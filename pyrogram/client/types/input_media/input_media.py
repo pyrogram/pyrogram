@@ -16,12 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from ..pyrogram_type import PyrogramType
 
-class InputMedia:
-    def __init__(self,
-                 media: str,
-                 caption: str,
-                 parse_mode: str):
+
+class InputMedia(PyrogramType):
+    """This object represents the content of a media message to be sent. It should be one of:
+
+    - :obj:`InputMediaAnimation <pyrogram.InputMediaAnimation>`
+    - :obj:`InputMediaDocument <pyrogram.InputMediaDocument>`
+    - :obj:`InputMediaAudio <pyrogram.InputMediaAudio>`
+    - :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>`
+    - :obj:`InputMediaVideo <pyrogram.InputMediaVideo>`
+    """
+    __slots__ = ["media", "caption", "parse_mode"]
+
+    def __init__(self, media: str, caption: str, parse_mode: str):
+        super().__init__(None)
+
         self.media = media
         self.caption = caption
         self.parse_mode = parse_mode
