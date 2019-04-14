@@ -24,8 +24,7 @@ if sys.version_info[:3] in [(3, 5, 0), (3, 5, 1), (3, 5, 2)]:
     # Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
     sys.modules["typing"] = typing
 
-
-__version__ = "0.12.0.develop"
+__version__ = "0.12.0"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
     "\xe8", "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
