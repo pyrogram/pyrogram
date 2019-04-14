@@ -115,7 +115,7 @@ class Filters:
     voice = create("Voice", lambda _, m: bool(m.voice))
     """Filter messages that contain :obj:`Voice <pyrogram.Voice>` note objects."""
 
-    video_note = create("Voice", lambda _, m: bool(m.video_note))
+    video_note = create("VideoNote", lambda _, m: bool(m.video_note))
     """Filter messages that contain :obj:`VideoNote <pyrogram.VideoNote>` objects."""
 
     contact = create("Contact", lambda _, m: bool(m.contact))
