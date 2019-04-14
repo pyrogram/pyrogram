@@ -221,9 +221,13 @@ class Filters:
     - venue
     - poll"""
 
+
+    command_prefix: str or list = "/"
+    """Default prefix for Filters.command"""
+
     @staticmethod
     def command(command: str or list,
-                prefix: str or list = "/",
+                prefix: str or list = command_prefix,
                 separator: str = " ",
                 case_sensitive: bool = False):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
