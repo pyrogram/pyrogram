@@ -28,7 +28,7 @@ class Poll(PyrogramType):
     """This object represents a Poll.
 
     Args:
-        id (``int``):
+        id (``str``):
             Unique poll identifier.
 
         question (``str``):
@@ -53,7 +53,7 @@ class Poll(PyrogramType):
         self,
         *,
         client: "pyrogram.client.ext.BaseClient",
-        id: int,
+        id: str,
         question: str,
         options: List[PollOption],
         is_closed: bool,
@@ -98,7 +98,7 @@ class Poll(PyrogramType):
             )
 
         return Poll(
-            id=poll.id,
+            id=str(poll.id),
             question=poll.question,
             options=options,
             is_closed=poll.closed,
