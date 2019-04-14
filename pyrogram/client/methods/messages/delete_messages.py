@@ -48,7 +48,7 @@ class DeleteMessages(BaseClient):
                 Defaults to True.
 
         Returns:
-            True on success.
+            True on success, False otherwise.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
@@ -57,18 +57,20 @@ class DeleteMessages(BaseClient):
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            self.send(
+            r = self.send(
                 functions.channels.DeleteMessages(
                     channel=peer,
                     id=message_ids
                 )
             )
         else:
-            self.send(
+            r = self.send(
                 functions.messages.DeleteMessages(
                     id=message_ids,
                     revoke=revoke or None
                 )
             )
 
-        return True
+        # Deleting messages you don't have right onto, won't raise any error.
+        # Check for pts_count, which is 0 in case deletes fail.
+        return bool(r.pts_count)
