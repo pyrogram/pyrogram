@@ -186,6 +186,9 @@ class Message(PyrogramType, Update):
             web page preview. In future versions this property could turn into a full web page object that contains
             more details.
 
+        poll (:obj:`Poll <pyrogram.Poll>`, *optional*):
+            Message is a native poll, information about the poll.
+
         new_chat_members (List of :obj:`User <pyrogram.User>`, *optional*):
             New members that were added to the group or supergroup and information about them
             (the bot itself may be one of these members).
