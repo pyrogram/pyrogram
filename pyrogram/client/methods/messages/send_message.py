@@ -24,17 +24,21 @@ from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
-    def send_message(self,
-                     chat_id: Union[int, str],
-                     text: str,
-                     parse_mode: str = "",
-                     disable_web_page_preview: bool = None,
-                     disable_notification: bool = None,
-                     reply_to_message_id: int = None,
-                     reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardMarkup",
-                                         "pyrogram.ReplyKeyboardRemove",
-                                         "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_message(
+        self,
+        chat_id: Union[int, str],
+        text: str,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send text messages.
 
         Args:
@@ -69,7 +73,7 @@ class SendMessage(BaseClient):
             On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         message, entities = style.parse(text).values()

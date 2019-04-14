@@ -40,7 +40,11 @@ from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
-from pyrogram.api.errors import (
+from pyrogram.client.handlers import DisconnectHandler
+from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
+from pyrogram.crypto import AES
+from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
@@ -48,13 +52,8 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler
-from pyrogram.client.handlers.handler import Handler
-from pyrogram.client.methods.password.utils import compute_check
-from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
-from .dispatcher import Dispatcher
-from .ext import utils, Syncer, BaseClient
+from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
 
 log = logging.getLogger(__name__)
@@ -67,10 +66,10 @@ class Client(Methods, BaseClient):
 
     Args:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot.
-            For Users: pass a string of your choice, e.g.: "my_main_account".
-            For Bots: pass your Bot API token, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-            Note: as long as a valid User session file exists, Pyrogram won't ask you again to input your phone number.
+            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
+            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Note for bots: You can pass a bot token here, but this usage will be deprecated in next releases.
+            Use *bot_token* instead.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
@@ -144,6 +143,10 @@ class Client(Methods, BaseClient):
             a new Telegram account in case the phone number you passed is not registered yet.
             Only applicable for new sessions.
 
+        bot_token (``str``, *optional*):
+            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Only applicable for new sessions.
+
         last_name (``str``, *optional*):
             Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
             be an empty string: "". Only applicable for new sessions.
@@ -176,30 +179,35 @@ class Client(Methods, BaseClient):
             Defaults to False (normal session).
     """
 
-    def __init__(self,
-                 session_name: str,
-                 api_id: Union[int, str] = None,
-                 api_hash: str = None,
-                 app_version: str = None,
-                 device_model: str = None,
-                 system_version: str = None,
-                 lang_code: str = None,
-                 ipv6: bool = False,
-                 proxy: dict = None,
-                 test_mode: bool = False,
-                 phone_number: str = None,
-                 phone_code: Union[str, callable] = None,
-                 password: str = None,
-                 recovery_code: callable = None,
-                 force_sms: bool = False,
-                 first_name: str = None,
-                 last_name: str = None,
-                 workers: int = BaseClient.WORKERS,
-                 workdir: str = BaseClient.WORKDIR,
-                 config_file: str = BaseClient.CONFIG_FILE,
-                 plugins: dict = None,
-                 no_updates: bool = None,
-                 takeout: bool = None):
+    terms_of_service_displayed = False
+
+    def __init__(
+        self,
+        session_name: str,
+        api_id: Union[int, str] = None,
+        api_hash: str = None,
+        app_version: str = None,
+        device_model: str = None,
+        system_version: str = None,
+        lang_code: str = None,
+        ipv6: bool = False,
+        proxy: dict = None,
+        test_mode: bool = False,
+        phone_number: str = None,
+        phone_code: Union[str, callable] = None,
+        password: str = None,
+        recovery_code: callable = None,
+        force_sms: bool = False,
+        bot_token: str = None,
+        first_name: str = None,
+        last_name: str = None,
+        workers: int = BaseClient.WORKERS,
+        workdir: str = BaseClient.WORKDIR,
+        config_file: str = BaseClient.CONFIG_FILE,
+        plugins: dict = None,
+        no_updates: bool = None,
+        takeout: bool = None
+    ):
         super().__init__()
 
         self.session_name = session_name
@@ -218,6 +226,7 @@ class Client(Methods, BaseClient):
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
+        self.bot_token = bot_token
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
@@ -256,15 +265,20 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
 
         if self.BOT_TOKEN_RE.match(self.session_name):
+            self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
+            log.warning('\nWARNING: You are using a bot token as session name!\n'
+                        'This usage will be deprecated soon. Please use a session file name to load '
+                        'an existing session and the bot_token argument to create new sessions.\n'
+                        'More info: https://docs.pyrogram.ml/start/Setup#bot-authorization\n')
 
         self.load_config()
         self.load_session()
@@ -282,13 +296,15 @@ class Client(Methods, BaseClient):
         try:
             if self.user_id is None:
                 if self.bot_token is None:
+                    self.is_bot = False
                     self.authorize_user()
                 else:
+                    self.is_bot = True
                     self.authorize_bot()
 
                 self.save_session()
 
-            if self.bot_token is None:
+            if not self.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
@@ -419,7 +435,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
@@ -530,9 +546,10 @@ class Client(Methods, BaseClient):
             try:
                 r = self.send(
                     functions.auth.SendCode(
-                        self.phone_number,
-                        self.api_id,
-                        self.api_hash
+                        phone_number=self.phone_number,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        settings=types.CodeSettings()
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:
@@ -576,8 +593,9 @@ class Client(Methods, BaseClient):
         phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
-        if terms_of_service:
+        if terms_of_service and not Client.terms_of_service_displayed:
             print("\n" + terms_of_service.text + "\n")
+            Client.terms_of_service_displayed = True
 
         if self.force_sms:
             self.send(
@@ -612,9 +630,9 @@ class Client(Methods, BaseClient):
                     try:
                         r = self.send(
                             functions.auth.SignIn(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code
                             )
                         )
                     except PhoneNumberUnoccupied:
@@ -625,11 +643,11 @@ class Client(Methods, BaseClient):
                     try:
                         r = self.send(
                             functions.auth.SignUp(
-                                self.phone_number,
-                                phone_code_hash,
-                                self.phone_code,
-                                self.first_name,
-                                self.last_name
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code,
+                                first_name=self.first_name,
+                                last_name=self.last_name
                             )
                         )
                     except PhoneNumberOccupied:
@@ -723,7 +741,11 @@ class Client(Methods, BaseClient):
                 break
 
         if terms_of_service:
-            assert self.send(functions.help.AcceptTermsOfService(terms_of_service.id))
+            assert self.send(
+                functions.help.AcceptTermsOfService(
+                    id=terms_of_service.id
+                )
+            )
 
         self.password = None
         self.user_id = r.user.id
@@ -1015,16 +1037,16 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
 
         if self.no_updates:
-            data = functions.InvokeWithoutUpdates(data)
+            data = functions.InvokeWithoutUpdates(query=data)
 
         if self.takeout_id:
-            data = functions.InvokeWithTakeout(self.takeout_id, data)
+            data = functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
 
         r = self.session.send(data, retries, timeout)
 
@@ -1113,6 +1135,8 @@ class Client(Methods, BaseClient):
             self.auth_key = base64.b64decode("".join(s["auth_key"]))
             self.user_id = s["user_id"]
             self.date = s.get("date", 0)
+            # TODO: replace default with False once token session name will be deprecated
+            self.is_bot = s.get("is_bot", self.is_bot)
 
             for k, v in s.get("peers_by_id", {}).items():
                 self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
@@ -1139,7 +1163,7 @@ class Client(Methods, BaseClient):
 
             if include is None:
                 for path in sorted(Path(root).rglob("*.py")):
-                    module_path = os.path.splitext(str(path))[0].replace("/", ".")
+                    module_path = '.'.join(path.parent.parts + (path.stem,))
                     module = import_module(module_path)
 
                     for name in vars(module).keys():
@@ -1163,7 +1187,7 @@ class Client(Methods, BaseClient):
 
                     try:
                         module = import_module(module_path)
-                    except ModuleNotFoundError:
+                    except ImportError:
                         log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
                         continue
 
@@ -1199,7 +1223,7 @@ class Client(Methods, BaseClient):
 
                     try:
                         module = import_module(module_path)
-                    except ModuleNotFoundError:
+                    except ImportError:
                         log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
                         continue
 
@@ -1246,7 +1270,8 @@ class Client(Methods, BaseClient):
                     test_mode=self.test_mode,
                     auth_key=auth_key,
                     user_id=self.user_id,
-                    date=self.date
+                    date=self.date,
+                    is_bot=self.is_bot,
                 ),
                 f,
                 indent=4
@@ -1302,7 +1327,7 @@ class Client(Methods, BaseClient):
             On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         try:
@@ -1335,7 +1360,7 @@ class Client(Methods, BaseClient):
                 self.fetch_peers(
                     self.send(
                         functions.users.GetUsers(
-                            id=[types.InputUser(peer_id, 0)]
+                            id=[types.InputUser(user_id=peer_id, access_hash=0)]
                         )
                     )
                 )
@@ -1343,7 +1368,7 @@ class Client(Methods, BaseClient):
                 if str(peer_id).startswith("-100"):
                     self.send(
                         functions.channels.GetChannels(
-                            id=[types.InputChannel(int(str(peer_id)[4:]), 0)]
+                            id=[types.InputChannel(channel_id=int(str(peer_id)[4:]), access_hash=0)]
                         )
                     )
                 else:
@@ -1407,7 +1432,7 @@ class Client(Methods, BaseClient):
             On success, the uploaded file is returned in form of an InputFile object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
@@ -1439,21 +1464,25 @@ class Client(Methods, BaseClient):
                             md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
                         break
 
-                    if is_big:
-                        rpc = functions.upload.SaveBigFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            file_total_parts=file_total_parts,
-                            bytes=chunk
-                        )
-                    else:
-                        rpc = functions.upload.SaveFilePart(
-                            file_id=file_id,
-                            file_part=file_part,
-                            bytes=chunk
-                        )
+                    for _ in range(3):
+                        if is_big:
+                            rpc = functions.upload.SaveBigFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                file_total_parts=file_total_parts,
+                                bytes=chunk
+                            )
+                        else:
+                            rpc = functions.upload.SaveFilePart(
+                                file_id=file_id,
+                                file_part=file_part,
+                                bytes=chunk
+                            )
 
-                    assert session.send(rpc), "Couldn't upload file"
+                        if session.send(rpc):
+                            break
+                    else:
+                        raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
 
                     if is_missing_part:
                         return
@@ -1646,8 +1675,8 @@ class Client(Methods, BaseClient):
 
                             hashes = session.send(
                                 functions.upload.GetCdnFileHashes(
-                                    r.file_token,
-                                    offset
+                                    file_token=r.file_token,
+                                    offset=offset
                                 )
                             )
 

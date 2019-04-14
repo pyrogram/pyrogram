@@ -22,8 +22,10 @@ from ...ext import BaseClient
 
 
 class GetChatPreview(BaseClient):
-    def get_chat_preview(self,
-                         invite_link: str):
+    def get_chat_preview(
+        self,
+        invite_link: str
+    ):
         """Use this method to get the preview of a chat using the invite link.
 
         This method only returns a chat preview, if you want to join a chat use :meth:`join_chat`
@@ -36,7 +38,7 @@ class GetChatPreview(BaseClient):
             Either :obj:`Chat` or :obj:`ChatPreview`, depending on whether you already joined the chat or not.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case of an invalid invite_link.
         """
         match = self.INVITE_LINK_RE.match(invite_link)

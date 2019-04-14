@@ -23,9 +23,11 @@ from ...ext import BaseClient
 
 
 class SetChatTitle(BaseClient):
-    def set_chat_title(self,
-                       chat_id: Union[int, str],
-                       title: str) -> bool:
+    def set_chat_title(
+        self,
+        chat_id: Union[int, str],
+        title: str
+    ) -> bool:
         """Use this method to change the title of a chat.
         Titles can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -45,7 +47,7 @@ class SetChatTitle(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)

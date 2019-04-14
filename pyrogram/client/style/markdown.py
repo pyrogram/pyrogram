@@ -19,6 +19,7 @@
 import re
 from collections import OrderedDict
 
+import pyrogram
 from pyrogram.api.types import (
     MessageEntityBold as Bold,
     MessageEntityItalic as Italic,
@@ -28,6 +29,7 @@ from pyrogram.api.types import (
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention
 )
+from pyrogram.errors import PeerIdInvalid
 from . import utils
 
 
@@ -52,11 +54,11 @@ class Markdown:
     ))
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, peers_by_id: dict):
-        self.peers_by_id = peers_by_id
+    def __init__(self, client: "pyrogram.BaseClient" = None):
+        self.client = client
 
     def parse(self, message: str):
-        message = utils.add_surrogates(str(message)).strip()
+        message = utils.add_surrogates(str(message or "")).strip()
         entities = []
         offset = 0
 
@@ -69,27 +71,30 @@ class Markdown:
 
                 if mention:
                     user_id = int(mention.group(1))
-                    input_user = self.peers_by_id.get(user_id, None)
+
+                    try:
+                        input_user = self.client.resolve_peer(user_id)
+                    except PeerIdInvalid:
+                        input_user = None
 
                     entity = (
-                        Mention(start, len(text), input_user)
-                        if input_user
-                        else MentionInvalid(start, len(text), user_id)
+                        Mention(offset=start, length=len(text), user_id=input_user)
+                        if input_user else MentionInvalid(offset=start, length=len(text), user_id=user_id)
                     )
                 else:
-                    entity = Url(start, len(text), url)
+                    entity = Url(offset=start, length=len(text), url=url)
 
                 body = text
                 offset += len(url) + 4
             else:
                 if style == self.BOLD_DELIMITER:
-                    entity = Bold(start, len(body))
+                    entity = Bold(offset=start, length=len(body))
                 elif style == self.ITALIC_DELIMITER:
-                    entity = Italic(start, len(body))
+                    entity = Italic(offset=start, length=len(body))
                 elif style == self.CODE_DELIMITER:
-                    entity = Code(start, len(body))
+                    entity = Code(offset=start, length=len(body))
                 elif style == self.PRE_DELIMITER:
-                    entity = Pre(start, len(body), "")
+                    entity = Pre(offset=start, length=len(body), language="")
                 else:
                     continue
 

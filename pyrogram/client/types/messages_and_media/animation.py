@@ -57,18 +57,22 @@ class Animation(PyrogramType):
             Date the animation was sent in Unix time.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 file_id: str,
-                 width: int,
-                 height: int,
-                 duration: int,
-                 thumb: PhotoSize = None,
-                 file_name: str = None,
-                 mime_type: str = None,
-                 file_size: int = None,
-                 date: int = None):
+    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "duration"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        file_id: str,
+        width: int,
+        height: int,
+        duration: int,
+        thumb: PhotoSize = None,
+        file_name: str = None,
+        mime_type: str = None,
+        file_size: int = None,
+        date: int = None
+    ):
         super().__init__(client)
 
         self.file_id = file_id
@@ -97,7 +101,7 @@ class Animation(PyrogramType):
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),
-            thumb=PhotoSize._parse(client, animation.thumb),
+            thumb=PhotoSize._parse(client, animation.thumbs),
             mime_type=animation.mime_type,
             file_size=animation.size,
             file_name=file_name,

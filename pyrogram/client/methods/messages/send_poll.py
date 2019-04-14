@@ -24,16 +24,20 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendPoll(BaseClient):
-    def send_poll(self,
-                  chat_id: Union[int, str],
-                  question: str,
-                  options: List[str],
-                  disable_notification: bool = None,
-                  reply_to_message_id: int = None,
-                  reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardMarkup",
-                                      "pyrogram.ReplyKeyboardRemove",
-                                      "pyrogram.ForceReply"] = None) -> "pyrogram.Message":
+    def send_poll(
+        self,
+        chat_id: Union[int, str],
+        question: str,
+        options: List[str],
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None
+    ) -> "pyrogram.Message":
         """Use this method to send a new poll.
 
         Args:
@@ -63,7 +67,7 @@ class SendPoll(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(

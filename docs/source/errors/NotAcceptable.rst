@@ -1,8 +1,7 @@
 406 - Not Acceptable
 ====================
 
-.. module:: pyrogram.api.errors.NotAcceptable
+.. module:: pyrogram.errors.NotAcceptable
 
-.. automodule:: pyrogram.api.errors.exceptions.not_acceptable_406
+.. automodule:: pyrogram.errors.exceptions.not_acceptable_406
     :members:
-    :show-inheritance:

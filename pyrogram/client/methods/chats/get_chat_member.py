@@ -19,14 +19,17 @@
 from typing import Union
 
 import pyrogram
-from pyrogram.api import functions, types, errors
+from pyrogram.api import functions, types
+from pyrogram.errors import UserNotParticipant
 from ...ext import BaseClient
 
 
 class GetChatMember(BaseClient):
-    def get_chat_member(self,
-                        chat_id: Union[int, str],
-                        user_id: Union[int, str]) -> "pyrogram.ChatMember":
+    def get_chat_member(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str]
+    ) -> "pyrogram.ChatMember":
         """Use this method to get information about one member of a chat.
 
         Args:
@@ -42,7 +45,7 @@ class GetChatMember(BaseClient):
             On success, a :obj:`ChatMember <pyrogram.ChatMember>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         chat_id = self.resolve_peer(chat_id)
         user_id = self.resolve_peer(user_id)
@@ -55,10 +58,10 @@ class GetChatMember(BaseClient):
             )
 
             for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
-                if member.user.id == user_id.user_id:
+                if member.user.is_self:
                     return member
             else:
-                raise errors.UserNotParticipant
+                raise UserNotParticipant
         elif isinstance(chat_id, types.InputPeerChannel):
             r = self.send(
                 functions.channels.GetParticipant(

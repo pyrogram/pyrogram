@@ -16,8 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.api import types
+from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from ..pyrogram_type import PyrogramType
 
@@ -43,9 +46,6 @@ class Chat(PyrogramType):
 
         last_name (``str``, *optional*):
             Last name of the other party in a private chat.
-
-        all_members_are_administrators (``bool``, *optional*):
-            True if a basic group has "All Members Are Admins" enabled.
 
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             Chat photo. Suitable for downloads only.
@@ -75,26 +75,37 @@ class Chat(PyrogramType):
 
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
+
+        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+            Information about the chat default permissions.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 id: int,
-                 type: str,
-                 title: str = None,
-                 username: str = None,
-                 first_name: str = None,
-                 last_name: str = None,
-                 all_members_are_administrators: bool = None,
-                 photo: ChatPhoto = None,
-                 description: str = None,
-                 invite_link: str = None,
-                 pinned_message=None,
-                 sticker_set_name: str = None,
-                 can_set_sticker_set: bool = None,
-                 members_count: int = None,
-                 restriction_reason: str = None):
+    __slots__ = [
+        "id", "type", "title", "username", "first_name", "last_name", "photo", "description", "invite_link",
+        "pinned_message", "sticker_set_name", "can_set_sticker_set", "members_count", "restriction_reason",
+        "permissions"
+    ]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        id: int,
+        type: str,
+        title: str = None,
+        username: str = None,
+        first_name: str = None,
+        last_name: str = None,
+        photo: ChatPhoto = None,
+        description: str = None,
+        invite_link: str = None,
+        pinned_message=None,
+        sticker_set_name: str = None,
+        can_set_sticker_set: bool = None,
+        members_count: int = None,
+        restriction_reason: str = None,
+        permissions: "pyrogram.ChatPermissions" = None
+    ):
         super().__init__(client)
 
         self.id = id
@@ -103,7 +114,6 @@ class Chat(PyrogramType):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
-        self.all_members_are_administrators = all_members_are_administrators
         self.photo = photo
         self.description = description
         self.invite_link = invite_link
@@ -112,6 +122,7 @@ class Chat(PyrogramType):
         self.can_set_sticker_set = can_set_sticker_set
         self.members_count = members_count
         self.restriction_reason = restriction_reason
+        self.permissions = permissions
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
@@ -128,17 +139,12 @@ class Chat(PyrogramType):
 
     @staticmethod
     def _parse_chat_chat(client, chat: types.Chat) -> "Chat":
-        admins_enabled = getattr(chat, "admins_enabled", None)
-
-        if admins_enabled is not None:
-            admins_enabled = not admins_enabled
-
         return Chat(
             id=-chat.id,
             type="group",
             title=chat.title,
-            all_members_are_administrators=admins_enabled,
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
+            permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             client=client
         )
 
@@ -151,6 +157,7 @@ class Chat(PyrogramType):
             username=getattr(channel, "username", None),
             photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
             restriction_reason=getattr(channel, "restriction_reason", None),
+            permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             client=client
         )
 
@@ -197,7 +204,7 @@ class Chat(PyrogramType):
                 parsed_chat.description = full_chat.about or None
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
-                parsed_chat.sticker_set_name = full_chat.stickerset
+                parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
@@ -209,3 +216,12 @@ class Chat(PyrogramType):
                 parsed_chat.invite_link = full_chat.exported_invite.link
 
         return parsed_chat
+
+    @staticmethod
+    def _parse_chat(client, chat: Union[types.Chat, types.User, types.Channel]) -> "Chat":
+        if isinstance(chat, types.Chat):
+            return Chat._parse_chat_chat(client, chat)
+        elif isinstance(chat, types.User):
+            return Chat._parse_user_chat(client, chat)
+        else:
+            return Chat._parse_channel_chat(client, chat)

@@ -54,16 +54,22 @@ class InlineKeyboardButton(PyrogramType):
 
     # TODO: Add callback_game and pay fields
 
-    def __init__(self,
-                 text: str,
-                 callback_data: bytes = None,
-                 url: str = None,
-                 switch_inline_query: str = None,
-                 switch_inline_query_current_chat: str = None,
-                 callback_game: CallbackGame = None):
+    __slots__ = [
+        "text", "url", "callback_data", "switch_inline_query", "switch_inline_query_current_chat", "callback_game"
+    ]
+
+    def __init__(
+        self,
+        text: str,
+        callback_data: bytes = None,
+        url: str = None,
+        switch_inline_query: str = None,
+        switch_inline_query_current_chat: str = None,
+        callback_game: CallbackGame = None
+    ):
         super().__init__(None)
 
-        self.text = text
+        self.text = str(text)
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
@@ -104,17 +110,21 @@ class InlineKeyboardButton(PyrogramType):
             )
 
     def write(self):
-        if self.callback_data:
-            return KeyboardButtonCallback(self.text, self.callback_data)
+        if self.callback_data is not None:
+            return KeyboardButtonCallback(text=self.text, data=self.callback_data)
 
-        if self.url:
-            return KeyboardButtonUrl(self.text, self.url)
+        if self.url is not None:
+            return KeyboardButtonUrl(text=self.text, url=self.url)
 
-        if self.switch_inline_query:
-            return KeyboardButtonSwitchInline(self.text, self.switch_inline_query)
+        if self.switch_inline_query is not None:
+            return KeyboardButtonSwitchInline(text=self.text, query=self.switch_inline_query)
 
-        if self.switch_inline_query_current_chat:
-            return KeyboardButtonSwitchInline(self.text, self.switch_inline_query_current_chat, same_peer=True)
+        if self.switch_inline_query_current_chat is not None:
+            return KeyboardButtonSwitchInline(
+                text=self.text,
+                query=self.switch_inline_query_current_chat,
+                same_peer=True
+            )
 
-        if self.callback_game:
-            return KeyboardButtonGame(self.text)
+        if self.callback_game is not None:
+            return KeyboardButtonGame(text=self.text)

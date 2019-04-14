@@ -44,14 +44,18 @@ class Venue(PyrogramType):
 
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 location: Location,
-                 title: str,
-                 address: str,
-                 foursquare_id: str = None,
-                 foursquare_type: str = None):
+    __slots__ = ["location", "title", "address", "foursquare_id", "foursquare_type"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        location: Location,
+        title: str,
+        address: str,
+        foursquare_id: str = None,
+        foursquare_type: str = None
+    ):
         super().__init__(client)
 
         self.location = location

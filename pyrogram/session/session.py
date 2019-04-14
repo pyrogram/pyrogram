@@ -31,9 +31,9 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
-from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -48,6 +48,7 @@ class Result:
 class Session:
     INITIAL_SALT = 0x616e67656c696361
     NET_WORKERS = 1
+    START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
@@ -130,8 +131,14 @@ class Session:
                 Thread(target=self.recv, name="RecvThread").start()
 
                 self.current_salt = FutureSalt(0, 0, self.INITIAL_SALT)
-                self.current_salt = FutureSalt(0, 0, self._send(functions.Ping(0)).new_server_salt)
-                self.current_salt = self._send(functions.GetFutureSalts(1)).salts[0]
+                self.current_salt = FutureSalt(
+                    0, 0,
+                    self._send(
+                        functions.Ping(ping_id=0),
+                        timeout=self.START_TIMEOUT
+                    ).new_server_salt
+                )
+                self.current_salt = self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT).salts[0]
 
                 self.next_salt_thread = Thread(target=self.next_salt, name="NextSaltThread")
                 self.next_salt_thread.start()
@@ -139,8 +146,8 @@ class Session:
                 if not self.is_cdn:
                     self._send(
                         functions.InvokeWithLayer(
-                            layer,
-                            functions.InitConnection(
+                            layer=layer,
+                            query=functions.InitConnection(
                                 api_id=self.client.api_id,
                                 app_version=self.client.app_version,
                                 device_model=self.client.device_model,
@@ -150,7 +157,8 @@ class Session:
                                 lang_pack="",
                                 query=functions.help.GetConfig(),
                             )
-                        )
+                        ),
+                        timeout=self.START_TIMEOUT
                     )
 
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
@@ -163,7 +171,7 @@ class Session:
             except AuthKeyDuplicated as e:
                 self.stop()
                 raise e
-            except (OSError, TimeoutError, Error):
+            except (OSError, TimeoutError, RPCError):
                 self.stop()
             except Exception as e:
                 self.stop()
@@ -306,7 +314,7 @@ class Session:
                     log.info("Send {} acks".format(len(self.pending_acks)))
 
                     try:
-                        self._send(types.MsgsAck(list(self.pending_acks)), False)
+                        self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
                     except (OSError, TimeoutError):
                         pass
                     else:
@@ -327,9 +335,9 @@ class Session:
 
             try:
                 self._send(functions.PingDelayDisconnect(
-                    0, self.WAIT_TIMEOUT + 10
+                    ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                 ), False)
-            except (OSError, TimeoutError, Error):
+            except (OSError, TimeoutError, RPCError):
                 pass
 
         log.debug("PingThread stopped")
@@ -357,8 +365,8 @@ class Session:
                 break
 
             try:
-                self.current_salt = self._send(functions.GetFutureSalts(1)).salts[0]
-            except (OSError, TimeoutError, Error):
+                self.current_salt = self._send(functions.GetFutureSalts(num=1)).salts[0]
+            except (OSError, TimeoutError, RPCError):
                 self.connection.close()
                 break
 
@@ -404,7 +412,7 @@ class Session:
             if result is None:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
-                Error.raise_it(result, type(data))
+                RPCError.raise_it(result, type(data))
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
                     result.error_code,

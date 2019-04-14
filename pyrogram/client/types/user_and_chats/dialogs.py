@@ -26,7 +26,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Dialogs(PyrogramType):
-    """This object represents a user's dialogs chunk
+    """This object represents a user's dialogs chunk.
 
     Args:
         total_count (``int``):
@@ -36,11 +36,15 @@ class Dialogs(PyrogramType):
             Requested dialogs.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 total_count: int,
-                 dialogs: List[Dialog]):
+    __slots__ = ["total_count", "dialogs"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        total_count: int,
+        dialogs: List[Dialog]
+    ):
         super().__init__(client)
 
         self.total_count = total_count

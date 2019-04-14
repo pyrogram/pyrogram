@@ -23,9 +23,11 @@ from ...ext import BaseClient
 
 
 class LeaveChat(BaseClient):
-    def leave_chat(self,
-                   chat_id: Union[int, str],
-                   delete: bool = False):
+    def leave_chat(
+        self,
+        chat_id: Union[int, str],
+        delete: bool = False
+    ):
         """Use this method to leave a group chat or channel.
 
         Args:
@@ -37,7 +39,7 @@ class LeaveChat(BaseClient):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

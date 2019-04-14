@@ -23,8 +23,10 @@ from ...ext import BaseClient
 
 
 class UnpinChatMessage(BaseClient):
-    def unpin_chat_message(self,
-                           chat_id: Union[int, str]) -> bool:
+    def unpin_chat_message(
+        self,
+        chat_id: Union[int, str]
+    ) -> bool:
         """Use this method to unpin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.
@@ -37,7 +39,7 @@ class UnpinChatMessage(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         self.send(
             functions.messages.UpdatePinnedMessage(

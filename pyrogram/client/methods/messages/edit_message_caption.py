@@ -24,12 +24,14 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditMessageCaption(BaseClient):
-    def edit_message_caption(self,
-                             chat_id: Union[int, str],
-                             message_id: int,
-                             caption: str,
-                             parse_mode: str = "",
-                             reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
+    def edit_message_caption(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        caption: str,
+        parse_mode: str = "",
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> "pyrogram.Message":
         """Use this method to edit captions of messages.
 
         Args:
@@ -56,7 +58,7 @@ class EditMessageCaption(BaseClient):
             On success, the edited :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 

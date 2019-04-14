@@ -1,17 +1,19 @@
 Using Filters
 =============
 
-For a finer grained control over what kind of messages will be allowed or not in your callback functions, you can use
-:class:`Filters <pyrogram.Filters>`.
+So far we've seen how to register a callback function that executes every time a specific update comes from the server,
+but there's much more than that to come.
 
-.. note::
-    This page makes use of Handlers to show you how to handle updates.
-    Learn more at `Update Handling <UpdateHandling.html>`_.
+Here we'll discuss about :class:`Filters <pyrogram.Filters>`. Filters enable a fine-grain control over what kind of
+updates are allowed or not to be passed in your callback functions, based on their inner details.
+
+Let's start right away with a simple example:
 
 -   This example will show you how to **only** handle messages containing an :obj:`Audio <pyrogram.Audio>` object and
-    ignore any other message:
+    ignore any other message. Filters are passed as the first argument of the decorator:
 
     .. code-block:: python
+        :emphasize-lines: 4
 
         from pyrogram import Filters
 
@@ -20,9 +22,10 @@ For a finer grained control over what kind of messages will be allowed or not in
         def my_handler(client, message):
             print(message)
 
--   or, without decorators:
+-   or, without decorators. Here filters are passed as the second argument of the handler constructor:
 
     .. code-block:: python
+        :emphasize-lines: 8
 
         from pyrogram import Filters, MessageHandler
 
@@ -37,7 +40,7 @@ Combining Filters
 -----------------
 
 Filters can also be used in a more advanced way by inverting and combining more filters together using bitwise
-operators:
+operators ``~``, ``&`` and ``|``:
 
 -   Use ``~`` to invert a filter (behaves like the ``not`` operator).
 -   Use ``&`` and ``|`` to merge two filters (behave like ``and``, ``or`` operators respectively).
@@ -74,7 +77,7 @@ can also accept arguments:
         def my_handler(client, message):
             print(message)
 
--   Message is a **text** message matching the given **regex** pattern.
+-   Message is a **text** message or a media **caption** matching the given **regex** pattern.
 
     .. code-block:: python
 
@@ -104,17 +107,17 @@ Custom Filters
 --------------
 
 Pyrogram already provides lots of built-in :class:`Filters <pyrogram.Filters>` to work with, but in case you can't find
-a specific one for your needs or want to build a custom filter by yourself (to be used in a different handler, for
-example) you can use :meth:`Filters.create() <pyrogram.Filters.create>`.
+a specific one for your needs or want to build a custom filter by yourself (to be used in a different kind of handler,
+for example) you can use :meth:`Filters.create() <pyrogram.Filters.create>`.
 
 .. note::
     At the moment, the built-in filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`
     only.
 
 An example to demonstrate how custom filters work is to show how to create and use one for the
-:obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>`. Note that callback queries updates are only received by Bots;
-create and `authorize your bot <../start/Setup.html#bot-authorization>`_, then send a message with an inline keyboard to
-yourself. This allows you to test your filter by pressing the inline button:
+:obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>`. Note that callback queries updates are only received by
+bots; create and `authorize your bot <../start/Setup.html#bot-authorization>`_, then send a message with an inline
+keyboard to yourself. This allows you to test your filter by pressing the inline button:
 
 .. code-block:: python
 
@@ -133,26 +136,27 @@ Basic Filters
 
 For this basic filter we will be using only the first two parameters of :meth:`Filters.create() <pyrogram.Filters.create>`.
 
-The code below creates a simple filter for hardcoded callback data. This filter will only allow callback queries
-containing "pyrogram" as data:
+The code below creates a simple filter for hardcoded, static callback data. This filter will only allow callback queries
+containing "Pyrogram" as data, that is, the function *func* you pass returns True in case the callback query data
+equals to ``b"Pyrogram"``.
 
 .. code-block:: python
 
-    hardcoded_data = Filters.create(
-        name="HardcodedData",
-        func=lambda filter, callback_query: callback_query.data == b"pyrogram"
+    static_data = Filters.create(
+        name="StaticdData",
+        func=lambda flt, callback_query: callback_query.data == b"Pyrogram"
     )
 
 The ``lambda`` operator in python is used to create small anonymous functions and is perfect for this example, the same
-could be achieved with a normal function, but we don't really need it as it makes sense only inside the filter itself:
+could be achieved with a normal function, but we don't really need it as it makes sense only inside the filter's scope:
 
 .. code-block:: python
 
-    def func(filter, callback_query):
-        return callback_query.data == b"pyrogram"
+    def func(flt, callback_query):
+        return callback_query.data == b"Pyrogram"
 
-    hardcoded_data = Filters.create(
-        name="HardcodedData",
+    static_data = Filters.create(
+        name="StaticData",
         func=func
     )
 
@@ -160,14 +164,14 @@ The filter usage remains the same:
 
 .. code-block:: python
 
-    @app.on_callback_query(hardcoded_data)
+    @app.on_callback_query(static_data)
     def pyrogram_data(client, callback_query):
         client.answer_callback_query(callback_query.id, "it works!")
 
 Filters with Arguments
 ^^^^^^^^^^^^^^^^^^^^^^
 
-A much cooler filter would be one that accepts "pyrogram" or any other data as argument at usage time.
+A much cooler filter would be one that accepts "Pyrogram" or any other data as argument at usage time.
 A dynamic filter like this will make use of the third parameter of :meth:`Filters.create() <pyrogram.Filters.create>`.
 
 This is how a dynamic custom filter looks like:
@@ -177,7 +181,7 @@ This is how a dynamic custom filter looks like:
     def dynamic_data(data):
         return Filters.create(
             name="DynamicData",
-            func=lambda filter, callback_query: filter.data == callback_query.data,
+            func=lambda flt, callback_query: flt.data == callback_query.data,
             data=data  # "data" kwarg is accessed with "filter.data"
         )
 
@@ -185,6 +189,6 @@ And its usage:
 
 .. code-block:: python
 
-    @app.on_callback_query(dynamic_data(b"pyrogram"))
+    @app.on_callback_query(dynamic_data(b"Pyrogram"))
     def pyrogram_data(client, callback_query):
         client.answer_callback_query(callback_query.id, "it works!")

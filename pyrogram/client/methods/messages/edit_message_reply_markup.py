@@ -24,10 +24,12 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditMessageReplyMarkup(BaseClient):
-    def edit_message_reply_markup(self,
-                                  chat_id: Union[int, str],
-                                  message_id: int,
-                                  reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "pyrogram.Message":
+    def edit_message_reply_markup(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> "pyrogram.Message":
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Args:
@@ -47,7 +49,7 @@ class EditMessageReplyMarkup(BaseClient):
             :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
 
         r = self.send(

@@ -21,18 +21,20 @@ import time
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FloodWait
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
 
 
 class GetDialogs(BaseClient):
-    def get_dialogs(self,
-                    offset_date: int = 0,
-                    limit: int = 100,
-                    pinned_only: bool = False) -> "pyrogram.Dialogs":
-        """Use this method to get a chunk of the user's dialogs
+    def get_dialogs(
+        self,
+        offset_date: int = 0,
+        limit: int = 100,
+        pinned_only: bool = False
+    ) -> "pyrogram.Dialogs":
+        """Use this method to get a chunk of the user's dialogs.
 
         You can get up to 100 dialogs at once.
         For a more convenient way of getting a user's dialogs see :meth:`iter_dialogs`.
@@ -54,7 +56,7 @@ class GetDialogs(BaseClient):
             On success, a :obj:`Dialogs` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
 
         while True:

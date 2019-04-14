@@ -23,9 +23,11 @@ from pyrogram.client.ext import BaseClient
 
 
 class ClosePoll(BaseClient):
-    def close_poll(self,
-                   chat_id: Union[int, str],
-                   message_id: id) -> bool:
+    def close_poll(
+        self,
+        chat_id: Union[int, str],
+        message_id: id
+    ) -> bool:
         """Use this method to close (stop) a poll.
 
         Closed polls can't be reopened and nobody will be able to vote in it anymore.
@@ -43,7 +45,7 @@ class ClosePoll(BaseClient):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         poll = self.get_messages(chat_id, message_id).poll
 

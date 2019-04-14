@@ -29,17 +29,22 @@ class PollOption(PyrogramType):
 
         voters (``int``):
             The number of users who voted this option.
+            It will be 0 until you vote for the poll.
 
         data (``bytes``):
             Unique data that identifies this option among all the other options in a poll.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 text: str,
-                 voters: int,
-                 data: bytes):
+    __slots__ = ["text", "voters", "data"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        text: str,
+        voters: int,
+        data: bytes
+    ):
         super().__init__(client)
 
         self.text = text

@@ -23,8 +23,10 @@ from ...ext import BaseClient
 
 
 class GetChatMembersCount(BaseClient):
-    def get_chat_members_count(self,
-                               chat_id: Union[int, str]) -> int:
+    def get_chat_members_count(
+        self,
+        chat_id: Union[int, str]
+    ) -> int:
         """Use this method to get the number of members in a chat.
 
         Args:
@@ -35,7 +37,7 @@ class GetChatMembersCount(BaseClient):
             On success, an integer is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)

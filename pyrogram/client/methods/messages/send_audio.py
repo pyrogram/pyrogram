@@ -17,35 +17,38 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
 import os
 import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid, FilePartMissing
+from pyrogram.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
 
 
 class SendAudio(BaseClient):
-    def send_audio(self,
-                   chat_id: Union[int, str],
-                   audio: str,
-                   caption: str = "",
-                   parse_mode: str = "",
-                   duration: int = 0,
-                   performer: str = None,
-                   title: str = None,
-                   thumb: str = None,
-                   disable_notification: bool = None,
-                   reply_to_message_id: int = None,
-                   reply_markup: Union["pyrogram.InlineKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardMarkup",
-                                       "pyrogram.ReplyKeyboardRemove",
-                                       "pyrogram.ForceReply"] = None,
-                   progress: callable = None,
-                   progress_args: tuple = ()) -> Union["pyrogram.Message", None]:
+    def send_audio(
+        self,
+        chat_id: Union[int, str],
+        audio: str,
+        caption: str = "",
+        parse_mode: str = "",
+        duration: int = 0,
+        performer: str = None,
+        title: str = None,
+        thumb: str = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup: Union[
+            "pyrogram.InlineKeyboardMarkup",
+            "pyrogram.ReplyKeyboardMarkup",
+            "pyrogram.ReplyKeyboardRemove",
+            "pyrogram.ForceReply"
+        ] = None,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ) -> Union["pyrogram.Message", None]:
         """Use this method to send audio files.
 
         For sending voice messages, use the :obj:`send_voice()` method instead.
@@ -124,7 +127,7 @@ class SendAudio(BaseClient):
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
@@ -134,7 +137,7 @@ class SendAudio(BaseClient):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=mimetypes.types_map.get("." + audio.split(".")[-1], "audio/mpeg"),
+                    mime_type="audio/mpeg",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -143,7 +146,7 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(audio))
                     ]
                 )
             elif audio.startswith("http"):

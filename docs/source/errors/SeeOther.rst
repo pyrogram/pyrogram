@@ -1,8 +1,7 @@
 303 - See Other
 ===============
 
-.. module:: pyrogram.api.errors.SeeOther
+.. module:: pyrogram.errors.SeeOther
 
-.. automodule:: pyrogram.api.errors.exceptions.see_other_303
+.. automodule:: pyrogram.errors.exceptions.see_other_303
     :members:
-    :show-inheritance:

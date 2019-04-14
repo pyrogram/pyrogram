@@ -9,6 +9,7 @@ Handlers
     MessageHandler
     DeletedMessagesHandler
     CallbackQueryHandler
+    InlineQueryHandler
     UserStatusHandler
     DisconnectHandler
     RawUpdateHandler
@@ -20,6 +21,9 @@ Handlers
     :members:
 
 .. autoclass:: CallbackQueryHandler
+    :members:
+
+.. autoclass:: InlineQueryHandler
     :members:
 
 .. autoclass:: UserStatusHandler

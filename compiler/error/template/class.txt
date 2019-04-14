@@ -1,12 +1,12 @@
 {notice}
 
-from ..error import Error
+from ..rpc_error import RPCError
 
 
-class {super_class}(Error):
+class {super_class}(RPCError):
     {docstring}
     CODE = {code}
-    """``int``: Error Code"""
+    """``int``: RPC Error Code"""
     NAME = __doc__
 
 

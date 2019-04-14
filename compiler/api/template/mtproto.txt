@@ -9,7 +9,10 @@ class {class_name}(Object):
     """{docstring_args}
     """
 
+    __slots__ = [{slots}]
+
     ID = {object_id}
+    QUALNAME = "{qualname}"
 
     def __init__(self{arguments}):
         {fields}

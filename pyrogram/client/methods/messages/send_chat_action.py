@@ -23,10 +23,12 @@ from pyrogram.client.ext import BaseClient, ChatAction
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(self,
-                         chat_id: Union[int, str],
-                         action: Union[ChatAction, str],
-                         progress: int = 0):
+    def send_chat_action(
+        self,
+        chat_id: Union[int, str],
+        action: Union[ChatAction, str],
+        progress: int = 0
+    ):
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Args:
@@ -49,7 +51,7 @@ class SendChatAction(BaseClient):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the provided string is not a valid ChatAction.
         """
 
@@ -60,7 +62,7 @@ class SendChatAction(BaseClient):
             action = action.value
 
         if "Upload" in action.__name__:
-            action = action(progress)
+            action = action(progress=progress)
         else:
             action = action()
 

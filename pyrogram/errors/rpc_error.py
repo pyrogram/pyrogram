@@ -19,11 +19,11 @@
 import re
 from importlib import import_module
 
-from pyrogram.api.types import RpcError
+from pyrogram.api.types import RpcError as RawRPCError
 from .exceptions.all import exceptions
 
 
-class Error(Exception):
+class RPCError(Exception):
     """This is the base exception class for all Telegram API related errors.
     For a finer grained control, see the specific errors below.
     """
@@ -32,7 +32,7 @@ class Error(Exception):
     NAME = None
     MESSAGE = None
 
-    def __init__(self, x: int or RpcError = None, query_type: type = None):
+    def __init__(self, x: int or RawRPCError = None, query_type: type = None):
         super().__init__("[{} {}]: {}".format(
             self.CODE,
             self.ID or self.NAME,
@@ -50,7 +50,7 @@ class Error(Exception):
                 f.write("{}\t{}\t{}\n".format(x.error_code, x.error_message, query_type))
 
     @staticmethod
-    def raise_it(rpc_error: RpcError, query_type: type):
+    def raise_it(rpc_error: RawRPCError, query_type: type):
         code = rpc_error.error_code
 
         if code not in exceptions:
@@ -66,12 +66,12 @@ class Error(Exception):
         x = x.group(1) if x is not None else x
 
         raise getattr(
-            import_module("pyrogram.api.errors"),
+            import_module("pyrogram.errors"),
             exceptions[code][id]
         )(x=x)
 
 
-class UnknownError(Error):
+class UnknownError(RPCError):
     """This object represents an Unknown Error, that is, an error which
     Pyrogram does not know anything about, yet.
     """

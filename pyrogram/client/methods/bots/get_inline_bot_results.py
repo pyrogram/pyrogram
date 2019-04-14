@@ -19,17 +19,19 @@
 from typing import Union
 
 from pyrogram.api import functions, types
-from pyrogram.api.errors import UnknownError
+from pyrogram.errors import UnknownError
 from pyrogram.client.ext import BaseClient
 
 
 class GetInlineBotResults(BaseClient):
-    def get_inline_bot_results(self,
-                               bot: Union[int, str],
-                               query: str,
-                               offset: str = "",
-                               latitude: float = None,
-                               longitude: float = None):
+    def get_inline_bot_results(
+        self,
+        bot: Union[int, str],
+        query: str,
+        offset: str = "",
+        latitude: float = None,
+        longitude: float = None
+    ):
         """Use this method to get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
@@ -56,7 +58,7 @@ class GetInlineBotResults(BaseClient):
             On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``TimeoutError`` if the bot fails to answer within 10 seconds
         """
         # TODO: Don't return the raw type

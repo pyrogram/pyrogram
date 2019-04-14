@@ -16,11 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+import time
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class Filters:
@@ -33,12 +38,14 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(self,
-                         chat_id: Union[int, str],
-                         offset: int = 0,
-                         limit: int = 200,
-                         query: str = "",
-                         filter: str = Filters.ALL) -> "pyrogram.ChatMembers":
+    def get_chat_members(
+        self,
+        chat_id: Union[int, str],
+        offset: int = 0,
+        limit: int = 200,
+        query: str = "",
+        filter: str = Filters.ALL
+    ) -> "pyrogram.ChatMembers":
         """Use this method to get a chunk of the members list of a chat.
 
         You can get up to 200 chat members at once.
@@ -82,7 +89,7 @@ class GetChatMembers(BaseClient):
             On success, a :obj:`ChatMembers` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if you used an invalid filter or a chat_id that belongs to a user.
         """
         peer = self.resolve_peer(chat_id)
@@ -92,7 +99,7 @@ class GetChatMembers(BaseClient):
                 self,
                 self.send(
                     functions.messages.GetFullChat(
-                        peer.chat_id
+                        chat_id=peer.chat_id
                     )
                 )
             )
@@ -114,17 +121,22 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            return pyrogram.ChatMembers._parse(
-                self,
-                self.send(
-                    functions.channels.GetParticipants(
-                        channel=peer,
-                        filter=filter,
-                        offset=offset,
-                        limit=limit,
-                        hash=0
+            while True:
+                try:
+                    return pyrogram.ChatMembers._parse(
+                        self,
+                        self.send(
+                            functions.channels.GetParticipants(
+                                channel=peer,
+                                filter=filter,
+                                offset=offset,
+                                limit=limit,
+                                hash=0
+                            )
+                        )
                     )
-                )
-            )
+                except FloodWait as e:
+                    log.warning("Sleeping for {}s".format(e.x))
+                    time.sleep(e.x)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

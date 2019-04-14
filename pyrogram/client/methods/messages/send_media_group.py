@@ -17,28 +17,31 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
-import mimetypes
+import logging
 import os
 import struct
+import time
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.api.errors import FileIdInvalid
+from pyrogram.errors import FileIdInvalid, FloodWait
 from pyrogram.client.ext import BaseClient, utils
+
+log = logging.getLogger(__name__)
 
 
 class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
-    # TODO: Return new Message object
     # TODO: Figure out how to send albums using URLs
-    def send_media_group(self,
-                         chat_id: Union[int, str],
-                         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
-                         disable_notification: bool = None,
-                         reply_to_message_id: int = None):
+    def send_media_group(
+        self,
+        chat_id: Union[int, str],
+        media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
+        disable_notification: bool = None,
+        reply_to_message_id: int = None
+    ):
         """Use this method to send a group of photos or videos as an album.
-        On success, an Update containing the sent Messages is returned.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -46,10 +49,8 @@ class SendMediaGroup(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (``list``):
-                A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
-                :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
-                describing photos and videos to be sent, must include 2–10 items.
+            media (List of :obj:`InputMediaPhoto` and :obj:`InputMediaVideo`):
+                A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -57,6 +58,13 @@ class SendMediaGroup(BaseClient):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+        Returns:
+            On success, a :obj:`Messages <pyrogram.Messages>` object is returned containing all the
+            single messages sent.
+
+        Raises:
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         multi_media = []
 
@@ -65,14 +73,21 @@ class SendMediaGroup(BaseClient):
 
             if isinstance(i, pyrogram.InputMediaPhoto):
                 if os.path.exists(i.media):
-                    media = self.send(
-                        functions.messages.UploadMedia(
-                            peer=self.resolve_peer(chat_id),
-                            media=types.InputMediaUploadedPhoto(
-                                file=self.save_file(i.media)
+                    while True:
+                        try:
+                            media = self.send(
+                                functions.messages.UploadMedia(
+                                    peer=self.resolve_peer(chat_id),
+                                    media=types.InputMediaUploadedPhoto(
+                                        file=self.save_file(i.media)
+                                    )
+                                )
                             )
-                        )
-                    )
+                        except FloodWait as e:
+                            log.warning("Sleeping for {}s".format(e.x))
+                            time.sleep(e.x)
+                        else:
+                            break
 
                     media = types.InputMediaPhoto(
                         id=types.InputPhoto(
@@ -106,25 +121,32 @@ class SendMediaGroup(BaseClient):
                         )
             elif isinstance(i, pyrogram.InputMediaVideo):
                 if os.path.exists(i.media):
-                    media = self.send(
-                        functions.messages.UploadMedia(
-                            peer=self.resolve_peer(chat_id),
-                            media=types.InputMediaUploadedDocument(
-                                file=self.save_file(i.media),
-                                thumb=None if i.thumb is None else self.save_file(i.thumb),
-                                mime_type=mimetypes.types_map[".mp4"],
-                                attributes=[
-                                    types.DocumentAttributeVideo(
-                                        supports_streaming=i.supports_streaming or None,
-                                        duration=i.duration,
-                                        w=i.width,
-                                        h=i.height
-                                    ),
-                                    types.DocumentAttributeFilename(os.path.basename(i.media))
-                                ]
+                    while True:
+                        try:
+                            media = self.send(
+                                functions.messages.UploadMedia(
+                                    peer=self.resolve_peer(chat_id),
+                                    media=types.InputMediaUploadedDocument(
+                                        file=self.save_file(i.media),
+                                        thumb=None if i.thumb is None else self.save_file(i.thumb),
+                                        mime_type="video/mp4",
+                                        attributes=[
+                                            types.DocumentAttributeVideo(
+                                                supports_streaming=i.supports_streaming or None,
+                                                duration=i.duration,
+                                                w=i.width,
+                                                h=i.height
+                                            ),
+                                            types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                        ]
+                                    )
+                                )
                             )
-                        )
-                    )
+                        except FloodWait as e:
+                            log.warning("Sleeping for {}s".format(e.x))
+                            time.sleep(e.x)
+                        else:
+                            break
 
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
@@ -165,11 +187,30 @@ class SendMediaGroup(BaseClient):
                 )
             )
 
-        return self.send(
-            functions.messages.SendMultiMedia(
-                peer=self.resolve_peer(chat_id),
-                multi_media=multi_media,
-                silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+        while True:
+            try:
+                r = self.send(
+                    functions.messages.SendMultiMedia(
+                        peer=self.resolve_peer(chat_id),
+                        multi_media=multi_media,
+                        silent=disable_notification or None,
+                        reply_to_msg_id=reply_to_message_id
+                    )
+                )
+            except FloodWait as e:
+                log.warning("Sleeping for {}s".format(e.x))
+                time.sleep(e.x)
+            else:
+                break
+
+        return pyrogram.Messages._parse(
+            self,
+            types.messages.Messages(
+                messages=[m.message for m in filter(
+                    lambda u: isinstance(u, (types.UpdateNewMessage, types.UpdateNewChannelMessage)),
+                    r.updates
+                )],
+                users=r.users,
+                chats=r.chats
             )
         )

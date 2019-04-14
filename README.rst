@@ -20,7 +20,9 @@ Pyrogram
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and C.
 It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the `MTProto API`_.
 
-    `A fully-asynchronous variant is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
+    `Pyrogram in fully-asynchronous mode is also available » <https://github.com/pyrogram/pyrogram/issues/181>`_
+    
+    `Working PoC of Telegram voice calls using Pyrogram » <https://github.com/bakatrouble/pytgvoip>`_
 
 Features
 --------
@@ -30,7 +32,7 @@ Features
 -   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
 -   **Documented**: Pyrogram API methods, types and public interfaces are well documented.
 -   **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
--   **Updated**, to the latest Telegram API version, currently Layer 91 on top of `MTProto 2.0`_.
+-   **Updated**, to the latest Telegram API version, currently Layer 97 on top of `MTProto 2.0`_.
 -   **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
 -   **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
 
@@ -105,7 +107,7 @@ Copyright & License
         </a>
         <br>
         <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30"
+            <img src="https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30"
                 alt="Schema Layer">
         </a>
         <a href="https://github.com/pyrogram/tgcrypto">
@@ -120,7 +122,7 @@ Copyright & License
 
 .. |description| replace:: **Telegram MTProto API Framework for Python**
 
-.. |schema| image:: https://img.shields.io/badge/schema-layer%2091-eda738.svg?longCache=true&colorA=262b30
+.. |schema| image:: https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30
     :target: compiler/api/source/main_api.tl
     :alt: Schema Layer
 

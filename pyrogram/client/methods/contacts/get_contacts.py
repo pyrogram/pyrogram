@@ -19,8 +19,9 @@
 import logging
 import time
 
-from pyrogram.api import functions, types
-from pyrogram.api.errors import FloodWait
+import pyrogram
+from pyrogram.api import functions
+from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -28,25 +29,20 @@ log = logging.getLogger(__name__)
 
 class GetContacts(BaseClient):
     def get_contacts(self):
-        """Use this method to get contacts from your Telegram address book
-
-        Requires no parameters.
+        """Use this method to get contacts from your Telegram address book.
 
         Returns:
-            On success, the user's contacts are returned
+            On success, a list of :obj:`User` objects is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         while True:
             try:
-                contacts = self.send(functions.contacts.GetContacts(0))
+                contacts = self.send(functions.contacts.GetContacts(hash=0))
             except FloodWait as e:
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
-                continue
             else:
-                if isinstance(contacts, types.contacts.Contacts):
-                    log.info("Total contacts: {}".format(len(self.peers_by_phone)))
-
-                return contacts
+                log.info("Total contacts: {}".format(len(self.peers_by_phone)))
+                return [pyrogram.User._parse(self, user) for user in contacts.users]

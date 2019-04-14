@@ -1,40 +1,102 @@
 Advanced Usage
 ==============
 
-In this section, you'll be shown the alternative way of communicating with Telegram using Pyrogram: the main Telegram
-API with its raw functions and types.
+Pyrogram's API, which consists of well documented convenience methods_ and facade types_, exists to provide a much
+easier interface to the undocumented and often confusing Telegram API.
+
+In this section, you'll be shown the alternative way of communicating with Telegram using Pyrogram: the main "raw"
+Telegram API with its functions and types.
 
 Telegram Raw API
 ----------------
 
 If you can't find a high-level method for your needs or if you want complete, low-level access to the whole
-Telegram API, you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>`
-exposed by the ``pyrogram.api`` package and call any Telegram API method you wish using the
-:meth:`send() <pyrogram.Client.send>` method provided by the Client class.
+Telegram API, you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>`.
+
+As already hinted, raw functions and types can be really confusing, mainly because people don't realize soon enough they
+accept *only* the right types and that all required parameters must be filled in. This section will therefore explain
+some pitfalls to take into consideration when working with the raw API.
 
 .. hint::
 
-    Every available high-level method mentioned in the previous page is built on top of these raw functions.
+    Every available high-level methods in Pyrogram is built on top of these raw functions.
 
     Nothing stops you from using the raw functions only, but they are rather complex and `plenty of them`_ are already
-    re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API.
+    re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API (yet much more
+    powerful).
 
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
-Caveats
--------
+Invoking Functions
+^^^^^^^^^^^^^^^^^^
 
-As hinted before, raw functions and types can be confusing, mainly because people don't realize they must accept
-*exactly* the right values, but also because most of them don't have enough Python experience to fully grasp how things
-work.
+Unlike the methods_ found in Pyrogram's API, which can be called in the usual simple way, functions to be invoked from
+the raw Telegram API have a different way of usage and are more complex.
 
-This section will therefore explain some pitfalls to take into consideration when working with the raw API.
+First of all, both `raw functions`_ and `raw types`_ live in their respective packages (and sub-packages):
+``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist as Python classes, meaning you need to create an
+instance of each every time you need them and fill them in with the correct values using named arguments.
+
+Next, to actually invoke the raw function you have to use the :meth:`send() <pyrogram.Client.send>` method provided by
+the Client class and pass the function object you created.
+
+Here's some examples:
+
+-   Update first name, last name and bio:
+
+    .. code-block:: python
+
+        from pyrogram import Client
+        from pyrogram.api import functions
+
+        with Client("my_account") as app:
+            app.send(
+                functions.account.UpdateProfile(
+                    first_name="Dan", last_name="Tès",
+                    about="Bio written from Pyrogram"
+                )
+            )
+
+-   Disable links to your account when someone forwards your messages:
+
+    .. code-block:: python
+
+        from pyrogram import Client
+        from pyrogram.api import functions, types
+
+        with Client("my_account") as app:
+            app.send(
+                functions.account.SetPrivacy(
+                    key=types.PrivacyKeyForwards(),
+                    rules=[types.InputPrivacyValueDisallowAll()]
+                )
+            )
+
+-   Invite users to your channel/supergroup:
+
+    .. code-block:: python
+
+        from pyrogram import Client
+        from pyrogram.api import functions, types
+
+        with Client("my_account") as app:
+            app.send(
+                functions.channels.InviteToChannel(
+                    channel=app.resolve_peer(123456789),  # ID or Username
+                    users=[  # The users you want to invite
+                        app.resolve_peer(23456789),  # By ID
+                        app.resolve_peer("username"),  # By username
+                        app.resolve_peer("+393281234567"),  # By phone number
+                    ]
+                )
+            )
 
 Chat IDs
 ^^^^^^^^
 
 The way Telegram works makes it impossible to directly send a message to a user or a chat by using their IDs only.
-Instead, a pair of ``id`` and ``access_hash`` wrapped in a so called ``InputPeer`` is always needed.
+Instead, a pair of ``id`` and ``access_hash`` wrapped in a so called ``InputPeer`` is always needed. Pyrogram allows
+sending messages with IDs only thanks to cached access hashes.
 
 There are three different InputPeer types, one for each kind of Telegram entity.
 Whenever an InputPeer is needed you must pass one of these:
@@ -56,66 +118,19 @@ kind of ID.
 
 For example, given the ID *123456789*, here's how Pyrogram can tell entities apart:
 
-    - ``+ID`` - User: *123456789*
-    - ``-ID`` - Chat: *-123456789*
-    - ``-100ID`` - Channel (and Supergroup): *-100123456789*
+    - ``+ID`` User: *123456789*
+    - ``-ID`` Chat: *-123456789*
+    - ``-100ID`` Channel (and Supergroup): *-100123456789*
 
 So, every time you take a raw ID, make sure to translate it into the correct ID when you want to use it with an
 high-level method.
 
-Examples
---------
-
--   Update first name, last name and bio:
-
-    .. code-block:: python
-
-        from pyrogram import Client
-        from pyrogram.api import functions
-
-        with Client("my_account") as app:
-            app.send(
-                functions.account.UpdateProfile(
-                    first_name="Dan", last_name="Tès",
-                    about="Bio written from Pyrogram"
-                )
-            )
-
--   Share your Last Seen time only with your contacts:
-
-    .. code-block:: python
-
-        from pyrogram import Client
-        from pyrogram.api import functions, types
-
-        with Client("my_account") as app:
-            app.send(
-                functions.account.SetPrivacy(
-                    key=types.InputPrivacyKeyStatusTimestamp(),
-                    rules=[types.InputPrivacyValueAllowContacts()]
-                )
-            )
-
--   Invite users to your channel/supergroup:
-
-    .. code-block:: python
-
-        from pyrogram import Client
-        from pyrogram.api import functions, types
-
-        with Client("my_account") as app:
-            app.send(
-                functions.channels.InviteToChannel(
-                    channel=app.resolve_peer(123456789),  # ID or Username
-                    users=[  # The users you want to invite
-                        app.resolve_peer(23456789),  # By ID
-                        app.resolve_peer("username"),  # By username
-                        app.resolve_peer("393281234567"),  # By phone number
-                    ]
-                )
-            )
 
 
+
+.. _methods: ../pyrogram/Client.html#messages
+.. _types: ../pyrogram/Types.html
 .. _plenty of them: ../pyrogram/Client.html#messages
-.. _Raw Functions: Usage.html#using-raw-functions
+.. _raw functions: ../pyrogram/functions
+.. _raw types: ../pyrogram/types
 .. _Community: https://t.me/PyrogramChat

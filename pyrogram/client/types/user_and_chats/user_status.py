@@ -65,17 +65,21 @@ class UserStatus(PyrogramType, Update):
             always shown to blocked users), None otherwise.
     """
 
-    def __init__(self,
-                 *,
-                 client: "pyrogram.client.ext.BaseClient",
-                 user_id: int,
-                 online: bool = None,
-                 offline: bool = None,
-                 date: int = None,
-                 recently: bool = None,
-                 within_week: bool = None,
-                 within_month: bool = None,
-                 long_time_ago: bool = None):
+    __slots__ = ["user_id", "online", "offline", "date", "recently", "within_week", "within_month", "long_time_ago"]
+
+    def __init__(
+        self,
+        *,
+        client: "pyrogram.client.ext.BaseClient",
+        user_id: int,
+        online: bool = None,
+        offline: bool = None,
+        date: int = None,
+        recently: bool = None,
+        within_week: bool = None,
+        within_month: bool = None,
+        long_time_ago: bool = None
+    ):
         super().__init__(client)
 
         self.user_id = user_id

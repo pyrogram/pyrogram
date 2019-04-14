@@ -24,10 +24,12 @@ from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(self,
-                              current_password: str,
-                              new_password: str,
-                              new_hint: str = "") -> bool:
+    def change_cloud_password(
+        self,
+        current_password: str,
+        new_password: str,
+        new_hint: str = ""
+    ) -> bool:
         """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
 
         Args:
@@ -44,7 +46,7 @@ class ChangeCloudPassword(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case there is no cloud password to change.
         """
         r = self.send(functions.account.GetPassword())
