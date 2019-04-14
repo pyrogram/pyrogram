@@ -50,7 +50,7 @@ class GetUserProfilePhotos(BaseClient):
             On success, a :obj:`UserProfilePhotos` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         return pyrogram.UserProfilePhotos._parse(
             self,

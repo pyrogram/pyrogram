@@ -26,3 +26,8 @@ from .inline_keyboard_markup import InlineKeyboardMarkup
 from .keyboard_button import KeyboardButton
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
+
+__all__ = [
+    "CallbackGame", "CallbackQuery", "ForceReply", "GameHighScore", "GameHighScores", "InlineKeyboardButton",
+    "InlineKeyboardMarkup", "KeyboardButton", "ReplyKeyboardMarkup", "ReplyKeyboardRemove"
+]

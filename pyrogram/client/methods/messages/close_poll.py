@@ -45,7 +45,7 @@ class ClosePoll(BaseClient):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         poll = self.get_messages(chat_id, message_id).poll
 

@@ -19,7 +19,7 @@
 from typing import List
 
 from pyrogram.api import functions, types
-from pyrogram.api.errors import PeerIdInvalid
+from pyrogram.errors import PeerIdInvalid
 from ...ext import BaseClient
 
 
@@ -28,7 +28,7 @@ class DeleteContacts(BaseClient):
         self,
         ids: List[int]
     ):
-        """Use this method to delete contacts from your Telegram address book
+        """Use this method to delete contacts from your Telegram address book.
 
         Args:
             ids (List of ``int``):
@@ -39,7 +39,7 @@ class DeleteContacts(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         contacts = []
 

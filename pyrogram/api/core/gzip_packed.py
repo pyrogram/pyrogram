@@ -26,6 +26,10 @@ from .primitives import Int, Bytes
 class GzipPacked(Object):
     ID = 0x3072cfa1
 
+    __slots__ = ["packed_data"]
+
+    QUALNAME = "GzipPacked"
+
     def __init__(self, packed_data: Object):
         self.packed_data = packed_data
 

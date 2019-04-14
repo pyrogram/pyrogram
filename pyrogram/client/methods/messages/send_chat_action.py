@@ -51,7 +51,7 @@ class SendChatAction(BaseClient):
             On success, True is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the provided string is not a valid ChatAction.
         """
 
@@ -62,7 +62,7 @@ class SendChatAction(BaseClient):
             action = action.value
 
         if "Upload" in action.__name__:
-            action = action(progress)
+            action = action(progress=progress)
         else:
             action = action()
 

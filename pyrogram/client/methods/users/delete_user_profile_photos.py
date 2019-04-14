@@ -29,7 +29,7 @@ class DeleteUserProfilePhotos(BaseClient):
         self,
         id: Union[str, List[str]]
     ) -> bool:
-        """Use this method to delete your own profile photos
+        """Use this method to delete your own profile photos.
 
         Args:
             id (``str`` | ``list``):
@@ -40,7 +40,7 @@ class DeleteUserProfilePhotos(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         id = id if isinstance(id, list) else [id]
         input_photos = []

@@ -24,8 +24,10 @@ from threading import Thread
 
 import pyrogram
 from pyrogram.api import types
-from ..handlers import CallbackQueryHandler, MessageHandler, RawUpdateHandler, UserStatusHandler, \
-    DeletedMessagesHandler, PhoneCallHandler
+from ..handlers import (
+    CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
+    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PhoneCallHandler
+)
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +76,10 @@ class Dispatcher:
             (types.UpdateUserStatus,):
                 lambda upd, usr, cht: (
                     pyrogram.UserStatus._parse(self.client, upd.status, upd.user_id), UserStatusHandler
+                ),
+
+            (types.UpdateBotInlineQuery,):
+                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler)
                 ),
 
             (types.UpdatePhoneCall,):

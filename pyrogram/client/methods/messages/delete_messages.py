@@ -29,13 +29,7 @@ class DeleteMessages(BaseClient):
         message_ids: Iterable[int],
         revoke: bool = True
     ) -> bool:
-        """Use this method to delete messages, including service messages, with the following limitations:
-
-        - A message can only be deleted if it was sent less than 48 hours ago.
-        - Users can delete outgoing messages in groups and supergroups.
-        - Users granted *can_post_messages* permissions can delete outgoing messages in channels.
-        - If the user is an administrator of a group, it can delete any message there.
-        - If the user has *can_delete_messages* permission in a supergroup or a channel, it can delete any message there.
+        """Use this method to delete messages, including service messages.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -57,7 +51,7 @@ class DeleteMessages(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]

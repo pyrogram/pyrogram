@@ -1,8 +1,7 @@
 400 - Bad Request
 =================
 
-.. module:: pyrogram.api.errors.BadRequest
+.. module:: pyrogram.errors.BadRequest
 
-.. automodule:: pyrogram.api.errors.exceptions.bad_request_400
+.. automodule:: pyrogram.errors.exceptions.bad_request_400
     :members:
-    :show-inheritance:

@@ -1,13 +1,13 @@
 Configuration File
 ==================
 
-As already mentioned in previous sections, Pyrogram can also be configured by the use of an INI file.
+As already mentioned in previous sections, Pyrogram can be configured by the use of an INI file.
 This page explains how this file is structured in Pyrogram, how to use it and why.
 
 Introduction
 ------------
 
-The idea behind using a configuration file is to help keeping your code free of settings (private) information such as
+The idea behind using a configuration file is to help keeping your code free of private settings information such as
 the API Key and Proxy without having you to even deal with how to load such settings. The configuration file, usually
 referred as ``config.ini`` file, is automatically loaded from the root of your working directory; all you need to do is
 fill in the necessary parts.
@@ -46,7 +46,7 @@ These are all the sections Pyrogram uses in its configuration file:
 Pyrogram
 ^^^^^^^^
 
-The ``[pyrogram]`` section contains your Telegram API credentials *api_id* and *api_hash*.
+The ``[pyrogram]`` section contains your Telegram API credentials: *api_id* and *api_hash*.
 
 .. code-block:: ini
 

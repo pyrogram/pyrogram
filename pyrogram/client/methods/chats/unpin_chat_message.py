@@ -39,7 +39,7 @@ class UnpinChatMessage(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         self.send(
             functions.messages.UpdatePinnedMessage(

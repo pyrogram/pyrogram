@@ -26,6 +26,10 @@ from .primitives import Int
 class MsgContainer(Object):
     ID = 0x73f1f8dc
 
+    __slots__ = ["messages"]
+
+    QUALNAME = "MsgContainer"
+
     def __init__(self, messages: list):
         self.messages = messages
 

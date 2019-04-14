@@ -10,13 +10,14 @@ can be freely used as basic building blocks for your own applications without wo
 
 Example | Description
 ---: | :---
-[**hello**](hello.py) | Demonstration of basic API usage
-[**echo**](echo.py) | Reply to every private text message
+[**hello_world**](hello_world.py) | Demonstration of basic API usage
+[**echobot**](echobot.py) | Echo every private text message
 [**welcome**](welcome.py) | The Welcome Bot in [@PyrogramChat](https://t.me/pyrogramchat)
 [**history**](history.py) | Get the full message history of a chat
 [**chat_members**](chat_members.py) | Get all the members of a chat
 [**dialogs**](dialogs.py) | Get all of your dialog chats
-[**inline_bots**](inline_bots.py) | Query an inline bot and send a result to a chat
+[**using_inline_bots**](using_inline_bots.py) | Query an inline bot (as user) and send a result to a chat
 [**keyboards**](keyboards.py) | Send normal and inline keyboards using regular bots
 [**callback_queries**](callback_queries.py) | Handle queries coming from inline button presses
+[**inline_queries**](inline_queries.py) | Handle inline queries
 [**raw_updates**](raw_updates.py) | Handle raw updates (old, should be avoided)

@@ -39,17 +39,8 @@ class Object:
     def __str__(self) -> str:
         return dumps(self, indent=4, default=default, ensure_ascii=False)
 
-    def __bool__(self) -> bool:
-        return True
-
-    def __eq__(self, other) -> bool:
-        return self.__dict__ == other.__dict__
-
     def __len__(self) -> int:
         return len(self.write())
-
-    def __call__(self):
-        pass
 
     def __getitem__(self, item):
         return getattr(self, item)

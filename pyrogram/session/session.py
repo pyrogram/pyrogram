@@ -31,9 +31,9 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
 from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
-from pyrogram.api.errors import Error, InternalServerError, AuthKeyDuplicated
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -171,7 +171,7 @@ class Session:
             except AuthKeyDuplicated as e:
                 self.stop()
                 raise e
-            except (OSError, TimeoutError, Error):
+            except (OSError, TimeoutError, RPCError):
                 self.stop()
             except Exception as e:
                 self.stop()
@@ -337,7 +337,7 @@ class Session:
                 self._send(functions.PingDelayDisconnect(
                     ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                 ), False)
-            except (OSError, TimeoutError, Error):
+            except (OSError, TimeoutError, RPCError):
                 pass
 
         log.debug("PingThread stopped")
@@ -366,7 +366,7 @@ class Session:
 
             try:
                 self.current_salt = self._send(functions.GetFutureSalts(num=1)).salts[0]
-            except (OSError, TimeoutError, Error):
+            except (OSError, TimeoutError, RPCError):
                 self.connection.close()
                 break
 
@@ -412,7 +412,7 @@ class Session:
             if result is None:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
-                Error.raise_it(result, type(data))
+                RPCError.raise_it(result, type(data))
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
                     result.error_code,

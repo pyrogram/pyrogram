@@ -18,9 +18,10 @@
 
 from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
 from pyrogram.session.internals import MsgId
+from ..pyrogram_type import PyrogramType
 
 
-class InputPhoneContact:
+class InputPhoneContact(PyrogramType):
     """This object represents a Phone Contact to be added in your Telegram address book.
     It is intended to be used with :meth:`add_contacts() <pyrogram.Client.add_contacts>`
 
@@ -37,13 +38,8 @@ class InputPhoneContact:
 
     __slots__ = []
 
-    def __init__(
-        self,
-        phone: str,
-        first_name: str,
-        last_name: str = ""
-    ):
-        pass
+    def __init__(self, phone: str, first_name: str, last_name: str = ""):
+        super().__init__(None)
 
     def __new__(cls,
                 phone: str,

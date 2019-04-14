@@ -26,3 +26,8 @@ from .dialog import Dialog
 from .dialogs import Dialogs
 from .user import User
 from .user_status import UserStatus
+
+__all__ = [
+    "Chat", "ChatMember", "ChatMembers", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "Dialogs", "User",
+    "UserStatus"
+]

@@ -28,8 +28,9 @@ class GetChat(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> "pyrogram.Chat":
-        """Use this method to get up to date information about the chat (current name of the user for
-        one-on-one conversations, current username of a user, group or channel, etc.)
+        """Use this method to get up to date information about the chat.
+        Information include current name of the user for one-on-one conversations, current username of a user, group or
+        channel, etc.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -41,7 +42,7 @@ class GetChat(BaseClient):
             On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` in case the chat invite link refers to a chat you haven't joined yet.
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))

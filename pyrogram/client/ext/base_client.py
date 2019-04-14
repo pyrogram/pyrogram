@@ -81,8 +81,8 @@ class BaseClient:
         self.peers_by_username = {}
         self.peers_by_phone = {}
 
-        self.markdown = Markdown(self.peers_by_id)
-        self.html = HTML(self.peers_by_id)
+        self.markdown = Markdown(self)
+        self.html = HTML(self)
 
         self.session = None
         self.media_sessions = {}
@@ -131,4 +131,7 @@ class BaseClient:
         pass
 
     def get_chat_members_count(self, *args, **kwargs):
+        pass
+
+    def answer_inline_query(self, *args, **kwargs):
         pass

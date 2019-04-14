@@ -39,7 +39,7 @@ class LeaveChat(BaseClient):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

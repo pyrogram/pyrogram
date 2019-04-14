@@ -1,11 +1,11 @@
 Installation
 ============
 
-Being a Python library, Pyrogram requires Python to be installed in your system.
+Being a Python library, **Pyrogram** requires Python to be installed in your system.
 We recommend using the latest version of Python 3 and pip.
 
-Get Python 3 from https://www.python.org/downloads/ (or with your package manager) and pip
-by following the instructions at https://pip.pypa.io/en/latest/installing/.
+- Get **Python 3** from https://www.python.org/downloads/ (or with your package manager)
+- Get **pip** by following the instructions at https://pip.pypa.io/en/latest/installing/.
 
 .. important::
 
@@ -29,8 +29,12 @@ Install Pyrogram
 Bleeding Edge
 -------------
 
-If you want the latest development version of Pyrogram, you can install it straight from the develop_
-branch using this command (note "develop.zip" in the link):
+Things are constantly evolving in Pyrogram, although new releases are published only when enough changes are added,
+but this doesn't mean you can't try new features right now!
+
+In case you would like to try out the latest Pyrogram features and additions, the `GitHub repo`_ is always kept updated
+with new changes; you can install the development version straight from the ``develop`` branch using this command
+(note "develop.zip" in the link):
 
 .. code-block:: text
 
@@ -39,10 +43,10 @@ branch using this command (note "develop.zip" in the link):
 Asynchronous
 ------------
 
-Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging client library after all), and here's
+Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging framework after all), and here's
 where asyncio shines the most by providing extra performance while running on a single OS-level thread only.
 
-**A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5+ required).
+**A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5.3+ required).
 Use this command to install (note "asyncio.zip" in the link):
 
 .. code-block:: text
@@ -85,4 +89,4 @@ If no error shows up you are good to go.
     '0.12.0'
 
 .. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
-.. _develop: http://github.com/pyrogram/pyrogram
+.. _`Github repo`: http://github.com/pyrogram/pyrogram

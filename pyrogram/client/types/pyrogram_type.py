@@ -19,11 +19,13 @@
 from collections import OrderedDict
 from json import dumps
 
+import pyrogram
+
 
 class PyrogramType:
     __slots__ = ["_client"]
 
-    def __init__(self, client):
+    def __init__(self, client: "pyrogram.client.ext.BaseClient"):
         self._client = client
 
     def __str__(self):

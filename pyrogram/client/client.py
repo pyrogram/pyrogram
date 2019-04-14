@@ -29,7 +29,6 @@ import struct
 import tempfile
 import threading
 import time
-import warnings
 from configparser import ConfigParser
 from datetime import datetime
 from hashlib import sha256, md5
@@ -41,7 +40,11 @@ from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
-from pyrogram.api.errors import (
+from pyrogram.client.handlers import DisconnectHandler, PhoneCallHandler
+from pyrogram.client.handlers.handler import Handler
+from pyrogram.client.methods.password.utils import compute_check
+from pyrogram.crypto import AES
+from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
     PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
@@ -49,13 +52,8 @@ from pyrogram.api.errors import (
     VolumeLocNotFound, UserMigrate, FileIdInvalid, ChannelPrivate, PhoneNumberOccupied,
     PasswordRecoveryNa, PasswordEmpty
 )
-from pyrogram.client.handlers import DisconnectHandler, PhoneCallHandler
-from pyrogram.client.handlers.handler import Handler
-from pyrogram.client.methods.password.utils import compute_check
-from pyrogram.crypto import AES
 from pyrogram.session import Auth, Session
-from .dispatcher import Dispatcher
-from .ext import utils, Syncer, BaseClient
+from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
 
 log = logging.getLogger(__name__)
@@ -181,32 +179,36 @@ class Client(Methods, BaseClient):
             Defaults to False (normal session).
     """
 
-    def __init__(self,
-                 session_name: str,
-                 api_id: Union[int, str] = None,
-                 api_hash: str = None,
-                 app_version: str = None,
-                 device_model: str = None,
-                 system_version: str = None,
-                 lang_code: str = None,
-                 ipv6: bool = False,
-                 proxy: dict = None,
-                 test_mode: bool = False,
-                 phone_number: str = None,
-                 phone_code: Union[str, callable] = None,
-                 password: str = None,
-                 recovery_code: callable = None,
-                 force_sms: bool = False,
-                 bot_token: str = None,
-                 first_name: str = None,
-                 last_name: str = None,
-                 workers: int = BaseClient.WORKERS,
-                 workdir: str = BaseClient.WORKDIR,
-                 config_file: str = BaseClient.CONFIG_FILE,
-                 plugins: dict = None,
-                 no_updates: bool = None,
-                 takeout: bool = None,
-                 receive_phone_calls: bool = False):
+    terms_of_service_displayed = False
+
+    def __init__(
+        self,
+        session_name: str,
+        api_id: Union[int, str] = None,
+        api_hash: str = None,
+        app_version: str = None,
+        device_model: str = None,
+        system_version: str = None,
+        lang_code: str = None,
+        ipv6: bool = False,
+        proxy: dict = None,
+        test_mode: bool = False,
+        phone_number: str = None,
+        phone_code: Union[str, callable] = None,
+        password: str = None,
+        recovery_code: callable = None,
+        force_sms: bool = False,
+        bot_token: str = None,
+        first_name: str = None,
+        last_name: str = None,
+        workers: int = BaseClient.WORKERS,
+        workdir: str = BaseClient.WORKDIR,
+        config_file: str = BaseClient.CONFIG_FILE,
+        plugins: dict = None,
+        no_updates: bool = None,
+        takeout: bool = None,
+        receive_phone_calls: bool = False
+    ):
         super().__init__()
 
         self.session_name = session_name
@@ -265,7 +267,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ConnectionError`` in case you try to start an already started Client.
         """
         if self.is_started:
@@ -275,10 +277,10 @@ class Client(Methods, BaseClient):
             self.is_bot = True
             self.bot_token = self.session_name
             self.session_name = self.session_name.split(":")[0]
-            warnings.warn('\nYou are using a bot token as session name.\n'
-                          'It will be deprecated in next update, please use session file name to load '
-                          'existing sessions and bot_token argument to create new sessions.',
-                          DeprecationWarning, stacklevel=2)
+            log.warning('\nWARNING: You are using a bot token as session name!\n'
+                        'This usage will be deprecated soon. Please use a session file name to load '
+                        'an existing session and the bot_token argument to create new sessions.\n'
+                        'More info: https://docs.pyrogram.ml/start/Setup#bot-authorization\n')
 
         self.load_config()
         self.load_session()
@@ -452,7 +454,7 @@ class Client(Methods, BaseClient):
         Requires no parameters.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         self.start()
         self.idle()
@@ -610,8 +612,9 @@ class Client(Methods, BaseClient):
         phone_code_hash = r.phone_code_hash
         terms_of_service = r.terms_of_service
 
-        if terms_of_service:
+        if terms_of_service and not Client.terms_of_service_displayed:
             print("\n" + terms_of_service.text + "\n")
+            Client.terms_of_service_displayed = True
 
         if self.force_sms:
             self.send(
@@ -1053,7 +1056,7 @@ class Client(Methods, BaseClient):
                 Timeout in seconds.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         if not self.is_started:
             raise ConnectionError("Client has not been started")
@@ -1343,7 +1346,7 @@ class Client(Methods, BaseClient):
             On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``KeyError`` in case the peer doesn't exist in the internal database.
         """
         try:
@@ -1448,7 +1451,7 @@ class Client(Methods, BaseClient):
             On success, the uploaded file is returned in form of an InputFile object.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         part_size = 512 * 1024
         file_size = os.path.getsize(path)

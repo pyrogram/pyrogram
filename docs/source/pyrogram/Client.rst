@@ -31,6 +31,7 @@ Decorators
 
     on_message
     on_callback_query
+    on_inline_query
     on_deleted_messages
     on_user_status
     on_disconnect
@@ -56,6 +57,7 @@ Messages
     send_location
     send_venue
     send_contact
+    send_cached_media
     send_chat_action
     edit_message_text
     edit_message_caption
@@ -67,6 +69,7 @@ Messages
     iter_history
     send_poll
     vote_poll
+    close_poll
     retract_vote
     download_media
 
@@ -97,6 +100,8 @@ Chats
     iter_chat_members
     get_dialogs
     iter_dialogs
+    restrict_chat
+    update_chat_username
 
 Users
 -----
@@ -109,6 +114,7 @@ Users
     get_user_profile_photos
     set_user_profile_photo
     delete_user_profile_photos
+    update_username
 
 Contacts
 --------
@@ -139,10 +145,12 @@ Bots
     get_inline_bot_results
     send_inline_bot_result
     answer_callback_query
+    answer_inline_query
     request_callback_answer
     send_game
     set_game_score
     get_game_high_scores
+    answer_inline_query
 
 
 .. autoclass:: pyrogram.Client

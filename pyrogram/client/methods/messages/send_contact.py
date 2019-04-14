@@ -29,8 +29,8 @@ class SendContact(BaseClient):
         chat_id: Union[int, str],
         phone_number: str,
         first_name: str,
-        last_name: str = "",
-        vcard: str = "",
+        last_name: str = None,
+        vcard: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -75,7 +75,7 @@ class SendContact(BaseClient):
             On success, the sent :obj:`Message <pyrogram.Message>` is returned.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(
@@ -83,8 +83,8 @@ class SendContact(BaseClient):
                 media=types.InputMediaContact(
                     phone_number=phone_number,
                     first_name=first_name,
-                    last_name=last_name,
-                    vcard=vcard
+                    last_name=last_name or "",
+                    vcard=vcard or ""
                 ),
                 message="",
                 silent=disable_notification or None,

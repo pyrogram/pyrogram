@@ -42,20 +42,18 @@ class SetChatDescription(BaseClient):
             True on success.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
         peer = self.resolve_peer(chat_id)
 
-        if isinstance(peer, types.InputPeerChannel):
+        if isinstance(peer, (types.InputPeerChannel, types.InputPeerChat)):
             self.send(
-                functions.channels.EditAbout(
-                    channel=peer,
+                functions.messages.EditChatAbout(
+                    peer=peer,
                     about=description
                 )
             )
-        elif isinstance(peer, types.InputPeerChat):
-            raise ValueError("The chat_id \"{}\" belongs to a basic group".format(chat_id))
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
 

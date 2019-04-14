@@ -32,7 +32,7 @@ class DownloadMedia(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union[str, None]:
-        """Use this method to download the media from a Message.
+        """Use this method to download the media from a message.
 
         Args:
             message (:obj:`Message <pyrogram.Message>` | ``str``):
@@ -77,7 +77,7 @@ class DownloadMedia(BaseClient):
             In case the download is deliberately stopped with :meth:`stop_transmission`, None is returned as well.
 
         Raises:
-            :class:`Error <pyrogram.Error>` in case of a Telegram RPC error.
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
             ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"

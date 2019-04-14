@@ -24,26 +24,13 @@ if sys.version_info[:3] in [(3, 5, 0), (3, 5, 1), (3, 5, 2)]:
     # Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
     sys.modules["typing"] = typing
 
-__copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
-    "\xe8",
-    "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
-)
+__version__ = "0.12.0"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__version__ = "0.12.0.develop"
+__copyright__ = "Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>".replace(
+    "\xe8", "e" if sys.getfilesystemencoding() != "utf-8" else "\xe8"
+)
 
-from .api.errors import Error
-from .client.types import (
-    Audio, Chat, ChatMember, ChatMembers, ChatPhoto, Contact, Document, InputMediaPhoto,
-    InputMediaVideo, InputMediaDocument, InputMediaAudio, InputMediaAnimation, InputPhoneContact,
-    Location, Message, MessageEntity, Dialog, Dialogs, Photo, PhotoSize, Sticker, User, UserStatus,
-    UserProfilePhotos, Venue, Animation, Video, VideoNote, Voice, CallbackQuery, Messages, ForceReply,
-    InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-    Poll, PollOption, ChatPreview, StopPropagation, ContinuePropagation, Game, CallbackGame, GameHighScore,
-    GameHighScores, ChatPermissions,
-    BaseCall, FileCallMixin, IncomingCall, IncomingFileCall, OutgoingCall, OutgoingFileCall
-)
-from .client import (
-    Client, ChatAction, ParseMode, Emoji,
-    MessageHandler, DeletedMessagesHandler, CallbackQueryHandler,
-    RawUpdateHandler, DisconnectHandler, UserStatusHandler, PhoneCallHandler, Filters
-)
+from .errors import RPCError
+from .client import *
+from .client.handlers import *
+from .client.types import *
