@@ -120,7 +120,7 @@ class SendVideoNote(BaseClient):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video_note, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type="video/mp4",
+                    mime_type=self.guess_mime_type(video_note) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[

@@ -123,7 +123,7 @@ class SendDocument(BaseClient):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(document, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type="application/zip",
+                    mime_type=self.guess_mime_type(document) or "application/zip",
                     file=file,
                     thumb=thumb,
                     attributes=[

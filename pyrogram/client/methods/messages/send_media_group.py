@@ -129,7 +129,7 @@ class SendMediaGroup(BaseClient):
                                     media=types.InputMediaUploadedDocument(
                                         file=self.save_file(i.media),
                                         thumb=None if i.thumb is None else self.save_file(i.thumb),
-                                        mime_type="video/mp4",
+                                        mime_type=self.guess_mime_type(i.media) or "video/mp4",
                                         attributes=[
                                             types.DocumentAttributeVideo(
                                                 supports_streaming=i.supports_streaming or None,

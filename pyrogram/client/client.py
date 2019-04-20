@@ -861,18 +861,20 @@ class Client(Methods, BaseClient):
                 file_name = file_name or getattr(media, "file_name", None)
 
                 if not file_name:
-                    if media_type == 3:
-                        extension = ".ogg"
-                    elif media_type in (4, 10, 13):
-                        extension = mimetypes.guess_extension(media.mime_type) or ".mp4"
-                    elif media_type == 5:
-                        extension = mimetypes.guess_extension(media.mime_type) or ".unknown"
-                    elif media_type == 8:
-                        extension = ".webp"
-                    elif media_type == 9:
-                        extension = mimetypes.guess_extension(media.mime_type) or ".mp3"
-                    elif media_type in (0, 1, 2):
+                    guessed_extension = self.guess_extension(media.mime_type)
+
+                    if media_type in (0, 1, 2):
                         extension = ".jpg"
+                    elif media_type == 3:
+                        extension = guessed_extension or ".ogg"
+                    elif media_type in (4, 10, 13):
+                        extension = guessed_extension or ".mp4"
+                    elif media_type == 5:
+                        extension = guessed_extension or ".zip"
+                    elif media_type == 8:
+                        extension = guessed_extension or ".webp"
+                    elif media_type == 9:
+                        extension = guessed_extension or ".mp3"
                     else:
                         continue
 
@@ -1708,3 +1710,13 @@ class Client(Methods, BaseClient):
             return ""
         else:
             return file_name
+
+    def guess_mime_type(self, filename: str):
+        extension = os.path.splitext(filename)[1]
+        return self.extensions_to_mime_types.get(extension)
+
+    def guess_extension(self, mime_type: str):
+        extensions = self.mime_types_to_extensions.get(mime_type)
+
+        if extensions:
+            return extensions.split(" ")[0]

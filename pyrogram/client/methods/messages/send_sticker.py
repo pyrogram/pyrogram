@@ -104,7 +104,7 @@ class SendSticker(BaseClient):
             if os.path.exists(sticker):
                 file = self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type="image/webp",
+                    mime_type=self.guess_mime_type(sticker) or "image/webp",
                     file=file,
                     attributes=[
                         types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
