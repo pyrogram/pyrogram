@@ -37,6 +37,7 @@ from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
 from typing import Union, List
+from getpass import getpass
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import Object
@@ -671,7 +672,7 @@ class Client(Methods, BaseClient):
 
                 def default_password_callback(password_hint: str) -> str:
                     print("Hint: {}".format(password_hint))
-                    return input("Enter password (empty to recover): ")
+                    return getpass("Enter password (empty to recover): ")
 
                 def default_recovery_callback(email_pattern: str) -> str:
                     print("An e-mail containing the recovery code has been sent to {}".format(email_pattern))
