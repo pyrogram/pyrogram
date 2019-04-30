@@ -123,7 +123,7 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type="video/mp4",
+                            mime_type=self.guess_mime_type(media.media) or "video/mp4",
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
@@ -182,7 +182,7 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type="audio/mpeg",
+                            mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
@@ -240,7 +240,7 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type="video/mp4",
+                            mime_type=self.guess_mime_type(media.media) or "video/mp4",
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
@@ -300,7 +300,7 @@ class EditMessageMedia(BaseClient):
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
-                            mime_type="application/zip",
+                            mime_type=self.guess_mime_type(media.media) or "application/zip",
                             thumb=None if media.thumb is None else self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[

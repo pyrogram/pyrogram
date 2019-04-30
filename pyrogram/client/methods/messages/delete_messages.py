@@ -48,7 +48,7 @@ class DeleteMessages(BaseClient):
                 Defaults to True.
 
         Returns:
-            True on success.
+            True on success, False otherwise.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
@@ -71,4 +71,6 @@ class DeleteMessages(BaseClient):
                 )
             )
 
-        return True
+        # Deleting messages you don't have right onto, won't raise any error.
+        # Check for pts_count, which is 0 in case deletes fail.
+        return bool(r.pts_count)

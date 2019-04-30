@@ -171,6 +171,9 @@ setup(
     },
     python_requires="~=3.4",
     packages=find_packages(exclude=["compiler*"]),
+    package_data={
+        "pyrogram.client.ext": ["mime.types"]
+    },
     zip_safe=False,
     install_requires=read("requirements.txt"),
     extras_require={

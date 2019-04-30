@@ -136,7 +136,7 @@ class SendAudio(BaseClient):
                 thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type="audio/mpeg",
+                    mime_type=self.guess_mime_type(audio) or "audio/mpeg",
                     file=file,
                     thumb=thumb,
                     attributes=[

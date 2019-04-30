@@ -2729,18 +2729,16 @@ class Message(PyrogramType, Update):
                 Defaults to True.
 
         Returns:
-            True on success.
+            True on success, False otherwise.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>`
         """
-        await self._client.delete_messages(
+        return await self._client.delete_messages(
             chat_id=self.chat.id,
             message_ids=self.message_id,
             revoke=revoke
         )
-
-        return True
 
     async def click(self, x: int or str, y: int = None, quote: bool = None):
         """Bound method *click* of :obj:`Message <pyrogram.Message>`.

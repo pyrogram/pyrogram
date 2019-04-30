@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import asyncio
 import platform
 import re
@@ -65,6 +66,20 @@ class BaseClient:
         10: "animation",
         13: "video_note"
     }
+
+    mime_types_to_extensions = {}
+    extensions_to_mime_types = {}
+
+    with open("{}/mime.types".format(os.path.dirname(__file__)), "r", encoding="UTF-8") as f:
+        for match in re.finditer(r"^([^#\s]+)\s+(.+)$", f.read(), flags=re.M):
+            mime_type, extensions = match.groups()
+
+            extensions = [".{}".format(ext) for ext in extensions.split(" ")]
+
+            for ext in extensions:
+                extensions_to_mime_types[ext] = mime_type
+
+            mime_types_to_extensions[mime_type] = " ".join(extensions)
 
     def __init__(self):
         self.is_bot = None
@@ -130,4 +145,10 @@ class BaseClient:
         pass
 
     async def answer_inline_query(self, *args, **kwargs):
+        pass
+
+    def guess_mime_type(self, *args, **kwargs):
+        pass
+
+    def guess_extension(self, *args, **kwargs):
         pass
