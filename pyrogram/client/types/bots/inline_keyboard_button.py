@@ -17,6 +17,8 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 from typing import Union
 
+from typing import Union
+
 from pyrogram.api.types import (
     KeyboardButtonUrl, KeyboardButtonCallback,
     KeyboardButtonSwitchInline, KeyboardButtonGame

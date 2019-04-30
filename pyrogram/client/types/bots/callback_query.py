@@ -79,7 +79,7 @@ class CallbackQuery(PyrogramType, Update):
         self.chat_instance = chat_instance
         self.message = message
         self.inline_message_id = inline_message_id
-        self.data: str = str(data, "utf-8")
+        self.data = str(data, "utf-8")
         self.game_short_name = game_short_name
 
     @staticmethod
