@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api.types import (
     KeyboardButtonUrl, KeyboardButtonCallback,
     KeyboardButtonSwitchInline, KeyboardButtonGame
@@ -61,7 +63,7 @@ class InlineKeyboardButton(PyrogramType):
     def __init__(
         self,
         text: str,
-        callback_data: bytes = None,
+        callback_data: Union[str, bytes] = None,
         url: str = None,
         switch_inline_query: str = None,
         switch_inline_query_current_chat: str = None,
@@ -71,7 +73,7 @@ class InlineKeyboardButton(PyrogramType):
 
         self.text = str(text)
         self.url = url
-        self.callback_data = callback_data
+        self.callback_data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
