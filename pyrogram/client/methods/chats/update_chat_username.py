@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UpdateChatUsername(BaseClient):
-    def update_chat_username(
+    async def update_chat_username(
         self,
         chat_id: Union[int, str],
         username: Union[str, None]
@@ -46,11 +46,11 @@ class UpdateChatUsername(BaseClient):
             ``ValueError`` if a chat_id belongs to a user or chat.
         """
 
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
             return bool(
-                self.send(
+                await self.send(
                     functions.channels.UpdateUsername(
                         channel=peer,
                         username=username or ""

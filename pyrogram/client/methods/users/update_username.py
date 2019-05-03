@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UpdateUsername(BaseClient):
-    def update_username(
+    async def update_username(
         self,
         username: Union[str, None]
     ) -> bool:
@@ -45,7 +45,7 @@ class UpdateUsername(BaseClient):
         """
 
         return bool(
-            self.send(
+            await self.send(
                 functions.account.UpdateUsername(
                     username=username or ""
                 )
