@@ -22,85 +22,88 @@ import pyrogram
 from pyrogram.api import types
 from .poll_option import PollOption
 from ..pyrogram_type import PyrogramType
+from ..update import Update
 
 
-class Poll(PyrogramType):
+class Poll(PyrogramType, Update):
     """This object represents a Poll.
 
     Args:
-        id (``int``):
-            The poll id in this chat.
-
-        closed (``bool``):
-            Whether the poll is closed or not.
+        id (``str``):
+            Unique poll identifier.
 
         question (``str``):
-            Poll question.
+            Poll question, 1-255 characters.
 
         options (List of :obj:`PollOption`):
-            The available poll options.
+            List of poll options.
+
+        is_closed (``bool``):
+            True, if the poll is closed.
 
         total_voters (``int``):
-            Total amount of voters for this poll.
+            Total count of voters for this poll.
 
-        option_chosen (``int``, *optional*):
-            The index of your chosen option (in case you voted already), None otherwise.
+        chosen_option (``int``, *optional*):
+            Index of your chosen option (0-9), None in case you haven't voted yet.
     """
 
-    __slots__ = ["id", "closed", "question", "options", "total_voters", "option_chosen"]
+    __slots__ = ["id", "question", "options", "is_closed", "total_voters", "chosen_option"]
 
     def __init__(
         self,
         *,
         client: "pyrogram.client.ext.BaseClient",
-        id: int,
-        closed: bool,
+        id: str,
         question: str,
         options: List[PollOption],
+        is_closed: bool,
         total_voters: int,
-        option_chosen: int = None
+        chosen_option: int = None
     ):
         super().__init__(client)
 
         self.id = id
-        self.closed = closed
         self.question = question
         self.options = options
+        self.is_closed = is_closed
         self.total_voters = total_voters
-        self.option_chosen = option_chosen
+        self.chosen_option = chosen_option
 
     @staticmethod
     def _parse(client, media_poll: types.MessageMediaPoll) -> "Poll":
         poll = media_poll.poll
         results = media_poll.results.results
         total_voters = media_poll.results.total_voters
-        option_chosen = None
+        chosen_option = None
 
         options = []
 
         for i, answer in enumerate(poll.answers):
-            voters = 0
+            voter_count = 0
 
             if results:
                 result = results[i]
-                voters = result.voters
+                voter_count = result.voters
 
                 if result.chosen:
-                    option_chosen = i
+                    chosen_option = i
 
-            options.append(PollOption(
-                text=answer.text,
-                voters=voters,
-                data=answer.option,
-                client=client
-            ))
+            options.append(
+                PollOption(
+                    text=answer.text,
+                    voter_count=voter_count,
+                    data=answer.option,
+                    client=client
+                )
+            )
 
         return Poll(
-            id=poll.id,
-            closed=poll.closed,
+            id=str(poll.id),
             question=poll.question,
             options=options,
+            is_closed=poll.closed,
             total_voters=total_voters,
-            option_chosen=option_chosen,
+            chosen_option=chosen_option,
             client=client
         )

@@ -18,19 +18,21 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
 
 
-class ClosePoll(BaseClient):
-    def close_poll(
+class StopPoll(BaseClient):
+    def stop_poll(
         self,
         chat_id: Union[int, str],
-        message_id: id
-    ) -> bool:
-        """Use this method to close (stop) a poll.
+        message_id: int,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> "pyrogram.Poll":
+        """Use this method to stop a poll which was sent by you.
 
-        Closed polls can't be reopened and nobody will be able to vote in it anymore.
+        Stopped polls can't be reopened and nobody will be able to vote in it anymore.
 
         Args:
             chat_id (``int`` | ``str``):
@@ -39,17 +41,20 @@ class ClosePoll(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             message_id (``int``):
-                Unique poll message identifier inside this chat.
+                Identifier of the original message with the poll.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
 
         Returns:
-            On success, True is returned.
+            On success, the stopped :obj:`Poll <pyrogram.Poll>` with the final results is returned.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
         poll = self.get_messages(chat_id, message_id).poll
 
-        self.send(
+        r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
@@ -60,8 +65,9 @@ class ClosePoll(BaseClient):
                         question="",
                         answers=[]
                     )
-                )
+                ),
+                reply_markup=reply_markup.write() if reply_markup else None
             )
         )
 
-        return True
+        return pyrogram.Poll._parse(self, r.updates[0])

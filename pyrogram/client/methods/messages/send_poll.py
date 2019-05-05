@@ -47,10 +47,10 @@ class SendPoll(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             question (``str``):
-                The poll question, as string.
+                Poll question, 1-255 characters.
 
             options (List of ``str``):
-                The poll options, as list of strings (2 to 10 options are allowed).
+                List of answer options, 2-10 strings 1-100 characters each.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

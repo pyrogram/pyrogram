@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .close_poll import ClosePoll
+from .stop_poll import StopPoll
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
 from .edit_message_caption import EditMessageCaption
@@ -72,7 +72,7 @@ class Messages(
     SendVoice,
     SendPoll,
     VotePoll,
-    ClosePoll,
+    StopPoll,
     RetractVote,
     DownloadMedia,
     IterHistory,

@@ -18,6 +18,7 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram.api import functions
 from pyrogram.client.ext import BaseClient
 
@@ -26,8 +27,8 @@ class RetractVote(BaseClient):
     def retract_vote(
         self,
         chat_id: Union[int, str],
-        message_id: id
-    ) -> bool:
+        message_id: int
+    ) -> "pyrogram.Poll":
         """Use this method to retract your vote in a poll.
 
         Args:
@@ -37,15 +38,15 @@ class RetractVote(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             message_id (``int``):
-                Unique poll message identifier inside this chat.
+                Identifier of the original message with the poll.
 
         Returns:
-            On success, True is returned.
+            On success, the :obj:`Poll <pyrogram.Poll>` with the retracted vote is returned.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
-        self.send(
+        r = self.send(
             functions.messages.SendVote(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
@@ -53,4 +54,4 @@ class RetractVote(BaseClient):
             )
         )
 
-        return True
+        return pyrogram.Poll._parse(self, r.updates[0])
