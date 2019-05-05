@@ -126,17 +126,11 @@ class ChatMember(PyrogramType):
             )
 
         if isinstance(member, types.ChannelParticipantBanned):
-            status = (
-                "kicked" if member.banned_rights.view_messages
-                else "left" if member.left
-                else "restricted"
-            )
-
             return ChatMember(
                 user=user,
-                status=status,
+                status="kicked" if member.banned_rights.view_messages else "restricted",
                 date=member.date,
-                is_member=not member.left if status == "restricted" else None,
+                is_member=not member.left,
                 restricted_by=pyrogram.User._parse(client, users[member.kicked_by]),
                 permissions=pyrogram.ChatPermissions._parse(member),
                 client=client
