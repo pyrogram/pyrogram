@@ -82,7 +82,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
 
             (types.UpdateMessagePoll,):
-                lambda upd, usr, cht: (pyrogram.Poll._parse(self.client, upd), PollHandler)
+                lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler)
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

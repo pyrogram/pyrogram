@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Union
 
 import pyrogram
 from pyrogram.api import types
@@ -71,12 +71,11 @@ class Poll(PyrogramType, Update):
         self.chosen_option = chosen_option
 
     @staticmethod
-    def _parse(client, media_poll: types.MessageMediaPoll) -> "Poll":
+    def _parse(client, media_poll: Union[types.MessageMediaPoll, types.UpdateMessagePoll]) -> "Poll":
         poll = media_poll.poll
         results = media_poll.results.results
         total_voters = media_poll.results.total_voters
         chosen_option = None
-
         options = []
 
         for i, answer in enumerate(poll.answers):
@@ -104,6 +103,38 @@ class Poll(PyrogramType, Update):
             options=options,
             is_closed=poll.closed,
             total_voters=total_voters,
+            chosen_option=chosen_option,
+            client=client
+        )
+
+    @staticmethod
+    def _parse_update(client, update: types.UpdateMessagePoll):
+        if update.poll is not None:
+            return Poll._parse(client, update)
+
+        results = update.results.results
+        chosen_option = None
+        options = []
+
+        for i, result in enumerate(results):
+            if result.chosen:
+                chosen_option = i
+
+            options.append(
+                PollOption(
+                    text="",
+                    voter_count=result.voters,
+                    data=result.option,
+                    client=client
+                )
+            )
+
+        return Poll(
+            id=str(update.poll_id),
+            question="",
+            options=options,
+            is_closed=False,
+            total_voters=update.results.total_voters,
             chosen_option=chosen_option,
             client=client
         )
