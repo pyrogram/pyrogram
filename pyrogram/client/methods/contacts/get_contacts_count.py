@@ -16,24 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .on_callback_query import OnCallbackQuery
-from .on_deleted_messages import OnDeletedMessages
-from .on_disconnect import OnDisconnect
-from .on_inline_query import OnInlineQuery
-from .on_message import OnMessage
-from .on_poll import OnPoll
-from .on_raw_update import OnRawUpdate
-from .on_user_status import OnUserStatus
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class Decorators(
-    OnMessage,
-    OnDeletedMessages,
-    OnCallbackQuery,
-    OnRawUpdate,
-    OnDisconnect,
-    OnUserStatus,
-    OnInlineQuery,
-    OnPoll
-):
-    pass
+class GetContactsCount(BaseClient):
+    async def get_contacts_count(self) -> int:
+        """Use this method to get the total count of contacts from your Telegram address book.
+
+        Returns:
+            On success, an integer is returned.
+
+        Raises:
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+        """
+
+        return len((await self.send(functions.contacts.GetContacts(hash=0))).contacts)

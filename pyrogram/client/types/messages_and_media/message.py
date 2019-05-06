@@ -79,7 +79,7 @@ class Message(PyrogramType, Update):
         forward_from (:obj:`User <pyrogram.User>`, *optional*):
             For forwarded messages, sender of the original message.
 
-        forward_from_name (``str``, *optional*):
+        forward_sender_name (``str``, *optional*):
             For messages forwarded from users who have hidden their accounts, name of the user.
 
         forward_from_chat (:obj:`Chat <pyrogram.Chat>`, *optional*):
@@ -186,6 +186,9 @@ class Message(PyrogramType, Update):
             web page preview. In future versions this property could turn into a full web page object that contains
             more details.
 
+        poll (:obj:`Poll <pyrogram.Poll>`, *optional*):
+            Message is a native poll, information about the poll.
+
         new_chat_members (List of :obj:`User <pyrogram.User>`, *optional*):
             New members that were added to the group or supergroup and information about them
             (the bot itself may be one of these members).
@@ -267,7 +270,7 @@ class Message(PyrogramType, Update):
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
 
     __slots__ = [
-        "message_id", "date", "chat", "from_user", "forward_from", "forward_from_name", "forward_from_chat",
+        "message_id", "date", "chat", "from_user", "forward_from", "forward_sender_name", "forward_from_chat",
         "forward_from_message_id", "forward_signature", "forward_date", "reply_to_message", "mentioned", "empty",
         "service", "media", "edit_date", "media_group_id", "author_signature", "text", "entities", "caption_entities",
         "audio", "document", "photo", "sticker", "animation", "game", "video", "voice", "video_note", "caption",
@@ -286,7 +289,7 @@ class Message(PyrogramType, Update):
         chat: Chat = None,
         from_user: User = None,
         forward_from: User = None,
-        forward_from_name: str = None,
+        forward_sender_name: str = None,
         forward_from_chat: Chat = None,
         forward_from_message_id: int = None,
         forward_signature: str = None,
@@ -348,7 +351,7 @@ class Message(PyrogramType, Update):
         self.chat = chat
         self.from_user = from_user
         self.forward_from = forward_from
-        self.forward_from_name = forward_from_name
+        self.forward_sender_name = forward_sender_name
         self.forward_from_chat = forward_from_chat
         self.forward_from_message_id = forward_from_message_id
         self.forward_signature = forward_signature
@@ -487,7 +490,7 @@ class Message(PyrogramType, Update):
             entities = list(filter(lambda x: x is not None, entities))
 
             forward_from = None
-            forward_from_name = None
+            forward_sender_name = None
             forward_from_chat = None
             forward_from_message_id = None
             forward_signature = None
@@ -501,7 +504,7 @@ class Message(PyrogramType, Update):
                 if forward_header.from_id:
                     forward_from = User._parse(client, users[forward_header.from_id])
                 elif forward_header.from_name:
-                    forward_from_name = forward_header.from_name
+                    forward_sender_name = forward_header.from_name
                 else:
                     forward_from_chat = Chat._parse_channel_chat(client, chats[forward_header.channel_id])
                     forward_from_message_id = forward_header.channel_post
@@ -607,7 +610,7 @@ class Message(PyrogramType, Update):
                 caption_entities=entities or None if media is not None else None,
                 author_signature=message.post_author,
                 forward_from=forward_from,
-                forward_from_name=forward_from_name,
+                forward_sender_name=forward_sender_name,
                 forward_from_chat=forward_from_chat,
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
@@ -795,7 +798,7 @@ class Message(PyrogramType, Update):
             thumb (``str``, *optional*):
                 Thumbnail of the animation file sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
@@ -930,7 +933,7 @@ class Message(PyrogramType, Update):
             thumb (``str``, *optional*):
                 Thumbnail of the music file album cover.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
@@ -1257,7 +1260,7 @@ class Message(PyrogramType, Update):
             thumb (``str``, *optional*):
                 Thumbnail of the file sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             caption (``str``, *optional*):
@@ -2064,7 +2067,7 @@ class Message(PyrogramType, Update):
             thumb (``str``, *optional*):
                 Thumbnail of the video sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             supports_streaming (``bool``, *optional*):
@@ -2189,7 +2192,7 @@ class Message(PyrogramType, Update):
             thumb (``str``, *optional*):
                 Thumbnail of the video sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):

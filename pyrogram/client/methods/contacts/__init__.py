@@ -19,11 +19,13 @@
 from .add_contacts import AddContacts
 from .delete_contacts import DeleteContacts
 from .get_contacts import GetContacts
+from .get_contacts_count import GetContactsCount
 
 
 class Contacts(
     GetContacts,
     DeleteContacts,
-    AddContacts
+    AddContacts,
+    GetContactsCount
 ):
     pass

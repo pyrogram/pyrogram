@@ -39,6 +39,7 @@ from .set_chat_title import SetChatTitle
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .get_dialogs_count import GetDialogsCount
 
 
 class Chats(
@@ -64,6 +65,7 @@ class Chats(
     IterDialogs,
     IterChatMembers,
     UpdateChatUsername,
-    RestrictChat
+    RestrictChat,
+    GetDialogsCount
 ):
     pass

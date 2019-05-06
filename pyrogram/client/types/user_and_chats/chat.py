@@ -185,6 +185,12 @@ class Chat(PyrogramType):
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
+
+            if chat_full.pinned_msg_id:
+                parsed_chat.pinned_message = await client.get_messages(
+                    parsed_chat.id,
+                    message_ids=chat_full.pinned_msg_id
+                )
         else:
             full_chat = chat_full.full_chat
             chat = None

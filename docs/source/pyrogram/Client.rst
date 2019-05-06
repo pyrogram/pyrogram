@@ -66,10 +66,11 @@ Messages
     delete_messages
     get_messages
     get_history
+    get_history_count
     iter_history
     send_poll
     vote_poll
-    close_poll
+    stop_poll
     retract_vote
     download_media
 
@@ -100,6 +101,7 @@ Chats
     iter_chat_members
     get_dialogs
     iter_dialogs
+    get_dialogs_count
     restrict_chat
     update_chat_username
 
@@ -112,6 +114,7 @@ Users
     get_me
     get_users
     get_user_profile_photos
+    get_user_profile_photos_count
     set_user_profile_photo
     delete_user_profile_photos
     update_username
@@ -124,6 +127,7 @@ Contacts
 
     add_contacts
     get_contacts
+    get_contacts_count
     delete_contacts
 
 Password

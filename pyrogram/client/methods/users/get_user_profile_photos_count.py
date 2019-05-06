@@ -18,40 +18,37 @@
 
 from typing import Union
 
-import pyrogram
-from pyrogram.api import functions
-from pyrogram.client.ext import BaseClient
+from pyrogram.api import functions, types
+from ...ext import BaseClient
 
 
-class RetractVote(BaseClient):
-    async def retract_vote(
-        self,
-        chat_id: Union[int, str],
-        message_id: int
-    ) -> "pyrogram.Poll":
-        """Use this method to retract your vote in a poll.
+class GetUserProfilePhotosCount(BaseClient):
+    async def get_user_profile_photos_count(self, user_id: Union[int, str]) -> int:
+        """Use this method to get the total count of profile pictures for a user.
 
         Args:
-            chat_id (``int`` | ``str``):
+            user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``):
-                Identifier of the original message with the poll.
-
         Returns:
-            On success, the :obj:`Poll <pyrogram.Poll>` with the retracted vote is returned.
+            On success, an integer is returned.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
         """
+
         r = await self.send(
-            functions.messages.SendVote(
-                peer=await self.resolve_peer(chat_id),
-                msg_id=message_id,
-                options=[]
+            functions.photos.GetUserPhotos(
+                user_id=await self.resolve_peer(user_id),
+                offset=0,
+                max_id=0,
+                limit=1
             )
         )
 
-        return pyrogram.Poll._parse(self, r.updates[0])
+        if isinstance(r, types.photos.Photos):
+            return len(r.photos)
+        else:
+            return r.count

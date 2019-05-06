@@ -34,7 +34,7 @@ class Dialog(PyrogramType):
             The last message sent in the dialog at this time.
 
         unread_messages_count (``int``):
-            Amount of unread messages in this dialogs.
+            Amount of unread messages in this dialog.
 
         unread_mentions_count (``int``):
             Amount of unread messages containing a mention in this dialog.
