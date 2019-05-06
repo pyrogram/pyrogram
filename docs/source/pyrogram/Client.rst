@@ -101,6 +101,7 @@ Chats
     iter_chat_members
     get_dialogs
     iter_dialogs
+    get_dialogs_count
     restrict_chat
     update_chat_username
 
