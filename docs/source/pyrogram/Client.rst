@@ -69,7 +69,7 @@ Messages
     iter_history
     send_poll
     vote_poll
-    close_poll
+    stop_poll
     retract_vote
     download_media
 
