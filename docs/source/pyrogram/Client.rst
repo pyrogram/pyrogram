@@ -126,6 +126,7 @@ Contacts
 
     add_contacts
     get_contacts
+    get_contacts_count
     delete_contacts
 
 Password

@@ -16,16 +16,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .add_contacts import AddContacts
-from .delete_contacts import DeleteContacts
-from .get_contacts import GetContacts
-from .get_contacts_count import GetContactsCount
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class Contacts(
-    GetContacts,
-    DeleteContacts,
-    AddContacts,
-    GetContactsCount
-):
-    pass
+class GetContactsCount(BaseClient):
+    def get_contacts_count(self) -> int:
+        """Use this method to get the total count of contacts from your Telegram address book.
+
+        Returns:
+            On success, an integer is returned.
+
+        Raises:
+            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+        """
+
+        return len(self.send(functions.contacts.GetContacts(hash=0)).contacts)
