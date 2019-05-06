@@ -48,4 +48,7 @@ class GetDialogsCount(BaseClient):
                 )
             )
 
-            return r.count
+            if isinstance(r, types.messages.Dialogs):
+                return len(r.dialogs)
+            else:
+                return r.count
