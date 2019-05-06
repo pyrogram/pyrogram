@@ -50,7 +50,7 @@ class BaseClient:
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 1
-    OFFLINE_SLEEP = 300
+    OFFLINE_SLEEP = 900
     WORKERS = 4
     WORKDIR = "."
     CONFIG_FILE = "./config.ini"
