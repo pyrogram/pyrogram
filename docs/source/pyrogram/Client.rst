@@ -114,6 +114,7 @@ Users
     get_me
     get_users
     get_user_profile_photos
+    get_user_profile_photos_count
     set_user_profile_photo
     delete_user_profile_photos
     update_username
