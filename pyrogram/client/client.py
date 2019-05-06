@@ -1176,8 +1176,8 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
-                                    type(handler).__name__, name, group, module_path))
+                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                    self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
                         except Exception:
@@ -1190,11 +1190,13 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[LOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
+                            self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[LOAD] Ignoring namespace "{}"'.format(module_path))
+                        log.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
+                            self.session_name, module_path))
                         continue
 
                     if handlers is None:
@@ -1209,14 +1211,14 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[LOAD] {}("{}") in group {} from "{}"'.format(
-                                    type(handler).__name__, name, group, module_path))
+                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                    self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[LOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    name, module_path))
+                                log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    self.session_name, name, module_path))
 
             if exclude is not None:
                 for path, handlers in exclude:
@@ -1226,11 +1228,13 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[UNLOAD] Ignoring non-existent module "{}"'.format(module_path))
+                        log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
+                            self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[UNLOAD] Ignoring namespace "{}"'.format(module_path))
+                        log.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
+                            self.session_name, module_path))
                         continue
 
                     if handlers is None:
@@ -1245,19 +1249,21 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
 
-                                log.info('[UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                    type(handler).__name__, name, group, module_path))
+                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                    self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count -= 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    name, module_path))
+                                log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                    self.session_name, name, module_path))
 
             if count > 0:
-                log.warning('Successfully loaded {} plugin{} from "{}"'.format(count, "s" if count > 1 else "", root))
+                log.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
+                    self.session_name, count, "s" if count > 1 else "", root))
             else:
-                log.warning('No plugin loaded from "{}"'.format(root))
+                log.warning('[{}] No plugin loaded from "{}"'.format(
+                    self.session_name, root))
 
     def save_session(self):
         auth_key = base64.b64encode(self.auth_key).decode()
