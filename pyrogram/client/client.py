@@ -261,8 +261,7 @@ class Client(Methods, BaseClient):
         self._proxy.update(value)
 
     def start(self):
-        """Use this method to start the Client after creating it.
-        Requires no parameters.
+        """Use this method to start the Client.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
@@ -355,8 +354,7 @@ class Client(Methods, BaseClient):
         return self
 
     def stop(self):
-        """Use this method to manually stop the Client.
-        Requires no parameters.
+        """Use this method to stop the Client.
 
         Raises:
             ``ConnectionError`` in case you try to stop an already stopped Client.
@@ -399,7 +397,6 @@ class Client(Methods, BaseClient):
 
     def restart(self):
         """Use this method to restart the Client.
-        Requires no parameters.
 
         Raises:
             ``ConnectionError`` in case you try to restart a stopped Client.
@@ -408,14 +405,24 @@ class Client(Methods, BaseClient):
         self.start()
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Blocks the program execution until one of the signals are received,
-        then gently stop the Client by closing the underlying connection.
+        """Use this method to block the main script execution until a signal (e.g.: from CTRL+C) is received.
+        Once the signal is received, the client will automatically stop and the main script will continue its execution.
+
+        This is used after starting one or more clients and is useful for event-driven applications only, that are,
+        applications which react upon incoming Telegram updates through handlers, rather than executing a set of methods
+        sequentially.
+
+        The way Pyrogram works, will keep your handlers in a pool of workers, which are executed concurrently outside
+        the main script; calling idle() will ensure the client(s) will be kept alive by not letting the main script to
+        end, until you decide to quit.
 
         Args:
             stop_signals (``tuple``, *optional*):
                 Iterable containing signals the signal handler will listen to.
                 Defaults to (SIGINT, SIGTERM, SIGABRT).
         """
+
+        # TODO: Maybe make this method static and don't automatically stop
 
         def signal_handler(*args):
             self.is_idle = False
@@ -431,8 +438,11 @@ class Client(Methods, BaseClient):
         self.stop()
 
     def run(self):
-        """Use this method to automatically start and idle a Client.
-        Requires no parameters.
+        """Use this method as a convenience shortcut to automatically start the Client and idle the main script.
+
+        This is a convenience method that literally just calls :meth:`start` and :meth:`idle`. It makes running a client
+        less verbose, but is not suitable in case you want to run more than one client in a single main script,
+        since :meth:`idle` will block.
 
         Raises:
             :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
@@ -465,7 +475,7 @@ class Client(Methods, BaseClient):
         return handler, group
 
     def remove_handler(self, handler: Handler, group: int = 0):
-        """Removes a previously-added update handler.
+        """Use this method to remove a previously-registered update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
         the return value of the :meth:`add_handler` method, a tuple of (handler, group), and
@@ -752,9 +762,16 @@ class Client(Methods, BaseClient):
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
-    def fetch_peers(self, entities: List[Union[types.User,
-                                               types.Chat, types.ChatForbidden,
-                                               types.Channel, types.ChannelForbidden]]):
+    def fetch_peers(
+        self,
+        entities: List[
+            Union[
+                types.User,
+                types.Chat, types.ChatForbidden,
+                types.Channel, types.ChannelForbidden
+            ]
+        ]
+    ):
         for entity in entities:
             if isinstance(entity, types.User):
                 user_id = entity.id
@@ -1018,15 +1035,18 @@ class Client(Methods, BaseClient):
 
         log.debug("{} stopped".format(name))
 
-    def send(self,
-             data: Object,
-             retries: int = Session.MAX_RETRIES,
-             timeout: float = Session.WAIT_TIMEOUT):
-        """Use this method to send Raw Function queries.
+    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+        """Use this method to send raw Telegram queries.
 
-        This method makes possible to manually call every single Telegram API method in a low-level manner.
+        This method makes it possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`functions <pyrogram.api.functions>` package and may accept compound
         data types from :obj:`types <pyrogram.api.types>` as well as bare types such as ``int``, ``str``, etc...
+
+        .. note::
+
+            This is a utility method intended to be used **only** when working with raw
+            :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
+            available yet in the Client class as an easy-to-use method).
 
         Args:
             data (``Object``):
@@ -1285,8 +1305,7 @@ class Client(Methods, BaseClient):
                 indent=4
             )
 
-    def get_initial_dialogs_chunk(self,
-                                  offset_date: int = 0):
+    def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
                 r = self.send(
@@ -1318,13 +1337,15 @@ class Client(Methods, BaseClient):
 
         self.get_initial_dialogs_chunk()
 
-    def resolve_peer(self,
-                     peer_id: Union[int, str]):
-        """Use this method to get the InputPeer of a known peer_id.
+    def resolve_peer(self, peer_id: Union[int, str]):
+        """Use this method to get the InputPeer of a known peer id.
+        Useful whenever an InputPeer type is required.
 
-        This is a utility method intended to be used **only** when working with Raw Functions (i.e: a Telegram API
-        method you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an
-        InputPeer type is required.
+        .. note::
+
+            This is a utility method intended to be used **only** when working with raw
+            :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
+            available yet in the Client class as an easy-to-use method).
 
         Args:
             peer_id (``int`` | ``str``):
@@ -1391,17 +1412,22 @@ class Client(Methods, BaseClient):
             except KeyError:
                 raise PeerIdInvalid
 
-    def save_file(self,
-                  path: str,
-                  file_id: int = None,
-                  file_part: int = 0,
-                  progress: callable = None,
-                  progress_args: tuple = ()):
+    def save_file(
+        self,
+        path: str,
+        file_id: int = None,
+        file_part: int = 0,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ):
         """Use this method to upload a file onto Telegram servers, without actually sending the message to anyone.
+        Useful whenever an InputFile type is required.
 
-        This is a utility method intended to be used **only** when working with Raw Functions (i.e: a Telegram API
-        method you wish to use which is not available yet in the Client class as an easy-to-use method), whenever an
-        InputFile type is required.
+        .. note::
+
+            This is a utility method intended to be used **only** when working with raw
+            :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
+            available yet in the Client class as an easy-to-use method).
 
         Args:
             path (``str``):
