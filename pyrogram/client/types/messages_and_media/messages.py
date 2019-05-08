@@ -75,7 +75,7 @@ class Messages(PyrogramType, Update):
                 reply_messages = client.get_messages(
                     parsed_messages[0].chat.id,
                     reply_to_message_ids=reply_message_ids,
-                    replies=0
+                    replies=replies - 1
                 ).messages
 
                 for message in parsed_messages:
