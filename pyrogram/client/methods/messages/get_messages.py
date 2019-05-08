@@ -55,7 +55,9 @@ class GetMessages(BaseClient):
                 If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
-                The number of subsequent replies to get for each message. Defaults to 1.
+                The number of subsequent replies to get for each message.
+                Pass 0 for no reply at all or -1 for unlimited replies.
+                Defaults to 1.
 
         Returns:
             On success and in case *message_ids* or *reply_to_message_ids* was an iterable, the returned value will be a
@@ -79,6 +81,9 @@ class GetMessages(BaseClient):
         is_iterable = not isinstance(ids, int)
         ids = list(ids) if is_iterable else [ids]
         ids = [ids_type(id=i) for i in ids]
+
+        if replies < 0:
+            replies = (1 << 31) - 1
 
         if isinstance(peer, types.InputPeerChannel):
             rpc = functions.channels.GetMessages(channel=peer, id=ids)
