@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .bots import *
+from .keyboards import *
 from .inline_mode import *
 from .input_media import *
 from .input_message_content import *
