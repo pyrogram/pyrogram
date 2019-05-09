@@ -21,8 +21,8 @@ from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.errors import MessageIdsEmpty
 from pyrogram.client.types.input_media import InputMedia
+from pyrogram.errors import MessageIdsEmpty
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
@@ -2725,10 +2725,10 @@ class Message(PyrogramType, Update):
             revoke=revoke
         )
 
-    def click(self, x: int or str, y: int = None, quote: bool = None):
+    def click(self, x: int or str, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`Message`.
 
-        Use as a shortcut for clicking a button attached to the message instead of.
+        Use as a shortcut for clicking a button attached to the message instead of:
 
         - Clicking inline buttons:
 
@@ -2773,58 +2773,67 @@ class Message(PyrogramType, Update):
                 If ``True``, the message will be sent as a reply to this message.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
+            timeout (``int``, *optional*):
+                Timeout in seconds.
+
         Returns:
-            -   The result of *request_callback_answer()* in case of inline callback button clicks.
-            -   The result of *reply()* in case of normal button clicks.
-            -   A string in case the inline button is an URL, switch_inline_query or switch_inline_query_current_chat
-                button.
+            -   The result of :meth:`request_callback_answer() <pyrogram.Client.request_callback_answer>` in case of
+                inline callback button clicks.
+            -   The result of :meth:`reply() <pyrogram.Message.reply>` in case of normal button clicks.
+            -   A string in case the inline button is a URL, a *switch_inline_query* or a
+                *switch_inline_query_current_chat* button.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
-            ``ValueError``: If the provided index or position is out of range or the button label was not found
-            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
+            ValueError: In case the provided index or position is out of range or the button label was not found.
+            TimeoutError: In case, after clicking an inline button, the bot fails to answer within the timeout.
         """
+
         if isinstance(self.reply_markup, pyrogram.ReplyKeyboardMarkup):
-            return self.reply(x, quote=quote)
+            keyboard = self.reply_markup.keyboard
+            is_inline = False
         elif isinstance(self.reply_markup, pyrogram.InlineKeyboardMarkup):
-            if isinstance(x, int) and y is None:
-                try:
-                    button = [
-                        button
-                        for row in self.reply_markup.inline_keyboard
-                        for button in row
-                    ][x]
-                except IndexError:
-                    raise ValueError("The button at index {} doesn't exist".format(x)) from None
-            elif isinstance(x, int) and isinstance(y, int):
-                try:
-                    button = self.reply_markup.inline_keyboard[y][x]
-                except IndexError:
-                    raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y)) from None
-            elif isinstance(x, str):
-                x = x.encode("utf-16", "surrogatepass").decode("utf-16")
+            keyboard = self.reply_markup.inline_keyboard
+            is_inline = True
+        else:
+            raise ValueError("The message doesn't contain any keyboard")
 
-                try:
-                    button = [
-                        button
-                        for row in self.reply_markup.inline_keyboard
-                        for button in row
-                        if x == button.text
-                    ][0]
-                except IndexError:
-                    raise ValueError(
-                        "The button with label '{}' doesn't exists".format(
-                            x.encode("unicode_escape").decode()
-                        )
-                    ) from None
-            else:
-                raise ValueError("Invalid arguments")
+        if isinstance(x, int) and y is None:
+            try:
+                button = [
+                    button
+                    for row in keyboard
+                    for button in row
+                ][x]
+            except IndexError:
+                raise ValueError("The button at index {} doesn't exist".format(x))
+        elif isinstance(x, int) and isinstance(y, int):
+            try:
+                button = keyboard[y][x]
+            except IndexError:
+                raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y))
+        elif isinstance(x, str) and y is None:
+            label = x.encode("utf-16", "surrogatepass").decode("utf-16")
 
+            try:
+                button = [
+                    button
+                    for row in keyboard
+                    for button in row
+                    if label == button.text
+                ][0]
+            except IndexError:
+                raise ValueError("The button with label '{}' doesn't exists".format(x))
+        else:
+            raise ValueError("Invalid arguments")
+
+        if is_inline:
             if button.callback_data:
                 return self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
-                    callback_data=button.callback_data
+                    callback_data=button.callback_data,
+                    timeout=timeout
                 )
             elif button.url:
                 return button.url
@@ -2835,7 +2844,7 @@ class Message(PyrogramType, Update):
             else:
                 raise ValueError("This button is not supported yet")
         else:
-            raise ValueError("The message doesn't contain any keyboard")
+            self.reply(button, quote=quote)
 
     def download(
         self,
