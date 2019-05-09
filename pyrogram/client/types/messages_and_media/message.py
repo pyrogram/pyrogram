@@ -22,7 +22,7 @@ from typing import List, Match, Union
 import pyrogram
 from pyrogram.api import types
 from pyrogram.errors import MessageIdsEmpty
-from pyrogram.client.ext import ChatAction, ParseMode
+from pyrogram.client.ext import ChatAction
 from pyrogram.client.types.input_media import InputMedia
 from .contact import Contact
 from .location import Location
@@ -2686,7 +2686,7 @@ class Message(PyrogramType, Update):
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
                     return send_media(file_id=file_id)
                 else:
-                    return send_media(file_id=file_id, caption=caption, parse_mode=ParseMode.HTML)
+                    return send_media(file_id=file_id, caption=caption, parse_mode="html")
             else:
                 raise ValueError("Can't copy this message")
         else:

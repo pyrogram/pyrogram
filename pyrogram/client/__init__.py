@@ -17,9 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .client import Client
-from .ext import BaseClient, ChatAction, Emoji, ParseMode
+from .ext import BaseClient, ChatAction, Emoji
 from .filters import Filters
 
 __all__ = [
-    "Client", "BaseClient", "ChatAction", "Emoji", "ParseMode", "Filters",
+    "Client", "BaseClient", "ChatAction", "Emoji", "Filters",
 ]
