@@ -77,30 +77,30 @@ To get started, press the Next button.
     :hidden:
     :caption: Quick Start
 
-    start/Installation
-    start/Setup
-    start/Usage
+    start/installation
+    start/setup
+    start/usage
 
 .. toctree::
     :hidden:
     :caption: Resources
 
-    resources/UpdateHandling
-    resources/UsingFilters
-    resources/MoreOnUpdates
-    resources/ConfigurationFile
-    resources/SmartPlugins
-    resources/AutoAuthorization
-    resources/CustomizeSessions
-    resources/TgCrypto
-    resources/TextFormatting
-    resources/SOCKS5Proxy
-    resources/BotsInteraction
-    resources/ErrorHandling
-    resources/TestServers
-    resources/AdvancedUsage
-    resources/VoiceCalls
-    resources/Changelog
+    resources/update-handling
+    resources/using-filters
+    resources/more-on-updates
+    resources/configuration-file
+    resources/smart-plugins
+    resources/auto-authorization
+    resources/customize-sessions
+    resources/tgcrypto
+    resources/text-formatting
+    resources/socks5-proxy
+    resources/bots-interaction
+    resources/error-handling
+    resources/test-servers
+    resources/advanced-usage
+    resources/voice-calls
+    resources/changelog
 
 .. toctree::
     :hidden:

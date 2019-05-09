@@ -9,12 +9,12 @@ after the well established Telegram Bot API methods, thus offering a familiar lo
 .. toctree::
     :maxdepth: 1
 
-    Types
-    Methods
-    Handlers
-    Decorators
-    Filters
-    Errors
+    types
+    methods
+    handlers
+    decorators
+    filters
+    errors
 
 
 .. autoclass:: pyrogram.Client()

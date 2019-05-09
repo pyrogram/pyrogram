@@ -18,11 +18,11 @@ All the Pyrogram errors listed here live inside the ``errors`` sub-package.
     :members:
 
 .. toctree::
-    ../errors/SeeOther
-    ../errors/BadRequest
-    ../errors/Unauthorized
-    ../errors/Forbidden
-    ../errors/NotAcceptable
-    ../errors/Flood
-    ../errors/InternalServerError
-    ../errors/UnknownError
+    ../errors/see-other
+    ../errors/bad-request
+    ../errors/unauthorized
+    ../errors/forbidden
+    ../errors/not-acceptable
+    ../errors/flood
+    ../errors/internal-server-error
+    ../errors/unknown-error
