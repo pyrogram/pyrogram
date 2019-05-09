@@ -22,7 +22,6 @@ from typing import List, Match, Union
 import pyrogram
 from pyrogram.api import types
 from pyrogram.errors import MessageIdsEmpty
-from pyrogram.client.ext import ChatAction
 from pyrogram.client.types.input_media import InputMedia
 from .contact import Contact
 from .location import Location
@@ -1077,11 +1076,7 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    def reply_chat_action(
-        self,
-        action: Union[ChatAction, str],
-        progress: int = 0
-    ) -> "Message":
+    def reply_chat_action(self, action: str) -> bool:
         """Bound method *reply_chat_action* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -1099,27 +1094,24 @@ class Message(PyrogramType, Update):
                 message.reply_chat_action("typing")
 
         Parameters:
-            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
-                Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
-                depending on what the user is about to receive.
-                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
-
-            progress (``int``, *optional*):
-                Progress of the upload process.
-                Currently useless because official clients don't seem to be handling this.
+            action (``str``):
+                Type of action to broadcast. Choose one, depending on what the user is about to receive: *"typing"* for
+                text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
+                *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
+                *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
+                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
+                displayed.
 
         Returns:
-            On success, True is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if the provided string is not a valid ChatAction.
+            ValueError: In case the provided string is not a valid chat action.
         """
         return self._client.send_chat_action(
             chat_id=self.chat.id,
-            action=action,
-            progress=progress
+            action=action
         )
 
     def reply_contact(

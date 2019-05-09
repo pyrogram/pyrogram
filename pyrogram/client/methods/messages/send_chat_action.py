@@ -18,17 +18,32 @@
 
 from typing import Union
 
-from pyrogram.api import functions
-from pyrogram.client.ext import BaseClient, ChatAction
+from pyrogram.api import functions, types
+from pyrogram.client.ext import BaseClient
+import json
+
+
+class ChatAction:
+    TYPING = types.SendMessageTypingAction
+    UPLOAD_PHOTO = types.SendMessageUploadPhotoAction
+    RECORD_VIDEO = types.SendMessageRecordVideoAction
+    UPLOAD_VIDEO = types.SendMessageUploadVideoAction
+    RECORD_AUDIO = types.SendMessageRecordAudioAction
+    UPLOAD_AUDIO = types.SendMessageUploadAudioAction
+    UPLOAD_DOCUMENT = types.SendMessageUploadDocumentAction
+    FIND_LOCATION = types.SendMessageGeoLocationAction
+    RECORD_VIDEO_NOTE = types.SendMessageRecordRoundAction
+    UPLOAD_VIDEO_NOTE = types.SendMessageUploadRoundAction
+    PLAYING = types.SendMessageGamePlayAction
+    CHOOSE_CONTACT = types.SendMessageChooseContactAction
+    CANCEL = types.SendMessageCancelAction
+
+
+POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), ChatAction.__dict__.keys())))
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(
-        self,
-        chat_id: Union[int, str],
-        action: Union[ChatAction, str],
-        progress: int = 0
-    ):
+    def send_chat_action(self, chat_id: Union[int, str], action: str) -> bool:
         """Use this method when you need to tell the other party that something is happening on your side.
 
         Parameters:
@@ -37,15 +52,13 @@ class SendChatAction(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            action (:obj:`ChatAction` | ``str``):
-                Type of action to broadcast.
-                Choose one from the :class:`ChatAction` enumeration,
-                depending on what the user is about to receive.
-                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
-
-            progress (``int``, *optional*):
-                Progress of the upload process.
-                Currently useless because official clients don't seem to be handling this.
+            action (``str``):
+                Type of action to broadcast. Choose one, depending on what the user is about to receive: *"typing"* for
+                text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
+                *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
+                *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
+                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
+                displayed.
 
         Returns:
             ``bool``: On success, True is returned.
@@ -55,14 +68,14 @@ class SendChatAction(BaseClient):
             ValueError: In case the provided string is not a valid ChatAction.
         """
 
-        # Resolve Enum type
-        if isinstance(action, str):
-            action = ChatAction.from_string(action).value
-        elif isinstance(action, ChatAction):
-            action = action.value
+        try:
+            action = ChatAction.__dict__[action.upper()]
+        except KeyError:
+            raise ValueError("Invalid chat action '{}'. Possible values are: {}".format(
+                action, json.dumps(POSSIBLE_VALUES, indent=4))) from None
 
         if "Upload" in action.__name__:
-            action = action(progress=progress)
+            action = action(progress=0)
         else:
             action = action()
 

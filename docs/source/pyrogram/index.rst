@@ -14,7 +14,6 @@ after the well established Telegram Bot API methods, thus offering a familiar lo
     Handlers
     Decorators
     Filters
-    ChatAction
     Errors
 
 
