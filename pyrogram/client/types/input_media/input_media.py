@@ -22,11 +22,11 @@ from ..pyrogram_type import PyrogramType
 class InputMedia(PyrogramType):
     """This object represents the content of a media message to be sent. It should be one of:
 
-    - :obj:`InputMediaAnimation <pyrogram.InputMediaAnimation>`
-    - :obj:`InputMediaDocument <pyrogram.InputMediaDocument>`
-    - :obj:`InputMediaAudio <pyrogram.InputMediaAudio>`
-    - :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>`
-    - :obj:`InputMediaVideo <pyrogram.InputMediaVideo>`
+    - :obj:`InputMediaAnimation`
+    - :obj:`InputMediaDocument`
+    - :obj:`InputMediaAudio`
+    - :obj:`InputMediaPhoto`
+    - :obj:`InputMediaVideo`
     """
     __slots__ = ["media", "caption", "parse_mode"]
 

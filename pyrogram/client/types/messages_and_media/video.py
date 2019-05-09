@@ -28,7 +28,7 @@ from ...ext.utils import encode
 class Video(PyrogramType):
     """This object represents a video file.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -41,7 +41,7 @@ class Video(PyrogramType):
         duration (``int``):
             Duration of the video in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Video thumbnail.
 
         file_name (``str``, *optional*):

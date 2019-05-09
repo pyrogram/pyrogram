@@ -27,7 +27,7 @@ def create(name: str, func: callable, **kwargs) -> type:
 
     Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
 
-    Args:
+    Parameters:
         name (``str``):
             Your filter's name. Can be anything you like.
 
@@ -35,9 +35,9 @@ def create(name: str, func: callable, **kwargs) -> type:
             A function that accepts two arguments *(filter, update)* and returns a Boolean: True if the update should be
             handled, False otherwise.
             The "update" argument type will vary depending on which `Handler <Handlers.html>`_ is coming from.
-            For example, in a :obj:`MessageHandler <pyrogram.MessageHandler>` the update type will be
-            a :obj:`Message <pyrogram.Message>`; in a :obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>` the
-            update type will be a :obj:`CallbackQuery <pyrogram.CallbackQuery>`. Your function body can then access the
+            For example, in a :obj:`MessageHandler` the update type will be
+            a :obj:`Message`; in a :obj:`CallbackQueryHandler` the
+            update type will be a :obj:`CallbackQuery`. Your function body can then access the
             incoming update and decide whether to allow it or not.
 
         **kwargs (``any``, *optional*):
@@ -54,7 +54,7 @@ def create(name: str, func: callable, **kwargs) -> type:
 class Filters:
     """This class provides access to all library-defined Filters available in Pyrogram.
 
-    The Filters listed here are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>` only.
+    The Filters listed here are intended to be used with the :obj:`MessageHandler` only.
     At the moment, if you want to filter updates coming from different `Handlers <Handlers.html>`_ you have to create
     your own filters with :meth:`Filters.create` and use them in the same way.
     """
@@ -89,49 +89,49 @@ class Filters:
     """Filter edited messages."""
 
     audio = create("Audio", lambda _, m: bool(m.audio))
-    """Filter messages that contain :obj:`Audio <pyrogram.Audio>` objects."""
+    """Filter messages that contain :obj:`Audio` objects."""
 
     document = create("Document", lambda _, m: bool(m.document))
-    """Filter messages that contain :obj:`Document <pyrogram.Document>` objects."""
+    """Filter messages that contain :obj:`Document` objects."""
 
     photo = create("Photo", lambda _, m: bool(m.photo))
-    """Filter messages that contain :obj:`Photo <pyrogram.PhotoSize>` objects."""
+    """Filter messages that contain :obj:`Photo` objects."""
 
     sticker = create("Sticker", lambda _, m: bool(m.sticker))
-    """Filter messages that contain :obj:`Sticker <pyrogram.Sticker>` objects."""
+    """Filter messages that contain :obj:`Sticker` objects."""
 
     animation = create("Animation", lambda _, m: bool(m.animation))
-    """Filter messages that contain :obj:`Animation <pyrogram.Animation>` objects."""
+    """Filter messages that contain :obj:`Animation` objects."""
 
     game = create("Game", lambda _, m: bool(m.game))
-    """Filter messages that contain :obj:`Game <pyrogram.Game>` objects."""
+    """Filter messages that contain :obj:`Game` objects."""
 
     video = create("Video", lambda _, m: bool(m.video))
-    """Filter messages that contain :obj:`Video <pyrogram.Video>` objects."""
+    """Filter messages that contain :obj:`Video` objects."""
 
     media_group = create("MediaGroup", lambda _, m: bool(m.media_group_id))
     """Filter messages containing photos or videos being part of an album."""
 
     voice = create("Voice", lambda _, m: bool(m.voice))
-    """Filter messages that contain :obj:`Voice <pyrogram.Voice>` note objects."""
+    """Filter messages that contain :obj:`Voice` note objects."""
 
     video_note = create("VideoNote", lambda _, m: bool(m.video_note))
-    """Filter messages that contain :obj:`VideoNote <pyrogram.VideoNote>` objects."""
+    """Filter messages that contain :obj:`VideoNote` objects."""
 
     contact = create("Contact", lambda _, m: bool(m.contact))
-    """Filter messages that contain :obj:`Contact <pyrogram.Contact>` objects."""
+    """Filter messages that contain :obj:`Contact` objects."""
 
     location = create("Location", lambda _, m: bool(m.location))
-    """Filter messages that contain :obj:`Location <pyrogram.Location>` objects."""
+    """Filter messages that contain :obj:`Location` objects."""
 
     venue = create("Venue", lambda _, m: bool(m.venue))
-    """Filter messages that contain :obj:`Venue <pyrogram.Venue>` objects."""
+    """Filter messages that contain :obj:`Venue` objects."""
 
     web_page = create("WebPage", lambda _, m: m.web_page)
     """Filter messages sent with a webpage preview."""
 
     poll = create("Poll", lambda _, m: m.poll)
-    """Filter messages that contain :obj:`Poll <pyrogram.Poll>` objects."""
+    """Filter messages that contain :obj:`Poll` objects."""
 
     private = create("Private", lambda _, m: bool(m.chat and m.chat.type == "private"))
     """Filter messages sent in private chats."""
@@ -230,12 +230,12 @@ class Filters:
     ):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
-        Args:
+        Parameters:
             commands (``str`` | ``list``):
                 The command or list of commands as string the filter should look for.
                 Examples: "start", ["start", "help", "settings"]. When a message text containing
                 a command arrives, the command itself and its arguments will be stored in the *command*
-                field of the :class:`Message <pyrogram.Message>`.
+                field of the :class:`Message`.
 
             prefix (``str`` | ``list``, *optional*):
                 A prefix or a list of prefixes as string the filter should look for.
@@ -275,11 +275,11 @@ class Filters:
     def regex(pattern, flags: int = 0):
         """Filter messages that match a given RegEx pattern.
 
-        Args:
+        Parameters:
             pattern (``str``):
                 The RegEx pattern as string, it will be applied to the text of a message. When a pattern matches,
                 all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_
-                are stored in the *matches* field of the :class:`Message <pyrogram.Message>` itself.
+                are stored in the *matches* field of the :class:`Message` itself.
 
             flags (``int``, *optional*):
                 RegEx flags.
@@ -298,7 +298,7 @@ class Filters:
         You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
         users container.
 
-        Args:
+        Parameters:
             users (``int`` | ``str`` | ``list``):
                 Pass one or more user ids/usernames to filter users.
                 For you yourself, "me" or "self" can be used as well. 
@@ -329,7 +329,7 @@ class Filters:
         You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the
         chats container.
 
-        Args:
+        Parameters:
             chats (``int`` | ``str`` | ``list``):
                 Pass one or more chat ids/usernames to filter chats.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".

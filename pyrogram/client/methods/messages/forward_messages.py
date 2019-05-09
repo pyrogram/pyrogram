@@ -35,7 +35,7 @@ class ForwardMessages(BaseClient):
     ) -> "pyrogram.Messages":
         """Use this method to forward messages of any kind.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -64,13 +64,14 @@ class ForwardMessages(BaseClient):
                 Defaults to False.
 
         Returns:
-            On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
-            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
-            is returned.
+            :obj:`Message`: In case *message_ids* was an integer, the single forwarded message is
+            returned.
+
+            :obj:`Messages` -- In case *message_ids* was an iterable, the returned value will be an
+            object containing a list of messages, even if such iterable contained just a single element.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         is_iterable = not isinstance(message_ids, int)

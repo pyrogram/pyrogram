@@ -30,7 +30,7 @@ from ...ext.utils import encode
 class Sticker(PyrogramType):
     """This object represents a sticker.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -40,7 +40,7 @@ class Sticker(PyrogramType):
         height (``int``):
             Sticker height.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Sticker thumbnail in the .webp or .jpg format.
 
         file_name (``str``, *optional*):

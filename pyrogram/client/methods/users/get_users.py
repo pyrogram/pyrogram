@@ -31,19 +31,19 @@ class GetUsers(BaseClient):
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.
 
-        Args:
+        Parameters:
             user_ids (``iterable``):
                 A list of User identifiers (id or username) or a single user id/username.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
                 Iterators and Generators are also accepted.
 
         Returns:
-            On success and in case *user_ids* was an iterable, the returned value will be a list of the requested
-            :obj:`Users <User>` even if a list contains just one element, otherwise if
-            *user_ids* was an integer or string, the single requested :obj:`User` is returned.
+            :obj:`User`: In case *user_ids* was an integer or string.
+
+            List of :obj:`User` -- In case *user_ids* was an iterable, even if the iterable contained one item only.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]

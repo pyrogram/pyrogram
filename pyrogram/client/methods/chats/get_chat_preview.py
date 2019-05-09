@@ -30,16 +30,18 @@ class GetChatPreview(BaseClient):
 
         This method only returns a chat preview, if you want to join a chat use :meth:`join_chat`
 
-        Args:
+        Parameters:
             invite_link (``str``):
                 Unique identifier for the target chat in form of *t.me/joinchat/* links.
 
         Returns:
-            Either :obj:`Chat` or :obj:`ChatPreview`, depending on whether you already joined the chat or not.
+            :obj:`Chat`: In case you already joined the chat.
+
+            :obj:`ChatPreview` -- In case you haven't joined the chat yet.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` in case of an invalid invite_link.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case of an invalid invite link.
         """
         match = self.INVITE_LINK_RE.match(invite_link)
 

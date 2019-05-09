@@ -32,7 +32,7 @@ class EditMessageReplyMarkup(BaseClient):
     ) -> "pyrogram.Message":
         """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -45,11 +45,12 @@ class EditMessageReplyMarkup(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, if edited message is sent by the bot, the edited
-            :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
+            :obj:`Message`: In case the edited message is sent by the bot.
+
+            ``bool`` -- True, in case the edited message is sent by the user.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         r = self.send(

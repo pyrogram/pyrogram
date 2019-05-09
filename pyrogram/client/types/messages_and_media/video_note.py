@@ -28,7 +28,7 @@ from ...ext.utils import encode
 class VideoNote(PyrogramType):
     """This object represents a video note.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -38,7 +38,7 @@ class VideoNote(PyrogramType):
         duration (``int``):
             Duration of the video in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Video thumbnail.
 
         mime_type (``str``, *optional*):

@@ -39,7 +39,7 @@ class GetMessages(BaseClient):
         """Use this method to get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -60,12 +60,14 @@ class GetMessages(BaseClient):
                 Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* or *reply_to_message_ids* was an iterable, the returned value will be a
-            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element. Otherwise, if *message_ids* or
-            *reply_to_message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: In case *message_ids* was an integer, the single forwarded message is
+            returned.
+
+            :obj:`Messages` -- In case *message_ids* was an iterable, the returned value will be an
+            object containing a list of messages, even if such iterable contained just a single element.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids

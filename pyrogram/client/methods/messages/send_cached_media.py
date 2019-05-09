@@ -48,7 +48,7 @@ class SendCachedMedia(BaseClient):
         It does the same as calling the relevant method for sending media using a file_id, thus saving you from the
         hassle of using the correct method for the media the file_id is pointing to.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -62,9 +62,8 @@ class SendCachedMedia(BaseClient):
                 Media caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -78,10 +77,10 @@ class SendCachedMedia(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: On success, the sent media message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 

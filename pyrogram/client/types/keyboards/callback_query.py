@@ -32,18 +32,18 @@ class CallbackQuery(PyrogramType, Update):
     will be present. If the button was attached to a message sent via the bot (in inline mode),
     the field inline_message_id will be present. Exactly one of the fields data or game_short_name will be present.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this query.
 
-        from_user (:obj:`User <pyrogram.User>`):
+        from_user (:obj:`User`):
             Sender.
 
         chat_instance (``str``, *optional*):
             Global identifier, uniquely corresponding to the chat to which the message with the callback button was
             sent. Useful for high scores in games.
 
-        message (:obj:`Message <pyrogram.Message>`, *optional*):
+        message (:obj:`Message`, *optional*):
             Message with the callback button that originated the query. Note that message content and message date will
             not be available if the message is too old.
 
@@ -121,7 +121,7 @@ class CallbackQuery(PyrogramType, Update):
         )
 
     def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
-        """Bound method *answer* of :obj:`CallbackQuery <pyrogram.CallbackQuery>`.
+        """Bound method *answer* of :obj:`CallbackQuery`.
 
         Use this method as a shortcut for:
 
@@ -138,7 +138,7 @@ class CallbackQuery(PyrogramType, Update):
 
                 callback_query.answer("Hello", show_alert=True)
 
-        Args:
+        Parameters:
             text (``str``):
                 Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters.
 

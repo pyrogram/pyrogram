@@ -35,7 +35,7 @@ class SendInlineBotResult(BaseClient):
         """Use this method to send an inline bot result.
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -61,7 +61,7 @@ class SendInlineBotResult(BaseClient):
             On success, the sent Message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return self.send(
             functions.messages.SendInlineBotResult(

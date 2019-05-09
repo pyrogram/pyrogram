@@ -39,7 +39,7 @@ class GetDialogs(BaseClient):
         You can get up to 100 dialogs at once.
         For a more convenient way of getting a user's dialogs see :meth:`iter_dialogs`.
 
-        Args:
+        Parameters:
             offset_date (``int``):
                 The offset date in Unix time taken from the top message of a :obj:`Dialog`.
                 Defaults to 0. Valid for non-pinned dialogs only.
@@ -53,10 +53,10 @@ class GetDialogs(BaseClient):
                 Defaults to False.
 
         Returns:
-            On success, a :obj:`Dialogs` object is returned.
+            :obj:`Dialogs`: On success, an object containing a list of dialogs is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         while True:

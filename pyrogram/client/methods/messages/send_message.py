@@ -41,7 +41,7 @@ class SendMessage(BaseClient):
     ) -> "pyrogram.Message":
         """Use this method to send text messages.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -51,9 +51,8 @@ class SendMessage(BaseClient):
                 Text of the message to be sent.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -70,10 +69,10 @@ class SendMessage(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message` is returned.
+            :obj:`Message`: On success, the sent text message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
         message, entities = style.parse(text).values()

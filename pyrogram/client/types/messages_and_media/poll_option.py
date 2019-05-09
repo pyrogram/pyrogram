@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 class PollOption(PyrogramType):
     """This object contains information about one answer option in a poll.
 
-    Args:
+    Parameters:
         text (``str``):
             Option text, 1-100 characters.
 

@@ -27,11 +27,11 @@ from .game_high_score import GameHighScore
 class GameHighScores(PyrogramType):
     """This object represents the high scores table for a game.
 
-    Args:
+    Parameters:
         total_count (``int``):
             Total number of scores the target game has.
 
-        game_high_scores (List of :obj:`GameHighScore <pyrogram.GameHighScore>`):
+        game_high_scores (List of :obj:`GameHighScore`):
             Game scores.
     """
 

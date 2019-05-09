@@ -30,16 +30,16 @@ class DeleteContacts(BaseClient):
     ):
         """Use this method to delete contacts from your Telegram address book.
 
-        Args:
+        Parameters:
             ids (List of ``int``):
                 A list of unique identifiers for the target users.
                 Can be an ID (int), a username (string) or phone number (string).
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         contacts = []
 

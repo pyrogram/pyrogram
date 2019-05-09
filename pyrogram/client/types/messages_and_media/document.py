@@ -28,11 +28,11 @@ from ...ext.utils import encode
 class Document(PyrogramType):
     """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique file identifier.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Document thumbnail as defined by sender.
 
         file_name (``str``, *optional*):

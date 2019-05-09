@@ -39,7 +39,7 @@ class SetChatPhoto(BaseClient):
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
             setting is off.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -47,10 +47,10 @@ class SetChatPhoto(BaseClient):
                 New chat photo. You can pass a :class:`Photo` id or a file path to upload a new photo.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
             ``ValueError`` if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)

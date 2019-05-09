@@ -30,16 +30,16 @@ class SetUserProfilePhoto(BaseClient):
         This method only works for Users.
         Bots profile photos must be set using BotFather.
 
-        Args:
+        Parameters:
             photo (``str``):
                 Profile photo to set.
                 Pass a file path as string to upload a new photo that exists on your local machine.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         return bool(

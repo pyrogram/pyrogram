@@ -28,7 +28,7 @@ from ..pyrogram_type import PyrogramType
 class PhotoSize(PyrogramType):
     """This object represents one size of a photo or a file/sticker thumbnail.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 

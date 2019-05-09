@@ -28,7 +28,7 @@ class ChatPermissions(PyrogramType):
     Some permissions make sense depending on the context: default chat permissions, restricted/kicked member or
     administrators in groups or channels.
 
-    Args:
+    Parameters:
         until_date (``int``, *optional*):
             Applicable to restricted and kicked members only.
             Date when user restrictions will be lifted, unix time.

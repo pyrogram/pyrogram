@@ -30,15 +30,12 @@ class AddContacts(BaseClient):
     ):
         """Use this method to add contacts to your Telegram address book.
 
-        Args:
-            contacts (List of :obj:`InputPhoneContact <pyrogram.InputPhoneContact>`):
+        Parameters:
+            contacts (List of :obj:`InputPhoneContact`):
                 The contact list to be added
 
-        Returns:
-            On success, the added contacts are returned.
-
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         imported_contacts = self.send(
             functions.contacts.ImportContacts(

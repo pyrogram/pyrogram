@@ -26,8 +26,8 @@ from ..pyrogram_type import PyrogramType
 class InlineKeyboardMarkup(PyrogramType):
     """This object represents an inline keyboard that appears right next to the message it belongs to.
 
-    Args:
-        inline_keyboard (List of List of :obj:`InlineKeyboardButton <pyrogram.InlineKeyboardButton>`):
+    Parameters:
+        inline_keyboard (List of List of :obj:`InlineKeyboardButton`):
             List of button rows, each represented by a List of InlineKeyboardButton objects.
     """
 

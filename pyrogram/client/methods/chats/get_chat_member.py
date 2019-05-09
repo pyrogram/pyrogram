@@ -32,7 +32,7 @@ class GetChatMember(BaseClient):
     ) -> "pyrogram.ChatMember":
         """Use this method to get information about one member of a chat.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -42,10 +42,10 @@ class GetChatMember(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            On success, a :obj:`ChatMember <pyrogram.ChatMember>` object is returned.
+            :obj:`ChatMember`: On success, a chat member is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         chat_id = self.resolve_peer(chat_id)
         user_id = self.resolve_peer(user_id)

@@ -28,7 +28,7 @@ from ...ext.utils import encode
 class Animation(PyrogramType):
     """This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 

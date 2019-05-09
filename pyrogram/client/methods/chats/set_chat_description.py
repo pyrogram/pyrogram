@@ -31,7 +31,7 @@ class SetChatDescription(BaseClient):
         """Use this method to change the description of a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -39,10 +39,10 @@ class SetChatDescription(BaseClient):
                 New chat description, 0-255 characters.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
             ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
         """
         peer = self.resolve_peer(chat_id)

@@ -25,7 +25,7 @@ class InlineQueryResultCachedMpeg4Gif(PyrogramType):
     Attributes:
         ID: ``0xb0700013``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be mpeg4_gif.
 
@@ -47,7 +47,7 @@ class InlineQueryResultCachedMpeg4Gif(PyrogramType):
         reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the video animation.
 
     """

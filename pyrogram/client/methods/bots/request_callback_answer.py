@@ -32,7 +32,7 @@ class RequestCallbackAnswer(BaseClient):
         """Use this method to request a callback answer from bots.
         This is the equivalent of clicking an inline button containing callback data.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -49,8 +49,8 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``TimeoutError`` if the bot fails to answer within 10 seconds.
+            RPCError: In case of a Telegram RPC error.
+            TimeoutError: In case the bot fails to answer within 10 seconds.
         """
         return self.send(
             functions.messages.GetBotCallbackAnswer(

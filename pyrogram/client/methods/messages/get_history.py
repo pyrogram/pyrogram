@@ -43,7 +43,7 @@ class GetHistory(BaseClient):
         You can get up to 100 messages at once.
         For a more convenient way of getting a chat history see :meth:`iter_history`.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -67,10 +67,10 @@ class GetHistory(BaseClient):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
-            On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
+            :obj:`Messages` - On success, an object containing a list of the retrieved messages.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         while True:

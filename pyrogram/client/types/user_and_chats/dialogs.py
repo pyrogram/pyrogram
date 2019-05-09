@@ -28,11 +28,11 @@ from ..pyrogram_type import PyrogramType
 class Dialogs(PyrogramType):
     """This object represents a user's dialogs chunk.
 
-    Args:
+    Parameters:
         total_count (``int``):
             Total number of dialogs the user has.
 
-        dialogs (List of :obj:`Dialog <pyrogram.Dialog>`):
+        dialogs (List of :obj:`Dialog`):
             Requested dialogs.
     """
 

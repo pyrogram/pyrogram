@@ -33,8 +33,8 @@ class OnCallbackQuery(BaseClient):
         """Use this decorator to automatically register a function for handling callback queries.
         This does the same thing as :meth:`add_handler` using the :class:`CallbackQueryHandler`.
 
-        Args:
-            filters (:obj:`Filters <pyrogram.Filters>`):
+        Parameters:
+            filters (:obj:`Filters`):
                 Pass one or more filters to allow only a subset of callback queries to be passed
                 in your function.
 

@@ -48,7 +48,7 @@ class SendDocument(BaseClient):
     ) -> Union["pyrogram.Message", None]:
         """Use this method to send general files.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -70,9 +70,8 @@ class SendDocument(BaseClient):
                 Document caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -95,7 +94,7 @@ class SendDocument(BaseClient):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -109,11 +108,12 @@ class SendDocument(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            :obj:`Message`: On success, the sent document message is returned.
+
+            ``None`` -- In case the upload is deliberately stopped with :meth:`stop_transmission`.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown

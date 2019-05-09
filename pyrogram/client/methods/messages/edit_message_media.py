@@ -47,7 +47,7 @@ class EditMessageMedia(BaseClient):
         Use previously uploaded file via its file_id or specify a URL. On success, if the edited message was sent
         by the bot, the edited Message is returned, otherwise True is returned.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -63,10 +63,10 @@ class EditMessageMedia(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: On success, the edited message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption

@@ -44,6 +44,8 @@ extensions = [
     'sphinx.ext.autosummary'
 ]
 
+napoleon_use_rtype = False
+
 # Don't show source files on docs
 html_show_sourcelink = True
 
@@ -112,7 +114,7 @@ html_theme = 'sphinx_rtd_theme'
 #
 html_theme_options = {
     'canonical_url': "https://docs.pyrogram.ml/",
-    'collapse_navigation': False,
+    'collapse_navigation': True,
     'sticky_navigation': False,
     'logo_only': True,
     'display_version': True

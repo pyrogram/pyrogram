@@ -26,7 +26,7 @@ class KeyboardButton(PyrogramType):
     For simple text buttons String can be used instead of this object to specify text of the button.
     Optional fields are mutually exclusive.
 
-    Args:
+    Parameters:
         text (``str``):
             Text of the button. If none of the optional fields are used, it will be sent as a message when
             the button is pressed.

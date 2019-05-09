@@ -28,7 +28,7 @@ from ..update import Update
 class Poll(PyrogramType, Update):
     """This object represents a Poll.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique poll identifier.
 

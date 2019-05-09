@@ -30,14 +30,14 @@ from ...ext.utils import encode
 class Photo(PyrogramType):
     """This object represents a Photo.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this photo.
 
         date (``int``):
             Date the photo was sent in Unix time.
 
-        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
+        sizes (List of :obj:`PhotoSize`):
             Available sizes of this photo.
     """
 

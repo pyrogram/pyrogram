@@ -40,7 +40,7 @@ class KickChatMember(BaseClient):
             off in the target group. Otherwise members may only be removed by the group's creator or by the member
             that added them.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -54,10 +54,12 @@ class KickChatMember(BaseClient):
                 considered to be banned forever. Defaults to 0 (ban forever).
 
         Returns:
-            On success, either True or a service :obj:`Message <pyrogram.Message>` will be returned (when applicable).
+            :obj:`Message`: On success, a service message will be returned (when applicable).
+
+            ``bool`` -- True, in case a message object couldn't be returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         chat_peer = self.resolve_peer(chat_id)
         user_peer = self.resolve_peer(user_id)

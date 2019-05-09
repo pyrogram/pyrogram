@@ -25,8 +25,8 @@ from ..pyrogram_type import PyrogramType
 class ChatMember(PyrogramType):
     """This object contains information about one member of a chat.
 
-    Args:
-        user (:obj:`User <pyrogram.User>`):
+    Parameters:
+        user (:obj:`User`):
             Information about the user.
 
         status (``str``):
@@ -39,17 +39,17 @@ class ChatMember(PyrogramType):
         is_member (``bool``, *optional*):
             Restricted only. True, if the user is a member of the chat at the moment of the request.
 
-        invited_by (:obj:`User <pyrogram.User>`, *optional*):
+        invited_by (:obj:`User`, *optional*):
             Administrators and self member only. Information about the user who invited this member.
             In case the user joined by himself this will be the same as "user".
 
-        promoted_by (:obj:`User <pyrogram.User>`, *optional*):
+        promoted_by (:obj:`User`, *optional*):
             Administrators only. Information about the user who promoted this member as administrator.
 
-        restricted_by (:obj:`User <pyrogram.User>`, *optional*):
+        restricted_by (:obj:`User`, *optional*):
             Restricted and kicked only. Information about the user who restricted or kicked this member.
 
-        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+        permissions (:obj:`ChatPermissions` *optional*):
             Administrators, restricted and kicked members only.
             Information about the member permissions.
     """

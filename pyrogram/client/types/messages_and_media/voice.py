@@ -27,7 +27,7 @@ from ...ext.utils import encode
 class Voice(PyrogramType):
     """This object represents a voice note.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 

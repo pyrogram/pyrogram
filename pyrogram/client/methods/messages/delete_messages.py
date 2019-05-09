@@ -31,7 +31,7 @@ class DeleteMessages(BaseClient):
     ) -> bool:
         """Use this method to delete messages, including service messages.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -48,10 +48,10 @@ class DeleteMessages(BaseClient):
                 Defaults to True.
 
         Returns:
-            True on success, False otherwise.
+            ``bool``: True on success, False otherwise.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]

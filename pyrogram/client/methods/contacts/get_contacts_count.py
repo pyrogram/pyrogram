@@ -25,10 +25,10 @@ class GetContactsCount(BaseClient):
         """Use this method to get the total count of contacts from your Telegram address book.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, an integer is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         return len(self.send(functions.contacts.GetContacts(hash=0)).contacts)

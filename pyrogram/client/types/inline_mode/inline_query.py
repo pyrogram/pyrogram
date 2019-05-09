@@ -31,11 +31,11 @@ class InlineQuery(PyrogramType, Update):
     """This object represents an incoming inline query.
     When the user sends an empty query, your bot could return some default or trending results.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this query.
 
-        from_user (:obj:`User <pyrogram.User>`):
+        from_user (:obj:`User`):
             Sender.
 
         query (``str``):
@@ -44,7 +44,7 @@ class InlineQuery(PyrogramType, Update):
         offset (``str``):
             Offset of the results to be returned, can be controlled by the bot.
 
-        location (:obj:`Location <pyrogram.Location>`. *optional*):
+        location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
     """
     __slots__ = ["id", "from_user", "query", "offset", "location"]
@@ -108,7 +108,7 @@ class InlineQuery(PyrogramType, Update):
 
                 inline_query.answer([...])
 
-        Args:
+        Parameters:
             results (List of :obj:`InlineQueryResult <pyrogram.InlineQueryResult>`):
                 A list of results for the inline query.
 

@@ -40,15 +40,15 @@ class GetHistoryCount(BaseClient):
             a **private** or a **basic group** chat has with a single method call. To overcome this limitation, Pyrogram
             has to iterate over all the messages. Channels and supergroups are not affected by this limitation.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, an integer is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         peer = self.resolve_peer(chat_id)

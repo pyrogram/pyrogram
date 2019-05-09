@@ -29,10 +29,10 @@ class GetDialogsCount(BaseClient):
             Defaults to False.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, an integer is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         if pinned_only:

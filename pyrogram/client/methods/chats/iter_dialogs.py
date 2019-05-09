@@ -33,7 +33,7 @@ class IterDialogs(BaseClient):
         This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from
         the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a single call.
 
-        Args:
+        Parameters:
             offset_date (``int``):
                 The offset date in Unix time taken from the top message of a :obj:`Dialog`.
                 Defaults to 0 (most recent dialog).
@@ -43,10 +43,10 @@ class IterDialogs(BaseClient):
                 By default, no limit is applied and all dialogs are returned.
 
         Returns:
-            A generator yielding :obj:`Dialog <pyrogram.Dialog>` objects.
+            ``Generator``: A generator yielding :obj:`Dialog` objects.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         current = 0
         total = limit or (1 << 31) - 1

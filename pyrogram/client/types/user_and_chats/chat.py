@@ -28,7 +28,7 @@ from ..pyrogram_type import PyrogramType
 class Chat(PyrogramType):
     """This object represents a chat.
 
-    Args:
+    Parameters:
         id (``int``):
             Unique identifier for this chat.
 
@@ -58,7 +58,7 @@ class Chat(PyrogramType):
             Chat invite link, for supergroups and channel chats.
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
-        pinned_message (:obj:`Message <pyrogram.Message>`, *optional*):
+        pinned_message (:obj:`Message`, *optional*):
             Pinned message, for supergroups and channel chats.
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 

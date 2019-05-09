@@ -26,17 +26,17 @@ class CallbackQueryHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_callback_query() <pyrogram.Client.on_callback_query>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a new CallbackQuery arrives. It takes *(client, callback_query)*
             as positional arguments (look at the section below for a detailed description).
 
-        filters (:obj:`Filters <pyrogram.Filters>`):
+        filters (:obj:`Filters`):
             Pass one or more filters to allow only a subset of callback queries to be passed
             in your callback function.
 
     Other parameters:
-        client (:obj:`Client <pyrogram.Client>`):
+        client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
         callback_query (:obj:`CallbackQuery <pyrogram.CallbackQuery>`):

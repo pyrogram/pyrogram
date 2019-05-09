@@ -25,7 +25,7 @@ class InlineQueryResultAudio(PyrogramType):
     Attributes:
         ID: ``0xb0700004``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be audio.
 

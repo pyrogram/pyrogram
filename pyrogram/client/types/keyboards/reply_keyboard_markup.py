@@ -27,8 +27,8 @@ from ..pyrogram_type import PyrogramType
 class ReplyKeyboardMarkup(PyrogramType):
     """This object represents a custom keyboard with reply options.
 
-    Args:
-        keyboard (List of List of :obj:`KeyboardButton <pyrogram.KeyboardButton>`):
+    Parameters:
+        keyboard (List of List of :obj:`KeyboardButton`):
             List of button rows, each represented by a List of KeyboardButton objects.
 
         resize_keyboard (``bool``, *optional*):

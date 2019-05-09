@@ -29,11 +29,11 @@ from ..user_and_chats import Chat
 class Messages(PyrogramType, Update):
     """This object represents a chat's messages.
 
-    Args:
+    Parameters:
         total_count (``int``):
             Total number of messages the target chat has.
 
-        messages (List of :obj:`Message <pyrogram.Message>`):
+        messages (List of :obj:`Message`):
             Requested messages.
     """
 
@@ -124,9 +124,9 @@ class Messages(PyrogramType, Update):
         as_copy: bool = False,
         remove_caption: bool = False
     ):
-        """Bound method *forward* of :obj:`Message <pyrogram.Messages>`.
+        """Bound method *forward* of :obj:`Message`.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -146,10 +146,10 @@ class Messages(PyrogramType, Update):
                 Defaults to False.
 
         Returns:
-            On success, a :class:`Messages <pyrogram.Messages>` containing forwarded messages is returned.
+            On success, a :class:`Messages` containing forwarded messages is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         forwarded_messages = []
 

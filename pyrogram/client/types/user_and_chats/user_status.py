@@ -31,7 +31,7 @@ class UserStatus(PyrogramType, Update):
         You won't see exact last seen timestamps for people with whom you don't share your own. Instead, you get
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
-    Args:
+    Parameters:
         user_id (``int``):
             User's id.
 

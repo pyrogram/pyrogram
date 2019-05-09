@@ -31,15 +31,15 @@ class SendChatAction(BaseClient):
     ):
         """Use this method when you need to tell the other party that something is happening on your side.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
+            action (:obj:`ChatAction` | ``str``):
                 Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
+                Choose one from the :class:`ChatAction` enumeration,
                 depending on what the user is about to receive.
                 You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
 
@@ -48,11 +48,11 @@ class SendChatAction(BaseClient):
                 Currently useless because official clients don't seem to be handling this.
 
         Returns:
-            On success, True is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if the provided string is not a valid ChatAction.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case the provided string is not a valid ChatAction.
         """
 
         # Resolve Enum type

@@ -30,7 +30,7 @@ class LeaveChat(BaseClient):
     ):
         """Use this method to leave a group chat or channel.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
@@ -39,7 +39,7 @@ class LeaveChat(BaseClient):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         peer = self.resolve_peer(chat_id)
 

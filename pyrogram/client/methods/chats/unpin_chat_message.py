@@ -31,15 +31,15 @@ class UnpinChatMessage(BaseClient):
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
         right in the supergroup or "can_edit_messages" admin right in the channel.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         self.send(
             functions.messages.UpdatePinnedMessage(

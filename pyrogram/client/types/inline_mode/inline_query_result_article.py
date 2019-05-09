@@ -27,7 +27,7 @@ class InlineQueryResultArticle(InlineQueryResult):
 
     TODO: Hide url?
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 

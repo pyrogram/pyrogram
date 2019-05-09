@@ -27,20 +27,20 @@ class MessageHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_message() <pyrogram.Client.on_message>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a new Message arrives. It takes *(client, message)*
             as positional arguments (look at the section below for a detailed description).
 
-        filters (:obj:`Filters <pyrogram.Filters>`):
+        filters (:obj:`Filters`):
             Pass one or more filters to allow only a subset of messages to be passed
             in your callback function.
 
     Other parameters:
-        client (:obj:`Client <pyrogram.Client>`):
+        client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        message (:obj:`Message <pyrogram.Message>`):
+        message (:obj:`Message`):
             The received message.
     """
 

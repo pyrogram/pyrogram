@@ -1,6 +1,19 @@
 Types
 =====
 
+All Pyrogram types listed here are accessible through the main package directly.
+
+**Example:**
+
+.. code-block:: python
+
+    from pyrogram import User, Message, ...
+
+.. note::
+
+    **Optional** fields may not exist when irrelevant -- i.e.: they will contain the value of ``None`` and aren't shown
+    when, for example, using ``print()``.
+
 .. currentmodule:: pyrogram
 
 Users & Chats
@@ -42,11 +55,12 @@ Messages & Media
     Location
     Venue
     Sticker
+    Game
     Poll
     PollOption
 
-Bots
-----
+Keyboards
+---------
 
 .. autosummary::
     :nosignatures:
@@ -58,7 +72,8 @@ Bots
     InlineKeyboardButton
     ForceReply
     CallbackQuery
-    Game
+    GameHighScore
+    CallbackGame
 
 Input Media
 -----------
@@ -96,168 +111,168 @@ InputMessageContent
 ..  User & Chats
     ------------
 
-.. autoclass:: User
+.. autoclass:: User()
     :members:
 
-.. autoclass:: UserStatus
+.. autoclass:: UserStatus()
     :members:
 
-.. autoclass:: Chat
+.. autoclass:: Chat()
     :members:
 
-.. autoclass:: ChatPreview
+.. autoclass:: ChatPreview()
     :members:
 
-.. autoclass:: ChatPhoto
+.. autoclass:: ChatPhoto()
     :members:
 
-.. autoclass:: ChatMember
+.. autoclass:: ChatMember()
     :members:
 
-.. autoclass:: ChatMembers
+.. autoclass:: ChatMembers()
     :members:
 
-.. autoclass:: ChatPermissions
+.. autoclass:: ChatPermissions()
     :members:
 
-.. autoclass:: Dialog
+.. autoclass:: Dialog()
     :members:
 
-.. autoclass:: Dialogs
+.. autoclass:: Dialogs()
     :members:
 
 ..  Messages & Media
     ----------------
 
-.. autoclass:: Message
+.. autoclass:: Message()
     :members:
 
-.. autoclass:: Messages
+.. autoclass:: Messages()
     :members:
 
-.. autoclass:: MessageEntity
+.. autoclass:: MessageEntity()
     :members:
 
-.. autoclass:: Photo
+.. autoclass:: Photo()
     :members:
 
-.. autoclass:: PhotoSize
+.. autoclass:: PhotoSize()
     :members:
 
-.. autoclass:: UserProfilePhotos
+.. autoclass:: UserProfilePhotos()
     :members:
 
-.. autoclass:: Audio
+.. autoclass:: Audio()
     :members:
 
-.. autoclass:: Document
+.. autoclass:: Document()
     :members:
 
-.. autoclass:: Animation
+.. autoclass:: Animation()
     :members:
 
-.. autoclass:: Video
+.. autoclass:: Video()
     :members:
 
-.. autoclass:: Voice
+.. autoclass:: Voice()
     :members:
 
-.. autoclass:: VideoNote
+.. autoclass:: VideoNote()
     :members:
 
-.. autoclass:: Contact
+.. autoclass:: Contact()
     :members:
 
-.. autoclass:: Location
+.. autoclass:: Location()
     :members:
 
-.. autoclass:: Venue
+.. autoclass:: Venue()
     :members:
 
-.. autoclass:: Sticker
+.. autoclass:: Sticker()
     :members:
 
-.. autoclass:: Poll
+.. autoclass:: Game()
     :members:
 
-.. autoclass:: PollOption
+.. autoclass:: Poll()
     :members:
 
-..  Bots
-    ----
-
-.. autoclass:: ReplyKeyboardMarkup
+.. autoclass:: PollOption()
     :members:
 
-.. autoclass:: KeyboardButton
+..  Keyboards
+    ---------
+
+.. autoclass:: ReplyKeyboardMarkup()
     :members:
 
-.. autoclass:: ReplyKeyboardRemove
+.. autoclass:: KeyboardButton()
     :members:
 
-.. autoclass:: InlineKeyboardMarkup
+.. autoclass:: ReplyKeyboardRemove()
     :members:
 
-.. autoclass:: InlineKeyboardButton
+.. autoclass:: InlineKeyboardMarkup()
     :members:
 
-.. autoclass:: ForceReply
+.. autoclass:: InlineKeyboardButton()
     :members:
 
-.. autoclass:: CallbackQuery
+.. autoclass:: ForceReply()
     :members:
 
-.. autoclass:: Game
+.. autoclass:: CallbackQuery()
     :members:
 
-.. autoclass:: GameHighScore
+.. autoclass:: GameHighScore()
     :members:
 
-.. autoclass:: GameHighScores
+.. autoclass:: CallbackGame()
     :members:
 
 ..  Input Media
     -----------
 
-.. autoclass:: InputMedia
+.. autoclass:: InputMedia()
     :members:
 
-.. autoclass:: InputMediaPhoto
+.. autoclass:: InputMediaPhoto()
     :members:
 
-.. autoclass:: InputMediaVideo
+.. autoclass:: InputMediaVideo()
     :members:
 
-.. autoclass:: InputMediaAudio
+.. autoclass:: InputMediaAudio()
     :members:
 
-.. autoclass:: InputMediaAnimation
+.. autoclass:: InputMediaAnimation()
     :members:
 
-.. autoclass:: InputMediaDocument
+.. autoclass:: InputMediaDocument()
     :members:
 
-.. autoclass:: InputPhoneContact
+.. autoclass:: InputPhoneContact()
     :members:
 
 
 ..  Inline Mode
     -----------
 
-.. autoclass:: InlineQuery
+.. autoclass:: InlineQuery()
     :members:
 
-.. autoclass:: InlineQueryResult
+.. autoclass:: InlineQueryResult()
     :members:
 
-.. autoclass:: InlineQueryResultArticle
+.. autoclass:: InlineQueryResultArticle()
     :members:
 
 ..  InputMessageContent
     -------------------
 
-.. autoclass:: InputMessageContent
+.. autoclass:: InputMessageContent()
     :members:
 
-.. autoclass:: InputTextMessageContent
+.. autoclass:: InputTextMessageContent()
     :members:

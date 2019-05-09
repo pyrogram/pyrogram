@@ -27,7 +27,7 @@ from ..pyrogram_type import PyrogramType
 class ChatMembers(PyrogramType):
     """This object contains information about the members list of a chat.
 
-    Args:
+    Parameters:
         total_count (``int``):
             Total number of members the chat has.
 

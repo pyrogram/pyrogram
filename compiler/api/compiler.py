@@ -328,15 +328,16 @@ def start():
                 )
 
         if docstring_args:
-            docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
+            docstring_args = "Parameters:\n        " + "\n        ".join(docstring_args)
         else:
             docstring_args = "No parameters required."
 
         docstring_args = "Attributes:\n        ID: ``{}``\n\n    ".format(c.id) + docstring_args
 
         if c.section == "functions":
-            docstring_args += "\n\n    Raises:\n        :obj:`RPCError <pyrogram.RPCError>`"
             docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
+            docstring_args += "\n\n    Raises:\n        RPCError: In case of a Telegram RPC error."
+
         else:
             references = get_references(".".join(filter(None, [c.namespace, c.name])))
 

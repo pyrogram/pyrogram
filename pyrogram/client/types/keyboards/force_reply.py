@@ -27,7 +27,7 @@ class ForceReply(PyrogramType):
     This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to
     sacrifice privacy mode.
 
-    Args:
+    Parameters:
         selective (``bool``, *optional*):
             Use this parameter if you want to force reply from specific users only. Targets:
             1) users that are @mentioned in the text of the Message object;

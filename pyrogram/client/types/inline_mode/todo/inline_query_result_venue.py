@@ -25,7 +25,7 @@ class InlineQueryResultVenue(PyrogramType):
     Attributes:
         ID: ``0xb0700008``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be venue.
 

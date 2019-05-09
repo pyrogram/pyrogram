@@ -28,14 +28,14 @@ from ...ext.utils import encode
 class Audio(PyrogramType):
     """This object represents an audio file to be treated as music by the Telegram clients.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Thumbnail of the music file album cover.
 
         file_name (``str``, *optional*):

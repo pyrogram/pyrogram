@@ -34,8 +34,8 @@ class DownloadMedia(BaseClient):
     ) -> Union[str, None]:
         """Use this method to download the media from a message.
 
-        Args:
-            message (:obj:`Message <pyrogram.Message>` | ``str``):
+        Parameters:
+            message (:obj:`Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
                 the file id as string.
 
@@ -59,7 +59,7 @@ class DownloadMedia(BaseClient):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -73,11 +73,12 @@ class DownloadMedia(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the absolute path of the downloaded file as string is returned, None otherwise.
-            In case the download is deliberately stopped with :meth:`stop_transmission`, None is returned as well.
+            ``str``: On success, the absolute path of the downloaded file is returned.
+
+            ``None`` --  In case the download is deliberately stopped with :meth:`stop_transmission`.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
             ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"

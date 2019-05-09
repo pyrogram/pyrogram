@@ -25,7 +25,7 @@ class InlineQueryResultCachedPhoto(PyrogramType):
     Attributes:
         ID: ``0xb0700011``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be photo.
 

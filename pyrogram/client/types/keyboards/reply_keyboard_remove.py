@@ -25,7 +25,7 @@ class ReplyKeyboardRemove(PyrogramType):
     By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time
     keyboards that are hidden immediately after the user presses a button (see ReplyKeyboardMarkup).
 
-    Args:
+    Parameters:
         selective (``bool``, *optional*):
             Use this parameter if you want to remove the keyboard for specific users only. Targets:
             1) users that are @mentioned in the text of the Message object;

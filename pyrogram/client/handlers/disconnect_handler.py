@@ -26,13 +26,13 @@ class DisconnectHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_disconnect() <pyrogram.Client.on_disconnect>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a disconnection occurs. It takes *(client)*
             as positional argument (look at the section below for a detailed description).
 
     Other parameters:
-        client (:obj:`Client <pyrogram.Client>`):
+        client (:obj:`Client`):
             The Client itself. Useful, for example, when you want to change the proxy before a new connection
             is established.
     """

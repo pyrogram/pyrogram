@@ -25,7 +25,7 @@ class InlineQueryResultLocation(PyrogramType):
     Attributes:
         ID: ``0xb0700007``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be location.
 

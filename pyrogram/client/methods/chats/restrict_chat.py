@@ -39,7 +39,7 @@ class RestrictChat(BaseClient):
         """Use this method to restrict a chat.
         Pass True for all boolean parameters to lift restrictions from a chat.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -70,10 +70,10 @@ class RestrictChat(BaseClient):
                 Pass True, if the user can pin messages.
 
         Returns:
-            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+            :obj:`Chat`: On success, a chat object is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         send_messages = True
         send_media = True
