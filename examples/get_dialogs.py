@@ -1,4 +1,4 @@
-"""This example shows how to get the full dialogs list of a user."""
+"""This example shows how to get the full dialogs list (as user)."""
 
 from pyrogram import Client
 

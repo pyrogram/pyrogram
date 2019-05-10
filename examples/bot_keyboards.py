@@ -1,4 +1,4 @@
-"""This example will show you how to send normal and inline keyboards.
+"""This example will show you how to send normal and inline keyboards (as bot).
 
 You must log-in as a regular bot in order to send keyboards (use the token from @BotFather).
 Any attempt in sending keyboards with a user account will be simply ignored by the server.
