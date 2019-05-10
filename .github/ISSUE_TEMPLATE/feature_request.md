@@ -1,5 +1,5 @@
 ---
-name: Question
-about: Ask a question
-labels: "question"
+name: Feature request
+about: Suggest a new feature or enhancement
+labels: "enhancement"
 ---
