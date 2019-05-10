@@ -26,7 +26,7 @@ from ...ext import BaseClient
 class GetUsers(BaseClient):
     def get_users(
         self,
-        user_ids: Iterable[Union[int, str]]
+        user_ids: Union[Iterable[Union[int, str]], int, str]
     ) -> Union["pyrogram.User", List["pyrogram.User"]]:
         """Use this method to get information about a user.
         You can retrieve up to 200 users at once.

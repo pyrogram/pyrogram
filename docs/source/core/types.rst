@@ -1,5 +1,5 @@
-Types
-=====
+Available Types
+===============
 
 All Pyrogram types listed here are accessible through the main package directly.
 

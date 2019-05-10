@@ -1,5 +1,5 @@
-Methods
-=======
+Available Methods
+=================
 
 All Pyrogram methods listed here are bound to a :obj:`Client <pyrogram.Client>` instance.
 

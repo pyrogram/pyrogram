@@ -151,9 +151,9 @@ Continue Propagation
 
 As opposed to `stopping the update propagation <#stop-propagation>`_ and also as an alternative to the
 `handler groups <#handler-groups>`_, you can signal the internal dispatcher to continue the update propagation within
-**the same group** regardless of the next handler's filters. This allows you to register multiple handlers with
-overlapping filters in the same group; to let the dispatcher process the next handler you can do *one* of the following
-in each handler you want to grant permission to continue:
+**the same group** despite having conflicting filters in the next registered handler. This allows you to register
+multiple handlers with overlapping filters in the same group; to let the dispatcher process the next handler you can do
+*one* of the following in each handler you want to grant permission to continue:
 
 - Call the update's bound-method ``.continue_propagation()`` (preferred way).
 - Manually ``raise ContinuePropagation`` exception (more suitable for raw updates only).

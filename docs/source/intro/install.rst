@@ -1,8 +1,8 @@
-Installation
-============
+Install Guide
+=============
 
 Being a Python library, **Pyrogram** requires Python to be installed in your system.
-We recommend using the latest version of Python 3 and pip.
+We recommend using the latest versions of both Python 3 and pip.
 
 - Get **Python 3** from https://www.python.org/downloads/ (or with your package manager)
 - Get **pip** by following the instructions at https://pip.pypa.io/en/latest/installing/.
@@ -88,5 +88,5 @@ If no error shows up you are good to go.
     >>> pyrogram.__version__
     '0.12.0'
 
-.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
+.. _TgCrypto: ../resources/tgcrypto.html
 .. _`Github repo`: http://github.com/pyrogram/pyrogram
