@@ -1,5 +1,5 @@
-Handlers
-========
+Update Handlers
+===============
 
 Handlers are used to instruct Pyrogram about which kind of updates you'd like to handle with your callback functions.
 

@@ -1,5 +1,5 @@
-Methods
-=======
+Available Methods
+=================
 
 All Pyrogram methods listed here are bound to a :obj:`Client <pyrogram.Client>` instance.
 
@@ -151,7 +151,6 @@ Bots
     send_game
     set_game_score
     get_game_high_scores
-    answer_inline_query
 
 ..  Utilities
     ---------
@@ -267,4 +266,3 @@ Bots
 .. automethod:: pyrogram.Client.send_game()
 .. automethod:: pyrogram.Client.set_game_score()
 .. automethod:: pyrogram.Client.get_game_high_scores()
-.. automethod:: pyrogram.Client.answer_inline_query()
