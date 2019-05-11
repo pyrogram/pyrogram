@@ -463,7 +463,7 @@ def start():
                             ["{0}={0}".format(i[0]) for i in sorted_args if i != ("flags", "#")]
                         ),
                         slots=", ".join(['"{}"'.format(i[0]) for i in sorted_args if i != ("flags", "#")]),
-                        qualname="{}{}".format("{}.".format(c.namespace) if c.namespace else "", c.name)
+                        qualname="{}.{}{}".format(c.section, "{}.".format(c.namespace) if c.namespace else "", c.name)
                     )
                 )
 
