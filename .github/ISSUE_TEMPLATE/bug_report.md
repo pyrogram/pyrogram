@@ -1,29 +1,21 @@
 ---
-name: Bug report
-about: Create a bug report to help us improve
+name: Bug Report
+about: Create a bug report affecting the library
 labels: "bug"
 ---
 
-## Summary
+<!-- WARNING: Ignoring this template will lead to the issue being closed as incomplete -->
+
+## Checklist
+- [ ] I am sure the error is coming from Pyrogram's code and not elsewhere.
+- [ ] I have searched in the issue tracker for similar bug reports, including closed ones.
+- [ ] I ran `pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip` and reproduced the issue using the latest development version.
+
+## Description
 A clear and concise description of the problem.
 
 ## Steps to Reproduce
-A minimal, complete and verifiable example (https://stackoverflow.com/help/mcve).
+[A minimal, complete and verifiable example](https://stackoverflow.com/help/mcve).
 
-## Expected Results
-A description of what should happen.
-
-## Actual Results
-A description of what actually happened.
-
-## Environment info
-- **OS**: [e.g. Linux/macOS/Windows]
-- **Python version**: [e.g. 3.7.2]
-- **Pyrogram version**: [e.g. 0.12.0/develop]
-
-## Extra details
-Other details about the problem.
-
-<details><summary><b>Logs</b>:</summary>
-Insert logs here (if necessary)
-</details>
+## Traceback
+The full traceback (if applicable).
