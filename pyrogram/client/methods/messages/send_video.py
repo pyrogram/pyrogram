@@ -50,7 +50,7 @@ class SendVideo(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send video files.
+        """Send video files.
 
         Parameters:
             chat_id (``int`` | ``str``):

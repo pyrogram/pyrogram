@@ -29,7 +29,7 @@ class RetractVote(BaseClient):
         chat_id: Union[int, str],
         message_id: int
     ) -> "pyrogram.Poll":
-        """Use this method to retract your vote in a poll.
+        """Retract your vote in a poll.
 
         Parameters:
             chat_id (``int`` | ``str``):

@@ -24,7 +24,7 @@ from pyrogram.client.types.user_and_chats import User
 
 
 class GameHighScore(PyrogramType):
-    """This object represents one row of the high scores table for a game.
+    """One row of the high scores table for a game.
 
     Parameters:
         user (:obj:`User`):

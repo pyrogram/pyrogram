@@ -38,7 +38,7 @@ class SendPoll(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send a new poll.
+        """Send a new poll.
 
         Parameters:
             chat_id (``int`` | ``str``):

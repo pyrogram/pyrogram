@@ -42,7 +42,7 @@ class SendCachedMedia(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send any media stored on the Telegram servers using a file_id.
+        """Send any media stored on the Telegram servers using a file_id.
 
         This convenience method works with any valid file_id only.
         It does the same as calling the relevant method for sending media using a file_id, thus saving you from the

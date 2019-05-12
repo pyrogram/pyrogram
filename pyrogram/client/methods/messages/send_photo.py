@@ -46,7 +46,7 @@ class SendPhoto(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send photos.
+        """Send photos.
 
         Parameters:
             chat_id (``int`` | ``str``):

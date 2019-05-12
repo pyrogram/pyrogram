@@ -41,7 +41,7 @@ class SendMediaGroup(BaseClient):
         disable_notification: bool = None,
         reply_to_message_id: int = None
     ):
-        """Use this method to send a group of photos or videos as an album.
+        """Send a group of photos or videos as an album.
 
         Parameters:
             chat_id (``int`` | ``str``):

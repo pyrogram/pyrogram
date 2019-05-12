@@ -25,7 +25,7 @@ from ...ext.utils import encode
 
 
 class ChatPhoto(PyrogramType):
-    """This object represents a chat photo.
+    """a chat photo.
 
     Parameters:
         small_file_id (``str``):

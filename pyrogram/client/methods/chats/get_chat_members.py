@@ -46,7 +46,7 @@ class GetChatMembers(BaseClient):
         query: str = "",
         filter: str = Filters.ALL
     ) -> "pyrogram.ChatMembers":
-        """Use this method to get a chunk of the members list of a chat.
+        """Get a chunk of the members list of a chat.
 
         You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.

@@ -28,7 +28,7 @@ from ...ext.utils import encode
 
 
 class Sticker(PyrogramType):
-    """This object represents a sticker.
+    """A sticker.
 
     Parameters:
         file_id (``str``):

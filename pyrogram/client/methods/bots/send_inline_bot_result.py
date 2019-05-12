@@ -32,7 +32,7 @@ class SendInlineBotResult(BaseClient):
         reply_to_message_id: int = None,
         hide_via: bool = None
     ):
-        """Use this method to send an inline bot result.
+        """Send an inline bot result.
         Bot results can be retrieved using :obj:`get_inline_bot_results <pyrogram.Client.get_inline_bot_results>`
 
         Parameters:

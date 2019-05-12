@@ -24,7 +24,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class InlineKeyboardMarkup(PyrogramType):
-    """This object represents an inline keyboard that appears right next to the message it belongs to.
+    """An inline keyboard that appears right next to the message it belongs to.
 
     Parameters:
         inline_keyboard (List of List of :obj:`InlineKeyboardButton`):

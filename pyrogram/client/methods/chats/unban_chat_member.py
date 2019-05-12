@@ -28,7 +28,7 @@ class UnbanChatMember(BaseClient):
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> bool:
-        """Use this method to unban a previously kicked user in a supergroup or channel.
+        """Unban a previously kicked user in a supergroup or channel.
         The user will **not** return to the group or channel automatically, but will be able to join via link, etc.
         You must be an administrator for this to work.
 

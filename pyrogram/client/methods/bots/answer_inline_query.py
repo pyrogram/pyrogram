@@ -34,7 +34,7 @@ class AnswerInlineQuery(BaseClient):
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
     ):
-        """Use this method to send answers to an inline query.
+        """Send answers to an inline query.
         No more than 50 results per query are allowed.
 
         Parameters:

@@ -33,7 +33,7 @@ class ForwardMessages(BaseClient):
         as_copy: bool = False,
         remove_caption: bool = False
     ) -> "pyrogram.Messages":
-        """Use this method to forward messages of any kind.
+        """Forward messages of any kind.
 
         Parameters:
             chat_id (``int`` | ``str``):

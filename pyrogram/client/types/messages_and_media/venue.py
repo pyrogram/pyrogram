@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Venue(PyrogramType):
-    """This object represents a venue.
+    """A venue.
 
     Parameters:
         location (:obj:`Location`):

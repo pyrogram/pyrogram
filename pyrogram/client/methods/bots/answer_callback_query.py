@@ -29,7 +29,7 @@ class AnswerCallbackQuery(BaseClient):
         url: str = None,
         cache_time: int = 0
     ):
-        """Use this method to send answers to callback queries sent from inline keyboards.
+        """Send answers to callback queries sent from inline keyboards.
         The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
 
         Parameters:

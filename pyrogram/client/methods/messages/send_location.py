@@ -38,7 +38,7 @@ class SendLocation(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send points on the map.
+        """Send points on the map.
 
         Parameters:
             chat_id (``int`` | ``str``):

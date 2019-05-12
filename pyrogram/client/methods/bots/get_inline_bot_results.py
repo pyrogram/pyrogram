@@ -32,7 +32,7 @@ class GetInlineBotResults(BaseClient):
         latitude: float = None,
         longitude: float = None
     ):
-        """Use this method to get bot results via inline queries.
+        """Get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
         Parameters:

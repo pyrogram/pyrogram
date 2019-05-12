@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 class GetContactsCount(BaseClient):
     def get_contacts_count(self) -> int:
-        """Use this method to get the total count of contacts from your Telegram address book.
+        """Get the total count of contacts from your Telegram address book.
 
         Returns:
             ``int``: On success, an integer is returned.

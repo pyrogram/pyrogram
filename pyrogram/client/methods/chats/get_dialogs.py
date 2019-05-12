@@ -34,7 +34,7 @@ class GetDialogs(BaseClient):
         limit: int = 100,
         pinned_only: bool = False
     ) -> "pyrogram.Dialogs":
-        """Use this method to get a chunk of the user's dialogs.
+        """Get a chunk of the user's dialogs.
 
         You can get up to 100 dialogs at once.
         For a more convenient way of getting a user's dialogs see :meth:`iter_dialogs`.

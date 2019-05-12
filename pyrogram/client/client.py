@@ -261,7 +261,7 @@ class Client(Methods, BaseClient):
         self._proxy.update(value)
 
     def start(self):
-        """Use this method to start the Client.
+        """Start the Client.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -354,7 +354,7 @@ class Client(Methods, BaseClient):
         return self
 
     def stop(self):
-        """Use this method to stop the Client.
+        """Stop the Client.
 
         Raises:
             ConnectionError: In case you try to stop an already stopped Client.
@@ -396,7 +396,7 @@ class Client(Methods, BaseClient):
         return self
 
     def restart(self):
-        """Use this method to restart the Client.
+        """Restart the Client.
 
         Raises:
             ConnectionError: In case you try to restart a stopped Client.
@@ -405,7 +405,7 @@ class Client(Methods, BaseClient):
         self.start()
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Use this method to block the main script execution until a signal (e.g.: from CTRL+C) is received.
+        """Block the main script execution until a signal (e.g.: from CTRL+C) is received.
         Once the signal is received, the client will automatically stop and the main script will continue its execution.
 
         This is used after starting one or more clients and is useful for event-driven applications only, that are,
@@ -438,7 +438,7 @@ class Client(Methods, BaseClient):
         self.stop()
 
     def run(self):
-        """Use this method to start the Client and automatically idle the main script.
+        """Start the Client and automatically idle the main script.
 
         This is a convenience method that literally just calls :meth:`start` and :meth:`idle`. It makes running a client
         less verbose, but is not suitable in case you want to run more than one client in a single main script,
@@ -451,7 +451,7 @@ class Client(Methods, BaseClient):
         self.idle()
 
     def add_handler(self, handler: Handler, group: int = 0):
-        """Use this method to register an update handler.
+        """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group
         will be used for a single update. To handle the same update more than once, register
@@ -475,7 +475,7 @@ class Client(Methods, BaseClient):
         return handler, group
 
     def remove_handler(self, handler: Handler, group: int = 0):
-        """Use this method to remove a previously-registered update handler.
+        """Remove a previously-registered update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
         the return value of the :meth:`add_handler` method, a tuple of (handler, group), and
@@ -494,7 +494,7 @@ class Client(Methods, BaseClient):
             self.dispatcher.remove_handler(handler, group)
 
     def stop_transmission(self):
-        """Use this method to stop downloading or uploading a file.
+        """Stop downloading or uploading a file.
         Must be called inside a progress callback function.
         """
         raise Client.StopTransmission
@@ -1036,7 +1036,7 @@ class Client(Methods, BaseClient):
         log.debug("{} stopped".format(name))
 
     def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
-        """Use this method to send raw Telegram queries.
+        """Send raw Telegram queries.
 
         This method makes it possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`functions <pyrogram.api.functions>` package and may accept compound
@@ -1341,7 +1341,7 @@ class Client(Methods, BaseClient):
         self.get_initial_dialogs_chunk()
 
     def resolve_peer(self, peer_id: Union[int, str]):
-        """Use this method to get the InputPeer of a known peer id.
+        """Get the InputPeer of a known peer id.
         Useful whenever an InputPeer type is required.
 
         .. note::
@@ -1423,7 +1423,7 @@ class Client(Methods, BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ):
-        """Use this method to upload a file onto Telegram servers, without actually sending the message to anyone.
+        """Upload a file onto Telegram servers, without actually sending the message to anyone.
         Useful whenever an InputFile type is required.
 
         .. note::

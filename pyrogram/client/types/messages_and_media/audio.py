@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class Audio(PyrogramType):
-    """This object represents an audio file to be treated as music by the Telegram clients.
+    """An audio file to be treated as music by the Telegram clients.
 
     Parameters:
         file_id (``str``):

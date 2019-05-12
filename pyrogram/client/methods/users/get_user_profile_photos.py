@@ -30,7 +30,7 @@ class GetUserProfilePhotos(BaseClient):
         offset: int = 0,
         limit: int = 100
     ) -> "pyrogram.UserProfilePhotos":
-        """Use this method to get a list of profile pictures for a user.
+        """Get a list of profile pictures for a user.
 
         Parameters:
             user_id (``int`` | ``str``):

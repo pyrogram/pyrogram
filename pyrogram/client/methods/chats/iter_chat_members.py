@@ -45,7 +45,7 @@ class IterChatMembers(BaseClient):
         query: str = "",
         filter: str = Filters.ALL
     ) -> Generator["pyrogram.ChatMember", None, None]:
-        """Use this method to iterate through the members of a chat sequentially.
+        """Iterate through the members of a chat sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_chat_members` in a loop, thus saving you
         from the hassle of setting up boilerplate code. It is useful for getting the whole members list of a chat with

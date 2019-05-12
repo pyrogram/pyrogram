@@ -28,7 +28,7 @@ from ...ext.utils import encode
 
 
 class Photo(PyrogramType):
-    """This object represents a Photo.
+    """A Photo.
 
     Parameters:
         id (``str``):

@@ -46,7 +46,7 @@ class SendVoice(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send audio files.
+        """Send audio files.
 
         Parameters:
             chat_id (``int`` | ``str``):

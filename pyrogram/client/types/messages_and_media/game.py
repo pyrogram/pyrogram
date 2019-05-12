@@ -24,7 +24,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Game(PyrogramType):
-    """This object represents a game.
+    """A game.
     Use BotFather to create and edit games, their short names will act as unique identifiers.
 
     Parameters:

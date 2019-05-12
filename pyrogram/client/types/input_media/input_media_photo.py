@@ -20,7 +20,7 @@ from . import InputMedia
 
 
 class InputMediaPhoto(InputMedia):
-    """This object represents a photo to be sent inside an album.
+    """A photo to be sent inside an album.
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
     Parameters:

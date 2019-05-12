@@ -20,7 +20,9 @@ from ..pyrogram_type import PyrogramType
 
 
 class InputMedia(PyrogramType):
-    """This object represents the content of a media message to be sent. It should be one of:
+    """Content of a media message to be sent.
+
+    It should be one of:
 
     - :obj:`InputMediaAnimation`
     - :obj:`InputMediaDocument`

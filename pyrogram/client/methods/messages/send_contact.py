@@ -40,7 +40,7 @@ class SendContact(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send phone contacts.
+        """Send phone contacts.
 
         Parameters:
             chat_id (``int`` | ``str``):

@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Contact(PyrogramType):
-    """This object represents a phone contact.
+    """A phone contact.
 
     Parameters:
         phone_number (``str``):

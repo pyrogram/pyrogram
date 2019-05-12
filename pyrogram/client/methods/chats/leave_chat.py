@@ -28,7 +28,7 @@ class LeaveChat(BaseClient):
         chat_id: Union[int, str],
         delete: bool = False
     ):
-        """Use this method to leave a group chat or channel.
+        """Leave a group chat or channel.
 
         Parameters:
             chat_id (``int`` | ``str``):

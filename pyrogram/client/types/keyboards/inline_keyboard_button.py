@@ -27,7 +27,9 @@ from ..pyrogram_type import PyrogramType
 
 
 class InlineKeyboardButton(PyrogramType):
-    """This object represents one button of an inline keyboard. You must use exactly one of the optional fields.
+    """One button of an inline keyboard.
+
+    You must use exactly one of the optional fields.
 
     Parameters:
         text (``str``):

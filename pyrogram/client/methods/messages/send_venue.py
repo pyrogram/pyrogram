@@ -42,7 +42,7 @@ class SendVenue(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send information about a venue.
+        """Send information about a venue.
 
         Parameters:
             chat_id (``int`` | ``str``):

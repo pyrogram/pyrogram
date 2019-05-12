@@ -28,7 +28,8 @@ from ..user_and_chats import User
 
 
 class InlineQuery(PyrogramType, Update):
-    """This object represents an incoming inline query.
+    """An incoming inline query.
+
     When the user sends an empty query, your bot could return some default or trending results.
 
     Parameters:

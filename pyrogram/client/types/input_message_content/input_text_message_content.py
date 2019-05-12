@@ -22,7 +22,7 @@ from ...style import HTML, Markdown
 
 
 class InputTextMessageContent(InputMessageContent):
-    """This object represents the content of a text message to be sent as the result of an inline query.
+    """Content of a text message to be sent as the result of an inline query.
 
     Parameters:
         message_text (``str``):

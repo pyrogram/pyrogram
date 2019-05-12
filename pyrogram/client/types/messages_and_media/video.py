@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class Video(PyrogramType):
-    """This object represents a video file.
+    """A video file.
 
     Parameters:
         file_id (``str``):

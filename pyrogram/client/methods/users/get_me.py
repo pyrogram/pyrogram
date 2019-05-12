@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 class GetMe(BaseClient):
     def get_me(self) -> "pyrogram.User":
-        """A simple method for testing your authorization. Requires no parameters.
+        """Get your own user identity.
 
         Returns:
             :obj:`User`: Basic information about the user or bot.

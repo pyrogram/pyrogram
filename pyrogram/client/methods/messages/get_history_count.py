@@ -32,7 +32,7 @@ class GetHistoryCount(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> int:
-        """Use this method to get the total count of messages in a chat.
+        """Get the total count of messages in a chat.
 
         .. note::
 

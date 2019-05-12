@@ -30,7 +30,7 @@ class VotePoll(BaseClient):
         message_id: id,
         option: int
     ) -> "pyrogram.Poll":
-        """Use this method to vote a poll.
+        """Vote a poll.
 
         Parameters:
             chat_id (``int`` | ``str``):

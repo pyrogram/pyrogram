@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class ChatMember(PyrogramType):
-    """This object contains information about one member of a chat.
+    """Contains information about one member of a chat.
 
     Parameters:
         user (:obj:`User`):

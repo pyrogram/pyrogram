@@ -32,7 +32,7 @@ class DownloadMedia(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union[str, None]:
-        """Use this method to download the media from a message.
+        """Download the media from a message.
 
         Parameters:
             message (:obj:`Message` | ``str``):

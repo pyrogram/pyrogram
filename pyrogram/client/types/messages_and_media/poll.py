@@ -26,7 +26,7 @@ from ..update import Update
 
 
 class Poll(PyrogramType, Update):
-    """This object represents a Poll.
+    """A Poll.
 
     Parameters:
         id (``str``):

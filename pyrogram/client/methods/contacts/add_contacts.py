@@ -28,7 +28,7 @@ class AddContacts(BaseClient):
         self,
         contacts: List["pyrogram.InputPhoneContact"]
     ):
-        """Use this method to add contacts to your Telegram address book.
+        """Add contacts to your Telegram address book.
 
         Parameters:
             contacts (List of :obj:`InputPhoneContact`):

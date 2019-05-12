@@ -26,7 +26,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Chat(PyrogramType):
-    """This object represents a chat.
+    """A chat.
 
     Parameters:
         id (``int``):

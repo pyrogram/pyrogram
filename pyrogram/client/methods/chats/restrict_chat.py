@@ -36,7 +36,7 @@ class RestrictChat(BaseClient):
         can_invite_users: bool = False,
         can_pin_messages: bool = False
     ) -> Chat:
-        """Use this method to restrict a chat.
+        """Restrict a chat.
         Pass True for all boolean parameters to lift restrictions from a chat.
 
         Parameters:

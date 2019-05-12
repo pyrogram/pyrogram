@@ -24,7 +24,7 @@ from ..user_and_chats import Chat
 
 
 class Dialog(PyrogramType):
-    """This object represents a dialog.
+    """A user's dialog.
 
     Parameters:
         chat (:obj:`Chat <pyrogram.Chat>`):

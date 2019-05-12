@@ -30,7 +30,7 @@ class EditMessageReplyMarkup(BaseClient):
         message_id: int,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+        """Edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 
         Parameters:
             chat_id (``int`` | ``str``):

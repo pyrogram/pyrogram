@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class Document(PyrogramType):
-    """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
+    """A generic file (as opposed to photos, voice messages, audio files, ...).
 
     Parameters:
         file_id (``str``):

@@ -40,7 +40,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class InlineQueryResult(PyrogramType):
-    """This object represents one result of an inline query.
+    """One result of an inline query.
 
     Pyrogram currently supports results of the following 20 types:
 

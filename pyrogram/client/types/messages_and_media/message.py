@@ -60,7 +60,7 @@ class Str(str):
 
 
 class Message(PyrogramType, Update):
-    """This object represents a message.
+    """A message.
 
     Parameters:
         message_id (``int``):

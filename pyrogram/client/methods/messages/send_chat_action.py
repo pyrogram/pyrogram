@@ -44,7 +44,7 @@ POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswit
 
 class SendChatAction(BaseClient):
     def send_chat_action(self, chat_id: Union[int, str], action: str) -> bool:
-        """Use this method when you need to tell the other party that something is happening on your side.
+        """Tell the other party that something is happening on your side.
 
         Parameters:
             chat_id (``int`` | ``str``):

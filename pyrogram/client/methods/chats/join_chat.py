@@ -26,7 +26,7 @@ class JoinChat(BaseClient):
         self,
         chat_id: str
     ):
-        """Use this method to join a group chat or channel.
+        """Join a group chat or channel.
 
         Parameters:
             chat_id (``str``):

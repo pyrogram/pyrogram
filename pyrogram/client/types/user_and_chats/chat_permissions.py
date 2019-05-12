@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class ChatPermissions(PyrogramType):
-    """This object represents both a chat default permissions and a single member permissions within a chat.
+    """A chat default permissions and a single member permissions within a chat.
 
     Some permissions make sense depending on the context: default chat permissions, restricted/kicked member or
     administrators in groups or channels.

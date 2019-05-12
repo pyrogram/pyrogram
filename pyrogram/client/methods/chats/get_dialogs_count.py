@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 class GetDialogsCount(BaseClient):
     def get_dialogs_count(self, pinned_only: bool = False) -> int:
-        """Use this method to get the total count of your dialogs.
+        """Get the total count of your dialogs.
 
         pinned_only (``bool``, *optional*):
             Pass True if you want to count only pinned dialogs.

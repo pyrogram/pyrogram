@@ -30,7 +30,7 @@ class ChangeCloudPassword(BaseClient):
         new_password: str,
         new_hint: str = ""
     ) -> bool:
-        """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
+        """Change your Two-Step Verification password (Cloud Password) with a new one.
 
         Parameters:
             current_password (``str``):

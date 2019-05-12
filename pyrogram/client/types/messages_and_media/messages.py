@@ -27,7 +27,7 @@ from ..user_and_chats import Chat
 
 
 class Messages(PyrogramType, Update):
-    """This object represents a chat's messages.
+    """Contains a chat's messages.
 
     Parameters:
         total_count (``int``):

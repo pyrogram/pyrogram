@@ -20,7 +20,8 @@ from . import InputMedia
 
 
 class InputMediaAudio(InputMedia):
-    """This object represents an audio to be sent inside an album.
+    """An audio to be sent inside an album.
+
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
     Parameters:

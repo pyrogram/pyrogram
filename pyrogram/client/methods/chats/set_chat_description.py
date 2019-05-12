@@ -28,7 +28,7 @@ class SetChatDescription(BaseClient):
         chat_id: Union[int, str],
         description: str
     ) -> bool:
-        """Use this method to change the description of a supergroup or a channel.
+        """Change the description of a supergroup or a channel.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Parameters:

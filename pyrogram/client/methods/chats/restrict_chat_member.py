@@ -38,7 +38,7 @@ class RestrictChatMember(BaseClient):
         can_invite_users: bool = False,
         can_pin_messages: bool = False
     ) -> Chat:
-        """Use this method to restrict a user in a supergroup.
+        """Restrict a user in a supergroup.
 
         The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
         Pass True for all boolean parameters to lift restrictions from a user.

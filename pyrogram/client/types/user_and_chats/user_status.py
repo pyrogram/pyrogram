@@ -24,7 +24,7 @@ from ..update import Update
 
 
 class UserStatus(PyrogramType, Update):
-    """This object represents a User status (Last Seen privacy).
+    """A User status (Last Seen privacy).
 
     .. note::
 

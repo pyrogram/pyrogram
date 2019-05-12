@@ -26,7 +26,7 @@ from ..user_and_chats.user import User
 
 
 class ChatPreview(PyrogramType):
-    """This object represents a chat preview.
+    """A chat preview.
 
     Parameters:
         title (``str``):

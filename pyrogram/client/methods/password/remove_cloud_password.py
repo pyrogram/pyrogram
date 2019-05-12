@@ -26,7 +26,7 @@ class RemoveCloudPassword(BaseClient):
         self,
         password: str
     ) -> bool:
-        """Use this method to turn off the Two-Step Verification security feature (Cloud Password) on your account.
+        """Turn off the Two-Step Verification security feature (Cloud Password) on your account.
 
         Parameters:
             password (``str``):

@@ -32,7 +32,7 @@ class IterHistory(BaseClient):
         offset_date: int = 0,
         reverse: bool = False
     ) -> Generator["pyrogram.Message", None, None]:
-        """Use this method to iterate through a chat history sequentially.
+        """Iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from
         the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a single call.

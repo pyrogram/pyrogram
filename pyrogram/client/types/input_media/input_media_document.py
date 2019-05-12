@@ -20,7 +20,7 @@ from . import InputMedia
 
 
 class InputMediaDocument(InputMedia):
-    """This object represents a general file to be sent.
+    """A generic file to be sent inside an album.
 
     Parameters:
         media (``str``):

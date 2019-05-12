@@ -28,7 +28,7 @@ class GetUsers(BaseClient):
         self,
         user_ids: Union[Iterable[Union[int, str]], int, str]
     ) -> Union["pyrogram.User", List["pyrogram.User"]]:
-        """Use this method to get information about a user.
+        """Get information about a user.
         You can retrieve up to 200 users at once.
 
         Parameters:

@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Location(PyrogramType):
-    """This object represents a point on the map.
+    """A point on the map.
 
     Parameters:
         longitude (``float``):

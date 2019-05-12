@@ -34,7 +34,7 @@ class SetGameScore(BaseClient):
         message_id: int = None
     ):
         # inline_message_id: str = None):  TODO Add inline_message_id
-        """Use this method to set the score of the specified user in a game.
+        """Set the score of the specified user in a game.
 
         Parameters:
             user_id (``int`` | ``str``):

@@ -24,7 +24,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class UserProfilePhotos(PyrogramType):
-    """This object represents a user's profile pictures.
+    """Contains a user's profile pictures.
 
     Parameters:
         total_count (``int``):

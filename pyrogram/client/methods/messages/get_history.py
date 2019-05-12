@@ -38,7 +38,7 @@ class GetHistory(BaseClient):
         offset_date: int = 0,
         reverse: bool = False
     ) -> "pyrogram.Messages":
-        """Use this method to retrieve a chunk of the history of a chat.
+        """Retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
         For a more convenient way of getting a chat history see :meth:`iter_history`.

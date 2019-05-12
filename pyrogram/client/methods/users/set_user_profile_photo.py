@@ -25,7 +25,7 @@ class SetUserProfilePhoto(BaseClient):
         self,
         photo: str
     ) -> bool:
-        """Use this method to set a new profile photo.
+        """Set a new profile photo.
 
         This method only works for Users.
         Bots profile photos must be set using BotFather.

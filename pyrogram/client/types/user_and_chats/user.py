@@ -24,7 +24,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class User(PyrogramType):
-    """This object represents a Telegram user or bot.
+    """A Telegram user or bot.
 
     Parameters:
         id (``int``):

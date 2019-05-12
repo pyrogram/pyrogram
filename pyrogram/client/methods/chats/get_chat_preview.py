@@ -26,7 +26,7 @@ class GetChatPreview(BaseClient):
         self,
         invite_link: str
     ):
-        """Use this method to get the preview of a chat using the invite link.
+        """Get the preview of a chat using the invite link.
 
         This method only returns a chat preview, if you want to join a chat use :meth:`join_chat`
 

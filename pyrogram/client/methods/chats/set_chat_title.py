@@ -28,7 +28,7 @@ class SetChatTitle(BaseClient):
         chat_id: Union[int, str],
         title: str
     ) -> bool:
-        """Use this method to change the title of a chat.
+        """Change the title of a chat.
         Titles can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 

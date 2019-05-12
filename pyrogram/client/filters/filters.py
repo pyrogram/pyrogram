@@ -23,7 +23,7 @@ from ..types.keyboards import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 
 def create(name: str, func: callable, **kwargs) -> type:
-    """Use this method to create a Filter.
+    """Create a Filter.
 
     Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
 

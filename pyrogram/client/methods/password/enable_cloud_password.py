@@ -30,7 +30,7 @@ class EnableCloudPassword(BaseClient):
         hint: str = "",
         email: str = None
     ) -> bool:
-        """Use this method to enable the Two-Step Verification security feature (Cloud Password) on your account.
+        """Enable the Two-Step Verification security feature (Cloud Password) on your account.
 
         This password will be asked when you log-in on a new device in addition to the SMS code.
 

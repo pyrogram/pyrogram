@@ -25,7 +25,7 @@ from ...ext.utils import encode
 
 
 class Voice(PyrogramType):
-    """This object represents a voice note.
+    """A voice note.
 
     Parameters:
         file_id (``str``):

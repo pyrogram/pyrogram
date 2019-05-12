@@ -26,7 +26,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class Dialogs(PyrogramType):
-    """This object represents a user's dialogs chunk.
+    """Contains a user's dialogs chunk.
 
     Parameters:
         total_count (``int``):

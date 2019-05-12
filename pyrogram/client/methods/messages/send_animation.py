@@ -49,7 +49,7 @@ class SendAnimation(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send animation files (animation or H.264/MPEG-4 AVC video without sound).
+        """Send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Parameters:
             chat_id (``int`` | ``str``):

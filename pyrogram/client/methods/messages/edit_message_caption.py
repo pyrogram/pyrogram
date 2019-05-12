@@ -32,7 +32,7 @@ class EditMessageCaption(BaseClient):
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Use this method to edit captions of messages.
+        """Edit captions of messages.
 
         Parameters:
             chat_id (``int`` | ``str``):

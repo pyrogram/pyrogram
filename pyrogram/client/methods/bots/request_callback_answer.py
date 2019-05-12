@@ -30,7 +30,7 @@ class RequestCallbackAnswer(BaseClient):
         callback_data: bytes,
         timeout: int = 10
     ):
-        """Use this method to request a callback answer from bots.
+        """Request a callback answer from bots.
         This is the equivalent of clicking an inline button containing callback data.
 
         Parameters:

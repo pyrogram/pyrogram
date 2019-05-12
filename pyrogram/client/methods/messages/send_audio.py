@@ -49,7 +49,7 @@ class SendAudio(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send audio files.
+        """Send audio files.
 
         For sending voice messages, use the :obj:`send_voice()` method instead.
 

@@ -30,7 +30,7 @@ class GetChatMember(BaseClient):
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> "pyrogram.ChatMember":
-        """Use this method to get information about one member of a chat.
+        """Get information about one member of a chat.
 
         Parameters:
             chat_id (``int`` | ``str``):

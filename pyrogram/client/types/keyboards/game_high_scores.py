@@ -25,7 +25,7 @@ from .game_high_score import GameHighScore
 
 
 class GameHighScores(PyrogramType):
-    """This object represents the high scores table for a game.
+    """The high scores table for a game.
 
     Parameters:
         total_count (``int``):

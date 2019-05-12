@@ -29,7 +29,7 @@ class DeleteUserProfilePhotos(BaseClient):
         self,
         id: Union[str, List[str]]
     ) -> bool:
-        """Use this method to delete your own profile photos.
+        """Delete your own profile photos.
 
         Parameters:
             id (``str`` | ``list``):

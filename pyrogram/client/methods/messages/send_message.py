@@ -39,7 +39,7 @@ class SendMessage(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send text messages.
+        """Send text messages.
 
         Parameters:
             chat_id (``int`` | ``str``):

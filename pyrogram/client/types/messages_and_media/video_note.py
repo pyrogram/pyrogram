@@ -26,7 +26,7 @@ from ...ext.utils import encode
 
 
 class VideoNote(PyrogramType):
-    """This object represents a video note.
+    """A video note.
 
     Parameters:
         file_id (``str``):

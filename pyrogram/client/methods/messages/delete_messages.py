@@ -29,7 +29,7 @@ class DeleteMessages(BaseClient):
         message_ids: Iterable[int],
         revoke: bool = True
     ) -> bool:
-        """Use this method to delete messages, including service messages.
+        """Delete messages, including service messages.
 
         Parameters:
             chat_id (``int`` | ``str``):

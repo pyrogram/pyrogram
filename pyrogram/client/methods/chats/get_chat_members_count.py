@@ -27,7 +27,7 @@ class GetChatMembersCount(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> int:
-        """Use this method to get the number of members in a chat.
+        """Get the number of members in a chat.
 
         Parameters:
             chat_id (``int`` | ``str``):

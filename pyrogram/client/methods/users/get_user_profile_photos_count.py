@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 class GetUserProfilePhotosCount(BaseClient):
     def get_user_profile_photos_count(self, user_id: Union[int, str]) -> int:
-        """Use this method to get the total count of profile pictures for a user.
+        """Get the total count of profile pictures for a user.
 
         Parameters:
             user_id (``int`` | ``str``):

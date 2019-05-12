@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 
 class GetContacts(BaseClient):
     def get_contacts(self) -> List["pyrogram.User"]:
-        """Use this method to get contacts from your Telegram address book.
+        """Get contacts from your Telegram address book.
 
         Returns:
             List of :obj:`User`: On success, a list of users is returned.

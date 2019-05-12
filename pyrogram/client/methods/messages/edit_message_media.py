@@ -40,7 +40,7 @@ class EditMessageMedia(BaseClient):
         media: InputMedia,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Use this method to edit audio, document, photo, or video messages.
+        """Edit audio, document, photo, or video messages.
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
         message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.

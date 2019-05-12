@@ -30,7 +30,7 @@ class StopPoll(BaseClient):
         message_id: int,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Poll":
-        """Use this method to stop a poll which was sent by you.
+        """Stop a poll which was sent by you.
 
         Stopped polls can't be reopened and nobody will be able to vote in it anymore.
 

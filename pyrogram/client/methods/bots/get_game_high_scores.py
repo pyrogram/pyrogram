@@ -30,7 +30,7 @@ class GetGameHighScores(BaseClient):
         chat_id: Union[int, str],
         message_id: int = None
     ) -> "pyrogram.GameHighScores":
-        """Use this method to get data for high score tables.
+        """Get data for high score tables.
 
         Parameters:
             user_id (``int`` | ``str``):

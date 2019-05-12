@@ -20,7 +20,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class CallbackGame(PyrogramType):
-    """A placeholder, currently holds no information.
+    """Placeholder, currently holds no information.
 
     Use BotFather to set up your game.
     """
