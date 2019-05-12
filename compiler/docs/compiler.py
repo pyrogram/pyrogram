@@ -21,7 +21,7 @@ import os
 import shutil
 
 HOME = "compiler/docs"
-DESTINATION = "docs/source"
+DESTINATION = "docs/source/telegram"
 
 FUNCTIONS_PATH = "pyrogram/api/functions"
 TYPES_PATH = "pyrogram/api/types"
@@ -129,6 +129,6 @@ if "__main__" == __name__:
     FUNCTIONS_PATH = "../../pyrogram/api/functions"
     TYPES_PATH = "../../pyrogram/api/types"
     HOME = "."
-    DESTINATION = "../../docs/source"
+    DESTINATION = "../../docs/source/telegram"
 
     start()

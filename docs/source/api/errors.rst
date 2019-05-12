@@ -1,5 +1,5 @@
-Errors
-======
+RPC Errors
+==========
 
 All the Pyrogram errors listed here live inside the ``errors`` sub-package.
 

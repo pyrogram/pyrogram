@@ -54,26 +54,54 @@ Welcome to Pyrogram
 
     app.run()
 
-**Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and C.
-It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the `MTProto API`_.
+**Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
+C. It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the
+`MTProto API`_.
 
-How the documentation is organized
+.. _Telegram: https://telegram.org
+.. _MTProto API: https://core.telegram.org/api#telegram-api
+
+How the Documentation is Organized
 ----------------------------------
 
-Contents are organized into self-contained topics and can be accessed from the sidebar, or by following them in order
-using the Next button at the end of each page.
+Contents are organized into self-contained topics and can be all accessed from the sidebar, or by following them in
+order using the Next button at the end of each page. Here below you can find a list of the most relevant pages.
 
-Relevant Pages
-^^^^^^^^^^^^^^
+Getting Started
+^^^^^^^^^^^^^^^
 
-- `Quick Start`_ - Concise steps to get you started as fast as possible.
-- `API Usage`_ - Guide on how to use Pyrogram's API.
-- `Update Handling`_ - Guide on how to handle Telegram updates.
-- Client_ - Reference details about the Client class.
-- Types_ - All the available Pyrogram types.
-- Methods_ - All the available Pyrogram methods.
+- `Quick Start`_ - Overview to get you started as fast as possible.
+- `Calling Methods`_ - How to use Pyrogram's API.
+- `Handling Updates`_ - How to handle Telegram updates.
+- `Error Handling`_ - How to handle API errors correctly.
 
-**To get started, press the Next button**
+.. _Quick Start: intro/start
+.. _Calling Methods: start/invoking
+.. _Handling Updates: start/updates
+.. _Error Handling: start/errors
+
+API Reference
+^^^^^^^^^^^^^
+- `Client Class`_ - Details about the Client class.
+- `Available Methods`_ - A list of available high-level methods.
+- `Available Types`_ - A list of available high-level types.
+
+.. _Client Class: core/client
+.. _Available Methods: core/methods
+.. _Available Types: core/types
+
+Topics
+^^^^^^
+
+- `Smart Plugins`_ - How to modularize your application.
+- `Advanced Usage`_ - How to use Telegram's raw API.
+- `Release Notes`_ - Release notes for Pyrogram releases.
+- `Pyrogram FAQ`_ - Answers to common Pyrogram questions.
+
+.. _Smart Plugins: topics/smart-plugins
+.. _Advanced Usage: topics/advanced-usage
+.. _Release Notes: topics/releases
+.. _Pyrogram FAQ: topics/faq
 
 .. toctree::
     :hidden:
@@ -82,55 +110,51 @@ Relevant Pages
     intro/start
     intro/install
     intro/setup
-    intro/auth
 
 .. toctree::
     :hidden:
-    :caption: Topic Guides
+    :caption: Getting Started
 
-    topics/usage
-    topics/update-handling
-    topics/using-filters
-    topics/more-on-updates
-    topics/configuration-file
-    topics/smart-plugins
-    topics/auto-authorization
-    topics/customize-sessions
-    topics/tgcrypto
-    topics/text-formatting
-    topics/socks5-proxy
-    topics/bots-interaction
-    topics/error-handling
-    topics/test-servers
-    topics/advanced-usage
-    topics/voice-calls
-    topics/changelog
+    intro/auth
+    start/invoking
+    start/updates
+    start/errors
 
 .. toctree::
     :hidden:
     :caption: API Reference
 
-    core/client
-    core/types
-    core/methods
-    core/handlers
-    core/decorators
-    core/filters
-    core/errors
+    api/client
+    api/methods
+    api/types
+    api/handlers
+    api/decorators
+    api/filters
+    api/errors
+
+.. toctree::
+    :hidden:
+    :caption: Topic Guides
+
+    topics/filters
+    topics/more-on-updates
+    topics/config-file
+    topics/smart-plugins
+    topics/auto-auth
+    topics/session-settings
+    topics/tgcrypto
+    topics/text-formatting
+    topics/proxy
+    topics/bots-interaction
+    topics/test-servers
+    topics/advanced-usage
+    topics/voice-calls
+    topics/releases
+    topics/faq
 
 .. toctree::
     :hidden:
     :caption: Telegram API
 
-    functions/index
-    types/index
-
-.. _Telegram: https://telegram.org
-.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
-.. _MTProto API: https://core.telegram.org/api#telegram-api
-.. _Quick Start: intro/start.html
-.. _API Usage: topics/usage.html
-.. _Update Handling: topics/update-handling.html
-.. _Client: core/client.html
-.. _Types: core/types.html
-.. _Methods: core/methods
+    telegram/functions/index
+    telegram/types/index

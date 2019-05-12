@@ -1,14 +1,10 @@
-API Usage
-=========
+Calling Methods
+===============
 
-At this point, we have successfully `installed Pyrogram`_ and authorized_ our account and we are now pointing towards
-the core of the library. It's time to start playing with the API!
+At this point, we have successfully `installed Pyrogram`_ and authorized_ our account; we are now pointing towards the
+core of the library. It's time to start playing with the API!
 
-Make API Method Calls
----------------------
-
-Making API method calls with Pyrogram is very simple.
-Here's an example we are going to examine:
+Making API method calls with Pyrogram is very simple. Here's an example we are going to examine:
 
 .. code-block:: python
 

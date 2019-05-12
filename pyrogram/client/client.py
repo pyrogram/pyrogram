@@ -60,7 +60,7 @@ log = logging.getLogger(__name__)
 
 
 class Client(Methods, BaseClient):
-    """This class represents a Client, the main mean for interacting with Telegram.
+    """This class represents a Client, the main means for interacting with Telegram.
     It exposes bot-like methods for an easy access to the API as well as a simple way to
     invoke every single Telegram API method available.
 
@@ -438,7 +438,7 @@ class Client(Methods, BaseClient):
         self.stop()
 
     def run(self):
-        """Use this method as a convenience shortcut to automatically start the Client and idle the main script.
+        """Use this method to start the Client and automatically idle the main script.
 
         This is a convenience method that literally just calls :meth:`start` and :meth:`idle`. It makes running a client
         less verbose, but is not suitable in case you want to run more than one client in a single main script,

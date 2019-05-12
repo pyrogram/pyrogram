@@ -32,7 +32,7 @@ Get Pyrogram Real Fast
 
 8. Watch Pyrogram send a message to yourself.
 
-9. Join our `community <//t.me/pyrogramchat>`_.
+9. Join our `community`_.
 
 10. Say, "hi!".
 
@@ -42,4 +42,8 @@ Enjoy the API
 That was just a quick overview that barely scratched the surface!
 In the next few pages of the introduction, we'll take a much more in-depth look of what we have just done.
 
-Feeling eager? You can take a shortcut to `API Usage <../topics/usage.html>`_ and come back later to learn some more details.
+Feeling eager? You can take a shortcut to `Calling Methods`_ and come back later to learn some more
+details.
+
+.. _community: //t.me/pyrogramchat
+.. _Calling Methods: ../start/invoking

@@ -48,7 +48,7 @@ def get_readme():
 class Clean(Command):
     DIST = ["./build", "./dist", "./Pyrogram.egg-info"]
     API = ["pyrogram/api/errors/exceptions", "pyrogram/api/functions", "pyrogram/api/types", "pyrogram/api/all.py"]
-    DOCS = ["docs/source/functions", "docs/source/types", "docs/build"]
+    DOCS = ["docs/source/telegram", "docs/build"]
     ALL = DIST + API + DOCS
 
     description = "Clean generated files"

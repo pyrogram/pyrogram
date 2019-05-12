@@ -16,8 +16,7 @@ There are many errors that Telegram could return, but they all fall in one of th
 
 As stated above, there are really many (too many) errors, and in case Pyrogram does not know anything yet about a
 specific one, it raises a special :obj:`520 Unknown Error <pyrogram.errors.UnknownError>` exception and logs it
-in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors; in later versions of Pyrogram
-some kind of automatic error reporting module might be implemented.
+in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors.
 
 Examples
 --------
