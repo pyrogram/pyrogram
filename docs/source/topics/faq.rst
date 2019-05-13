@@ -68,7 +68,7 @@ in a bunch of seconds:
 I keep getting [400 PEER_ID_INVALID] error!
 -------------------------------------------
 
-The error in question is ``[400 PEER_ID_INVALID]: The id/access_hash combination is invalid``, and could mean several
+The error in question is **[400 PEER_ID_INVALID]: The id/access_hash combination is invalid**, and could mean several
 things:
 
 - The chat id you tried to use is simply wrong, double check it.
