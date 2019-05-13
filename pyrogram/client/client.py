@@ -1093,7 +1093,7 @@ class Client(Methods, BaseClient):
             else:
                 raise AttributeError(
                     "No API Key found. "
-                    "More info: https://docs.pyrogram.ml/start/ProjectSetup#configuration"
+                    "More info: https://docs.pyrogram.ml/intro/setup#configuration"
                 )
 
         for option in ["app_version", "device_model", "system_version", "lang_code"]:
