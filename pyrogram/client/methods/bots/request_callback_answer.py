@@ -27,7 +27,7 @@ class RequestCallbackAnswer(BaseClient):
         self,
         chat_id: Union[int, str],
         message_id: int,
-        callback_data: bytes,
+        callback_data: Union[str, bytes],
         timeout: int = 10
     ):
         """Request a callback answer from bots.
@@ -42,7 +42,7 @@ class RequestCallbackAnswer(BaseClient):
             message_id (``int``):
                 The message id the inline keyboard is attached on.
 
-            callback_data (``bytes``):
+            callback_data (``str`` | ``bytes``):
                 Callback data associated with the inline button you want to get the answer from.
 
             timeout (``int``, *optional*):
@@ -56,11 +56,15 @@ class RequestCallbackAnswer(BaseClient):
             RPCError: In case of a Telegram RPC error.
             TimeoutError: In case the bot fails to answer within 10 seconds.
         """
+
+        # Telegram only wants bytes, but we are allowed to pass strings too.
+        data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
+
         return self.send(
             functions.messages.GetBotCallbackAnswer(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                data=callback_data
+                data=data
             ),
             retries=0,
             timeout=timeout

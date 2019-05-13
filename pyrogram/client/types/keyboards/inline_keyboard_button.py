@@ -35,7 +35,7 @@ class InlineKeyboardButton(PyrogramType):
         text (``str``):
             Label text on the button.
 
-        callback_data (``bytes``, *optional*):
+        callback_data (``str`` | ``bytes``, *optional*):
             Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes.
 
         url (``str``, *optional*):
@@ -75,7 +75,7 @@ class InlineKeyboardButton(PyrogramType):
 
         self.text = str(text)
         self.url = url
-        self.callback_data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
+        self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
@@ -90,9 +90,16 @@ class InlineKeyboardButton(PyrogramType):
             )
 
         if isinstance(o, KeyboardButtonCallback):
+            # Try decode data to keep it as string, but if fails, fallback to bytes so we don't lose any information,
+            # instead of decoding by ignoring/replacing errors.
+            try:
+                data = o.data.decode()
+            except UnicodeDecodeError:
+                data = o.data
+
             return InlineKeyboardButton(
                 text=o.text,
-                callback_data=o.data
+                callback_data=data
             )
 
         if isinstance(o, KeyboardButtonSwitchInline):
@@ -115,7 +122,9 @@ class InlineKeyboardButton(PyrogramType):
 
     def write(self):
         if self.callback_data is not None:
-            return KeyboardButtonCallback(text=self.text, data=self.callback_data)
+            # Telegram only wants bytes, but we are allowed to pass strings too, for convenience.
+            data = bytes(self.callback_data, "utf-8") if isinstance(self.callback_data, str) else self.callback_data
+            return KeyboardButtonCallback(text=self.text, data=data)
 
         if self.url is not None:
             return KeyboardButtonUrl(text=self.text, url=self.url)

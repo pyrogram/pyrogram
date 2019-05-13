@@ -18,6 +18,7 @@
 
 from base64 import b64encode
 from struct import pack
+from typing import Union
 
 import pyrogram
 from pyrogram.api import types
@@ -51,7 +52,7 @@ class CallbackQuery(PyrogramType, Update):
         inline_message_id (``str``):
             Identifier of the message sent via the bot in inline mode, that originated the query.
 
-        data (``bytes``, *optional*):
+        data (``str`` | ``bytes``, *optional*):
             Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field.
 
         game_short_name (``str``, *optional*):
@@ -70,7 +71,7 @@ class CallbackQuery(PyrogramType, Update):
         chat_instance: str,
         message: "pyrogram.Message" = None,
         inline_message_id: str = None,
-        data: bytes = None,
+        data: Union[str, bytes] = None,
         game_short_name: str = None
     ):
         super().__init__(client)
@@ -80,7 +81,7 @@ class CallbackQuery(PyrogramType, Update):
         self.chat_instance = chat_instance
         self.message = message
         self.inline_message_id = inline_message_id
-        self.data = str(data, "utf-8")
+        self.data = data
         self.game_short_name = game_short_name
 
     @staticmethod
@@ -110,13 +111,20 @@ class CallbackQuery(PyrogramType, Update):
                 b"-_"
             ).decode().rstrip("=")
 
+        # Try to decode callback query data into string. If that fails, fallback to bytes instead of decoding by
+        # ignoring/replacing errors, this way, button clicks will still work.
+        try:
+            data = callback_query.data.decode()
+        except UnicodeDecodeError:
+            data = callback_query.data
+
         return CallbackQuery(
             id=str(callback_query.query_id),
             from_user=User._parse(client, users[callback_query.user_id]),
             message=message,
             inline_message_id=inline_message_id,
             chat_instance=str(callback_query.chat_instance),
-            data=callback_query.data,
+            data=data,
             game_short_name=callback_query.game_short_name,
             client=client
         )
