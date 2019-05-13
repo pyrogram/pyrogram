@@ -27,22 +27,14 @@ from compiler.api import compiler as api_compiler
 from compiler.docs import compiler as docs_compiler
 from compiler.error import compiler as error_compiler
 
+with open("requirements.txt", encoding="utf-8") as r:
+    requires = [i.strip() for i in r]
 
-def read(file: str) -> list:
-    with open(file, encoding="utf-8") as r:
-        return [i.strip() for i in r]
+with open("pyrogram/__init__.py", encoding="utf-8") as f:
+    version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
 
-
-def get_version():
-    with open("pyrogram/__init__.py", encoding="utf-8") as f:
-        return re.findall(r"__version__ = \"(.+)\"", f.read())[0]
-
-
-def get_readme():
-    # PyPI doesn't like raw html
-    with open("README.rst", encoding="utf-8") as f:
-        readme = re.sub(r"\.\. \|.+\| raw:: html(?:\s{4}.+)+\n\n", "", f.read())
-        return re.sub(r"\|header\|", "|logo|\n\n|description|\n\n|schema| |tgcrypto|", readme)
+with open("README.md", encoding="utf-8") as f:
+    readme = f.read()
 
 
 class Clean(Command):
@@ -128,23 +120,24 @@ class Generate(Command):
 
 
 if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
-    error_compiler.start()
     api_compiler.start()
-    docs_compiler.start()
+    error_compiler.start()
 
 setup(
     name="Pyrogram",
-    version=get_version(),
+    version=version,
     description="Telegram MTProto API Client Library for Python",
-    long_description=get_readme(),
+    long_description=readme,
+    long_description_content_type="text/markdown",
     url="https://github.com/pyrogram",
     download_url="https://github.com/pyrogram/pyrogram/releases/latest",
     author="Dan Tès",
     author_email="admin@pyrogram.ml",
     license="LGPLv3+",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
+        "Natural Language :: English",
         "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
@@ -152,6 +145,8 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
@@ -175,10 +170,9 @@ setup(
         "pyrogram.client.ext": ["mime.types"]
     },
     zip_safe=False,
-    install_requires=read("requirements.txt"),
+    install_requires=requires,
     extras_require={
-        "tgcrypto": ["tgcrypto==1.1.1"],  # TODO: Remove soon
-        "fast": ["tgcrypto==1.1.1"],
+        "fast": ["tgcrypto==1.1.1"]
     },
     cmdclass={
         "clean": Clean,
