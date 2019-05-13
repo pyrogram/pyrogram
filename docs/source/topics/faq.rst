@@ -11,7 +11,7 @@ What is Pyrogram?
 -----------------
 
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
-C. It enables you to easily create custom applications using both user and bot identities (bot API alternative) via the
+C. It enables you to easily create custom applications for both user and bot identities (bot API alternative) via the
 `MTProto API`_ with the Python programming language.
 
 .. _Telegram: https://telegram.org
@@ -30,7 +30,7 @@ How old is Pyrogram?
 Pyrogram was first released on December 12, 2017. The actual work on the framework began roughly three months prior the
 initial public release on `GitHub`_.
 
-.. _GitHub: <https://github.com/pyrogram/pyrogram>
+.. _GitHub: https://github.com/pyrogram/pyrogram
 
 Why do I need an API key for bots?
 ----------------------------------

@@ -218,5 +218,5 @@ The output of both (equivalent) examples will be:
     1
     2
 
-.. _`update handlers`: UpdateHandling.html
-.. _`filters`: UsingFilters.html
+.. _`update handlers`: ../start/updates
+.. _`filters`: filters

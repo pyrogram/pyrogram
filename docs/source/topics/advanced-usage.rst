@@ -125,12 +125,9 @@ For example, given the ID *123456789*, here's how Pyrogram can tell entities apa
 So, every time you take a raw ID, make sure to translate it into the correct ID when you want to use it with an
 high-level method.
 
-
-
-
-.. _methods: ../pyrogram/Client.html#messages
-.. _types: ../pyrogram/Types.html
-.. _plenty of them: ../pyrogram/Client.html#messages
-.. _raw functions: ../pyrogram/functions
-.. _raw types: ../pyrogram/types
+.. _methods: ../api/methods
+.. _types: ../api/types
+.. _plenty of them: ../api/methods
+.. _raw functions: ../telegram/functions
+.. _raw types: ../telegram/types
 .. _Community: https://t.me/PyrogramChat

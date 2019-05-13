@@ -4,10 +4,13 @@ Handling Updates
 Calling `API methods`_ sequentially is cool, but how to react when, for example, a new message arrives? This page deals
 with updates and how to handle such events in Pyrogram. Let's have a look at how they work.
 
+Defining Updates
+----------------
+
 First, let's define what are these updates. As hinted already, updates are simply events that happen in your Telegram
 account (incoming messages, new members join, button presses, etc...), which are meant to notify you about a new
 specific state that changed. These updates are handled by registering one or more callback functions in your app using
-`Handlers <../pyrogram/Handlers.html>`_.
+`Handlers <../api/handlers>`_.
 
 Each handler deals with a specific event and once a matching update arrives from Telegram, your registered callback
 function will be called and its body executed.

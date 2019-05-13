@@ -65,7 +65,7 @@ after importing your modules, like this:
         app.run()
 
 This is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
-manually ``import``, manually :meth:`add_handler <pyrogram.Client.add_handler>` and manually instantiate each
+manually ``import``, manually :meth:`add_handler() <pyrogram.Client.add_handler>` and manually instantiate each
 :obj:`MessageHandler <pyrogram.MessageHandler>` object because **you can't use those cool decorators** for your
 functions. So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
 
@@ -156,7 +156,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 .. note::
 
     Remember: there can be at most one handler, within a group, dealing with a specific update. Plugins with overlapping
-    filters included a second time will not work. Learn more at `More on Updates <MoreOnUpdates.html>`_.
+    filters included a second time will not work. Learn more at `More on Updates <more-on-updates>`_.
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``

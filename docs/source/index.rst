@@ -23,7 +23,7 @@ Welcome to Pyrogram
 
         •
         <a href="https://github.com/pyrogram/pyrogram/releases">
-            Changelog
+            Releases
         </a>
         •
         <a href="https://pypi.org/project/Pyrogram">
@@ -55,7 +55,7 @@ Welcome to Pyrogram
     app.run()
 
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
-C. It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the
+C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the
 `MTProto API`_.
 
 .. _Telegram: https://telegram.org
@@ -65,7 +65,8 @@ How the Documentation is Organized
 ----------------------------------
 
 Contents are organized into self-contained topics and can be all accessed from the sidebar, or by following them in
-order using the Next button at the end of each page. Here below you can find a list of the most relevant pages.
+order using the Next button at the end of each page. Here below you can, instead, find a list of the most relevant
+pages.
 
 Getting Started
 ^^^^^^^^^^^^^^^
@@ -86,9 +87,9 @@ API Reference
 - `Available Methods`_ - A list of available high-level methods.
 - `Available Types`_ - A list of available high-level types.
 
-.. _Client Class: core/client
-.. _Available Methods: core/methods
-.. _Available Types: core/types
+.. _Client Class: api/client
+.. _Available Methods: api/methods
+.. _Available Types: api/types
 
 Topics
 ^^^^^^

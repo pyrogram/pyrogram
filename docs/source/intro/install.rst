@@ -88,5 +88,5 @@ If no error shows up you are good to go.
     >>> pyrogram.__version__
     '0.12.0'
 
-.. _TgCrypto: ../resources/tgcrypto.html
+.. _TgCrypto: ../topics/tgcrypto
 .. _`Github repo`: http://github.com/pyrogram/pyrogram

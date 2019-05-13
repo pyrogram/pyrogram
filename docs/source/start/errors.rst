@@ -4,18 +4,18 @@ Error Handling
 Errors are inevitable when working with the API, and they must be correctly handled with ``try..except`` blocks.
 
 There are many errors that Telegram could return, but they all fall in one of these categories
-(which are in turn children of the :obj:`RPCError <pyrogram.RPCError>` superclass):
+(which are in turn children of the ``RPCError`` superclass):
 
--   :obj:`303 - See Other <pyrogram.errors.SeeOther>`
--   :obj:`400 - Bad Request <pyrogram.errors.BadRequest>`
--   :obj:`401 - Unauthorized <pyrogram.errors.Unauthorized>`
--   :obj:`403 - Forbidden <pyrogram.errors.Forbidden>`
--   :obj:`406 - Not Acceptable <pyrogram.errors.NotAcceptable>`
--   :obj:`420 - Flood <pyrogram.errors.Flood>`
--   :obj:`500 - Internal Server Error <pyrogram.errors.InternalServerError>`
+-   `303 - See Other <../api/errors#see-other>`_
+-   `400 - Bad Request <../api/errors#bad-request>`_
+-   `401 - Unauthorized  <../api/errors#unauthorized>`_
+-   `403 - Forbidden <../api/errors#forbidden>`_
+-   `406 - Not Acceptable <../api/errors#not-acceptable>`_
+-   `420 - Flood <../api/errors#flood>`_
+-   `500 - Internal Server Error <../api/errors#internal-server-error>`_
 
 As stated above, there are really many (too many) errors, and in case Pyrogram does not know anything yet about a
-specific one, it raises a special :obj:`520 Unknown Error <pyrogram.errors.UnknownError>` exception and logs it
+specific one, it raises a special ``520 Unknown Error`` exception and logs it
 in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors.
 
 Examples
@@ -44,7 +44,7 @@ Examples
         pass
 
 Exception objects may also contain some informative values.
-E.g.: :obj:`FloodWait <pyrogram.errors.exceptions.flood_420.FloodWait>` holds the amount of seconds you have to wait
+E.g.: ``FloodWait`` holds the amount of seconds you have to wait
 before you can try again. The value is always stored in the ``x`` field of the returned exception object:
 
 .. code-block:: python

@@ -54,7 +54,7 @@ The ``[pyrogram]`` section contains your Telegram API credentials: *api_id* and 
     api_id = 12345
     api_hash = 0123456789abcdef0123456789abcdef
 
-`More info about API Key. <../start/Setup.html#configuration>`_
+`More info about API Key. <../intro/setup#api-keys>`_
 
 Proxy
 ^^^^^
@@ -70,7 +70,7 @@ The ``[proxy]`` section contains settings about your SOCKS5 proxy.
     username = <your_username>
     password = <your_password>
 
-`More info about SOCKS5 Proxy. <SOCKS5Proxy.html>`_
+`More info about SOCKS5 Proxy. <proxy>`_
 
 Plugins
 ^^^^^^^
@@ -87,4 +87,4 @@ The ``[plugins]`` section contains settings about Smart Plugins.
     exclude =
         module fn2
 
-`More info about Smart Plugins. <SmartPlugins.html>`_
+`More info about Smart Plugins. <smart-plugins>`_
