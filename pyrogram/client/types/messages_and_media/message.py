@@ -2725,7 +2725,7 @@ class Message(PyrogramType, Update):
             revoke=revoke
         )
 
-    def click(self, x: int or str, y: int = None, quote: bool = None, timeout: int = 10):
+    def click(self, x: int or str, y: int = 0, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:
