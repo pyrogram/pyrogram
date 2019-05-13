@@ -71,7 +71,7 @@ class InlineKeyboardButton(PyrogramType):
         switch_inline_query_current_chat: str = None,
         callback_game: CallbackGame = None
     ):
-        super().__init__(None)
+        super().__init__()
 
         self.text = str(text)
         self.url = url

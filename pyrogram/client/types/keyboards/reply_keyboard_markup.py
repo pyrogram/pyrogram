@@ -58,7 +58,7 @@ class ReplyKeyboardMarkup(PyrogramType):
         one_time_keyboard: bool = None,
         selective: bool = None
     ):
-        super().__init__(None)
+        super().__init__()
 
         self.keyboard = keyboard
         self.resize_keyboard = resize_keyboard

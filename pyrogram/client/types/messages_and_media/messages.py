@@ -42,7 +42,7 @@ class Messages(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         total_count: int,
         messages: List[Message]
     ):

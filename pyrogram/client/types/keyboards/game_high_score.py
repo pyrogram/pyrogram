@@ -42,7 +42,7 @@ class GameHighScore(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         user: User,
         score: int,
         position: int = None

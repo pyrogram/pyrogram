@@ -37,7 +37,7 @@ class InlineKeyboardMarkup(PyrogramType):
         self,
         inline_keyboard: List[List[InlineKeyboardButton]]
     ):
-        super().__init__(None)
+        super().__init__()
 
         self.inline_keyboard = inline_keyboard
 

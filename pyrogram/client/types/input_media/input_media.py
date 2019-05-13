@@ -33,7 +33,7 @@ class InputMedia(PyrogramType):
     __slots__ = ["media", "caption", "parse_mode"]
 
     def __init__(self, media: str, caption: str, parse_mode: str):
-        super().__init__(None)
+        super().__init__()
 
         self.media = media
         self.caption = caption

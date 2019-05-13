@@ -40,7 +40,7 @@ class ChatMembers(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         total_count: int,
         chat_members: List[ChatMember]
     ):

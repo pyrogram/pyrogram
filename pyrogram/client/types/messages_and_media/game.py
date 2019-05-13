@@ -53,7 +53,7 @@ class Game(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: int,
         title: str,
         short_name: str,

@@ -48,7 +48,7 @@ class KeyboardButton(PyrogramType):
         request_contact: bool = None,
         request_location: bool = None
     ):
-        super().__init__(None)
+        super().__init__()
 
         self.text = str(text)
         self.request_contact = request_contact

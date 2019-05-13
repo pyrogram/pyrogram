@@ -42,7 +42,7 @@ class ForceReply(PyrogramType):
         self,
         selective: bool = None
     ):
-        super().__init__(None)
+        super().__init__()
 
         self.selective = selective
 

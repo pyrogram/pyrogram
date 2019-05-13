@@ -53,7 +53,7 @@ class InlineQuery(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: str,
         from_user: User,
         query: str,
@@ -62,7 +62,6 @@ class InlineQuery(PyrogramType, Update):
     ):
         super().__init__(client)
 
-        self._client = client
         self.id = id
         self.from_user = from_user
         self.query = query

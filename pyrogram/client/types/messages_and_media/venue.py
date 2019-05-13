@@ -49,7 +49,7 @@ class Venue(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         location: Location,
         title: str,
         address: str,

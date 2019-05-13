@@ -38,7 +38,7 @@ class Location(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         longitude: float,
         latitude: float
     ):

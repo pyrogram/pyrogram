@@ -50,7 +50,7 @@ class ChatPreview(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         title: str,
         photo: ChatPhoto,
         type: str,

@@ -62,7 +62,7 @@ class Animation(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         width: int,
         height: int,

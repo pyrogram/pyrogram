@@ -28,4 +28,4 @@ class CallbackGame(PyrogramType):
     __slots__ = []
 
     def __init__(self):
-        super().__init__(None)
+        super().__init__()

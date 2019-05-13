@@ -282,7 +282,7 @@ class Message(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         message_id: int,
         date: int = None,
         chat: Chat = None,
@@ -2852,7 +2852,7 @@ class Message(PyrogramType, Update):
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> "Message":
+    ) -> str:
         """Bound method *download* of :obj:`Message`.
 
         Use as a shortcut for:

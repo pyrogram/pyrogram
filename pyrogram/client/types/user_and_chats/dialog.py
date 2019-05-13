@@ -51,7 +51,7 @@ class Dialog(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         chat: Chat,
         top_message: "pyrogram.Message",
         unread_messages_count: int,

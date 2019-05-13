@@ -40,7 +40,7 @@ class GameHighScores(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         total_count: int,
         game_high_scores: List[GameHighScore]
     ):
