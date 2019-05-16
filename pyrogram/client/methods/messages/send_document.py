@@ -46,7 +46,7 @@ class SendDocument(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Send general files.
+        """Send generic files.
 
         Parameters:
             chat_id (``int`` | ``str``):

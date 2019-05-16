@@ -8,7 +8,7 @@ Defining Updates
 ----------------
 
 First, let's define what are these updates. As hinted already, updates are simply events that happen in your Telegram
-account (incoming messages, new members join, button presses, etc...), which are meant to notify you about a new
+account (incoming messages, new members join, bot button presses, etc...), which are meant to notify you about a new
 specific state that changed. These updates are handled by registering one or more callback functions in your app using
 `Handlers <../api/handlers>`_.
 
@@ -70,7 +70,7 @@ begins.
 
     app.add_handler(my_handler)
 
-Last one, the :meth:`run() <pyrogram.Client.run>` method. What this does is simply calling
+Last one, the :meth:`run() <pyrogram.Client.run>` method. What this does is simply call
 :meth:`start() <pyrogram.Client.start>` and a special method :meth:`idle() <pyrogram.Client.idle>` that keeps your main
 scripts alive until you press ``CTRL+C``; the client will be automatically stopped after that.
 

@@ -30,7 +30,8 @@ class OnPoll(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling poll updates.
+        """Decorator for handling poll updates.
+
         This does the same thing as :meth:`add_handler` using the :class:`PollHandler`.
 
         Parameters:

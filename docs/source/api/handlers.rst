@@ -7,13 +7,12 @@ For a much more convenient way of registering callback functions have a look at 
 In case you decided to manually create an handler, use :meth:`add_handler() <pyrogram.Client.add_handler>` to register
 it.
 
-**Example:**
-
 .. code-block:: python
+    :emphasize-lines: 1, 10
 
     from pyrogram import Client, MessageHandler
 
-    app = Client(...)
+    app = Client("my_account")
 
 
     def dump(client, message):
@@ -34,6 +33,7 @@ it.
     CallbackQueryHandler
     InlineQueryHandler
     UserStatusHandler
+    PollHandler
     DisconnectHandler
     RawUpdateHandler
 
@@ -50,6 +50,9 @@ it.
     :members:
 
 .. autoclass:: UserStatusHandler()
+    :members:
+
+.. autoclass:: PollHandler()
     :members:
 
 .. autoclass:: DisconnectHandler()

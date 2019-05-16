@@ -29,12 +29,12 @@ Install Pyrogram
 Bleeding Edge
 -------------
 
-Things are constantly evolving in Pyrogram, although new releases are published only when enough changes are added,
-but this doesn't mean you can't try new features right now!
+Pyrogram is always evolving, although new releases on PyPI are published only when enough changes are added, but this
+doesn't mean you can't try new features right now!
 
-In case you would like to try out the latest Pyrogram features and additions, the `GitHub repo`_ is always kept updated
-with new changes; you can install the development version straight from the ``develop`` branch using this command
-(note "develop.zip" in the link):
+In case you'd like to try out the latest Pyrogram features, the `GitHub repo`_ is always kept updated with new changes;
+you can install the development version straight from the ``develop`` branch using this command (note "develop.zip" in
+the link):
 
 .. code-block:: text
 
@@ -44,7 +44,8 @@ Asynchronous
 ------------
 
 Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging framework after all), and here's
-where asyncio shines the most by providing extra performance while running on a single OS-level thread only.
+where asyncio shines the most by providing extra performance and efficiency while running on a single OS-level thread
+only.
 
 **A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5.3+ required).
 Use this command to install (note "asyncio.zip" in the link):

@@ -3,9 +3,8 @@ Available Types
 
 All Pyrogram types listed here are accessible through the main package directly.
 
-**Example:**
-
 .. code-block:: python
+    :emphasize-lines: 1
 
     from pyrogram import User, Message, ...
 
@@ -112,167 +111,72 @@ InputMessageContent
     ------------
 
 .. autoclass:: User()
-    :members:
-
 .. autoclass:: UserStatus()
-    :members:
-
 .. autoclass:: Chat()
-    :members:
-
 .. autoclass:: ChatPreview()
-    :members:
-
 .. autoclass:: ChatPhoto()
-    :members:
-
 .. autoclass:: ChatMember()
-    :members:
-
 .. autoclass:: ChatMembers()
-    :members:
-
 .. autoclass:: ChatPermissions()
-    :members:
-
 .. autoclass:: Dialog()
-    :members:
-
 .. autoclass:: Dialogs()
-    :members:
 
 ..  Messages & Media
     ----------------
 
 .. autoclass:: Message()
-    :members:
-
 .. autoclass:: Messages()
-    :members:
-
 .. autoclass:: MessageEntity()
-    :members:
-
 .. autoclass:: Photo()
-    :members:
-
 .. autoclass:: PhotoSize()
-    :members:
-
 .. autoclass:: UserProfilePhotos()
-    :members:
-
 .. autoclass:: Audio()
-    :members:
-
 .. autoclass:: Document()
-    :members:
-
 .. autoclass:: Animation()
-    :members:
-
 .. autoclass:: Video()
-    :members:
-
 .. autoclass:: Voice()
-    :members:
-
 .. autoclass:: VideoNote()
-    :members:
-
 .. autoclass:: Contact()
-    :members:
-
 .. autoclass:: Location()
-    :members:
-
 .. autoclass:: Venue()
-    :members:
-
 .. autoclass:: Sticker()
-    :members:
-
 .. autoclass:: Game()
-    :members:
-
 .. autoclass:: Poll()
-    :members:
-
 .. autoclass:: PollOption()
-    :members:
 
 ..  Keyboards
     ---------
 
 .. autoclass:: ReplyKeyboardMarkup()
-    :members:
-
 .. autoclass:: KeyboardButton()
-    :members:
-
 .. autoclass:: ReplyKeyboardRemove()
-    :members:
-
 .. autoclass:: InlineKeyboardMarkup()
-    :members:
-
 .. autoclass:: InlineKeyboardButton()
-    :members:
-
 .. autoclass:: ForceReply()
-    :members:
-
 .. autoclass:: CallbackQuery()
-    :members:
-
 .. autoclass:: GameHighScore()
-    :members:
-
 .. autoclass:: CallbackGame()
-    :members:
 
 ..  Input Media
     -----------
 
 .. autoclass:: InputMedia()
-    :members:
-
 .. autoclass:: InputMediaPhoto()
-    :members:
-
 .. autoclass:: InputMediaVideo()
-    :members:
-
 .. autoclass:: InputMediaAudio()
-    :members:
-
 .. autoclass:: InputMediaAnimation()
-    :members:
-
 .. autoclass:: InputMediaDocument()
-    :members:
-
 .. autoclass:: InputPhoneContact()
-    :members:
-
 
 ..  Inline Mode
     -----------
 
 .. autoclass:: InlineQuery()
-    :members:
-
 .. autoclass:: InlineQueryResult()
-    :members:
-
 .. autoclass:: InlineQueryResultArticle()
-    :members:
 
 ..  InputMessageContent
     -------------------
 
 .. autoclass:: InputMessageContent()
-    :members:
-
 .. autoclass:: InputTextMessageContent()
-    :members:

@@ -61,6 +61,7 @@ after the session name, which will be ``pyrogrambot.session`` for the example be
         "my_bot",
         bot_token="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
     )
+
     app.run()
 
 .. _project is set up: setup.html

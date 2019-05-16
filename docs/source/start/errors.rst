@@ -1,51 +1,57 @@
 Error Handling
 ==============
 
-Errors are inevitable when working with the API, and they must be correctly handled with ``try..except`` blocks.
-
-There are many errors that Telegram could return, but they all fall in one of these categories
-(which are in turn children of the ``RPCError`` superclass):
-
--   `303 - See Other <../api/errors#see-other>`_
--   `400 - Bad Request <../api/errors#bad-request>`_
--   `401 - Unauthorized  <../api/errors#unauthorized>`_
--   `403 - Forbidden <../api/errors#forbidden>`_
--   `406 - Not Acceptable <../api/errors#not-acceptable>`_
--   `420 - Flood <../api/errors#flood>`_
--   `500 - Internal Server Error <../api/errors#internal-server-error>`_
-
-As stated above, there are really many (too many) errors, and in case Pyrogram does not know anything yet about a
-specific one, it raises a special ``520 Unknown Error`` exception and logs it
-in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors.
-
-Examples
---------
+Errors are inevitable when working with the API, and they must be correctly handled with ``try..except`` blocks in order
+to control the behaviour of your application. Pyrogram errors all live inside the ``errors`` package:
 
 .. code-block:: python
 
-    from pyrogram.errors import (
-        BadRequest, Flood, InternalServerError,
-        SeeOther, Unauthorized, UnknownError
-    )
+    from pyrogram import errors
 
-    try:
-        ...
-    except BadRequest:
-        pass
-    except Flood:
-        pass
-    except InternalServerError:
-        pass
-    except SeeOther:
-        pass
-    except Unauthorized:
-        pass
-    except UnknownError:
-        pass
+RPCError
+--------
 
-Exception objects may also contain some informative values.
-E.g.: ``FloodWait`` holds the amount of seconds you have to wait
-before you can try again. The value is always stored in the ``x`` field of the returned exception object:
+The father of all errors is named ``RPCError``. This error exists in form of a Python exception and is able to catch all
+Telegram API related errors.
+
+.. code-block:: python
+
+    from pyrogram.errors import RPCError
+
+.. warning::
+
+    It must be noted that catching this error is bad practice, especially when no feedback is given (i.e. by
+    logging/printing the full error traceback), because it makes it impossible to understand what went wrong.
+
+Error Categories
+----------------
+
+The ``RPCError`` packs together all the possible errors Telegram could raise, but to make things tidier, Pyrogram
+provides categories of errors, which are named after the common HTTP errors:
+
+.. code-block:: python
+
+    from pyrogram.errors import BadRequest, Forbidden, ...
+
+-   `303 - SeeOther <../api/errors#seeother>`_
+-   `400 - BadRequest <../api/errors#badrequest>`_
+-   `401 - Unauthorized  <../api/errors#unauthorized>`_
+-   `403 - Forbidden <../api/errors#forbidden>`_
+-   `406 - NotAcceptable <../api/errors#notacceptable>`_
+-   `420 - Flood <../api/errors#flood>`_
+-   `500 - InternalServerError <../api/errors#internalservererror>`_
+
+Unknown Errors
+--------------
+
+In case Pyrogram does not know anything yet about a specific error, it raises a special ``520 - UnknownError`` exception
+and logs it in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors.
+
+Errors with Values
+------------------
+
+Exception objects may also contain some informative values. For example, ``FloodWait`` holds the amount of seconds you
+have to wait before you can try again. The value is always stored in the ``x`` field of the returned exception object:
 
 .. code-block:: python
 
@@ -55,4 +61,4 @@ before you can try again. The value is always stored in the ``x`` field of the r
     try:
         ...
     except FloodWait as e:
-        time.sleep(e.x)
+        time.sleep(e.x)  # Wait before trying again

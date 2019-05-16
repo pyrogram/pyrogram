@@ -7,6 +7,9 @@ but there's much more than that to come.
 Here we'll discuss about :class:`Filters <pyrogram.Filters>`. Filters enable a fine-grain control over what kind of
 updates are allowed or not to be passed in your callback functions, based on their inner details.
 
+Single Filters
+--------------
+
 Let's start right away with a simple example:
 
 -   This example will show you how to **only** handle messages containing an :obj:`Audio <pyrogram.Audio>` object and

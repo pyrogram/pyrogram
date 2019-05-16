@@ -30,7 +30,8 @@ class OnMessage(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling messages.
+        """Decorator for handling messages.
+
         This does the same thing as :meth:`add_handler` using the :class:`MessageHandler`.
 
         Parameters:

@@ -66,7 +66,7 @@ How the Documentation is Organized
 
 Contents are organized into self-contained topics and can be all accessed from the sidebar, or by following them in
 order using the Next button at the end of each page. Here below you can, instead, find a list of the most relevant
-pages.
+pages for a quick access.
 
 Getting Started
 ^^^^^^^^^^^^^^^
@@ -86,23 +86,27 @@ API Reference
 - `Client Class`_ - Details about the Client class.
 - `Available Methods`_ - A list of available high-level methods.
 - `Available Types`_ - A list of available high-level types.
+- `Bound Methods`_ - A list of convenient bound methods.
 
 .. _Client Class: api/client
 .. _Available Methods: api/methods
 .. _Available Types: api/types
+.. _Bound Methods: api/bound-methods
 
-Topics
-^^^^^^
+Relevant Topics
+^^^^^^^^^^^^^^^
 
 - `Smart Plugins`_ - How to modularize your application.
 - `Advanced Usage`_ - How to use Telegram's raw API.
 - `Release Notes`_ - Release notes for Pyrogram releases.
 - `Pyrogram FAQ`_ - Answers to common Pyrogram questions.
+- `Pyrogram Glossary`_ - A list of words with brief explanations.
 
 .. _Smart Plugins: topics/smart-plugins
 .. _Advanced Usage: topics/advanced-usage
 .. _Release Notes: topics/releases
 .. _Pyrogram FAQ: topics/faq
+.. _Pyrogram Glossary: topics/glossary
 
 .. toctree::
     :hidden:
@@ -128,6 +132,7 @@ Topics
     api/client
     api/methods
     api/types
+    api/bound-methods
     api/handlers
     api/decorators
     api/filters
@@ -152,6 +157,7 @@ Topics
     topics/voice-calls
     topics/releases
     topics/faq
+    topics/glossary
 
 .. toctree::
     :hidden:

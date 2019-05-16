@@ -30,7 +30,8 @@ class OnInlineQuery(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling inline queries.
+        """Decorator for handling inline queries.
+
         This does the same thing as :meth:`add_handler` using the :class:`InlineQueryHandler`.
 
         Parameters:

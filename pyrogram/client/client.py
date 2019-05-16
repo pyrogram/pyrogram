@@ -60,9 +60,7 @@ log = logging.getLogger(__name__)
 
 
 class Client(Methods, BaseClient):
-    """This class represents a Client, the main means for interacting with Telegram.
-    It exposes bot-like methods for an easy access to the API as well as a simple way to
-    invoke every single Telegram API method available.
+    """Pyrogram Client, the main means for interacting with Telegram.
 
     Parameters:
         session_name (``str``):
@@ -80,7 +78,7 @@ class Client(Methods, BaseClient):
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         app_version (``str``, *optional*):
-            Application version. Defaults to "Pyrogram \U0001f525 vX.Y.Z"
+            Application version. Defaults to "Pyrogram :fire: vX.Y.Z"
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         device_model (``str``, *optional*):
@@ -109,6 +107,10 @@ class Client(Methods, BaseClient):
             Enable or disable log-in to testing servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
+
+        bot_token (``str``, *optional*):
+            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Only applicable for new sessions.
 
         phone_number (``str`` | ``callable``, *optional*):
             Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
@@ -141,10 +143,6 @@ class Client(Methods, BaseClient):
             Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
             arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
             a new Telegram account in case the phone number you passed is not registered yet.
-            Only applicable for new sessions.
-
-        bot_token (``str``, *optional*):
-            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
 
         last_name (``str``, *optional*):
@@ -193,12 +191,12 @@ class Client(Methods, BaseClient):
         ipv6: bool = False,
         proxy: dict = None,
         test_mode: bool = False,
+        bot_token: str = None,
         phone_number: str = None,
         phone_code: Union[str, callable] = None,
         password: str = None,
         recovery_code: callable = None,
         force_sms: bool = False,
-        bot_token: str = None,
         first_name: str = None,
         last_name: str = None,
         workers: int = BaseClient.WORKERS,
@@ -221,12 +219,12 @@ class Client(Methods, BaseClient):
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
         self.test_mode = test_mode
+        self.bot_token = bot_token
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
         self.recovery_code = recovery_code
         self.force_sms = force_sms
-        self.bot_token = bot_token
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers

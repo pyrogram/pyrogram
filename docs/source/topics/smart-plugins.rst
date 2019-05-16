@@ -30,7 +30,7 @@ after importing your modules, like this:
         handlers.py
         main.py
 
-- ``handlers.py``
+-   ``handlers.py``
 
     .. code-block:: python
 
@@ -41,7 +41,7 @@ after importing your modules, like this:
         def echo_reversed(client, message):
             message.reply(message.text[::-1])
 
-- ``main.py``
+-   ``main.py``
 
     .. code-block:: python
 
@@ -91,7 +91,7 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
         config.ini
         main.py
 
-- ``plugins/handlers.py``
+-   ``plugins/handlers.py``
 
     .. code-block:: python
         :emphasize-lines: 4, 9
@@ -108,14 +108,14 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
         def echo_reversed(client, message):
             message.reply(message.text[::-1])
 
-- ``config.ini``
+-   ``config.ini``
 
     .. code-block:: ini
 
         [plugins]
         root = plugins
 
-- ``main.py``
+-   ``main.py``
 
     .. code-block:: python
 
@@ -199,8 +199,8 @@ also organized in subfolders:
                 ...
         ...
 
-- Load every handler from every module, namely *plugins0.py*, *plugins1.py* and *plugins2.py* in alphabetical order
-  (files) and definition order (handlers inside files):
+-   Load every handler from every module, namely *plugins0.py*, *plugins1.py* and *plugins2.py* in alphabetical order
+    (files) and definition order (handlers inside files):
 
     Using *config.ini* file:
 
@@ -217,7 +217,7 @@ also organized in subfolders:
 
         Client("my_account", plugins=plugins).run()
 
-- Load only handlers defined inside *plugins2.py* and *plugins0.py*, in this order:
+-   Load only handlers defined inside *plugins2.py* and *plugins0.py*, in this order:
 
     Using *config.ini* file:
 
@@ -243,7 +243,7 @@ also organized in subfolders:
 
         Client("my_account", plugins=plugins).run()
 
-- Load everything except the handlers inside *plugins2.py*:
+-   Load everything except the handlers inside *plugins2.py*:
 
     Using *config.ini* file:
 
@@ -264,7 +264,7 @@ also organized in subfolders:
 
         Client("my_account", plugins=plugins).run()
 
-- Load only *fn3*, *fn1* and *fn2* (in this order) from *plugins1.py*:
+-   Load only *fn3*, *fn1* and *fn2* (in this order) from *plugins1.py*:
 
     Using *config.ini* file:
 
@@ -297,7 +297,7 @@ Each function decorated with the usual ``on_message`` decorator (or any other de
 *(handler: Handler, group: int)*. The actual callback function is therefore stored inside the handler's *callback*
 attribute. Here's an example:
 
-- ``plugins/handlers.py``
+-   ``plugins/handlers.py``
 
     .. code-block:: python
         :emphasize-lines: 5, 6
@@ -321,7 +321,7 @@ In order to unload a plugin, or any other handler, all you need to do is obtain 
 relevant module and call :meth:`remove_handler() <pyrogram.Client.remove_handler>` Client's method with your function
 name preceded by the star ``*`` operator as argument. Example:
 
-- ``main.py``
+-   ``main.py``
 
     .. code-block:: python
 
@@ -345,7 +345,7 @@ Loading
 Similarly to the unloading process, in order to load again a previously unloaded plugin you do the same, but this time
 using :meth:`add_handler() <pyrogram.Client.add_handler>` instead. Example:
 
-- ``main.py``
+-   ``main.py``
 
     .. code-block:: python
 

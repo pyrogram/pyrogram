@@ -1,7 +1,7 @@
 Decorators
 ==========
 
-While still being methods bound to the :obj:`Client` class, decorators are of a special kind and thus deserve a
+While still being methods bound to the :obj:`Client <pyrogram.Client>` class, decorators are of a special kind and thus deserve a
 dedicated page.
 
 Decorators are able to register callback functions for handling updates in a much easier and cleaner way compared to
@@ -9,13 +9,12 @@ Decorators are able to register callback functions for handling updates in a muc
 :meth:`add_handler() <pyrogram.Client.add_handler>`, automatically. All you need to do is adding the decorators on top
 of your functions.
 
-**Example:**
-
 .. code-block:: python
+    :emphasize-lines: 6
 
     from pyrogram import Client
 
-    app = Client(...)
+    app = Client("my_account")
 
 
     @app.on_message()

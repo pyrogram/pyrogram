@@ -101,9 +101,9 @@ sending messages with IDs only thanks to cached access hashes.
 There are three different InputPeer types, one for each kind of Telegram entity.
 Whenever an InputPeer is needed you must pass one of these:
 
-    - `InputPeerUser <https://docs.pyrogram.ml/types/InputPeerUser>`_ - Users
-    - `InputPeerChat <https://docs.pyrogram.ml/types/InputPeerChat>`_ -  Basic Chats
-    - `InputPeerChannel <https://docs.pyrogram.ml/types/InputPeerChannel>`_ - Either Channels or Supergroups
+    - :obj:`InputPeerUser <../telegram/types/InputPeerUser>` - Users
+    - :obj:`InputPeerChat <../telegram/types/InputPeerChat>` -  Basic Chats
+    - :obj:`InputPeerChannel <../telegram/types/InputPeerChannel>` - Either Channels or Supergroups
 
 But you don't necessarily have to manually instantiate each object because, luckily for you, Pyrogram already provides
 :meth:`resolve_peer() <pyrogram.Client.resolve_peer>` as a convenience utility method that returns the correct InputPeer

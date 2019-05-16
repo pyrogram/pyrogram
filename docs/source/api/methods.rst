@@ -3,13 +3,12 @@ Available Methods
 
 All Pyrogram methods listed here are bound to a :obj:`Client <pyrogram.Client>` instance.
 
-**Example:**
-
 .. code-block:: python
+    :emphasize-lines: 6
 
     from pyrogram import Client
 
-    app = Client(...)
+    app = Client("my_account")
 
     with app:
         app.send_message("haskell", "hi")

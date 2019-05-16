@@ -30,7 +30,7 @@ class OnUserStatus(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling user status updates.
+        """Decorator for handling user status updates.
         This does the same thing as :meth:`add_handler` using the :class:`UserStatusHandler`.
 
         Parameters:

@@ -1,8 +1,11 @@
 Calling Methods
 ===============
 
-At this point, we have successfully `installed Pyrogram`_ and authorized_ our account; we are now pointing towards the
+At this point, we have successfully `installed Pyrogram`_ and authorized_ our account; we are now aiming towards the
 core of the library. It's time to start playing with the API!
+
+Basic Usage
+-----------
 
 Making API method calls with Pyrogram is very simple. Here's an example we are going to examine:
 
@@ -60,8 +63,8 @@ Context Manager
 ---------------
 
 You can also use Pyrogram's Client in a context manager with the ``with`` statement. The client will automatically
-:meth:`start <pyrogram.Client.start>` and :meth:`stop <pyrogram.Client.stop>` gracefully, even in case of unhandled
-exceptions in your code. The example above can be therefore rewritten in a much nicer way, this way:
+:meth:`start() <pyrogram.Client.start>` and :meth:`stop() <pyrogram.Client.stop>` gracefully, even in case of unhandled
+exceptions in your code. The example above can be therefore rewritten in a much nicer way:
 
 .. code-block:: python
 

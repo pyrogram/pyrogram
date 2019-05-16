@@ -1,7 +1,16 @@
 Pyrogram Client
 ===============
 
-The :class:`Client <pyrogram.Client>` is the main class. It exposes easy-to-use methods that are named
-after the well established Telegram Bot API methods, thus offering a familiar look to Bot developers.
+This class exposes high-level methods for an easy access to the API.
+
+.. code-block:: python
+    :emphasize-lines: 1-3
+
+    from pyrogram import Client
+
+    app = Client("my_account")
+
+    with app:
+        app.send_message("me", "Hi!")
 
 .. autoclass:: pyrogram.Client()

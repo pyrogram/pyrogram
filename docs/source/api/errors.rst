@@ -5,27 +5,26 @@ All Pyrogram API errors live inside the ``errors`` sub-package: ``pyrogram.error
 The errors ids listed here are shown as *UPPER_SNAKE_CASE*, but the actual exception names to import from Pyrogram
 follow the usual *PascalCase* convention.
 
-**Example**:
-
 .. code-block:: python
+    :emphasize-lines: 1, 5
 
-    from pyrogram.errors import InternalServerError
+    from pyrogram.errors import FloodWait
 
     try:
         ...
-    except FloodWait:
+    except FloodWait as e:
         ...
 
-303 - See Other
----------------
+303 - SeeOther
+--------------
 
 .. csv-table::
     :file: ../../../compiler/error/source/303_SEE_OTHER.tsv
     :delim: tab
     :header-rows: 1
 
-400 - Bad Request
------------------
+400 - BadRequest
+----------------
 
 .. csv-table::
     :file: ../../../compiler/error/source/400_BAD_REQUEST.tsv
@@ -48,8 +47,8 @@ follow the usual *PascalCase* convention.
     :delim: tab
     :header-rows: 1
 
-406 - Not Acceptable
---------------------
+406 - NotAcceptable
+-------------------
 
 .. csv-table::
     :file: ../../../compiler/error/source/406_NOT_ACCEPTABLE.tsv
@@ -64,8 +63,8 @@ follow the usual *PascalCase* convention.
     :delim: tab
     :header-rows: 1
 
-500 - Internal Server Error
----------------------------
+500 - InternalServerError
+-------------------------
 
 .. csv-table::
     :file: ../../../compiler/error/source/500_INTERNAL_SERVER_ERROR.tsv

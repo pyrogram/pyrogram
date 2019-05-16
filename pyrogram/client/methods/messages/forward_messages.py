@@ -28,7 +28,7 @@ class ForwardMessages(BaseClient):
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
-        message_ids: Iterable[int],
+        message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
         as_copy: bool = False,
         remove_caption: bool = False

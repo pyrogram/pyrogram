@@ -191,35 +191,19 @@ class Filters:
     """Filter messages sent via inline bots"""
 
     service = create("Service", lambda _, m: bool(m.service))
-    """Filter service messages. A service message contains any of the following fields set
+    """Filter service messages.
     
-    - left_chat_member
-    - new_chat_title
-    - new_chat_photo
-    - delete_chat_photo
-    - group_chat_created
-    - supergroup_chat_created
-    - channel_chat_created
-    - migrate_to_chat_id
-    - migrate_from_chat_id
-    - pinned_message
-    - game_score"""
+    A service message contains any of the following fields set: *left_chat_member*,
+    *new_chat_title*, *new_chat_photo*, *delete_chat_photo*, *group_chat_created*, *supergroup_chat_created*,
+    *channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*.
+    """
 
     media = create("Media", lambda _, m: bool(m.media))
-    """Filter media messages. A media message contains any of the following fields set
+    """Filter media messages.
     
-    - audio
-    - document
-    - photo
-    - sticker
-    - video
-    - animation
-    - voice
-    - video_note
-    - contact
-    - location
-    - venue
-    - poll"""
+    A media message contains any of the following fields set: *audio*, *document*, *photo*, *sticker*, *video*,
+    *animation*, *voice*, *video_note*, *contact*, *location*, *venue*, *poll*.
+    """
 
     @staticmethod
     def command(
