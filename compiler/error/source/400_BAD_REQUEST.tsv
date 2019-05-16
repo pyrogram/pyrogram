@@ -97,3 +97,4 @@ CHAT_NOT_MODIFIED	The chat settings were not modified
 RESULTS_TOO_MUCH	The result contains too many items
 RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers
 ACCESS_TOKEN_INVALID	The bot access token is invalid
+INVITE_HASH_EXPIRED	The chat invite link is no longer valid
