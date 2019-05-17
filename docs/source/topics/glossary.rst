@@ -2,7 +2,12 @@ Pyrogram Glossary
 -----------------
 
 This page contains a list of common words with brief explanations related to Pyrogram and, to some extent, Telegram in
-general.
+general. Some words may as well link to dedicated articles in case the topic is covered in a more detailed fashion.
+
+.. tip::
+
+    If you think something interesting could be added here, feel free to propose it by opening a `Feature Request`_.
+
 
 .. glossary::
 
@@ -13,6 +18,18 @@ general.
     API key
         A secret code used to authenticate and/or authorize a specific application to Telegram in order for it to
         control how the API is being used, for example, to prevent abuses of the API.
+
+    DC
+        Also known as *data center*, is a place where lots of computer systems are housed and used together in order to
+        achieve high quality and availability for services.
+
+    RPC
+        Acronym for Remote Procedure call, that is, a function which gets executed at some remote place (i.e. Telegram
+        server) and not in your local.
+
+    RPCError
+        An error caused by an RPC which must be returned in place of the successful result in order to let the caller
+        know something went wrong.
 
     MTProto
         The name of the custom-made, open encryption protocol by Telegram, implemented in Pyrogram.
@@ -51,3 +68,5 @@ general.
 
 .. _Telegram Bot API: https://core.telegram.org/bots/api
 .. _handling updates: ../start/updates
+
+.. _Feature Request: https://github.com/pyrogram/pyrogram/issues/new?labels=enhancement&template=feature_request.md

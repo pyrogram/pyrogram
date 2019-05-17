@@ -78,7 +78,7 @@ class Client(Methods, BaseClient):
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         app_version (``str``, *optional*):
-            Application version. Defaults to "Pyrogram :fire: vX.Y.Z"
+            Application version. Defaults to "Pyrogram X.Y.Z"
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         device_model (``str``, *optional*):

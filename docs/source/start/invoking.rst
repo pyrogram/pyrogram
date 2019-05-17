@@ -36,7 +36,7 @@ Now instantiate a new Client object, "my_account" is a session name of your choi
 
     app = Client("my_account")
 
-To actually make use of any method, the client has to be started:
+To actually make use of any method, the client has to be started first:
 
 .. code-block:: python
 

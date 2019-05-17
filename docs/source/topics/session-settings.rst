@@ -8,16 +8,16 @@ Briefly explaining, sessions are simply new logins in your account. They can be 
 app (or by invoking `GetAuthorizations <../telegram/functions/account/GetAuthorizations.html>`_ with Pyrogram). They
 store some useful information such as the client who's using them and from which country and IP address.
 
-.. figure:: https://i.imgur.com/lzGPCdZ.png
-    :width: 70%
+.. figure:: https://i.imgur.com/YaqtMLO.png
+    :width: 90%
     :align: center
 
-    **A Pyrogram session running on Linux, Python 3.6.**
+    **A Pyrogram session running on Linux, Python 3.7.**
 
 That's how a session looks like on the Android app, showing the three main pieces of information.
 
--   ``app_version``: **Pyrogram 🔥 0.7.5**
--   ``device_model``: **CPython 3.6.5**
+-   ``app_version``: **Pyrogram 0.13.0**
+-   ``device_model``: **CPython 3.7.2**
 -   ``system_version``: **Linux 4.15.0-23-generic**
 
 Set Custom Values

@@ -2,7 +2,7 @@ Authorization
 =============
 
 Once a `project is set up`_, you will still have to follow a few steps before you can actually use Pyrogram to make
-API calls. This section provides all the information you need in order to authorize yourself as user or a bot.
+API calls. This section provides all the information you need in order to authorize yourself as user or bot.
 
 User Authorization
 ------------------
@@ -51,7 +51,7 @@ the `Bot Father`_. Bot tokens replace the users' phone numbers only — you stil
 
 The authorization process is automatically managed. All you need to do is choose a ``session_name`` (can be anything,
 usually your bot username) and pass your bot token using the ``bot_token`` parameter. The session file will be named
-after the session name, which will be ``pyrogrambot.session`` for the example below.
+after the session name, which will be ``my_bot.session`` for the example below.
 
 .. code-block:: python
 

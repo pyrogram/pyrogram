@@ -3,9 +3,14 @@ Pyrogram FAQ
 
 This FAQ page provides answers to common questions about Pyrogram and, to some extent, Telegram in general.
 
+.. tip::
+
+    If you think something interesting could be added here, feel free to propose it by opening a `Feature Request`_.
+
 .. contents:: Contents
     :backlinks: none
     :local:
+    :depth: 1
 
 What is Pyrogram?
 -----------------
@@ -41,6 +46,7 @@ Why Pyrogram?
 - **Documented**: Pyrogram API methods, types and public interfaces are well documented.
 - **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
 - **Updated**, to make use of the latest Telegram API version and features.
+- **Bot API-like**: Similar to the Bot API in its simplicity, but much more powerful and detailed.
 - **Pluggable**: The `Smart Plugin`_ system allows to write components with minimal boilerplate code.
 - **Comprehensive**: Execute any `advanced action`_ an official client is able to do, and even more.
 
@@ -51,23 +57,41 @@ Why Pyrogram?
 What can MTProto do more than the Bot API?
 ------------------------------------------
 
-- Authorize both user and bot identities.
-- Upload & download any file, up to 1500 MB each.
-- Has less overhead due to direct connections to the actual Telegram servers.
-- Run multiple sessions at once, up to 10 per account (either bot or user).
-- Get information about any public chat by usernames, even if not a member.
-- Obtain information about any message existing in a chat using message ids.
-- retrieve the whole chat members list of either public or private chats.
-- Receive extra updates, such as the one about a user name change.
-- More meaningful errors in case something went wrong.
-- Get API version updates, and thus new features, sooner.
+Here you can find a list of all the known advantages in using MTProto-based libraries (Pyrogram) instead of the official
+HTTP Bot API:
+
+- **Authorize both user and bot identities**: The Bot API only allows bot accounts.
+
+- **Upload & download any file, up to 1500 MB each (~1.5 GB)**: The Bot API allows uploads and downloads of files only
+  up to 50 MB / 20 MB in size (respectively).
+
+- **Has less overhead due to direct connections to Telegram**: The Bot API uses an intermediate server to handle HTTP
+  requests before they are sent to the actual Telegram servers.
+
+- **Run multiple sessions at once, up to 10 per account (either bot or user)**: The Bot API intermediate server will
+  terminate any other session in case you try to use the same bot again in a parallel connection.
+
+- **Get information about any public chat by usernames, even if not a member**: The Bot API simply doesn't support this.
+
+- **Obtain information about any message existing in a chat using their ids**: The Bot API simply doesn't support this.
+
+- **Retrieve the whole chat members list of either public or private chats**: The Bot API simply doesn't support this.
+
+- **Receive extra updates, such as the one about a user name change**: The Bot API simply doesn't support this.
+
+- **Has more meaningful errors in case something went wrong**: The Bot API reports less detailed errors.
+
+- **Has much more detailed types and powerful methods**: The Bot API types often miss some useful information about
+  Telegram's type and some of the methods are limited as well.
+
+- **Get API version updates, and thus new features, sooner**: The Bot API is simply slower in implementing new features.
 
 Why do I need an API key for bots?
 ----------------------------------
 
-Requests against the official bot API endpoint are made via JSON/HTTP, but are handled by a backend application that
-implements the MTProto protocol -- just like Pyrogram -- and uses its own API key, which is always required, but hidden
-to the public.
+Requests against the official bot API endpoint are made via JSON/HTTP, but are handled by an intermediate server
+application that implements the MTProto protocol -- just like Pyrogram -- and uses its own API key, which is always
+required, but hidden to the public.
 
 .. figure:: https://i.imgur.com/C108qkX.png
     :align: center
@@ -76,9 +100,7 @@ Using MTProto is the only way to communicate with the actual Telegram servers, a
 identify applications by means of a unique key; the bot token identifies a bot as a user and replaces the user's phone
 number only.
 
-Why is the main API (MTProto) superiod
-
-I started a client but nothing happens!
+I started a client and nothing happens!
 ---------------------------------------
 
 If you are connecting from Russia, China or Iran `you need a proxy`_, because Telegram could be partially or
@@ -92,6 +114,15 @@ in a bunch of seconds:
 
     import logging
     logging.basicConfig(level=logging.INFO)
+
+Another way to confirm you aren't able to connect to Telegram is by pinging these IP addresses and see whether ping
+fails or not:
+
+- DC1: ``149.154.175.50``
+- DC2: ``149.154.167.51``
+- DC3: ``149.154.175.100``
+- DC4: ``149.154.167.91``
+- DC5: ``91.108.56.149``
 
 |bug report|
 
@@ -114,7 +145,16 @@ things:
 
     **Note:** If you really believe this should not happen, kindly open a `Bug Report`_.
 
-.. _Bug Report: https://github.com/pyrogram/pyrogram/issues/new?labels=bug&template=bug_report.md
+Can I use the same file_id across different accounts?
+-----------------------------------------------------
+
+No, Telegram doesn't allow this.
+
+File ids are bound to a specific user/bot, and an attempt in using a foreign file id will result in errors such as
+**[400 MEDIA_EMPTY]: The media is invalid**.
+
+The only exception are stickers' file ids; you can use them across different accounts without any problem, like this
+one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
 
 My account has been deactivated/limited!
 ----------------------------------------
@@ -151,3 +191,6 @@ for free under LGPLv3+.
 In other words: you can use and integrate Pyrogram into your own code --- either open source, under the same or a
 different licence or even proprietary --- without being required to release the source code of your own applications.
 However, any modifications to the library itself are required to be published for free under the same LGPLv3+ license.
+
+.. _Bug Report: https://github.com/pyrogram/pyrogram/issues/new?labels=bug&template=bug_report.md
+.. _Feature Request: https://github.com/pyrogram/pyrogram/issues/new?labels=enhancement&template=feature_request.md

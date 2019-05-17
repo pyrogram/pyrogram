@@ -55,7 +55,7 @@ Use this command to install (note "asyncio.zip" in the link):
     $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/asyncio.zip
 
 
-Pyrogram API remains the same and features are kept up to date from the non-async, default develop branch, but you
+Pyrogram's API remains the same and features are kept up to date from the non-async, default develop branch, but you
 are obviously required Python asyncio knowledge in order to take full advantage of it.
 
 
@@ -87,7 +87,7 @@ If no error shows up you are good to go.
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.12.0'
+    '0.13.0'
 
 .. _TgCrypto: ../topics/tgcrypto
 .. _`Github repo`: http://github.com/pyrogram/pyrogram

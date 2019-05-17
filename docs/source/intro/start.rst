@@ -1,7 +1,8 @@
 Quick Start
 ===========
 
-The next few steps serve as a quick start for all new Pyrogrammers that want to get something done as fast as possible!
+The next few steps serve as a quick start for all new Pyrogrammers that want to get something done as fast as possible.
+Let's go!
 
 Get Pyrogram Real Fast
 ----------------------

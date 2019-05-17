@@ -9,11 +9,11 @@ Defining Updates
 
 First, let's define what are these updates. As hinted already, updates are simply events that happen in your Telegram
 account (incoming messages, new members join, bot button presses, etc...), which are meant to notify you about a new
-specific state that changed. These updates are handled by registering one or more callback functions in your app using
-`Handlers <../api/handlers>`_.
+specific state that has changed. These updates are handled by registering one or more callback functions in your app
+using `Handlers <../api/handlers>`_.
 
 Each handler deals with a specific event and once a matching update arrives from Telegram, your registered callback
-function will be called and its body executed.
+function will be called back by the framework and its body executed.
 
 Registering an Handler
 ----------------------
@@ -63,8 +63,8 @@ above must only handle updates that are in form of a :obj:`Message <pyrogram.Mes
     my_handler = MessageHandler(my_function)
 
 Third: the method :meth:`add_handler() <pyrogram.Client.add_handler>`. This method is used to actually register the
-handler and let Pyrogram know it needs to be taken into consideration when new updates arrive and the dispatching phase
-begins.
+handler and let Pyrogram know it needs to be taken into consideration when new updates arrive and the internal
+dispatching phase begins.
 
 .. code-block:: python
 
@@ -109,4 +109,4 @@ to do so is by decorating your callback function with the :meth:`on_message() <p
     ``my_function[0].callback``, that is, the *callback* field of the *handler* object which is the first element in the
     tuple, accessed by bracket notation *[0]*.
 
-.. _API methods: usage.html
+.. _API methods: invoking

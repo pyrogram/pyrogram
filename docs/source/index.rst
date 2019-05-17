@@ -14,29 +14,15 @@ Welcome to Pyrogram
 
         <br>
         <a href="https://github.com/pyrogram/pyrogram">
-            GitHub
+            Source Code
         </a>
-        •
-        <a href="https://t.me/Pyrogram">
-            Community
-        </a>
-
         •
         <a href="https://github.com/pyrogram/pyrogram/releases">
             Releases
         </a>
         •
-        <a href="https://pypi.org/project/Pyrogram">
-            PyPI
-        </a>
-        <br>
-        <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30"
-                alt="Schema Layer">
-        </a>
-        <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
-                alt="TgCrypto Version">
+        <a href="https://t.me/Pyrogram">
+            Community
         </a>
     </p>
 
@@ -59,7 +45,7 @@ C. It enables you to easily create custom apps for both user and bot identities 
 `MTProto API`_.
 
 .. _Telegram: https://telegram.org
-.. _MTProto API: https://core.telegram.org/api#telegram-api
+.. _MTProto API: topics/faq#what-can-mtproto-do-more-than-the-bot-api
 
 How the Documentation is Organized
 ----------------------------------
@@ -68,11 +54,11 @@ Contents are organized into self-contained topics and can be all accessed from t
 order using the Next button at the end of each page. Here below you can, instead, find a list of the most relevant
 pages for a quick access.
 
-Getting Started
-^^^^^^^^^^^^^^^
+First Steps
+^^^^^^^^^^^
 
-- `Quick Start`_ - Overview to get you started as fast as possible.
-- `Calling Methods`_ - How to use Pyrogram's API.
+- `Quick Start`_ - Overview to get you started quickly.
+- `Calling Methods`_ - How to call Pyrogram's methods.
 - `Handling Updates`_ - How to handle Telegram updates.
 - `Error Handling`_ - How to handle API errors correctly.
 
@@ -83,7 +69,8 @@ Getting Started
 
 API Reference
 ^^^^^^^^^^^^^
-- `Client Class`_ - Details about the Client class.
+
+- `Client Class`_ - Reference details about the Client class.
 - `Available Methods`_ - A list of available high-level methods.
 - `Available Types`_ - A list of available high-level types.
 - `Bound Methods`_ - A list of convenient bound methods.

@@ -59,6 +59,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 - **Documented**: Pyrogram API methods, types and public interfaces are well documented.
 - **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
 - **Updated**, to make use of the latest Telegram API version and features.
+- **Bot API-like**: Similar to the Bot API in its simplicity, but much more powerful and detailed.
 - **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
 - **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
 

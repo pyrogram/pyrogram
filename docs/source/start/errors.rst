@@ -11,8 +11,9 @@ to control the behaviour of your application. Pyrogram errors all live inside th
 RPCError
 --------
 
-The father of all errors is named ``RPCError``. This error exists in form of a Python exception and is able to catch all
-Telegram API related errors.
+The father of all errors is named ``RPCError``. This error exists in form of a Python exception which is directly
+subclass-ed from Python's main ``Exception`` and is able to catch all Telegram API related errors. This error is raised
+every time a method call against Telegram's API was unsuccessful.
 
 .. code-block:: python
 
@@ -27,7 +28,7 @@ Error Categories
 ----------------
 
 The ``RPCError`` packs together all the possible errors Telegram could raise, but to make things tidier, Pyrogram
-provides categories of errors, which are named after the common HTTP errors:
+provides categories of errors, which are named after the common HTTP errors and subclass-ed from the RPCError:
 
 .. code-block:: python
 
@@ -40,6 +41,32 @@ provides categories of errors, which are named after the common HTTP errors:
 -   `406 - NotAcceptable <../api/errors#notacceptable>`_
 -   `420 - Flood <../api/errors#flood>`_
 -   `500 - InternalServerError <../api/errors#internalservererror>`_
+
+Single Errors
+-------------
+
+For a fine-grained control over every single error, Pyrogram does also expose errors that deal each with a specific
+issue. For example:
+
+.. code-block:: python
+
+    from pyrogram.errors import FloodWait
+
+These errors subclass directly from the category of errors they belong to, which in turn subclass from the father
+RPCError, thus building a class of error hierarchy such as this:
+
+- RPCError
+    - BadRequest
+        - ``MessageEmpty``
+        - ``UsernameOccupied``
+        - ``...``
+    - InternalServerError
+        - ``RpcCallFail``
+        - ``InterDcCallError``
+        - ``...``
+    - ``...``
+
+.. _Errors: api/errors
 
 Unknown Errors
 --------------
