@@ -13,7 +13,7 @@
         Releases
     </a>
     •
-    <a href="https://t.me/PyrogramChat">
+    <a href="https://t.me/Pyrogram">
         Community
     </a>
     <br>
@@ -58,8 +58,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
   written in pure C.
 - **Documented**: Pyrogram API methods, types and public interfaces are well documented.
 - **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
-- **Updated**, to the latest Telegram API version, currently Layer 97 on top of
-  [MTProto 2.0](https://core.telegram.org/mtproto).
+- **Updated**, to make use of the latest Telegram API version and features.
 - **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
 - **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
 
