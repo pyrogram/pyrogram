@@ -32,7 +32,7 @@ class ChatPreview(PyrogramType):
         title (``str``):
             Title of the chat.
 
-        photo (:obj:`ChatPhoto`):
+        photo (:obj:`ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
         type (``str``):
@@ -52,7 +52,7 @@ class ChatPreview(PyrogramType):
         *,
         client: "pyrogram.BaseClient" = None,
         title: str,
-        photo: ChatPhoto,
+        photo: ChatPhoto = None,
         type: str,
         members_count: int,
         members: List[User] = None

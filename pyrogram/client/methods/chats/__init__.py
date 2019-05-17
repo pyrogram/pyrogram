@@ -22,7 +22,6 @@ from .get_chat import GetChat
 from .get_chat_member import GetChatMember
 from .get_chat_members import GetChatMembers
 from .get_chat_members_count import GetChatMembersCount
-from .get_chat_preview import GetChatPreview
 from .get_dialogs import GetDialogs
 from .iter_chat_members import IterChatMembers
 from .iter_dialogs import IterDialogs
@@ -61,7 +60,6 @@ class Chats(
     UnpinChatMessage,
     GetDialogs,
     GetChatMembersCount,
-    GetChatPreview,
     IterDialogs,
     IterChatMembers,
     UpdateChatUsername,

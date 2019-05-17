@@ -27,8 +27,9 @@ class GetChat(BaseClient):
     def get_chat(
         self,
         chat_id: Union[int, str]
-    ) -> "pyrogram.Chat":
-        """Get up to date information about the chat.
+    ) -> Union["pyrogram.Chat", "pyrogram.ChatPreview"]:
+        """Get up to date information about a chat.
+
         Information include current name of the user for one-on-one conversations, current username of a user, group or
         channel, etc.
 
@@ -39,7 +40,8 @@ class GetChat(BaseClient):
                 of the target channel/supergroup (in the format @username).
 
         Returns:
-            :obj:`Chat`: On success, a chat object is returned.
+            :obj:`Chat` | :obj:`ChatPreview`: On success, if you've already joined the chat, a chat object is returned,
+            otherwise, a chat preview object is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -48,16 +50,14 @@ class GetChat(BaseClient):
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            h = match.group(1)
-
             r = self.send(
                 functions.messages.CheckChatInvite(
-                    hash=h
+                    hash=match.group(1)
                 )
             )
 
             if isinstance(r, types.ChatInvite):
-                raise ValueError("You haven't joined \"t.me/joinchat/{}\" yet".format(h))
+                return pyrogram.ChatPreview._parse(self, r)
 
             self.fetch_peers([r.chat])
 
