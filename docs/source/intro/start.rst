@@ -44,5 +44,5 @@ In the next few pages of the introduction, we'll take a much more in-depth look 
 
 Feeling eager to continue? You can take a shortcut to `Calling Methods`_ and come back later to learn some more details.
 
-.. _community: //t.me/pyrogramchat
+.. _community: //t.me/Pyrogram
 .. _Calling Methods: ../start/invoking

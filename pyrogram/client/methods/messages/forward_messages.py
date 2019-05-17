@@ -64,11 +64,9 @@ class ForwardMessages(BaseClient):
                 Defaults to False.
 
         Returns:
-            :obj:`Message`: In case *message_ids* was an integer, the single forwarded message is
-            returned.
-
-            :obj:`Messages` -- In case *message_ids* was an iterable, the returned value will be an
-            object containing a list of messages, even if such iterable contained just a single element.
+            :obj:`Message` | :obj:`Messages`: In case *message_ids* was an integer, the single forwarded message is
+            returned, otherwise, in case *message_ids* was an iterable, the returned value will be an object containing
+            a list of messages, even if such iterable contained just a single element.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

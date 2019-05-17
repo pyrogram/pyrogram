@@ -130,4 +130,4 @@ high-level method.
 .. _plenty of them: ../api/methods
 .. _raw functions: ../telegram/functions
 .. _raw types: ../telegram/types
-.. _Community: https://t.me/PyrogramChat
+.. _Community: https://t.me/Pyrogram

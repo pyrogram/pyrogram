@@ -90,7 +90,6 @@ Chats
     pin_chat_message
     unpin_chat_message
     get_chat
-    get_chat_preview
     get_chat_member
     get_chat_members
     get_chat_members_count
@@ -217,7 +216,6 @@ Bots
 .. automethod:: pyrogram.Client.pin_chat_message()
 .. automethod:: pyrogram.Client.unpin_chat_message()
 .. automethod:: pyrogram.Client.get_chat()
-.. automethod:: pyrogram.Client.get_chat_preview()
 .. automethod:: pyrogram.Client.get_chat_member()
 .. automethod:: pyrogram.Client.get_chat_members()
 .. automethod:: pyrogram.Client.get_chat_members_count()

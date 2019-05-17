@@ -72,6 +72,7 @@ Keyboards
     ForceReply
     CallbackQuery
     GameHighScore
+    GameHighScores
     CallbackGame
 
 Input Media
@@ -155,6 +156,7 @@ InputMessageContent
 .. autoclass:: ForceReply()
 .. autoclass:: CallbackQuery()
 .. autoclass:: GameHighScore()
+.. autoclass:: GameHighScores()
 .. autoclass:: CallbackGame()
 
 ..  Input Media

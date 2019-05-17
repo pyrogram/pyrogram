@@ -73,9 +73,8 @@ class DownloadMedia(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            ``str``: On success, the absolute path of the downloaded file is returned.
-
-            ``None`` --  In case the download is deliberately stopped with :meth:`stop_transmission`.
+            ``str`` | ``None``: On success, the absolute path of the downloaded file is returned, otherwise, in case
+            the download failed or was deliberately stopped with :meth:`stop_transmission`, None is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

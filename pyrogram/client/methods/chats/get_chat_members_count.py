@@ -34,7 +34,7 @@ class GetChatMembersCount(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, the chat members count is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

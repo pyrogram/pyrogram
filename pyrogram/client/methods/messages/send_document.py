@@ -108,9 +108,8 @@ class SendDocument(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            :obj:`Message`: On success, the sent document message is returned.
-
-            ``None`` -- In case the upload is deliberately stopped with :meth:`stop_transmission`.
+            :obj:`Message` | ``None``: On success, the sent document message is returned, otherwise, in case the upload
+            is deliberately stopped with :meth:`stop_transmission`, None is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

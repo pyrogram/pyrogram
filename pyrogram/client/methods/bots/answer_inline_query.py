@@ -73,7 +73,7 @@ class AnswerInlineQuery(BaseClient):
                 where they wanted to use the bot's inline capabilities.
 
         Returns:
-            ``bool``: On success, True is returned.
+            ``bool``: True, on success.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

@@ -45,7 +45,7 @@ class GetHistoryCount(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            ``int``: On success, an integer is returned.
+            ``int``: On success, the chat history count is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

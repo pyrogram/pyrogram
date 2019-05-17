@@ -58,7 +58,7 @@ class SendInlineBotResult(BaseClient):
                 Sends the message with *via @bot* hidden.
 
         Returns:
-            On success, the sent Message is returned.
+            :obj:`Message`: On success, the sent inline result message is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

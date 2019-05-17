@@ -38,26 +38,10 @@ it.
     RawUpdateHandler
 
 .. autoclass:: MessageHandler()
-    :members:
-
 .. autoclass:: DeletedMessagesHandler()
-    :members:
-
 .. autoclass:: CallbackQueryHandler()
-    :members:
-
 .. autoclass:: InlineQueryHandler()
-    :members:
-
 .. autoclass:: UserStatusHandler()
-    :members:
-
 .. autoclass:: PollHandler()
-    :members:
-
 .. autoclass:: DisconnectHandler()
-    :members:
-
 .. autoclass:: RawUpdateHandler()
-    :members:
-

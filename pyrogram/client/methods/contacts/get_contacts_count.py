@@ -25,7 +25,7 @@ class GetContactsCount(BaseClient):
         """Get the total count of contacts from your Telegram address book.
 
         Returns:
-            ``int``: On success, an integer is returned.
+            ``int``: On success, the contacts count is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

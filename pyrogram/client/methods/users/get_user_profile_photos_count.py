@@ -33,7 +33,7 @@ class GetUserProfilePhotosCount(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            ``int``: On success, an integer is returned.
+            ``int``: On success, the user profile photos count is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

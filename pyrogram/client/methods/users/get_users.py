@@ -24,6 +24,7 @@ from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
+    # TODO: Add Users type and use that
     def get_users(
         self,
         user_ids: Union[Iterable[Union[int, str]], int, str]
@@ -38,9 +39,9 @@ class GetUsers(BaseClient):
                 Iterators and Generators are also accepted.
 
         Returns:
-            :obj:`User`: In case *user_ids* was an integer or string.
-
-            List of :obj:`User` -- In case *user_ids* was an iterable, even if the iterable contained one item only.
+            :obj:`User` | List of :obj:`User`: In case *user_ids* was an integer or string the single requested user is
+            returned, otherwise, in case *user_ids* was an iterable a list of users is returned, even if the iterable
+            contained one item only.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

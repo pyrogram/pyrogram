@@ -32,7 +32,7 @@ class SetGameScore(BaseClient):
         disable_edit_message: bool = None,
         chat_id: Union[int, str] = None,
         message_id: int = None
-    ):
+    ) -> Union["pyrogram.Message", bool]:
         # inline_message_id: str = None):  TODO Add inline_message_id
         """Set the score of the specified user in a game.
 
@@ -63,8 +63,8 @@ class SetGameScore(BaseClient):
                 Required if inline_message_id is not specified.
 
         Returns:
-            On success, if the message was sent by the bot, returns the edited :obj:`Message`,
-            otherwise returns True.
+            :obj:`Message` | ``bool``: On success, if the message was sent by the bot, the edited message is returned,
+            True otherwise.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

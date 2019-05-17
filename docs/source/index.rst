@@ -17,7 +17,7 @@ Welcome to Pyrogram
             GitHub
         </a>
         •
-        <a href="https://t.me/PyrogramChat">
+        <a href="https://t.me/Pyrogram">
             Community
         </a>
 

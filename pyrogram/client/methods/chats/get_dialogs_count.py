@@ -29,7 +29,7 @@ class GetDialogsCount(BaseClient):
             Defaults to False.
 
         Returns:
-            ``int``: On success, an integer is returned.
+            ``int``: On success, the dialogs count is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

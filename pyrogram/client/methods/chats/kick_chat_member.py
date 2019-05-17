@@ -54,9 +54,8 @@ class KickChatMember(BaseClient):
                 considered to be banned forever. Defaults to 0 (ban forever).
 
         Returns:
-            :obj:`Message`: On success, a service message will be returned (when applicable).
-
-            ``bool`` -- True, in case a message object couldn't be returned.
+            :obj:`Message` | ``bool``: On success, a service message will be returned (when applicable), otherwise, in
+            case a message object couldn't be returned, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
