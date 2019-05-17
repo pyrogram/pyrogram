@@ -33,33 +33,33 @@ class Chat(PyrogramType):
             Unique identifier for this chat.
 
         type (``str``):
-            Type of chat, can be either "private", "group", "supergroup" or "channel".
+            Type of chat, can be either "private", "bot", "group", "supergroup" or "channel".
 
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
 
         username (``str``, *optional*):
-            Username, for private chats, supergroups and channels if available.
+            Username, for private chats, bots, supergroups and channels if available.
 
         first_name (``str``, *optional*):
-            First name of the other party in a private chat.
+            First name of the other party in a private chat, for private chats and bots.
 
         last_name (``str``, *optional*):
-            Last name of the other party in a private chat.
+            Last name of the other party in a private chat, for private chats.
 
         photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
             Chat photo. Suitable for downloads only.
 
         description (``str``, *optional*):
-            Description, for supergroups and channel chats.
+            Bio, for private chats and bots or description for groups, supergroups and channels.
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         invite_link (``str``, *optional*):
-            Chat invite link, for supergroups and channel chats.
+            Chat invite link, for groups, supergroups and channels.
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         pinned_message (:obj:`Message`, *optional*):
-            Pinned message, for supergroups and channel chats.
+            Pinned message, for groups, supergroups channels and own chat.
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         sticker_set_name (``str``, *optional*):
@@ -71,13 +71,13 @@ class Chat(PyrogramType):
             Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
 
         members_count (``int``, *optional*):
-            Chat members count, for groups and channels only.
+            Chat members count, for groups, supergroups and channels only.
 
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
 
         permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
-            Information about the chat default permissions.
+            Information about the chat default permissions, for groups and supergroups.
     """
 
     __slots__ = [
@@ -128,7 +128,7 @@ class Chat(PyrogramType):
     def _parse_user_chat(client, user: types.User) -> "Chat":
         return Chat(
             id=user.id,
-            type="private",
+            type="bot" if user.bot else "private",
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
