@@ -64,6 +64,6 @@ after the session name, which will be ``my_bot.session`` for the example below.
 
     app.run()
 
-.. _project is set up: setup.html
+.. _project is set up: ../intro/setup
 .. _Country Code: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 .. _Bot Father: https://t.me/botfather

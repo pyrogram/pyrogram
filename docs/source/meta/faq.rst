@@ -20,17 +20,17 @@ C. It enables you to easily create custom applications for both user and bot ide
 `MTProto API`_ with the Python programming language.
 
 .. _Telegram: https://telegram.org
-.. _MTProto API: https://core.telegram.org/api#telegram-api
+.. _MTProto API: ../topics/mtproto-vs-botapi#what-is-the-mtproto-api
 
-What does the name mean?
-------------------------
+Where does the name come from?
+------------------------------
 
-The word "Pyrogram" is composed by **pyro**, which comes from the Greek word *πῦρ (pyr)*, meaning fire, and **gram**,
+The name "Pyrogram" is composed by **pyro**, which comes from the Greek word *πῦρ (pyr)*, meaning fire, and **gram**,
 from *Telegram*. The word *pyro* itself is built from *Python*, **py** for short, and the suffix **ro** to come up with
 the word *fire*, which also inspired the project logo.
 
-How old is the project?
------------------------
+How old is Pyrogram?
+--------------------
 
 Pyrogram was first released on December 12, 2017. The actual work on the framework began roughly three months prior the
 initial public release on `GitHub`_.
@@ -51,40 +51,15 @@ Why Pyrogram?
 - **Comprehensive**: Execute any `advanced action`_ an official client is able to do, and even more.
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
-.. _Smart Plugin: smart-plugins
-.. _advanced action: advanced-usage
+.. _Smart Plugin: ../topics/smart-plugins
+.. _advanced action: ../topics/advanced-usage
 
 What can MTProto do more than the Bot API?
 ------------------------------------------
 
-Here you can find a list of all the known advantages in using MTProto-based libraries (Pyrogram) instead of the official
-HTTP Bot API:
+For a detailed answer, please refer to the `MTProto vs. Bot API`_ page.
 
-- **Authorize both user and bot identities**: The Bot API only allows bot accounts.
-
-- **Upload & download any file, up to 1500 MB each (~1.5 GB)**: The Bot API allows uploads and downloads of files only
-  up to 50 MB / 20 MB in size (respectively).
-
-- **Has less overhead due to direct connections to Telegram**: The Bot API uses an intermediate server to handle HTTP
-  requests before they are sent to the actual Telegram servers.
-
-- **Run multiple sessions at once, up to 10 per account (either bot or user)**: The Bot API intermediate server will
-  terminate any other session in case you try to use the same bot again in a parallel connection.
-
-- **Get information about any public chat by usernames, even if not a member**: The Bot API simply doesn't support this.
-
-- **Obtain information about any message existing in a chat using their ids**: The Bot API simply doesn't support this.
-
-- **Retrieve the whole chat members list of either public or private chats**: The Bot API simply doesn't support this.
-
-- **Receive extra updates, such as the one about a user name change**: The Bot API simply doesn't support this.
-
-- **Has more meaningful errors in case something went wrong**: The Bot API reports less detailed errors.
-
-- **Has much more detailed types and powerful methods**: The Bot API types often miss some useful information about
-  Telegram's type and some of the methods are limited as well.
-
-- **Get API version updates, and thus new features, sooner**: The Bot API is simply slower in implementing new features.
+.. _MTProto vs. Bot API: ../topics/mtproto-vs-botapi
 
 Why do I need an API key for bots?
 ----------------------------------
@@ -126,7 +101,7 @@ fails or not:
 
 |bug report|
 
-.. _you need a proxy: proxy
+.. _you need a proxy: ../topics/proxy
 
 I keep getting PEER_ID_INVALID error!
 -------------------------------------------
@@ -150,11 +125,26 @@ Can I use the same file_id across different accounts?
 
 No, Telegram doesn't allow this.
 
-File ids are bound to a specific user/bot, and an attempt in using a foreign file id will result in errors such as
-**[400 MEDIA_EMPTY]: The media is invalid**.
+File ids are personal and bound to a specific user/bot -- and an attempt in using a foreign file id will result in
+errors such as **[400 MEDIA_EMPTY]: The media is invalid**.
 
 The only exception are stickers' file ids; you can use them across different accounts without any problem, like this
 one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
+
+Can I use Bot API's file_ids in Pyrogram?
+-----------------------------------------
+
+Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram...
+
+...at least for now.
+
+Telegram is slowly changing some server's internals and it's doing it in such a way that file ids are going to break
+inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
+losing the *persistence* feature.
+
+This change will most likely affect the official `Bot API <../topics/mtproto-vs-botapi#what-is-the-bot-api>`_  too
+(unless Telegram implements some workarounds server-side to keep backwards compatibility, which Pyrogram could in turn
+make use of) and we can expect a proper notice from Telegram.
 
 My account has been deactivated/limited!
 ----------------------------------------
@@ -184,13 +174,14 @@ About the License
 .. image:: https://www.gnu.org/graphics/lgplv3-with-text-154x68.png
     :align: left
 
-Pyrogram is free software and is currently licensed under the terms of the GNU Lesser General Public License v3 or later
-(LGPLv3+). In short: you may use, redistribute and/or modify it provided that modifications are described and licensed
-for free under LGPLv3+.
+Pyrogram is free software and is currently licensed under the terms of the
+`GNU Lesser General Public License v3 or later (LGPLv3+)`_. In short: you may use, redistribute and/or modify it
+provided that modifications are described and licensed for free under LGPLv3+.
 
 In other words: you can use and integrate Pyrogram into your own code --- either open source, under the same or a
 different licence or even proprietary --- without being required to release the source code of your own applications.
 However, any modifications to the library itself are required to be published for free under the same LGPLv3+ license.
 
+.. _GNU Lesser General Public License v3 or later (LGPLv3+): https://github.com/pyrogram/pyrogram/blob/develop/COPYING.lesser
 .. _Bug Report: https://github.com/pyrogram/pyrogram/issues/new?labels=bug&template=bug_report.md
 .. _Feature Request: https://github.com/pyrogram/pyrogram/issues/new?labels=enhancement&template=feature_request.md
