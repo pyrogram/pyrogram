@@ -4,7 +4,7 @@ Welcome to Pyrogram
 .. raw:: html
 
     <div align="center">
-        <a href="https://docs.pyrogram.ml">
+        <a href="https://docs.pyrogram.org">
             <div><img src="_static/logo.png" alt="Pyrogram Logo"></div>
         </a>
     </div>
@@ -45,7 +45,7 @@ C. It enables you to easily create custom apps for both user and bot identities 
 `MTProto API`_.
 
 .. _Telegram: https://telegram.org
-.. _MTProto API: topics/faq#what-can-mtproto-do-more-than-the-bot-api
+.. _MTProto API: topics/mtproto-vs-botapi#what-is-the-mtproto-api
 
 How the Documentation is Organized
 ----------------------------------
@@ -62,7 +62,7 @@ First Steps
 - `Handling Updates`_ - How to handle Telegram updates.
 - `Error Handling`_ - How to handle API errors correctly.
 
-.. _Quick Start: intro/start
+.. _Quick Start: intro/quickstart
 .. _Calling Methods: start/invoking
 .. _Handling Updates: start/updates
 .. _Error Handling: start/errors
@@ -80,26 +80,26 @@ API Reference
 .. _Available Types: api/types
 .. _Bound Methods: api/bound-methods
 
-Relevant Topics
-^^^^^^^^^^^^^^^
+Meta
+^^^^
 
-- `Smart Plugins`_ - How to modularize your application.
-- `Advanced Usage`_ - How to use Telegram's raw API.
-- `Release Notes`_ - Release notes for Pyrogram releases.
 - `Pyrogram FAQ`_ - Answers to common Pyrogram questions.
 - `Pyrogram Glossary`_ - A list of words with brief explanations.
+- `Release Notes`_ - Release notes for Pyrogram releases.
+- `Powered by Pyrogram`_ - A collection of Pyrogram Projects.
+- `Support Pyrogram Development`_ - Ways to show your appreciation.
 
-.. _Smart Plugins: topics/smart-plugins
-.. _Advanced Usage: topics/advanced-usage
-.. _Release Notes: topics/releases
-.. _Pyrogram FAQ: topics/faq
-.. _Pyrogram Glossary: topics/glossary
+.. _Pyrogram FAQ: meta/faq
+.. _Pyrogram Glossary: meta/glossary
+.. _Release Notes: meta/releases
+.. _Powered by Pyrogram: meta/powered-by
+.. _Support Pyrogram Development: meta/support-pyrogram
 
 .. toctree::
     :hidden:
     :caption: Introduction
 
-    intro/start
+    intro/quickstart
     intro/install
     intro/setup
 
@@ -107,7 +107,7 @@ Relevant Topics
     :hidden:
     :caption: Getting Started
 
-    intro/auth
+    start/auth
     start/invoking
     start/updates
     start/errors
@@ -139,12 +139,20 @@ Relevant Topics
     topics/text-formatting
     topics/proxy
     topics/bots-interaction
+    topics/mtproto-vs-botapi
     topics/test-servers
     topics/advanced-usage
     topics/voice-calls
-    topics/releases
-    topics/faq
-    topics/glossary
+
+.. toctree::
+    :hidden:
+    :caption: Meta
+
+    meta/faq
+    meta/glossary
+    meta/releases
+    meta/powered-by
+    meta/support-pyrogram
 
 .. toctree::
     :hidden:

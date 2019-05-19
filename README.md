@@ -5,7 +5,7 @@
     <br>
     <b>Telegram MTProto API Framework for Python</b>
     <br>
-    <a href="https://docs.pyrogram.ml">
+    <a href="https://docs.pyrogram.org">
         Documentation
     </a>
     •
@@ -66,7 +66,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 ### Requirements
 
 - Python 3.4 or higher.
-- A [Telegram API key](https://docs.pyrogram.ml/intro/setup#api-keys).
+- A [Telegram API key](https://docs.pyrogram.org/intro/setup#api-keys).
 
 ### Installing
 
@@ -76,11 +76,11 @@ pip3 install pyrogram
 
 ### Resources
 
-- The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.ml.
+- The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.org.
 - Reading [Examples in this repository](https://github.com/pyrogram/pyrogram/tree/master/examples) is also a good way
   for learning how Pyrogram works.
 - Seeking extra help? Don't be shy, come join and ask our [Community](https://t.me/PyrogramChat)!
-- For other requests you can send an [Email](mailto:admin@pyrogram.ml) or a [Message](https://t.me/haskell).
+- For other requests you can send an [Email](mailto:dan@pyrogram.org) or a [Message](https://t.me/haskell).
 
 ### Contributing
 

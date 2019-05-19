@@ -8,7 +8,7 @@ from pyrogram import Client, Emoji, Filters
 
 TARGET = "PyrogramChat"  # Target chat. Can also be a list of multiple chat ids/usernames
 MENTION = "[{}](tg://user?id={})"  # User mention markup
-MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.ml/)'s group chat {}!"  # Welcome message
+MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.org/)'s group chat {}!"  # Welcome message
 
 app = Client("my_account")
 

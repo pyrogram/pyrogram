@@ -20,7 +20,7 @@ import datetime
 import os
 import re
 
-canonical = "https://docs.pyrogram.ml"
+canonical = "https://docs.pyrogram.org/"
 
 dirs = {
     "start": ("weekly", 0.9),

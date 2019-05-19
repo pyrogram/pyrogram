@@ -20,7 +20,7 @@ To use this mode, pass "markdown" in the *parse_mode* field when using
 
     __italic text__
 
-    [inline URL](https://docs.pyrogram.ml/)
+    [inline URL](https://docs.pyrogram.org/)
 
     [inline mention of a user](tg://user?id=23122162)
 
@@ -43,7 +43,7 @@ The following tags are currently supported:
 
     <i>italic</i>, <em>italic</em>
 
-    <a href="http://docs.pyrogram.ml/">inline URL</a>
+    <a href="http://docs.pyrogram.org/">inline URL</a>
 
     <a href="tg://user?id=23122162">inline mention of a user</a>
 
@@ -66,7 +66,7 @@ Examples
                 "**bold**, "
                 "__italic__, "
                 "[mention](tg://user?id=23122162), "
-                "[URL](https://docs.pyrogram.ml), "
+                "[URL](https://docs.pyrogram.org), "
                 "`code`, "
                 "```"
                 "for i in range(10):\n"
@@ -84,7 +84,7 @@ Examples
                 "<b>bold</b>, "
                 "<i>italic</i>, "
                 "<a href=\"tg://user?id=23122162\">mention</a>, "
-                "<a href=\"https://pyrogram.ml/\">URL</a>, "
+                "<a href=\"https://pyrogram.org/\">URL</a>, "
                 "<code>code</code>, "
                 "<pre>"
                 "for i in range(10):\n"

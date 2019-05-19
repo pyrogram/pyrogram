@@ -275,7 +275,7 @@ class Client(Methods, BaseClient):
             log.warning('\nWARNING: You are using a bot token as session name!\n'
                         'This usage will be deprecated soon. Please use a session file name to load '
                         'an existing session and the bot_token argument to create new sessions.\n'
-                        'More info: https://docs.pyrogram.ml/start/Setup#bot-authorization\n')
+                        'More info: https://docs.pyrogram.org/intro/auth#bot-authorization\n')
 
         self.load_config()
         self.load_session()
@@ -1091,7 +1091,7 @@ class Client(Methods, BaseClient):
             else:
                 raise AttributeError(
                     "No API Key found. "
-                    "More info: https://docs.pyrogram.ml/intro/setup#configuration"
+                    "More info: https://docs.pyrogram.org/intro/setup#configuration"
                 )
 
         for option in ["app_version", "device_model", "system_version", "lang_code"]:

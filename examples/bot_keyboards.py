@@ -39,7 +39,7 @@ with app:
                     ),
                     InlineKeyboardButton(  # Opens a web URL
                         "URL",
-                        url="https://docs.pyrogram.ml"
+                        url="https://docs.pyrogram.org"
                     ),
                 ],
                 [  # Second row

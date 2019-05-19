@@ -113,7 +113,7 @@ html_theme = 'sphinx_rtd_theme'
 # documentation.
 #
 html_theme_options = {
-    'canonical_url': "https://docs.pyrogram.ml/",
+    'canonical_url': "https://docs.pyrogram.org/",
     'collapse_navigation': True,
     'sticky_navigation': False,
     'logo_only': True,
