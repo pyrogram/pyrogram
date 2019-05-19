@@ -336,7 +336,6 @@ def start():
 
         if c.section == "functions":
             docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
-            docstring_args += "\n\n    Raises:\n        RPCError: In case of a Telegram RPC error."
 
         else:
             references = get_references(".".join(filter(None, [c.namespace, c.name])))
