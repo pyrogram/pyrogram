@@ -15,8 +15,8 @@ using `Handlers <../api/handlers>`_.
 Each handler deals with a specific event and once a matching update arrives from Telegram, your registered callback
 function will be called back by the framework and its body executed.
 
-Registering an Handler
-----------------------
+Registering a Handler
+---------------------
 
 To explain how handlers work let's have a look at the most used one, the
 :obj:`MessageHandler <pyrogram.MessageHandler>`, which will be in charge for handling :obj:`Message <pyrogram.Message>`

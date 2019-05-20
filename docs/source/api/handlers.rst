@@ -4,7 +4,7 @@ Update Handlers
 Handlers are used to instruct Pyrogram about which kind of updates you'd like to handle with your callback functions.
 
 For a much more convenient way of registering callback functions have a look at `Decorators <Decorators.html>`_ instead.
-In case you decided to manually create an handler, use :meth:`add_handler() <pyrogram.Client.add_handler>` to register
+In case you decided to manually create a handler, use :meth:`add_handler() <pyrogram.Client.add_handler>` to register
 it.
 
 .. code-block:: python
