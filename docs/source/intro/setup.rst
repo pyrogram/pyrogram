@@ -40,7 +40,7 @@ There are two ways to do so, and you can choose what fits better for you:
         api_hash = 0123456789abcdef0123456789abcdef
 
 -   Alternatively, you can pass your API key to Pyrogram by simply using the *api_id* and *api_hash* parameters of the
-    Client class. This way you can have full control on how to store and load your credentials (e.g.:, you can load the
+    Client class. This way you can have full control on how to store and load your credentials (e.g., you can load the
     credentials from the environment variables and directly pass the values into Pyrogram):
 
     .. code-block:: python

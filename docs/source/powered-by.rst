@@ -55,8 +55,8 @@ Projects Showcase
 
 -----
 
-`BotListBot <https://t.me/botlistt>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`BotListBot <https://t.me/botlist>`_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | **A bot which partly uses Pyrogram to check if other bots are still alive**
 | --- by `JosXa <https://t.me/JosXa>`_

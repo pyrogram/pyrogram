@@ -8,7 +8,7 @@ User Authorization
 ------------------
 
 In order to use the API, Telegram requires that users be authorized via their phone numbers.
-Pyrogram automatically manages this access, all you need to do is create an instance of the
+Pyrogram automatically manages this process, all you need to do is create an instance of the
 :class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` of your choice (e.g.: "my_account") and call
 the :meth:`run() <pyrogram.Client.run>` method:
 
@@ -47,7 +47,7 @@ Bot Authorization
 
 Bots are a special kind of users that are authorized via their tokens (instead of phone numbers), which are created by
 the `Bot Father`_. Bot tokens replace the users' phone numbers only — you still need to
-`configure a Telegram API key <setup.html#configuration>`_ with Pyrogram, even when using bots.
+`configure a Telegram API key <../intro/setup#configuration>`_ with Pyrogram, even when using bots.
 
 The authorization process is automatically managed. All you need to do is choose a ``session_name`` (can be anything,
 usually your bot username) and pass your bot token using the ``bot_token`` parameter. The session file will be named

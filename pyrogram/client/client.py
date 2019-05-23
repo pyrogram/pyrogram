@@ -66,15 +66,13 @@ class Client(Methods, BaseClient):
         session_name (``str``):
             Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
             to save a file to disk that stores details needed for reconnecting without asking again for credentials.
-            Note for bots: You can pass a bot token here, but this usage will be deprecated in next releases.
-            Use *bot_token* instead.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         api_hash (``str``, *optional*):
-            The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef"
+            The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef".
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         app_version (``str``, *optional*):
@@ -104,7 +102,7 @@ class Client(Methods, BaseClient):
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (``bool``, *optional*):
-            Enable or disable log-in to testing servers. Defaults to False.
+            Enable or disable login to the test servers. Defaults to False.
             Only applicable for new sessions and will be ignored in case previously
             created sessions are loaded.
 
@@ -170,7 +168,7 @@ class Client(Methods, BaseClient):
             Defaults to False (updates enabled and always received).
 
         takeout (``bool``, *optional*):
-            Pass True to let the client use a takeout session instead of a normal one, implies no_updates.
+            Pass True to let the client use a takeout session instead of a normal one, implies *no_updates=True*.
             Useful for exporting your Telegram data. Methods invoked inside a takeout session (such as get_history,
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.

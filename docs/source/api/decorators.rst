@@ -34,6 +34,7 @@ of your functions.
     on_inline_query
     on_deleted_messages
     on_user_status
+    on_poll
     on_disconnect
     on_raw_update
 
@@ -42,5 +43,6 @@ of your functions.
 .. automethod:: pyrogram.Client.on_inline_query()
 .. automethod:: pyrogram.Client.on_deleted_messages()
 .. automethod:: pyrogram.Client.on_user_status()
+.. automethod:: pyrogram.Client.on_poll()
 .. automethod:: pyrogram.Client.on_disconnect()
 .. automethod:: pyrogram.Client.on_raw_update()

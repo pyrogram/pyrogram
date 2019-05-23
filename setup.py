@@ -122,6 +122,7 @@ class Generate(Command):
 if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     api_compiler.start()
     error_compiler.start()
+    docs_compiler.start()
 
 setup(
     name="Pyrogram",

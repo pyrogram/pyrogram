@@ -4,8 +4,8 @@ Welcome to Pyrogram
 .. raw:: html
 
     <div align="center">
-        <a href="https://docs.pyrogram.org">
-            <div><img src="_static/logo.png" alt="Pyrogram Logo"></div>
+        <a href="/">
+            <div><img src="_static/pyrogram.png" alt="Pyrogram Logo" width="420"></div>
         </a>
     </div>
 
@@ -55,12 +55,15 @@ order using the Next button at the end of each page. Here below you can, instead
 pages for a quick access.
 
 First Steps
-^^^^^^^^^^^
+-----------
 
-- `Quick Start`_ - Overview to get you started quickly.
-- `Calling Methods`_ - How to call Pyrogram's methods.
-- `Handling Updates`_ - How to handle Telegram updates.
-- `Error Handling`_ - How to handle API errors correctly.
+.. hlist::
+    :columns: 2
+
+    - `Quick Start`_: Overview to get you started quickly.
+    - `Calling Methods`_: How to call Pyrogram's methods.
+    - `Handling Updates`_: How to handle Telegram updates.
+    - `Error Handling`_: How to handle API errors correctly.
 
 .. _Quick Start: intro/quickstart
 .. _Calling Methods: start/invoking
@@ -68,32 +71,38 @@ First Steps
 .. _Error Handling: start/errors
 
 API Reference
-^^^^^^^^^^^^^
+-------------
 
-- `Client Class`_ - Reference details about the Client class.
-- `Available Methods`_ - A list of available high-level methods.
-- `Available Types`_ - A list of available high-level types.
-- `Bound Methods`_ - A list of convenient bound methods.
+.. hlist::
+    :columns: 2
 
-.. _Client Class: api/client
+    - `Pyrogram Client`_: Reference details about the Client class.
+    - `Available Methods`_: List of available high-level methods.
+    - `Available Types`_: List of available high-level types.
+    - `Bound Methods`_: List of convenient bound methods.
+
+.. _Pyrogram Client: ./api/client
 .. _Available Methods: api/methods
 .. _Available Types: api/types
 .. _Bound Methods: api/bound-methods
 
 Meta
-^^^^
+----
 
-- `Pyrogram FAQ`_ - Answers to common Pyrogram questions.
-- `Pyrogram Glossary`_ - A list of words with brief explanations.
-- `Release Notes`_ - Release notes for Pyrogram releases.
-- `Powered by Pyrogram`_ - A collection of Pyrogram Projects.
-- `Support Pyrogram Development`_ - Ways to show your appreciation.
+.. hlist::
+    :columns: 2
 
-.. _Pyrogram FAQ: meta/faq
-.. _Pyrogram Glossary: meta/glossary
-.. _Release Notes: meta/releases
-.. _Powered by Pyrogram: meta/powered-by
-.. _Support Pyrogram Development: meta/support-pyrogram
+    - `Pyrogram FAQ`_: Answers to common Pyrogram questions.
+    - `Pyrogram Glossary`_: List of words with brief explanations.
+    - `Release Notes`_: Release notes for Pyrogram releases.
+    - `Powered by Pyrogram`_: Collection of Pyrogram Projects.
+    - `Support Pyrogram`_: Ways to show your appreciation.
+
+.. _Pyrogram FAQ: faq
+.. _Pyrogram Glossary: glossary
+.. _Release Notes: releases
+.. _Powered by Pyrogram: powered-by
+.. _Support Pyrogram: support-pyrogram
 
 .. toctree::
     :hidden:
@@ -137,6 +146,7 @@ Meta
     topics/session-settings
     topics/tgcrypto
     topics/text-formatting
+    topics/serialize
     topics/proxy
     topics/bots-interaction
     topics/mtproto-vs-botapi
@@ -148,11 +158,11 @@ Meta
     :hidden:
     :caption: Meta
 
-    meta/faq
-    meta/glossary
-    meta/releases
-    meta/powered-by
-    meta/support-pyrogram
+    faq
+    glossary
+    releases
+    powered-by
+    support-pyrogram
 
 .. toctree::
     :hidden:

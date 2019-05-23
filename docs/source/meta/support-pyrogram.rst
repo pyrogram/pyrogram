@@ -1,2 +1,0 @@
-Support Pyrogram Development
-============================

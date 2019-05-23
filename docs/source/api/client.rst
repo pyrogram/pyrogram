@@ -1,7 +1,7 @@
 Pyrogram Client
 ===============
 
-This class exposes high-level methods for an easy access to the API.
+This is the Client class. It exposes high-level methods for an easy access to the API.
 
 .. code-block:: python
     :emphasize-lines: 1-3

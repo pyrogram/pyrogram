@@ -83,11 +83,11 @@ Verifying
 To verify that Pyrogram is correctly installed, open a Python shell and import it.
 If no error shows up you are good to go.
 
-.. code-block:: python
+.. parsed-literal::
 
     >>> import pyrogram
     >>> pyrogram.__version__
-    '0.13.0'
+    '|version|'
 
 .. _TgCrypto: ../topics/tgcrypto
 .. _`Github repo`: http://github.com/pyrogram/pyrogram

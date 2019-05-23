@@ -2,7 +2,7 @@ Fast Crypto
 ===========
 
 Pyrogram's speed can be *dramatically* boosted up by TgCrypto_, a high-performance, easy-to-install Telegram Crypto
-Library specifically written in C for Pyrogram [#f1]_ as a Python extension.
+Library specifically written in C for Pyrogram [1]_ as a Python extension.
 
 TgCrypto is a replacement for the much slower PyAES and implements the crypto algorithms Telegram requires, namely
 **AES-IGE 256 bit** (used in MTProto v2.0) and **AES-CTR 256 bit** (used for CDN encrypted files).
@@ -28,5 +28,5 @@ what you should do next:
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
-.. [#f1] Although TgCrypto is intended for Pyrogram, it is shipped as a standalone package and can thus be used for
+.. [1] Although TgCrypto is intended for Pyrogram, it is shipped as a standalone package and can thus be used for
    other Python projects too.

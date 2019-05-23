@@ -16,15 +16,6 @@
     <a href="https://t.me/Pyrogram">
         Community
     </a>
-    <br>
-    <a href="compiler/api/source/main_api.tl">
-        <img src="https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30"
-            alt="Schema Layer">
-    </a>
-    <a href="https://github.com/pyrogram/tgcrypto">
-        <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
-            alt="TgCrypto Version">
-    </a>
 </p>
 
 ## Pyrogram

@@ -9,7 +9,7 @@ app (or by invoking `GetAuthorizations <../telegram/functions/account/GetAuthori
 store some useful information such as the client who's using them and from which country and IP address.
 
 .. figure:: https://i.imgur.com/YaqtMLO.png
-    :width: 90%
+    :width: 600
     :align: center
 
     **A Pyrogram session running on Linux, Python 3.7.**

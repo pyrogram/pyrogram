@@ -2928,7 +2928,7 @@ class Message(PyrogramType, Update):
             True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         return self._client.pin_chat_message(
             chat_id=self.chat.id,
