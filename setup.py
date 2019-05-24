@@ -132,7 +132,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/pyrogram",
     download_url="https://github.com/pyrogram/pyrogram/releases/latest",
-    author="Dan Tès",
+    author="Dan",
     author_email="dan@pyrogram.org",
     license="LGPLv3+",
     classifiers=[
@@ -161,7 +161,7 @@ setup(
     keywords="telegram chat messenger mtproto api client library python",
     project_urls={
         "Tracker": "https://github.com/pyrogram/pyrogram/issues",
-        "Community": "https://t.me/PyrogramChat",
+        "Community": "https://t.me/Pyrogram",
         "Source": "https://github.com/pyrogram/pyrogram",
         "Documentation": "https://docs.pyrogram.org",
     },
