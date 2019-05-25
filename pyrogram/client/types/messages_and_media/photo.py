@@ -28,16 +28,16 @@ from ...ext.utils import encode
 
 
 class Photo(PyrogramType):
-    """This object represents a Photo.
+    """A Photo.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this photo.
 
         date (``int``):
             Date the photo was sent in Unix time.
 
-        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
+        sizes (List of :obj:`PhotoSize`):
             Available sizes of this photo.
     """
 
@@ -46,7 +46,7 @@ class Photo(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: str,
         date: int,
         sizes: List[PhotoSize]

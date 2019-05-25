@@ -24,7 +24,7 @@ from ..pyrogram_type import PyrogramType
 
 
 class InputMessageContent(PyrogramType):
-    """This object represents the content of a message to be sent as a result of an inline query.
+    """Content of a message to be sent as a result of an inline query.
 
     Pyrogram currently supports the following 4 types:
 
@@ -34,4 +34,4 @@ class InputMessageContent(PyrogramType):
     __slots__ = []
 
     def __init__(self):
-        super().__init__(None)
+        super().__init__()

@@ -26,20 +26,20 @@ class InlineQueryHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_inline_query() <pyrogram.Client.on_inline_query>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a new InlineQuery arrives. It takes *(client, inline_query)*
             as positional arguments (look at the section below for a detailed description).
 
-        filters (:obj:`Filters <pyrogram.Filters>`):
+        filters (:obj:`Filters`):
             Pass one or more filters to allow only a subset of inline queries to be passed
             in your callback function.
 
     Other parameters:
-        client (:obj:`Client <pyrogram.Client>`):
+        client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the inline query handler.
 
-        inline_query (:obj:`InlineQuery <pyrogram.InlineQuery>`):
+        inline_query (:obj:`InlineQuery`):
             The received inline query.
     """
 

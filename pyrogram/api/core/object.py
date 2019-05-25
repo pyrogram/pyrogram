@@ -30,43 +30,51 @@ class Object:
     QUALNAME = "Base"
 
     @staticmethod
-    def read(b: BytesIO, *args):
+    def read(b: BytesIO, *args):  # TODO: Rename b -> data
         return Object.all[int.from_bytes(b.read(4), "little")].read(b, *args)
 
     def write(self, *args) -> bytes:
         pass
 
+    def __eq__(self, other: "Object") -> bool:
+        for attr in self.__slots__:
+            try:
+                if getattr(self, attr) != getattr(other, attr):
+                    return False
+            except AttributeError:
+                return False
+
+        return True
+
     def __str__(self) -> str:
+        def default(obj: Object):
+            try:
+                return OrderedDict(
+                    [("_", obj.QUALNAME)]
+                    + [(attr, getattr(obj, attr))
+                       for attr in obj.__slots__
+                       if getattr(obj, attr) is not None]
+                )
+            except AttributeError:
+                if isinstance(obj, datetime):
+                    return obj.strftime("%d-%b-%Y %H:%M:%S")
+                else:
+                    return repr(obj)
+
         return dumps(self, indent=4, default=default, ensure_ascii=False)
+
+    def __repr__(self) -> str:
+        return "pyrogram.api.{}({})".format(
+            self.QUALNAME,
+            ", ".join(
+                "{}={}".format(attr, repr(getattr(self, attr)))
+                for attr in self.__slots__
+                if getattr(self, attr) is not None
+            )
+        )
 
     def __len__(self) -> int:
         return len(self.write())
 
     def __getitem__(self, item):
         return getattr(self, item)
-
-
-def remove_none(obj):
-    if isinstance(obj, (list, tuple, set)):
-        return type(obj)(remove_none(x) for x in obj if x is not None)
-    elif isinstance(obj, dict):
-        return type(obj)((remove_none(k), remove_none(v)) for k, v in obj.items() if k is not None and v is not None)
-    else:
-        return obj
-
-
-def default(o: "Object"):
-    try:
-        content = {i: getattr(o, i) for i in o.__slots__}
-
-        return remove_none(
-            OrderedDict(
-                [("_", o.QUALNAME)]
-                + [i for i in content.items()]
-            )
-        )
-    except AttributeError:
-        if isinstance(o, datetime):
-            return o.strftime("%d-%b-%Y %H:%M:%S")
-        else:
-            return repr(o)

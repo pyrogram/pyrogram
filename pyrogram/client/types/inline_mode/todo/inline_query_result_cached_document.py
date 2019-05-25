@@ -25,7 +25,7 @@ class InlineQueryResultCachedDocument(PyrogramType):
     Attributes:
         ID: ``0xb0700015``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be document.
 

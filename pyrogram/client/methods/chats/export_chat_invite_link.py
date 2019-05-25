@@ -27,7 +27,7 @@ class ExportChatInviteLink(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> str:
-        """Use this method to generate a new invite link for a chat; any previously generated link is revoked.
+        """Generate a new invite link for a chat; any previously generated link is revoked.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
 
@@ -38,16 +38,16 @@ class ExportChatInviteLink(BaseClient):
             using this method – after this the link will become available to the bot via the :meth:`get_chat` method.
             If your bot needs to generate a new invite link replacing its previous one, use this method again.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
         Returns:
-            On success, the exported invite link as string is returned.
+            ``str``: On success, the exported invite link is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         peer = await self.resolve_peer(chat_id)
 

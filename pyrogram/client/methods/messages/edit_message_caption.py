@@ -32,9 +32,9 @@ class EditMessageCaption(BaseClient):
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Use this method to edit captions of messages.
+        """Edit captions of messages.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -47,18 +47,17 @@ class EditMessageCaption(BaseClient):
                 New caption of the message.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: On success, the edited message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 

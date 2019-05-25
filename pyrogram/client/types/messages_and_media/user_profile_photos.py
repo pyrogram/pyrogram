@@ -24,13 +24,13 @@ from ..pyrogram_type import PyrogramType
 
 
 class UserProfilePhotos(PyrogramType):
-    """This object represents a user's profile pictures.
+    """Contains a user's profile pictures.
 
-    Args:
+    Parameters:
         total_count (``int``):
             Total number of profile pictures the target user has.
 
-        photos (List of :obj:`Photo <pyrogram.Photo>`):
+        photos (List of :obj:`Photo`):
             Requested profile pictures.
     """
 
@@ -39,7 +39,7 @@ class UserProfilePhotos(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         total_count: int,
         photos: List[Photo]
     ):

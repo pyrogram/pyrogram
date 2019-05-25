@@ -27,7 +27,7 @@ class PollHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_poll() <pyrogram.Client.on_poll>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a new poll update arrives. It takes *(client, poll)*
             as positional arguments (look at the section below for a detailed description).

@@ -20,10 +20,10 @@ from . import InputMedia
 
 
 class InputMediaVideo(InputMedia):
-    """This object represents a video to be sent inside an album.
+    """A video to be sent inside an album.
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
-    Args:
+    Parameters:
         media (``str``):
             Video to send.
             Pass a file_id as string to send a video that exists on the Telegram servers or
@@ -40,9 +40,8 @@ class InputMediaVideo(InputMedia):
             Caption of the video to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-            if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-            Defaults to Markdown.
+            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
+            in your caption. Defaults to "markdown".
 
         width (``int``, *optional*):
             Video width.

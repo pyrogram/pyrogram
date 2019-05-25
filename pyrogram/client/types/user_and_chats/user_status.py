@@ -24,14 +24,14 @@ from ..update import Update
 
 
 class UserStatus(PyrogramType, Update):
-    """This object represents a User status (Last Seen privacy).
+    """A User status (Last Seen privacy).
 
     .. note::
 
         You won't see exact last seen timestamps for people with whom you don't share your own. Instead, you get
         "recently", "within_week", "within_month" or "long_time_ago" fields set.
 
-    Args:
+    Parameters:
         user_id (``int``):
             User's id.
 
@@ -70,7 +70,7 @@ class UserStatus(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         user_id: int,
         online: bool = None,
         offline: bool = None,

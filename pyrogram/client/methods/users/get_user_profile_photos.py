@@ -30,9 +30,9 @@ class GetUserProfilePhotos(BaseClient):
         offset: int = 0,
         limit: int = 100
     ) -> "pyrogram.UserProfilePhotos":
-        """Use this method to get a list of profile pictures for a user.
+        """Get a list of profile pictures for a user.
 
-        Args:
+        Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -47,10 +47,10 @@ class GetUserProfilePhotos(BaseClient):
                 Values between 1—100 are accepted. Defaults to 100.
 
         Returns:
-            On success, a :obj:`UserProfilePhotos` object is returned.
+            :obj:`UserProfilePhotos`: On success, an object containing a list of the profile photos is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return pyrogram.UserProfilePhotos._parse(
             self,

@@ -30,11 +30,11 @@ class StopPoll(BaseClient):
         message_id: int,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Poll":
-        """Use this method to stop a poll which was sent by you.
+        """Stop a poll which was sent by you.
 
         Stopped polls can't be reopened and nobody will be able to vote in it anymore.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -47,10 +47,10 @@ class StopPoll(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the stopped :obj:`Poll <pyrogram.Poll>` with the final results is returned.
+            :obj:`Poll`: On success, the stopped poll with the final results is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         poll = (await self.get_messages(chat_id, message_id)).poll
 

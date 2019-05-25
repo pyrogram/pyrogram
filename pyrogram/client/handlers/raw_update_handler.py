@@ -26,14 +26,14 @@ class RawUpdateHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_raw_update() <pyrogram.Client.on_raw_update>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             A function that will be called when a new update is received from the server. It takes
             *(client, update, users, chats)* as positional arguments (look at the section below for
             a detailed description).
 
     Other Parameters:
-        client (:class:`Client <pyrogram.Client>`):
+        client (:class:`Client`):
             The Client itself, useful when you want to call other API methods inside the update handler.
 
         update (``Update``):

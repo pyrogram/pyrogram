@@ -25,7 +25,7 @@ class InlineQueryResultCachedVideo(PyrogramType):
     Attributes:
         ID: ``0xb0700016``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be video.
 

@@ -26,9 +26,9 @@ from ..update import Update
 
 
 class Poll(PyrogramType, Update):
-    """This object represents a Poll.
+    """A Poll.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique poll identifier.
 
@@ -53,7 +53,7 @@ class Poll(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: str,
         question: str,
         options: List[PollOption],

@@ -25,9 +25,9 @@ from ...ext.utils import encode
 
 
 class ChatPhoto(PyrogramType):
-    """This object represents a chat photo.
+    """A chat photo.
 
-    Args:
+    Parameters:
         small_file_id (``str``):
             Unique file identifier of small (160x160) chat photo. This file_id can be used only for photo download.
 
@@ -40,7 +40,7 @@ class ChatPhoto(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         small_file_id: str,
         big_file_id: str
     ):

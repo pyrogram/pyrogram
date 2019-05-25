@@ -24,9 +24,9 @@ from ..pyrogram_type import PyrogramType
 
 
 class User(PyrogramType):
-    """This object represents a Telegram user or bot.
+    """A Telegram user or bot.
 
-    Args:
+    Parameters:
         id (``int``):
             Unique identifier for this user or bot.
 
@@ -78,7 +78,7 @@ class User(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: int,
         is_self: bool,
         is_contact: bool,

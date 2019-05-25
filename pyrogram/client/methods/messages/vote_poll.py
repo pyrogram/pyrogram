@@ -30,9 +30,9 @@ class VotePoll(BaseClient):
         message_id: id,
         option: int
     ) -> "pyrogram.Poll":
-        """Use this method to vote a poll.
+        """Vote a poll.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -45,10 +45,10 @@ class VotePoll(BaseClient):
                 Index of the poll option you want to vote for (0 to 9).
 
         Returns:
-            On success, the :obj:`Poll <pyrogram.Poll>` with the chosen option is returned.
+            :obj:`Poll` - On success, the poll with the chosen option is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         poll = (await self.get_messages(chat_id, message_id)).poll

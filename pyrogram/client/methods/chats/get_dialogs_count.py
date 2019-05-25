@@ -22,17 +22,17 @@ from ...ext import BaseClient
 
 class GetDialogsCount(BaseClient):
     async def get_dialogs_count(self, pinned_only: bool = False) -> int:
-        """Use this method to get the total count of your dialogs.
+        """Get the total count of your dialogs.
 
         pinned_only (``bool``, *optional*):
             Pass True if you want to count only pinned dialogs.
             Defaults to False.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, the dialogs count is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         if pinned_only:

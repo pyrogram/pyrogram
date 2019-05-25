@@ -25,7 +25,7 @@ class InlineQueryResultGif(PyrogramType):
     Attributes:
         ID: ``0xb0700001``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be gif.
 

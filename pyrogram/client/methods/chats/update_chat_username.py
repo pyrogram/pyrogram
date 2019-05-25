@@ -28,22 +28,22 @@ class UpdateChatUsername(BaseClient):
         chat_id: Union[int, str],
         username: Union[str, None]
     ) -> bool:
-        """Use this method to update a channel or a supergroup username.
+        """Update a channel or a supergroup username.
         
         To update your own username (for users only, not bots) you can use :meth:`update_username`.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``)
                 Unique identifier (int) or username (str) of the target chat.
             username (``str`` | ``None``):
                 Username to set. Pass "" (empty string) or None to remove the username.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to a user or chat.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case a chat id belongs to a user or chat.
         """
 
         peer = await self.resolve_peer(chat_id)

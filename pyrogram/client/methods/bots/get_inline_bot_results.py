@@ -32,10 +32,10 @@ class GetInlineBotResults(BaseClient):
         latitude: float = None,
         longitude: float = None
     ):
-        """Use this method to get bot results via inline queries.
+        """Get bot results via inline queries.
         You can then send a result using :obj:`send_inline_bot_result <pyrogram.Client.send_inline_bot_result>`
 
-        Args:
+        Parameters:
             bot (``int`` | ``str``):
                 Unique identifier of the inline bot you want to get results from. You can specify
                 a @username (str) or a bot ID (int).
@@ -55,11 +55,11 @@ class GetInlineBotResults(BaseClient):
                 Useful for location-based results only.
 
         Returns:
-            On Success, :obj:`BotResults <pyrogram.api.types.messages.BotResults>` is returned.
+            :obj:`BotResults <pyrogram.api.types.messages.BotResults>`: On Success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``TimeoutError`` if the bot fails to answer within 10 seconds
+            RPCError: In case of a Telegram RPC error.
+            TimeoutError: In case the bot fails to answer within 10 seconds.
         """
         # TODO: Don't return the raw type
 

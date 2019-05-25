@@ -38,12 +38,12 @@ class RestrictChatMember(BaseClient):
         can_invite_users: bool = False,
         can_pin_messages: bool = False
     ) -> Chat:
-        """Use this method to restrict a user in a supergroup.
+        """Restrict a user in a supergroup.
 
         The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
         Pass True for all boolean parameters to lift restrictions from a user.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -83,10 +83,10 @@ class RestrictChatMember(BaseClient):
                 Pass True, if the user can pin messages.
 
         Returns:
-            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+            :obj:`Chat`: On success, a chat object is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         send_messages = True
         send_media = True

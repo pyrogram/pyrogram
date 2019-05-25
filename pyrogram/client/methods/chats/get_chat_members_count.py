@@ -27,18 +27,18 @@ class GetChatMembersCount(BaseClient):
         self,
         chat_id: Union[int, str]
     ) -> int:
-        """Use this method to get the number of members in a chat.
+        """Get the number of members in a chat.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, the chat members count is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to user.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case a chat id belongs to user.
         """
         peer = await self.resolve_peer(chat_id)
 

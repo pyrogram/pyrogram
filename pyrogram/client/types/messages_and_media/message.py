@@ -21,9 +21,8 @@ from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.errors import MessageIdsEmpty
-from pyrogram.client.ext import ChatAction, ParseMode
 from pyrogram.client.types.input_media import InputMedia
+from pyrogram.errors import MessageIdsEmpty
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
@@ -61,28 +60,28 @@ class Str(str):
 
 
 class Message(PyrogramType, Update):
-    """This object represents a message.
+    """A message.
 
-    Args:
+    Parameters:
         message_id (``int``):
             Unique message identifier inside this chat.
 
         date (``int``, *optional*):
             Date the message was sent in Unix time.
 
-        chat (:obj:`Chat <pyrogram.Chat>`, *optional*):
+        chat (:obj:`Chat`, *optional*):
             Conversation the message belongs to.
 
-        from_user (:obj:`User <pyrogram.User>`, *optional*):
+        from_user (:obj:`User`, *optional*):
             Sender, empty for messages sent to channels.
 
-        forward_from (:obj:`User <pyrogram.User>`, *optional*):
+        forward_from (:obj:`User`, *optional*):
             For forwarded messages, sender of the original message.
 
         forward_sender_name (``str``, *optional*):
             For messages forwarded from users who have hidden their accounts, name of the user.
 
-        forward_from_chat (:obj:`Chat <pyrogram.Chat>`, *optional*):
+        forward_from_chat (:obj:`Chat`, *optional*):
             For messages forwarded from channels, information about the original channel.
 
         forward_from_message_id (``int``, *optional*):
@@ -94,7 +93,7 @@ class Message(PyrogramType, Update):
         forward_date (``int``, *optional*):
             For forwarded messages, date the original message was sent in Unix time.
 
-        reply_to_message (:obj:`Message <pyrogram.Message>`, *optional*):
+        reply_to_message (:obj:`Message`, *optional*):
             For replies, the original message. Note that the Message object in this field will not contain
             further reply_to_message fields even if it itself is a reply.
 
@@ -131,38 +130,38 @@ class Message(PyrogramType, Update):
             *text.html* to get the marked up message text. In case there is no entity, the fields
             will contain the same text as *text*.
 
-        entities (List of :obj:`MessageEntity <pyrogram.MessageEntity>`, *optional*):
+        entities (List of :obj:`MessageEntity`, *optional*):
             For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
 
-        caption_entities (List of :obj:`MessageEntity <pyrogram.MessageEntity>`, *optional*):
+        caption_entities (List of :obj:`MessageEntity`, *optional*):
             For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear
             in the caption.
 
-        audio (:obj:`Audio <pyrogram.Audio>`, *optional*):
+        audio (:obj:`Audio`, *optional*):
             Message is an audio file, information about the file.
 
-        document (:obj:`Document <pyrogram.Document>`, *optional*):
+        document (:obj:`Document`, *optional*):
             Message is a general file, information about the file.
 
-        photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
+        photo (:obj:`Photo`, *optional*):
             Message is a photo, information about the photo.
 
-        sticker (:obj:`Sticker <pyrogram.Sticker>`, *optional*):
+        sticker (:obj:`Sticker`, *optional*):
             Message is a sticker, information about the sticker.
 
-        animation (:obj:`Animation <pyrogram.Animation>`, *optional*):
+        animation (:obj:`Animation`, *optional*):
             Message is an animation, information about the animation.
 
-        game (:obj:`Game <pyrogram.Game>`, *optional*):
+        game (:obj:`Game`, *optional*):
             Message is a game, information about the game.
 
-        video (:obj:`Video <pyrogram.Video>`, *optional*):
+        video (:obj:`Video`, *optional*):
             Message is a video, information about the video.
 
-        voice (:obj:`Voice <pyrogram.Voice>`, *optional*):
+        voice (:obj:`Voice`, *optional*):
             Message is a voice message, information about the file.
 
-        video_note (:obj:`VideoNote <pyrogram.VideoNote>`, *optional*):
+        video_note (:obj:`VideoNote`, *optional*):
             Message is a video note, information about the video message.
 
         caption (``str``, *optional*):
@@ -171,13 +170,13 @@ class Message(PyrogramType, Update):
             *caption.html* to get the marked up caption text. In case there is no caption entity, the fields
             will contain the same text as *caption*.
 
-        contact (:obj:`Contact <pyrogram.Contact>`, *optional*):
+        contact (:obj:`Contact`, *optional*):
             Message is a shared contact, information about the contact.
 
-        location (:obj:`Location <pyrogram.Location>`, *optional*):
+        location (:obj:`Location`, *optional*):
             Message is a shared location, information about the location.
 
-        venue (:obj:`Venue <pyrogram.Venue>`, *optional*):
+        venue (:obj:`Venue`, *optional*):
             Message is a venue, information about the venue.
 
         web_page (``bool``, *optional*):
@@ -186,20 +185,20 @@ class Message(PyrogramType, Update):
             web page preview. In future versions this property could turn into a full web page object that contains
             more details.
 
-        poll (:obj:`Poll <pyrogram.Poll>`, *optional*):
+        poll (:obj:`Poll`, *optional*):
             Message is a native poll, information about the poll.
 
-        new_chat_members (List of :obj:`User <pyrogram.User>`, *optional*):
+        new_chat_members (List of :obj:`User`, *optional*):
             New members that were added to the group or supergroup and information about them
             (the bot itself may be one of these members).
 
-        left_chat_member (:obj:`User <pyrogram.User>`, *optional*):
+        left_chat_member (:obj:`User`, *optional*):
             A member was removed from the group, information about them (this member may be the bot itself).
 
         new_chat_title (``str``, *optional*):
             A chat title was changed to this value.
 
-        new_chat_photo (:obj:`Photo <pyrogram.Photo>`, *optional*):
+        new_chat_photo (:obj:`Photo`, *optional*):
             A chat photo was change to this value.
 
         delete_chat_photo (``bool``, *optional*):
@@ -232,19 +231,19 @@ class Message(PyrogramType, Update):
             in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float
             type are safe for storing this identifier.
 
-        pinned_message (:obj:`Message <pyrogram.Message>`, *optional*):
+        pinned_message (:obj:`Message`, *optional*):
             Specified message was pinned.
             Note that the Message object in this field will not contain further reply_to_message fields even if it
             is itself a reply.
 
-        game_high_score (:obj:`GameHighScore <pyrogram.GameHighScore>`, *optional*):
+        game_high_score (:obj:`GameHighScore`, *optional*):
             The game score for a user.
             The reply_to_message field will contain the game Message.
 
         views (``int``, *optional*):
             Channel post views.
 
-        via_bot (:obj:`User <pyrogram.User>`):
+        via_bot (:obj:`User`):
             The information of the bot that generated the message from an inline query of a user.
 
         outgoing (``bool``, *optional*):
@@ -283,7 +282,7 @@ class Message(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         message_id: int,
         date: int = None,
         chat: Chat = None,
@@ -662,7 +661,7 @@ class Message(PyrogramType, Update):
         reply_to_message_id: int = None,
         reply_markup=None
     ) -> "Message":
-        """Bound method *reply* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -679,7 +678,7 @@ class Message(PyrogramType, Update):
 
                 message.reply("hello", quote=True)
 
-        Args:
+        Parameters:
             text (``str``):
                 Text of the message to be sent.
 
@@ -689,9 +688,8 @@ class Message(PyrogramType, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -711,7 +709,7 @@ class Message(PyrogramType, Update):
             On success, the sent Message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -750,7 +748,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_animation* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_animation* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -766,7 +764,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_animation(animation)
 
-        Args:
+        Parameters:
             animation (``str``):
                 Animation to send.
                 Pass a file_id as string to send an animation that exists on the Telegram servers,
@@ -782,9 +780,8 @@ class Message(PyrogramType, Update):
                 Animation caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             duration (``int``, *optional*):
                 Duration of sent animation in seconds.
@@ -822,7 +819,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -836,11 +833,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -885,7 +882,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_audio* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_audio* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -901,7 +898,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_audio(audio)
 
-        Args:
+        Parameters:
             audio (``str``):
                 Audio file to send.
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
@@ -917,9 +914,8 @@ class Message(PyrogramType, Update):
                 Audio caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             duration (``int``, *optional*):
                 Duration of the audio in seconds.
@@ -957,7 +953,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -971,11 +967,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1014,7 +1010,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_cached_media* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_cached_media* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1030,7 +1026,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_cached_media(file_id)
 
-        Args:
+        Parameters:
             file_id (``str``):
                 Media to send.
                 Pass a file_id as string to send a media that exists on the Telegram servers.
@@ -1044,9 +1040,8 @@ class Message(PyrogramType, Update):
                 Media caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -1060,10 +1055,10 @@ class Message(PyrogramType, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1081,12 +1076,8 @@ class Message(PyrogramType, Update):
             reply_markup=reply_markup
         )
 
-    async def reply_chat_action(
-        self,
-        action: Union[ChatAction, str],
-        progress: int = 0
-    ) -> "Message":
-        """Bound method *reply_chat_action* of :obj:`Message <pyrogram.Message>`.
+    async def reply_chat_action(self, action: str) -> bool:
+        """Bound method *reply_chat_action* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1102,28 +1093,25 @@ class Message(PyrogramType, Update):
 
                 message.reply_chat_action("typing")
 
-        Args:
-            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
-                Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
-                depending on what the user is about to receive.
-                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
-
-            progress (``int``, *optional*):
-                Progress of the upload process.
-                Currently useless because official clients don't seem to be handling this.
+        Parameters:
+            action (``str``):
+                Type of action to broadcast. Choose one, depending on what the user is about to receive: *"typing"* for
+                text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
+                *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
+                *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
+                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
+                displayed.
 
         Returns:
-            On success, True is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if the provided string is not a valid ChatAction.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case the provided string is not a valid chat action.
         """
         return await self._client.send_chat_action(
             chat_id=self.chat.id,
-            action=action,
-            progress=progress
+            action=action
         )
 
     async def reply_contact(
@@ -1142,7 +1130,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_contact* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_contact* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1159,7 +1147,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_contact(phone_number, "Dan")
 
-        Args:
+        Parameters:
             phone_number (``str``):
                 Contact's phone number.
 
@@ -1189,10 +1177,10 @@ class Message(PyrogramType, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1229,7 +1217,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_document* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_document* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1245,7 +1233,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_document(document)
 
-        Args:
+        Parameters:
             document (``str``):
                 File to send.
                 Pass a file_id as string to send a file that exists on the Telegram servers,
@@ -1267,9 +1255,8 @@ class Message(PyrogramType, Update):
                 Document caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -1292,7 +1279,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -1306,11 +1293,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1344,7 +1331,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_game* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_game* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1360,7 +1347,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_game("lumberjack")
 
-        Args:
+        Parameters:
             game_short_name (``str``):
                 Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
 
@@ -1384,7 +1371,7 @@ class Message(PyrogramType, Update):
             On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1409,7 +1396,7 @@ class Message(PyrogramType, Update):
         reply_to_message_id: int = None,
         hide_via: bool = None
     ) -> "Message":
-        """Bound method *reply_inline_bot_result* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_inline_bot_result* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1426,7 +1413,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_inline_bot_result(query_id, result_id)
 
-        Args:
+        Parameters:
             query_id (``int``):
                 Unique identifier for the answered query.
 
@@ -1452,7 +1439,7 @@ class Message(PyrogramType, Update):
             On success, the sent Message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1483,7 +1470,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_location* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_location* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1500,7 +1487,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_location(41.890251, 12.492373)
 
-        Args:
+        Parameters:
             latitude (``float``):
                 Latitude of the location.
 
@@ -1524,10 +1511,10 @@ class Message(PyrogramType, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1551,7 +1538,7 @@ class Message(PyrogramType, Update):
         disable_notification: bool = None,
         reply_to_message_id: int = None
     ) -> "Message":
-        """Bound method *reply_media_group* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_media_group* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1567,7 +1554,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_media_group(list_of_media)
 
-        Args:
+        Parameters:
             media (``list``):
                 A list containing either :obj:`InputMediaPhoto <pyrogram.InputMediaPhoto>` or
                 :obj:`InputMediaVideo <pyrogram.InputMediaVideo>` objects
@@ -1586,11 +1573,11 @@ class Message(PyrogramType, Update):
                 If the message is a reply, ID of the original message.
 
         Returns:
-            On success, a :obj:`Messages <pyrogram.Messages>` object is returned containing all the
+            On success, a :obj:`Messages` object is returned containing all the
             single messages sent.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1623,7 +1610,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_photo* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_photo* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1639,7 +1626,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_photo(photo)
 
-        Args:
+        Parameters:
             photo (``str``):
                 Photo to send.
                 Pass a file_id as string to send a photo that exists on the Telegram servers,
@@ -1655,9 +1642,8 @@ class Message(PyrogramType, Update):
                 Photo caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             ttl_seconds (``int``, *optional*):
                 Self-Destruct Timer.
@@ -1685,7 +1671,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -1699,11 +1685,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1738,7 +1724,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_poll* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_poll* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1755,7 +1741,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_poll("Is Pyrogram the best?", ["Yes", "Yes"])
 
-        Args:
+        Parameters:
             question (``str``):
                 The poll question, as string.
 
@@ -1779,10 +1765,10 @@ class Message(PyrogramType, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1814,7 +1800,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_sticker* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_sticker* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1830,7 +1816,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_sticker(sticker)
 
-        Args:
+        Parameters:
             sticker (``str``):
                 Sticker to send.
                 Pass a file_id as string to send a sticker that exists on the Telegram servers,
@@ -1863,7 +1849,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -1877,11 +1863,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -1917,7 +1903,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_venue* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_venue* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -1936,7 +1922,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_venue(41.890251, 12.492373, "Coliseum", "Piazza del Colosseo, 1, 00184 Roma RM")
 
-        Args:
+        Parameters:
             latitude (``float``):
                 Latitude of the venue.
 
@@ -1973,10 +1959,10 @@ class Message(PyrogramType, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2019,7 +2005,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_video* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_video* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2035,7 +2021,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_video(video)
 
-        Args:
+        Parameters:
             video (``str``):
                 Video to send.
                 Pass a file_id as string to send a video that exists on the Telegram servers,
@@ -2051,9 +2037,8 @@ class Message(PyrogramType, Update):
                 Video caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -2094,7 +2079,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -2108,11 +2093,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2155,7 +2140,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_video_note* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_video_note* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2171,7 +2156,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_video_note(video_note)
 
-        Args:
+        Parameters:
             video_note (``str``):
                 Video note to send.
                 Pass a file_id as string to send a video note that exists on the Telegram servers, or
@@ -2216,7 +2201,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -2230,11 +2215,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2273,7 +2258,7 @@ class Message(PyrogramType, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_voice* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_voice* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2289,7 +2274,7 @@ class Message(PyrogramType, Update):
 
                 message.reply_voice(voice)
 
-        Args:
+        Parameters:
             voice (``str``):
                 Audio file to send.
                 Pass a file_id as string to send an audio that exists on the Telegram servers,
@@ -2305,9 +2290,8 @@ class Message(PyrogramType, Update):
                 Voice message caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             duration (``int``, *optional*):
                 Duration of the voice message in seconds.
@@ -2333,7 +2317,7 @@ class Message(PyrogramType, Update):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -2347,11 +2331,11 @@ class Message(PyrogramType, Update):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            On success, the sent :obj:`Message` is returned.
             In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
             quote = self.chat.type != "private"
@@ -2384,7 +2368,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *edit* of :obj:`Message <pyrogram.Message>`
+        """Bound method *edit* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2401,14 +2385,13 @@ class Message(PyrogramType, Update):
 
                 message.edit("hello")
 
-        Args:
+        Parameters:
             text (``str``):
                 New text of the message.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -2417,10 +2400,10 @@ class Message(PyrogramType, Update):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.edit_message_text(
             chat_id=self.chat.id,
@@ -2442,7 +2425,7 @@ class Message(PyrogramType, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *edit_caption* of :obj:`Message <pyrogram.Message>`
+        """Bound method *edit_caption* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2459,23 +2442,22 @@ class Message(PyrogramType, Update):
 
                 message.edit_caption("hello")
 
-        Args:
+        Parameters:
             caption (``str``):
                 New caption of the message.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your message.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.edit_message_caption(
             chat_id=self.chat.id,
@@ -2486,7 +2468,7 @@ class Message(PyrogramType, Update):
         )
 
     async def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
-        """Bound method *edit_media* of :obj:`Message <pyrogram.Message>`
+        """Bound method *edit_media* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2503,7 +2485,7 @@ class Message(PyrogramType, Update):
 
                 message.edit_media(media)
 
-        Args:
+        Parameters:
             media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
@@ -2511,10 +2493,10 @@ class Message(PyrogramType, Update):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            On success, the edited :obj:`Message <pyrogram.Message>` is returned.
+            On success, the edited :obj:`Message` is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.edit_message_media(
             chat_id=self.chat.id,
@@ -2524,7 +2506,7 @@ class Message(PyrogramType, Update):
         )
 
     async def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
-        """Bound method *edit_reply_markup* of :obj:`Message <pyrogram.Message>`
+        """Bound method *edit_reply_markup* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2541,16 +2523,16 @@ class Message(PyrogramType, Update):
 
                 message.edit_reply_markup(inline_reply_markup)
 
-        Args:
+        Parameters:
             reply_markup (:obj:`InlineKeyboardMarkup`):
                 An InlineKeyboardMarkup object.
 
         Returns:
             On success, if edited message is sent by the bot, the edited
-            :obj:`Message <pyrogram.Message>` is returned, otherwise True is returned.
+            :obj:`Message` is returned, otherwise True is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.edit_message_reply_markup(
             chat_id=self.chat.id,
@@ -2565,7 +2547,7 @@ class Message(PyrogramType, Update):
         as_copy: bool = False,
         remove_caption: bool = False
     ) -> "Message":
-        """Bound method *forward* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *forward* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2582,7 +2564,7 @@ class Message(PyrogramType, Update):
 
                 message.forward(chat_id)
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -2605,7 +2587,7 @@ class Message(PyrogramType, Update):
             On success, the forwarded Message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         if as_copy:
             if self.service:
@@ -2696,7 +2678,7 @@ class Message(PyrogramType, Update):
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
                     return await send_media(file_id=file_id)
                 else:
-                    return await send_media(file_id=file_id, caption=caption, parse_mode=ParseMode.HTML)
+                    return await send_media(file_id=file_id, caption=caption, parse_mode="html")
             else:
                 raise ValueError("Can't copy this message")
         else:
@@ -2708,7 +2690,7 @@ class Message(PyrogramType, Update):
             )
 
     async def delete(self, revoke: bool = True):
-        """Bound method *delete* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *delete* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2724,7 +2706,7 @@ class Message(PyrogramType, Update):
 
                 message.delete()
 
-        Args:
+        Parameters:
             revoke (``bool``, *optional*):
                 Deletes messages on both parts.
                 This is only for private cloud chats and normal groups, messages on
@@ -2735,7 +2717,7 @@ class Message(PyrogramType, Update):
             True on success, False otherwise.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.delete_messages(
             chat_id=self.chat.id,
@@ -2743,10 +2725,10 @@ class Message(PyrogramType, Update):
             revoke=revoke
         )
 
-    async def click(self, x: int or str, y: int = None, quote: bool = None):
-        """Bound method *click* of :obj:`Message <pyrogram.Message>`.
+    async def click(self, x: int or str, y: int = 0, quote: bool = None, timeout: int = 10):
+        """Bound method *click* :obj:`Message <pyrogram.Message>`.
 
-        Use as a shortcut for clicking a button attached to the message instead of.
+        Use as a shortcut for clicking a button attached to the message instead of:
 
         - Clicking inline buttons:
 
@@ -2779,9 +2761,10 @@ class Message(PyrogramType, Update):
             3.  Pass one string argument only (e.g.: ``.click("Settings")``, to click a button by using its label).
                 Only the first matching button will be pressed.
 
-        Args:
+        Parameters:
             x (``int`` | ``str``):
                 Used as integer index, integer abscissa (in pair with y) or as string label.
+                Defaults to 0 (first button).
 
             y (``int``, *optional*):
                 Used as ordinate only (in pair with x).
@@ -2791,58 +2774,67 @@ class Message(PyrogramType, Update):
                 If ``True``, the message will be sent as a reply to this message.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
+            timeout (``int``, *optional*):
+                Timeout in seconds.
+
         Returns:
-            -   The result of *request_callback_answer()* in case of inline callback button clicks.
-            -   The result of *reply()* in case of normal button clicks.
-            -   A string in case the inline button is an URL, switch_inline_query or switch_inline_query_current_chat
-                button.
+            -   The result of :meth:`request_callback_answer() <pyrogram.Client.request_callback_answer>` in case of
+                inline callback button clicks.
+            -   The result of :meth:`reply() <pyrogram.Message.reply>` in case of normal button clicks.
+            -   A string in case the inline button is a URL, a *switch_inline_query* or a
+                *switch_inline_query_current_chat* button.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
-            ``ValueError``: If the provided index or position is out of range or the button label was not found
-            ``TimeoutError``: If, after clicking an inline button, the bot fails to answer within 10 seconds
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case the provided index or position is out of range or the button label was not found.
+            TimeoutError: In case, after clicking an inline button, the bot fails to answer within the timeout.
         """
+
         if isinstance(self.reply_markup, pyrogram.ReplyKeyboardMarkup):
-            return await self.reply(x, quote=quote)
+            keyboard = self.reply_markup.keyboard
+            is_inline = False
         elif isinstance(self.reply_markup, pyrogram.InlineKeyboardMarkup):
-            if isinstance(x, int) and y is None:
-                try:
-                    button = [
-                        button
-                        for row in self.reply_markup.inline_keyboard
-                        for button in row
-                    ][x]
-                except IndexError:
-                    raise ValueError("The button at index {} doesn't exist".format(x)) from None
-            elif isinstance(x, int) and isinstance(y, int):
-                try:
-                    button = self.reply_markup.inline_keyboard[y][x]
-                except IndexError:
-                    raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y)) from None
-            elif isinstance(x, str):
-                x = x.encode("utf-16", "surrogatepass").decode("utf-16")
+            keyboard = self.reply_markup.inline_keyboard
+            is_inline = True
+        else:
+            raise ValueError("The message doesn't contain any keyboard")
 
-                try:
-                    button = [
-                        button
-                        for row in self.reply_markup.inline_keyboard
-                        for button in row
-                        if x == button.text
-                    ][0]
-                except IndexError:
-                    raise ValueError(
-                        "The button with label '{}' doesn't exists".format(
-                            x.encode("unicode_escape").decode()
-                        )
-                    ) from None
-            else:
-                raise ValueError("Invalid arguments")
+        if isinstance(x, int) and y is None:
+            try:
+                button = [
+                    button
+                    for row in keyboard
+                    for button in row
+                ][x]
+            except IndexError:
+                raise ValueError("The button at index {} doesn't exist".format(x))
+        elif isinstance(x, int) and isinstance(y, int):
+            try:
+                button = keyboard[y][x]
+            except IndexError:
+                raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y))
+        elif isinstance(x, str) and y is None:
+            label = x.encode("utf-16", "surrogatepass").decode("utf-16")
 
+            try:
+                button = [
+                    button
+                    for row in keyboard
+                    for button in row
+                    if label == button.text
+                ][0]
+            except IndexError:
+                raise ValueError("The button with label '{}' doesn't exists".format(x))
+        else:
+            raise ValueError("Invalid arguments")
+
+        if is_inline:
             if button.callback_data:
                 return await self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
-                    callback_data=button.callback_data
+                    callback_data=button.callback_data,
+                    timeout=timeout
                 )
             elif button.url:
                 return button.url
@@ -2853,7 +2845,7 @@ class Message(PyrogramType, Update):
             else:
                 raise ValueError("This button is not supported yet")
         else:
-            raise ValueError("The message doesn't contain any keyboard")
+            await self.reply(button, quote=quote)
 
     async def download(
         self,
@@ -2861,8 +2853,8 @@ class Message(PyrogramType, Update):
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> "Message":
-        """Bound method *download* of :obj:`Message <pyrogram.Message>`.
+    ) -> str:
+        """Bound method *download* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2875,7 +2867,7 @@ class Message(PyrogramType, Update):
 
                 message.download()
 
-        Args:
+        Parameters:
             file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
@@ -2899,7 +2891,7 @@ class Message(PyrogramType, Update):
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
             ``ValueError``: If the message doesn't contain any downloadable media
         """
         return await self._client.download_media(
@@ -2911,7 +2903,7 @@ class Message(PyrogramType, Update):
         )
 
     async def pin(self, disable_notification: bool = None) -> "Message":
-        """Bound method *pin* of :obj:`Message <pyrogram.Message>`.
+        """Bound method *pin* :obj:`Message <pyrogram.Message>`.
 
         Use as a shortcut for:
 
@@ -2927,7 +2919,7 @@ class Message(PyrogramType, Update):
 
                 message.pin()
 
-        Args:
+        Parameters:
             disable_notification (``bool``):
                 Pass True, if it is not necessary to send a notification to all chat members about the new pinned
                 message. Notifications are always disabled in channels.
@@ -2936,7 +2928,7 @@ class Message(PyrogramType, Update):
             True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>`
+            RPCError: In case of a Telegram RPC error.
         """
         return await self._client.pin_chat_message(
             chat_id=self.chat.id,

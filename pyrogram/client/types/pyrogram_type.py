@@ -25,34 +25,45 @@ import pyrogram
 class PyrogramType:
     __slots__ = ["_client"]
 
-    def __init__(self, client: "pyrogram.client.ext.BaseClient"):
+    def __init__(self, client: "pyrogram.BaseClient" = None):
         self._client = client
 
-    def __str__(self):
+        if self._client is None:
+            del self._client
+
+    def __eq__(self, other: "PyrogramType") -> bool:
+        for attr in self.__slots__:
+            try:
+                if getattr(self, attr) != getattr(other, attr):
+                    return False
+            except AttributeError:
+                return False
+
+        return True
+
+    def __str__(self) -> str:
+        def default(obj: PyrogramType):
+            try:
+                return OrderedDict(
+                    [("_", "pyrogram." + obj.__class__.__name__)]
+                    + [(attr, getattr(obj, attr))
+                       for attr in obj.__slots__
+                       if getattr(obj, attr) is not None]
+                )
+            except AttributeError:
+                return repr(obj)
+
         return dumps(self, indent=4, default=default, ensure_ascii=False)
+
+    def __repr__(self) -> str:
+        return "pyrogram.{}({})".format(
+            self.__class__.__name__,
+            ", ".join(
+                "{}={}".format(attr, repr(getattr(self, attr)))
+                for attr in self.__slots__
+                if getattr(self, attr) is not None
+            )
+        )
 
     def __getitem__(self, item):
         return getattr(self, item)
-
-
-def remove_none(obj):
-    if isinstance(obj, (list, tuple, set)):
-        return type(obj)(remove_none(x) for x in obj if x is not None)
-    elif isinstance(obj, dict):
-        return type(obj)((remove_none(k), remove_none(v)) for k, v in obj.items() if k is not None and v is not None)
-    else:
-        return obj
-
-
-def default(o: PyrogramType):
-    try:
-        content = {i: getattr(o, i) for i in o.__slots__}
-
-        return remove_none(
-            OrderedDict(
-                [("_", "pyrogram." + o.__class__.__name__)]
-                + [i for i in content.items() if not i[0].startswith("_")]
-            )
-        )
-    except AttributeError:
-        return repr(o)

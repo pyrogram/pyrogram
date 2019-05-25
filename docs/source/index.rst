@@ -4,8 +4,8 @@ Welcome to Pyrogram
 .. raw:: html
 
     <div align="center">
-        <a href="https://docs.pyrogram.ml">
-            <div><img src="_static/logo.png" alt="Pyrogram Logo"></div>
+        <a href="/">
+            <div><img src="_static/pyrogram.png" alt="Pyrogram Logo" width="420"></div>
         </a>
     </div>
 
@@ -13,25 +13,16 @@ Welcome to Pyrogram
         <b>Telegram MTProto API Framework for Python</b>
 
         <br>
-        <a href="https://docs.pyrogram.ml">
-            Documentation
+        <a href="https://github.com/pyrogram/pyrogram">
+            Source Code
         </a>
         •
         <a href="https://github.com/pyrogram/pyrogram/releases">
-            Changelog
+            Releases
         </a>
         •
-        <a href="https://t.me/PyrogramChat">
+        <a href="https://t.me/Pyrogram">
             Community
-        </a>
-        <br>
-        <a href="compiler/api/source/main_api.tl">
-            <img src="https://img.shields.io/badge/schema-layer%2097-eda738.svg?longCache=true&colorA=262b30"
-                alt="Schema Layer">
-        </a>
-        <a href="https://github.com/pyrogram/tgcrypto">
-            <img src="https://img.shields.io/badge/tgcrypto-v1.1.1-eda738.svg?longCache=true&colorA=262b30"
-                alt="TgCrypto Version">
         </a>
     </p>
 
@@ -49,73 +40,133 @@ Welcome to Pyrogram
 
     app.run()
 
-Welcome to Pyrogram's Documentation! Here you can find resources for learning how to use the framework.
-Contents are organized into self-contained topics and can be accessed from the sidebar, or by following them in order
-using the Next button at the end of each page. But first, here's a brief overview of what is this all about.
+**Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
+C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the
+`MTProto API`_.
 
-About
------
+.. _Telegram: https://telegram.org
+.. _MTProto API: topics/mtproto-vs-botapi#what-is-the-mtproto-api
 
-**Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and C.
-It enables you to easily create custom apps using both user and bot identities (bot API alternative) via the `MTProto API`_.
+How the Documentation is Organized
+----------------------------------
 
-Features
---------
+Contents are organized into self-contained topics and can be all accessed from the sidebar, or by following them in
+order using the Next button at the end of each page. Here below you can, instead, find a list of the most relevant
+pages for a quick access.
 
--   **Easy**: You can install Pyrogram with pip and start building your applications right away.
--   **Elegant**: Low-level details are abstracted and re-presented in a much nicer and easier way.
--   **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
--   **Documented**: Pyrogram API methods, types and public interfaces are well documented.
--   **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
--   **Updated**, to the latest Telegram API version, currently Layer 97 on top of `MTProto 2.0`_.
--   **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
--   **Comprehensive**: Execute any advanced action an official client is able to do, and even more.
+First Steps
+-----------
 
-To get started, press the Next button.
+.. hlist::
+    :columns: 2
+
+    - `Quick Start`_: Overview to get you started quickly.
+    - `Calling Methods`_: How to call Pyrogram's methods.
+    - `Handling Updates`_: How to handle Telegram updates.
+    - `Error Handling`_: How to handle API errors correctly.
+
+.. _Quick Start: intro/quickstart
+.. _Calling Methods: start/invoking
+.. _Handling Updates: start/updates
+.. _Error Handling: start/errors
+
+API Reference
+-------------
+
+.. hlist::
+    :columns: 2
+
+    - `Pyrogram Client`_: Reference details about the Client class.
+    - `Available Methods`_: List of available high-level methods.
+    - `Available Types`_: List of available high-level types.
+    - `Bound Methods`_: List of convenient bound methods.
+
+.. _Pyrogram Client: ./api/client
+.. _Available Methods: api/methods
+.. _Available Types: api/types
+.. _Bound Methods: api/bound-methods
+
+Meta
+----
+
+.. hlist::
+    :columns: 2
+
+    - `Pyrogram FAQ`_: Answers to common Pyrogram questions.
+    - `Pyrogram Glossary`_: List of words with brief explanations.
+    - `Release Notes`_: Release notes for Pyrogram releases.
+    - `Powered by Pyrogram`_: Collection of Pyrogram Projects.
+    - `Support Pyrogram`_: Ways to show your appreciation.
+
+.. _Pyrogram FAQ: faq
+.. _Pyrogram Glossary: glossary
+.. _Release Notes: releases
+.. _Powered by Pyrogram: powered-by
+.. _Support Pyrogram: support-pyrogram
 
 .. toctree::
     :hidden:
-    :caption: Quick Start
+    :caption: Introduction
 
-    start/Installation
-    start/Setup
-    start/Usage
-
-.. toctree::
-    :hidden:
-    :caption: Resources
-
-    resources/UpdateHandling
-    resources/UsingFilters
-    resources/MoreOnUpdates
-    resources/ConfigurationFile
-    resources/SmartPlugins
-    resources/AutoAuthorization
-    resources/CustomizeSessions
-    resources/TgCrypto
-    resources/TextFormatting
-    resources/SOCKS5Proxy
-    resources/BotsInteraction
-    resources/ErrorHandling
-    resources/TestServers
-    resources/AdvancedUsage
-    resources/VoiceCalls
-    resources/Changelog
+    intro/quickstart
+    intro/install
+    intro/setup
 
 .. toctree::
     :hidden:
-    :caption: Main Package
+    :caption: Getting Started
 
-    pyrogram/index
+    start/auth
+    start/invoking
+    start/updates
+    start/errors
+
+.. toctree::
+    :hidden:
+    :caption: API Reference
+
+    api/client
+    api/methods
+    api/types
+    api/bound-methods
+    api/handlers
+    api/decorators
+    api/filters
+    api/errors
+
+.. toctree::
+    :hidden:
+    :caption: Topic Guides
+
+    topics/filters
+    topics/more-on-updates
+    topics/config-file
+    topics/smart-plugins
+    topics/auto-auth
+    topics/session-settings
+    topics/tgcrypto
+    topics/text-formatting
+    topics/serialize
+    topics/proxy
+    topics/bots-interaction
+    topics/mtproto-vs-botapi
+    topics/test-servers
+    topics/advanced-usage
+    topics/voice-calls
+
+.. toctree::
+    :hidden:
+    :caption: Meta
+
+    faq
+    glossary
+    releases
+    powered-by
+    support-pyrogram
 
 .. toctree::
     :hidden:
     :caption: Telegram API
 
-    functions/index
-    types/index
-
-.. _`Telegram`: https://telegram.org
-.. _TgCrypto: https://docs.pyrogram.ml/resources/TgCrypto
-.. _`MTProto API`: https://core.telegram.org/api#telegram-api
-.. _`MTProto 2.0`: https://core.telegram.org/mtproto
+    telegram/functions/index
+    telegram/types/index

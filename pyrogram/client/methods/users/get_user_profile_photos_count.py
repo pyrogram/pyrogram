@@ -24,19 +24,19 @@ from ...ext import BaseClient
 
 class GetUserProfilePhotosCount(BaseClient):
     async def get_user_profile_photos_count(self, user_id: Union[int, str]) -> int:
-        """Use this method to get the total count of profile pictures for a user.
+        """Get the total count of profile pictures for a user.
 
-        Args:
+        Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, the user profile photos count is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         r = await self.send(

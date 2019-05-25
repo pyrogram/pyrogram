@@ -30,7 +30,7 @@ class KickChatMember(BaseClient):
         user_id: Union[int, str],
         until_date: int = 0
     ) -> Union["pyrogram.Message", bool]:
-        """Use this method to kick a user from a group, a supergroup or a channel.
+        """Kick a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must
         have the appropriate admin rights.
@@ -40,7 +40,7 @@ class KickChatMember(BaseClient):
             off in the target group. Otherwise members may only be removed by the group's creator or by the member
             that added them.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -54,10 +54,11 @@ class KickChatMember(BaseClient):
                 considered to be banned forever. Defaults to 0 (ban forever).
 
         Returns:
-            On success, either True or a service :obj:`Message <pyrogram.Message>` will be returned (when applicable).
+            :obj:`Message` | ``bool``: On success, a service message will be returned (when applicable), otherwise, in
+            case a message object couldn't be returned, True is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         chat_peer = await self.resolve_peer(chat_id)
         user_peer = await self.resolve_peer(user_id)

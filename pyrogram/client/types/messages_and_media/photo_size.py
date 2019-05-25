@@ -26,9 +26,9 @@ from ..pyrogram_type import PyrogramType
 
 
 class PhotoSize(PyrogramType):
-    """This object represents one size of a photo or a file/sticker thumbnail.
+    """One size of a photo or a file/sticker thumbnail.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -47,7 +47,7 @@ class PhotoSize(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         width: int,
         height: int,

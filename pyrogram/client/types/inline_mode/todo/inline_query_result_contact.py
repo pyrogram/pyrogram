@@ -25,7 +25,7 @@ class InlineQueryResultContact(PyrogramType):
     Attributes:
         ID: ``0xb0700009``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be contact.
 

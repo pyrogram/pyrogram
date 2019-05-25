@@ -43,9 +43,9 @@ class SendSticker(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send .webp stickers.
+        """Send .webp stickers.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -78,7 +78,7 @@ class SendSticker(BaseClient):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -92,11 +92,10 @@ class SendSticker(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
-
+            :obj:`Message` | ``None``: On success, the sent sticker message is returned, otherwise, in case the upload
+            is deliberately stopped with :meth:`stop_transmission`, None is returned.
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         file = None
 

@@ -28,10 +28,11 @@ class OnRawUpdate(BaseClient):
         self=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling raw updates.
+        """Decorator for handling raw updates.
+
         This does the same thing as :meth:`add_handler` using the :class:`RawUpdateHandler`.
 
-        Args:
+        Parameters:
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """

@@ -17,8 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .base_client import BaseClient
-from .chat_action import ChatAction
 from .dispatcher import Dispatcher
 from .emoji import Emoji
-from .parse_mode import ParseMode
 from .syncer import Syncer

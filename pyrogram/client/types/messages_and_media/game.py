@@ -24,10 +24,10 @@ from ..pyrogram_type import PyrogramType
 
 
 class Game(PyrogramType):
-    """This object represents a game.
+    """A game.
     Use BotFather to create and edit games, their short names will act as unique identifiers.
 
-    Args:
+    Parameters:
         id (``int``):
             Unique identifier of the game.
 
@@ -40,10 +40,10 @@ class Game(PyrogramType):
         description (``str``):
             Description of the game.
 
-        photo (:obj:`Photo <pyrogram.Photo>`):
+        photo (:obj:`Photo`):
             Photo that will be displayed in the game message in chats.
 
-        animation (:obj:`Animation <pyrogram.Animation>`, *optional*):
+        animation (:obj:`Animation`, *optional*):
             Animation that will be displayed in the game message in chats.
             Upload via BotFather.
     """
@@ -53,7 +53,7 @@ class Game(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: int,
         title: str,
         short_name: str,

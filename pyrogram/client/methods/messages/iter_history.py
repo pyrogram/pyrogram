@@ -35,12 +35,12 @@ class IterHistory(BaseClient):
         offset_date: int = 0,
         reverse: bool = False
     ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
-        """Use this method to iterate through a chat history sequentially.
+        """Iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from
         the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a single call.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -64,10 +64,10 @@ class IterHistory(BaseClient):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
-            A generator yielding :obj:`Message <pyrogram.Message>` objects.
+            ``Generator``: A generator yielding :obj:`Message` objects.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         offset_id = offset_id or (1 if reverse else 0)
         current = 0

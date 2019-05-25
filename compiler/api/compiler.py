@@ -328,15 +328,15 @@ def start():
                 )
 
         if docstring_args:
-            docstring_args = "Args:\n        " + "\n        ".join(docstring_args)
+            docstring_args = "Parameters:\n        " + "\n        ".join(docstring_args)
         else:
             docstring_args = "No parameters required."
 
         docstring_args = "Attributes:\n        ID: ``{}``\n\n    ".format(c.id) + docstring_args
 
         if c.section == "functions":
-            docstring_args += "\n\n    Raises:\n        :obj:`RPCError <pyrogram.RPCError>`"
             docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)
+
         else:
             references = get_references(".".join(filter(None, [c.namespace, c.name])))
 
@@ -462,7 +462,7 @@ def start():
                             ["{0}={0}".format(i[0]) for i in sorted_args if i != ("flags", "#")]
                         ),
                         slots=", ".join(['"{}"'.format(i[0]) for i in sorted_args if i != ("flags", "#")]),
-                        qualname="{}{}".format("{}.".format(c.namespace) if c.namespace else "", c.name)
+                        qualname="{}.{}{}".format(c.section, "{}.".format(c.namespace) if c.namespace else "", c.name)
                     )
                 )
 

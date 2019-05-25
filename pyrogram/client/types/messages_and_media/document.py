@@ -26,13 +26,13 @@ from ...ext.utils import encode
 
 
 class Document(PyrogramType):
-    """This object represents a general file (as opposed to photos, voice messages, audio files, ...).
+    """A generic file (as opposed to photos, voice messages, audio files, ...).
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique file identifier.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
+        thumb (:obj:`PhotoSize`, *optional*):
             Document thumbnail as defined by sender.
 
         file_name (``str``, *optional*):
@@ -53,7 +53,7 @@ class Document(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         thumb: PhotoSize = None,
         file_name: str = None,

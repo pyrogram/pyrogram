@@ -31,12 +31,12 @@ class IterDialogs(BaseClient):
         limit: int = 0,
         offset_date: int = 0
     ) -> Optional[AsyncGenerator["pyrogram.Dialog", None]]:
-        """Use this method to iterate through a user's dialogs sequentially.
+        """Iterate through a user's dialogs sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from
         the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a single call.
 
-        Args:
+        Parameters:
             limit (``str``, *optional*):
                 Limits the number of dialogs to be retrieved.
                 By default, no limit is applied and all dialogs are returned.
@@ -46,10 +46,10 @@ class IterDialogs(BaseClient):
                 Defaults to 0 (most recent dialog).
 
         Returns:
-            A generator yielding :obj:`Dialog <pyrogram.Dialog>` objects.
+            ``Generator``: A generator yielding :obj:`Dialog` objects.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         current = 0
         total = limit or (1 << 31) - 1

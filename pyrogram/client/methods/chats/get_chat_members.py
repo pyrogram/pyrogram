@@ -46,14 +46,14 @@ class GetChatMembers(BaseClient):
         query: str = "",
         filter: str = Filters.ALL
     ) -> "pyrogram.ChatMembers":
-        """Use this method to get a chunk of the members list of a chat.
+        """Get a chunk of the members list of a chat.
 
         You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.
         You must be admin to retrieve the members list of a channel (also known as "subscribers").
         For a more convenient way of getting chat members see :meth:`iter_chat_members`.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -86,11 +86,11 @@ class GetChatMembers(BaseClient):
         .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Returns:
-            On success, a :obj:`ChatMembers` object is returned.
+            :obj:`ChatMembers`: On success, an object containing a list of chat members is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if you used an invalid filter or a chat_id that belongs to a user.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case you used an invalid filter or a chat id that belongs to a user.
         """
         peer = await self.resolve_peer(chat_id)
 

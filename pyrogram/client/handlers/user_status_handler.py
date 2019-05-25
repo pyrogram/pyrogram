@@ -26,20 +26,20 @@ class UserStatusHandler(Handler):
     For a nicer way to register this handler, have a look at the
     :meth:`on_user_status() <pyrogram.Client.on_user_status>` decorator.
 
-    Args:
+    Parameters:
         callback (``callable``):
             Pass a function that will be called when a new UserStatus update arrives. It takes *(client, user_status)*
             as positional arguments (look at the section below for a detailed description).
 
-        filters (:obj:`Filters <pyrogram.Filters>`):
+        filters (:obj:`Filters`):
             Pass one or more filters to allow only a subset of messages to be passed
             in your callback function.
 
     Other parameters:
-        client (:obj:`Client <pyrogram.Client>`):
+        client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the user status handler.
 
-        user_status (:obj:`UserStatus <pyrogram.UserStatus>`):
+        user_status (:obj:`UserStatus`):
             The received UserStatus update.
     """
 

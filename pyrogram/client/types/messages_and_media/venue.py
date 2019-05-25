@@ -23,10 +23,10 @@ from ..pyrogram_type import PyrogramType
 
 
 class Venue(PyrogramType):
-    """This object represents a venue.
+    """A venue.
 
-    Args:
-        location (:obj:`Location <pyrogram.Location>`):
+    Parameters:
+        location (:obj:`Location`):
             Venue location.
 
         title (``str``):
@@ -49,7 +49,7 @@ class Venue(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         location: Location,
         title: str,
         address: str,

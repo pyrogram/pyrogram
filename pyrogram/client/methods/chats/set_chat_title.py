@@ -28,7 +28,7 @@ class SetChatTitle(BaseClient):
         chat_id: Union[int, str],
         title: str
     ) -> bool:
-        """Use this method to change the title of a chat.
+        """Change the title of a chat.
         Titles can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
@@ -36,7 +36,7 @@ class SetChatTitle(BaseClient):
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
             setting is off.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -44,11 +44,11 @@ class SetChatTitle(BaseClient):
                 New chat title, 1-255 characters.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to user.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case a chat id belongs to user.
         """
         peer = await self.resolve_peer(chat_id)
 

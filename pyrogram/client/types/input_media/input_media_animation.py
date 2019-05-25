@@ -20,9 +20,9 @@ from . import InputMedia
 
 
 class InputMediaAnimation(InputMedia):
-    """This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
+    """An animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent inside an album.
 
-    Args:
+    Parameters:
         media (``str``):
             Animation to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
@@ -38,9 +38,8 @@ class InputMediaAnimation(InputMedia):
             Caption of the animation to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-            if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-            Defaults to Markdown.
+            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
+            in your caption. Defaults to "markdown".
 
         width (``int``, *optional*):
             Animation width.

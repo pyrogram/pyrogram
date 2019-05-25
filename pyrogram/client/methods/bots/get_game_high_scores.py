@@ -29,10 +29,10 @@ class GetGameHighScores(BaseClient):
         user_id: Union[int, str],
         chat_id: Union[int, str],
         message_id: int = None
-    ):
-        """Use this method to get data for high score tables.
+    ) -> "pyrogram.GameHighScores":
+        """Get data for high score tables.
 
-        Args:
+        Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -49,10 +49,10 @@ class GetGameHighScores(BaseClient):
                 Required if inline_message_id is not specified.
 
         Returns:
-            On success, a :obj:`GameHighScores <pyrogram.GameHighScores>` object is returned.
+            :obj:`GameHighScores`: On success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         # TODO: inline_message_id
 

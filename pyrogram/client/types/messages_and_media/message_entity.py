@@ -24,10 +24,10 @@ from ..user_and_chats.user import User
 
 
 class MessageEntity(PyrogramType):
-    """This object represents one special entity in a text message.
+    """One special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the entity.
             Can be "mention" (@username), "hashtag", "cashtag", "bot_command", "url", "email", "phone_number", "bold"
@@ -43,7 +43,7 @@ class MessageEntity(PyrogramType):
         url (``str``, *optional*):
             For "text_link" only, url that will be opened after user taps on the text.
 
-        user (:obj:`User <pyrogram.User>`, *optional*):
+        user (:obj:`User`, *optional*):
             For "text_mention" only, the mentioned user.
     """
 
@@ -68,7 +68,7 @@ class MessageEntity(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         type: str,
         offset: int,
         length: int,

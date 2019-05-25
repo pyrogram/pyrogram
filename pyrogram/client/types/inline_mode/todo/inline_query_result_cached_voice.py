@@ -25,7 +25,7 @@ class InlineQueryResultCachedVoice(PyrogramType):
     Attributes:
         ID: ``0xb0700017``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be voice.
 

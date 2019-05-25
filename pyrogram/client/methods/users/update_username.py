@@ -27,21 +27,21 @@ class UpdateUsername(BaseClient):
         self,
         username: Union[str, None]
     ) -> bool:
-        """Use this method to update your own username.
+        """Update your own username.
         
         This method only works for users, not bots. Bot usernames must be changed via Bot Support or by recreating
         them from scratch using BotFather. To update a channel or supergroup username you can use
         :meth:`update_chat_username`.
 
-        Args:
+        Parameters:
             username (``str`` | ``None``):
-                Username to set. "" (empty string) or None to remove the username.
+                Username to set. "" (empty string) or None to remove it.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         return bool(

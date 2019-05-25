@@ -23,11 +23,11 @@ from .inline_query_result import InlineQueryResult
 
 
 class InlineQueryResultArticle(InlineQueryResult):
-    """Represents a link to an article or web page.
+    """Link to an article or web page.
 
     TODO: Hide url?
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 

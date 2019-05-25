@@ -22,13 +22,13 @@ from ...ext import BaseClient
 
 class GetContactsCount(BaseClient):
     async def get_contacts_count(self) -> int:
-        """Use this method to get the total count of contacts from your Telegram address book.
+        """Get the total count of contacts from your Telegram address book.
 
         Returns:
-            On success, an integer is returned.
+            ``int``: On success, the contacts count is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         return len((await self.send(functions.contacts.GetContacts(hash=0))).contacts)

@@ -41,9 +41,9 @@ class SendMediaGroup(BaseClient):
         disable_notification: bool = None,
         reply_to_message_id: int = None
     ):
-        """Use this method to send a group of photos or videos as an album.
+        """Send a group of photos or videos as an album.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -60,11 +60,10 @@ class SendMediaGroup(BaseClient):
                 If the message is a reply, ID of the original message.
 
         Returns:
-            On success, a :obj:`Messages <pyrogram.Messages>` object is returned containing all the
-            single messages sent.
+            :obj:`Messages`: On success, an object is returned containing all the single messages sent.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         multi_media = []
 
