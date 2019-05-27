@@ -18,6 +18,7 @@
 
 from .delete_user_profile_photos import DeleteUserProfilePhotos
 from .get_me import GetMe
+from .get_user_dc import GetUserDC
 from .get_user_profile_photos import GetUserProfilePhotos
 from .get_user_profile_photos_count import GetUserProfilePhotosCount
 from .get_users import GetUsers
@@ -32,6 +33,7 @@ class Users(
     GetUsers,
     GetMe,
     UpdateUsername,
-    GetUserProfilePhotosCount
+    GetUserProfilePhotosCount,
+    GetUserDC
 ):
     pass
