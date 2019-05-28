@@ -1,8 +1,8 @@
 Calling Methods
 ===============
 
-At this point, we have successfully `installed Pyrogram`_ and authorized_ our account; we are now aiming towards the
-core of the library. It's time to start playing with the API!
+At this point, we have successfully :doc:`installed Pyrogram <../intro/install>` and :doc:`authorized <auth>` our
+account; we are now aiming towards the core of the library. It's time to start playing with the API!
 
 Basic Usage
 -----------
@@ -63,8 +63,8 @@ Context Manager
 ---------------
 
 You can also use Pyrogram's Client in a context manager with the ``with`` statement. The client will automatically
-:meth:`start() <pyrogram.Client.start>` and :meth:`stop() <pyrogram.Client.stop>` gracefully, even in case of unhandled
-exceptions in your code. The example above can be therefore rewritten in a much nicer way:
+:meth:`~pyrogram.Client.start` and :meth:`~pyrogram.Client.stop` gracefully, even in case of unhandled exceptions in
+your code. The example above can be therefore rewritten in a much nicer way:
 
 .. code-block:: python
 
@@ -79,6 +79,3 @@ exceptions in your code. The example above can be therefore rewritten in a much 
         app.send_sticker("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
 
 More examples can be found on `GitHub <https://github.com/pyrogram/pyrogram/tree/develop/examples>`_.
-
-.. _installed Pyrogram: ../intro/install.html
-.. _authorized: ../intro/setup.html

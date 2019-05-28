@@ -12,7 +12,7 @@ Markdown Style
 --------------
 
 To use this mode, pass "markdown" in the *parse_mode* field when using
-:obj:`send_message() <pyrogram.Client.send_message>`. Use the following syntax in your message:
+:meth:`~pyrogram.Client.send_message`. Use the following syntax in your message:
 
 .. code-block:: text
 
@@ -34,7 +34,7 @@ To use this mode, pass "markdown" in the *parse_mode* field when using
 HTML Style
 ----------
 
-To use this mode, pass "html" in the *parse_mode* field when using :obj:`send_message() <pyrogram.Client.send_message>`.
+To use this mode, pass "html" in the *parse_mode* field when using :meth:`~pyrogram.Client.send_message`.
 The following tags are currently supported:
 
 .. code-block:: text

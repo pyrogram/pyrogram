@@ -1,7 +1,7 @@
 Authorization
 =============
 
-Once a `project is set up`_, you will still have to follow a few steps before you can actually use Pyrogram to make
+Once a :doc:`project is set up <../intro/setup>`, you will still have to follow a few steps before you can actually use Pyrogram to make
 API calls. This section provides all the information you need in order to authorize yourself as user or bot.
 
 User Authorization
@@ -9,8 +9,8 @@ User Authorization
 
 In order to use the API, Telegram requires that users be authorized via their phone numbers.
 Pyrogram automatically manages this process, all you need to do is create an instance of the
-:class:`Client <pyrogram.Client>` class by passing to it a ``session_name`` of your choice (e.g.: "my_account") and call
-the :meth:`run() <pyrogram.Client.run>` method:
+:class:`~pyrogram.Client` class by passing to it a ``session_name`` of your choice (e.g.: "my_account") and call
+the :meth:`~pyrogram.Client.run` method:
 
 .. code-block:: python
 
@@ -47,7 +47,7 @@ Bot Authorization
 
 Bots are a special kind of users that are authorized via their tokens (instead of phone numbers), which are created by
 the `Bot Father`_. Bot tokens replace the users' phone numbers only — you still need to
-`configure a Telegram API key <../intro/setup#configuration>`_ with Pyrogram, even when using bots.
+:doc:`configure a Telegram API key <../intro/setup>` with Pyrogram, even when using bots.
 
 The authorization process is automatically managed. All you need to do is choose a ``session_name`` (can be anything,
 usually your bot username) and pass your bot token using the ``bot_token`` parameter. The session file will be named
@@ -64,6 +64,5 @@ after the session name, which will be ``my_bot.session`` for the example below.
 
     app.run()
 
-.. _project is set up: ../intro/setup
 .. _Country Code: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 .. _Bot Father: https://t.me/botfather

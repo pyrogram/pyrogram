@@ -3,7 +3,7 @@ Auto Authorization
 
 Manually writing phone number, phone code and password on the terminal every time you want to login can be tedious.
 Pyrogram is able to automate both **Log In** and **Sign Up** processes, all you need to do is pass the relevant
-parameters when creating a new :class:`Client <pyrogram.Client>`.
+parameters when creating a new :class:`~pyrogram.Client`.
 
 .. note:: If you omit any of the optional parameter required for the authorization, Pyrogram will ask you to
    manually write it. For instance, if you don't want to set a ``last_name`` when creating a new account you

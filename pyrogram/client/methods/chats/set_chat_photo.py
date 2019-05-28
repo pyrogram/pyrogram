@@ -51,7 +51,7 @@ class SetChatPhoto(BaseClient):
 
         Raises:
             RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to user.
+            ValueError: if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)
 

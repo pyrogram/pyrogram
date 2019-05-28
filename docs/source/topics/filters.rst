@@ -4,7 +4,7 @@ Using Filters
 So far we've seen how to register a callback function that executes every time a specific update comes from the server,
 but there's much more than that to come.
 
-Here we'll discuss about :class:`Filters <pyrogram.Filters>`. Filters enable a fine-grain control over what kind of
+Here we'll discuss about :class:`~pyrogram.Filters`. Filters enable a fine-grain control over what kind of
 updates are allowed or not to be passed in your callback functions, based on their inner details.
 
 Single Filters
@@ -12,7 +12,7 @@ Single Filters
 
 Let's start right away with a simple example:
 
--   This example will show you how to **only** handle messages containing an :obj:`Audio <pyrogram.Audio>` object and
+-   This example will show you how to **only** handle messages containing an :class:`~pyrogram.Audio` object and
     ignore any other message. Filters are passed as the first argument of the decorator:
 
     .. code-block:: python
@@ -69,7 +69,7 @@ Here are some examples:
 Advanced Filters
 ----------------
 
-Some filters, like :meth:`command() <pyrogram.Filters.command>` or :meth:`regex() <pyrogram.Filters.regex>`
+Some filters, like :meth:`~pyrogram.Filters.command` or :meth:`~pyrogram.Filters.regex`
 can also accept arguments:
 
 -   Message is either a */start* or */help* **command**.
@@ -109,18 +109,18 @@ More handlers using different filters can also live together.
 Custom Filters
 --------------
 
-Pyrogram already provides lots of built-in :class:`Filters <pyrogram.Filters>` to work with, but in case you can't find
+Pyrogram already provides lots of built-in :class:`~pyrogram.Filters` to work with, but in case you can't find
 a specific one for your needs or want to build a custom filter by yourself (to be used in a different kind of handler,
-for example) you can use :meth:`Filters.create() <pyrogram.Filters.create>`.
+for example) you can use :meth:`~pyrogram.Filters.create`.
 
 .. note::
-    At the moment, the built-in filters are intended to be used with the :obj:`MessageHandler <pyrogram.MessageHandler>`
-    only.
+
+    At the moment, the built-in filters are intended to be used with the :class:`~pyrogram.MessageHandler` only.
 
 An example to demonstrate how custom filters work is to show how to create and use one for the
-:obj:`CallbackQueryHandler <pyrogram.CallbackQueryHandler>`. Note that callback queries updates are only received by
-bots; create and `authorize your bot <../start/Setup.html#bot-authorization>`_, then send a message with an inline
-keyboard to yourself. This allows you to test your filter by pressing the inline button:
+:class:`~pyrogram.CallbackQueryHandler`. Note that callback queries updates are only received by bots; create and
+:doc:`authorize your bot <../start/auth>`, then send a message with an inline keyboard to yourself. This allows you to
+test your filter by pressing the inline button:
 
 .. code-block:: python
 
@@ -137,7 +137,7 @@ keyboard to yourself. This allows you to test your filter by pressing the inline
 Basic Filters
 ^^^^^^^^^^^^^
 
-For this basic filter we will be using only the first two parameters of :meth:`Filters.create() <pyrogram.Filters.create>`.
+For this basic filter we will be using only the first two parameters of :meth:`~pyrogram.Filters.create`.
 
 The code below creates a simple filter for hardcoded, static callback data. This filter will only allow callback queries
 containing "Pyrogram" as data, that is, the function *func* you pass returns True in case the callback query data
@@ -175,7 +175,7 @@ Filters with Arguments
 ^^^^^^^^^^^^^^^^^^^^^^
 
 A much cooler filter would be one that accepts "Pyrogram" or any other data as argument at usage time.
-A dynamic filter like this will make use of the third parameter of :meth:`Filters.create() <pyrogram.Filters.create>`.
+A dynamic filter like this will make use of the third parameter of :meth:`~pyrogram.Filters.create`.
 
 This is how a dynamic custom filter looks like:
 

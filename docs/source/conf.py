@@ -43,7 +43,6 @@ autodoc_member_order = "bysource"
 
 version = __version__
 release = version
-version_rst = ".. |version| replace:: {}".format(version)
 
 templates_path = ["_templates"]
 
@@ -61,7 +60,8 @@ html_theme_options = {
     "collapse_navigation": True,
     "sticky_navigation": False,
     "logo_only": True,
-    "display_version": True
+    "display_version": True,
+    "style_external_links": True
 }
 
 html_logo = "_images/pyrogram.png"

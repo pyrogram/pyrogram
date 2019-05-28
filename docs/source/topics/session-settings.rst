@@ -5,7 +5,7 @@ As you may probably know, Telegram allows users (and bots) having more than one 
 in the system at the same time.
 
 Briefly explaining, sessions are simply new logins in your account. They can be reviewed in the settings of an official
-app (or by invoking `GetAuthorizations <../telegram/functions/account/GetAuthorizations.html>`_ with Pyrogram). They
+app (or by invoking :class:`~pyrogram.api.functions.account.GetAuthorizations` with Pyrogram). They
 store some useful information such as the client who's using them and from which country and IP address.
 
 .. figure:: https://i.imgur.com/YaqtMLO.png

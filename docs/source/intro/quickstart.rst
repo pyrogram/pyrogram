@@ -43,7 +43,7 @@ Enjoy the API
 That was just a quick overview that barely scratched the surface!
 In the next few pages of the introduction, we'll take a much more in-depth look of what we have just done above.
 
-Feeling eager to continue? You can take a shortcut to `Calling Methods`_ and come back later to learn some more details.
+Feeling eager to continue? You can take a shortcut to :doc:`Calling Methods <../start/invoking>` and come back later to
+learn some more details.
 
 .. _community: //t.me/Pyrogram
-.. _Calling Methods: ../start/invoking

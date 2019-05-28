@@ -42,10 +42,9 @@ Welcome to Pyrogram
 
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
 C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the
-`MTProto API`_.
+:doc:`MTProto API <topics/mtproto-vs-botapi>`.
 
 .. _Telegram: https://telegram.org
-.. _MTProto API: topics/mtproto-vs-botapi#what-is-the-mtproto-api
 
 How the Documentation is Organized
 ----------------------------------
@@ -60,15 +59,10 @@ First Steps
 .. hlist::
     :columns: 2
 
-    - `Quick Start`_: Overview to get you started quickly.
-    - `Calling Methods`_: How to call Pyrogram's methods.
-    - `Handling Updates`_: How to handle Telegram updates.
-    - `Error Handling`_: How to handle API errors correctly.
-
-.. _Quick Start: intro/quickstart
-.. _Calling Methods: start/invoking
-.. _Handling Updates: start/updates
-.. _Error Handling: start/errors
+    - :doc:`Quick Start <intro/quickstart>`: Overview to get you started quickly.
+    - :doc:`Calling Methods <start/invoking>`: How to call Pyrogram's methods.
+    - :doc:`Handling Updates <start/updates>`: How to handle Telegram updates.
+    - :doc:`Error Handling <start/errors>`: How to handle API errors correctly.
 
 API Reference
 -------------
@@ -76,15 +70,10 @@ API Reference
 .. hlist::
     :columns: 2
 
-    - `Pyrogram Client`_: Reference details about the Client class.
-    - `Available Methods`_: List of available high-level methods.
-    - `Available Types`_: List of available high-level types.
-    - `Bound Methods`_: List of convenient bound methods.
-
-.. _Pyrogram Client: ./api/client
-.. _Available Methods: api/methods
-.. _Available Types: api/types
-.. _Bound Methods: api/bound-methods
+    - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
+    - :doc:`Available Methods <api/methods>`: List of available high-level methods.
+    - :doc:`Available Types <api/types>`: List of available high-level types.
+    - :doc:`Bound Methods <api/bound-methods>`: List of convenient bound methods.
 
 Meta
 ----
@@ -92,17 +81,12 @@ Meta
 .. hlist::
     :columns: 2
 
-    - `Pyrogram FAQ`_: Answers to common Pyrogram questions.
-    - `Pyrogram Glossary`_: List of words with brief explanations.
-    - `Release Notes`_: Release notes for Pyrogram releases.
-    - `Powered by Pyrogram`_: Collection of Pyrogram Projects.
-    - `Support Pyrogram`_: Ways to show your appreciation.
-
-.. _Pyrogram FAQ: faq
-.. _Pyrogram Glossary: glossary
-.. _Release Notes: releases
-.. _Powered by Pyrogram: powered-by
-.. _Support Pyrogram: support-pyrogram
+    - :doc:`Pyrogram FAQ <faq>`: Answers to common Pyrogram questions.
+    - :doc:`Pyrogram Glossary <glossary>`: List of words with brief explanations.
+    - :doc:`Release Notes <releases>`: Release notes for Pyrogram releases.
+    - :doc:`Powered by Pyrogram <powered-by>`: Collection of Pyrogram Projects.
+    - :doc:`Support Pyrogram <support-pyrogram>`: Ways to show your appreciation.
+    - :doc:`About the License <license>`: Information about the Project license.
 
 .. toctree::
     :hidden:
@@ -163,6 +147,7 @@ Meta
     releases
     powered-by
     support-pyrogram
+    license
 
 .. toctree::
     :hidden:
@@ -170,3 +155,5 @@ Meta
 
     telegram/functions/index
     telegram/types/index
+
+Last updated on |today|

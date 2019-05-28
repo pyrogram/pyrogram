@@ -1,13 +1,13 @@
 Decorators
 ==========
 
-While still being methods bound to the :obj:`Client <pyrogram.Client>` class, decorators are of a special kind and thus deserve a
-dedicated page.
+While still being methods bound to the :class:`~pyrogram.Client` class, decorators are of a special kind and thus
+deserve a dedicated page.
 
 Decorators are able to register callback functions for handling updates in a much easier and cleaner way compared to
-`Handlers <Handlers.html>`_; they do so by instantiating the correct handler and calling
-:meth:`add_handler() <pyrogram.Client.add_handler>`, automatically. All you need to do is adding the decorators on top
-of your functions.
+:doc:`Handlers <handlers>`; they do so by instantiating the correct handler and calling
+:meth:`~pyrogram.Client.add_handler`, automatically. All you need to do is adding the decorators on top of your
+functions.
 
 .. code-block:: python
     :emphasize-lines: 6
@@ -24,25 +24,34 @@ of your functions.
 
     app.run()
 
-.. currentmodule:: pyrogram.Client
+.. currentmodule:: pyrogram
 
-.. autosummary::
-    :nosignatures:
+Index
+-----
 
-    on_message
-    on_callback_query
-    on_inline_query
-    on_deleted_messages
-    on_user_status
-    on_poll
-    on_disconnect
-    on_raw_update
+.. hlist::
+    :columns: 3
 
-.. automethod:: pyrogram.Client.on_message()
-.. automethod:: pyrogram.Client.on_callback_query()
-.. automethod:: pyrogram.Client.on_inline_query()
-.. automethod:: pyrogram.Client.on_deleted_messages()
-.. automethod:: pyrogram.Client.on_user_status()
-.. automethod:: pyrogram.Client.on_poll()
-.. automethod:: pyrogram.Client.on_disconnect()
-.. automethod:: pyrogram.Client.on_raw_update()
+    - :meth:`~Client.on_message`
+    - :meth:`~Client.on_callback_query`
+    - :meth:`~Client.on_inline_query`
+    - :meth:`~Client.on_deleted_messages`
+    - :meth:`~Client.on_user_status`
+    - :meth:`~Client.on_poll`
+    - :meth:`~Client.on_disconnect`
+    - :meth:`~Client.on_raw_update`
+
+-----
+
+Details
+-------
+
+.. Decorators
+.. autodecorator:: pyrogram.Client.on_message()
+.. autodecorator:: pyrogram.Client.on_callback_query()
+.. autodecorator:: pyrogram.Client.on_inline_query()
+.. autodecorator:: pyrogram.Client.on_deleted_messages()
+.. autodecorator:: pyrogram.Client.on_user_status()
+.. autodecorator:: pyrogram.Client.on_poll()
+.. autodecorator:: pyrogram.Client.on_disconnect()
+.. autodecorator:: pyrogram.Client.on_raw_update()

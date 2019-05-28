@@ -1,8 +1,8 @@
 Project Setup
 =============
 
-We have just `installed Pyrogram`_. In this page we'll discuss what you need to do in order to set up a project with
-the library. Let's see how it's done.
+We have just :doc:`installed Pyrogram <install>`. In this page we'll discuss what you need to do in order to set up a
+project with the library. Let's see how it's done.
 
 API Keys
 --------
@@ -26,7 +26,7 @@ The very first step requires you to obtain a valid Telegram API key (API id/hash
 Configuration
 -------------
 
-Having the API key from the `previous step <#api-keys>`_  in handy, we can now begin to configure a Pyrogram project.
+Having the API key from the previous step in handy, we can now begin to configure a Pyrogram project.
 There are two ways to do so, and you can choose what fits better for you:
 
 -   First option (recommended): create a new ``config.ini`` file at the root of your working directory, copy-paste the
@@ -57,5 +57,3 @@ There are two ways to do so, and you can choose what fits better for you:
 
     To keep code snippets clean and concise, from now on it is assumed you are making use of the ``config.ini`` file,
     thus, the *api_id* and *api_hash* parameters usage won't be shown anymore.
-
-.. _installed Pyrogram: install.html

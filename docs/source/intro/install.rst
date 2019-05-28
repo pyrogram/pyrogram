@@ -20,7 +20,7 @@ Install Pyrogram
 
         $ pip3 install -U pyrogram
 
--   or, with TgCrypto_ as extra requirement (recommended):
+-   or, with :doc:`TgCrypto <../topics/tgcrypto>` as extra requirement (recommended):
 
     .. code-block:: text
 
@@ -89,5 +89,4 @@ If no error shows up you are good to go.
     >>> pyrogram.__version__
     '|version|'
 
-.. _TgCrypto: ../topics/tgcrypto
 .. _`Github repo`: http://github.com/pyrogram/pyrogram

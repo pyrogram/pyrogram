@@ -1,8 +1,9 @@
 Advanced Usage
 ==============
 
-Pyrogram's API, which consists of well documented convenience methods_ and facade types_, exists to provide a much
-easier interface to the undocumented and often confusing Telegram API.
+Pyrogram's API, which consists of well documented convenience :doc:`methods <../api/methods>` and facade
+:doc:`types <../api/types>`, exists to provide a much easier interface to the undocumented and often confusing Telegram
+API.
 
 In this section, you'll be shown the alternative way of communicating with Telegram using Pyrogram: the main "raw"
 Telegram API with its functions and types.
@@ -11,7 +12,7 @@ Telegram Raw API
 ----------------
 
 If you can't find a high-level method for your needs or if you want complete, low-level access to the whole
-Telegram API, you have to use the raw :mod:`functions <pyrogram.api.functions>` and :mod:`types <pyrogram.api.types>`.
+Telegram API, you have to use the raw :mod:`~pyrogram.api.functions` and :mod:`~pyrogram.api.types`.
 
 As already hinted, raw functions and types can be really confusing, mainly because people don't realize soon enough they
 accept *only* the right types and that all required parameters must be filled in. This section will therefore explain
@@ -21,24 +22,25 @@ some pitfalls to take into consideration when working with the raw API.
 
     Every available high-level methods in Pyrogram is built on top of these raw functions.
 
-    Nothing stops you from using the raw functions only, but they are rather complex and `plenty of them`_ are already
-    re-implemented by providing a much simpler and cleaner interface which is very similar to the Bot API (yet much more
-    powerful).
+    Nothing stops you from using the raw functions only, but they are rather complex and
+    :doc:`plenty of them <../api/methods>` are already re-implemented by providing a much simpler and cleaner interface
+    which is very similar to the Bot API (yet much more powerful).
 
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
 Invoking Functions
 ^^^^^^^^^^^^^^^^^^
 
-Unlike the methods_ found in Pyrogram's API, which can be called in the usual simple way, functions to be invoked from
-the raw Telegram API have a different way of usage and are more complex.
+Unlike the :doc:`methods <../api/methods>` found in Pyrogram's API, which can be called in the usual simple way,
+functions to be invoked from the raw Telegram API have a different way of usage and are more complex.
 
-First of all, both `raw functions`_ and `raw types`_ live in their respective packages (and sub-packages):
-``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist as Python classes, meaning you need to create an
-instance of each every time you need them and fill them in with the correct values using named arguments.
+First of all, both :doc:`raw functions <../telegram/functions/index>` and :doc:`raw types <../telegram/types/index>` live in their
+respective packages (and sub-packages): ``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist as Python
+classes, meaning you need to create an instance of each every time you need them and fill them in with the correct
+values using named arguments.
 
-Next, to actually invoke the raw function you have to use the :meth:`send() <pyrogram.Client.send>` method provided by
-the Client class and pass the function object you created.
+Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.send` method provided by the
+Client class and pass the function object you created.
 
 Here's some examples:
 
@@ -101,12 +103,12 @@ sending messages with IDs only thanks to cached access hashes.
 There are three different InputPeer types, one for each kind of Telegram entity.
 Whenever an InputPeer is needed you must pass one of these:
 
-    - :obj:`InputPeerUser <../telegram/types/InputPeerUser>` - Users
-    - :obj:`InputPeerChat <../telegram/types/InputPeerChat>` -  Basic Chats
-    - :obj:`InputPeerChannel <../telegram/types/InputPeerChannel>` - Either Channels or Supergroups
+    - :class:`~pyrogram.api.types.InputPeerUser` - Users
+    - :class:`~pyrogram.api.types.InputPeerChat` -  Basic Chats
+    - :class:`~pyrogram.api.types.InputPeerChannel` - Either Channels or Supergroups
 
 But you don't necessarily have to manually instantiate each object because, luckily for you, Pyrogram already provides
-:meth:`resolve_peer() <pyrogram.Client.resolve_peer>` as a convenience utility method that returns the correct InputPeer
+:meth:`~pyrogram.Client.resolve_peer` as a convenience utility method that returns the correct InputPeer
 by accepting a peer ID only.
 
 Another thing to take into consideration about chat IDs is the way they are represented: they are all integers and
@@ -125,9 +127,4 @@ For example, given the ID *123456789*, here's how Pyrogram can tell entities apa
 So, every time you take a raw ID, make sure to translate it into the correct ID when you want to use it with an
 high-level method.
 
-.. _methods: ../api/methods
-.. _types: ../api/types
-.. _plenty of them: ../api/methods
-.. _raw functions: ../telegram/functions
-.. _raw types: ../telegram/types
 .. _Community: https://t.me/Pyrogram

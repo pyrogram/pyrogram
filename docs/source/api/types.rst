@@ -15,102 +15,108 @@ All Pyrogram types listed here are accessible through the main package directly.
 
 .. currentmodule:: pyrogram
 
+Index
+-----
+
 Users & Chats
--------------
+^^^^^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 5
 
-    User
-    UserStatus
-    Chat
-    ChatPreview
-    ChatPhoto
-    ChatMember
-    ChatMembers
-    ChatPermissions
-    Dialog
-    Dialogs
+    - :class:`User`
+    - :class:`UserStatus`
+    - :class:`Chat`
+    - :class:`ChatPreview`
+    - :class:`ChatPhoto`
+    - :class:`ChatMember`
+    - :class:`ChatMembers`
+    - :class:`ChatPermissions`
+    - :class:`Dialog`
+    - :class:`Dialogs`
 
 Messages & Media
-----------------
+^^^^^^^^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 5
 
-    Message
-    Messages
-    MessageEntity
-    Photo
-    PhotoSize
-    UserProfilePhotos
-    Audio
-    Document
-    Animation
-    Video
-    Voice
-    VideoNote
-    Contact
-    Location
-    Venue
-    Sticker
-    Game
-    Poll
-    PollOption
+    - :class:`Message`
+    - :class:`Messages`
+    - :class:`MessageEntity`
+    - :class:`Photo`
+    - :class:`PhotoSize`
+    - :class:`UserProfilePhotos`
+    - :class:`Audio`
+    - :class:`Document`
+    - :class:`Animation`
+    - :class:`Video`
+    - :class:`Voice`
+    - :class:`VideoNote`
+    - :class:`Contact`
+    - :class:`Location`
+    - :class:`Venue`
+    - :class:`Sticker`
+    - :class:`Game`
+    - :class:`Poll`
+    - :class:`PollOption`
 
 Keyboards
----------
+^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 4
 
-    ReplyKeyboardMarkup
-    KeyboardButton
-    ReplyKeyboardRemove
-    InlineKeyboardMarkup
-    InlineKeyboardButton
-    ForceReply
-    CallbackQuery
-    GameHighScore
-    GameHighScores
-    CallbackGame
+    - :class:`ReplyKeyboardMarkup`
+    - :class:`KeyboardButton`
+    - :class:`ReplyKeyboardRemove`
+    - :class:`InlineKeyboardMarkup`
+    - :class:`InlineKeyboardButton`
+    - :class:`ForceReply`
+    - :class:`CallbackQuery`
+    - :class:`GameHighScore`
+    - :class:`GameHighScores`
+    - :class:`CallbackGame`
 
 Input Media
------------
+^^^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 4
 
-    InputMedia
-    InputMediaPhoto
-    InputMediaVideo
-    InputMediaAudio
-    InputMediaAnimation
-    InputMediaDocument
-    InputPhoneContact
+    - :class:`InputMedia`
+    - :class:`InputMediaPhoto`
+    - :class:`InputMediaVideo`
+    - :class:`InputMediaAudio`
+    - :class:`InputMediaAnimation`
+    - :class:`InputMediaDocument`
+    - :class:`InputPhoneContact`
 
 Inline Mode
-------------
+^^^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 3
 
-    InlineQuery
-    InlineQueryResult
-    InlineQueryResultArticle
+    - :class:`InlineQuery`
+    - :class:`InlineQueryResult`
+    - :class:`InlineQueryResultArticle`
 
 InputMessageContent
--------------------
+^^^^^^^^^^^^^^^^^^^
 
-.. autosummary::
-    :nosignatures:
+.. hlist::
+    :columns: 3
 
-    InputMessageContent
-    InputTextMessageContent
+    - :class:`InputMessageContent`
+    - :class:`InputTextMessageContent`
+
+-----
+
+Details
+-------
 
 ..  User & Chats
-    ------------
-
 .. autoclass:: User()
 .. autoclass:: UserStatus()
 .. autoclass:: Chat()
@@ -123,8 +129,6 @@ InputMessageContent
 .. autoclass:: Dialogs()
 
 ..  Messages & Media
-    ----------------
-
 .. autoclass:: Message()
 .. autoclass:: Messages()
 .. autoclass:: MessageEntity()
@@ -146,8 +150,6 @@ InputMessageContent
 .. autoclass:: PollOption()
 
 ..  Keyboards
-    ---------
-
 .. autoclass:: ReplyKeyboardMarkup()
 .. autoclass:: KeyboardButton()
 .. autoclass:: ReplyKeyboardRemove()
@@ -160,8 +162,6 @@ InputMessageContent
 .. autoclass:: CallbackGame()
 
 ..  Input Media
-    -----------
-
 .. autoclass:: InputMedia()
 .. autoclass:: InputMediaPhoto()
 .. autoclass:: InputMediaVideo()
@@ -171,14 +171,10 @@ InputMessageContent
 .. autoclass:: InputPhoneContact()
 
 ..  Inline Mode
-    -----------
-
 .. autoclass:: InlineQuery()
 .. autoclass:: InlineQueryResult()
 .. autoclass:: InlineQueryResultArticle()
 
 ..  InputMessageContent
-    -------------------
-
 .. autoclass:: InputMessageContent()
 .. autoclass:: InputTextMessageContent()
