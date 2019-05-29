@@ -45,8 +45,8 @@ Messages & Media
     - :class:`Messages`
     - :class:`MessageEntity`
     - :class:`Photo`
-    - :class:`PhotoSize`
-    - :class:`UserProfilePhotos`
+    - :class:`Photos`
+    - :class:`Thumbnail`
     - :class:`Audio`
     - :class:`Document`
     - :class:`Animation`
@@ -133,8 +133,8 @@ Details
 .. autoclass:: Messages()
 .. autoclass:: MessageEntity()
 .. autoclass:: Photo()
-.. autoclass:: PhotoSize()
-.. autoclass:: UserProfilePhotos()
+.. autoclass:: Photos()
+.. autoclass:: Thumbnail()
 .. autoclass:: Audio()
 .. autoclass:: Document()
 .. autoclass:: Animation()
