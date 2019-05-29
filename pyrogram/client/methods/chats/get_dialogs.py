@@ -62,7 +62,7 @@ class GetDialogs(BaseClient):
         while True:
             try:
                 if pinned_only:
-                    r = self.send(functions.messages.GetPinnedDialogs())
+                    r = self.send(functions.messages.GetPinnedDialogs(folder_id=0))
                 else:
                     r = self.send(
                         functions.messages.GetDialogs(

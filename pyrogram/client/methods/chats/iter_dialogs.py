@@ -26,7 +26,7 @@ class IterDialogs(BaseClient):
     def iter_dialogs(
         self,
         offset_date: int = 0,
-        limit: int = 0
+        limit: int = None
     ) -> Generator["pyrogram.Dialog", None, None]:
         """Iterate through a user's dialogs sequentially.
 

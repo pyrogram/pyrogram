@@ -36,7 +36,7 @@ class GetDialogsCount(BaseClient):
         """
 
         if pinned_only:
-            return len(self.send(functions.messages.GetPinnedDialogs()).dialogs)
+            return len(self.send(functions.messages.GetPinnedDialogs(folder_id=0)).dialogs)
         else:
             r = self.send(
                 functions.messages.GetDialogs(

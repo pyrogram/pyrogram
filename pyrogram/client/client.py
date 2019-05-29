@@ -313,7 +313,7 @@ class Client(Methods, BaseClient):
                     self.get_initial_dialogs()
                     self.get_contacts()
                 else:
-                    self.send(functions.messages.GetPinnedDialogs())
+                    self.send(functions.messages.GetPinnedDialogs(folder_id=0))
                     self.get_initial_dialogs_chunk()
             else:
                 self.send(functions.updates.GetState())
@@ -1325,7 +1325,7 @@ class Client(Methods, BaseClient):
                 return r
 
     def get_initial_dialogs(self):
-        self.send(functions.messages.GetPinnedDialogs())
+        self.send(functions.messages.GetPinnedDialogs(folder_id=0))
 
         dialogs = self.get_initial_dialogs_chunk()
         offset_date = utils.get_offset_date(dialogs)
