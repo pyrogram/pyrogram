@@ -23,13 +23,13 @@ from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class GetUserProfilePhotos(BaseClient):
-    def get_user_profile_photos(
+class GetUserPhotos(BaseClient):
+    def get_user_photos(
         self,
         user_id: Union[int, str],
         offset: int = 0,
         limit: int = 100
-    ) -> "pyrogram.UserProfilePhotos":
+    ) -> "pyrogram.Photos":
         """Get a list of profile pictures for a user.
 
         Parameters:
@@ -47,12 +47,12 @@ class GetUserProfilePhotos(BaseClient):
                 Values between 1—100 are accepted. Defaults to 100.
 
         Returns:
-            :obj:`UserProfilePhotos`: On success, an object containing a list of the profile photos is returned.
+            :obj:`Photos`: On success, an object containing a list of the profile photos is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return pyrogram.UserProfilePhotos._parse(
+        return pyrogram.Photos._parse(
             self,
             self.send(
                 functions.photos.GetUserPhotos(
