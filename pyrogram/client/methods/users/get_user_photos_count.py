@@ -22,8 +22,8 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class GetUserProfilePhotosCount(BaseClient):
-    def get_user_profile_photos_count(self, user_id: Union[int, str]) -> int:
+class GetUserPhotosCount(BaseClient):
+    def get_user_photos_count(self, user_id: Union[int, str]) -> int:
         """Get the total count of profile pictures for a user.
 
         Parameters:
