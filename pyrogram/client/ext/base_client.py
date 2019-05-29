@@ -19,6 +19,7 @@
 import os
 import platform
 import re
+from collections import namedtuple
 from queue import Queue
 from threading import Lock
 
@@ -56,7 +57,7 @@ class BaseClient:
     CONFIG_FILE = "./config.ini"
 
     MEDIA_TYPE_ID = {
-        0: "thumbnail",
+        0: "photo_thumbnail",
         1: "chat_photo",
         2: "photo",
         3: "voice",
@@ -65,7 +66,8 @@ class BaseClient:
         8: "sticker",
         9: "audio",
         10: "animation",
-        13: "video_note"
+        13: "video_note",
+        14: "document_thumbnail"
     }
 
     mime_types_to_extensions = {}
@@ -81,6 +83,10 @@ class BaseClient:
                 extensions_to_mime_types[ext] = mime_type
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
+
+    fields = ("media_type", "dc_id", "file_id", "access_hash", "thumb_size", "peer_id", "volume_id", "local_id",
+              "is_big", "file_size", "mime_type", "file_name", "date")
+    FileData = namedtuple("FileData", fields, defaults=(None,) * len(fields))
 
     def __init__(self):
         self.is_bot = None

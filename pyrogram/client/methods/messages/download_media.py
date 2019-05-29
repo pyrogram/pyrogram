@@ -16,11 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import binascii
+import struct
 from threading import Event
 from typing import Union
 
 import pyrogram
-from pyrogram.client.ext import BaseClient
+from pyrogram.client.ext import BaseClient, utils
+from pyrogram.errors import FileIdInvalid
 
 
 class DownloadMedia(BaseClient):
@@ -81,67 +84,91 @@ class DownloadMedia(BaseClient):
             ``ValueError`` if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"
+        available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
+
+        file_size = None
+        mime_type = None
+        date = None
 
         if isinstance(message, pyrogram.Message):
-            if message.photo:
-                media = pyrogram.Document(
-                    file_id=message.photo.sizes[-1].file_id,
-                    file_size=message.photo.sizes[-1].file_size,
-                    mime_type="",
-                    date=message.photo.date,
-                    client=self
-                )
-            elif message.audio:
-                media = message.audio
-            elif message.document:
-                media = message.document
-            elif message.video:
-                media = message.video
-            elif message.voice:
-                media = message.voice
-            elif message.video_note:
-                media = message.video_note
-            elif message.sticker:
-                media = message.sticker
-            elif message.animation:
-                media = message.animation
+            for kind in available_media:
+                media = getattr(message, kind, None)
+
+                if media is not None:
+                    break
             else:
                 raise ValueError(error_message)
-        elif isinstance(message, (
-            pyrogram.Photo,
-            pyrogram.PhotoSize,
-            pyrogram.Audio,
-            pyrogram.Document,
-            pyrogram.Video,
-            pyrogram.Voice,
-            pyrogram.VideoNote,
-            pyrogram.Sticker,
-            pyrogram.Animation
-        )):
-            if isinstance(message, pyrogram.Photo):
-                media = pyrogram.Document(
-                    file_id=message.sizes[-1].file_id,
-                    file_size=message.sizes[-1].file_size,
-                    mime_type="",
-                    date=message.date,
-                    client=self
+        else:
+            media = message
+
+        if isinstance(media, str):
+            file_id_str = media
+        else:
+            file_id_str = media.file_id
+            file_name = getattr(media, "file_name", "")
+            file_size = getattr(media, "file_size", None)
+            mime_type = getattr(media, "mime_type", None)
+            date = getattr(media, "date", None)
+
+        data = self.FileData(
+            file_name=file_name,
+            file_size=file_size,
+            mime_type=mime_type,
+            date=date
+        )
+
+        def get_existing_attributes() -> dict:
+            return dict(filter(lambda x: x[1] is not None, data._asdict().items()))
+
+        try:
+            decoded = utils.decode(file_id_str)
+            media_type = decoded[0]
+
+            if media_type == 1:
+                unpacked = struct.unpack("<iiqqib", decoded)
+                dc_id, peer_id, volume_id, local_id, is_big = unpacked[1:]
+
+                data = self.FileData(
+                    **get_existing_attributes(),
+                    media_type=media_type,
+                    dc_id=dc_id,
+                    peer_id=peer_id,
+                    volume_id=volume_id,
+                    local_id=local_id,
+                    is_big=bool(is_big)
+                )
+            elif media_type in (0, 2, 14):
+                unpacked = struct.unpack("<iiqqc", decoded)
+                dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+
+                data = self.FileData(
+                    **get_existing_attributes(),
+                    media_type=media_type,
+                    dc_id=dc_id,
+                    file_id=file_id,
+                    access_hash=access_hash,
+                    thumb_size=thumb_size.decode()
+                )
+            elif media_type in (3, 4, 5, 8, 9, 10, 13):
+                unpacked = struct.unpack("<iiqq", decoded)
+                dc_id, file_id, access_hash = unpacked[1:]
+
+                data = self.FileData(
+                    **get_existing_attributes(),
+                    media_type=media_type,
+                    dc_id=dc_id,
+                    file_id=file_id,
+                    access_hash=access_hash
                 )
             else:
-                media = message
-        elif isinstance(message, str):
-            media = pyrogram.Document(
-                file_id=message,
-                file_size=0,
-                mime_type="",
-                client=self
-            )
-        else:
-            raise ValueError(error_message)
+                raise ValueError("Unknown media type: {}".format(file_id_str))
+        except (AssertionError, binascii.Error, struct.error):
+            raise FileIdInvalid from None
 
         done = Event()
         path = [None]
 
-        self.download_queue.put((media, file_name, done, progress, progress_args, path))
+        self.download_queue.put((data, file_name, done, progress, progress_args, path))
 
         if block:
             done.wait()
