@@ -46,7 +46,7 @@ class GetUserDC(BaseClient):
             r = r[0]
 
             if r.photo:
-                if isinstance(r.photo.photo_small, types.FileLocation):
-                    return r.photo.photo_small.dc_id
+                if isinstance(r.photo, types.UserProfilePhoto):
+                    return r.photo.dc_id
 
         return None
