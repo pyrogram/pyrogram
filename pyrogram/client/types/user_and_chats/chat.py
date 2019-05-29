@@ -35,6 +35,16 @@ class Chat(PyrogramType):
         type (``str``):
             Type of chat, can be either "private", "bot", "group", "supergroup" or "channel".
 
+        is_verified (``bool``, *optional*):
+            True, if this chat has been verified by Telegram. Supergroups and channels only.
+
+        is_restricted (``bool``, *optional*):
+            True, if this chat has been restricted. Supergroups and channels only.
+            See *restriction_reason* for details.
+
+        is_scam (``bool``, *optional*):
+            True, if this chat has been flagged for scam. Supergroups and channels only.
+
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
 
@@ -75,15 +85,16 @@ class Chat(PyrogramType):
 
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
+            This field is available only in case *is_restricted* is True.
 
         permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
             Information about the chat default permissions, for groups and supergroups.
     """
 
     __slots__ = [
-        "id", "type", "title", "username", "first_name", "last_name", "photo", "description", "invite_link",
-        "pinned_message", "sticker_set_name", "can_set_sticker_set", "members_count", "restriction_reason",
-        "permissions"
+        "id", "type", "is_verified", "is_restricted", "is_scam", "title", "username", "first_name", "last_name",
+        "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
+        "members_count", "restriction_reason", "permissions"
     ]
 
     def __init__(
@@ -92,6 +103,9 @@ class Chat(PyrogramType):
         client: "pyrogram.BaseClient" = None,
         id: int,
         type: str,
+        is_verified: bool = None,
+        is_restricted: bool = None,
+        is_scam: bool = None,
         title: str = None,
         username: str = None,
         first_name: str = None,
@@ -110,6 +124,9 @@ class Chat(PyrogramType):
 
         self.id = id
         self.type = type
+        self.is_verified = is_verified
+        self.is_restricted = is_restricted
+        self.is_scam = is_scam
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -126,36 +143,45 @@ class Chat(PyrogramType):
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
+        peer_id = user.id
+
         return Chat(
-            id=user.id,
+            id=peer_id,
             type="bot" if user.bot else "private",
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo=ChatPhoto._parse(client, user.photo),
+            photo=ChatPhoto._parse(client, user.photo, peer_id),
             restriction_reason=user.restriction_reason,
             client=client
         )
 
     @staticmethod
     def _parse_chat_chat(client, chat: types.Chat) -> "Chat":
+        peer_id = -chat.id
+
         return Chat(
-            id=-chat.id,
+            id=peer_id,
             type="group",
             title=chat.title,
-            photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             client=client
         )
 
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
+        peer_id = int("-100" + str(channel.id))
+
         return Chat(
-            id=int("-100" + str(channel.id)),
+            id=peer_id,
             type="supergroup" if channel.megagroup else "channel",
+            is_verified=getattr(channel, "verified", None),
+            is_restricted=getattr(channel, "restricted", None),
+            is_scam=getattr(channel, "scam", None),
             title=channel.title,
             username=getattr(channel, "username", None),
-            photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
             restriction_reason=getattr(channel, "restriction_reason", None),
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             client=client
