@@ -17,10 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .photo_size import PhotoSize
+from .thumbnail import Thumbnail
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
@@ -31,9 +32,6 @@ class Document(PyrogramType):
     Parameters:
         file_id (``str``):
             Unique file identifier.
-
-        thumb (:obj:`PhotoSize`, *optional*):
-            Document thumbnail as defined by sender.
 
         file_name (``str``, *optional*):
             Original filename as defined by sender.
@@ -46,29 +44,32 @@ class Document(PyrogramType):
 
         date (``int``, *optional*):
             Date the document was sent in Unix time.
+
+        thumbnails (List of :obj:`Thumbnail`, *optional*):
+            Document thumbnails as defined by sender.
     """
 
-    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date"]
+    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "thumbnails"]
 
     def __init__(
         self,
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        thumb: PhotoSize = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None
+        date: int = None,
+        thumbnails: List[Thumbnail] = None,
     ):
         super().__init__(client)
 
         self.file_id = file_id
-        self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
-        self.date = date
+        self.date = date,
+        self.thumbnails = thumbnails
 
     @staticmethod
     def _parse(client, document: types.Document, file_name: str) -> "Document":
@@ -82,10 +83,10 @@ class Document(PyrogramType):
                     document.access_hash
                 )
             ),
-            thumb=PhotoSize._parse(client, document.thumbs),
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,
             date=document.date,
+            thumbnails=Thumbnail._parse(client, document),
             client=client
         )
