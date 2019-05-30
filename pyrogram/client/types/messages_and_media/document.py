@@ -68,7 +68,7 @@ class Document(PyrogramType):
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
-        self.date = date,
+        self.date = date
         self.thumbnails = thumbnails
 
     @staticmethod
