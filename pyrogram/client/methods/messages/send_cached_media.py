@@ -16,13 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
-import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -84,39 +81,10 @@ class SendCachedMedia(BaseClient):
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        try:
-            decoded = utils.decode(file_id)
-            fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-            unpacked = struct.unpack(fmt, decoded)
-        except (AssertionError, binascii.Error, struct.error):
-            raise FileIdInvalid from None
-        else:
-            media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-            if not media_type:
-                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-            if media_type == "photo":
-                media = types.InputMediaPhoto(
-                    id=types.InputPhoto(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
-                )
-            else:
-                media = types.InputMediaDocument(
-                    id=types.InputDocument(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
-                )
-
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=media,
+                media=utils.get_input_media_from_file_id(file_id),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),

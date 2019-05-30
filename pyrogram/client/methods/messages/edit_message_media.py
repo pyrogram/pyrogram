@@ -16,14 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
 import os
-import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
@@ -94,28 +91,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                try:
-                    decoded = utils.decode(media.media)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] != 2:
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaPhoto(
-                        id=types.InputPhoto(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(media.media, 2)
 
         if isinstance(media, InputMediaVideo):
             if os.path.exists(media.media):
@@ -153,28 +129,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                try:
-                    decoded = utils.decode(media.media)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] != 4:
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(media.media, 4)
 
         if isinstance(media, InputMediaAudio):
             if os.path.exists(media.media):
@@ -211,28 +166,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                try:
-                    decoded = utils.decode(media.media)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] != 9:
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(media.media, 9)
 
         if isinstance(media, InputMediaAnimation):
             if os.path.exists(media.media):
@@ -271,28 +205,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                try:
-                    decoded = utils.decode(media.media)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] != 10:
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(media.media, 10)
 
         if isinstance(media, InputMediaDocument):
             if os.path.exists(media.media):
@@ -324,28 +237,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                try:
-                    decoded = utils.decode(media.media)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] not in (5, 10):
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(media.media, 5)
 
         r = self.send(
             functions.messages.EditMessage(
