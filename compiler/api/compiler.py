@@ -67,7 +67,7 @@ def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool
         n = len(t) - 1
 
         t = (("e" if is_list else "E") + "ither " if n else "") + ", ".join(
-            ":obj:`{1} <{0}.{1}>`".format(
+            ":obj:`~{}.{}`".format(
                 "pyrogram.types" if is_pyrogram_type else "pyrogram.api.types",
                 i.replace("pyrogram.", "")
             )
@@ -88,7 +88,7 @@ def get_references(t: str):
         n = len(t) - 1
 
         t = ", ".join(
-            ":obj:`{0} <pyrogram.api.functions.{0}>`".format(i)
+            ":obj:`~pyrogram.api.functions.{}`".format(i)
             for i in t
         )
 
