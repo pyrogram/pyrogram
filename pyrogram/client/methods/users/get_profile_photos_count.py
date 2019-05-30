@@ -18,16 +18,15 @@
 
 from typing import Union
 
-from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class GetUserPhotosCount(BaseClient):
-    def get_user_photos_count(self, user_id: Union[int, str]) -> int:
+class GetProfilePhotosCount(BaseClient):
+    def get_profile_photos_count(self, chat_id: Union[int, str]) -> int:
         """Get the total count of profile pictures for a user.
 
         Parameters:
-            user_id (``int`` | ``str``):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
@@ -39,16 +38,4 @@ class GetUserPhotosCount(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
 
-        r = self.send(
-            functions.photos.GetUserPhotos(
-                user_id=self.resolve_peer(user_id),
-                offset=0,
-                max_id=0,
-                limit=1
-            )
-        )
-
-        if isinstance(r, types.photos.Photos):
-            return len(r.photos)
-        else:
-            return r.count
+        return self.get_profile_photos(chat_id, limit=1).total_count

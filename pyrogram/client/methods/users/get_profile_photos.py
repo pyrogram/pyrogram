@@ -19,21 +19,21 @@
 from typing import Union
 
 import pyrogram
-from pyrogram.api import functions
+from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class GetUserPhotos(BaseClient):
-    def get_user_photos(
+class GetProfilePhotos(BaseClient):
+    def get_profile_photos(
         self,
-        user_id: Union[int, str],
+        chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 100
     ) -> "pyrogram.Photos":
-        """Get a list of profile pictures for a user.
+        """Get a list of profile pictures for a user or a chat.
 
         Parameters:
-            user_id (``int`` | ``str``):
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
@@ -52,14 +52,41 @@ class GetUserPhotos(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return pyrogram.Photos._parse(
-            self,
-            self.send(
-                functions.photos.GetUserPhotos(
-                    user_id=self.resolve_peer(user_id),
-                    offset=offset,
-                    max_id=0,
-                    limit=limit
+        peer_id = self.resolve_peer(chat_id)
+
+        if isinstance(peer_id, types.InputPeerUser):
+            return pyrogram.Photos._parse(
+                self,
+                self.send(
+                    functions.photos.GetUserPhotos(
+                        user_id=peer_id,
+                        offset=offset,
+                        max_id=0,
+                        limit=limit
+                    )
                 )
             )
-        )
+        else:
+            new_chat_photos = pyrogram.Messages._parse(
+                self,
+                self.send(
+                    functions.messages.Search(
+                        peer=peer_id,
+                        q="",
+                        filter=types.InputMessagesFilterChatPhotos(),
+                        min_date=0,
+                        max_date=0,
+                        offset_id=0,
+                        add_offset=offset,
+                        limit=limit,
+                        max_id=0,
+                        min_id=0,
+                        hash=0
+                    )
+                )
+            )
+
+            return pyrogram.Photos(
+                total_count=new_chat_photos.total_count,
+                photos=[m.new_chat_photo for m in new_chat_photos.messages][:limit]
+            )

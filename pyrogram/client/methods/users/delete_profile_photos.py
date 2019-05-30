@@ -24,8 +24,8 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class DeletePhotos(BaseClient):
-    def delete_photos(
+class DeleteProfilePhotos(BaseClient):
+    def delete_profile_photos(
         self,
         id: Union[str, List[str]]
     ) -> bool:

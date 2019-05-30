@@ -111,10 +111,11 @@ Users
 
     - :meth:`~Client.get_me`
     - :meth:`~Client.get_users`
-    - :meth:`~Client.get_user_photos`
-    - :meth:`~Client.get_user_photos_count`
-    - :meth:`~Client.set_photo`
-    - :meth:`~Client.delete_photos`
+    - :meth:`~Client.get_profile_photos`
+    - :meth:`~Client.get_profile_photos_count`
+    - :meth:`~Client.iter_profile_photos`
+    - :meth:`~Client.set_profile_photo`
+    - :meth:`~Client.delete_profile_photos`
     - :meth:`~Client.update_username`
     - :meth:`~Client.get_user_dc`
 
@@ -232,10 +233,11 @@ Details
 ..  Users
 .. automethod:: Client.get_me()
 .. automethod:: Client.get_users()
-.. automethod:: Client.get_user_photos()
-.. automethod:: Client.get_user_photos_count()
-.. automethod:: Client.set_photo()
-.. automethod:: Client.delete_photos()
+.. automethod:: Client.get_profile_photos()
+.. automethod:: Client.get_profile_photos_count()
+.. automethod:: Client.iter_profile_photos()
+.. automethod:: Client.set_profile_photo()
+.. automethod:: Client.delete_profile_photos()
 .. automethod:: Client.update_username()
 .. automethod:: Client.get_user_dc()
 

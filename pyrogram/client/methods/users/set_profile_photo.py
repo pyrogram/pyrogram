@@ -20,8 +20,8 @@ from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class SetPhoto(BaseClient):
-    def set_photo(
+class SetProfilePhoto(BaseClient):
+    def set_profile_photo(
         self,
         photo: str
     ) -> bool:

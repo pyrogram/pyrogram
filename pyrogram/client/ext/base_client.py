@@ -159,3 +159,6 @@ class BaseClient:
 
     def guess_extension(self, *args, **kwargs):
         pass
+
+    def get_profile_photos(self, *args, **kwargs):
+        pass
