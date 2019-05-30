@@ -16,8 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import struct
 from base64 import b64decode, b64encode
+from typing import Union
 
+from . import BaseClient
 from ...api import types
 
 
@@ -82,3 +85,53 @@ def get_offset_date(dialogs):
             return m.date
     else:
         return 0
+
+
+def get_input_media_from_file_id(
+    file_id_str: str,
+    expected_media_type: int = None
+) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
+    try:
+        decoded = decode(file_id_str)
+    except Exception:
+        raise ValueError("Failed to decode file_id: {}".format(file_id_str))
+    else:
+        media_type = decoded[0]
+
+        if expected_media_type is not None:
+            if media_type != expected_media_type:
+                media_type_str = BaseClient.MEDIA_TYPE_ID.get(media_type, None)
+                expected_media_type_str = BaseClient.MEDIA_TYPE_ID.get(expected_media_type, None)
+
+                raise ValueError(
+                    'Expected: "{}", got "{}" file_id instead'.format(expected_media_type_str, media_type_str)
+                )
+
+        if media_type in (0, 1, 14):
+            raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
+
+        if media_type == 2:
+            unpacked = struct.unpack("<iiqqc", decoded)
+            dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+
+            return types.InputMediaPhoto(
+                id=types.InputPhoto(
+                    id=file_id,
+                    access_hash=access_hash,
+                    file_reference=b""
+                )
+            )
+
+        if media_type in (3, 4, 5, 8, 9, 10, 13):
+            unpacked = struct.unpack("<iiqq", decoded)
+            dc_id, file_id, access_hash = unpacked[1:]
+
+            return types.InputMediaDocument(
+                id=types.InputDocument(
+                    id=file_id,
+                    access_hash=access_hash,
+                    file_reference=b""
+                )
+            )
+
+        raise ValueError("Unknown media type: {}".format(file_id_str))
