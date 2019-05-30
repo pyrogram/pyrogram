@@ -119,7 +119,7 @@ class SendAnimation(BaseClient):
 
         Returns:
             :obj:`Message` | ``None``: On success, the sent animation message is returned, otherwise, in case the upload
-            is deliberately stopped with :meth:`stop_transmission`, None is returned.
+            is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

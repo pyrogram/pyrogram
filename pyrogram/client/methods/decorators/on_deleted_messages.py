@@ -32,7 +32,7 @@ class OnDeletedMessages(BaseClient):
     ) -> callable:
         """Decorator for handling deleted messages.
 
-        This does the same thing as :meth:`add_handler` using the :class:`DeletedMessagesHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`DeletedMessagesHandler`.
 
         Parameters:
             filters (:obj:`Filters`):

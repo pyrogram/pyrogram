@@ -57,28 +57,28 @@ class Chat(PyrogramType):
         last_name (``str``, *optional*):
             Last name of the other party in a private chat, for private chats.
 
-        photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
+        photo (:obj:`ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
         description (``str``, *optional*):
             Bio, for private chats and bots or description for groups, supergroups and channels.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         invite_link (``str``, *optional*):
             Chat invite link, for groups, supergroups and channels.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         pinned_message (:obj:`Message`, *optional*):
             Pinned message, for groups, supergroups channels and own chat.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         sticker_set_name (``str``, *optional*):
             For supergroups, name of group sticker set.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         can_set_sticker_set (``bool``, *optional*):
             True, if the group sticker set can be changed by you.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         members_count (``int``, *optional*):
             Chat members count, for groups, supergroups and channels only.
@@ -87,7 +87,7 @@ class Chat(PyrogramType):
             The reason why this chat might be unavailable to some users.
             This field is available only in case *is_restricted* is True.
 
-        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+        permissions (:obj:`ChatPermissions` *optional*):
             Information about the chat default permissions, for groups and supergroups.
     """
 

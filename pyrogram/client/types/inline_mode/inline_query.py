@@ -92,7 +92,7 @@ class InlineQuery(PyrogramType, Update):
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
     ):
-        """Bound method *answer* of :obj:`InlineQuery <pyrogram.InlineQuery>`.
+        """Bound method *answer* of :obj:`InlineQuery`.
 
         Use this method as a shortcut for:
 
@@ -109,7 +109,7 @@ class InlineQuery(PyrogramType, Update):
                 inline_query.answer([...])
 
         Parameters:
-            results (List of :obj:`InlineQueryResult <pyrogram.InlineQueryResult>`):
+            results (List of :obj:`InlineQueryResult`):
                 A list of results for the inline query.
 
             cache_time (``int``, *optional*):

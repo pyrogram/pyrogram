@@ -77,7 +77,7 @@ class DownloadMedia(BaseClient):
 
         Returns:
             ``str`` | ``None``: On success, the absolute path of the downloaded file is returned, otherwise, in case
-            the download failed or was deliberately stopped with :meth:`stop_transmission`, None is returned.
+            the download failed or was deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

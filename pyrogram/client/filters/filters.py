@@ -42,7 +42,7 @@ def create(name: str, func: callable, **kwargs) -> type:
 
         **kwargs (``any``, *optional*):
             Any keyword argument you would like to pass. Useful for custom filters that accept parameters (e.g.:
-            :meth:`Filters.command`, :meth:`Filters.regex`).
+            :meth:`~Filters.command`, :meth:`~Filters.regex`).
     """
     # TODO: unpack kwargs using **kwargs into the dict itself. For Python 3.5+ only
     d = {"__call__": func}
@@ -56,7 +56,7 @@ class Filters:
 
     The Filters listed here are intended to be used with the :obj:`MessageHandler` only.
     At the moment, if you want to filter updates coming from different `Handlers <Handlers.html>`_ you have to create
-    your own filters with :meth:`Filters.create` and use them in the same way.
+    your own filters with :meth:`~Filters.create` and use them in the same way.
     """
 
     create = create
@@ -219,7 +219,7 @@ class Filters:
                 The command or list of commands as string the filter should look for.
                 Examples: "start", ["start", "help", "settings"]. When a message text containing
                 a command arrives, the command itself and its arguments will be stored in the *command*
-                field of the :class:`Message`.
+                field of the :obj:`Message`.
 
             prefix (``str`` | ``list``, *optional*):
                 A prefix or a list of prefixes as string the filter should look for.
@@ -263,7 +263,7 @@ class Filters:
             pattern (``str``):
                 The RegEx pattern as string, it will be applied to the text of a message. When a pattern matches,
                 all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_
-                are stored in the *matches* field of the :class:`Message` itself.
+                are stored in the *matches* field of the :obj:`Message` itself.
 
             flags (``int``, *optional*):
                 RegEx flags.

@@ -37,7 +37,7 @@ class GetDialogs(BaseClient):
         """Get a chunk of the user's dialogs.
 
         You can get up to 100 dialogs at once.
-        For a more convenient way of getting a user's dialogs see :meth:`iter_dialogs`.
+        For a more convenient way of getting a user's dialogs see :meth:`~Client.iter_dialogs`.
 
         Parameters:
             offset_date (``int``):

@@ -35,7 +35,7 @@ class InlineQueryResultGame(PyrogramType):
         game_short_name (``str``):
             Short name of the game.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
     """

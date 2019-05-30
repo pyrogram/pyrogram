@@ -32,7 +32,7 @@ class OnCallbackQuery(BaseClient):
     ) -> callable:
         """Decorator for handling callback queries.
 
-        This does the same thing as :meth:`add_handler` using the :class:`CallbackQueryHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`CallbackQueryHandler`.
 
         Parameters:
             filters (:obj:`Filters`):

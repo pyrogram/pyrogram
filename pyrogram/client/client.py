@@ -434,9 +434,9 @@ class Client(Methods, BaseClient):
     def run(self):
         """Start the Client and automatically idle the main script.
 
-        This is a convenience method that literally just calls :meth:`start` and :meth:`idle`. It makes running a client
-        less verbose, but is not suitable in case you want to run more than one client in a single main script,
-        since :meth:`idle` will block.
+        This is a convenience method that literally just calls :meth:`~Client.start` and :meth:`~Client.idle`. It makes
+        running a client less verbose, but is not suitable in case you want to run more than one client in a single main
+        script, since :meth:`~Client.idle` will block.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -472,7 +472,7 @@ class Client(Methods, BaseClient):
         """Remove a previously-registered update handler.
 
         Make sure to provide the right group that the handler was added in. You can use
-        the return value of the :meth:`add_handler` method, a tuple of (handler, group), and
+        the return value of the :meth:`~Client.add_handler` method, a tuple of (handler, group), and
         pass it directly.
 
         Parameters:

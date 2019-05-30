@@ -834,7 +834,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -968,7 +968,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -1294,7 +1294,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -1686,7 +1686,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -1864,7 +1864,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -2094,7 +2094,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -2216,7 +2216,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -2332,7 +2332,7 @@ class Message(PyrogramType, Update):
 
         Returns:
             On success, the sent :obj:`Message` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            In case the upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned instead.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -2778,9 +2778,8 @@ class Message(PyrogramType, Update):
                 Timeout in seconds.
 
         Returns:
-            -   The result of :meth:`request_callback_answer() <pyrogram.Client.request_callback_answer>` in case of
-                inline callback button clicks.
-            -   The result of :meth:`reply() <pyrogram.Message.reply>` in case of normal button clicks.
+            -   The result of :meth:`~Client.request_callback_answer` in case of inline callback button clicks.
+            -   The result of :meth:`~Message.reply()` in case of normal button clicks.
             -   A string in case the inline button is a URL, a *switch_inline_query* or a
                 *switch_inline_query_current_chat* button.
 

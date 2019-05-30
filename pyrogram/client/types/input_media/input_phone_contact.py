@@ -23,7 +23,7 @@ from ..pyrogram_type import PyrogramType
 
 class InputPhoneContact(PyrogramType):
     """A Phone Contact to be added in your Telegram address book.
-    It is intended to be used with :meth:`add_contacts() <pyrogram.Client.add_contacts>`
+    It is intended to be used with :meth:`~Client.add_contacts() <pyrogram.Client.add_contacts>`
 
     Parameters:
         phone (``str``):

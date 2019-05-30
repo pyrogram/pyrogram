@@ -22,10 +22,10 @@ from .handler import Handler
 class DeletedMessagesHandler(Handler):
     """The deleted Messages handler class. Used to handle deleted messages coming from any chat
     (private, group, channel). It is intended to be used with
-    :meth:`add_handler() <pyrogram.Client.add_handler>`
+    :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_deleted_messages() <pyrogram.Client.on_deleted_messages>` decorator.
+    :meth:`~Client.on_deleted_messages` decorator.
 
     Parameters:
         callback (``callable``):

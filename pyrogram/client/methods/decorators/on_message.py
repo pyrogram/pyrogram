@@ -32,7 +32,7 @@ class OnMessage(BaseClient):
     ) -> callable:
         """Decorator for handling messages.
 
-        This does the same thing as :meth:`add_handler` using the :class:`MessageHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`MessageHandler`.
 
         Parameters:
             filters (:obj:`Filters`):

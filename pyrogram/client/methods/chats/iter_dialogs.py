@@ -30,8 +30,9 @@ class IterDialogs(BaseClient):
     ) -> Generator["pyrogram.Dialog", None, None]:
         """Iterate through a user's dialogs sequentially.
 
-        This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from
-        the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a single call.
+        This convenience method does the same as repeatedly calling :meth:`~Client.get_dialogs` in a loop, thus saving
+        you from the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a
+        single call.
 
         Parameters:
             offset_date (``int``):

@@ -34,10 +34,10 @@ class InlineQueryResultArticle(InlineQueryResult):
         title (``str``):
             Title for the result.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.InputMessageContent>`):
+        input_message_content (:obj:`InputMessageContent`):
             Content of the message to be sent.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.InlineKeyboardMarkup>`, *optional*):
+        reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
 
         url (``str``, *optional*):

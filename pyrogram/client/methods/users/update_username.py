@@ -31,7 +31,7 @@ class UpdateUsername(BaseClient):
         
         This method only works for users, not bots. Bot usernames must be changed via Bot Support or by recreating
         them from scratch using BotFather. To update a channel or supergroup username you can use
-        :meth:`update_chat_username`.
+        :meth:`~Client.update_chat_username`.
 
         Parameters:
             username (``str`` | ``None``):

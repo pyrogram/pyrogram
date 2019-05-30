@@ -44,7 +44,7 @@ class SetChatPhoto(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
 
             photo (``str``):
-                New chat photo. You can pass a :class:`Photo` id or a file path to upload a new photo.
+                New chat photo. You can pass a :obj:`Photo` id or a file path to upload a new photo.
 
         Returns:
             ``bool``: True on success.

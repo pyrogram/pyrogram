@@ -21,10 +21,10 @@ from .handler import Handler
 
 class CallbackQueryHandler(Handler):
     """The CallbackQuery handler class. Used to handle callback queries coming from inline buttons.
-    It is intended to be used with :meth:`add_handler() <pyrogram.Client.add_handler>`
+    It is intended to be used with :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_callback_query() <pyrogram.Client.on_callback_query>` decorator.
+    :meth:`~Client.on_callback_query` decorator.
 
     Parameters:
         callback (``callable``):

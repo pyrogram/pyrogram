@@ -21,10 +21,10 @@ from .handler import Handler
 
 class DisconnectHandler(Handler):
     """The Disconnect handler class. Used to handle disconnections. It is intended to be used with
-    :meth:`add_handler() <pyrogram.Client.add_handler>`
+    :meth:~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_disconnect() <pyrogram.Client.on_disconnect>` decorator.
+    :meth:`~Client.on_disconnect` decorator.
 
     Parameters:
         callback (``callable``):

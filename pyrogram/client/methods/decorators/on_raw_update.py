@@ -30,7 +30,7 @@ class OnRawUpdate(BaseClient):
     ) -> callable:
         """Decorator for handling raw updates.
 
-        This does the same thing as :meth:`add_handler` using the :class:`RawUpdateHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`RawUpdateHandler`.
 
         Parameters:
             group (``int``, *optional*):
