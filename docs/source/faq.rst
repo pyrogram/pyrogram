@@ -155,6 +155,15 @@ things:
   chats).
 - The chat id argument you passed is in form of a string; you have to convert it into an integer with ``int(chat_id)``.
 
+My verification code expires immediately!
+-----------------------------------------
+
+That is because you likely shared it across any of your Telegram chats. Yes, that's right: the server keeps scanning the
+messages you send and if an active verification code is found it will immediately expire, automatically.
+
+The reason behind this is to protect unaware users from giving their account access to any potential scammer, but if you
+legitimately want to share your account(s) verification codes, consider scrambling them, e.g. ``12345`` → ``1-2-3-4-5``.
+
 My account has been deactivated/limited!
 ----------------------------------------
 
