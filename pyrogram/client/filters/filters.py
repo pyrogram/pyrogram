@@ -348,9 +348,9 @@ class Filters:
                 Pass the data you want to filter for.
         """
 
-        def f(_, cb):
-            return bool(cb.data and cb.data == _.d)
+        def f(flt, cb):
+            return cb.data == flt.data
 
-        return create("CallbackData", f, d=data)
+        return create("CallbackData", f, data=data)
 
     dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
