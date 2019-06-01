@@ -48,6 +48,7 @@ Messages
     - :meth:`~Client.send_audio`
     - :meth:`~Client.send_document`
     - :meth:`~Client.send_sticker`
+    - :meth:`~Client.send_animated_sticker`
     - :meth:`~Client.send_video`
     - :meth:`~Client.send_animation`
     - :meth:`~Client.send_voice`
@@ -180,6 +181,7 @@ Details
 .. automethod:: Client.send_audio()
 .. automethod:: Client.send_document()
 .. automethod:: Client.send_sticker()
+.. automethod:: Client.send_animated_sticker()
 .. automethod:: Client.send_video()
 .. automethod:: Client.send_animation()
 .. automethod:: Client.send_voice()
