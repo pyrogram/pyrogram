@@ -346,12 +346,11 @@ class Filters:
         Parameters:
             data (``str`` | ``bytes``):
                 Pass the data you want to filter for.
-                Defaults to None (no data).
         """
 
         def f(_, cb):
             return bool(cb.data and cb.data == _.d)
 
-        return create("Data", f, d=data)
+        return create("CallbackData", f, d=data)
 
     dan = create("Dan", lambda _, m: bool(m.from_user and m.from_user.id == 23122162))
