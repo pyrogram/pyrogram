@@ -112,7 +112,7 @@ class SendAnimatedSticker(BaseClient):
                     url=animated_sticker
                 )
             else:
-                media = utils.get_input_media_from_file_id(animated_sticker, 8)
+                media = utils.get_input_media_from_file_id(animated_sticker, 5)
 
             while True:
                 try:
