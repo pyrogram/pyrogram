@@ -16,14 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .future_salt import FutureSalt
-from .future_salts import FutureSalts
-from .gzip_packed import GzipPacked
-from .list import List
-from .message import Message
-from .msg_container import MsgContainer
 from .object import Object
-from .primitives import (
-    Bool, BoolTrue, BoolFalse, Bytes, Double,
-    Int, Long, Int128, Int256, Null, String, Vector
-)
+
+
+class List(list, Object):
+    __slots__ = []
+
+    def __repr__(self):
+        return "pyrogram.api.core.List([{}])".format(",".join(Object.__str__(i) for i in self))

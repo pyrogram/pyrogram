@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
-from datetime import datetime
 from io import BytesIO
 from json import dumps
 
@@ -36,32 +35,22 @@ class Object:
     def write(self, *args) -> bytes:
         pass
 
-    def __eq__(self, other: "Object") -> bool:
-        for attr in self.__slots__:
-            try:
-                if getattr(self, attr) != getattr(other, attr):
-                    return False
-            except AttributeError:
-                return False
+    @staticmethod
+    def default(obj: "Object"):
+        if isinstance(obj, bytes):
+            return repr(obj)
 
-        return True
+        return OrderedDict(
+            [("_", obj.QUALNAME)]
+            + [
+                (attr, getattr(obj, attr))
+                for attr in obj.__slots__
+                if getattr(obj, attr) is not None
+            ]
+        )
 
     def __str__(self) -> str:
-        def default(obj: Object):
-            try:
-                return OrderedDict(
-                    [("_", obj.QUALNAME)]
-                    + [(attr, getattr(obj, attr))
-                       for attr in obj.__slots__
-                       if getattr(obj, attr) is not None]
-                )
-            except AttributeError:
-                if isinstance(obj, datetime):
-                    return obj.strftime("%d-%b-%Y %H:%M:%S")
-                else:
-                    return repr(obj)
-
-        return dumps(self, indent=4, default=default, ensure_ascii=False)
+        return dumps(self, indent=4, default=Object.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
         return "pyrogram.api.{}({})".format(
@@ -72,6 +61,16 @@ class Object:
                 if getattr(self, attr) is not None
             )
         )
+
+    def __eq__(self, other: "Object") -> bool:
+        for attr in self.__slots__:
+            try:
+                if getattr(self, attr) != getattr(other, attr):
+                    return False
+            except AttributeError:
+                return False
+
+        return True
 
     def __len__(self) -> int:
         return len(self.write())

@@ -19,6 +19,7 @@
 from io import BytesIO
 
 from . import Int
+from ..list import List
 from ..object import Object
 
 
@@ -37,11 +38,11 @@ class Vector(Object):
 
     @staticmethod
     def read(b: BytesIO, t: Object = None) -> list:
-        return [
+        return List(
             t.read(b) if t
             else Vector._read(b)
             for _ in range(Int.read(b))
-        ]
+        )
 
     def __new__(cls, value: list, t: Object = None) -> bytes:
         return b"".join(
