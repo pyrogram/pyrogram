@@ -340,7 +340,7 @@ class Filters:
                              and not message.outgoing)))
 
     @staticmethod
-    def data(data: str or bytes = None):
+    def data(data: str or bytes):
         """Filter callback queries for their data.
         
         Parameters:
