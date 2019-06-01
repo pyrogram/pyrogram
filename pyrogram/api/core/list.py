@@ -23,4 +23,6 @@ class List(list, Object):
     __slots__ = []
 
     def __repr__(self):
-        return "pyrogram.api.core.List([{}])".format(",".join(Object.__str__(i) for i in self))
+        return "pyrogram.api.core.List([{}])".format(
+            ",".join(Object.__repr__(i) for i in self)
+        )
