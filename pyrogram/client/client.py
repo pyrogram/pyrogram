@@ -765,7 +765,9 @@ class Client(Methods, BaseClient):
                 types.Channel, types.ChannelForbidden
             ]
         ]
-    ):
+    ) -> bool:
+        is_min = False
+
         for entity in entities:
             if isinstance(entity, types.User):
                 user_id = entity.id
@@ -773,6 +775,7 @@ class Client(Methods, BaseClient):
                 access_hash = entity.access_hash
 
                 if access_hash is None:
+                    is_min = True
                     continue
 
                 username = entity.username
@@ -808,6 +811,7 @@ class Client(Methods, BaseClient):
                 access_hash = entity.access_hash
 
                 if access_hash is None:
+                    is_min = True
                     continue
 
                 username = getattr(entity, "username", None)
@@ -821,6 +825,8 @@ class Client(Methods, BaseClient):
 
                 if username is not None:
                     self.peers_by_username[username.lower()] = input_peer
+
+        return is_min
 
     def download_worker(self):
         name = threading.current_thread().name
@@ -837,7 +843,6 @@ class Client(Methods, BaseClient):
 
             try:
                 data, file_name, done, progress, progress_args, path = packet
-                data = data  # type: BaseClient.FileData
 
                 directory, file_name = os.path.split(file_name)
                 directory = directory or "downloads"
@@ -917,8 +922,10 @@ class Client(Methods, BaseClient):
 
             try:
                 if isinstance(updates, (types.Update, types.UpdatesCombined)):
-                    self.fetch_peers(updates.users)
-                    self.fetch_peers(updates.chats)
+                    is_min = self.fetch_peers(updates.users) or self.fetch_peers(updates.chats)
+
+                    users = {u.id: u for u in updates.users}
+                    chats = {c.id: c for c in updates.chats}
 
                     for update in updates.updates:
                         channel_id = getattr(
@@ -935,7 +942,7 @@ class Client(Methods, BaseClient):
                         if isinstance(update, types.UpdateChannelTooLong):
                             log.warning(update)
 
-                        if isinstance(update, types.UpdateNewChannelMessage):
+                        if isinstance(update, types.UpdateNewChannelMessage) and is_min:
                             message = update.message
 
                             if not isinstance(message, types.MessageEmpty):
@@ -957,22 +964,10 @@ class Client(Methods, BaseClient):
                                     pass
                                 else:
                                     if not isinstance(diff, types.updates.ChannelDifferenceEmpty):
-                                        updates.users += diff.users
-                                        updates.chats += diff.chats
+                                        users.update({u.id: u for u in diff.users})
+                                        chats.update({c.id: c for c in diff.chats})
 
-                        if channel_id and pts:
-                            if channel_id not in self.channels_pts:
-                                self.channels_pts[channel_id] = []
-
-                            if pts in self.channels_pts[channel_id]:
-                                continue
-
-                            self.channels_pts[channel_id].append(pts)
-
-                            if len(self.channels_pts[channel_id]) > 50:
-                                self.channels_pts[channel_id] = self.channels_pts[channel_id][25:]
-
-                        self.dispatcher.updates_queue.put((update, updates.users, updates.chats))
+                        self.dispatcher.updates_queue.put((update, users, chats))
                 elif isinstance(updates, (types.UpdateShortMessage, types.UpdateShortChatMessage)):
                     diff = self.send(
                         functions.updates.GetDifference(
@@ -989,13 +984,13 @@ class Client(Methods, BaseClient):
                                 pts=updates.pts,
                                 pts_count=updates.pts_count
                             ),
-                            diff.users,
-                            diff.chats
+                            {u.id: u for u in diff.users},
+                            {c.id: c for c in diff.chats}
                         ))
                     else:
-                        self.dispatcher.updates_queue.put((diff.other_updates[0], [], []))
+                        self.dispatcher.updates_queue.put((diff.other_updates[0], {}, {}))
                 elif isinstance(updates, types.UpdateShort):
-                    self.dispatcher.updates_queue.put((updates.update, [], []))
+                    self.dispatcher.updates_queue.put((updates.update, {}, {}))
                 elif isinstance(updates, types.UpdatesTooLong):
                     log.warning(updates)
             except Exception as e:

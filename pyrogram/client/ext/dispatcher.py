@@ -125,16 +125,13 @@ class Dispatcher:
         log.debug("{} started".format(name))
 
         while True:
-            update = self.updates_queue.get()
+            packet = self.updates_queue.get()
 
-            if update is None:
+            if packet is None:
                 break
 
             try:
-                users = {i.id: i for i in update[1]}
-                chats = {i.id: i for i in update[2]}
-                update = update[0]
-
+                update, users, chats = packet
                 parser = self.update_parsers.get(type(update), None)
 
                 parsed_update, handler_type = (

@@ -96,7 +96,6 @@ class BaseClient:
         self.date = None
 
         self.rnd_id = MsgId
-        self.channels_pts = {}
 
         self.peers_by_id = {}
         self.peers_by_username = {}
