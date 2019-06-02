@@ -17,15 +17,16 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
-from typing import List, Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import types
 from pyrogram.client.ext.utils import encode
+from .stripped_thumbnail import StrippedThumbnail
 from ..pyrogram_type import PyrogramType
 
 
-class PhotoSize(PyrogramType):
+class Thumbnail(PyrogramType):
     """One size of a photo or a file/sticker thumbnail.
 
     Parameters:
@@ -61,30 +62,44 @@ class PhotoSize(PyrogramType):
         self.file_size = file_size
 
     @staticmethod
-    def _parse(client, thumbs: List) -> Union["PhotoSize", None]:
-        if not thumbs:
+    def _parse(
+        client,
+        media: Union[types.Photo, types.Document]
+    ) -> Union[List[Union[StrippedThumbnail, "Thumbnail"]], None]:
+        if isinstance(media, types.Photo):
+            raw_thumbnails = media.sizes[:-1]
+            media_type = 0
+        elif isinstance(media, types.Document):
+            raw_thumbnails = media.thumbs
+            media_type = 14
+
+            if not raw_thumbnails:
+                return None
+        else:
             return None
 
-        photo_size = thumbs[-1]
+        thumbnails = []
 
-        if not isinstance(photo_size, (types.PhotoSize, types.PhotoCachedSize, types.PhotoStrippedSize)):
-            return None
-
-        loc = photo_size.location
-
-        if not isinstance(loc, types.FileLocation):
-            return None
-
-        return PhotoSize(
-            file_id=encode(
-                pack(
-                    "<iiqqqqi",
-                    0, loc.dc_id, 0, 0,
-                    loc.volume_id, loc.secret, loc.local_id
+        for thumbnail in raw_thumbnails:
+            # TODO: Enable this
+            # if isinstance(thumbnail, types.PhotoStrippedSize):
+            #     thumbnails.append(StrippedThumbnail._parse(client, thumbnail))
+            if isinstance(thumbnail, types.PhotoSize):
+                thumbnails.append(
+                    Thumbnail(
+                        file_id=encode(
+                            pack(
+                                "<iiqqc",
+                                media_type, media.dc_id,
+                                media.id, media.access_hash,
+                                thumbnail.type.encode()
+                            )
+                        ),
+                        width=thumbnail.w,
+                        height=thumbnail.h,
+                        file_size=thumbnail.size,
+                        client=client
+                    )
                 )
-            ),
-            width=getattr(photo_size, "w", 0),
-            height=getattr(photo_size, "h", 0),
-            file_size=getattr(photo_size, "size", len(getattr(photo_size, "bytes", b""))),
-            client=client
-        )
+
+        return thumbnails or None

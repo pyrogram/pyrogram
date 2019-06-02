@@ -21,11 +21,10 @@ from .handler import Handler
 
 class MessageHandler(Handler):
     """The Message handler class. Used to handle text, media and service messages coming from
-    any chat (private, group, channel). It is intended to be used with
-    :meth:`add_handler() <pyrogram.Client.add_handler>`
+    any chat (private, group, channel). It is intended to be used with :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_message() <pyrogram.Client.on_message>` decorator.
+    :meth:`~Client.on_message` decorator.
 
     Parameters:
         callback (``callable``):

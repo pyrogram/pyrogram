@@ -50,10 +50,10 @@ class InlineQueryResultDocument(PyrogramType):
         description (``str``, optional):
             Short description of the result.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the file.
 
         thumb_url (``str``, optional):

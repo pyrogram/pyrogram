@@ -50,7 +50,7 @@ class IterChatMembers(BaseClient):
     ) -> Optional[AsyncGenerator["pyrogram.ChatMember", None]]:
         """Iterate through the members of a chat sequentially.
 
-        This convenience method does the same as repeatedly calling :meth:`get_chat_members` in a loop, thus saving you
+        This convenience method does the same as repeatedly calling :meth:`~Client.get_chat_members` in a loop, thus saving you
         from the hassle of setting up boilerplate code. It is useful for getting the whole members list of a chat with
         a single call.
 

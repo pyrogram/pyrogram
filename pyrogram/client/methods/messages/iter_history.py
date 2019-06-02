@@ -37,8 +37,9 @@ class IterHistory(BaseClient):
     ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
         """Iterate through a chat history sequentially.
 
-        This convenience method does the same as repeatedly calling :meth:`get_history` in a loop, thus saving you from
-        the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a single call.
+        This convenience method does the same as repeatedly calling :meth:`~Client.get_history` in a loop, thus saving
+        you from the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a
+        single call.
 
         Parameters:
             chat_id (``int`` | ``str``):

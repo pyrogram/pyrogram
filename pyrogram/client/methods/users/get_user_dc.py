@@ -18,19 +18,13 @@
 
 from typing import Union
 
-import pyrogram
-from pyrogram.api import functions
+from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class GetUserProfilePhotos(BaseClient):
-    async def get_user_profile_photos(
-        self,
-        user_id: Union[int, str],
-        offset: int = 0,
-        limit: int = 100
-    ) -> "pyrogram.UserProfilePhotos":
-        """Get a list of profile pictures for a user.
+class GetUserDC(BaseClient):
+    async def get_user_dc(self, user_id: Union[int, str]) -> Union[int, None]:
+        """Get the assigned data center (DC) of a user.
 
         Parameters:
             user_id (``int`` | ``str``):
@@ -38,28 +32,20 @@ class GetUserProfilePhotos(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            offset (``int``, *optional*):
-                Sequential number of the first photo to be returned.
-                By default, all photos are returned.
-
-            limit (``int``, *optional*):
-                Limits the number of photos to be retrieved.
-                Values between 1—100 are accepted. Defaults to 100.
-
         Returns:
-            :obj:`UserProfilePhotos`: On success, an object containing a list of the profile photos is returned.
+            ``int`` | ``None``: The DC identifier as integer, or None in case it wasn't possible to get it.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return pyrogram.UserProfilePhotos._parse(
-            self,
-            await self.send(
-                functions.photos.GetUserPhotos(
-                    user_id=await self.resolve_peer(user_id),
-                    offset=offset,
-                    max_id=0,
-                    limit=limit
-                )
-            )
-        )
+
+        r = await self.send(functions.users.GetUsers(id=[await self.resolve_peer(user_id)]))
+
+        if r:
+            r = r[0]
+
+            if r.photo:
+                if isinstance(r.photo, types.UserProfilePhoto):
+                    return r.photo.dc_id
+
+        return None

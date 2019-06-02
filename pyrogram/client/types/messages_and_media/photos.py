@@ -23,7 +23,7 @@ from .photo import Photo
 from ..pyrogram_type import PyrogramType
 
 
-class UserProfilePhotos(PyrogramType):
+class Photos(PyrogramType):
     """Contains a user's profile pictures.
 
     Parameters:
@@ -49,8 +49,8 @@ class UserProfilePhotos(PyrogramType):
         self.photos = photos
 
     @staticmethod
-    def _parse(client, photos) -> "UserProfilePhotos":
-        return UserProfilePhotos(
+    def _parse(client, photos) -> "Photos":
+        return Photos(
             total_count=getattr(photos, "count", len(photos.photos)),
             photos=[Photo._parse(client, photo) for photo in photos.photos],
             client=client

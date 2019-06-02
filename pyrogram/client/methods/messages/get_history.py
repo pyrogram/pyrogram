@@ -41,7 +41,7 @@ class GetHistory(BaseClient):
         """Retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
-        For a more convenient way of getting a chat history see :meth:`iter_history`.
+        For a more convenient way of getting a chat history see :meth:`~Client.iter_history`.
 
         Parameters:
             chat_id (``int`` | ``str``):

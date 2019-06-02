@@ -65,8 +65,8 @@ after importing your modules, like this:
         app.run()
 
 This is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
-manually ``import``, manually :meth:`add_handler() <pyrogram.Client.add_handler>` and manually instantiate each
-:obj:`MessageHandler <pyrogram.MessageHandler>` object because **you can't use those cool decorators** for your
+manually ``import``, manually :meth:`~pyrogram.Client.add_handler` and manually instantiate each
+:class:`~pyrogram.MessageHandler` object because **you can't use those cool decorators** for your
 functions. So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
 
 Using Smart Plugins
@@ -80,7 +80,7 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
 
 .. note::
 
-    This is the same example application `as shown above <#introduction>`_, written using the Smart Plugin system.
+    This is the same example application as shown above, written using the Smart Plugin system.
 
 .. code-block:: text
     :emphasize-lines: 2, 3
@@ -156,7 +156,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 .. note::
 
     Remember: there can be at most one handler, within a group, dealing with a specific update. Plugins with overlapping
-    filters included a second time will not work. Learn more at `More on Updates <more-on-updates>`_.
+    filters included a second time will not work. Learn more at :doc:`More on Updates <more-on-updates>`.
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``
@@ -288,9 +288,8 @@ also organized in subfolders:
 Load/Unload Plugins at Runtime
 ------------------------------
 
-In the `previous section <#specifying-the-plugins-to-include>`_ we've explained how to specify which plugins to load and
-which to ignore before your Client starts. Here we'll show, instead, how to unload and load again a previously
-registered plugin at runtime.
+In the previous section we've explained how to specify which plugins to load and which to ignore before your Client
+starts. Here we'll show, instead, how to unload and load again a previously registered plugin at runtime.
 
 Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram updates
 ) will be modified in such a way that, when you reference them later on, they will be actually pointing to a tuple of
@@ -318,7 +317,7 @@ Unloading
 ^^^^^^^^^
 
 In order to unload a plugin, or any other handler, all you need to do is obtain a reference to it by importing the
-relevant module and call :meth:`remove_handler() <pyrogram.Client.remove_handler>` Client's method with your function
+relevant module and call :meth:`~pyrogram.Client.remove_handler` Client's method with your function
 name preceded by the star ``*`` operator as argument. Example:
 
 -   ``main.py``
@@ -343,7 +342,7 @@ Loading
 ^^^^^^^
 
 Similarly to the unloading process, in order to load again a previously unloaded plugin you do the same, but this time
-using :meth:`add_handler() <pyrogram.Client.add_handler>` instead. Example:
+using :meth:`~pyrogram.Client.add_handler` instead. Example:
 
 -   ``main.py``
 

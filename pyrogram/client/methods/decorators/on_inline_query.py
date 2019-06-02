@@ -32,7 +32,7 @@ class OnInlineQuery(BaseClient):
     ) -> callable:
         """Decorator for handling inline queries.
 
-        This does the same thing as :meth:`add_handler` using the :class:`InlineQueryHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`InlineQueryHandler`.
 
         Parameters:
             filters (:obj:`Filters <pyrogram.Filters>`):

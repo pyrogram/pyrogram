@@ -333,6 +333,7 @@ def start():
             docstring_args = "No parameters required."
 
         docstring_args = "Attributes:\n        ID: ``{}``\n\n    ".format(c.id) + docstring_args
+        docstring_args = "Attributes:\n        LAYER: ``{}``\n\n    ".format(layer) + docstring_args
 
         if c.section == "functions":
             docstring_args += "\n\n    Returns:\n        " + get_docstring_arg_type(c.return_type)

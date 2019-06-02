@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
+from datetime import datetime
 from json import dumps
 
 import pyrogram
@@ -46,9 +47,15 @@ class PyrogramType:
             try:
                 return OrderedDict(
                     [("_", "pyrogram." + obj.__class__.__name__)]
-                    + [(attr, getattr(obj, attr))
-                       for attr in obj.__slots__
-                       if getattr(obj, attr) is not None]
+                    + [
+                        (attr, "*" * len(getattr(obj, attr)))
+                        if attr == "phone_number"
+                        else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
+                        if attr.endswith("date")
+                        else (attr, getattr(obj, attr))
+                        for attr in obj.__slots__
+                        if getattr(obj, attr) is not None
+                    ]
                 )
             except AttributeError:
                 return repr(obj)

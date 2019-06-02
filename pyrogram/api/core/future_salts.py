@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
 from io import BytesIO
 
 from . import FutureSalt
@@ -31,7 +30,7 @@ class FutureSalts(Object):
 
     QUALNAME = "FutureSalts"
 
-    def __init__(self, req_msg_id: int, now: int or datetime, salts: list):
+    def __init__(self, req_msg_id: int, now: int, salts: list):
         self.req_msg_id = req_msg_id
         self.now = now
         self.salts = salts
@@ -39,7 +38,7 @@ class FutureSalts(Object):
     @staticmethod
     def read(b: BytesIO, *args) -> "FutureSalts":
         req_msg_id = Long.read(b)
-        now = datetime.fromtimestamp(Int.read(b))
+        now = Int.read(b)
 
         count = Int.read(b)
         salts = [FutureSalt.read(b) for _ in range(count)]

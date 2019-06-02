@@ -28,6 +28,7 @@ from .get_history_count import GetHistoryCount
 from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .retract_vote import RetractVote
+from .send_animated_sticker import SendAnimatedSticker
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
@@ -78,6 +79,7 @@ class Messages(
     DownloadMedia,
     IterHistory,
     SendCachedMedia,
-    GetHistoryCount
+    GetHistoryCount,
+    SendAnimatedSticker
 ):
     pass

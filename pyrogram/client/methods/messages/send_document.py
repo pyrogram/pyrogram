@@ -16,15 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
 import os
-import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
+from pyrogram.errors import FilePartMissing
 
 
 class SendDocument(BaseClient):
@@ -108,7 +106,7 @@ class SendDocument(BaseClient):
 
         Returns:
             :obj:`Message` | ``None``: On success, the sent document message is returned, otherwise, in case the upload
-            is deliberately stopped with :meth:`stop_transmission`, None is returned.
+            is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -133,28 +131,7 @@ class SendDocument(BaseClient):
                     url=document
                 )
             else:
-                try:
-                    decoded = utils.decode(document)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] not in (5, 10):
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(document, 5)
 
             while True:
                 try:

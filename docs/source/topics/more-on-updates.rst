@@ -1,7 +1,8 @@
 More on Updates
 ===============
 
-Here we'll show some advanced usages when working with `update handlers`_ and `filters`_.
+Here we'll show some advanced usages when working with :doc:`update handlers <../start/updates>` and
+:doc:`filters <filters>`.
 
 Handler Groups
 --------------
@@ -44,7 +45,7 @@ Or, if you want ``just_text`` to be fired *before* ``text_or_sticker`` (note ``-
     def just_text(client, message):
         print("Just Text")
 
-With :meth:`add_handler() <pyrogram.Client.add_handler>` (without decorators) the same can be achieved with:
+With :meth:`~pyrogram.Client.add_handler` (without decorators) the same can be achieved with:
 
 .. code-block:: python
 
@@ -217,6 +218,3 @@ The output of both (equivalent) examples will be:
     0
     1
     2
-
-.. _`update handlers`: ../start/updates
-.. _`filters`: filters

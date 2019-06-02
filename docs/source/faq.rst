@@ -17,10 +17,9 @@ What is Pyrogram?
 
 **Pyrogram** is an elegant, easy-to-use Telegram_ client library and framework written from the ground up in Python and
 C. It enables you to easily create custom applications for both user and bot identities (bot API alternative) via the
-`MTProto API`_ with the Python programming language.
+:doc:`MTProto API <topics/mtproto-vs-botapi>` with the Python programming language.
 
 .. _Telegram: https://telegram.org
-.. _MTProto API: topics/mtproto-vs-botapi#what-is-the-mtproto-api
 
 Where does the name come from?
 ------------------------------
@@ -47,19 +46,17 @@ Why Pyrogram?
 - **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
 - **Updated**, to make use of the latest Telegram API version and features.
 - **Bot API-like**: Similar to the Bot API in its simplicity, but much more powerful and detailed.
-- **Pluggable**: The `Smart Plugin`_ system allows to write components with minimal boilerplate code.
-- **Comprehensive**: Execute any `advanced action`_ an official client is able to do, and even more.
+- **Pluggable**: The :doc:`Smart Plugin <topics/smart-plugins>` system allows to write components with minimal
+  boilerplate code.
+- **Comprehensive**: Execute any :doc:`advanced action <topics/advanced-usage>` an official client is able to do, and
+  even more.
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
-.. _Smart Plugin: topics/smart-plugins
-.. _advanced action: topics/advanced-usage
 
 What can MTProto do more than the Bot API?
 ------------------------------------------
 
-For a detailed answer, please refer to the `MTProto vs. Bot API`_ page.
-
-.. _MTProto vs. Bot API: topics/mtproto-vs-botapi
+For a detailed answer, please refer to the :doc:`MTProto vs. Bot API <topics/mtproto-vs-botapi>` page.
 
 Why do I need an API key for bots?
 ----------------------------------
@@ -97,9 +94,9 @@ Telegram is slowly changing some server's internals and it's doing it in such a 
 inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
 losing the *persistence* feature.
 
-This change will most likely affect the official `Bot API <topics/mtproto-vs-botapi#what-is-the-bot-api>`_  too
-(unless Telegram implements some workarounds server-side to keep backwards compatibility, which Pyrogram could in turn
-make use of) and we can expect a proper notice from Telegram.
+This change will most likely affect the official :doc:`Bot API <topics/mtproto-vs-botapi>` too (unless Telegram
+implements some workarounds server-side to keep backwards compatibility, which Pyrogram could in turn make use of) and
+we can expect a proper notice from Telegram.
 
 Can I use multiple clients at once on the same account?
 -------------------------------------------------------
@@ -125,8 +122,8 @@ from the beginning every time, and use one separate session for each parallel cl
 I started a client and nothing happens!
 ---------------------------------------
 
-If you are connecting from Russia, China or Iran `you need a proxy`_, because Telegram could be partially or
-totally blocked in those countries.
+If you are connecting from Russia, China or Iran :doc:`you need a proxy <topics/proxy>`, because Telegram could be
+partially or totally blocked in those countries.
 
 Another possible cause might be network issues, either yours or Telegram's. To confirm this, add the following code on
 the top of your script and run it again. You should see some error mentioning a socket timeout or an unreachable network
@@ -146,8 +143,6 @@ fails or not:
 - DC4: ``149.154.167.91``
 - DC5: ``91.108.56.149``
 
-.. _you need a proxy: topics/proxy
-
 I keep getting PEER_ID_INVALID error!
 -------------------------------------------
 
@@ -159,6 +154,15 @@ things:
 - The chat id refers to a user you have't seen yet (from contacts, groups in common, forwarded messages or private
   chats).
 - The chat id argument you passed is in form of a string; you have to convert it into an integer with ``int(chat_id)``.
+
+My verification code expires immediately!
+-----------------------------------------
+
+That is because you likely shared it across any of your Telegram chats. Yes, that's right: the server keeps scanning the
+messages you send and if an active verification code is found it will immediately expire, automatically.
+
+The reason behind this is to protect unaware users from giving their account access to any potential scammer, but if you
+legitimately want to share your account(s) verification codes, consider scrambling them, e.g. ``12345`` → ``1-2-3-4-5``.
 
 My account has been deactivated/limited!
 ----------------------------------------
@@ -179,23 +183,15 @@ However, you might be right, and your account was deactivated/limited without an
 mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at
 recover@telegram.org, contact `@smstelegram`_ on Twitter or use `this form`_.
 
+Are there any secret easter eggs?
+---------------------------------
+
+Yes. If you found one, `let me know`_!
+
+.. _let me know: https://t.me/pyrogram
+
 .. _@smstelegram: https://twitter.com/smstelegram
 .. _this form: https://telegram.org/support
 
-About the License
------------------
-
-.. image:: https://www.gnu.org/graphics/lgplv3-with-text-154x68.png
-    :align: left
-
-Pyrogram is free software and is currently licensed under the terms of the
-`GNU Lesser General Public License v3 or later (LGPLv3+)`_. In short: you may use, redistribute and/or modify it
-provided that modifications are described and licensed for free under LGPLv3+.
-
-In other words: you can use and integrate Pyrogram into your own code --- either open source, under the same or
-different license, or even proprietary --- without being required to release the source code of your own applications.
-However, any modifications to the library itself are required to be published for free under the same LGPLv3+ license.
-
-.. _GNU Lesser General Public License v3 or later (LGPLv3+): https://github.com/pyrogram/pyrogram/blob/develop/COPYING.lesser
 .. _Bug Report: https://github.com/pyrogram/pyrogram/issues/new?labels=bug&template=bug_report.md
 .. _Feature Request: https://github.com/pyrogram/pyrogram/issues/new?labels=enhancement&template=feature_request.md

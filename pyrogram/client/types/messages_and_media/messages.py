@@ -150,7 +150,7 @@ class Messages(PyrogramType, Update):
                 Defaults to False.
 
         Returns:
-            On success, a :class:`Messages` containing forwarded messages is returned.
+            On success, a :obj:`Messages` containing forwarded messages is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

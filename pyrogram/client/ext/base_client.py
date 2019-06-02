@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import asyncio
+import os
 import platform
 import re
+from collections import namedtuple
 
 from pyrogram import __version__
 from ..style import Markdown, HTML
@@ -55,7 +56,7 @@ class BaseClient:
     CONFIG_FILE = "./config.ini"
 
     MEDIA_TYPE_ID = {
-        0: "thumbnail",
+        0: "photo_thumbnail",
         1: "chat_photo",
         2: "photo",
         3: "voice",
@@ -64,7 +65,8 @@ class BaseClient:
         8: "sticker",
         9: "audio",
         10: "animation",
-        13: "video_note"
+        13: "video_note",
+        14: "document_thumbnail"
     }
 
     mime_types_to_extensions = {}
@@ -81,6 +83,10 @@ class BaseClient:
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
+    fields = ("media_type", "dc_id", "file_id", "access_hash", "thumb_size", "peer_id", "volume_id", "local_id",
+              "is_big", "file_size", "mime_type", "file_name", "date")
+    FileData = namedtuple("FileData", fields, defaults=(None,) * len(fields))
+
     def __init__(self):
         self.is_bot = None
         self.dc_id = None
@@ -89,7 +95,6 @@ class BaseClient:
         self.date = None
 
         self.rnd_id = MsgId
-        self.channels_pts = {}
 
         self.peers_by_id = {}
         self.peers_by_username = {}
@@ -151,4 +156,7 @@ class BaseClient:
         pass
 
     def guess_extension(self, *args, **kwargs):
+        pass
+
+    def get_profile_photos(self, *args, **kwargs):
         pass

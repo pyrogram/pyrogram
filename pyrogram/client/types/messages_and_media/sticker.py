@@ -17,13 +17,14 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List
 
 from async_lru import alru_cache
 
 import pyrogram
 from pyrogram.api import types, functions
 from pyrogram.errors import StickersetInvalid
-from .photo_size import PhotoSize
+from .thumbnail import Thumbnail
 from ..pyrogram_type import PyrogramType
 from ...ext.utils import encode
 
@@ -40,9 +41,6 @@ class Sticker(PyrogramType):
 
         height (``int``):
             Sticker height.
-
-        thumb (:obj:`PhotoSize`, *optional*):
-            Sticker thumbnail in the .webp or .jpg format.
 
         file_name (``str``, *optional*):
             Sticker file name.
@@ -61,12 +59,15 @@ class Sticker(PyrogramType):
 
         set_name (``str``, *optional*):
             Name of the sticker set to which the sticker belongs.
+
+        thumbnails (List of :obj:`Thumbnail`, *optional*):
+            Sticker thumbnails in the .webp or .jpg format.
     """
 
     # TODO: Add mask position
 
     __slots__ = [
-        "file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name"
+        "file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name", "thumbnails"
     ]
 
     def __init__(
@@ -76,18 +77,17 @@ class Sticker(PyrogramType):
         file_id: str,
         width: int,
         height: int,
-        thumb: PhotoSize = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
         date: int = None,
         emoji: str = None,
-        set_name: str = None
+        set_name: str = None,
+        thumbnails: List[Thumbnail] = None
     ):
         super().__init__(client)
 
         self.file_id = file_id
-        self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -95,7 +95,8 @@ class Sticker(PyrogramType):
         self.width = width
         self.height = height
         self.emoji = emoji
-        self.set_name = set_name
+        self.set_name = set_name,
+        self.thumbnails = thumbnails
         # self.mask_position = mask_position
 
     @staticmethod
@@ -136,7 +137,6 @@ class Sticker(PyrogramType):
             ),
             width=image_size_attributes.w if image_size_attributes else 0,
             height=image_size_attributes.h if image_size_attributes else 0,
-            thumb=PhotoSize._parse(client, sticker.thumbs),
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,
@@ -144,5 +144,6 @@ class Sticker(PyrogramType):
             mime_type=sticker.mime_type,
             file_name=file_name,
             date=sticker.date,
+            thumbnails=Thumbnail._parse(client, sticker),
             client=client
         )

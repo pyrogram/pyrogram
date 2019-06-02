@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 from typing import Union
 
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
-import json
 
 
 class ChatAction:

@@ -23,11 +23,11 @@ canonical = "https://docs.pyrogram.org/"
 
 dirs = {
     ".": ("weekly", 1.0),
-    "intro": ("weekly", 0.8),
-    "start": ("weekly", 0.8),
-    "api": ("weekly", 0.6),
-    "topics": ("weekly", 0.6),
-    "telegram": ("weekly", 0.4)
+    "intro": ("weekly", 0.9),
+    "start": ("weekly", 0.9),
+    "api": ("weekly", 0.8),
+    "topics": ("weekly", 0.8),
+    "telegram": ("weekly", 0.6)
 }
 
 

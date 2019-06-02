@@ -25,14 +25,11 @@ from pyrogram.client.ext import BaseClient, utils
 from pyrogram.errors import FilePartMissing
 
 
-class SendVideoNote(BaseClient):
-    async def send_video_note(
+class SendAnimatedSticker(BaseClient):
+    def send_animated_sticker(
         self,
         chat_id: Union[int, str],
-        video_note: str,
-        duration: int = 0,
-        length: int = 1,
-        thumb: str = None,
+        animated_sticker: str,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -44,7 +41,7 @@ class SendVideoNote(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Send video messages.
+        """Send .tgs animated stickers.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -52,30 +49,18 @@ class SendVideoNote(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            video_note (``str``):
-                Video note to send.
-                Pass a file_id as string to send a video note that exists on the Telegram servers, or
-                pass a file path as string to upload a new video note that exists on your local machine.
-                Sending video notes by a URL is currently unsupported.
-
-            duration (``int``, *optional*):
-                Duration of sent video in seconds.
-
-            length (``int``, *optional*):
-                Video width and height.
-
-            thumb (``str``, *optional*):
-                Thumbnail of the video sent.
-                The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 320 pixels.
-                Thumbnails can't be reused and can be only uploaded as a new file.
+            animated_sticker (``str``):
+                Animated sticker to send.
+                Pass a file_id as string to send a animated sticker that exists on the Telegram servers,
+                pass an HTTP URL as a string for Telegram to get a .webp animated sticker file from the Internet, or
+                pass a file path as string to upload a new animated sticker that exists on your local machine.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             reply_to_message_id (``int``, *optional*):
-                If the message is a reply, ID of the original message
+                If the message is a reply, ID of the original message.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -105,39 +90,35 @@ class SendVideoNote(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            :obj:`Message` | ``None``: On success, the sent video note message is returned, otherwise, in case the
-            pload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
-
+            :obj:`Message` | ``None``: On success, the sent animated sticker message is returned, otherwise, in case the
+            upload is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
         file = None
 
         try:
-            if os.path.exists(video_note):
-                thumb = None if thumb is None else await self.save_file(thumb)
-                file = await self.save_file(video_note, progress=progress, progress_args=progress_args)
+            if os.path.exists(animated_sticker):
+                file = self.save_file(animated_sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video_note) or "video/mp4",
+                    mime_type=self.guess_mime_type(animated_sticker) or "application/x-tgsticker",
                     file=file,
-                    thumb=thumb,
                     attributes=[
-                        types.DocumentAttributeVideo(
-                            round_message=True,
-                            duration=duration,
-                            w=length,
-                            h=length
-                        )
+                        types.DocumentAttributeFilename(file_name=os.path.basename(animated_sticker))
                     ]
                 )
+            elif animated_sticker.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=animated_sticker
+                )
             else:
-                media = utils.get_input_media_from_file_id(video_note, 13)
+                media = utils.get_input_media_from_file_id(animated_sticker, 5)
 
             while True:
                 try:
-                    r = await self.send(
+                    r = self.send(
                         functions.messages.SendMedia(
-                            peer=await self.resolve_peer(chat_id),
+                            peer=self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
@@ -147,11 +128,11 @@ class SendVideoNote(BaseClient):
                         )
                     )
                 except FilePartMissing as e:
-                    await self.save_file(video_note, file_id=file.id, file_part=e.x)
+                    self.save_file(animated_sticker, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
                         if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                            return await pyrogram.Message._parse(
+                            return pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats}

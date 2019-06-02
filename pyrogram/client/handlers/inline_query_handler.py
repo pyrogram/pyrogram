@@ -21,10 +21,10 @@ from .handler import Handler
 
 class InlineQueryHandler(Handler):
     """The InlineQuery handler class. Used to handle inline queries.
-    It is intended to be used with :meth:`add_handler() <pyrogram.Client.add_handler>`
+    It is intended to be used with :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_inline_query() <pyrogram.Client.on_inline_query>` decorator.
+    :meth:`~Client.on_inline_query` decorator.
 
     Parameters:
         callback (``callable``):

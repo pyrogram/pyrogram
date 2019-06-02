@@ -45,6 +45,19 @@ class User(PyrogramType):
         is_bot (``bool``):
             True, if this user is a bot.
 
+        is_verified (``bool``):
+            True, if this user has been verified by Telegram.
+
+        is_restricted (``bool``):
+            True, if this user has been restricted. Bots only.
+            See *restriction_reason* for details.
+
+        is_support (``bool``):
+            True, if this user is part of the Telegram support team.
+
+        is_scam (``bool``):
+            True, if this user has been flagged for scam.
+
         first_name (``str``):
             User's or bot's first name.
 
@@ -68,11 +81,13 @@ class User(PyrogramType):
 
         restriction_reason (``str``, *optional*):
             The reason why this bot might be unavailable to some users.
+            This field is available only in case *is_restricted* is True.
     """
 
     __slots__ = [
-        "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "first_name", "last_name", "status",
-        "username", "language_code", "phone_number", "photo", "restriction_reason"
+        "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "is_verified", "is_restricted",
+        "is_support", "is_scam", "first_name", "last_name", "status", "username", "language_code", "phone_number",
+        "photo", "restriction_reason"
     ]
 
     def __init__(
@@ -85,6 +100,10 @@ class User(PyrogramType):
         is_mutual_contact: bool,
         is_deleted: bool,
         is_bot: bool,
+        is_verified: bool,
+        is_restricted: bool,
+        is_support: bool,
+        is_scam: bool,
         first_name: str,
         last_name: str = None,
         status: UserStatus = None,
@@ -102,6 +121,10 @@ class User(PyrogramType):
         self.is_mutual_contact = is_mutual_contact
         self.is_deleted = is_deleted
         self.is_bot = is_bot
+        self.is_verified = is_verified
+        self.is_restricted = is_restricted
+        self.is_support = is_support
+        self.is_scam = is_scam
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
@@ -123,13 +146,17 @@ class User(PyrogramType):
             is_mutual_contact=user.mutual_contact,
             is_deleted=user.deleted,
             is_bot=user.bot,
+            is_verified=user.verified,
+            is_restricted=user.restricted,
+            is_support=user.support,
+            is_scam=user.scam,
             first_name=user.first_name,
             last_name=user.last_name,
             status=UserStatus._parse(client, user.status, user.id, user.bot),
             username=user.username,
             language_code=user.lang_code,
             phone_number=user.phone,
-            photo=ChatPhoto._parse(client, user.photo),
+            photo=ChatPhoto._parse(client, user.photo, user.id),
             restriction_reason=user.restriction_reason,
             client=client
         )

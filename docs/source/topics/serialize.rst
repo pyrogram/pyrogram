@@ -9,7 +9,8 @@ For Humans - str(obj)
 ---------------------
 
 If you want a nicely formatted, human readable JSON representation of any object in the API -- namely, any object from
-`Pyrogram types`_, `raw functions`_ and `raw types`_ -- you can use use ``str(obj)``.
+:doc:`Pyrogram types <../api/types>`, :doc:`raw functions <../telegram/functions/index>` and
+:doc:`raw types <../telegram/types/index>` -- you can use use ``str(obj)``.
 
 .. code-block:: python
 
@@ -24,10 +25,6 @@ If you want a nicely formatted, human readable JSON representation of any object
 
     When using ``print()`` you don't actually need to use ``str()`` on the object because it is called automatically, we
     have done that above just to show you how to explicitly convert a Pyrogram object to JSON.
-
-.. _Pyrogram types: ../api/types
-.. _raw functions: ../telegram/functions
-.. _raw types: ../telegram/types
 
 For Machines - repr(obj)
 ------------------------

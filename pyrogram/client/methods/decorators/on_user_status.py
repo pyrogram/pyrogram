@@ -31,7 +31,7 @@ class OnUserStatus(BaseClient):
         group: int = 0
     ) -> callable:
         """Decorator for handling user status updates.
-        This does the same thing as :meth:`add_handler` using the :class:`UserStatusHandler`.
+        This does the same thing as :meth:`~Client.add_handler` using the :obj:`UserStatusHandler`.
 
         Parameters:
             filters (:obj:`Filters`):

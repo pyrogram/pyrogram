@@ -47,10 +47,10 @@ class InlineQueryResultCachedDocument(PyrogramType):
         parse_mode (``str``, optional):
             Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in the media caption.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the file.
 
     """

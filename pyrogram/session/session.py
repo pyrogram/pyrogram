@@ -306,7 +306,8 @@ class Session:
 
             # Seconds to wait until middle-overlap, which is
             # 15 minutes before/after the current/next salt end/start time
-            dt = (self.current_salt.valid_until - now).total_seconds() - 900
+            valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
+            dt = (valid_until - now).total_seconds() - 900
 
             log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
                 dt // 60, dt % 60,

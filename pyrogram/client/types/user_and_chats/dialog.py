@@ -69,7 +69,7 @@ class Dialog(PyrogramType):
         self.is_pinned = is_pinned
 
     @staticmethod
-    def _parse(client, dialog, messages, users, chats) -> "Dialog":
+    def _parse(client, dialog: types.Dialog, messages, users, chats) -> "Dialog":
         chat_id = dialog.peer
 
         if isinstance(chat_id, types.PeerUser):

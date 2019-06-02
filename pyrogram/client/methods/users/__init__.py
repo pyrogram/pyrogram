@@ -16,22 +16,26 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .delete_user_profile_photos import DeleteUserProfilePhotos
+from .delete_profile_photos import DeleteProfilePhotos
 from .get_me import GetMe
-from .get_user_profile_photos import GetUserProfilePhotos
-from .get_user_profile_photos_count import GetUserProfilePhotosCount
+from .get_profile_photos import GetProfilePhotos
+from .get_profile_photos_count import GetProfilePhotosCount
+from .get_user_dc import GetUserDC
 from .get_users import GetUsers
-from .set_user_profile_photo import SetUserProfilePhoto
+from .iter_profile_photos import IterProfilePhotos
+from .set_profile_photo import SetProfilePhoto
 from .update_username import UpdateUsername
 
 
 class Users(
-    GetUserProfilePhotos,
-    SetUserProfilePhoto,
-    DeleteUserProfilePhotos,
+    GetProfilePhotos,
+    SetProfilePhoto,
+    DeleteProfilePhotos,
     GetUsers,
     GetMe,
     UpdateUsername,
-    GetUserProfilePhotosCount
+    GetProfilePhotosCount,
+    GetUserDC,
+    IterProfilePhotos
 ):
     pass

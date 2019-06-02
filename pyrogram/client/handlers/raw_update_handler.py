@@ -21,10 +21,10 @@ from .handler import Handler
 
 class RawUpdateHandler(Handler):
     """The Raw Update handler class. Used to handle raw updates. It is intended to be used with
-    :meth:`add_handler() <pyrogram.Client.add_handler>`
+    :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_raw_update() <pyrogram.Client.on_raw_update>` decorator.
+    :meth:`~Client.on_raw_update` decorator.
 
     Parameters:
         callback (``callable``):
@@ -33,7 +33,7 @@ class RawUpdateHandler(Handler):
             a detailed description).
 
     Other Parameters:
-        client (:class:`Client`):
+        client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the update handler.
 
         update (``Update``):

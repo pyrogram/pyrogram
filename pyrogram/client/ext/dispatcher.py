@@ -124,16 +124,13 @@ class Dispatcher:
 
     async def update_worker(self):
         while True:
-            update = await self.updates_queue.get()
+            packet = await self.updates_queue.get()
 
-            if update is None:
+            if packet is None:
                 break
 
             try:
-                users = {i.id: i for i in update[1]}
-                chats = {i.id: i for i in update[2]}
-                update = update[0]
-
+                update, users, chats = packet
                 parser = self.update_parsers.get(type(update), None)
 
                 parsed_update, handler_type = (

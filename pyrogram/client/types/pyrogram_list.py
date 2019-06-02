@@ -16,26 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+from .pyrogram_type import PyrogramType
 
-if sys.version_info[:3] in [(3, 5, 0), (3, 5, 1), (3, 5, 2)]:
-    from .vendor import typing
 
-    # Monkey patch the standard "typing" module because Python versions from 3.5.0 to 3.5.2 have a broken one.
-    sys.modules["typing"] = typing
+class PyrogramList(list):
+    __slots__ = []
 
-__version__ = "0.13.0-asyncio"
-__license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__copyright__ = "Copyright (C) 2017-2019 Dan <https://github.com/delivrance>"
+    def __str__(self):
+        # noinspection PyCallByClass
+        return PyrogramType.__str__(self)
 
-try:
-    import uvloop
-except ImportError:
-    pass
-else:
-    uvloop.install()
-
-from .errors import RPCError
-from .client import *
-from .client.handlers import *
-from .client.types import *
+    def __repr__(self):
+        return "pyrogram.client.types.pyrogram_list.PyrogramList([{}])".format(
+            ",".join(PyrogramType.__repr__(i) for i in self)
+        )

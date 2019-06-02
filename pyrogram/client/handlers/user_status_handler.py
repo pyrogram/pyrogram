@@ -21,10 +21,10 @@ from .handler import Handler
 
 class UserStatusHandler(Handler):
     """The UserStatus handler class. Used to handle user status updates (user going online or offline).
-    It is intended to be used with :meth:`add_handler() <pyrogram.Client.add_handler>`
+    It is intended to be used with :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`on_user_status() <pyrogram.Client.on_user_status>` decorator.
+    :meth:`~Client.on_user_status` decorator.
 
     Parameters:
         callback (``callable``):

@@ -51,7 +51,7 @@ class GetChatMembers(BaseClient):
         You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.
         You must be admin to retrieve the members list of a channel (also known as "subscribers").
-        For a more convenient way of getting chat members see :meth:`iter_chat_members`.
+        For a more convenient way of getting chat members see :meth:`~Client.iter_chat_members`.
 
         Parameters:
             chat_id (``int`` | ``str``):
