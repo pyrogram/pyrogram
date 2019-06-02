@@ -183,6 +183,13 @@ However, you might be right, and your account was deactivated/limited without an
 mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at
 recover@telegram.org, contact `@smstelegram`_ on Twitter or use `this form`_.
 
+Are there any secret easter eggs?
+---------------------------------
+
+Yes. If you found one, `let me know`_!
+
+.. _let me know: https://t.me/pyrogram
+
 .. _@smstelegram: https://twitter.com/smstelegram
 .. _this form: https://telegram.org/support
 
