@@ -1,8 +1,8 @@
 Support Pyrogram
 ================
 
-Pyrogram is free and open source software, and thus supported by your love! If you like the project and have found it to
-be useful, give Pyrogram a `Star on GitHub`_. Your appreciation means a lot and helps staying motivated.
+Pyrogram is free and open source software, and thus powered by your love and support! If you like the project and have
+found it to be useful, give Pyrogram a `Star on GitHub`_. Your appreciation means a lot and helps staying motivated.
 
 .. raw:: html
 
@@ -12,8 +12,9 @@ be useful, give Pyrogram a `Star on GitHub`_. Your appreciation means a lot and 
 Donate
 ------
 
-If you'd also like to donate in order to support Pyrogram -- or any of my `other works`_ -- you can use the PayPal
-button below. Thank you.
+As a developer, you probably understand that "open source" doesn't mean "free work". A lot of time and resources has
+been put into the project and if you'd like to tip me for Pyrogram -- or any of my `other works`_ -- you can use the
+PayPal button below. Thank you!
 
 .. image:: https://i.imgur.com/fasFTzK.png
     :target: https://paypal.me/delivrance
