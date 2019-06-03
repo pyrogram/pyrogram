@@ -19,11 +19,11 @@
 from io import BytesIO
 
 from . import FutureSalt
-from .object import Object
+from .tl_object import TLObject
 from .primitives import Int, Long
 
 
-class FutureSalts(Object):
+class FutureSalts(TLObject):
     ID = 0xae500895
 
     __slots__ = ["req_msg_id", "now", "salts"]

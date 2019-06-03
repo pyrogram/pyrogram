@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.core import Message, MsgContainer, Object
+from pyrogram.api.core import Message, MsgContainer, TLObject
 from pyrogram.api.functions import Ping
 from pyrogram.api.types import MsgsAck, HttpWait
 from .msg_id import MsgId
@@ -29,7 +29,7 @@ class MsgFactory:
     def __init__(self):
         self.seq_no = SeqNo()
 
-    def __call__(self, body: Object) -> Message:
+    def __call__(self, body: TLObject) -> Message:
         return Message(
             body,
             MsgId(),

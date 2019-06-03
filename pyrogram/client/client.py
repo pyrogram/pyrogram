@@ -37,7 +37,7 @@ from threading import Thread
 from typing import Union, List
 
 from pyrogram.api import functions, types
-from pyrogram.api.core import Object
+from pyrogram.api.core import TLObject
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
@@ -998,7 +998,7 @@ class Client(Methods, BaseClient):
 
         log.debug("{} stopped".format(name))
 
-    def send(self, data: Object, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
+    def send(self, data: TLObject, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Send raw Telegram queries.
 
         This method makes it possible to manually call every single Telegram API method in a low-level manner.

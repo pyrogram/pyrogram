@@ -53,10 +53,10 @@ def get_docstring_arg_type(t: str, is_list: bool = False, is_pyrogram_type: bool
             return "``{}``".format(t.lower())
     elif t == "true":
         return "``bool``"
-    elif t == "Object" or t == "X":
-        return "Any object from :obj:`pyrogram.api.types`"
+    elif t == "TLObject" or t == "X":
+        return "Any object from :obj:`~pyrogram.api.types`"
     elif t == "!X":
-        return "Any method from :obj:`pyrogram.api.functions`"
+        return "Any method from :obj:`~pyrogram.api.functions`"
     elif t.startswith("Vector"):
         return "List of " + get_docstring_arg_type(t.split("<", 1)[1][:-1], True, is_pyrogram_type)
     else:
@@ -394,7 +394,7 @@ def start():
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = Object.read(b{}) if flags & (1 << {}) else []\n        ".format(
+                    read_types += "{} = TLObject.read(b{}) if flags & (1 << {}) else []\n        ".format(
                         arg_name, ", {}".format(sub_type.title()) if sub_type in core_types else "", index
                     )
                 else:
@@ -403,7 +403,7 @@ def start():
                     write_types += "b.write(self.{}.write())\n        ".format(arg_name)
 
                     read_types += "\n        "
-                    read_types += "{} = Object.read(b) if flags & (1 << {}) else None\n        ".format(
+                    read_types += "{} = TLObject.read(b) if flags & (1 << {}) else None\n        ".format(
                         arg_name, index
                     )
             else:
@@ -422,7 +422,7 @@ def start():
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = Object.read(b{})\n        ".format(
+                    read_types += "{} = TLObject.read(b{})\n        ".format(
                         arg_name, ", {}".format(sub_type.title()) if sub_type in core_types else ""
                     )
                 else:
@@ -430,7 +430,7 @@ def start():
                     write_types += "b.write(self.{}.write())\n        ".format(arg_name)
 
                     read_types += "\n        "
-                    read_types += "{} = Object.read(b)\n        ".format(arg_name)
+                    read_types += "{} = TLObject.read(b)\n        ".format(arg_name)
 
         if c.docs:
             description = c.docs.split("|")[0].split("§")[1]

@@ -19,24 +19,24 @@
 from gzip import compress, decompress
 from io import BytesIO
 
-from .object import Object
+from .tl_object import TLObject
 from .primitives import Int, Bytes
 
 
-class GzipPacked(Object):
+class GzipPacked(TLObject):
     ID = 0x3072cfa1
 
     __slots__ = ["packed_data"]
 
     QUALNAME = "GzipPacked"
 
-    def __init__(self, packed_data: Object):
+    def __init__(self, packed_data: TLObject):
         self.packed_data = packed_data
 
     @staticmethod
     def read(b: BytesIO, *args) -> "GzipPacked":
         # Return the Object itself instead of a GzipPacked wrapping it
-        return Object.read(
+        return TLObject.read(
             BytesIO(
                 decompress(
                     Bytes.read(b)

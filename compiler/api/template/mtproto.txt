@@ -5,7 +5,7 @@ from io import BytesIO
 from pyrogram.api.core import *
 
 
-class {class_name}(Object):
+class {class_name}(TLObject):
     """{docstring_args}
     """
 

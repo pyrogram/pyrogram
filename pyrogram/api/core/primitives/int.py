@@ -18,10 +18,10 @@
 
 from io import BytesIO
 
-from ..object import Object
+from ..tl_object import TLObject
 
 
-class Int(Object):
+class Int(TLObject):
     SIZE = 4
 
     @classmethod

@@ -30,7 +30,7 @@ import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
 from pyrogram.api.all import layer
-from pyrogram.api.core import Message, Object, MsgContainer, Long, FutureSalt, Int
+from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
@@ -391,7 +391,7 @@ class Session:
 
         log.debug("RecvThread stopped")
 
-    def _send(self, data: Object, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
+    def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
@@ -422,7 +422,7 @@ class Session:
             else:
                 return result
 
-    def send(self, data: Object, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
+    def send(self, data: TLObject, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
         self.is_connected.wait(self.WAIT_TIMEOUT)
 
         try:

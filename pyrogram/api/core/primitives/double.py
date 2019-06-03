@@ -19,10 +19,10 @@
 from io import BytesIO
 from struct import unpack, pack
 
-from ..object import Object
+from ..tl_object import TLObject
 
 
-class Double(Object):
+class Double(TLObject):
     @staticmethod
     def read(b: BytesIO, *args) -> float:
         return unpack("d", b.read(8))[0]

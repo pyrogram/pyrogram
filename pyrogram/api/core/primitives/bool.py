@@ -18,10 +18,10 @@
 
 from io import BytesIO
 
-from ..object import Object
+from ..tl_object import TLObject
 
 
-class BoolFalse(Object):
+class BoolFalse(TLObject):
     ID = 0xbc799737
     value = False
 
@@ -38,7 +38,7 @@ class BoolTrue(BoolFalse):
     value = True
 
 
-class Bool(Object):
+class Bool(TLObject):
     @classmethod
     def read(cls, b: BytesIO) -> bool:
         return int.from_bytes(b.read(4), "little") == BoolTrue.ID

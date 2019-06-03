@@ -21,7 +21,7 @@ from io import BytesIO
 from json import dumps
 
 
-class Object:
+class TLObject:
     all = {}
 
     __slots__ = []
@@ -30,13 +30,13 @@ class Object:
 
     @staticmethod
     def read(b: BytesIO, *args):  # TODO: Rename b -> data
-        return Object.all[int.from_bytes(b.read(4), "little")].read(b, *args)
+        return TLObject.all[int.from_bytes(b.read(4), "little")].read(b, *args)
 
     def write(self, *args) -> bytes:
         pass
 
     @staticmethod
-    def default(obj: "Object"):
+    def default(obj: "TLObject"):
         if isinstance(obj, bytes):
             return repr(obj)
 
@@ -50,7 +50,7 @@ class Object:
         )
 
     def __str__(self) -> str:
-        return dumps(self, indent=4, default=Object.default, ensure_ascii=False)
+        return dumps(self, indent=4, default=TLObject.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
         return "pyrogram.api.{}({})".format(
@@ -62,7 +62,7 @@ class Object:
             )
         )
 
-    def __eq__(self, other: "Object") -> bool:
+    def __eq__(self, other: "TLObject") -> bool:
         for attr in self.__slots__:
             try:
                 if getattr(self, attr) != getattr(other, attr):
@@ -77,3 +77,6 @@ class Object:
 
     def __getitem__(self, item):
         return getattr(self, item)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
