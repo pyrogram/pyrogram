@@ -19,10 +19,10 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Location(PyrogramType):
+class Location(Object):
     """A point on the map.
 
     Parameters:

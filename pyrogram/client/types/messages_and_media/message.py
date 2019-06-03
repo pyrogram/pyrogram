@@ -27,7 +27,7 @@ from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
 from ..messages_and_media.photo import Photo
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
@@ -59,7 +59,7 @@ class Str(str):
         return self._client.html.unparse(self, self._entities)
 
 
-class Message(PyrogramType, Update):
+class Message(Object, Update):
     """A message.
 
     Parameters:

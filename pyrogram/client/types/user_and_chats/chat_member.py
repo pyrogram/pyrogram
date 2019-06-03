@@ -19,10 +19,10 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ChatMember(PyrogramType):
+class ChatMember(Object):
     """Contains information about one member of a chat.
 
     Parameters:

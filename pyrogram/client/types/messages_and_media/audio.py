@@ -22,11 +22,11 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Audio(PyrogramType):
+class Audio(Object):
     """An audio file to be treated as music by the Telegram clients.
 
     Parameters:

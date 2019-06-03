@@ -20,10 +20,10 @@ import pyrogram
 from pyrogram.api import types
 from .animation import Animation
 from .photo import Photo
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Game(PyrogramType):
+class Game(Object):
     """A game.
     Use BotFather to create and edit games, their short names will act as unique identifiers.
 

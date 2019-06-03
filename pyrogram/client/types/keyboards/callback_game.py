@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class CallbackGame(PyrogramType):
+class CallbackGame(Object):
     """Placeholder, currently holds no information.
 
     Use BotFather to set up your game.

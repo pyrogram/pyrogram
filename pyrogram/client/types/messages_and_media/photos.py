@@ -20,10 +20,10 @@ from typing import List
 
 import pyrogram
 from .photo import Photo
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Photos(PyrogramType):
+class Photos(Object):
     """Contains a user's profile pictures.
 
     Parameters:

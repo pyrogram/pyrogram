@@ -23,10 +23,10 @@ from pyrogram.api.types import (
     KeyboardButtonSwitchInline, KeyboardButtonGame
 )
 from .callback_game import CallbackGame
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class InlineKeyboardButton(PyrogramType):
+class InlineKeyboardButton(Object):
     """One button of an inline keyboard.
 
     You must use exactly one of the optional fields.

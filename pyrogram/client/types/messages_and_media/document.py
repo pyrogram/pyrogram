@@ -22,11 +22,11 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Document(PyrogramType):
+class Document(Object):
     """A generic file (as opposed to photos, voice messages, audio files, ...).
 
     Parameters:

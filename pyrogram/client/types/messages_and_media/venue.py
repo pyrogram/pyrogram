@@ -19,10 +19,10 @@
 import pyrogram
 from pyrogram.api import types
 from .location import Location
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Venue(PyrogramType):
+class Venue(Object):
     """A venue.
 
     Parameters:

@@ -24,11 +24,11 @@ import pyrogram
 from pyrogram.api import types, functions
 from pyrogram.errors import StickersetInvalid
 from .thumbnail import Thumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Sticker(PyrogramType):
+class Sticker(Object):
     """A sticker.
 
     Parameters:

@@ -18,10 +18,10 @@
 
 import pyrogram
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class StrippedThumbnail(PyrogramType):
+class StrippedThumbnail(Object):
     """A stripped thumbnail
 
     Parameters:

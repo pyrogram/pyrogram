@@ -22,12 +22,12 @@ import pyrogram
 from pyrogram.api import types
 from .inline_query_result import InlineQueryResult
 from ..messages_and_media import Location
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 from ..user_and_chats import User
 
 
-class InlineQuery(PyrogramType, Update):
+class InlineQuery(Object, Update):
     """An incoming inline query.
 
     When the user sends an empty query, your bot could return some default or trending results.

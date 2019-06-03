@@ -22,10 +22,10 @@ import pyrogram
 from pyrogram.api import types
 from .dialog import Dialog
 from ..messages_and_media import Message
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Dialogs(PyrogramType):
+class Dialogs(Object):
     """Contains a user's dialogs chunk.
 
     Parameters:

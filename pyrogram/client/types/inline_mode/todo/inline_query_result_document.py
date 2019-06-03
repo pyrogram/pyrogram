@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultDocument(PyrogramType):
+class InlineQueryResultDocument(Object):
     """Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
 
     Attributes:

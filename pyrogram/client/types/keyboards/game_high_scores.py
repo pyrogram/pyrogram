@@ -20,11 +20,11 @@ from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 from .game_high_score import GameHighScore
 
 
-class GameHighScores(PyrogramType):
+class GameHighScores(Object):
     """The high scores table for a game.
 
     Parameters:

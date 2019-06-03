@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 """- :obj:`InlineQueryResultCachedAudio`
     - :obj:`InlineQueryResultCachedDocument`
@@ -39,7 +39,7 @@ from ..pyrogram_type import PyrogramType
     - :obj:`InlineQueryResultVoice`"""
 
 
-class InlineQueryResult(PyrogramType):
+class InlineQueryResult(Object):
     """One result of an inline query.
 
     Pyrogram currently supports results of the following 20 types:

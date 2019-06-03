@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class PollOption(PyrogramType):
+class PollOption(Object):
     """Contains information about one answer option in a poll.
 
     Parameters:

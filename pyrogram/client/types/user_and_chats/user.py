@@ -20,10 +20,10 @@ import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
 from .user_status import UserStatus
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class User(PyrogramType):
+class User(Object):
     """A Telegram user or bot.
 
     Parameters:

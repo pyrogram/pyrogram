@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultGame(PyrogramType):
+class InlineQueryResultGame(Object):
     """Represents a Game.
 
     Attributes:

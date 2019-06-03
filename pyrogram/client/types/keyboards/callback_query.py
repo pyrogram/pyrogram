@@ -22,12 +22,12 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 from ..user_and_chats import User
 
 
-class CallbackQuery(PyrogramType, Update):
+class CallbackQuery(Object, Update):
     """An incoming callback query from a callback button in an inline keyboard.
 
     If the button that originated the query was attached to a message sent by the bot, the field *message*
