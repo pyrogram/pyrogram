@@ -67,6 +67,7 @@ Messages
     - :meth:`~Client.get_messages`
     - :meth:`~Client.get_history`
     - :meth:`~Client.get_history_count`
+    - :meth:`~Client.read_history`
     - :meth:`~Client.iter_history`
     - :meth:`~Client.send_poll`
     - :meth:`~Client.vote_poll`
@@ -200,6 +201,7 @@ Details
 .. automethod:: Client.get_messages()
 .. automethod:: Client.get_history()
 .. automethod:: Client.get_history_count()
+.. automethod:: Client.read_history()
 .. automethod:: Client.iter_history()
 .. automethod:: Client.send_poll()
 .. automethod:: Client.vote_poll()
