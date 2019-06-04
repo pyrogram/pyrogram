@@ -31,6 +31,7 @@ class SendAnimation(BaseClient):
         chat_id: Union[int, str],
         animation: str,
         caption: str = "",
+        unsave: bool = False,
         parse_mode: str = "",
         duration: int = 0,
         width: int = 0,
@@ -63,6 +64,10 @@ class SendAnimation(BaseClient):
 
             caption (``str``, *optional*):
                 Animation caption, 0-1024 characters.
+
+            unsave (``bool``, *optional*):
+                By default, the server will save into your own collection any new animation GIF you send.
+                Pass True to automatically unsave the sent animation. Defaults to False.
 
             parse_mode (``str``, *optional*):
                 Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
@@ -171,10 +176,24 @@ class SendAnimation(BaseClient):
                 else:
                     for i in r.updates:
                         if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                            return pyrogram.Message._parse(
+                            message = pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats}
                             )
+
+                            if unsave:
+                                document = message.animation or message.document
+                                document_id = utils.get_input_media_from_file_id(document.file_id).id
+
+                                self.send(
+                                    functions.messages.SaveGif(
+                                        id=document_id,
+                                        unsave=True
+                                    )
+                                )
+
+                            return message
+
         except BaseClient.StopTransmission:
             return None
