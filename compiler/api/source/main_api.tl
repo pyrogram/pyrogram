@@ -1357,3 +1357,6 @@ folders.editPeerFolders#6847d0ab folder_peers:Vector<InputFolderPeer> = Updates;
 folders.deleteFolder#1c295881 folder_id:int = Updates;
 
 // LAYER 100
+
+// Ports
+channels.exportInvite#c7560885 channel:InputChannel = ExportedChatInvite;
