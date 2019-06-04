@@ -45,36 +45,37 @@ arrives:
 
     app.run()
 
-Let's examine these four new pieces. First one: a callback function we defined which accepts two arguments -
-*(client, message)*. This will be the function that gets executed every time a new message arrives and Pyrogram will
-call that function by passing the client instance and the new message instance as argument.
+#.  Let's examine these four new pieces. First one: a callback function we defined which accepts two arguments -
+    *(client, message)*. This will be the function that gets executed every time a new message arrives and Pyrogram will
+    call that function by passing the client instance and the new message instance as argument.
 
-.. code-block:: python
+    .. code-block:: python
 
-    def my_function(client, message):
-        print(message)
+        def my_function(client, message):
+            print(message)
 
-Second one: the :class:`~pyrogram.MessageHandler`. This object tells Pyrogram the function we defined above must only
-handle updates that are in form of a :class:`~pyrogram.Message`:
+#.  Second one: the :class:`~pyrogram.MessageHandler`. This object tells Pyrogram the function we defined above must
+    only handle updates that are in form of a :class:`~pyrogram.Message`:
 
-.. code-block:: python
+    .. code-block:: python
 
-    my_handler = MessageHandler(my_function)
+        my_handler = MessageHandler(my_function)
 
-Third: the method :meth:`~pyrogram.Client.add_handler`. This method is used to actually register the handler and let
-Pyrogram know it needs to be taken into consideration when new updates arrive and the internal dispatching phase begins.
+#.  Third: the method :meth:`~pyrogram.Client.add_handler`. This method is used to actually register the handler and let
+    Pyrogram know it needs to be taken into consideration when new updates arrive and the internal dispatching phase
+    begins.
 
-.. code-block:: python
+    .. code-block:: python
 
-    app.add_handler(my_handler)
+        app.add_handler(my_handler)
 
-Last one, the :meth:`~pyrogram.Client.run` method. What this does is simply call :meth:`~pyrogram.Client.start` and a
-special method :meth:`~pyrogram.Client.idle` that keeps your main scripts alive until you press ``CTRL+C``; the client
-will be automatically stopped after that.
+#.  Last one, the :meth:`~pyrogram.Client.run` method. What this does is simply call :meth:`~pyrogram.Client.start` and
+    a special method :meth:`~pyrogram.Client.idle` that keeps your main scripts alive until you press ``CTRL+C``; the
+    client will be automatically stopped after that.
 
-.. code-block:: python
+    .. code-block:: python
 
-    app.run()
+        app.run()
 
 Using Decorators
 ----------------

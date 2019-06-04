@@ -122,7 +122,8 @@ Meta
     :hidden:
     :caption: Topic Guides
 
-    topics/filters
+    topics/use-filters
+    topics/create-filters
     topics/more-on-updates
     topics/config-file
     topics/smart-plugins
@@ -134,6 +135,7 @@ Meta
     topics/proxy
     topics/bots-interaction
     topics/mtproto-vs-botapi
+    topics/debugging
     topics/test-servers
     topics/advanced-usage
     topics/voice-calls
