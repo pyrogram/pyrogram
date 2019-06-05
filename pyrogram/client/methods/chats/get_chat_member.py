@@ -37,8 +37,8 @@ class GetChatMember(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
 
             user_id (``int`` | ``str``)::
-                Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                Unique identifier (int) or username (str) of the target user.
+                For you yourself you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
