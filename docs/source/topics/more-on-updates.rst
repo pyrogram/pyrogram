@@ -2,7 +2,7 @@ More on Updates
 ===============
 
 Here we'll show some advanced usages when working with :doc:`update handlers <../start/updates>` and
-:doc:`filters <filters>`.
+:doc:`filters <use-filters>`.
 
 Handler Groups
 --------------

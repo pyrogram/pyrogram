@@ -83,10 +83,10 @@ Meta
 
     - :doc:`Pyrogram FAQ <faq>`: Answers to common Pyrogram questions.
     - :doc:`Pyrogram Glossary <glossary>`: List of words with brief explanations.
-    - :doc:`Release Notes <releases>`: Release notes for Pyrogram releases.
     - :doc:`Powered by Pyrogram <powered-by>`: Collection of Pyrogram Projects.
     - :doc:`Support Pyrogram <support-pyrogram>`: Ways to show your appreciation.
     - :doc:`About the License <license>`: Information about the Project license.
+    - :doc:`Release Notes <releases/index>`: Release notes for Pyrogram releases.
 
 .. toctree::
     :hidden:
@@ -146,10 +146,10 @@ Meta
 
     faq
     glossary
-    releases
     powered-by
     support-pyrogram
     license
+    releases/index
 
 .. toctree::
     :hidden:
