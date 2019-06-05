@@ -19,11 +19,11 @@
 import pyrogram
 
 from pyrogram.api import types
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 from pyrogram.client.types.user_and_chats import User
 
 
-class GameHighScore(PyrogramType):
+class GameHighScore(Object):
     """One row of the high scores table for a game.
 
     Parameters:

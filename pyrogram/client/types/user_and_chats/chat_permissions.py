@@ -19,10 +19,10 @@
 from typing import Union
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ChatPermissions(PyrogramType):
+class ChatPermissions(Object):
     """A chat default permissions and a single member permissions within a chat.
 
     Some permissions make sense depending on the context: default chat permissions, restricted/kicked member or

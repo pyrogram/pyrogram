@@ -21,12 +21,12 @@ from typing import List, Union
 import pyrogram
 from pyrogram.api import types
 from .message import Message
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 from ..user_and_chats import Chat
 
 
-class Messages(PyrogramType, Update):
+class Messages(Object, Update):
     """Contains a chat's messages.
 
     Parameters:

@@ -21,11 +21,11 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats.user import User
 
 
-class ChatPreview(PyrogramType):
+class ChatPreview(Object):
     """A chat preview.
 
     Parameters:

@@ -21,11 +21,11 @@ from typing import List, Union
 import pyrogram
 from pyrogram.api import types
 from .poll_option import PollOption
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 
 
-class Poll(PyrogramType, Update):
+class Poll(Object, Update):
     """A Poll.
 
     Parameters:

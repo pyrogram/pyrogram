@@ -155,6 +155,14 @@ things:
   chats).
 - The chat id argument you passed is in form of a string; you have to convert it into an integer with ``int(chat_id)``.
 
+UnicodeEncodeError: '<encoding>' codec can't encode …
+-----------------------------------------------------
+
+Where ``<encoding>`` might be *ascii*, *cp932*, *charmap* or anything else other than **utf-8**. This error usually
+shows up when you try to print something and has very little to do with Pyrogram itself as it is strictly related to
+your own terminal. To fix it, either find a way to change the encoding settings of your terminal to UTF-8 or switch to a
+better one.
+
 My verification code expires immediately!
 -----------------------------------------
 
@@ -179,8 +187,20 @@ Having said that, here's a list of what Telegram definitely doesn't like:
 - Spam, sending unsolicited messages or adding people to unwanted groups and channels.
 - Virtual/VoIP and cheap real numbers, because they are relatively easy to get and likely used for spam/flood.
 
-However, you might be right, and your account was deactivated/limited without any reason. This could happen because of
-mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at
+And here's a good explanation of how, probably, the system works:
+
+.. raw:: html
+
+    <script
+        async src="https://telegram.org/js/telegram-widget.js?5"
+        data-telegram-post="PyrogramChat/69424"
+        data-width="100%">
+    </script>
+
+.. centered:: Join the discussion at `@PyrogramChat <https://t.me/pyrogramchat>`_
+
+However, you might be right, and your account was deactivated/limited without any good reason. This could happen because
+of mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at
 recover@telegram.org, contact `@smstelegram`_ on Twitter or use `this form`_.
 
 Are there any secret easter eggs?

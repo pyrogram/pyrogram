@@ -24,7 +24,7 @@ from io import BytesIO
 from os import urandom
 
 from pyrogram.api import functions, types
-from pyrogram.api.core import Object, Long, Int
+from pyrogram.api.core import TLObject, Long, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
 from .internals import MsgId
@@ -44,7 +44,7 @@ class Auth:
         self.connection = None
 
     @staticmethod
-    def pack(data: Object) -> bytes:
+    def pack(data: TLObject) -> bytes:
         return (
             bytes(8)
             + Long(MsgId())
@@ -55,9 +55,9 @@ class Auth:
     @staticmethod
     def unpack(b: BytesIO):
         b.seek(20)  # Skip auth_key_id (8), message_id (8) and message_length (4)
-        return Object.read(b)
+        return TLObject.read(b)
 
-    async def send(self, data: Object):
+    async def send(self, data: TLObject):
         data = self.pack(data)
         await self.connection.send(data)
         response = BytesIO(await self.connection.recv())
@@ -159,7 +159,7 @@ class Auth:
                 answer_with_hash = AES.ige256_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
                 answer = answer_with_hash[20:]
 
-                server_dh_inner_data = Object.read(BytesIO(answer))
+                server_dh_inner_data = TLObject.read(BytesIO(answer))
 
                 log.debug("Done decrypting answer")
 

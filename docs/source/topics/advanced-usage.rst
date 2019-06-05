@@ -122,7 +122,7 @@ For example, given the ID *123456789*, here's how Pyrogram can tell entities apa
 
     - ``+ID`` User: *123456789*
     - ``-ID`` Chat: *-123456789*
-    - ``-100ID`` Channel (and Supergroup): *-100123456789*
+    - ``-100ID`` Channel or Supergroup: *-100123456789*
 
 So, every time you take a raw ID, make sure to translate it into the correct ID when you want to use it with an
 high-level method.

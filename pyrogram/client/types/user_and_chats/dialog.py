@@ -19,11 +19,11 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats import Chat
 
 
-class Dialog(PyrogramType):
+class Dialog(Object):
     """A user's dialog.
 
     Parameters:

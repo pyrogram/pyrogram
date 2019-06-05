@@ -18,10 +18,10 @@
 
 from io import BytesIO
 
-from ..object import Object
+from ..tl_object import TLObject
 
 
-class Null(Object):
+class Null(TLObject):
     ID = 0x56730bcc
 
     @staticmethod

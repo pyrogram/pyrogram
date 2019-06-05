@@ -19,11 +19,11 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats.user import User
 
 
-class MessageEntity(PyrogramType):
+class MessageEntity(Object):
     """One special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 

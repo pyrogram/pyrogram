@@ -22,11 +22,11 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class VideoNote(PyrogramType):
+class VideoNote(Object):
     """A video note.
 
     Parameters:

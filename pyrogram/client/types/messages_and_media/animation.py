@@ -22,11 +22,11 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Animation(PyrogramType):
+class Animation(Object):
     """An animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
     Parameters:

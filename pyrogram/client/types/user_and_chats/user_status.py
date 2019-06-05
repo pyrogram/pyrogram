@@ -19,11 +19,11 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 
 
-class UserStatus(PyrogramType, Update):
+class UserStatus(Object, Update):
     """A User status (Last Seen privacy).
 
     .. note::

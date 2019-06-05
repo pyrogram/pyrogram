@@ -37,7 +37,7 @@ from signal import signal, SIGINT, SIGTERM, SIGABRT
 from typing import Union, List
 
 from pyrogram.api import functions, types
-from pyrogram.api.core import Object
+from pyrogram.api.core import TLObject
 from pyrogram.client.handlers import DisconnectHandler
 from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
@@ -1003,7 +1003,7 @@ class Client(Methods, BaseClient):
         log.info("UpdatesWorkerTask stopped")
 
     async def send(self,
-                   data: Object,
+                   data: TLObject,
                    retries: int = Session.MAX_RETRIES,
                    timeout: float = Session.WAIT_TIMEOUT):
         """Send raw Telegram queries.

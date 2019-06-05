@@ -20,11 +20,11 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Voice(PyrogramType):
+class Voice(Object):
     """A voice note.
 
     Parameters:

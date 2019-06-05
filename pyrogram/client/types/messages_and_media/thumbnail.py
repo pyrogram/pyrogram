@@ -23,10 +23,10 @@ import pyrogram
 from pyrogram.api import types
 from pyrogram.client.ext.utils import encode
 from .stripped_thumbnail import StrippedThumbnail
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Thumbnail(PyrogramType):
+class Thumbnail(Object):
     """One size of a photo or a file/sticker thumbnail.
 
     Parameters:

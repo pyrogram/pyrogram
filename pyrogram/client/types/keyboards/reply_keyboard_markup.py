@@ -21,10 +21,10 @@ from typing import List, Union
 from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
 from . import KeyboardButton
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ReplyKeyboardMarkup(PyrogramType):
+class ReplyKeyboardMarkup(Object):
     """A custom keyboard with reply options.
 
     Parameters:

@@ -23,7 +23,12 @@ from json import dumps
 import pyrogram
 
 
-class PyrogramType:
+class Meta(type, metaclass=type("", (type,), {"__str__": lambda _: "~hi"})):
+    def __str__(self):
+        return "<class 'pyrogram.{}'>".format(self.__name__)
+
+
+class Object(metaclass=Meta):
     __slots__ = ["_client"]
 
     def __init__(self, client: "pyrogram.BaseClient" = None):
@@ -32,35 +37,26 @@ class PyrogramType:
         if self._client is None:
             del self._client
 
-    def __eq__(self, other: "PyrogramType") -> bool:
-        for attr in self.__slots__:
-            try:
-                if getattr(self, attr) != getattr(other, attr):
-                    return False
-            except AttributeError:
-                return False
+    @staticmethod
+    def default(obj: "Object"):
+        if isinstance(obj, bytes):
+            return repr(obj)
 
-        return True
+        return OrderedDict(
+            [("_", "pyrogram." + obj.__class__.__name__)]
+            + [
+                (attr, "*" * len(getattr(obj, attr)))
+                if attr == "phone_number"
+                else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
+                if attr.endswith("date")
+                else (attr, getattr(obj, attr))
+                for attr in obj.__slots__
+                if getattr(obj, attr) is not None
+            ]
+        )
 
     def __str__(self) -> str:
-        def default(obj: PyrogramType):
-            try:
-                return OrderedDict(
-                    [("_", "pyrogram." + obj.__class__.__name__)]
-                    + [
-                        (attr, "*" * len(getattr(obj, attr)))
-                        if attr == "phone_number"
-                        else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
-                        if attr.endswith("date")
-                        else (attr, getattr(obj, attr))
-                        for attr in obj.__slots__
-                        if getattr(obj, attr) is not None
-                    ]
-                )
-            except AttributeError:
-                return repr(obj)
-
-        return dumps(self, indent=4, default=default, ensure_ascii=False)
+        return dumps(self, indent=4, default=Object.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
         return "pyrogram.{}({})".format(
@@ -72,5 +68,18 @@ class PyrogramType:
             )
         )
 
+    def __eq__(self, other: "Object") -> bool:
+        for attr in self.__slots__:
+            try:
+                if getattr(self, attr) != getattr(other, attr):
+                    return False
+            except AttributeError:
+                return False
+
+        return True
+
     def __getitem__(self, item):
         return getattr(self, item)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)

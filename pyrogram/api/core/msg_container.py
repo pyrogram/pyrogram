@@ -19,11 +19,11 @@
 from io import BytesIO
 
 from .message import Message
-from .object import Object
+from .tl_object import TLObject
 from .primitives import Int
 
 
-class MsgContainer(Object):
+class MsgContainer(TLObject):
     ID = 0x73f1f8dc
 
     __slots__ = ["messages"]

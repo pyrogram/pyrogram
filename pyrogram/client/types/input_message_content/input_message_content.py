@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 """- :obj:`InputLocationMessageContent`
     - :obj:`InputVenueMessageContent`
     - :obj:`InputContactMessageContent`"""
 
 
-class InputMessageContent(PyrogramType):
+class InputMessageContent(Object):
     """Content of a message to be sent as a result of an inline query.
 
     Pyrogram currently supports the following 4 types:

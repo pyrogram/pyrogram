@@ -20,10 +20,10 @@ from typing import List
 
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
 from . import InlineKeyboardButton
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class InlineKeyboardMarkup(PyrogramType):
+class InlineKeyboardMarkup(Object):
     """An inline keyboard that appears right next to the message it belongs to.
 
     Parameters:

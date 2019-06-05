@@ -26,10 +26,10 @@ import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types
 from pyrogram.api.all import layer
-from pyrogram.api.core import Object, MsgContainer, Int, Long, FutureSalt, FutureSalts
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
+from pyrogram.api.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
 from pyrogram.connection import Connection
 from pyrogram.crypto import MTProto
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -126,7 +126,8 @@ class Session:
                         timeout=self.START_TIMEOUT
                     )).new_server_salt
                 )
-                self.current_salt = (await self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT)).salts[0]
+                self.current_salt = \
+                    (await self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT)).salts[0]
 
                 self.next_salt_task = asyncio.ensure_future(self.next_salt())
 
@@ -350,7 +351,7 @@ class Session:
 
         log.info("RecvTask stopped")
 
-    async def _send(self, data: Object, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
+    async def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
@@ -391,7 +392,7 @@ class Session:
             else:
                 return result
 
-    async def send(self, data: Object, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
+    async def send(self, data: TLObject, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
         try:
             await asyncio.wait_for(self.is_connected.wait(), self.WAIT_TIMEOUT)
         except asyncio.TimeoutError:

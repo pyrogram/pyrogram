@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import ReplyKeyboardForceReply
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ForceReply(PyrogramType):
+class ForceReply(Object):
     """Object used to force clients to show a reply interface.
 
     Upon receiving a message with this object, Telegram clients will display a reply interface to the user.

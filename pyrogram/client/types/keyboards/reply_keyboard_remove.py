@@ -17,10 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import ReplyKeyboardHide
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ReplyKeyboardRemove(PyrogramType):
+class ReplyKeyboardRemove(Object):
     """Object used to tell clients to remove a bot keyboard.
 
     Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display

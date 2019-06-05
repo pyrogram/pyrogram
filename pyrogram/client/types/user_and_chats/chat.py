@@ -22,10 +22,10 @@ import pyrogram
 from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Chat(PyrogramType):
+class Chat(Object):
     """A chat.
 
     Parameters:

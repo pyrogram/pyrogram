@@ -18,10 +18,10 @@
 
 from pyrogram.api.types import KeyboardButton as RawKeyboardButton
 from pyrogram.api.types import KeyboardButtonRequestPhone, KeyboardButtonRequestGeoLocation
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class KeyboardButton(PyrogramType):
+class KeyboardButton(Object):
     """One button of the reply keyboard.
     For simple text buttons String can be used instead of this object to specify text of the button.
     Optional fields are mutually exclusive.
