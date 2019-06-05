@@ -33,11 +33,17 @@ class Syncer:
     INTERVAL = 20
 
     clients = {}
-    event = asyncio.Event()
-    lock = asyncio.Lock()
+    event = None
+    lock = None
 
     @classmethod
     async def add(cls, client):
+        if cls.event is None:
+            cls.event = asyncio.Event()
+
+        if cls.lock is None:
+            cls.lock = asyncio.Lock()
+
         with await cls.lock:
             cls.sync(client)
 
