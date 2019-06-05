@@ -1555,7 +1555,7 @@ class Client(Methods, BaseClient):
                        is_big: bool,
                        progress: callable,
                        progress_args: tuple = ()) -> str:
-        with await self.media_sessions_lock:
+        async with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
@@ -1670,7 +1670,7 @@ class Client(Methods, BaseClient):
                         )
 
             elif isinstance(r, types.upload.FileCdnRedirect):
-                with await self.media_sessions_lock:
+                async with self.media_sessions_lock:
                     cdn_session = self.media_sessions.get(r.dc_id, None)
 
                     if cdn_session is None:

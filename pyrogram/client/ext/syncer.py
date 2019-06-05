@@ -44,7 +44,7 @@ class Syncer:
         if cls.lock is None:
             cls.lock = asyncio.Lock()
 
-        with await cls.lock:
+        async with cls.lock:
             cls.sync(client)
 
             cls.clients[id(client)] = client
@@ -54,7 +54,7 @@ class Syncer:
 
     @classmethod
     async def remove(cls, client):
-        with await cls.lock:
+        async with cls.lock:
             cls.sync(client)
 
             del cls.clients[id(client)]
@@ -77,7 +77,7 @@ class Syncer:
             try:
                 await asyncio.wait_for(cls.event.wait(), cls.INTERVAL)
             except asyncio.TimeoutError:
-                with await cls.lock:
+                async with cls.lock:
                     for client in cls.clients.values():
                         cls.sync(client)
             else:

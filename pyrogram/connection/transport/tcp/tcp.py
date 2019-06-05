@@ -92,7 +92,7 @@ class TCP:
                 self.socket.close()
 
     async def send(self, data: bytes):
-        with await self.lock:
+        async with self.lock:
             self.writer.write(data)
             await self.writer.drain()
 
