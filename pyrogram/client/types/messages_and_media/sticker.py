@@ -59,14 +59,14 @@ class Sticker(Object):
         set_name (``str``, *optional*):
             Name of the sticker set to which the sticker belongs.
 
-        thumbnails (List of :obj:`Thumbnail`, *optional*):
+        thumbs (List of :obj:`Thumbnail`, *optional*):
             Sticker thumbnails in the .webp or .jpg format.
     """
 
     # TODO: Add mask position
 
     __slots__ = [
-        "file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name", "thumbnails"
+        "file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name", "thumbs"
     ]
 
     def __init__(
@@ -82,7 +82,7 @@ class Sticker(Object):
         date: int = None,
         emoji: str = None,
         set_name: str = None,
-        thumbnails: List[Thumbnail] = None
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
@@ -95,7 +95,7 @@ class Sticker(Object):
         self.height = height
         self.emoji = emoji
         self.set_name = set_name,
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
         # self.mask_position = mask_position
 
     @staticmethod
@@ -143,6 +143,6 @@ class Sticker(Object):
             mime_type=sticker.mime_type,
             file_name=file_name,
             date=sticker.date,
-            thumbnails=Thumbnail._parse(client, sticker),
+            thumbs=Thumbnail._parse(client, sticker),
             client=client
         )

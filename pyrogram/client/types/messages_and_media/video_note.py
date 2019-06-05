@@ -48,11 +48,11 @@ class VideoNote(Object):
         date (``int``, *optional*):
             Date the video note was sent in Unix time.
 
-        thumbnails (List of :obj:`Thumbnail`, *optional*):
+        thumbs (List of :obj:`Thumbnail`, *optional*):
             Video thumbnails.
     """
 
-    __slots__ = ["file_id", "mime_type", "file_size", "date", "length", "duration", "thumbnails"]
+    __slots__ = ["file_id", "mime_type", "file_size", "date", "length", "duration", "thumbs"]
 
     def __init__(
         self,
@@ -61,7 +61,7 @@ class VideoNote(Object):
         file_id: str,
         length: int,
         duration: int,
-        thumbnails: List[Thumbnail] = None,
+        thumbs: List[Thumbnail] = None,
         mime_type: str = None,
         file_size: int = None,
         date: int = None
@@ -74,7 +74,7 @@ class VideoNote(Object):
         self.date = date
         self.length = length
         self.duration = duration
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
@@ -93,6 +93,6 @@ class VideoNote(Object):
             file_size=video_note.size,
             mime_type=video_note.mime_type,
             date=video_note.date,
-            thumbnails=Thumbnail._parse(client, video_note),
+            thumbs=Thumbnail._parse(client, video_note),
             client=client
         )
