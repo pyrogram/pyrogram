@@ -65,7 +65,9 @@ class InlineQueryResultGif(Object):
     """
     ID = 0xb0700001
 
-    def __init__(self, type: str, id: str, gif_url: str, thumb_url: str, gif_width: int = None, gif_height: int = None, gif_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, gif_url: str, thumb_url: str, gif_width: int = None, gif_height: int = None,
+                 gif_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None,
+                 reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.gif_url = gif_url  # string

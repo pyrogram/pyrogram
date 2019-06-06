@@ -62,7 +62,9 @@ class InlineQueryResultContact(Object):
     """
     ID = 0xb0700009
 
-    def __init__(self, type: str, id: str, phone_number: str, first_name: str, last_name: str = None, vcard: str = None, reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
+    def __init__(self, type: str, id: str, phone_number: str, first_name: str, last_name: str = None, vcard: str = None,
+                 reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None,
+                 thumb_height: int = None):
         self.type = type  # string
         self.id = id  # string
         self.phone_number = phone_number  # string

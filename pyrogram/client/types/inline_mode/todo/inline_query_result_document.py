@@ -68,7 +68,9 @@ class InlineQueryResultDocument(Object):
     """
     ID = 0xb0700006
 
-    def __init__(self, type: str, id: str, title: str, document_url: str, mime_type: str, caption: str = None, parse_mode: str = None, description: str = None, reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
+    def __init__(self, type: str, id: str, title: str, document_url: str, mime_type: str, caption: str = None,
+                 parse_mode: str = None, description: str = None, reply_markup=None, input_message_content=None,
+                 thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
         self.type = type  # string
         self.id = id  # string
         self.title = title  # string

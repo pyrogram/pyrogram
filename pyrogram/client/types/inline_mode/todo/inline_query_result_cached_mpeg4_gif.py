@@ -53,7 +53,8 @@ class InlineQueryResultCachedMpeg4Gif(Object):
     """
     ID = 0xb0700013
 
-    def __init__(self, type: str, id: str, mpeg4_file_id: str, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, mpeg4_file_id: str, title: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.mpeg4_file_id = mpeg4_file_id  # string

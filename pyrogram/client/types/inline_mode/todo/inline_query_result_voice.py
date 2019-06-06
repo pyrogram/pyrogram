@@ -56,7 +56,8 @@ class InlineQueryResultVoice(Object):
     """
     ID = 0xb0700005
 
-    def __init__(self, type: str, id: str, voice_url: str, title: str, caption: str = None, parse_mode: str = None, voice_duration: int = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, voice_url: str, title: str, caption: str = None, parse_mode: str = None,
+                 voice_duration: int = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.voice_url = voice_url  # string

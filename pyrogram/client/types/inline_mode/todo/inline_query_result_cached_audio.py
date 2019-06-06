@@ -20,10 +20,10 @@ import binascii
 import struct
 
 from pyrogram.api import types
-from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import utils, BaseClient
 from pyrogram.client.style import HTML, Markdown
 from pyrogram.client.types.object import Object
+from pyrogram.errors import FileIdInvalid
 
 
 class InlineQueryResultCachedAudio(Object):

@@ -68,7 +68,9 @@ class InlineQueryResultVenue(Object):
     """
     ID = 0xb0700008
 
-    def __init__(self, type: str, id: str, latitude: float, longitude: float, title: str, address: str, foursquare_id: str = None, foursquare_type: str = None, reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
+    def __init__(self, type: str, id: str, latitude: float, longitude: float, title: str, address: str,
+                 foursquare_id: str = None, foursquare_type: str = None, reply_markup=None, input_message_content=None,
+                 thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
         self.type = type  # string
         self.id = id  # string
         self.latitude = latitude  # double

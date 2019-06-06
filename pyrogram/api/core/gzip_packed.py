@@ -19,8 +19,8 @@
 from gzip import compress, decompress
 from io import BytesIO
 
-from .tl_object import TLObject
 from .primitives import Int, Bytes
+from .tl_object import TLObject
 
 
 class GzipPacked(TLObject):

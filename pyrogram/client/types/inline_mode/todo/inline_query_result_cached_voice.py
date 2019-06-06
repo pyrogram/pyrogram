@@ -53,7 +53,8 @@ class InlineQueryResultCachedVoice(Object):
     """
     ID = 0xb0700017
 
-    def __init__(self, type: str, id: str, voice_file_id: str, title: str, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, voice_file_id: str, title: str, caption: str = None, parse_mode: str = None,
+                 reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.voice_file_id = voice_file_id  # string

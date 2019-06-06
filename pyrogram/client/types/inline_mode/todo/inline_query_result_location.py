@@ -62,7 +62,9 @@ class InlineQueryResultLocation(Object):
     """
     ID = 0xb0700007
 
-    def __init__(self, type: str, id: str, latitude: float, longitude: float, title: str, live_period: int = None, reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
+    def __init__(self, type: str, id: str, latitude: float, longitude: float, title: str, live_period: int = None,
+                 reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None,
+                 thumb_height: int = None):
         self.type = type  # string
         self.id = id  # string
         self.latitude = latitude  # double

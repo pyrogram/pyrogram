@@ -56,7 +56,8 @@ class InlineQueryResultCachedVideo(Object):
     """
     ID = 0xb0700016
 
-    def __init__(self, type: str, id: str, video_file_id: str, title: str, description: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, video_file_id: str, title: str, description: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.video_file_id = video_file_id  # string

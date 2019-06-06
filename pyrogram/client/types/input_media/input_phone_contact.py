@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
+
 from pyrogram.session.internals import MsgId
 from ..object import Object
 

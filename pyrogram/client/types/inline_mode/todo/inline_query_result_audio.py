@@ -58,7 +58,8 @@ class InlineQueryResultAudio(Object):
 
     """
 
-    def __init__(self, type: str, id: str, audio_url: str, title: str, caption: str = None, parse_mode: str = None, performer: str = None, audio_duration: int = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, audio_url: str, title: str, caption: str = None, parse_mode: str = None,
+                 performer: str = None, audio_duration: int = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.audio_url = audio_url  # string
