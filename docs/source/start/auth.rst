@@ -39,8 +39,8 @@ keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
 .. note::
 
-    The code above does nothing except asking for credentials and keeping the client online, hit ``CTRL+C`` now to stop
-    your application and keep reading.
+    The code above does nothing except asking for credentials and keeping the client online, hit :guilabel:`CTRL+C` now
+    to stop your application and keep reading.
 
 Bot Authorization
 -----------------

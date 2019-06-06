@@ -42,7 +42,7 @@ from ..object import Object
 class InlineQueryResult(Object):
     """One result of an inline query.
 
-    Pyrogram currently supports results of the following 20 types:
+    Pyrogram currently supports results of the following types:
 
     - :obj:`InlineQueryResultArticle`
     """

@@ -288,9 +288,9 @@ def start():
         sorted_args = sort_args(c.args)
 
         arguments = (
-                ", "
-                + ("*, " if c.args else "")
-                + (", ".join([get_argument_type(i) for i in sorted_args if i != ("flags", "#")]) if c.args else "")
+            ", "
+            + ("*, " if c.args else "")
+            + (", ".join([get_argument_type(i) for i in sorted_args if i != ("flags", "#")]) if c.args else "")
         )
 
         fields = "\n        ".join(

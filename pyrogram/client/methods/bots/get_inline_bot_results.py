@@ -19,8 +19,8 @@
 from typing import Union
 
 from pyrogram.api import functions, types
-from pyrogram.errors import UnknownError
 from pyrogram.client.ext import BaseClient
+from pyrogram.errors import UnknownError
 
 
 class GetInlineBotResults(BaseClient):

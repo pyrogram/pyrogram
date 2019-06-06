@@ -50,8 +50,8 @@ How the Documentation is Organized
 ----------------------------------
 
 Contents are organized into self-contained topics and can be all accessed from the sidebar, or by following them in
-order using the Next button at the end of each page. Here below you can, instead, find a list of the most relevant
-pages for a quick access.
+order using the :guilabel:`Next` button at the end of each page. Here below you can, instead, find a list of the most
+relevant pages for a quick access.
 
 First Steps
 -----------

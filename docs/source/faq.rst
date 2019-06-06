@@ -197,7 +197,7 @@ And here's a good explanation of how, probably, the system works:
         data-width="100%">
     </script>
 
-.. centered:: Join the discussion at `@PyrogramChat <https://t.me/pyrogramchat>`_
+.. centered:: Join the discussion at `@Pyrogram <https://t.me/pyrogram>`_
 
 However, you might be right, and your account was deactivated/limited without any good reason. This could happen because
 of mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at

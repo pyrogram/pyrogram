@@ -45,11 +45,11 @@ class Photo(Object):
         date (``int``):
             Date the photo was sent in Unix time.
 
-        thumbnails (List of :obj:`Thumbnail`):
-            Available sizes of this photo.
+        thumbs (List of :obj:`Thumbnail`, *optional*):
+            Available thumbnails of this photo.
     """
 
-    __slots__ = ["file_id", "width", "height", "file_size", "date", "thumbnails"]
+    __slots__ = ["file_id", "width", "height", "file_size", "date", "thumbs"]
 
     def __init__(
         self,
@@ -60,7 +60,7 @@ class Photo(Object):
         height: int,
         file_size: int,
         date: int,
-        thumbnails: List[Thumbnail]
+        thumbs: List[Thumbnail]
     ):
         super().__init__(client)
 
@@ -69,7 +69,7 @@ class Photo(Object):
         self.height = height
         self.file_size = file_size
         self.date = date
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(client, photo: types.Photo) -> "Photo":
@@ -89,6 +89,6 @@ class Photo(Object):
                 height=big.h,
                 file_size=big.size,
                 date=photo.date,
-                thumbnails=Thumbnail._parse(client, photo),
+                thumbs=Thumbnail._parse(client, photo),
                 client=client
             )

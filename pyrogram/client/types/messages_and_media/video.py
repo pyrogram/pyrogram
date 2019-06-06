@@ -57,13 +57,13 @@ class Video(Object):
         date (``int``, *optional*):
             Date the video was sent in Unix time.
 
-        thumbnails (List of :obj:`Thumbnail`, *optional*):
+        thumbs (List of :obj:`Thumbnail`, *optional*):
             Video thumbnails.
     """
 
     __slots__ = [
         "file_id", "width", "height", "duration", "file_name", "mime_type", "supports_streaming", "file_size", "date",
-        "thumbnails"
+        "thumbs"
     ]
 
     def __init__(
@@ -79,7 +79,7 @@ class Video(Object):
         supports_streaming: bool = None,
         file_size: int = None,
         date: int = None,
-        thumbnails: List[Thumbnail] = None
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
@@ -92,7 +92,7 @@ class Video(Object):
         self.supports_streaming = supports_streaming
         self.file_size = file_size
         self.date = date
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(
@@ -119,6 +119,6 @@ class Video(Object):
             supports_streaming=video_attributes.supports_streaming,
             file_size=video.size,
             date=video.date,
-            thumbnails=Thumbnail._parse(client, video),
+            thumbs=Thumbnail._parse(client, video),
             client=client
         )

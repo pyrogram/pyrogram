@@ -26,7 +26,7 @@ from ..object import Object
 class InputMessageContent(Object):
     """Content of a message to be sent as a result of an inline query.
 
-    Pyrogram currently supports the following 4 types:
+    Pyrogram currently supports the following types:
 
     - :obj:`InputTextMessageContent`
     """

@@ -19,8 +19,8 @@
 from io import BytesIO
 
 from . import FutureSalt
-from .tl_object import TLObject
 from .primitives import Int, Long
+from .tl_object import TLObject
 
 
 class FutureSalts(TLObject):

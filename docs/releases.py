@@ -58,7 +58,7 @@ with open(DEST / "index.rst", "w") as index:
         date = datetime.strptime(
             release["published_at"],
             "%Y-%m-%dT%H:%M:%SZ"
-        ).strftime("%b %d, %Y - %H:%M:%S (UTC)")
+        ).strftime("%b %d, %Y")
 
         body = pypandoc.convert_text(
             release["body"].replace(r"\r\n", "\n"),
@@ -67,12 +67,17 @@ with open(DEST / "index.rst", "w") as index:
             extra_args=["--wrap=none"]
         )
 
+        tarball_url = release["tarball_url"]
+        zipball_url = release["zipball_url"]
+
         index.write("- :doc:`{} <{}>`\n".format(title, tag))
         tags.append(tag)
 
         with open(DEST / "{}.rst".format(tag), "w") as page:
             page.write("Pyrogram " + tag + "\n" + "=" * (len(tag) + 9) + "\n\n")
-            page.write("--- *Released on " + str(date) + "*\n\n")
+            page.write("\t\tReleased on " + str(date) + "\n\n")
+            page.write("- :download:`Source Code (zip) <{}>`\n".format(zipball_url))
+            page.write("- :download:`Source Code (tar.gz) <{}>`\n\n".format(tarball_url))
             page.write(name + "\n" + "-" * len(name) + "\n\n")
             page.write(body + "\n\n")
 

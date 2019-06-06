@@ -54,12 +54,12 @@ class Audio(Object):
         title (``str``, *optional*):
             Title of the audio as defined by sender or by audio tags.
 
-        thumbnails (List of :obj:`Thumbnail`, *optional*):
+        thumbs (List of :obj:`Thumbnail`, *optional*):
             Thumbnails of the music file album cover.
     """
 
     __slots__ = [
-        "file_id", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title", "thumbnails"
+        "file_id", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title", "thumbs"
     ]
 
     def __init__(
@@ -74,7 +74,7 @@ class Audio(Object):
         date: int = None,
         performer: str = None,
         title: str = None,
-        thumbnails: List[Thumbnail] = None,
+        thumbs: List[Thumbnail] = None,
     ):
         super().__init__(client)
 
@@ -86,7 +86,7 @@ class Audio(Object):
         self.duration = duration
         self.performer = performer
         self.title = title
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(
@@ -112,6 +112,6 @@ class Audio(Object):
             file_size=audio.size,
             file_name=file_name,
             date=audio.date,
-            thumbnails=Thumbnail._parse(client, audio),
+            thumbs=Thumbnail._parse(client, audio),
             client=client
         )

@@ -65,7 +65,9 @@ class InlineQueryResultMpeg4Gif(Object):
     """
     ID = 0xb0700002
 
-    def __init__(self, type: str, id: str, mpeg4_url: str, thumb_url: str, mpeg4_width: int = None, mpeg4_height: int = None, mpeg4_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, mpeg4_url: str, thumb_url: str, mpeg4_width: int = None,
+                 mpeg4_height: int = None, mpeg4_duration: int = None, title: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.mpeg4_url = mpeg4_url  # string

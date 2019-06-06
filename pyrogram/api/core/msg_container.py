@@ -19,8 +19,8 @@
 from io import BytesIO
 
 from .message import Message
-from .tl_object import TLObject
 from .primitives import Int
+from .tl_object import TLObject
 
 
 class MsgContainer(TLObject):

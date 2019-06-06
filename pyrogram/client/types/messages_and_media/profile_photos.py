@@ -23,35 +23,35 @@ from .photo import Photo
 from ..object import Object
 
 
-class Photos(Object):
+class ProfilePhotos(Object):
     """Contains a user's profile pictures.
 
     Parameters:
         total_count (``int``):
             Total number of profile pictures the target user has.
 
-        photos (List of :obj:`Photo`):
+        profile_photos (List of :obj:`Photo`):
             Requested profile pictures.
     """
 
-    __slots__ = ["total_count", "photos"]
+    __slots__ = ["total_count", "profile_photos"]
 
     def __init__(
         self,
         *,
         client: "pyrogram.BaseClient" = None,
         total_count: int,
-        photos: List[Photo]
+        profile_photos: List[Photo]
     ):
         super().__init__(client)
 
         self.total_count = total_count
-        self.photos = photos
+        self.profile_photos = profile_photos
 
     @staticmethod
-    def _parse(client, photos) -> "Photos":
-        return Photos(
+    def _parse(client, photos) -> "ProfilePhotos":
+        return ProfilePhotos(
             total_count=getattr(photos, "count", len(photos.photos)),
-            photos=[Photo._parse(client, photo) for photo in photos.photos],
+            profile_photos=[Photo._parse(client, photo) for photo in photos.photos],
             client=client
         )

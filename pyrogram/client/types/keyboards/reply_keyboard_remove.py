@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import ReplyKeyboardHide
+
 from ..object import Object
 
 

@@ -63,18 +63,18 @@ class InlineQueryResultPhoto(Object):
     """
 
     def __init__(
-            self,
-            id: str,
-            photo_url: str,
-            thumb_url: str,
-            photo_width: int = 0,
-            photo_height: int = 0,
-            title: str = None,
-            description: str = None,
-            caption: str = "",
-            parse_mode: str = "",
-            reply_markup=None,
-            input_message_content=None
+        self,
+        id: str,
+        photo_url: str,
+        thumb_url: str,
+        photo_width: int = 0,
+        photo_height: int = 0,
+        title: str = None,
+        description: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        reply_markup=None,
+        input_message_content=None
     ):
         self.id = id  # string
         self.photo_url = photo_url  # string

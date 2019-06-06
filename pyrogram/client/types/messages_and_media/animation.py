@@ -54,11 +54,11 @@ class Animation(Object):
         date (``int``, *optional*):
             Date the animation was sent in Unix time.
 
-        thumbnails (List of :obj:`Thumbnail`, *optional*):
+        thumbs (List of :obj:`Thumbnail`, *optional*):
             Animation thumbnails.
     """
 
-    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "duration", "thumbnails"]
+    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "duration", "thumbs"]
 
     def __init__(
         self,
@@ -72,7 +72,7 @@ class Animation(Object):
         mime_type: str = None,
         file_size: int = None,
         date: int = None,
-        thumbnails: List[Thumbnail] = None,
+        thumbs: List[Thumbnail] = None,
     ):
         super().__init__(client)
 
@@ -84,7 +84,7 @@ class Animation(Object):
         self.width = width
         self.height = height
         self.duration = duration
-        self.thumbnails = thumbnails
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(
@@ -110,6 +110,6 @@ class Animation(Object):
             file_size=animation.size,
             file_name=file_name,
             date=animation.date,
-            thumbnails=Thumbnail._parse(client, animation),
+            thumbs=Thumbnail._parse(client, animation),
             client=client
         )
