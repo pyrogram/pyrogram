@@ -29,7 +29,7 @@ class GetProfilePhotos(BaseClient):
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 100
-    ) -> "pyrogram.Photos":
+    ) -> "pyrogram.ProfilePhotos":
         """Get a list of profile pictures for a user or a chat.
 
         Parameters:
@@ -47,7 +47,7 @@ class GetProfilePhotos(BaseClient):
                 Values between 1—100 are accepted. Defaults to 100.
 
         Returns:
-            :obj:`Photos`: On success, an object containing a list of the profile photos is returned.
+            :obj:`ProfilePhotos`: On success, an object containing a list of the profile photos is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -55,7 +55,7 @@ class GetProfilePhotos(BaseClient):
         peer_id = self.resolve_peer(chat_id)
 
         if isinstance(peer_id, types.InputPeerUser):
-            return pyrogram.Photos._parse(
+            return pyrogram.ProfilePhotos._parse(
                 self,
                 self.send(
                     functions.photos.GetUserPhotos(
@@ -86,7 +86,7 @@ class GetProfilePhotos(BaseClient):
                 )
             )
 
-            return pyrogram.Photos(
+            return pyrogram.ProfilePhotos(
                 total_count=new_chat_photos.total_count,
-                photos=[m.new_chat_photo for m in new_chat_photos.messages][:limit]
+                profile_photos=[m.new_chat_photo for m in new_chat_photos.messages][:limit]
             )

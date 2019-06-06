@@ -28,10 +28,10 @@ from .messages import Messages
 from .photo import Photo
 from .poll import Poll
 from .poll_option import PollOption
+from .profile_photos import ProfilePhotos
 from .sticker import Sticker
 from .stripped_thumbnail import StrippedThumbnail
 from .thumbnail import Thumbnail
-from .photos import Photos
 from .venue import Venue
 from .video import Video
 from .video_note import VideoNote
@@ -39,5 +39,6 @@ from .voice import Voice
 
 __all__ = [
     "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Messages", "Photo",
-    "Thumbnail", "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Photos", "Venue", "Video", "VideoNote", "Voice"
+    "Thumbnail", "StrippedThumbnail", "Poll", "PollOption", "Sticker", "ProfilePhotos", "Venue", "Video", "VideoNote",
+    "Voice"
 ]
