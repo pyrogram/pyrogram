@@ -72,7 +72,7 @@ class Animation(Object):
         mime_type: str = None,
         file_size: int = None,
         date: int = None,
-        thumbs: List[Thumbnail] = None,
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 

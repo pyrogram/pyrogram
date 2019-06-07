@@ -884,7 +884,7 @@ class Client(Methods, BaseClient):
                 temp_file_path = await self.get_file(
                     media_type=data.media_type,
                     dc_id=data.dc_id,
-                    file_id=data.file_id,
+                    document_id=data.document_id,
                     access_hash=data.access_hash,
                     thumb_size=data.thumb_size,
                     peer_id=data.peer_id,
@@ -1544,7 +1544,7 @@ class Client(Methods, BaseClient):
 
     async def get_file(self, media_type: int,
                        dc_id: int,
-                       file_id: int,
+                       document_id: int,
                        access_hash: int,
                        thumb_size: str,
                        peer_id: int,
@@ -1604,21 +1604,21 @@ class Client(Methods, BaseClient):
             )
         elif media_type in (0, 2):
             location = types.InputPhotoFileLocation(
-                id=file_id,
+                id=document_id,
                 access_hash=access_hash,
                 file_reference=b"",
                 thumb_size=thumb_size
             )
         elif media_type == 14:
             location = types.InputDocumentFileLocation(
-                id=file_id,
+                id=document_id,
                 access_hash=access_hash,
                 file_reference=b"",
                 thumb_size=thumb_size
             )
         else:
             location = types.InputDocumentFileLocation(
-                id=file_id,
+                id=document_id,
                 access_hash=access_hash,
                 file_reference=b"",
                 thumb_size=""

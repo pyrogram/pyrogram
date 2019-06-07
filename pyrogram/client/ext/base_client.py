@@ -20,7 +20,6 @@ import asyncio
 import os
 import platform
 import re
-from collections import namedtuple
 
 from pyrogram import __version__
 from ..style import Markdown, HTML
@@ -82,10 +81,6 @@ class BaseClient:
                 extensions_to_mime_types[ext] = mime_type
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
-
-    fields = ("media_type", "dc_id", "file_id", "access_hash", "thumb_size", "peer_id", "volume_id", "local_id",
-              "is_big", "file_size", "mime_type", "file_name", "date")
-    FileData = namedtuple("FileData", fields, defaults=(None,) * len(fields))
 
     def __init__(self):
         self.is_bot = None

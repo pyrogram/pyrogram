@@ -16,34 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import pyrogram
-from pyrogram.api import types
-from ..object import Object
 
-
-class StrippedThumbnail(Object):
-    """A stripped thumbnail
-
-    Parameters:
-        data (``bytes``):
-            Thumbnail data
-    """
-
-    __slots__ = ["data"]
-
+class FileData:
     def __init__(
-        self,
-        *,
-        client: "pyrogram.BaseClient" = None,
-        data: bytes
+        self, *, media_type: int = None, dc_id: int = None, document_id: int = None, access_hash: int = None,
+        thumb_size: str = None, peer_id: int = None, volume_id: int = None, local_id: int = None, is_big: bool = None,
+        file_size: int = None, mime_type: str = None, file_name: str = None, date: int = None
     ):
-        super().__init__(client)
-
-        self.data = data
-
-    @staticmethod
-    def _parse(client, stripped_thumbnail: types.PhotoStrippedSize) -> "StrippedThumbnail":
-        return StrippedThumbnail(
-            data=stripped_thumbnail.bytes,
-            client=client
-        )
+        self.media_type = media_type
+        self.dc_id = dc_id
+        self.document_id = document_id
+        self.access_hash = access_hash
+        self.thumb_size = thumb_size
+        self.peer_id = peer_id
+        self.volume_id = volume_id
+        self.local_id = local_id
+        self.is_big = is_big
+        self.file_size = file_size
+        self.mime_type = mime_type
+        self.file_name = file_name
+        self.date = date
