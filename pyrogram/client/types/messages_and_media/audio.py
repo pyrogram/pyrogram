@@ -74,7 +74,7 @@ class Audio(Object):
         date: int = None,
         performer: str = None,
         title: str = None,
-        thumbs: List[Thumbnail] = None,
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
