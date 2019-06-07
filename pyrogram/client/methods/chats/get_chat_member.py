@@ -47,26 +47,30 @@ class GetChatMember(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat_id = self.resolve_peer(chat_id)
-        user_id = self.resolve_peer(user_id)
+        chat = self.resolve_peer(chat_id)
+        user = self.resolve_peer(user_id)
 
-        if isinstance(chat_id, types.InputPeerChat):
+        if isinstance(chat, types.InputPeerChat):
             full_chat = self.send(
                 functions.messages.GetFullChat(
-                    chat_id=chat_id.chat_id
+                    chat_id=chat.chat_id
                 )
             )
 
             for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
-                if member.user.is_self:
-                    return member
+                if isinstance(user, types.InputPeerSelf):
+                    if member.user.is_self:
+                        return member
+                else:
+                    if member.user.id == user.user_id:
+                        return member
             else:
                 raise UserNotParticipant
-        elif isinstance(chat_id, types.InputPeerChannel):
+        elif isinstance(chat, types.InputPeerChannel):
             r = self.send(
                 functions.channels.GetParticipant(
-                    channel=chat_id,
-                    user_id=user_id
+                    channel=chat,
+                    user_id=user
                 )
             )
 
