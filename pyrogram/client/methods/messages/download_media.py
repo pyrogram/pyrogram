@@ -22,7 +22,7 @@ from threading import Event
 from typing import Union
 
 import pyrogram
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient, FileData, utils
 from pyrogram.errors import FileIdInvalid
 
 
@@ -110,7 +110,7 @@ class DownloadMedia(BaseClient):
             mime_type = getattr(media, "mime_type", None)
             date = getattr(media, "date", None)
 
-        data = self.FileData(
+        data = FileData(
             file_name=file_name,
             file_size=file_size,
             mime_type=mime_type,
@@ -118,7 +118,7 @@ class DownloadMedia(BaseClient):
         )
 
         def get_existing_attributes() -> dict:
-            return dict(filter(lambda x: x[1] is not None, data._asdict().items()))
+            return dict(filter(lambda x: x[1] is not None, data.__dict__.items()))
 
         try:
             decoded = utils.decode(file_id_str)
@@ -128,7 +128,7 @@ class DownloadMedia(BaseClient):
                 unpacked = struct.unpack("<iiqqib", decoded)
                 dc_id, peer_id, volume_id, local_id, is_big = unpacked[1:]
 
-                data = self.FileData(
+                data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
@@ -139,25 +139,25 @@ class DownloadMedia(BaseClient):
                 )
             elif media_type in (0, 2, 14):
                 unpacked = struct.unpack("<iiqqc", decoded)
-                dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+                dc_id, document_id, access_hash, thumb_size = unpacked[1:]
 
-                data = self.FileData(
+                data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
-                    file_id=file_id,
+                    document_id=document_id,
                     access_hash=access_hash,
                     thumb_size=thumb_size.decode()
                 )
             elif media_type in (3, 4, 5, 8, 9, 10, 13):
                 unpacked = struct.unpack("<iiqq", decoded)
-                dc_id, file_id, access_hash = unpacked[1:]
+                dc_id, document_id, access_hash = unpacked[1:]
 
-                data = self.FileData(
+                data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
-                    file_id=file_id,
+                    document_id=document_id,
                     access_hash=access_hash
                 )
             else:
