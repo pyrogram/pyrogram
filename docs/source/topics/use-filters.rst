@@ -25,7 +25,8 @@ Let's start right away with a simple example:
         def my_handler(client, message):
             print(message)
 
--   or, without decorators. Here filters are passed as the second argument of the handler constructor:
+-   or, without decorators. Here filters are passed as the second argument of the handler constructor; the first is the
+    callback function itself:
 
     .. code-block:: python
         :emphasize-lines: 8

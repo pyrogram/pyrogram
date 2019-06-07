@@ -29,7 +29,7 @@ For example, take these two handlers:
         print("Just Text")
 
 Here, ``just_text`` is never executed because ``text_or_sticker``, which has been registered first, already handles
-texts (``Filters.text`` is shared and conflicting). To enable it, register the function using a different group:
+texts (``Filters.text`` is shared and conflicting). To enable it, register the handler using a different group:
 
 .. code-block:: python
 
@@ -37,7 +37,7 @@ texts (``Filters.text`` is shared and conflicting). To enable it, register the f
     def just_text(client, message):
         print("Just Text")
 
-Or, if you want ``just_text`` to be fired *before* ``text_or_sticker`` (note ``-1``, which is less than ``0``):
+Or, if you want ``just_text`` to be executed *before* ``text_or_sticker`` (note ``-1``, which is less than ``0``):
 
 .. code-block:: python
 
