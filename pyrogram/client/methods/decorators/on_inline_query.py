@@ -32,10 +32,10 @@ class OnInlineQuery(BaseClient):
     ) -> callable:
         """Decorator for handling inline queries.
 
-        This does the same thing as :meth:`~Client.add_handler` using the :obj:`InlineQueryHandler`.
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.InlineQueryHandler`.
 
         Parameters:
-            filters (:obj:`Filters <pyrogram.Filters>`):
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of inline queries to be passed
                 in your function.
 

@@ -32,10 +32,11 @@ class OnDeletedMessages(BaseClient):
     ) -> callable:
         """Decorator for handling deleted messages.
 
-        This does the same thing as :meth:`~Client.add_handler` using the :obj:`DeletedMessagesHandler`.
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
+        :obj:`~pyrogram.DeletedMessagesHandler`.
 
         Parameters:
-            filters (:obj:`Filters`):
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of messages to be passed
                 in your function.
 
