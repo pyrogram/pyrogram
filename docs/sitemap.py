@@ -27,6 +27,7 @@ dirs = {
     "start": ("weekly", 0.9),
     "api": ("weekly", 0.8),
     "topics": ("weekly", 0.8),
+    "releases": ("weekly", 0.8),
     "telegram": ("weekly", 0.6)
 }
 
