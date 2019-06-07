@@ -32,10 +32,10 @@ class OnPoll(BaseClient):
     ) -> callable:
         """Decorator for handling poll updates.
 
-        This does the same thing as :meth:`~Client.add_handler` using the :obj:`PollHandler`.
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.PollHandler`.
 
         Parameters:
-            filters (:obj:`Filters`):
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of polls to be passed
                 in your function.
 

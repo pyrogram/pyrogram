@@ -103,9 +103,9 @@ sending messages with IDs only thanks to cached access hashes.
 There are three different InputPeer types, one for each kind of Telegram entity.
 Whenever an InputPeer is needed you must pass one of these:
 
-    - :class:`~pyrogram.api.types.InputPeerUser` - Users
-    - :class:`~pyrogram.api.types.InputPeerChat` -  Basic Chats
-    - :class:`~pyrogram.api.types.InputPeerChannel` - Either Channels or Supergroups
+- :class:`~pyrogram.api.types.InputPeerUser` - Users
+- :class:`~pyrogram.api.types.InputPeerChat` -  Basic Chats
+- :class:`~pyrogram.api.types.InputPeerChannel` - Either Channels or Supergroups
 
 But you don't necessarily have to manually instantiate each object because, luckily for you, Pyrogram already provides
 :meth:`~pyrogram.Client.resolve_peer` as a convenience utility method that returns the correct InputPeer
@@ -120,9 +120,9 @@ kind of ID.
 
 For example, given the ID *123456789*, here's how Pyrogram can tell entities apart:
 
-    - ``+ID`` User: *123456789*
-    - ``-ID`` Chat: *-123456789*
-    - ``-100ID`` Channel or Supergroup: *-100123456789*
+- ``+ID`` User: *123456789*
+- ``-ID`` Chat: *-123456789*
+- ``-100ID`` Channel or Supergroup: *-100123456789*
 
 So, every time you take a raw ID, make sure to translate it into the correct ID when you want to use it with an
 high-level method.

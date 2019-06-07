@@ -13,9 +13,10 @@ Custom Filters
 --------------
 
 An example to demonstrate how custom filters work is to show how to create and use one for the
-:class:`~pyrogram.CallbackQueryHandler`. Note that callback queries updates are only received by bots; create and
-:doc:`authorize your bot <../start/auth>`, then send a message with an inline keyboard to yourself. This allows you to
-test your filter by pressing the inline button:
+:class:`~pyrogram.CallbackQueryHandler`. Note that callback queries updates are only received by bots as result of a
+user pressing an inline button attached to the bot's message; create and :doc:`authorize your bot <../start/auth>`,
+then send a message with an inline keyboard to yourself. This allows you to test your filter by pressing the inline
+button:
 
 .. code-block:: python
 
@@ -25,7 +26,7 @@ test your filter by pressing the inline button:
         "username",  # Change this to your username or id
         "Pyrogram's custom filter test",
         reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Press me", b"pyrogram")]]
+            [[InlineKeyboardButton("Press me", "pyrogram")]]
         )
     )
 
@@ -36,13 +37,13 @@ For this basic filter we will be using only the first two parameters of :meth:`~
 
 The code below creates a simple filter for hardcoded, static callback data. This filter will only allow callback queries
 containing "Pyrogram" as data, that is, the function *func* you pass returns True in case the callback query data
-equals to ``b"Pyrogram"``.
+equals to ``"Pyrogram"``.
 
 .. code-block:: python
 
     static_data = Filters.create(
         name="StaticdData",
-        func=lambda flt, callback_query: callback_query.data == b"Pyrogram"
+        func=lambda flt, query: query.data == "Pyrogram"
     )
 
 The ``lambda`` operator in python is used to create small anonymous functions and is perfect for this example, the same
@@ -50,8 +51,8 @@ could be achieved with a normal function, but we don't really need it as it make
 
 .. code-block:: python
 
-    def func(flt, callback_query):
-        return callback_query.data == b"Pyrogram"
+    def func(flt, query):
+        return query.data == "Pyrogram"
 
     static_data = Filters.create(
         name="StaticData",
@@ -63,8 +64,8 @@ The filter usage remains the same:
 .. code-block:: python
 
     @app.on_callback_query(static_data)
-    def pyrogram_data(client, callback_query):
-        client.answer_callback_query(callback_query.id, "it works!")
+    def pyrogram_data(_, query):
+        query.answer("it works!")
 
 Filters with Arguments
 ----------------------
@@ -79,14 +80,14 @@ This is how a dynamic custom filter looks like:
     def dynamic_data(data):
         return Filters.create(
             name="DynamicData",
-            func=lambda flt, callback_query: flt.data == callback_query.data,
-            data=data  # "data" kwarg is accessed with "filter.data"
+            func=lambda flt, query: flt.data == query.data,
+            data=data  # "data" kwarg is accessed with "flt.data"
         )
 
 And its usage:
 
 .. code-block:: python
 
-    @app.on_callback_query(dynamic_data(b"Pyrogram"))
-    def pyrogram_data(client, callback_query):
-        client.answer_callback_query(callback_query.id, "it works!")
+    @app.on_callback_query(dynamic_data("Pyrogram"))
+    def pyrogram_data(_, query):
+        query.answer("it works!")

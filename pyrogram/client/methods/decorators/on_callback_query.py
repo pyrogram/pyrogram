@@ -32,10 +32,11 @@ class OnCallbackQuery(BaseClient):
     ) -> callable:
         """Decorator for handling callback queries.
 
-        This does the same thing as :meth:`~Client.add_handler` using the :obj:`CallbackQueryHandler`.
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
+        :obj:`~pyrogram.CallbackQueryHandler`.
 
         Parameters:
-            filters (:obj:`Filters`):
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of callback queries to be passed
                 in your function.
 

@@ -1,14 +1,14 @@
 Configuration File
 ==================
 
-As already mentioned in previous sections, Pyrogram can be configured by the use of an INI file.
-This page explains how this file is structured in Pyrogram, how to use it and why.
+As already mentioned in previous pages, Pyrogram can be configured by the use of an INI file.
+This page explains how this file is structured, how to use it and why.
 
 Introduction
 ------------
 
 The idea behind using a configuration file is to help keeping your code free of private settings information such as
-the API Key and Proxy without having you to even deal with how to load such settings. The configuration file, usually
+the API Key and Proxy, without having you to even deal with how to load such settings. The configuration file, usually
 referred as ``config.ini`` file, is automatically loaded from the root of your working directory; all you need to do is
 fill in the necessary parts.
 

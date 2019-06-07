@@ -31,10 +31,10 @@ class OnUserStatus(BaseClient):
         group: int = 0
     ) -> callable:
         """Decorator for handling user status updates.
-        This does the same thing as :meth:`~Client.add_handler` using the :obj:`UserStatusHandler`.
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.UserStatusHandler`.
 
         Parameters:
-            filters (:obj:`Filters`):
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.
 
             group (``int``, *optional*):
