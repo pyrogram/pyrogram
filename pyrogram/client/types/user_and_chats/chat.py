@@ -257,3 +257,49 @@ class Chat(Object):
             return Chat._parse_user_chat(client, chat)
         else:
             return Chat._parse_channel_chat(client, chat)
+
+    def archive(self):
+        """Bound method *archive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.archive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.archive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.archive_chats(self.id)
+
+    def unarchive(self):
+        """Bound method *unarchive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unarchive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.unarchive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unarchive_chats(self.id)
