@@ -40,7 +40,6 @@ Messages & Media
     :columns: 5
 
     - :class:`Message`
-    - :class:`Messages`
     - :class:`MessageEntity`
     - :class:`Photo`
     - :class:`Thumbnail`
@@ -125,7 +124,6 @@ Details
 
 ..  Messages & Media
 .. autoclass:: Message()
-.. autoclass:: Messages()
 .. autoclass:: MessageEntity()
 .. autoclass:: Photo()
 .. autoclass:: Thumbnail()

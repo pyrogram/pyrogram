@@ -18,12 +18,12 @@
 
 import logging
 import time
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class GetMessages(BaseClient):
         message_ids: Union[int, Iterable[int]] = None,
         reply_to_message_ids: Union[int, Iterable[int]] = None,
         replies: int = 1
-    ) -> Union["pyrogram.Message", "pyrogram.Messages"]:
+    ) -> Union["pyrogram.Message", List["pyrogram.Message"]]:
         """Get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
@@ -60,9 +60,9 @@ class GetMessages(BaseClient):
                 Defaults to 1.
 
         Returns:
-            :obj:`Message` | :obj:`Messages`: In case *message_ids* was an integer, the single requested message is
-            returned, otherwise, in case *message_ids* was an iterable, the returned value will be an object containing
-            a list of messages, even if such iterable contained just a single element.
+            :obj:`Message` | List of :obj:`Message`: In case *message_ids* was an integer, the single requested message is
+            returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of messages,
+            even if such iterable contained just a single element.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -99,6 +99,6 @@ class GetMessages(BaseClient):
             else:
                 break
 
-        messages = pyrogram.Messages._parse(self, r, replies=replies)
+        messages = utils.parse_messages(self, r, replies=replies)
 
-        return messages if is_iterable else messages.messages[0]
+        return messages if is_iterable else messages[0]

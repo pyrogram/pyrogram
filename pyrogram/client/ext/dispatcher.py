@@ -21,6 +21,7 @@ import threading
 from collections import OrderedDict
 from queue import Queue
 from threading import Thread
+from . import utils
 
 import pyrogram
 from pyrogram.api import types
@@ -68,7 +69,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.Message._parse(self.client, upd.message, usr, cht), MessageHandler),
 
             Dispatcher.DELETE_MESSAGES_UPDATES:
-                lambda upd, usr, cht: (pyrogram.Messages._parse_deleted(self.client, upd), DeletedMessagesHandler),
+                lambda upd, usr, cht: (utils.parse_deleted_messages(self.client, upd), DeletedMessagesHandler),
 
             Dispatcher.CALLBACK_QUERY_UPDATES:
                 lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),

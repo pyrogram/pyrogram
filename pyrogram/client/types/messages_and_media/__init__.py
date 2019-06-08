@@ -24,7 +24,6 @@ from .game import Game
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
-from .messages import Messages
 from .photo import Photo
 from .poll import Poll
 from .poll_option import PollOption
@@ -37,6 +36,6 @@ from .video_note import VideoNote
 from .voice import Voice
 
 __all__ = [
-    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Messages", "Photo",
-    "Thumbnail", "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice"
+    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
+    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice"
 ]

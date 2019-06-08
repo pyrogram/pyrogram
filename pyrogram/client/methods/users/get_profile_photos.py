@@ -20,6 +20,7 @@ from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
 
@@ -66,7 +67,7 @@ class GetProfilePhotos(BaseClient):
 
             return pyrogram.List(pyrogram.Photo._parse(self, photo) for photo in r.photos)
         else:
-            new_chat_photos = pyrogram.Messages._parse(
+            r = utils.parse_messages(
                 self,
                 self.send(
                     functions.messages.Search(
@@ -85,4 +86,4 @@ class GetProfilePhotos(BaseClient):
                 )
             )
 
-            return pyrogram.List([m.new_chat_photo for m in new_chat_photos.messages][:limit])
+            return pyrogram.List([message.new_chat_photo for message in r][:limit])
