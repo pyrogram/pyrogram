@@ -104,6 +104,8 @@ Chats
     - :meth:`~Client.get_dialogs_count`
     - :meth:`~Client.restrict_chat`
     - :meth:`~Client.update_chat_username`
+    - :meth:`~Client.archive_chats`
+    - :meth:`~Client.unarchive_chats`
 
 Users
 ^^^^^
@@ -233,6 +235,8 @@ Details
 .. automethod:: Client.get_dialogs_count()
 .. automethod:: Client.restrict_chat()
 .. automethod:: Client.update_chat_username()
+.. automethod:: Client.archive_chats()
+.. automethod:: Client.unarchive_chats()
 
 ..  Users
 .. automethod:: Client.get_me()
