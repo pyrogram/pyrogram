@@ -26,6 +26,12 @@ class GetUserDC(BaseClient):
     def get_user_dc(self, user_id: Union[int, str]) -> Union[int, None]:
         """Get the assigned data center (DC) of a user.
 
+        .. note::
+
+            This information is approximate: it is based on where the user stores their profile pictures and does not by
+            any means tell you the user location. More info at
+            `FAQs <../faq#what-are-the-ip-addresses-of-telegram-data-centers>`_.
+
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

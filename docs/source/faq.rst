@@ -134,14 +134,23 @@ in a bunch of seconds:
     import logging
     logging.basicConfig(level=logging.INFO)
 
-Another way to confirm you aren't able to connect to Telegram is by pinging these IP addresses and see whether ping
-fails or not:
+Another way to confirm you aren't able to connect to Telegram is by pinging the IP addresses below and see whether ping
+fails or not.
 
-- DC1: ``149.154.175.50``
-- DC2: ``149.154.167.51``
-- DC3: ``149.154.175.100``
-- DC4: ``149.154.167.91``
-- DC5: ``91.108.56.149``
+What are the IP addresses of Telegram Data Centers?
+---------------------------------------------------
+
+Telegram is currently composed by a decentralized, multi-DC infrastructure (each of which can work independently) spread
+in 5 different locations. However, two of the less busy DCs have been lately dismissed and their IP addresses are now
+kept as aliases.
+
+- **DC1** - MIA, Miami FL, USA: ``149.154.175.50``
+- **DC2** - AMS, Amsterdam, NL: ``149.154.167.51``
+- **DC3*** - MIA, Miami FL, USA: ``149.154.175.100``
+- **DC4*** - AMS, Amsterdam, NL: ``149.154.167.91``
+- **DC5** - SIN, Singapore, SG: ``91.108.56.149``
+
+***** Alias DC
 
 I keep getting PEER_ID_INVALID error!
 -------------------------------------------
