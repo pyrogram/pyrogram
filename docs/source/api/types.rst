@@ -57,8 +57,8 @@ Messages & Media
     - :class:`Poll`
     - :class:`PollOption`
 
-Keyboards
-^^^^^^^^^
+Bots & Keyboards
+^^^^^^^^^^^^^^^^
 
 .. hlist::
     :columns: 4
@@ -140,7 +140,7 @@ Details
 .. autoclass:: Poll()
 .. autoclass:: PollOption()
 
-..  Keyboards
+..  Bots & Keyboards
 .. autoclass:: ReplyKeyboardMarkup()
 .. autoclass:: KeyboardButton()
 .. autoclass:: ReplyKeyboardRemove()
