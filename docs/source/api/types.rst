@@ -32,7 +32,6 @@ Users & Chats
     - :class:`ChatMember`
     - :class:`ChatPermissions`
     - :class:`Dialog`
-    - :class:`Dialogs`
 
 Messages & Media
 ^^^^^^^^^^^^^^^^
@@ -124,7 +123,6 @@ Details
 .. autoclass:: ChatMember()
 .. autoclass:: ChatPermissions()
 .. autoclass:: Dialog()
-.. autoclass:: Dialogs()
 
 ..  Messages & Media
 .. autoclass:: Message()

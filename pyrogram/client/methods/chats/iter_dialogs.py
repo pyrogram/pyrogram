@@ -55,7 +55,7 @@ class IterDialogs(BaseClient):
 
         pinned_dialogs = self.get_dialogs(
             pinned_only=True
-        ).dialogs
+        )
 
         for dialog in pinned_dialogs:
             yield dialog
@@ -69,7 +69,7 @@ class IterDialogs(BaseClient):
             dialogs = self.get_dialogs(
                 offset_date=offset_date,
                 limit=limit
-            ).dialogs
+            )
 
             if not dialogs:
                 return
