@@ -63,7 +63,7 @@ class IterProfilePhotos(BaseClient):
                 chat_id=chat_id,
                 offset=offset,
                 limit=limit
-            ).photos
+            )
 
             if not photos:
                 return
