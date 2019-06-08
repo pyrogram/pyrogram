@@ -30,7 +30,6 @@ Users & Chats
     - :class:`ChatPreview`
     - :class:`ChatPhoto`
     - :class:`ChatMember`
-    - :class:`ChatMembers`
     - :class:`ChatPermissions`
     - :class:`Dialog`
     - :class:`Dialogs`
@@ -123,7 +122,6 @@ Details
 .. autoclass:: ChatPreview()
 .. autoclass:: ChatPhoto()
 .. autoclass:: ChatMember()
-.. autoclass:: ChatMembers()
 .. autoclass:: ChatPermissions()
 .. autoclass:: Dialog()
 .. autoclass:: Dialogs()

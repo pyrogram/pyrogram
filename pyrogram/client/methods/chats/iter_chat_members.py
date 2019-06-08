@@ -106,7 +106,7 @@ class IterChatMembers(BaseClient):
                     limit=limit,
                     query=q,
                     filter=filter
-                ).chat_members
+                )
 
                 if not chat_members:
                     break

@@ -18,7 +18,6 @@
 
 from .chat import Chat
 from .chat_member import ChatMember
-from .chat_members import ChatMembers
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from .chat_preview import ChatPreview
@@ -28,6 +27,5 @@ from .user import User
 from .user_status import UserStatus
 
 __all__ = [
-    "Chat", "ChatMember", "ChatMembers", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "Dialogs", "User",
-    "UserStatus"
+    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "Dialogs", "User", "UserStatus"
 ]
