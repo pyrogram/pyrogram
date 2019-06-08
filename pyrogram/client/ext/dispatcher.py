@@ -21,10 +21,10 @@ import threading
 from collections import OrderedDict
 from queue import Queue
 from threading import Thread
-from . import utils
 
 import pyrogram
 from pyrogram.api import types
+from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
