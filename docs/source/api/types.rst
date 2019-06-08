@@ -71,7 +71,6 @@ Keyboards
     - :class:`ForceReply`
     - :class:`CallbackQuery`
     - :class:`GameHighScore`
-    - :class:`GameHighScores`
     - :class:`CallbackGame`
 
 Input Media
@@ -150,7 +149,6 @@ Details
 .. autoclass:: ForceReply()
 .. autoclass:: CallbackQuery()
 .. autoclass:: GameHighScore()
-.. autoclass:: GameHighScores()
 .. autoclass:: CallbackGame()
 
 ..  Input Media
