@@ -661,7 +661,7 @@ class Message(Object, Update):
         reply_to_message_id: int = None,
         reply_markup=None
     ) -> "Message":
-        """Bound method *reply* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -748,7 +748,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_animation* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_animation* :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -882,7 +882,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_audio* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_audio* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1010,7 +1010,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_cached_media* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_cached_media* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1077,7 +1077,7 @@ class Message(Object, Update):
         )
 
     def reply_chat_action(self, action: str) -> bool:
-        """Bound method *reply_chat_action* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_chat_action* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1130,7 +1130,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_contact* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_contact* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1217,7 +1217,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_document* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_document* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1331,7 +1331,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_game* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_game* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1396,7 +1396,7 @@ class Message(Object, Update):
         reply_to_message_id: int = None,
         hide_via: bool = None
     ) -> "Message":
-        """Bound method *reply_inline_bot_result* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_inline_bot_result* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1470,7 +1470,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_location* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_location* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1538,7 +1538,7 @@ class Message(Object, Update):
         disable_notification: bool = None,
         reply_to_message_id: int = None
     ) -> "Message":
-        """Bound method *reply_media_group* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_media_group* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1610,7 +1610,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_photo* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_photo* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1724,7 +1724,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_poll* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_poll* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1800,7 +1800,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_sticker* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_sticker* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -1903,7 +1903,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *reply_venue* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_venue* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2005,7 +2005,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_video* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_video* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2140,7 +2140,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_video_note* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_video_note* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2258,7 +2258,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> "Message":
-        """Bound method *reply_voice* :obj:`Message <pyrogram.Message>`.
+        """Bound method *reply_voice* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2368,7 +2368,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *edit* :obj:`Message <pyrogram.Message>`.
+        """Bound method *edit* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2425,7 +2425,7 @@ class Message(Object, Update):
             "pyrogram.ForceReply"
         ] = None
     ) -> "Message":
-        """Bound method *edit_caption* :obj:`Message <pyrogram.Message>`.
+        """Bound method *edit_caption* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2468,7 +2468,7 @@ class Message(Object, Update):
         )
 
     def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
-        """Bound method *edit_media* :obj:`Message <pyrogram.Message>`.
+        """Bound method *edit_media* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2506,7 +2506,7 @@ class Message(Object, Update):
         )
 
     def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
-        """Bound method *edit_reply_markup* :obj:`Message <pyrogram.Message>`.
+        """Bound method *edit_reply_markup* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2547,7 +2547,7 @@ class Message(Object, Update):
         as_copy: bool = False,
         remove_caption: bool = False
     ) -> "Message":
-        """Bound method *forward* :obj:`Message <pyrogram.Message>`.
+        """Bound method *forward* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2690,7 +2690,7 @@ class Message(Object, Update):
             )
 
     def delete(self, revoke: bool = True):
-        """Bound method *delete* :obj:`Message <pyrogram.Message>`.
+        """Bound method *delete* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2726,7 +2726,7 @@ class Message(Object, Update):
         )
 
     def click(self, x: int or str, y: int = 0, quote: bool = None, timeout: int = 10):
-        """Bound method *click* :obj:`Message <pyrogram.Message>`.
+        """Bound method *click* of :obj:`Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:
 
@@ -2853,7 +2853,7 @@ class Message(Object, Update):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> str:
-        """Bound method *download* :obj:`Message <pyrogram.Message>`.
+        """Bound method *download* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2902,7 +2902,7 @@ class Message(Object, Update):
         )
 
     def pin(self, disable_notification: bool = None) -> "Message":
-        """Bound method *pin* :obj:`Message <pyrogram.Message>`.
+        """Bound method *pin* of :obj:`Message`.
 
         Use as a shortcut for:
 
