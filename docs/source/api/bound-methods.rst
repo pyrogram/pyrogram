@@ -68,6 +68,15 @@ Chat
     - :meth:`~Chat.archive`
     - :meth:`~Chat.unarchive`
 
+User
+^^^^
+
+.. hlist::
+    :columns: 2
+
+    - :meth:`~User.archive`
+    - :meth:`~User.unarchive`
+
 CallbackQuery
 ^^^^^^^^^^^^^
 
@@ -121,6 +130,10 @@ Details
 .. Chat
 .. automethod:: Chat.archive()
 .. automethod:: Chat.unarchive()
+
+.. User
+.. automethod:: User.archive()
+.. automethod:: User.unarchive()
 
 .. CallbackQuery
 .. automethod:: CallbackQuery.answer()

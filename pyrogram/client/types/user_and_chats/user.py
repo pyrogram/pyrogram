@@ -160,3 +160,49 @@ class User(Object):
             restriction_reason=user.restriction_reason,
             client=client
         )
+
+    def archive(self):
+        """Bound method *archive* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.archive_chats(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.archive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.archive_chats(self.id)
+
+    def unarchive(self):
+        """Bound method *unarchive* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unarchive_chats(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.unarchive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unarchive_chats(self.id)
