@@ -54,7 +54,7 @@ class GetProfilePhotos(BaseClient):
         """
         peer_id = self.resolve_peer(chat_id)
 
-        if isinstance(peer_id, types.InputPeerUser):
+        if isinstance(peer_id, (types.InputPeerUser, types.InputPeerSelf)):
             return pyrogram.ProfilePhotos._parse(
                 self,
                 self.send(
