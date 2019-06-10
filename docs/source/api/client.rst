@@ -13,4 +13,7 @@ This is the Client class. It exposes high-level methods for an easy access to th
     with app:
         app.send_message("me", "Hi!")
 
+Details
+-------
+
 .. autoclass:: pyrogram.Client()
