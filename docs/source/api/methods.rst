@@ -31,9 +31,6 @@ Utilities
     - :meth:`~Client.run`
     - :meth:`~Client.add_handler`
     - :meth:`~Client.remove_handler`
-    - :meth:`~Client.send`
-    - :meth:`~Client.resolve_peer`
-    - :meth:`~Client.save_file`
     - :meth:`~Client.stop_transmission`
 
 Messages
@@ -159,6 +156,16 @@ Bots
     - :meth:`~Client.set_game_score`
     - :meth:`~Client.get_game_high_scores`
 
+Advanced Usage (Raw API)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. hlist::
+    :columns: 4
+
+    - :meth:`~Client.send`
+    - :meth:`~Client.resolve_peer`
+    - :meth:`~Client.save_file`
+
 -----
 
 Details
@@ -172,9 +179,6 @@ Details
 .. automethod:: Client.run()
 .. automethod:: Client.add_handler()
 .. automethod:: Client.remove_handler()
-.. automethod:: Client.send()
-.. automethod:: Client.resolve_peer()
-.. automethod:: Client.save_file()
 .. automethod:: Client.stop_transmission()
 
 ..  Messages
@@ -269,3 +273,8 @@ Details
 .. automethod:: Client.send_game()
 .. automethod:: Client.set_game_score()
 .. automethod:: Client.get_game_high_scores()
+
+.. Advanced Usage
+.. automethod:: Client.send()
+.. automethod:: Client.resolve_peer()
+.. automethod:: Client.save_file()
