@@ -59,6 +59,24 @@ Message
     - :meth:`~Message.reply_video_note`
     - :meth:`~Message.reply_voice`
 
+Chat
+^^^^
+
+.. hlist::
+    :columns: 2
+
+    - :meth:`~Chat.archive`
+    - :meth:`~Chat.unarchive`
+
+User
+^^^^
+
+.. hlist::
+    :columns: 2
+
+    - :meth:`~User.archive`
+    - :meth:`~User.unarchive`
+
 CallbackQuery
 ^^^^^^^^^^^^^
 
@@ -108,6 +126,14 @@ Details
 .. automethod:: Message.reply_video()
 .. automethod:: Message.reply_video_note()
 .. automethod:: Message.reply_voice()
+
+.. Chat
+.. automethod:: Chat.archive()
+.. automethod:: Chat.unarchive()
+
+.. User
+.. automethod:: User.archive()
+.. automethod:: User.unarchive()
 
 .. CallbackQuery
 .. automethod:: CallbackQuery.answer()

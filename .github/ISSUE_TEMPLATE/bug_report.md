@@ -4,7 +4,7 @@ about: Create a bug report affecting the library
 labels: "bug"
 ---
 
-<!-- WARNING: Ignoring this template will lead to the issue being closed as incomplete -->
+<!-- WARNING: Ignoring this template could lead to the issue being closed as incomplete -->
 
 ## Checklist
 - [ ] I am sure the error is coming from Pyrogram's code and not elsewhere.
@@ -15,7 +15,7 @@ labels: "bug"
 A clear and concise description of the problem.
 
 ## Steps to Reproduce
-[A minimal, complete and verifiable example](https://stackoverflow.com/help/mcve).
+[A minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
 
 ## Traceback
 The full traceback (if applicable).

@@ -52,11 +52,11 @@ class User(Object):
             True, if this user has been restricted. Bots only.
             See *restriction_reason* for details.
 
-        is_support (``bool``):
-            True, if this user is part of the Telegram support team.
-
         is_scam (``bool``):
             True, if this user has been flagged for scam.
+
+        is_support (``bool``):
+            True, if this user is part of the Telegram support team.
 
         first_name (``str``):
             User's or bot's first name.
@@ -86,7 +86,7 @@ class User(Object):
 
     __slots__ = [
         "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "is_verified", "is_restricted",
-        "is_support", "is_scam", "first_name", "last_name", "status", "username", "language_code", "phone_number",
+        "is_scam", "is_support", "first_name", "last_name", "status", "username", "language_code", "phone_number",
         "photo", "restriction_reason"
     ]
 
@@ -102,8 +102,8 @@ class User(Object):
         is_bot: bool,
         is_verified: bool,
         is_restricted: bool,
-        is_support: bool,
         is_scam: bool,
+        is_support: bool,
         first_name: str,
         last_name: str = None,
         status: UserStatus = None,
@@ -123,8 +123,8 @@ class User(Object):
         self.is_bot = is_bot
         self.is_verified = is_verified
         self.is_restricted = is_restricted
-        self.is_support = is_support
         self.is_scam = is_scam
+        self.is_support = is_support
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
@@ -148,8 +148,8 @@ class User(Object):
             is_bot=user.bot,
             is_verified=user.verified,
             is_restricted=user.restricted,
-            is_support=user.support,
             is_scam=user.scam,
+            is_support=user.support,
             first_name=user.first_name,
             last_name=user.last_name,
             status=UserStatus._parse(client, user.status, user.id, user.bot),
@@ -160,3 +160,49 @@ class User(Object):
             restriction_reason=user.restriction_reason,
             client=client
         )
+
+    def archive(self):
+        """Bound method *archive* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.archive_chats(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.archive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.archive_chats(self.id)
+
+    def unarchive(self):
+        """Bound method *unarchive* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unarchive_chats(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.unarchive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unarchive_chats(self.id)

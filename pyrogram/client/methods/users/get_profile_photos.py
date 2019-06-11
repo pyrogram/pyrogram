@@ -55,7 +55,7 @@ class GetProfilePhotos(BaseClient):
         """
         peer_id = self.resolve_peer(chat_id)
 
-        if isinstance(peer_id, types.InputPeerUser):
+        if isinstance(peer_id, (types.InputPeerUser, types.InputPeerSelf)):
             r = self.send(
                 functions.photos.GetUserPhotos(
                     user_id=peer_id,
