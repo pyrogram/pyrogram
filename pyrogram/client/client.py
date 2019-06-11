@@ -849,7 +849,9 @@ class Client(Methods, BaseClient):
 
                 media_type_str = Client.MEDIA_TYPE_ID[data.media_type]
 
-                if not data.file_name:
+                file_name = file_name or data.file_name
+
+                if not file_name:
                     guessed_extension = self.guess_extension(data.mime_type)
 
                     if data.media_type in (0, 1, 2, 14):
