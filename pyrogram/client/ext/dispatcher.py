@@ -106,6 +106,7 @@ class Dispatcher:
             worker.join()
 
         self.workers_list.clear()
+        self.groups.clear()
 
     def add_handler(self, handler, group: int):
         if group not in self.groups:

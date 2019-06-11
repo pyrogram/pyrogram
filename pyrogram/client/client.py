@@ -1085,29 +1085,34 @@ class Client(Methods, BaseClient):
                 self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
         if self.plugins:
-            self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
-            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
-            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
+            self.plugins = {
+                "enabled": bool(self.plugins.get("enabled", True)),
+                "root": self.plugins.get("root", None),
+                "include": self.plugins.get("include", []),
+                "exclude": self.plugins.get("exclude", [])
+            }
         else:
             try:
                 section = parser["plugins"]
 
                 self.plugins = {
                     "enabled": section.getboolean("enabled", True),
-                    "root": section.get("root"),
-                    "include": section.get("include") or None,
-                    "exclude": section.get("exclude") or None
+                    "root": section.get("root", None),
+                    "include": section.get("include", []),
+                    "exclude": section.get("exclude", [])
                 }
-            except KeyError:
-                self.plugins = {}
 
-        if self.plugins:
-            for option in ["include", "exclude"]:
-                if self.plugins[option] is not None:
-                    self.plugins[option] = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in self.plugins[option].strip().split("\n")
-                    ]
+                include = self.plugins["include"]
+                exclude = self.plugins["exclude"]
+
+                if include:
+                    self.plugins["include"] = include.strip().split("\n")
+
+                if exclude:
+                    self.plugins["exclude"] = exclude.strip().split("\n")
+
+            except KeyError:
+                self.plugins = None
 
     def load_session(self):
         try:
@@ -1142,14 +1147,26 @@ class Client(Methods, BaseClient):
                     self.peers_by_phone[k] = peer
 
     def load_plugins(self):
-        if self.plugins.get("enabled", False):
-            root = self.plugins["root"]
-            include = self.plugins["include"]
-            exclude = self.plugins["exclude"]
+        if self.plugins:
+            plugins = self.plugins.copy()
+
+            for option in ["include", "exclude"]:
+                if plugins[option]:
+                    plugins[option] = [
+                        (i.split()[0], i.split()[1:] or None)
+                        for i in self.plugins[option]
+                    ]
+        else:
+            return
+
+        if plugins.get("enabled", False):
+            root = plugins["root"]
+            include = plugins["include"]
+            exclude = plugins["exclude"]
 
             count = 0
 
-            if include is None:
+            if not include:
                 for path in sorted(Path(root).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
                     module = import_module(module_path)
@@ -1206,7 +1223,7 @@ class Client(Methods, BaseClient):
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
-            if exclude is not None:
+            if exclude:
                 for path, handlers in exclude:
                     module_path = root + "." + path
                     warn_non_existent_functions = True
