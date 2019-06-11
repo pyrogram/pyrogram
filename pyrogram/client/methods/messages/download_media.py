@@ -86,6 +86,7 @@ class DownloadMedia(BaseClient):
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
 
+        media_file_name = None
         file_size = None
         mime_type = None
         date = None
@@ -105,13 +106,13 @@ class DownloadMedia(BaseClient):
             file_id_str = media
         else:
             file_id_str = media.file_id
-            file_name = getattr(media, "file_name", "")
+            media_file_name = getattr(media, "file_name", "")
             file_size = getattr(media, "file_size", None)
             mime_type = getattr(media, "mime_type", None)
             date = getattr(media, "date", None)
 
         data = FileData(
-            file_name=file_name,
+            file_name=media_file_name,
             file_size=file_size,
             mime_type=mime_type,
             date=date
