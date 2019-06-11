@@ -152,11 +152,26 @@ kept as aliases.
 
 ***** Alias DC
 
-I keep getting PEER_ID_INVALID error!
--------------------------------------------
+I want to migrate my account from DCX to DCY.
+---------------------------------------------
 
-The error in question is ``[400 PEER_ID_INVALID]``, and could mean several
-things:
+This question is often asked by people who find their account(s) always being connected to DC1 - USA (for example), but
+are connecting from a place far away (e.g DC4 - Europe), thus resulting in slower interactions when using the API
+because of the great physical distance between the user and its associated DC.
+
+When registering an account for the first time, is up to Telegram to decide which DC the new user is going to be created
+in, based on the phone number origin.
+
+Even though Telegram `documentations <https://core.telegram.org/api/datacenter#user-migration>`_ state the server might
+decide to automatically migrate a user in case of prolonged usages from a distant, unusual location and albeit this
+mechanism is also `confirmed <https://twitter.com/telegram/status/427131446655197184>`_ to exist by Telegram itself,
+it's currently not possible to have your account migrated, in any way, simply because the feature was once planned but
+not yet implemented.
+
+I keep getting PEER_ID_INVALID error!
+-------------------------------------
+
+The error in question is ``[400 PEER_ID_INVALID]``, and could mean several things:
 
 - The chat id you tried to use is simply wrong, double check it.
 - The chat id refers to a group or channel you are not a member of.
