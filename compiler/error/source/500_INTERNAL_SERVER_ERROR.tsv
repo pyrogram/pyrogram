@@ -7,6 +7,6 @@ HISTORY_GET_FAILED	Telegram is having internal problems. Please try again later
 REG_ID_GENERATE_FAILED	Telegram is having internal problems. Please try again later
 RANDOM_ID_DUPLICATE	Telegram is having internal problems. Please try again later
 WORKER_BUSY_TOO_LONG_RETRY	Telegram is having internal problems. Please try again later
-INTERDC_X_CALL_ERROR	Telegram is having internal problems. Please try again later
-INTERDC_X_CALL_RICH_ERROR	Telegram is having internal problems. Please try again later
+INTERDC_X_CALL_ERROR	Telegram is having internal problems at DC{x}. Please try again later
+INTERDC_X_CALL_RICH_ERROR	Telegram is having internal problems at DC{x}. Please try again later
 FOLDER_DEAC_AUTOFIX_ALL	Telegram is having internal problems. Please try again later
