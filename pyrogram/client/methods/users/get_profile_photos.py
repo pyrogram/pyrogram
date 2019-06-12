@@ -21,6 +21,7 @@ from typing import Union, List
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.client.ext import utils
+
 from ...ext import BaseClient
 
 
@@ -55,18 +56,7 @@ class GetProfilePhotos(BaseClient):
         """
         peer_id = self.resolve_peer(chat_id)
 
-        if isinstance(peer_id, (types.InputPeerUser, types.InputPeerSelf)):
-            r = self.send(
-                functions.photos.GetUserPhotos(
-                    user_id=peer_id,
-                    offset=offset,
-                    max_id=0,
-                    limit=limit
-                )
-            )
-
-            return pyrogram.List(pyrogram.Photo._parse(self, photo) for photo in r.photos)
-        else:
+        if isinstance(peer_id, types.InputPeerChannel):
             r = utils.parse_messages(
                 self,
                 self.send(
@@ -87,3 +77,14 @@ class GetProfilePhotos(BaseClient):
             )
 
             return pyrogram.List([message.new_chat_photo for message in r][:limit])
+        else:
+            r = self.send(
+                functions.photos.GetUserPhotos(
+                    user_id=peer_id,
+                    offset=offset,
+                    max_id=0,
+                    limit=limit
+                )
+            )
+
+            return pyrogram.List(pyrogram.Photo._parse(self, photo) for photo in r.photos)
