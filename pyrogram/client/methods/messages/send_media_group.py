@@ -38,7 +38,7 @@ class SendMediaGroup(BaseClient):
         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
         disable_notification: bool = None,
         reply_to_message_id: int = None
-    ):
+    ) -> List["pyrogram.Message"]:
         """Send a group of photos or videos as an album.
 
         Parameters:
@@ -58,7 +58,7 @@ class SendMediaGroup(BaseClient):
                 If the message is a reply, ID of the original message.
 
         Returns:
-            :obj:`Messages`: On success, an object is returned containing all the single messages sent.
+            List of :obj:`Message`: On success, a list of the sent messages is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -158,7 +158,7 @@ class SendMediaGroup(BaseClient):
             else:
                 break
 
-        return pyrogram.Messages._parse(
+        return utils.parse_messages(
             self,
             types.messages.Messages(
                 messages=[m.message for m in filter(

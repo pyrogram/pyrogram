@@ -80,7 +80,7 @@ class IterHistory(BaseClient):
                 offset_id=offset_id,
                 offset_date=offset_date,
                 reverse=reverse
-            ).messages
+            )
 
             if not messages:
                 return

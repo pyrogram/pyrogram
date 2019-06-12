@@ -47,4 +47,4 @@ class GetContacts(BaseClient):
                 time.sleep(e.x)
             else:
                 log.info("Total contacts: {}".format(len(self.peers_by_phone)))
-                return [pyrogram.User._parse(self, user) for user in contacts.users]
+                return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)

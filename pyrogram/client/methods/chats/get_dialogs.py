@@ -18,6 +18,7 @@
 
 import logging
 import time
+from typing import List
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -33,7 +34,7 @@ class GetDialogs(BaseClient):
         offset_date: int = 0,
         limit: int = 100,
         pinned_only: bool = False
-    ) -> "pyrogram.Dialogs":
+    ) -> List["pyrogram.Dialog"]:
         """Get a chunk of the user's dialogs.
 
         You can get up to 100 dialogs at once.
@@ -53,7 +54,7 @@ class GetDialogs(BaseClient):
                 Defaults to False.
 
         Returns:
-            :obj:`Dialogs`: On success, an object containing a list of dialogs is returned.
+            List of :obj:`Dialog`: On success, a list of dialogs is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -80,4 +81,32 @@ class GetDialogs(BaseClient):
             else:
                 break
 
-        return pyrogram.Dialogs._parse(self, r)
+        users = {i.id: i for i in r.users}
+        chats = {i.id: i for i in r.chats}
+
+        messages = {}
+
+        for message in r.messages:
+            to_id = message.to_id
+
+            if isinstance(to_id, types.PeerUser):
+                if message.out:
+                    chat_id = to_id.user_id
+                else:
+                    chat_id = message.from_id
+            elif isinstance(to_id, types.PeerChat):
+                chat_id = -to_id.chat_id
+            else:
+                chat_id = int("-100" + str(to_id.channel_id))
+
+            messages[chat_id] = pyrogram.Message._parse(self, message, users, chats)
+
+        parsed_dialogs = []
+
+        for dialog in r.dialogs:
+            if not isinstance(dialog, types.Dialog):
+                continue
+
+            parsed_dialogs.append(pyrogram.Dialog._parse(self, dialog, messages, users, chats))
+
+        return pyrogram.List(parsed_dialogs)

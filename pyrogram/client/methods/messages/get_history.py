@@ -18,10 +18,11 @@
 
 import logging
 import time
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions
+from pyrogram.client.ext import utils
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
@@ -37,7 +38,7 @@ class GetHistory(BaseClient):
         offset_id: int = 0,
         offset_date: int = 0,
         reverse: bool = False
-    ) -> "pyrogram.Messages":
+    ) -> List["pyrogram.Message"]:
         """Retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
@@ -67,15 +68,17 @@ class GetHistory(BaseClient):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
-            :obj:`Messages` - On success, an object containing a list of the retrieved messages.
+            List of :obj:`Message` - On success, a list of the retrieved messages is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
 
+        offset_id = offset_id or (1 if reverse else 0)
+
         while True:
             try:
-                messages = pyrogram.Messages._parse(
+                messages = utils.parse_messages(
                     self,
                     self.send(
                         functions.messages.GetHistory(
@@ -97,6 +100,6 @@ class GetHistory(BaseClient):
                 break
 
         if reverse:
-            messages.messages.reverse()
+            messages.reverse()
 
         return messages

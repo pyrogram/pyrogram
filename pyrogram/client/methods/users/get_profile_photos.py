@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
 
@@ -29,7 +30,7 @@ class GetProfilePhotos(BaseClient):
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 100
-    ) -> "pyrogram.ProfilePhotos":
+    ) -> List["pyrogram.Photo"]:
         """Get a list of profile pictures for a user or a chat.
 
         Parameters:
@@ -47,7 +48,7 @@ class GetProfilePhotos(BaseClient):
                 Values between 1—100 are accepted. Defaults to 100.
 
         Returns:
-            :obj:`ProfilePhotos`: On success, an object containing a list of the profile photos is returned.
+            List of :obj:`Photo`: On success, a list of profile photos is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -55,19 +56,18 @@ class GetProfilePhotos(BaseClient):
         peer_id = self.resolve_peer(chat_id)
 
         if isinstance(peer_id, (types.InputPeerUser, types.InputPeerSelf)):
-            return pyrogram.ProfilePhotos._parse(
-                self,
-                self.send(
-                    functions.photos.GetUserPhotos(
-                        user_id=peer_id,
-                        offset=offset,
-                        max_id=0,
-                        limit=limit
-                    )
+            r = self.send(
+                functions.photos.GetUserPhotos(
+                    user_id=peer_id,
+                    offset=offset,
+                    max_id=0,
+                    limit=limit
                 )
             )
+
+            return pyrogram.List(pyrogram.Photo._parse(self, photo) for photo in r.photos)
         else:
-            new_chat_photos = pyrogram.Messages._parse(
+            r = utils.parse_messages(
                 self,
                 self.send(
                     functions.messages.Search(
@@ -86,7 +86,4 @@ class GetProfilePhotos(BaseClient):
                 )
             )
 
-            return pyrogram.ProfilePhotos(
-                total_count=new_chat_photos.total_count,
-                profile_photos=[m.new_chat_photo for m in new_chat_photos.messages][:limit]
-            )
+            return pyrogram.List([message.new_chat_photo for message in r][:limit])

@@ -20,16 +20,15 @@ from .handler import Handler
 
 
 class DeletedMessagesHandler(Handler):
-    """The deleted Messages handler class. Used to handle deleted messages coming from any chat
-    (private, group, channel). It is intended to be used with
-    :meth:`~Client.add_handler`
+    """The deleted messages handler class. Used to handle deleted messages coming from any chat
+    (private, group, channel). It is intended to be used with :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
     :meth:`~Client.on_deleted_messages` decorator.
 
     Parameters:
         callback (``callable``):
-            Pass a function that will be called when one or more Messages have been deleted.
+            Pass a function that will be called when one or more messages have been deleted.
             It takes *(client, messages)* as positional arguments (look at the section below for a detailed description).
 
         filters (:obj:`Filters`):
@@ -40,12 +39,12 @@ class DeletedMessagesHandler(Handler):
         client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        messages (:obj:`Messages`):
-            The deleted messages.
+        messages (List of :obj:`Message`):
+            The deleted messages, as list.
     """
 
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
 
     def check(self, messages):
-        return super().check(messages.messages[0])
+        return super().check(messages[0])
