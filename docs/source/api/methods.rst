@@ -159,6 +159,8 @@ Bots
 Advanced Usage (Raw API)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+Learn more about these methods at :doc:`Advanced Usage <../topics/advanced-usage>`.
+
 .. hlist::
     :columns: 4
 
