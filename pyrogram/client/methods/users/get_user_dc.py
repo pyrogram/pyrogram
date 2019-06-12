@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 class GetUserDC(BaseClient):
     def get_user_dc(self, user_id: Union[int, str]) -> Union[int, None]:
-        """Get the assigned data center (DC) of a user.
+        """Get the assigned DC (data center) of a user.
 
         .. note::
 
