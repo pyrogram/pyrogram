@@ -156,3 +156,6 @@ class BaseClient:
 
     def get_profile_photos(self, *args, **kwargs):
         pass
+
+    def edit_message_text(self, *args, **kwargs):
+        pass

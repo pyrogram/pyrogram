@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
 import struct
 from base64 import b64decode, b64encode
 from typing import Union, List
@@ -191,3 +192,14 @@ def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
         )
 
     return pyrogram.List(parsed_messages)
+
+
+def unpack_inline_message_id(inline_message_id: str) -> types.InputBotInlineMessageID:
+    r = inline_message_id + "=" * (-len(inline_message_id) % 4)
+    r = struct.unpack("<iqq", base64.b64decode(r, altchars="-_"))
+
+    return types.InputBotInlineMessageID(
+        dc_id=r[0],
+        id=r[1],
+        access_hash=r[2]
+    )

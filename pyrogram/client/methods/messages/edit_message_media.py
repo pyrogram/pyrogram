@@ -32,35 +32,42 @@ from pyrogram.client.types.input_media import InputMedia
 class EditMessageMedia(BaseClient):
     def edit_message_media(
         self,
-        chat_id: Union[int, str],
-        message_id: int,
         media: InputMedia,
+        chat_id: Union[int, str] = None,
+        message_id: int = None,
+        inline_message_id: str = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Edit audio, document, photo, or video messages.
+        """Edit animation, audio, document, photo or video messages.
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
         message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
-        Use previously uploaded file via its file_id or specify a URL. On success, if the edited message was sent
-        by the bot, the edited Message is returned, otherwise True is returned.
+        Use previously uploaded file via its file_id or specify a URL.
 
         Parameters:
-            chat_id (``int`` | ``str``):
+            media (:obj:`InputMedia`)
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            chat_id (``int`` | ``str``, *optional*):
+                Required if *inline_message_id* is not specified.
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``):
+            message_id (``int``, *optional*):
+                Required if *inline_message_id* is not specified.
                 Message identifier in the chat specified in chat_id.
 
-            media (:obj:`InputMedia`)
-                One of the InputMedia objects describing an animation, audio, document, photo or video.
+            inline_message_id (``str``, *optional*):
+                Required if *chat_id* and *message_id* are not specified.
+                Identifier of the inline message.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message`: On success, the edited message is returned.
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -92,8 +99,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 2)
-
-        if isinstance(media, InputMediaVideo):
+        elif isinstance(media, InputMediaVideo):
             if os.path.exists(media.media):
                 media = self.send(
                     functions.messages.UploadMedia(
@@ -130,8 +136,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 4)
-
-        if isinstance(media, InputMediaAudio):
+        elif isinstance(media, InputMediaAudio):
             if os.path.exists(media.media):
                 media = self.send(
                     functions.messages.UploadMedia(
@@ -167,8 +172,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 9)
-
-        if isinstance(media, InputMediaAnimation):
+        elif isinstance(media, InputMediaAnimation):
             if os.path.exists(media.media):
                 media = self.send(
                     functions.messages.UploadMedia(
@@ -206,8 +210,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 10)
-
-        if isinstance(media, InputMediaDocument):
+        elif isinstance(media, InputMediaDocument):
             if os.path.exists(media.media):
                 media = self.send(
                     functions.messages.UploadMedia(
@@ -239,12 +242,22 @@ class EditMessageMedia(BaseClient):
             else:
                 media = utils.get_input_media_from_file_id(media.media, 5)
 
+        if inline_message_id is not None:
+            return self.send(
+                functions.messages.EditInlineBotMessage(
+                    id=utils.unpack_inline_message_id(inline_message_id),
+                    media=media,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **style.parse(caption)
+                )
+            )
+
         r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),
                 id=message_id,
-                reply_markup=reply_markup.write() if reply_markup else None,
                 media=media,
+                reply_markup=reply_markup.write() if reply_markup else None,
                 **style.parse(caption)
             )
         )

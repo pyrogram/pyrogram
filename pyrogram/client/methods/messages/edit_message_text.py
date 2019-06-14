@@ -20,15 +20,16 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient
+from pyrogram.client.ext import BaseClient, utils
 
 
 class EditMessageText(BaseClient):
     def edit_message_text(
         self,
-        chat_id: Union[int, str],
-        message_id: int,
         text: str,
+        chat_id: Union[int, str] = None,
+        message_id: int = None,
+        inline_message_id: str = None,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
@@ -36,16 +37,22 @@ class EditMessageText(BaseClient):
         """Edit text messages.
 
         Parameters:
-            chat_id (``int`` | ``str``):
+            text (``str``):
+                New text of the message.
+
+            chat_id (``int`` | ``str``, *optional*):
+                Required if *inline_message_id* is not specified.
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``):
+            message_id (``int``, *optional*):
+                Required if *inline_message_id* is not specified.
                 Message identifier in the chat specified in chat_id.
 
-            text (``str``):
-                New text of the message.
+            inline_message_id (``str``, *optional*):
+                Required if *chat_id* and *message_id* are not specified.
+                Identifier of the inline message.
 
             parse_mode (``str``, *optional*):
                 Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
@@ -58,12 +65,23 @@ class EditMessageText(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message`: On success, the edited message is returned.
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
+
+        if inline_message_id is not None:
+            return self.send(
+                functions.messages.EditInlineBotMessage(
+                    id=utils.unpack_inline_message_id(inline_message_id),
+                    no_webpage=disable_web_page_preview or None,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **style.parse(text)
+                )
+            )
 
         r = self.send(
             functions.messages.EditMessage(
