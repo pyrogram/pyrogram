@@ -173,14 +173,14 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit_text(
+    def edit_message_text(
         self,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_text* of :obj:`CallbackQuery`.
+        """Bound method *edit_message_text* of :obj:`CallbackQuery`.
 
         Parameters:
             text (``str``):
@@ -224,13 +224,13 @@ class CallbackQuery(Object, Update):
             reply_markup=reply_markup
         )
 
-    def edit_caption(
+    def edit_message_caption(
         self,
         caption: str,
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_caption* of :obj:`Message`.
+        """Bound method *edit_message_caption* of :obj:`CallbackQuery`.
 
         Parameters:
             caption (``str``):
@@ -270,12 +270,12 @@ class CallbackQuery(Object, Update):
             reply_markup=reply_markup
         )
 
-    def edit_media(
+    def edit_message_media(
         self,
         media: "pyrogram.InputMedia",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_media* of :obj:`Message`.
+        """Bound method *edit_message_media* of :obj:`CallbackQuery`.
 
         Parameters:
             media (:obj:`InputMedia`):
@@ -310,11 +310,11 @@ class CallbackQuery(Object, Update):
             reply_markup=reply_markup
         )
 
-    def edit_reply_markup(
+    def edit_message_reply_markup(
         self,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_reply_markup* of :obj:`Message`.
+        """Bound method *edit_message_reply_markup* of :obj:`CallbackQuery`.
 
         Parameters:
             reply_markup (:obj:`InlineKeyboardMarkup`):
