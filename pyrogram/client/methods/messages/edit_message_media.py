@@ -45,7 +45,7 @@ class EditMessageMedia(BaseClient):
         Use previously uploaded file via its file_id or specify a URL.
 
         Parameters:
-            media (:obj:`InputMedia`)
+            media (:obj:`InputMedia`):
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             chat_id (``int`` | ``str``, *optional*):

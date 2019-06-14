@@ -2361,12 +2361,7 @@ class Message(Object, Update):
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
-        reply_markup: Union[
-            "pyrogram.InlineKeyboardMarkup",
-            "pyrogram.ReplyKeyboardMarkup",
-            "pyrogram.ReplyKeyboardRemove",
-            "pyrogram.ForceReply"
-        ] = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit* of :obj:`Message`.
 
@@ -2418,12 +2413,7 @@ class Message(Object, Update):
         self,
         caption: str,
         parse_mode: str = "",
-        reply_markup: Union[
-            "pyrogram.InlineKeyboardMarkup",
-            "pyrogram.ReplyKeyboardMarkup",
-            "pyrogram.ReplyKeyboardRemove",
-            "pyrogram.ForceReply"
-        ] = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit_caption* of :obj:`Message`.
 
@@ -2486,7 +2476,7 @@ class Message(Object, Update):
                 message.edit_media(media)
 
         Parameters:
-            media (:obj:`InputMediaAnimation` | :obj:`InputMediaAudio` | :obj:`InputMediaDocument` | :obj:`InputMediaPhoto` | :obj:`InputMediaVideo`)
+            media (:obj:`InputMedia`):
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
