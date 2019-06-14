@@ -55,11 +55,15 @@ Messages
     - :meth:`~Client.send_venue`
     - :meth:`~Client.send_contact`
     - :meth:`~Client.send_cached_media`
-    - :meth:`~Client.send_chat_action`
     - :meth:`~Client.edit_message_text`
     - :meth:`~Client.edit_message_caption`
-    - :meth:`~Client.edit_message_reply_markup`
     - :meth:`~Client.edit_message_media`
+    - :meth:`~Client.edit_message_reply_markup`
+    - :meth:`~Client.edit_inline_text`
+    - :meth:`~Client.edit_inline_caption`
+    - :meth:`~Client.edit_inline_media`
+    - :meth:`~Client.edit_inline_reply_markup`
+    - :meth:`~Client.send_chat_action`
     - :meth:`~Client.delete_messages`
     - :meth:`~Client.get_messages`
     - :meth:`~Client.get_history`
@@ -203,8 +207,12 @@ Details
 .. automethod:: Client.send_chat_action()
 .. automethod:: Client.edit_message_text()
 .. automethod:: Client.edit_message_caption()
-.. automethod:: Client.edit_message_reply_markup()
 .. automethod:: Client.edit_message_media()
+.. automethod:: Client.edit_message_reply_markup()
+.. automethod:: Client.edit_inline_text()
+.. automethod:: Client.edit_inline_caption()
+.. automethod:: Client.edit_inline_media()
+.. automethod:: Client.edit_inline_reply_markup()
 .. automethod:: Client.delete_messages()
 .. automethod:: Client.get_messages()
 .. automethod:: Client.get_history()

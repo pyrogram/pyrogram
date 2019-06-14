@@ -16,52 +16,52 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
-
 import pyrogram
-from pyrogram.client.ext import BaseClient
+from pyrogram.api import functions
+from pyrogram.client.ext import BaseClient, utils
 
 
-class EditMessageCaption(BaseClient):
-    def edit_message_caption(
+class EditInlineText(BaseClient):
+    def edit_inline_text(
         self,
-        chat_id: Union[int, str],
-        message_id: int,
-        caption: str,
+        inline_message_id: str,
+        text: str,
         parse_mode: str = "",
+        disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
-    ) -> "pyrogram.Message":
-        """Edit the caption of media messages.
+    ) -> bool:
+        """Edit the text of **inline** messages.
 
         Parameters:
-            chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
+            inline_message_id (``str``):
+                Identifier of the inline message.
 
-            message_id (``int``):
-                Message identifier in the chat specified in chat_id.
-
-            caption (``str``):
-                New caption of the media message.
+            text (``str``):
+                New text of the message.
 
             parse_mode (``str``, *optional*):
                 Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
                 URLs in your message. Defaults to "markdown".
 
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message`: On success, the edited message is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self.edit_message_text(
-            chat_id=chat_id,
-            message_id=message_id,
-            text=caption,
-            parse_mode=parse_mode,
-            reply_markup=reply_markup
+        style = self.html if parse_mode.lower() == "html" else self.markdown
+
+        return self.send(
+            functions.messages.EditInlineBotMessage(
+                id=utils.unpack_inline_message_id(inline_message_id),
+                no_webpage=disable_web_page_preview or None,
+                reply_markup=reply_markup.write() if reply_markup else None,
+                **style.parse(text)
+            )
         )

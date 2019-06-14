@@ -160,8 +160,17 @@ class BaseClient:
     def edit_message_text(self, *args, **kwargs):
         pass
 
+    def edit_inline_text(self, *args, **kwargs):
+        pass
+
     def edit_message_media(self, *args, **kwargs):
         pass
 
+    def edit_inline_media(self, *args, **kwargs):
+        pass
+
     def edit_message_reply_markup(self, *args, **kwargs):
+        pass
+
+    def edit_inline_reply_markup(self, *args, **kwargs):
         pass

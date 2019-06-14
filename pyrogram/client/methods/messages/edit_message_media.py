@@ -32,42 +32,33 @@ from pyrogram.client.types.input_media import InputMedia
 class EditMessageMedia(BaseClient):
     def edit_message_media(
         self,
+        chat_id: Union[int, str],
+        message_id: int,
         media: InputMedia,
-        chat_id: Union[int, str] = None,
-        message_id: int = None,
-        inline_message_id: str = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
         """Edit animation, audio, document, photo or video messages.
 
-        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
-        message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
-        Use previously uploaded file via its file_id or specify a URL.
+        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, the
+        message type can be changed arbitrarily.
 
         Parameters:
-            media (:obj:`InputMedia`):
-                One of the InputMedia objects describing an animation, audio, document, photo or video.
-
-            chat_id (``int`` | ``str``, *optional*):
-                Required if *inline_message_id* is not specified.
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``, *optional*):
-                Required if *inline_message_id* is not specified.
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            inline_message_id (``str``, *optional*):
-                Required if *chat_id* and *message_id* are not specified.
-                Identifier of the inline message.
+            media (:obj:`InputMedia`):
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
-            returned, otherwise True is returned (message sent via the bot, as inline query result).
+            :obj:`Message`: On success, the edited message is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -241,16 +232,6 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 5)
-
-        if inline_message_id is not None:
-            return self.send(
-                functions.messages.EditInlineBotMessage(
-                    id=utils.unpack_inline_message_id(inline_message_id),
-                    media=media,
-                    reply_markup=reply_markup.write() if reply_markup else None,
-                    **style.parse(caption)
-                )
-            )
 
         r = self.send(
             functions.messages.EditMessage(
