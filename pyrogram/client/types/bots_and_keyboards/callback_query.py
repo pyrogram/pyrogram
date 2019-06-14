@@ -173,14 +173,16 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit_message_text(
+    def edit_text(
         self,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_message_text* of :obj:`CallbackQuery`.
+        """Edit the text of messages attached to this callback query.
+
+        Bound method *edit_message_text* of :obj:`CallbackQuery`.
 
         Parameters:
             text (``str``):
@@ -203,34 +205,33 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat_id = None
-        message_id = None
-        inline_message_id = None
+        if self.inline_message_id is None:
+            return self._client.edit_message_text(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                text=text,
+                parse_mode=parse_mode,
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_text(
+                inline_message_id=self.inline_message_id,
+                text=text,
+                parse_mode=parse_mode,
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=reply_markup
+            )
 
-        if self.message is not None:
-            chat_id = self.message.chat.id
-            message_id = self.message.message_id
-
-        if self.inline_message_id is not None:
-            inline_message_id = self.inline_message_id
-
-        return self._client.edit_message_text(
-            text=text,
-            chat_id=chat_id,
-            message_id=message_id,
-            inline_message_id=inline_message_id,
-            parse_mode=parse_mode,
-            disable_web_page_preview=disable_web_page_preview,
-            reply_markup=reply_markup
-        )
-
-    def edit_message_caption(
+    def edit_caption(
         self,
         caption: str,
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_message_caption* of :obj:`CallbackQuery`.
+        """Edit the caption of media messages attached to this callback query.
+
+        Bound method *edit_message_caption* of :obj:`CallbackQuery`.
 
         Parameters:
             caption (``str``):
@@ -250,32 +251,16 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat_id = None
-        message_id = None
-        inline_message_id = None
+        return self.edit_text(caption, parse_mode, reply_markup)
 
-        if self.message is not None:
-            chat_id = self.message.chat.id
-            message_id = self.message.message_id
-
-        if self.inline_message_id is not None:
-            inline_message_id = self.inline_message_id
-
-        return self._client.edit_message_text(
-            text=caption,
-            chat_id=chat_id,
-            message_id=message_id,
-            inline_message_id=inline_message_id,
-            parse_mode=parse_mode,
-            reply_markup=reply_markup
-        )
-
-    def edit_message_media(
+    def edit_media(
         self,
         media: "pyrogram.InputMedia",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_message_media* of :obj:`CallbackQuery`.
+        """Edit animation, audio, document, photo or video messages attached to this callback query.
+
+        Bound method *edit_message_media* of :obj:`CallbackQuery`.
 
         Parameters:
             media (:obj:`InputMedia`):
@@ -291,30 +276,27 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat_id = None
-        message_id = None
-        inline_message_id = None
+        if self.inline_message_id is None:
+            return self._client.edit_message_media(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                media=media,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_media(
+                inline_message_id=self.inline_message_id,
+                media=media,
+                reply_markup=reply_markup
+            )
 
-        if self.message is not None:
-            chat_id = self.message.chat.id
-            message_id = self.message.message_id
-
-        if self.inline_message_id is not None:
-            inline_message_id = self.inline_message_id
-
-        return self._client.edit_message_media(
-            media=media,
-            chat_id=chat_id,
-            message_id=message_id,
-            inline_message_id=inline_message_id,
-            reply_markup=reply_markup
-        )
-
-    def edit_message_reply_markup(
+    def edit_reply_markup(
         self,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit_message_reply_markup* of :obj:`CallbackQuery`.
+        """Edit only the reply markup of messages attached to this callback query.
+
+        Bound method *edit_message_reply_markup* of :obj:`CallbackQuery`.
 
         Parameters:
             reply_markup (:obj:`InlineKeyboardMarkup`):
@@ -327,20 +309,14 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat_id = None
-        message_id = None
-        inline_message_id = None
-
-        if self.message is not None:
-            chat_id = self.message.chat.id
-            message_id = self.message.message_id
-
-        if self.inline_message_id is not None:
-            inline_message_id = self.inline_message_id
-
-        return self._client.edit_message_reply_markup(
-            reply_markup=reply_markup,
-            chat_id=chat_id,
-            message_id=message_id,
-            inline_message_id=inline_message_id
-        )
+        if self.inline_message_id is None:
+            return self._client.edit_message_reply_markup(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_reply_markup(
+                inline_message_id=self.inline_message_id,
+                reply_markup=reply_markup
+            )
