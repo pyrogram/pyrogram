@@ -651,7 +651,7 @@ class Message(Object, Update):
 
             return parsed_message
 
-    def reply(
+    def reply_text(
         self,
         text: str,
         quote: bool = None,
@@ -661,7 +661,7 @@ class Message(Object, Update):
         reply_to_message_id: int = None,
         reply_markup=None
     ) -> "Message":
-        """Bound method *reply* of :obj:`Message`.
+        """Bound method *reply_text* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -676,7 +676,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply("hello", quote=True)
+                message.reply_text("hello", quote=True)
 
         Parameters:
             text (``str``):
@@ -2356,14 +2356,14 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def edit(
+    def edit_text(
         self,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
-        """Bound method *edit* of :obj:`Message`.
+        """Bound method *edit_text* of :obj:`Message`.
 
         Use as a shortcut for:
 
@@ -2378,7 +2378,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.edit("hello")
+                message.edit_text("hello")
 
         Parameters:
             text (``str``):

@@ -34,13 +34,13 @@ Message
     - :meth:`~Message.click`
     - :meth:`~Message.delete`
     - :meth:`~Message.download`
-    - :meth:`~Message.edit`
+    - :meth:`~Message.forward`
+    - :meth:`~Message.pin`
+    - :meth:`~Message.edit_text`
     - :meth:`~Message.edit_caption`
     - :meth:`~Message.edit_media`
     - :meth:`~Message.edit_reply_markup`
-    - :meth:`~Message.forward`
-    - :meth:`~Message.pin`
-    - :meth:`~Message.reply`
+    - :meth:`~Message.reply_text`
     - :meth:`~Message.reply_animation`
     - :meth:`~Message.reply_audio`
     - :meth:`~Message.reply_cached_media`
@@ -84,7 +84,7 @@ CallbackQuery
     :columns: 5
 
     - :meth:`~CallbackQuery.answer`
-    - :meth:`~CallbackQuery.edit`
+    - :meth:`~CallbackQuery.edit_text`
     - :meth:`~CallbackQuery.edit_caption`
     - :meth:`~CallbackQuery.edit_media`
     - :meth:`~CallbackQuery.edit_reply_markup`
@@ -106,13 +106,13 @@ Details
 .. automethod:: Message.click()
 .. automethod:: Message.delete()
 .. automethod:: Message.download()
-.. automethod:: Message.edit()
+.. automethod:: Message.forward()
+.. automethod:: Message.pin()
+.. automethod:: Message.edit_text()
 .. automethod:: Message.edit_caption()
 .. automethod:: Message.edit_media()
 .. automethod:: Message.edit_reply_markup()
-.. automethod:: Message.forward()
-.. automethod:: Message.pin()
-.. automethod:: Message.reply()
+.. automethod:: Message.reply_text()
 .. automethod:: Message.reply_animation()
 .. automethod:: Message.reply_audio()
 .. automethod:: Message.reply_cached_media()
@@ -141,7 +141,7 @@ Details
 
 .. CallbackQuery
 .. automethod:: CallbackQuery.answer()
-.. automethod:: CallbackQuery.edit()
+.. automethod:: CallbackQuery.edit_text()
 .. automethod:: CallbackQuery.edit_caption()
 .. automethod:: CallbackQuery.edit_media()
 .. automethod:: CallbackQuery.edit_reply_markup()

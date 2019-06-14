@@ -173,14 +173,14 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit(
+    def edit_text(
         self,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Bound method *edit* of :obj:`CallbackQuery`.
+        """Bound method *edit_text* of :obj:`CallbackQuery`.
 
         Parameters:
             text (``str``):
