@@ -18,14 +18,14 @@
 
 from pyrogram.api import types
 from pyrogram.client.style import HTML, Markdown
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultPhoto(PyrogramType):
+class InlineQueryResultPhoto(Object):
     """Represents a link to a photo. By default, this photo will be sent by the user with optional caption.
     Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 
@@ -54,27 +54,27 @@ class InlineQueryResultPhoto(PyrogramType):
             Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in
             the media caption.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, *optional*):
+        reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, *optional*):
+        input_message_content (:obj:`InputMessageContent`, *optional*):
             Content of the message to be sent instead of the photo.
 
     """
 
     def __init__(
-            self,
-            id: str,
-            photo_url: str,
-            thumb_url: str,
-            photo_width: int = 0,
-            photo_height: int = 0,
-            title: str = None,
-            description: str = None,
-            caption: str = "",
-            parse_mode: str = "",
-            reply_markup=None,
-            input_message_content=None
+        self,
+        id: str,
+        photo_url: str,
+        thumb_url: str,
+        photo_width: int = 0,
+        photo_height: int = 0,
+        title: str = None,
+        description: str = None,
+        caption: str = "",
+        parse_mode: str = "",
+        reply_markup=None,
+        input_message_content=None
     ):
         self.id = id  # string
         self.photo_url = photo_url  # string

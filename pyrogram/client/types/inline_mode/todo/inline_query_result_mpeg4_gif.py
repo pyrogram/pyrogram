@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultMpeg4Gif(PyrogramType):
+class InlineQueryResultMpeg4Gif(Object):
     """Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
     Attributes:
         ID: ``0xb0700002``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be mpeg4_gif.
 
@@ -65,7 +65,9 @@ class InlineQueryResultMpeg4Gif(PyrogramType):
     """
     ID = 0xb0700002
 
-    def __init__(self, type: str, id: str, mpeg4_url: str, thumb_url: str, mpeg4_width: int = None, mpeg4_height: int = None, mpeg4_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, mpeg4_url: str, thumb_url: str, mpeg4_width: int = None,
+                 mpeg4_height: int = None, mpeg4_duration: int = None, title: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.mpeg4_url = mpeg4_url  # string

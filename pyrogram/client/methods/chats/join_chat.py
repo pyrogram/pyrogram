@@ -26,18 +26,18 @@ class JoinChat(BaseClient):
         self,
         chat_id: str
     ):
-        """Use this method to join a group chat or channel.
+        """Join a group chat or channel.
 
-        Args:
+        Parameters:
             chat_id (``str``):
                 Unique identifier for the target chat in form of a *t.me/joinchat/* link or username of the target
                 channel/supergroup (in the format @username).
 
         Returns:
-            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+            :obj:`Chat`: On success, a chat object is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 

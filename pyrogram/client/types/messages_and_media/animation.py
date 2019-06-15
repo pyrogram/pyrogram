@@ -17,18 +17,19 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .photo_size import PhotoSize
-from ..pyrogram_type import PyrogramType
+from .thumbnail import Thumbnail
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Animation(PyrogramType):
-    """This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound).
+class Animation(Object):
+    """An animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -41,9 +42,6 @@ class Animation(PyrogramType):
         duration (``int``):
             Duration of the animation in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Animation thumbnail.
-
         file_name (``str``, *optional*):
             Animation file name.
 
@@ -55,28 +53,30 @@ class Animation(PyrogramType):
 
         date (``int``, *optional*):
             Date the animation was sent in Unix time.
+
+        thumbs (List of :obj:`Thumbnail`, *optional*):
+            Animation thumbnails.
     """
 
-    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "width", "height", "duration"]
+    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "duration", "thumbs"]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         width: int,
         height: int,
         duration: int,
-        thumb: PhotoSize = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None
+        date: int = None,
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
         self.file_id = file_id
-        self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -84,10 +84,15 @@ class Animation(PyrogramType):
         self.width = width
         self.height = height
         self.duration = duration
+        self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, animation: types.Document, video_attributes: types.DocumentAttributeVideo,
-               file_name: str) -> "Animation":
+    def _parse(
+        client,
+        animation: types.Document,
+        video_attributes: types.DocumentAttributeVideo,
+        file_name: str
+    ) -> "Animation":
         return Animation(
             file_id=encode(
                 pack(
@@ -101,10 +106,10 @@ class Animation(PyrogramType):
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),
-            thumb=PhotoSize._parse(client, animation.thumbs),
             mime_type=animation.mime_type,
             file_size=animation.size,
             file_name=file_name,
             date=animation.date,
+            thumbs=Thumbnail._parse(client, animation),
             client=client
         )

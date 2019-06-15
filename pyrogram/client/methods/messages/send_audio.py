@@ -16,15 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
 import os
-import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FileIdInvalid, FilePartMissing
 from pyrogram.client.ext import BaseClient, utils
+from pyrogram.errors import FilePartMissing
 
 
 class SendAudio(BaseClient):
@@ -49,11 +47,11 @@ class SendAudio(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send audio files.
+        """Send audio files.
 
         For sending voice messages, use the :obj:`send_voice()` method instead.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -69,9 +67,8 @@ class SendAudio(BaseClient):
                 Audio caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             duration (``int``, *optional*):
                 Duration of the audio in seconds.
@@ -85,7 +82,7 @@ class SendAudio(BaseClient):
             thumb (``str``, *optional*):
                 Thumbnail of the music file album cover.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
-                A thumbnail's width and height should not exceed 90 pixels.
+                A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             disable_notification (``bool``, *optional*):
@@ -109,7 +106,7 @@ class SendAudio(BaseClient):
                 a chat_id and a message_id in order to edit a message with the updated progress.
 
         Other Parameters:
-            client (:obj:`Client <pyrogram.Client>`):
+            client (:obj:`Client`):
                 The Client itself, useful when you want to call other API methods inside the callback function.
 
             current (``int``):
@@ -123,11 +120,11 @@ class SendAudio(BaseClient):
                 You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
-            In case the upload is deliberately stopped with :meth:`stop_transmission`, None is returned instead.
+            :obj:`Message` | ``None``: On success, the sent audio message is returned, otherwise, in case the upload
+            is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         file = None
         style = self.html if parse_mode.lower() == "html" else self.markdown
@@ -137,7 +134,7 @@ class SendAudio(BaseClient):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type="audio/mpeg",
+                    mime_type=self.guess_mime_type(audio) or "audio/mpeg",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -154,28 +151,7 @@ class SendAudio(BaseClient):
                     url=audio
                 )
             else:
-                try:
-                    decoded = utils.decode(audio)
-                    fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-                    unpacked = struct.unpack(fmt, decoded)
-                except (AssertionError, binascii.Error, struct.error):
-                    raise FileIdInvalid from None
-                else:
-                    if unpacked[0] != 9:
-                        media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-                        if media_type:
-                            raise FileIdInvalid("The file_id belongs to a {}".format(media_type))
-                        else:
-                            raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-                    media = types.InputMediaDocument(
-                        id=types.InputDocument(
-                            id=unpacked[2],
-                            access_hash=unpacked[3],
-                            file_reference=b""
-                        )
-                    )
+                media = utils.get_input_media_from_file_id(audio, 9)
 
             while True:
                 try:

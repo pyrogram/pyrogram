@@ -16,17 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 """- :obj:`InputLocationMessageContent`
     - :obj:`InputVenueMessageContent`
     - :obj:`InputContactMessageContent`"""
 
 
-class InputMessageContent(PyrogramType):
-    """This object represents the content of a message to be sent as a result of an inline query.
+class InputMessageContent(Object):
+    """Content of a message to be sent as a result of an inline query.
 
-    Pyrogram currently supports the following 4 types:
+    Pyrogram currently supports the following types:
 
     - :obj:`InputTextMessageContent`
     """
@@ -34,4 +34,4 @@ class InputMessageContent(PyrogramType):
     __slots__ = []
 
     def __init__(self):
-        super().__init__(None)
+        super().__init__()

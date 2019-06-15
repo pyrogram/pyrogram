@@ -26,14 +26,15 @@ class IterDialogs(BaseClient):
     def iter_dialogs(
         self,
         offset_date: int = 0,
-        limit: int = 0
+        limit: int = None
     ) -> Generator["pyrogram.Dialog", None, None]:
-        """Use this method to iterate through a user's dialogs sequentially.
+        """Iterate through a user's dialogs sequentially.
 
-        This convenience method does the same as repeatedly calling :meth:`get_dialogs` in a loop, thus saving you from
-        the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a single call.
+        This convenience method does the same as repeatedly calling :meth:`~Client.get_dialogs` in a loop, thus saving
+        you from the hassle of setting up boilerplate code. It is useful for getting the whole dialogs list with a
+        single call.
 
-        Args:
+        Parameters:
             offset_date (``int``):
                 The offset date in Unix time taken from the top message of a :obj:`Dialog`.
                 Defaults to 0 (most recent dialog).
@@ -43,10 +44,10 @@ class IterDialogs(BaseClient):
                 By default, no limit is applied and all dialogs are returned.
 
         Returns:
-            A generator yielding :obj:`Dialog <pyrogram.Dialog>` objects.
+            ``Generator``: A generator yielding :obj:`Dialog` objects.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         current = 0
         total = limit or (1 << 31) - 1
@@ -54,7 +55,7 @@ class IterDialogs(BaseClient):
 
         pinned_dialogs = self.get_dialogs(
             pinned_only=True
-        ).dialogs
+        )
 
         for dialog in pinned_dialogs:
             yield dialog
@@ -68,7 +69,7 @@ class IterDialogs(BaseClient):
             dialogs = self.get_dialogs(
                 offset_date=offset_date,
                 limit=limit
-            ).dialogs
+            )
 
             if not dialogs:
                 return

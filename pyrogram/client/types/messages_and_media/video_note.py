@@ -17,18 +17,19 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .photo_size import PhotoSize
-from ..pyrogram_type import PyrogramType
+from .thumbnail import Thumbnail
+from ..object import Object
 from ...ext.utils import encode
 
 
-class VideoNote(PyrogramType):
-    """This object represents a video note.
+class VideoNote(Object):
+    """A video note.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -38,9 +39,6 @@ class VideoNote(PyrogramType):
         duration (``int``):
             Duration of the video in seconds as defined by sender.
 
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Video thumbnail.
-
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
 
@@ -49,18 +47,21 @@ class VideoNote(PyrogramType):
 
         date (``int``, *optional*):
             Date the video note was sent in Unix time.
+
+        thumbs (List of :obj:`Thumbnail`, *optional*):
+            Video thumbnails.
     """
 
-    __slots__ = ["file_id", "thumb", "mime_type", "file_size", "date", "length", "duration"]
+    __slots__ = ["file_id", "mime_type", "file_size", "date", "length", "duration", "thumbs"]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         length: int,
         duration: int,
-        thumb: PhotoSize = None,
+        thumbs: List[Thumbnail] = None,
         mime_type: str = None,
         file_size: int = None,
         date: int = None
@@ -68,12 +69,12 @@ class VideoNote(PyrogramType):
         super().__init__(client)
 
         self.file_id = file_id
-        self.thumb = thumb
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
         self.length = length
         self.duration = duration
+        self.thumbs = thumbs
 
     @staticmethod
     def _parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
@@ -89,9 +90,9 @@ class VideoNote(PyrogramType):
             ),
             length=video_attributes.w,
             duration=video_attributes.duration,
-            thumb=PhotoSize._parse(client, video_note.thumbs),
             file_size=video_note.size,
             mime_type=video_note.mime_type,
             date=video_note.date,
+            thumbs=Thumbnail._parse(client, video_note),
             client=client
         )

@@ -20,10 +20,10 @@ from . import InputMedia
 
 
 class InputMediaPhoto(InputMedia):
-    """This object represents a photo to be sent inside an album.
+    """A photo to be sent inside an album.
     It is intended to be used with :obj:`send_media_group() <pyrogram.Client.send_media_group>`.
 
-    Args:
+    Parameters:
         media (``str``):
             Photo to send.
             Pass a file_id as string to send a photo that exists on the Telegram servers or
@@ -34,9 +34,8 @@ class InputMediaPhoto(InputMedia):
             Caption of the photo to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-            if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-            Defaults to Markdown.
+            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
+            in your caption. Defaults to "markdown".
     """
 
     __slots__ = []

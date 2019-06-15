@@ -32,11 +32,11 @@ class SetGameScore(BaseClient):
         disable_edit_message: bool = None,
         chat_id: Union[int, str] = None,
         message_id: int = None
-    ):
+    ) -> Union["pyrogram.Message", bool]:
         # inline_message_id: str = None):  TODO Add inline_message_id
-        """Use this method to set the score of the specified user in a game.
+        """Set the score of the specified user in a game.
 
-        Args:
+        Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -63,12 +63,11 @@ class SetGameScore(BaseClient):
                 Required if inline_message_id is not specified.
 
         Returns:
-            On success, if the message was sent by the bot, returns the edited :obj:`Message <pyrogram.Message>`,
-            otherwise returns True.
+            :obj:`Message` | ``bool``: On success, if the message was sent by the bot, the edited message is returned,
+            True otherwise.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            :class:`BotScoreNotModified` if the new score is not greater than the user's current score in the chat and force is False.
+            RPCError: In case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SetGameScore(

@@ -19,13 +19,13 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Contact(PyrogramType):
-    """This object represents a phone contact.
+class Contact(Object):
+    """A phone contact.
 
-    Args:
+    Parameters:
         phone_number (``str``):
             Contact's phone number.
 
@@ -47,7 +47,7 @@ class Contact(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         phone_number: str,
         first_name: str,
         last_name: str = None,

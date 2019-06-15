@@ -16,8 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
+import struct
 from base64 import b64decode, b64encode
+from typing import Union, List
 
+import pyrogram
+from . import BaseClient
 from ...api import types
 
 
@@ -82,3 +87,119 @@ def get_offset_date(dialogs):
             return m.date
     else:
         return 0
+
+
+def get_input_media_from_file_id(
+    file_id_str: str,
+    expected_media_type: int = None
+) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
+    try:
+        decoded = decode(file_id_str)
+    except Exception:
+        raise ValueError("Failed to decode file_id: {}".format(file_id_str))
+    else:
+        media_type = decoded[0]
+
+        if expected_media_type is not None:
+            if media_type != expected_media_type:
+                media_type_str = BaseClient.MEDIA_TYPE_ID.get(media_type, None)
+                expected_media_type_str = BaseClient.MEDIA_TYPE_ID.get(expected_media_type, None)
+
+                raise ValueError(
+                    'Expected: "{}", got "{}" file_id instead'.format(expected_media_type_str, media_type_str)
+                )
+
+        if media_type in (0, 1, 14):
+            raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
+
+        if media_type == 2:
+            unpacked = struct.unpack("<iiqqc", decoded)
+            dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+
+            return types.InputMediaPhoto(
+                id=types.InputPhoto(
+                    id=file_id,
+                    access_hash=access_hash,
+                    file_reference=b""
+                )
+            )
+
+        if media_type in (3, 4, 5, 8, 9, 10, 13):
+            unpacked = struct.unpack("<iiqq", decoded)
+            dc_id, file_id, access_hash = unpacked[1:]
+
+            return types.InputMediaDocument(
+                id=types.InputDocument(
+                    id=file_id,
+                    access_hash=access_hash,
+                    file_reference=b""
+                )
+            )
+
+        raise ValueError("Unknown media type: {}".format(file_id_str))
+
+
+def parse_messages(client, messages: types.messages.Messages, replies: int = 1) -> List["pyrogram.Message"]:
+    users = {i.id: i for i in messages.users}
+    chats = {i.id: i for i in messages.chats}
+
+    if not messages.messages:
+        return pyrogram.List()
+
+    parsed_messages = [
+        pyrogram.Message._parse(client, message, users, chats, replies=0)
+        for message in messages.messages
+    ]
+
+    if replies:
+        messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
+        reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
+
+        if reply_message_ids:
+            reply_messages = client.get_messages(
+                parsed_messages[0].chat.id,
+                reply_to_message_ids=reply_message_ids,
+                replies=replies - 1
+            )
+
+            for message in parsed_messages:
+                reply_id = messages_with_replies[message.message_id]
+
+                for reply in reply_messages:
+                    if reply.message_id == reply_id:
+                        message.reply_to_message = reply
+
+    return pyrogram.List(parsed_messages)
+
+
+def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
+    messages = update.messages
+    channel_id = getattr(update, "channel_id", None)
+
+    parsed_messages = []
+
+    for message in messages:
+        parsed_messages.append(
+            pyrogram.Message(
+                message_id=message,
+                chat=pyrogram.Chat(
+                    id=int("-100" + str(channel_id)),
+                    type="channel",
+                    client=client
+                ) if channel_id is not None else None,
+                client=client
+            )
+        )
+
+    return pyrogram.List(parsed_messages)
+
+
+def unpack_inline_message_id(inline_message_id: str) -> types.InputBotInlineMessageID:
+    r = inline_message_id + "=" * (-len(inline_message_id) % 4)
+    r = struct.unpack("<iqq", base64.b64decode(r, altchars="-_"))
+
+    return types.InputBotInlineMessageID(
+        dc_id=r[0],
+        id=r[1],
+        access_hash=r[2]
+    )

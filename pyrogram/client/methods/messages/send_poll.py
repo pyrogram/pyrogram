@@ -38,19 +38,19 @@ class SendPoll(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> "pyrogram.Message":
-        """Use this method to send a new poll.
+        """Send a new poll.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             question (``str``):
-                The poll question, as string.
+                Poll question, 1-255 characters.
 
             options (List of ``str``):
-                The poll options, as list of strings (2 to 10 options are allowed).
+                List of answer options, 2-10 strings 1-100 characters each.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -64,10 +64,10 @@ class SendPoll(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: On success, the sent poll message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         r = self.send(
             functions.messages.SendMedia(

@@ -45,13 +45,13 @@ class IterChatMembers(BaseClient):
         query: str = "",
         filter: str = Filters.ALL
     ) -> Generator["pyrogram.ChatMember", None, None]:
-        """Use this method to iterate through the members of a chat sequentially.
+        """Iterate through the members of a chat sequentially.
 
-        This convenience method does the same as repeatedly calling :meth:`get_chat_members` in a loop, thus saving you
+        This convenience method does the same as repeatedly calling :meth:`~Client.get_chat_members` in a loop, thus saving you
         from the hassle of setting up boilerplate code. It is useful for getting the whole members list of a chat with
         a single call.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -75,10 +75,10 @@ class IterChatMembers(BaseClient):
                 Defaults to *"all"*.
 
         Returns:
-            A generator yielding :obj:`ChatMember <pyrogram.ChatMember>` objects.
+            ``Generator``: A generator yielding :obj:`ChatMember` objects.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         current = 0
         yielded = set()
@@ -106,7 +106,7 @@ class IterChatMembers(BaseClient):
                     limit=limit,
                     query=q,
                     filter=filter
-                ).chat_members
+                )
 
                 if not chat_members:
                     break

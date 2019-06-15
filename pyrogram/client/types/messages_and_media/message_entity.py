@@ -19,20 +19,20 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats.user import User
 
 
-class MessageEntity(PyrogramType):
-    """This object represents one special entity in a text message.
+class MessageEntity(Object):
+    """One special entity in a text message.
     For example, hashtags, usernames, URLs, etc.
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the entity.
             Can be "mention" (@username), "hashtag", "cashtag", "bot_command", "url", "email", "phone_number", "bold"
-            (bold text), italic (italic text), "code" (monowidth string), "pre" (monowidth block), "text_link"
-            (for clickable text URLs), "text_mention" (for users without usernames).
+            (bold text), "italic" (italic text), "code" (monowidth string), "pre" (monowidth block), "text_link"
+            (for clickable text URLs), "text_mention" (for custom text mentions based on users' identifiers).
 
         offset (``int``):
             Offset in UTF-16 code units to the start of the entity.
@@ -43,7 +43,7 @@ class MessageEntity(PyrogramType):
         url (``str``, *optional*):
             For "text_link" only, url that will be opened after user taps on the text.
 
-        user (:obj:`User <pyrogram.User>`, *optional*):
+        user (:obj:`User`, *optional*):
             For "text_mention" only, the mentioned user.
     """
 
@@ -68,7 +68,7 @@ class MessageEntity(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         type: str,
         offset: int,
         length: int,

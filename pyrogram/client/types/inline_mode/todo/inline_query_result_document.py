@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultDocument(PyrogramType):
+class InlineQueryResultDocument(Object):
     """Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
 
     Attributes:
         ID: ``0xb0700006``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be document.
 
@@ -50,10 +50,10 @@ class InlineQueryResultDocument(PyrogramType):
         description (``str``, optional):
             Short description of the result.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the file.
 
         thumb_url (``str``, optional):
@@ -68,7 +68,9 @@ class InlineQueryResultDocument(PyrogramType):
     """
     ID = 0xb0700006
 
-    def __init__(self, type: str, id: str, title: str, document_url: str, mime_type: str, caption: str = None, parse_mode: str = None, description: str = None, reply_markup=None, input_message_content=None, thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
+    def __init__(self, type: str, id: str, title: str, document_url: str, mime_type: str, caption: str = None,
+                 parse_mode: str = None, description: str = None, reply_markup=None, input_message_content=None,
+                 thumb_url: str = None, thumb_width: int = None, thumb_height: int = None):
         self.type = type  # string
         self.id = id  # string
         self.title = title  # string

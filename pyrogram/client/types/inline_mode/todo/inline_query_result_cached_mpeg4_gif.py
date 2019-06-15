@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultCachedMpeg4Gif(PyrogramType):
+class InlineQueryResultCachedMpeg4Gif(Object):
     """Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored on the Telegram servers. By default, this animated MPEG-4 file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
     Attributes:
         ID: ``0xb0700013``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be mpeg4_gif.
 
@@ -47,13 +47,14 @@ class InlineQueryResultCachedMpeg4Gif(PyrogramType):
         reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the video animation.
 
     """
     ID = 0xb0700013
 
-    def __init__(self, type: str, id: str, mpeg4_file_id: str, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, mpeg4_file_id: str, title: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.mpeg4_file_id = mpeg4_file_id  # string

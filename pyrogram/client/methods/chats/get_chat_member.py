@@ -30,43 +30,52 @@ class GetChatMember(BaseClient):
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> "pyrogram.ChatMember":
-        """Use this method to get information about one member of a chat.
+        """Get information about one member of a chat.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
             user_id (``int`` | ``str``)::
-                Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                Unique identifier (int) or username (str) of the target user.
+                For you yourself you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            On success, a :obj:`ChatMember <pyrogram.ChatMember>` object is returned.
+            :obj:`ChatMember`: On success, a chat member is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
-        chat_id = self.resolve_peer(chat_id)
-        user_id = self.resolve_peer(user_id)
+        chat = self.resolve_peer(chat_id)
+        user = self.resolve_peer(user_id)
 
-        if isinstance(chat_id, types.InputPeerChat):
-            full_chat = self.send(
+        if isinstance(chat, types.InputPeerChat):
+            r = self.send(
                 functions.messages.GetFullChat(
-                    chat_id=chat_id.chat_id
+                    chat_id=chat.chat_id
                 )
             )
 
-            for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
-                if member.user.is_self:
-                    return member
+            members = r.full_chat.participants.participants
+            users = {i.id: i for i in r.users}
+
+            for member in members:
+                member = pyrogram.ChatMember._parse(self, member, users)
+
+                if isinstance(user, types.InputPeerSelf):
+                    if member.user.is_self:
+                        return member
+                else:
+                    if member.user.id == user.user_id:
+                        return member
             else:
                 raise UserNotParticipant
-        elif isinstance(chat_id, types.InputPeerChannel):
+        elif isinstance(chat, types.InputPeerChannel):
             r = self.send(
                 functions.channels.GetParticipant(
-                    channel=chat_id,
-                    user_id=user_id
+                    channel=chat,
+                    user_id=user
                 )
             )
 

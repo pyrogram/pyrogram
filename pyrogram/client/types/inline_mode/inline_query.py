@@ -22,20 +22,21 @@ import pyrogram
 from pyrogram.api import types
 from .inline_query_result import InlineQueryResult
 from ..messages_and_media import Location
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..update import Update
 from ..user_and_chats import User
 
 
-class InlineQuery(PyrogramType, Update):
-    """This object represents an incoming inline query.
+class InlineQuery(Object, Update):
+    """An incoming inline query.
+
     When the user sends an empty query, your bot could return some default or trending results.
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this query.
 
-        from_user (:obj:`User <pyrogram.User>`):
+        from_user (:obj:`User`):
             Sender.
 
         query (``str``):
@@ -44,7 +45,7 @@ class InlineQuery(PyrogramType, Update):
         offset (``str``):
             Offset of the results to be returned, can be controlled by the bot.
 
-        location (:obj:`Location <pyrogram.Location>`. *optional*):
+        location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
     """
     __slots__ = ["id", "from_user", "query", "offset", "location"]
@@ -52,7 +53,7 @@ class InlineQuery(PyrogramType, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: str,
         from_user: User,
         query: str,
@@ -61,7 +62,6 @@ class InlineQuery(PyrogramType, Update):
     ):
         super().__init__(client)
 
-        self._client = client
         self.id = id
         self.from_user = from_user
         self.query = query
@@ -92,7 +92,7 @@ class InlineQuery(PyrogramType, Update):
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
     ):
-        """Bound method *answer* of :obj:`InlineQuery <pyrogram.InlineQuery>`.
+        """Bound method *answer* of :obj:`InlineQuery`.
 
         Use this method as a shortcut for:
 
@@ -108,8 +108,8 @@ class InlineQuery(PyrogramType, Update):
 
                 inline_query.answer([...])
 
-        Args:
-            results (List of :obj:`InlineQueryResult <pyrogram.InlineQueryResult>`):
+        Parameters:
+            results (List of :obj:`InlineQueryResult`):
                 A list of results for the inline query.
 
             cache_time (``int``, *optional*):

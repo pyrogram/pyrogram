@@ -20,14 +20,14 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Voice(PyrogramType):
-    """This object represents a voice note.
+class Voice(Object):
+    """A voice note.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
@@ -52,7 +52,7 @@ class Voice(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         duration: int,
         waveform: bytes = None,

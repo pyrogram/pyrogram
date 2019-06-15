@@ -2,6 +2,7 @@ id	message
 AUTH_KEY_UNREGISTERED	The key is not registered in the system
 AUTH_KEY_INVALID	The key is invalid
 USER_DEACTIVATED	The user has been deleted/deactivated
+USER_DEACTIVATED_BAN	The user has been deleted/deactivated
 SESSION_REVOKED	The authorization has been invalidated, because of the user terminating all sessions
 SESSION_EXPIRED	The authorization has expired
 ACTIVE_USER_REQUIRED	The method is only available to already activated users

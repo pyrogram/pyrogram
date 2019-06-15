@@ -23,8 +23,9 @@ from ...ext import BaseClient
 
 class OnDisconnect(BaseClient):
     def on_disconnect(self=None) -> callable:
-        """Use this decorator to automatically register a function for handling disconnections.
-        This does the same thing as :meth:`add_handler` using the :class:`DisconnectHandler`.
+        """Decorator for handling disconnections.
+
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.DisconnectHandler`.
         """
 
         def decorator(func: callable) -> Handler:

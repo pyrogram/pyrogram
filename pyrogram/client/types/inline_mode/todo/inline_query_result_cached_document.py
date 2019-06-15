@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultCachedDocument(PyrogramType):
+class InlineQueryResultCachedDocument(Object):
     """Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file.
 
     Attributes:
         ID: ``0xb0700015``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be document.
 
@@ -47,16 +47,17 @@ class InlineQueryResultCachedDocument(PyrogramType):
         parse_mode (``str``, optional):
             Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in the media caption.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the file.
 
     """
     ID = 0xb0700015
 
-    def __init__(self, type: str, id: str, title: str, document_file_id: str, description: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, title: str, document_file_id: str, description: str = None,
+                 caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.title = title  # string

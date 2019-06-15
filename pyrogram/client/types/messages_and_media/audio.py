@@ -17,26 +17,24 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
+from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .photo_size import PhotoSize
-from ..pyrogram_type import PyrogramType
+from .thumbnail import Thumbnail
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Audio(PyrogramType):
-    """This object represents an audio file to be treated as music by the Telegram clients.
+class Audio(Object):
+    """An audio file to be treated as music by the Telegram clients.
 
-    Args:
+    Parameters:
         file_id (``str``):
             Unique identifier for this file.
 
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
-
-        thumb (:obj:`PhotoSize <pyrogram.PhotoSize>`, *optional*):
-            Thumbnail of the music file album cover.
 
         file_name (``str``, *optional*):
             Audio file name.
@@ -55,28 +53,32 @@ class Audio(PyrogramType):
 
         title (``str``, *optional*):
             Title of the audio as defined by sender or by audio tags.
+
+        thumbs (List of :obj:`Thumbnail`, *optional*):
+            Thumbnails of the music file album cover.
     """
 
-    __slots__ = ["file_id", "thumb", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title"]
+    __slots__ = [
+        "file_id", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title", "thumbs"
+    ]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         file_id: str,
         duration: int,
-        thumb: PhotoSize = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
         date: int = None,
         performer: str = None,
-        title: str = None
+        title: str = None,
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
         self.file_id = file_id
-        self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -84,10 +86,15 @@ class Audio(PyrogramType):
         self.duration = duration
         self.performer = performer
         self.title = title
+        self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, audio: types.Document, audio_attributes: types.DocumentAttributeAudio,
-               file_name: str) -> "Audio":
+    def _parse(
+        client,
+        audio: types.Document,
+        audio_attributes: types.DocumentAttributeAudio,
+        file_name: str
+    ) -> "Audio":
         return Audio(
             file_id=encode(
                 pack(
@@ -103,8 +110,8 @@ class Audio(PyrogramType):
             title=audio_attributes.title,
             mime_type=audio.mime_type,
             file_size=audio.size,
-            thumb=PhotoSize._parse(client, audio.thumbs),
             file_name=file_name,
             date=audio.date,
+            thumbs=Thumbnail._parse(client, audio),
             client=client
         )

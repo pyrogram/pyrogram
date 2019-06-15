@@ -31,7 +31,7 @@ class SetChatPhoto(BaseClient):
         chat_id: Union[int, str],
         photo: str
     ) -> bool:
-        """Use this method to set a new profile photo for the chat.
+        """Set a new profile photo for the chat.
         Photos can't be changed for private chats.
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
@@ -39,19 +39,19 @@ class SetChatPhoto(BaseClient):
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
             setting is off.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
             photo (``str``):
-                New chat photo. You can pass a :class:`Photo` id or a file path to upload a new photo.
+                New chat photo. You can pass a :obj:`Photo` id or a file path to upload a new photo.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to user.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: if a chat_id belongs to user.
         """
         peer = self.resolve_peer(chat_id)
 

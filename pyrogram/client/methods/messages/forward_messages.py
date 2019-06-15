@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -28,14 +28,14 @@ class ForwardMessages(BaseClient):
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
-        message_ids: Iterable[int],
+        message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
         as_copy: bool = False,
         remove_caption: bool = False
-    ) -> "pyrogram.Messages":
-        """Use this method to forward messages of any kind.
+    ) -> List["pyrogram.Message"]:
+        """Forward messages of any kind.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -64,13 +64,12 @@ class ForwardMessages(BaseClient):
                 Defaults to False.
 
         Returns:
-            On success and in case *message_ids* was an iterable, the returned value will be a list of the forwarded
-            :obj:`Messages <pyrogram.Message>` even if a list contains just one element, otherwise if
-            *message_ids* was an integer, the single forwarded :obj:`Message <pyrogram.Message>`
-            is returned.
+            :obj:`Message` | List of :obj:`Message`: In case *message_ids* was an integer, the single forwarded message
+            is returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of
+            messages, even if such iterable contained just a single element.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
 
         is_iterable = not isinstance(message_ids, int)
@@ -80,9 +79,9 @@ class ForwardMessages(BaseClient):
             forwarded_messages = []
 
             for chunk in [message_ids[i:i + 200] for i in range(0, len(message_ids), 200)]:
-                messages = self.get_messages(chat_id=from_chat_id, message_ids=chunk)  # type: pyrogram.Messages
+                messages = self.get_messages(chat_id=from_chat_id, message_ids=chunk)
 
-                for message in messages.messages:
+                for message in messages:
                     forwarded_messages.append(
                         message.forward(
                             chat_id,
@@ -92,11 +91,7 @@ class ForwardMessages(BaseClient):
                         )
                     )
 
-            return pyrogram.Messages(
-                client=self,
-                total_count=len(forwarded_messages),
-                messages=forwarded_messages
-            ) if is_iterable else forwarded_messages[0]
+            return pyrogram.List(forwarded_messages) if is_iterable else forwarded_messages[0]
         else:
             r = self.send(
                 functions.messages.ForwardMessages(
@@ -122,8 +117,4 @@ class ForwardMessages(BaseClient):
                         )
                     )
 
-            return pyrogram.Messages(
-                client=self,
-                total_count=len(forwarded_messages),
-                messages=forwarded_messages
-            ) if is_iterable else forwarded_messages[0]
+            return pyrogram.List(forwarded_messages) if is_iterable else forwarded_messages[0]

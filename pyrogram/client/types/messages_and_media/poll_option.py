@@ -17,36 +17,36 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class PollOption(PyrogramType):
-    """This object represents a Poll Option.
+class PollOption(Object):
+    """Contains information about one answer option in a poll.
 
-    Args:
+    Parameters:
         text (``str``):
-            Text of the poll option.
+            Option text, 1-100 characters.
 
-        voters (``int``):
-            The number of users who voted this option.
-            It will be 0 until you vote for the poll.
+        voter_count (``int``):
+            Number of users that voted for this option.
+            Equals to 0 until you vote.
 
         data (``bytes``):
-            Unique data that identifies this option among all the other options in a poll.
+            The data this poll option is holding.
     """
 
-    __slots__ = ["text", "voters", "data"]
+    __slots__ = ["text", "voter_count", "data"]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         text: str,
-        voters: int,
+        voter_count: int,
         data: bytes
     ):
         super().__init__(client)
 
         self.text = text
-        self.voters = voters
+        self.voter_count = voter_count
         self.data = data

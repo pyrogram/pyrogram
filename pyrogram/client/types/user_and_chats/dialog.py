@@ -19,22 +19,22 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats import Chat
 
 
-class Dialog(PyrogramType):
-    """This object represents a dialog.
+class Dialog(Object):
+    """A user's dialog.
 
-    Args:
+    Parameters:
         chat (:obj:`Chat <pyrogram.Chat>`):
             Conversation the dialog belongs to.
 
-        top_message (:obj:`Message <pyrogram.Message>`):
+        top_message (:obj:`Message`):
             The last message sent in the dialog at this time.
 
         unread_messages_count (``int``):
-            Amount of unread messages in this dialogs.
+            Amount of unread messages in this dialog.
 
         unread_mentions_count (``int``):
             Amount of unread messages containing a mention in this dialog.
@@ -51,7 +51,7 @@ class Dialog(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         chat: Chat,
         top_message: "pyrogram.Message",
         unread_messages_count: int,
@@ -69,7 +69,7 @@ class Dialog(PyrogramType):
         self.is_pinned = is_pinned
 
     @staticmethod
-    def _parse(client, dialog, messages, users, chats) -> "Dialog":
+    def _parse(client, dialog: types.Dialog, messages, users, chats) -> "Dialog":
         chat_id = dialog.peer
 
         if isinstance(chat_id, types.PeerUser):

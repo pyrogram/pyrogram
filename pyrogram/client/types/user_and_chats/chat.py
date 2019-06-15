@@ -22,76 +22,94 @@ import pyrogram
 from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Chat(PyrogramType):
-    """This object represents a chat.
+class Chat(Object):
+    """A chat.
 
-    Args:
+    Parameters:
         id (``int``):
             Unique identifier for this chat.
 
         type (``str``):
-            Type of chat, can be either "private", "group", "supergroup" or "channel".
+            Type of chat, can be either "private", "bot", "group", "supergroup" or "channel".
+
+        is_verified (``bool``, *optional*):
+            True, if this chat has been verified by Telegram. Supergroups, channels and bots only.
+
+        is_restricted (``bool``, *optional*):
+            True, if this chat has been restricted. Supergroups, channels and bots only.
+            See *restriction_reason* for details.
+
+        is_scam (``bool``, *optional*):
+            True, if this chat has been flagged for scam. Supergroups, channels and bots only.
+
+        is_support (``bool``):
+            True, if this chat is part of the Telegram support team. Users and bots only.
 
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
 
         username (``str``, *optional*):
-            Username, for private chats, supergroups and channels if available.
+            Username, for private chats, bots, supergroups and channels if available.
 
         first_name (``str``, *optional*):
-            First name of the other party in a private chat.
+            First name of the other party in a private chat, for private chats and bots.
 
         last_name (``str``, *optional*):
-            Last name of the other party in a private chat.
+            Last name of the other party in a private chat, for private chats.
 
-        photo (:obj:`ChatPhoto <pyrogram.ChatPhoto>`, *optional*):
+        photo (:obj:`ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
         description (``str``, *optional*):
-            Description, for supergroups and channel chats.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Bio, for private chats and bots or description for groups, supergroups and channels.
+            Returned only in :meth:`~Client.get_chat`.
 
         invite_link (``str``, *optional*):
-            Chat invite link, for supergroups and channel chats.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Chat invite link, for groups, supergroups and channels.
+            Returned only in :meth:`~Client.get_chat`.
 
-        pinned_message (:obj:`Message <pyrogram.Message>`, *optional*):
-            Pinned message, for supergroups and channel chats.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+        pinned_message (:obj:`Message`, *optional*):
+            Pinned message, for groups, supergroups channels and own chat.
+            Returned only in :meth:`~Client.get_chat`.
 
         sticker_set_name (``str``, *optional*):
             For supergroups, name of group sticker set.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         can_set_sticker_set (``bool``, *optional*):
             True, if the group sticker set can be changed by you.
-            Returned only in :meth:`get_chat() <pyrogram.Client.get_chat>`.
+            Returned only in :meth:`~Client.get_chat`.
 
         members_count (``int``, *optional*):
-            Chat members count, for groups and channels only.
+            Chat members count, for groups, supergroups and channels only.
 
         restriction_reason (``str``, *optional*):
             The reason why this chat might be unavailable to some users.
+            This field is available only in case *is_restricted* is True.
 
-        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
-            Information about the chat default permissions.
+        permissions (:obj:`ChatPermissions` *optional*):
+            Information about the chat default permissions, for groups and supergroups.
     """
 
     __slots__ = [
-        "id", "type", "title", "username", "first_name", "last_name", "photo", "description", "invite_link",
-        "pinned_message", "sticker_set_name", "can_set_sticker_set", "members_count", "restriction_reason",
-        "permissions"
+        "id", "type", "is_verified", "is_restricted", "is_scam", "is_support", "title", "username", "first_name",
+        "last_name", "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
+        "members_count", "restriction_reason", "permissions"
     ]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         id: int,
         type: str,
+        is_verified: bool = None,
+        is_restricted: bool = None,
+        is_scam: bool = None,
+        is_support: bool = None,
         title: str = None,
         username: str = None,
         first_name: str = None,
@@ -110,6 +128,10 @@ class Chat(PyrogramType):
 
         self.id = id
         self.type = type
+        self.is_verified = is_verified
+        self.is_restricted = is_restricted
+        self.is_scam = is_scam
+        self.is_support = is_support
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -126,36 +148,49 @@ class Chat(PyrogramType):
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
+        peer_id = user.id
+
         return Chat(
-            id=user.id,
-            type="private",
+            id=peer_id,
+            type="bot" if user.bot else "private",
+            is_verified=getattr(user, "verified", None),
+            is_restricted=getattr(user, "restricted", None),
+            is_scam=getattr(user, "scam", None),
+            is_support=getattr(user, "support", None),
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo=ChatPhoto._parse(client, user.photo),
+            photo=ChatPhoto._parse(client, user.photo, peer_id),
             restriction_reason=user.restriction_reason,
             client=client
         )
 
     @staticmethod
     def _parse_chat_chat(client, chat: types.Chat) -> "Chat":
+        peer_id = -chat.id
+
         return Chat(
-            id=-chat.id,
+            id=peer_id,
             type="group",
             title=chat.title,
-            photo=ChatPhoto._parse(client, getattr(chat, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             client=client
         )
 
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
+        peer_id = int("-100" + str(channel.id))
+
         return Chat(
-            id=int("-100" + str(channel.id)),
+            id=peer_id,
             type="supergroup" if channel.megagroup else "channel",
+            is_verified=getattr(channel, "verified", None),
+            is_restricted=getattr(channel, "restricted", None),
+            is_scam=getattr(channel, "scam", None),
             title=channel.title,
             username=getattr(channel, "username", None),
-            photo=ChatPhoto._parse(client, getattr(channel, "photo", None)),
+            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
             restriction_reason=getattr(channel, "restriction_reason", None),
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             client=client
@@ -185,6 +220,12 @@ class Chat(PyrogramType):
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
+
+            if chat_full.pinned_msg_id:
+                parsed_chat.pinned_message = client.get_messages(
+                    parsed_chat.id,
+                    message_ids=chat_full.pinned_msg_id
+                )
         else:
             full_chat = chat_full.full_chat
             chat = None
@@ -225,3 +266,49 @@ class Chat(PyrogramType):
             return Chat._parse_user_chat(client, chat)
         else:
             return Chat._parse_channel_chat(client, chat)
+
+    def archive(self):
+        """Bound method *archive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.archive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.archive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.archive_chats(self.id)
+
+    def unarchive(self):
+        """Bound method *unarchive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unarchive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.unarchive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unarchive_chats(self.id)

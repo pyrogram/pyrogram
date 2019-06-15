@@ -24,9 +24,10 @@ from threading import Thread
 
 import pyrogram
 from pyrogram.api import types
+from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
-    UserStatusHandler, RawUpdateHandler, InlineQueryHandler
+    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
 )
 
 log = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.Message._parse(self.client, upd.message, usr, cht), MessageHandler),
 
             Dispatcher.DELETE_MESSAGES_UPDATES:
-                lambda upd, usr, cht: (pyrogram.Messages._parse_deleted(self.client, upd), DeletedMessagesHandler),
+                lambda upd, usr, cht: (utils.parse_deleted_messages(self.client, upd), DeletedMessagesHandler),
 
             Dispatcher.CALLBACK_QUERY_UPDATES:
                 lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
@@ -79,7 +80,10 @@ class Dispatcher:
                 ),
 
             (types.UpdateBotInlineQuery,):
-                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler)
+                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
+
+            (types.UpdateMessagePoll,):
+                lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler)
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
@@ -103,6 +107,7 @@ class Dispatcher:
             worker.join()
 
         self.workers_list.clear()
+        self.groups.clear()
 
     def add_handler(self, handler, group: int):
         if group not in self.groups:
@@ -122,16 +127,13 @@ class Dispatcher:
         log.debug("{} started".format(name))
 
         while True:
-            update = self.updates_queue.get()
+            packet = self.updates_queue.get()
 
-            if update is None:
+            if packet is None:
                 break
 
             try:
-                users = {i.id: i for i in update[1]}
-                chats = {i.id: i for i in update[2]}
-                update = update[0]
-
+                update, users, chats = packet
                 parser = self.update_parsers.get(type(update), None)
 
                 parsed_update, handler_type = (

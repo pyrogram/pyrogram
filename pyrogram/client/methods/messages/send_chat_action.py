@@ -16,53 +16,66 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
 from typing import Union
 
-from pyrogram.api import functions
-from pyrogram.client.ext import BaseClient, ChatAction
+from pyrogram.api import functions, types
+from pyrogram.client.ext import BaseClient
+
+
+class ChatAction:
+    TYPING = types.SendMessageTypingAction
+    UPLOAD_PHOTO = types.SendMessageUploadPhotoAction
+    RECORD_VIDEO = types.SendMessageRecordVideoAction
+    UPLOAD_VIDEO = types.SendMessageUploadVideoAction
+    RECORD_AUDIO = types.SendMessageRecordAudioAction
+    UPLOAD_AUDIO = types.SendMessageUploadAudioAction
+    UPLOAD_DOCUMENT = types.SendMessageUploadDocumentAction
+    FIND_LOCATION = types.SendMessageGeoLocationAction
+    RECORD_VIDEO_NOTE = types.SendMessageRecordRoundAction
+    UPLOAD_VIDEO_NOTE = types.SendMessageUploadRoundAction
+    PLAYING = types.SendMessageGamePlayAction
+    CHOOSE_CONTACT = types.SendMessageChooseContactAction
+    CANCEL = types.SendMessageCancelAction
+
+
+POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), ChatAction.__dict__.keys())))
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(
-        self,
-        chat_id: Union[int, str],
-        action: Union[ChatAction, str],
-        progress: int = 0
-    ):
-        """Use this method when you need to tell the other party that something is happening on your side.
+    def send_chat_action(self, chat_id: Union[int, str], action: str) -> bool:
+        """Tell the other party that something is happening on your side.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            action (:obj:`ChatAction <pyrogram.ChatAction>` | ``str``):
-                Type of action to broadcast.
-                Choose one from the :class:`ChatAction <pyrogram.ChatAction>` enumeration,
-                depending on what the user is about to receive.
-                You can also provide a string (e.g. "typing", "upload_photo", "record_audio", ...).
-
-            progress (``int``, *optional*):
-                Progress of the upload process.
-                Currently useless because official clients don't seem to be handling this.
+            action (``str``):
+                Type of action to broadcast. Choose one, depending on what the user is about to receive: *"typing"* for
+                text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
+                *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
+                *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
+                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
+                displayed.
 
         Returns:
-            On success, True is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` if the provided string is not a valid ChatAction.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case the provided string is not a valid ChatAction.
         """
 
-        # Resolve Enum type
-        if isinstance(action, str):
-            action = ChatAction.from_string(action).value
-        elif isinstance(action, ChatAction):
-            action = action.value
+        try:
+            action = ChatAction.__dict__[action.upper()]
+        except KeyError:
+            raise ValueError("Invalid chat action '{}'. Possible values are: {}".format(
+                action, json.dumps(POSSIBLE_VALUES, indent=4))) from None
 
         if "Upload" in action.__name__:
-            action = action(progress=progress)
+            action = action(progress=0)
         else:
             action = action()
 

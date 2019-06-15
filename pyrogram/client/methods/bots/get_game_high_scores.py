@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions
@@ -29,10 +29,10 @@ class GetGameHighScores(BaseClient):
         user_id: Union[int, str],
         chat_id: Union[int, str],
         message_id: int = None
-    ):
-        """Use this method to get data for high score tables.
+    ) -> List["pyrogram.GameHighScore"]:
+        """Get data for high score tables.
 
-        Args:
+        Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -49,20 +49,19 @@ class GetGameHighScores(BaseClient):
                 Required if inline_message_id is not specified.
 
         Returns:
-            On success, a :obj:`GameHighScores <pyrogram.GameHighScores>` object is returned.
+            List of :obj:`GameHighScore`: On success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         # TODO: inline_message_id
 
-        return pyrogram.GameHighScores._parse(
-            self,
-            self.send(
-                functions.messages.GetGameHighScores(
-                    peer=self.resolve_peer(chat_id),
-                    id=message_id,
-                    user_id=self.resolve_peer(user_id)
-                )
+        r = self.send(
+            functions.messages.GetGameHighScores(
+                peer=self.resolve_peer(chat_id),
+                id=message_id,
+                user_id=self.resolve_peer(user_id)
             )
         )
+
+        return pyrogram.List(pyrogram.GameHighScore._parse(self, score, r.users) for score in r.scores)

@@ -28,11 +28,11 @@ class UnbanChatMember(BaseClient):
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> bool:
-        """Use this method to unban a previously kicked user in a supergroup or channel.
+        """Unban a previously kicked user in a supergroup or channel.
         The user will **not** return to the group or channel automatically, but will be able to join via link, etc.
         You must be an administrator for this to work.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -41,10 +41,10 @@ class UnbanChatMember(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         self.send(
             functions.channels.EditBanned(

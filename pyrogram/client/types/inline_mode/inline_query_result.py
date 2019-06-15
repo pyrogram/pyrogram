@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 """- :obj:`InlineQueryResultCachedAudio`
     - :obj:`InlineQueryResultCachedDocument`
@@ -39,10 +39,10 @@ from ..pyrogram_type import PyrogramType
     - :obj:`InlineQueryResultVoice`"""
 
 
-class InlineQueryResult(PyrogramType):
-    """This object represents one result of an inline query.
+class InlineQueryResult(Object):
+    """One result of an inline query.
 
-    Pyrogram currently supports results of the following 20 types:
+    Pyrogram currently supports results of the following types:
 
     - :obj:`InlineQueryResultArticle`
     """
@@ -50,7 +50,7 @@ class InlineQueryResult(PyrogramType):
     __slots__ = ["type", "id"]
 
     def __init__(self, type: str, id: str):
-        super().__init__(None)
+        super().__init__()
 
         self.type = type
         self.id = id

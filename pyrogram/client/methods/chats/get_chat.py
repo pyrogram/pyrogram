@@ -27,37 +27,37 @@ class GetChat(BaseClient):
     def get_chat(
         self,
         chat_id: Union[int, str]
-    ) -> "pyrogram.Chat":
-        """Use this method to get up to date information about the chat.
+    ) -> Union["pyrogram.Chat", "pyrogram.ChatPreview"]:
+        """Get up to date information about a chat.
+
         Information include current name of the user for one-on-one conversations, current username of a user, group or
         channel, etc.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 Unique identifier for the target chat in form of a *t.me/joinchat/* link, identifier (int) or username
                 of the target channel/supergroup (in the format @username).
 
         Returns:
-            On success, a :obj:`Chat <pyrogram.Chat>` object is returned.
+            :obj:`Chat` | :obj:`ChatPreview`: On success, if you've already joined the chat, a chat object is returned,
+            otherwise, a chat preview object is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` in case the chat invite link refers to a chat you haven't joined yet.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case the chat invite link points to a chat you haven't joined yet.
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            h = match.group(1)
-
             r = self.send(
                 functions.messages.CheckChatInvite(
-                    hash=h
+                    hash=match.group(1)
                 )
             )
 
             if isinstance(r, types.ChatInvite):
-                raise ValueError("You haven't joined \"t.me/joinchat/{}\" yet".format(h))
+                return pyrogram.ChatPreview._parse(self, r)
 
             self.fetch_peers([r.chat])
 

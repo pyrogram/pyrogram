@@ -36,12 +36,12 @@ class PromoteChatMember(BaseClient):
         can_pin_messages: bool = False,
         can_promote_members: bool = False
     ) -> bool:
-        """Use this method to promote or demote a user in a supergroup or a channel.
+        """Promote or demote a user in a supergroup or a channel.
 
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
@@ -76,10 +76,10 @@ class PromoteChatMember(BaseClient):
                 were appointed by him).
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         self.send(
             functions.channels.EditAdmin(

@@ -30,11 +30,12 @@ class OnMessage(BaseClient):
         filters=None,
         group: int = 0
     ) -> callable:
-        """Use this decorator to automatically register a function for handling messages.
-        This does the same thing as :meth:`add_handler` using the :class:`MessageHandler`.
+        """Decorator for handling messages.
 
-        Args:
-            filters (:obj:`Filters <pyrogram.Filters>`):
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.MessageHandler`.
+
+        Parameters:
+            filters (:obj:`~pyrogram.Filters`, *optional*):
                 Pass one or more filters to allow only a subset of messages to be passed
                 in your function.
 

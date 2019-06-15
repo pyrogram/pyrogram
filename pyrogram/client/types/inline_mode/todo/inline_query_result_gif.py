@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultGif(PyrogramType):
+class InlineQueryResultGif(Object):
     """Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
     Attributes:
         ID: ``0xb0700001``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be gif.
 
@@ -65,7 +65,9 @@ class InlineQueryResultGif(PyrogramType):
     """
     ID = 0xb0700001
 
-    def __init__(self, type: str, id: str, gif_url: str, thumb_url: str, gif_width: int = None, gif_height: int = None, gif_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, gif_url: str, thumb_url: str, gif_width: int = None, gif_height: int = None,
+                 gif_duration: int = None, title: str = None, caption: str = None, parse_mode: str = None,
+                 reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.gif_url = gif_url  # string

@@ -23,21 +23,21 @@ from .inline_query_result import InlineQueryResult
 
 
 class InlineQueryResultArticle(InlineQueryResult):
-    """Represents a link to an article or web page.
+    """Link to an article or web page.
 
     TODO: Hide url?
 
-    Args:
+    Parameters:
         id (``str``):
             Unique identifier for this result, 1-64 bytes.
 
         title (``str``):
             Title for the result.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.InputMessageContent>`):
+        input_message_content (:obj:`InputMessageContent`):
             Content of the message to be sent.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.InlineKeyboardMarkup>`, *optional*):
+        reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
 
         url (``str``, *optional*):

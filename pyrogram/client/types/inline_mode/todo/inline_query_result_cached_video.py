@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultCachedVideo(PyrogramType):
+class InlineQueryResultCachedVideo(Object):
     """Represents a link to a video file stored on the Telegram servers. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
 
     Attributes:
         ID: ``0xb0700016``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be video.
 
@@ -56,7 +56,8 @@ class InlineQueryResultCachedVideo(PyrogramType):
     """
     ID = 0xb0700016
 
-    def __init__(self, type: str, id: str, video_file_id: str, title: str, description: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, video_file_id: str, title: str, description: str = None, caption: str = None,
+                 parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.video_file_id = video_file_id  # string

@@ -21,18 +21,18 @@ from typing import List
 import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 from ..user_and_chats.user import User
 
 
-class ChatPreview(PyrogramType):
-    """This object represents a chat preview.
+class ChatPreview(Object):
+    """A chat preview.
 
-    Args:
+    Parameters:
         title (``str``):
             Title of the chat.
 
-        photo (:obj:`ChatPhoto`):
+        photo (:obj:`ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
         type (``str``):
@@ -50,9 +50,9 @@ class ChatPreview(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         title: str,
-        photo: ChatPhoto,
+        photo: ChatPhoto = None,
         type: str,
         members_count: int,
         members: List[User] = None

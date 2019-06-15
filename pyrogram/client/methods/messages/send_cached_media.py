@@ -16,13 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
-import struct
 from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FileIdInvalid
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -42,13 +39,13 @@ class SendCachedMedia(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> Union["pyrogram.Message", None]:
-        """Use this method to send any media stored on the Telegram servers using a file_id.
+        """Send any media stored on the Telegram servers using a file_id.
 
         This convenience method works with any valid file_id only.
         It does the same as calling the relevant method for sending media using a file_id, thus saving you from the
         hassle of using the correct method for the media the file_id is pointing to.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -62,9 +59,8 @@ class SendCachedMedia(BaseClient):
                 Media caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-                if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-                Defaults to Markdown.
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your caption. Defaults to "markdown".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -78,46 +74,17 @@ class SendCachedMedia(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
         Returns:
-            On success, the sent :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message`: On success, the sent media message is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
-
-        try:
-            decoded = utils.decode(file_id)
-            fmt = "<iiqqqqi" if len(decoded) > 24 else "<iiqq"
-            unpacked = struct.unpack(fmt, decoded)
-        except (AssertionError, binascii.Error, struct.error):
-            raise FileIdInvalid from None
-        else:
-            media_type = BaseClient.MEDIA_TYPE_ID.get(unpacked[0], None)
-
-            if not media_type:
-                raise FileIdInvalid("Unknown media type: {}".format(unpacked[0]))
-
-            if media_type == "photo":
-                media = types.InputMediaPhoto(
-                    id=types.InputPhoto(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
-                )
-            else:
-                media = types.InputMediaDocument(
-                    id=types.InputDocument(
-                        id=unpacked[2],
-                        access_hash=unpacked[3],
-                        file_reference=b""
-                    )
-                )
 
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=media,
+                media=utils.get_input_media_from_file_id(file_id),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),

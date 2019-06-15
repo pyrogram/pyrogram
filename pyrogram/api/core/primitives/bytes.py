@@ -18,10 +18,10 @@
 
 from io import BytesIO
 
-from ..object import Object
+from ..tl_object import TLObject
 
 
-class Bytes(Object):
+class Bytes(TLObject):
     @staticmethod
     def read(b: BytesIO, *args) -> bytes:
         length = int.from_bytes(b.read(1), "little")

@@ -17,15 +17,16 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.api.types import InputPhoneContact as RawInputPhoneContact
+
 from pyrogram.session.internals import MsgId
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class InputPhoneContact(PyrogramType):
-    """This object represents a Phone Contact to be added in your Telegram address book.
-    It is intended to be used with :meth:`add_contacts() <pyrogram.Client.add_contacts>`
+class InputPhoneContact(Object):
+    """A Phone Contact to be added in your Telegram address book.
+    It is intended to be used with :meth:`~pyrogram.Client.add_contacts()`
 
-    Args:
+    Parameters:
         phone (``str``):
             Contact's phone number
 

@@ -34,10 +34,10 @@ class AnswerInlineQuery(BaseClient):
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
     ):
-        """Use this method to send answers to an inline query.
+        """Send answers to an inline query.
         No more than 50 results per query are allowed.
 
-        Args:
+        Parameters:
             inline_query_id (``str``):
                 Unique identifier for the answered query.
 
@@ -73,7 +73,10 @@ class AnswerInlineQuery(BaseClient):
                 where they wanted to use the bot's inline capabilities.
 
         Returns:
-            On success, True is returned.
+            ``bool``: True, on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
         """
         return self.send(
             functions.messages.SetInlineBotResults(

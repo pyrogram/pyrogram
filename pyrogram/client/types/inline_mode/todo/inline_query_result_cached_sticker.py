@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultCachedSticker(PyrogramType):
+class InlineQueryResultCachedSticker(Object):
     """Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
 
     Attributes:
         ID: ``0xb0700014``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be sticker.
 
@@ -35,10 +35,10 @@ class InlineQueryResultCachedSticker(PyrogramType):
         sticker_file_id (``str``):
             A valid file identifier of the sticker.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the sticker.
 
     """

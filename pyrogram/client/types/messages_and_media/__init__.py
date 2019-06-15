@@ -24,19 +24,18 @@ from .game import Game
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
-from .messages import Messages
 from .photo import Photo
-from .photo_size import PhotoSize
 from .poll import Poll
 from .poll_option import PollOption
 from .sticker import Sticker
-from .user_profile_photos import UserProfilePhotos
+from .stripped_thumbnail import StrippedThumbnail
+from .thumbnail import Thumbnail
 from .venue import Venue
 from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
 
 __all__ = [
-    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Messages", "Photo",
-    "PhotoSize", "Poll", "PollOption", "Sticker", "UserProfilePhotos", "Venue", "Video", "VideoNote", "Voice"
+    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
+    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice"
 ]

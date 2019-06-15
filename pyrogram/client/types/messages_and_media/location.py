@@ -19,13 +19,13 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class Location(PyrogramType):
-    """This object represents a point on the map.
+class Location(Object):
+    """A point on the map.
 
-    Args:
+    Parameters:
         longitude (``float``):
             Longitude as defined by sender.
 
@@ -38,7 +38,7 @@ class Location(PyrogramType):
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         longitude: float,
         latitude: float
     ):

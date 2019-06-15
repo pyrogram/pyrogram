@@ -23,13 +23,13 @@ from ...ext import BaseClient
 
 class GetMe(BaseClient):
     def get_me(self) -> "pyrogram.User":
-        """A simple method for testing your authorization. Requires no parameters.
+        """Get your own user identity.
 
         Returns:
-            Basic information about the user or bot in form of a :obj:`User` object
+            :obj:`User`: Basic information about the user or bot.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return pyrogram.User._parse(
             self,

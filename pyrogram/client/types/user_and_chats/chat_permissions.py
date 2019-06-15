@@ -19,16 +19,16 @@
 from typing import Union
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ChatPermissions(PyrogramType):
-    """This object represents both a chat default permissions and a single member permissions within a chat.
+class ChatPermissions(Object):
+    """A chat default permissions and a single member permissions within a chat.
 
     Some permissions make sense depending on the context: default chat permissions, restricted/kicked member or
     administrators in groups or channels.
 
-    Args:
+    Parameters:
         until_date (``int``, *optional*):
             Applicable to restricted and kicked members only.
             Date when user restrictions will be lifted, unix time.

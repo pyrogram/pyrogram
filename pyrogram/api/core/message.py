@@ -18,18 +18,18 @@
 
 from io import BytesIO
 
-from .object import Object
 from .primitives import Int, Long
+from .tl_object import TLObject
 
 
-class Message(Object):
+class Message(TLObject):
     ID = 0x5bb8e511  # hex(crc32(b"message msg_id:long seqno:int bytes:int body:Object = Message"))
 
     __slots__ = ["msg_id", "seq_no", "length", "body"]
 
     QUALNAME = "Message"
 
-    def __init__(self, body: Object, msg_id: int, seq_no: int, length: int):
+    def __init__(self, body: TLObject, msg_id: int, seq_no: int, length: int):
         self.msg_id = msg_id
         self.seq_no = seq_no
         self.length = length
@@ -42,7 +42,7 @@ class Message(Object):
         length = Int.read(b)
         body = b.read(length)
 
-        return Message(Object.read(BytesIO(body)), msg_id, seq_no, length)
+        return Message(TLObject.read(BytesIO(body)), msg_id, seq_no, length)
 
     def write(self) -> bytes:
         b = BytesIO()

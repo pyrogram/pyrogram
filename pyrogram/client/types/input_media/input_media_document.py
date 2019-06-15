@@ -20,9 +20,9 @@ from . import InputMedia
 
 
 class InputMediaDocument(InputMedia):
-    """This object represents a general file to be sent.
+    """A generic file to be sent inside an album.
 
-    Args:
+    Parameters:
         media (``str``):
             File to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
@@ -31,16 +31,15 @@ class InputMediaDocument(InputMedia):
         thumb (``str``):
             Thumbnail of the file sent.
             The thumbnail should be in JPEG format and less than 200 KB in size.
-            A thumbnail's width and height should not exceed 90 pixels.
+            A thumbnail's width and height should not exceed 320 pixels.
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
             Caption of the document to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Use :obj:`MARKDOWN <pyrogram.ParseMode.MARKDOWN>` or :obj:`HTML <pyrogram.ParseMode.HTML>`
-            if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your caption.
-            Defaults to Markdown.
+            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
+            in your caption. Defaults to "markdown".
     """
 
     __slots__ = ["thumb"]

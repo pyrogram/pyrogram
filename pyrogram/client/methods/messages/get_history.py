@@ -18,10 +18,11 @@
 
 import logging
 import time
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions
+from pyrogram.client.ext import utils
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
@@ -37,13 +38,13 @@ class GetHistory(BaseClient):
         offset_id: int = 0,
         offset_date: int = 0,
         reverse: bool = False
-    ):
-        """Use this method to retrieve a chunk of the history of a chat.
+    ) -> List["pyrogram.Message"]:
+        """Retrieve a chunk of the history of a chat.
 
         You can get up to 100 messages at once.
-        For a more convenient way of getting a chat history see :meth:`iter_history`.
+        For a more convenient way of getting a chat history see :meth:`~Client.iter_history`.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -67,15 +68,17 @@ class GetHistory(BaseClient):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
 
         Returns:
-            On success, a :obj:`Messages <pyrogram.Messages>` object is returned.
+            List of :obj:`Message` - On success, a list of the retrieved messages is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
+
+        offset_id = offset_id or (1 if reverse else 0)
 
         while True:
             try:
-                messages = pyrogram.Messages._parse(
+                messages = utils.parse_messages(
                     self,
                     self.send(
                         functions.messages.GetHistory(
@@ -97,6 +100,6 @@ class GetHistory(BaseClient):
                 break
 
         if reverse:
-            messages.messages.reverse()
+            messages.reverse()
 
         return messages

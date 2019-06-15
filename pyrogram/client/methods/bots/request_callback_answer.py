@@ -27,12 +27,13 @@ class RequestCallbackAnswer(BaseClient):
         self,
         chat_id: Union[int, str],
         message_id: int,
-        callback_data: bytes
+        callback_data: Union[str, bytes],
+        timeout: int = 10
     ):
-        """Use this method to request a callback answer from bots.
+        """Request a callback answer from bots.
         This is the equivalent of clicking an inline button containing callback data.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -41,23 +42,30 @@ class RequestCallbackAnswer(BaseClient):
             message_id (``int``):
                 The message id the inline keyboard is attached on.
 
-            callback_data (``bytes``):
+            callback_data (``str`` | ``bytes``):
                 Callback data associated with the inline button you want to get the answer from.
+
+            timeout (``int``, *optional*):
+                Timeout in seconds.
 
         Returns:
             The answer containing info useful for clients to display a notification at the top of the chat screen
             or as an alert.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``TimeoutError`` if the bot fails to answer within 10 seconds.
+            RPCError: In case of a Telegram RPC error.
+            TimeoutError: In case the bot fails to answer within 10 seconds.
         """
+
+        # Telegram only wants bytes, but we are allowed to pass strings too.
+        data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
+
         return self.send(
             functions.messages.GetBotCallbackAnswer(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                data=callback_data
+                data=data
             ),
             retries=0,
-            timeout=10
+            timeout=timeout
         )

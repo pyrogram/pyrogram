@@ -18,6 +18,7 @@
 
 import logging
 import time
+from typing import List
 
 import pyrogram
 from pyrogram.api import functions
@@ -28,14 +29,15 @@ log = logging.getLogger(__name__)
 
 
 class GetContacts(BaseClient):
-    def get_contacts(self):
-        """Use this method to get contacts from your Telegram address book.
+    def get_contacts(self) -> List["pyrogram.User"]:
+        # TODO: Create a Users object and return that
+        """Get contacts from your Telegram address book.
 
         Returns:
-            On success, a list of :obj:`User` objects is returned.
+            List of :obj:`User`: On success, a list of users is returned.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         while True:
             try:
@@ -45,4 +47,4 @@ class GetContacts(BaseClient):
                 time.sleep(e.x)
             else:
                 log.info("Total contacts: {}".format(self.session_storage.contacts_count()))
-                return [pyrogram.User._parse(self, user) for user in contacts.users]
+                return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)

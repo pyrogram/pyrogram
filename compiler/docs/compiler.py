@@ -18,10 +18,11 @@
 
 import ast
 import os
+import re
 import shutil
 
 HOME = "compiler/docs"
-DESTINATION = "docs/source"
+DESTINATION = "docs/source/telegram"
 
 FUNCTIONS_PATH = "pyrogram/api/functions"
 TYPES_PATH = "pyrogram/api/types"
@@ -29,8 +30,10 @@ TYPES_PATH = "pyrogram/api/types"
 FUNCTIONS_BASE = "functions"
 TYPES_BASE = "types"
 
-shutil.rmtree(TYPES_BASE, ignore_errors=True)
-shutil.rmtree(FUNCTIONS_BASE, ignore_errors=True)
+
+def snek(s: str):
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s).lower()
 
 
 def generate(source_path, base):
@@ -50,9 +53,11 @@ def generate(source_path, base):
                 for node in ast.walk(p):
                     if isinstance(node, ast.ClassDef):
                         name = node.name
+                        break
+                else:
+                    continue
 
-                # name = "".join([str(j.title()) for j in os.path.splitext(i)[0].split("_")])
-                full_path = os.path.basename(path) + "/" + name + ".rst"
+                full_path = os.path.basename(path) + "/" + snek(name).replace("_", "-") + ".rst"
 
                 if level:
                     full_path = base + "/" + full_path
@@ -65,7 +70,7 @@ def generate(source_path, base):
                             title=name,
                             title_markup="=" * len(name),
                             full_class_path="pyrogram.api.{}".format(
-                                os.path.splitext(full_path)[0].replace("/", ".")
+                                ".".join(full_path.split("/")[:-1]) + "." + name
                             )
                         )
                     )
@@ -82,7 +87,7 @@ def generate(source_path, base):
         entities = []
 
         for i in v:
-            entities.append(i)
+            entities.append(snek(i).replace("_", "-"))
 
         if k != base:
             inner_path = base + "/" + k + "/index" + ".rst"
@@ -98,6 +103,7 @@ def generate(source_path, base):
         with open(DESTINATION + "/" + inner_path, "w", encoding="utf-8") as f:
             if k == base:
                 f.write(":tocdepth: 1\n\n")
+                k = "Raw " + k
 
             f.write(
                 toctree.format(
@@ -115,6 +121,8 @@ def start():
     global page_template
     global toctree
 
+    shutil.rmtree(DESTINATION, ignore_errors=True)
+
     with open(HOME + "/template/page.txt", encoding="utf-8") as f:
         page_template = f.read()
 
@@ -129,6 +137,6 @@ if "__main__" == __name__:
     FUNCTIONS_PATH = "../../pyrogram/api/functions"
     TYPES_PATH = "../../pyrogram/api/types"
     HOME = "."
-    DESTINATION = "../../docs/source"
+    DESTINATION = "../../docs/source/telegram"
 
     start()

@@ -16,29 +16,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
 from io import BytesIO
 
-from .object import Object
 from .primitives import Int, Long
+from .tl_object import TLObject
 
 
-class FutureSalt(Object):
+class FutureSalt(TLObject):
     ID = 0x0949d9dc
 
     __slots__ = ["valid_since", "valid_until", "salt"]
 
     QUALNAME = "FutureSalt"
 
-    def __init__(self, valid_since: int or datetime, valid_until: int or datetime, salt: int):
+    def __init__(self, valid_since: int, valid_until: int, salt: int):
         self.valid_since = valid_since
         self.valid_until = valid_until
         self.salt = salt
 
     @staticmethod
     def read(b: BytesIO, *args) -> "FutureSalt":
-        valid_since = datetime.fromtimestamp(Int.read(b))
-        valid_until = datetime.fromtimestamp(Int.read(b))
+        valid_since = Int.read(b)
+        valid_until = Int.read(b)
         salt = Long.read(b)
 
         return FutureSalt(valid_since, valid_until, salt)

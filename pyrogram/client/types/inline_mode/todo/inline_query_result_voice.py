@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultVoice(PyrogramType):
+class InlineQueryResultVoice(Object):
     """Represents a link to a voice recording in an .ogg container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message.
 
     Attributes:
         ID: ``0xb0700005``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be voice.
 
@@ -47,16 +47,17 @@ class InlineQueryResultVoice(PyrogramType):
         voice_duration (``int`` ``32-bit``, optional):
             Recording duration in seconds.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
-        input_message_content (:obj:`InputMessageContent <pyrogram.types.InputMessageContent>`, optional):
+        input_message_content (:obj:`InputMessageContent`, optional):
             Content of the message to be sent instead of the voice recording.
 
     """
     ID = 0xb0700005
 
-    def __init__(self, type: str, id: str, voice_url: str, title: str, caption: str = None, parse_mode: str = None, voice_duration: int = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, voice_url: str, title: str, caption: str = None, parse_mode: str = None,
+                 voice_duration: int = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.voice_url = voice_url  # string

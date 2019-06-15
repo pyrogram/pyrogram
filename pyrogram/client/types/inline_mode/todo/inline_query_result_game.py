@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultGame(PyrogramType):
+class InlineQueryResultGame(Object):
     """Represents a Game.
 
     Attributes:
         ID: ``0xb0700010``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be game.
 
@@ -35,7 +35,7 @@ class InlineQueryResultGame(PyrogramType):
         game_short_name (``str``):
             Short name of the game.
 
-        reply_markup (:obj:`InlineKeyboardMarkup <pyrogram.types.InlineKeyboardMarkup>`, optional):
+        reply_markup (:obj:`InlineKeyboardMarkup`, optional):
             Inline keyboard attached to the message.
 
     """

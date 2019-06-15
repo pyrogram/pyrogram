@@ -16,89 +16,79 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from base64 import b64encode
 from struct import pack
 from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .photo_size import PhotoSize
-from ..pyrogram_type import PyrogramType
+from .thumbnail import Thumbnail
+from ..object import Object
 from ...ext.utils import encode
 
 
-class Photo(PyrogramType):
-    """This object represents a Photo.
+class Photo(Object):
+    """A Photo.
 
-    Args:
-        id (``str``):
+    Parameters:
+        file_id (``str``):
             Unique identifier for this photo.
+
+        width (``int``):
+            Photo width.
+
+        height (``int``):
+            Photo height.
+
+        file_size (``int``):
+            File size.
 
         date (``int``):
             Date the photo was sent in Unix time.
 
-        sizes (List of :obj:`PhotoSize <pyrogram.PhotoSize>`):
-            Available sizes of this photo.
+        thumbs (List of :obj:`Thumbnail`, *optional*):
+            Available thumbnails of this photo.
     """
 
-    __slots__ = ["id", "date", "sizes"]
+    __slots__ = ["file_id", "width", "height", "file_size", "date", "thumbs"]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
-        id: str,
+        client: "pyrogram.BaseClient" = None,
+        file_id: str,
+        width: int,
+        height: int,
+        file_size: int,
         date: int,
-        sizes: List[PhotoSize]
+        thumbs: List[Thumbnail]
     ):
         super().__init__(client)
 
-        self.id = id
+        self.file_id = file_id
+        self.width = width
+        self.height = height
+        self.file_size = file_size
         self.date = date
-        self.sizes = sizes
+        self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, photo: types.Photo):
+    def _parse(client, photo: types.Photo) -> "Photo":
         if isinstance(photo, types.Photo):
-            raw_sizes = photo.sizes
-            sizes = []
-
-            for raw_size in raw_sizes:
-                if isinstance(raw_size, (types.PhotoSize, types.PhotoCachedSize)):
-                    if isinstance(raw_size, types.PhotoSize):
-                        file_size = raw_size.size
-                    elif isinstance(raw_size, types.PhotoCachedSize):
-                        file_size = len(raw_size.bytes)
-                    else:
-                        file_size = 0
-
-                    loc = raw_size.location
-
-                    if isinstance(loc, types.FileLocation):
-                        size = PhotoSize(
-                            file_id=encode(
-                                pack(
-                                    "<iiqqqqi",
-                                    2, loc.dc_id, photo.id, photo.access_hash,
-                                    loc.volume_id, loc.secret, loc.local_id)),
-                            width=raw_size.w,
-                            height=raw_size.h,
-                            file_size=file_size,
-                            client=client
-                        )
-
-                        sizes.append(size)
+            big = photo.sizes[-1]
 
             return Photo(
-                id=b64encode(
+                file_id=encode(
                     pack(
-                        "<qq",
-                        photo.id,
-                        photo.access_hash
-                    ),
-                    b"-_"
-                ).decode().rstrip("="),
+                        "<iiqqc",
+                        2, photo.dc_id,
+                        photo.id, photo.access_hash,
+                        big.type.encode()
+                    )
+                ),
+                width=big.w,
+                height=big.h,
+                file_size=big.size,
                 date=photo.date,
-                sizes=sizes,
+                thumbs=Thumbnail._parse(client, photo),
                 client=client
             )

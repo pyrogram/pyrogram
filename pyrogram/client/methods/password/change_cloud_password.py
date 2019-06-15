@@ -30,9 +30,9 @@ class ChangeCloudPassword(BaseClient):
         new_password: str,
         new_hint: str = ""
     ) -> bool:
-        """Use this method to change your Two-Step Verification password (Cloud Password) with a new one.
+        """Change your Two-Step Verification password (Cloud Password) with a new one.
 
-        Args:
+        Parameters:
             current_password (``str``):
                 Your current password.
 
@@ -43,11 +43,11 @@ class ChangeCloudPassword(BaseClient):
                 A new password hint.
 
         Returns:
-            True on success.
+            ``bool``: True on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
-            ``ValueError`` in case there is no cloud password to change.
+            RPCError: In case of a Telegram RPC error.
+            ValueError: In case there is no cloud password to change.
         """
         r = self.send(functions.account.GetPassword())
 

@@ -1,0 +1,8 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /dev/*
+Disallow: /old/*
+
+Sitemap: https://docs.pyrogram.org/sitemap.xml

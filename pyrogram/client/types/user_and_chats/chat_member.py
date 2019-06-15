@@ -19,14 +19,14 @@
 import pyrogram
 
 from pyrogram.api import types
-from ..pyrogram_type import PyrogramType
+from ..object import Object
 
 
-class ChatMember(PyrogramType):
-    """This object contains information about one member of a chat.
+class ChatMember(Object):
+    """Contains information about one member of a chat.
 
-    Args:
-        user (:obj:`User <pyrogram.User>`):
+    Parameters:
+        user (:obj:`User`):
             Information about the user.
 
         status (``str``):
@@ -36,30 +36,34 @@ class ChatMember(PyrogramType):
         date (``int``, *optional*):
             Date when the user joined, unix time. Not available for creator.
 
-        invited_by (:obj:`User <pyrogram.User>`, *optional*):
+        is_member (``bool``, *optional*):
+            Restricted only. True, if the user is a member of the chat at the moment of the request.
+
+        invited_by (:obj:`User`, *optional*):
             Administrators and self member only. Information about the user who invited this member.
             In case the user joined by himself this will be the same as "user".
 
-        promoted_by (:obj:`User <pyrogram.User>`, *optional*):
+        promoted_by (:obj:`User`, *optional*):
             Administrators only. Information about the user who promoted this member as administrator.
 
-        restricted_by (:obj:`User <pyrogram.User>`, *optional*):
+        restricted_by (:obj:`User`, *optional*):
             Restricted and kicked only. Information about the user who restricted or kicked this member.
 
-        permissions (:obj:`ChatPermissions <pyrogram.ChatPermissions>` *optional*):
+        permissions (:obj:`ChatPermissions` *optional*):
             Administrators, restricted and kicked members only.
             Information about the member permissions.
     """
 
-    __slots__ = ["user", "status", "date", "invited_by", "promoted_by", "restricted_by", "permissions"]
+    __slots__ = ["user", "status", "date", "is_member", "invited_by", "promoted_by", "restricted_by", "permissions"]
 
     def __init__(
         self,
         *,
-        client: "pyrogram.client.ext.BaseClient",
+        client: "pyrogram.BaseClient" = None,
         user: "pyrogram.User",
         status: str,
         date: int = None,
+        is_member: bool = None,
         invited_by: "pyrogram.User" = None,
         promoted_by: "pyrogram.User" = None,
         restricted_by: "pyrogram.User" = None,
@@ -70,6 +74,7 @@ class ChatMember(PyrogramType):
         self.user = user
         self.status = status
         self.date = date
+        self.is_member = is_member
         self.invited_by = invited_by
         self.promoted_by = promoted_by
         self.restricted_by = restricted_by
@@ -123,12 +128,9 @@ class ChatMember(PyrogramType):
         if isinstance(member, types.ChannelParticipantBanned):
             return ChatMember(
                 user=user,
-                status=(
-                    "kicked" if member.banned_rights.view_messages
-                    else "left" if member.left
-                    else "restricted"
-                ),
+                status="kicked" if member.banned_rights.view_messages else "restricted",
                 date=member.date,
+                is_member=not member.left,
                 restricted_by=pyrogram.User._parse(client, users[member.kicked_by]),
                 permissions=pyrogram.ChatPermissions._parse(member),
                 client=client

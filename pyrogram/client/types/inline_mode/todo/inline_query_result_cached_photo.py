@@ -16,16 +16,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.client.types.pyrogram_type import PyrogramType
+from pyrogram.client.types.object import Object
 
 
-class InlineQueryResultCachedPhoto(PyrogramType):
+class InlineQueryResultCachedPhoto(Object):
     """Represents a link to a photo stored on the Telegram servers. By default, this photo will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
     Attributes:
         ID: ``0xb0700011``
 
-    Args:
+    Parameters:
         type (``str``):
             Type of the result, must be photo.
 
@@ -56,7 +56,8 @@ class InlineQueryResultCachedPhoto(PyrogramType):
     """
     ID = 0xb0700011
 
-    def __init__(self, type: str, id: str, photo_file_id: str, title: str = None, description: str = None, caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
+    def __init__(self, type: str, id: str, photo_file_id: str, title: str = None, description: str = None,
+                 caption: str = None, parse_mode: str = None, reply_markup=None, input_message_content=None):
         self.type = type  # string
         self.id = id  # string
         self.photo_file_id = photo_file_id  # string

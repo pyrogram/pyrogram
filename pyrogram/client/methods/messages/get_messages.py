@@ -18,12 +18,12 @@
 
 import logging
 import time
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
 
@@ -35,11 +35,11 @@ class GetMessages(BaseClient):
         message_ids: Union[int, Iterable[int]] = None,
         reply_to_message_ids: Union[int, Iterable[int]] = None,
         replies: int = 1
-    ) -> Union["pyrogram.Message", "pyrogram.Messages"]:
-        """Use this method to get one or more messages that belong to a specific chat.
+    ) -> Union["pyrogram.Message", List["pyrogram.Message"]]:
+        """Get one or more messages that belong to a specific chat.
         You can retrieve up to 200 messages at once.
 
-        Args:
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
@@ -55,15 +55,17 @@ class GetMessages(BaseClient):
                 If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
-                The number of subsequent replies to get for each message. Defaults to 1.
+                The number of subsequent replies to get for each message.
+                Pass 0 for no reply at all or -1 for unlimited replies.
+                Defaults to 1.
 
         Returns:
-            On success and in case *message_ids* or *reply_to_message_ids* was an iterable, the returned value will be a
-            :obj:`Messages <pyrogram.Messages>` even if a list contains just one element. Otherwise, if *message_ids* or
-            *reply_to_message_ids* was an integer, the single requested :obj:`Message <pyrogram.Message>` is returned.
+            :obj:`Message` | List of :obj:`Message`: In case *message_ids* was an integer, the single requested message is
+            returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of messages,
+            even if such iterable contained just a single element.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids
@@ -80,6 +82,9 @@ class GetMessages(BaseClient):
         ids = list(ids) if is_iterable else [ids]
         ids = [ids_type(id=i) for i in ids]
 
+        if replies < 0:
+            replies = (1 << 31) - 1
+
         if isinstance(peer, types.InputPeerChannel):
             rpc = functions.channels.GetMessages(channel=peer, id=ids)
         else:
@@ -94,6 +99,6 @@ class GetMessages(BaseClient):
             else:
                 break
 
-        messages = pyrogram.Messages._parse(self, r, replies=replies)
+        messages = utils.parse_messages(self, r, replies=replies)
 
-        return messages if is_iterable else messages.messages[0]
+        return messages if is_iterable else messages[0]

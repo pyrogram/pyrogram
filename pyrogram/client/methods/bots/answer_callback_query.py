@@ -29,10 +29,10 @@ class AnswerCallbackQuery(BaseClient):
         url: str = None,
         cache_time: int = 0
     ):
-        """Use this method to send answers to callback queries sent from inline keyboards.
+        """Send answers to callback queries sent from inline keyboards.
         The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
 
-        Args:
+        Parameters:
             callback_query_id (``str``):
                 Unique identifier for the query to be answered.
 
@@ -54,10 +54,10 @@ class AnswerCallbackQuery(BaseClient):
                 Telegram apps will support caching starting in version 3.14. Defaults to 0.
 
         Returns:
-            True, on success.
+            ``bool``: True, on success.
 
         Raises:
-            :class:`RPCError <pyrogram.RPCError>` in case of a Telegram RPC error.
+            RPCError: In case of a Telegram RPC error.
         """
         return self.send(
             functions.messages.SetBotCallbackAnswer(
