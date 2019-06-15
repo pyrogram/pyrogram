@@ -17,7 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import os
 import struct
+import time
+from datetime import datetime
 from threading import Event
 from typing import Union
 
@@ -25,12 +28,14 @@ import pyrogram
 from pyrogram.client.ext import BaseClient, FileData, utils
 from pyrogram.errors import FileIdInvalid
 
+DEFAULT_DOWNLOAD_DIR = "downloads/"
+
 
 class DownloadMedia(BaseClient):
     def download_media(
         self,
         message: Union["pyrogram.Message", str],
-        file_name: str = "",
+        file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -169,7 +174,40 @@ class DownloadMedia(BaseClient):
         done = Event()
         path = [None]
 
-        self.download_queue.put((data, file_name, done, progress, progress_args, path))
+        directory, file_name = os.path.split(file_name)
+        file_name = file_name or data.file_name or ""
+
+        if not os.path.isabs(file_name):
+            directory = self.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
+
+        media_type_str = self.MEDIA_TYPE_ID[data.media_type]
+
+        if not file_name:
+            guessed_extension = self.guess_extension(data.mime_type)
+
+            if data.media_type in (0, 1, 2, 14):
+                extension = ".jpg"
+            elif data.media_type == 3:
+                extension = guessed_extension or ".ogg"
+            elif data.media_type in (4, 10, 13):
+                extension = guessed_extension or ".mp4"
+            elif data.media_type == 5:
+                extension = guessed_extension or ".zip"
+            elif data.media_type == 8:
+                extension = guessed_extension or ".webp"
+            elif data.media_type == 9:
+                extension = guessed_extension or ".mp3"
+            else:
+                extension = ".unknown"
+
+            file_name = "{}_{}_{}{}".format(
+                media_type_str,
+                datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                self.rnd_id(),
+                extension
+            )
+
+        self.download_queue.put((data, directory, file_name, done, progress, progress_args, path))
 
         if block:
             done.wait()

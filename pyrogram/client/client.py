@@ -28,7 +28,6 @@ import tempfile
 import threading
 import time
 from configparser import ConfigParser
-from datetime import datetime
 from hashlib import sha256, md5
 from importlib import import_module
 from pathlib import Path
@@ -842,39 +841,7 @@ class Client(Methods, BaseClient):
             final_file_path = ""
 
             try:
-                data, file_name, done, progress, progress_args, path = packet
-
-                directory, file_name = os.path.split(file_name)
-                directory = directory or "downloads"
-
-                media_type_str = Client.MEDIA_TYPE_ID[data.media_type]
-
-                file_name = file_name or data.file_name
-
-                if not file_name:
-                    guessed_extension = self.guess_extension(data.mime_type)
-
-                    if data.media_type in (0, 1, 2, 14):
-                        extension = ".jpg"
-                    elif data.media_type == 3:
-                        extension = guessed_extension or ".ogg"
-                    elif data.media_type in (4, 10, 13):
-                        extension = guessed_extension or ".mp4"
-                    elif data.media_type == 5:
-                        extension = guessed_extension or ".zip"
-                    elif data.media_type == 8:
-                        extension = guessed_extension or ".webp"
-                    elif data.media_type == 9:
-                        extension = guessed_extension or ".mp3"
-                    else:
-                        continue
-
-                    file_name = "{}_{}_{}{}".format(
-                        media_type_str,
-                        datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                        self.rnd_id(),
-                        extension
-                    )
+                data, directory, file_name, done, progress, progress_args, path = packet
 
                 temp_file_path = self.get_file(
                     media_type=data.media_type,

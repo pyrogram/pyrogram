@@ -19,6 +19,8 @@
 import os
 import platform
 import re
+import sys
+from pathlib import Path
 from queue import Queue
 from threading import Lock
 
@@ -45,6 +47,8 @@ class BaseClient:
 
     LANG_CODE = "en"
 
+    PARENT_DIR = Path(sys.argv[0]).parent
+
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
@@ -52,8 +56,8 @@ class BaseClient:
     DOWNLOAD_WORKERS = 1
     OFFLINE_SLEEP = 900
     WORKERS = 4
-    WORKDIR = "."
-    CONFIG_FILE = "./config.ini"
+    WORKDIR = PARENT_DIR
+    CONFIG_FILE = PARENT_DIR / "config.ini"
 
     MEDIA_TYPE_ID = {
         0: "photo_thumbnail",
