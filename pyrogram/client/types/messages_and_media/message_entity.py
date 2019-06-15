@@ -32,7 +32,7 @@ class MessageEntity(PyrogramType):
             Type of the entity.
             Can be "mention" (@username), "hashtag", "cashtag", "bot_command", "url", "email", "phone_number", "bold"
             (bold text), "italic" (italic text), "code" (monowidth string), "pre" (monowidth block), "text_link"
-            (for clickable text URLs), "text_mention" (mentioning without the users username).
+            (for clickable text URLs), "text_mention" (for custom text mentions based on users' identifiers).
 
         offset (``int``):
             Offset in UTF-16 code units to the start of the entity.
