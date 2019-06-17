@@ -16,34 +16,30 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import Union
 
 import pyrogram
-from pyrogram.api import functions
+from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class AddContacts(BaseClient):
-    def add_contacts(
+class UnblockUser(BaseClient):
+    def unblock_user(
         self,
-        contacts: List["pyrogram.InputPhoneContact"]
-    ):
-        """Add contacts to your Telegram address book.
-
-        Parameters:
-            contacts (List of :obj:`InputPhoneContact`):
-                The contact list to be added
+        user_id: Union[int, str]
+    ) -> bool:
+        """Unblock a user.
 
         Returns:
-            :obj:`types.contacts.ImportedContacts`
+            ``bool``: True on success
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
+            RPCError: In case of Telegram RPC Error.
         """
-        imported_contacts = self.send(
-            functions.contacts.ImportContacts(
-                contacts=contacts
+        return bool(
+            self.send(
+                functions.contact.Unblock(
+                    id=self.resolve_peer(user_id)
+                )
             )
         )
-
-        return imported_contacts
