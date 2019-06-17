@@ -34,6 +34,9 @@ class AddContacts(BaseClient):
             contacts (List of :obj:`InputPhoneContact`):
                 The contact list to be added
 
+        Returns:
+            :obj:`types.contacts.ImportedContacts`
+
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
