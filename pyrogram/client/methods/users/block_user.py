@@ -16,30 +16,30 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .block_user import BlockUser
-from .delete_profile_photos import DeleteProfilePhotos
-from .get_me import GetMe
-from .get_profile_photos import GetProfilePhotos
-from .get_profile_photos_count import GetProfilePhotosCount
-from .get_user_dc import GetUserDC
-from .get_users import GetUsers
-from .iter_profile_photos import IterProfilePhotos
-from .set_profile_photo import SetProfilePhoto
-from .unblock_user import UnblockUser
-from .update_username import UpdateUsername
+from typing import Union
+
+import pyrogram
+from pyrogram.api import functions, types
+from ...ext import BaseClient
 
 
-class Users(
-    BlockUser,
-    GetProfilePhotos,
-    SetProfilePhoto,
-    DeleteProfilePhotos,
-    GetUsers,
-    GetMe,
-    UpdateUsername,
-    GetProfilePhotosCount,
-    GetUserDC,
-    IterProfilePhotos,
-    UnblockUser
-):
-    pass
+class BlockUser(BaseClient):
+    def block_user(
+        self,
+        user_id: Union[int, str]
+    ) -> bool:
+        """Block a user.
+
+        Returns:
+            ``bool``: True on success
+
+        Raises:
+            RPCError: In case of Telegram RPC Error.
+        """
+        return bool(
+            self.send(
+                functions.contact.Block(
+                    id=self.resolve_peer(user_id)
+                )
+            )
+        )
