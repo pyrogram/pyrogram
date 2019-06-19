@@ -32,6 +32,7 @@ Utilities
     - :meth:`~Client.add_handler`
     - :meth:`~Client.remove_handler`
     - :meth:`~Client.stop_transmission`
+    - :meth:`~Client.export_session_string`
 
 Messages
 ^^^^^^^^
@@ -186,6 +187,7 @@ Details
 .. automethod:: Client.add_handler()
 .. automethod:: Client.remove_handler()
 .. automethod:: Client.stop_transmission()
+.. automethod:: Client.export_session_string()
 
 ..  Messages
 .. automethod:: Client.send_message()
