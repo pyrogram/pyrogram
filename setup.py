@@ -174,7 +174,7 @@ setup(
     zip_safe=False,
     install_requires=requires,
     extras_require={
-        "fast": ["tgcrypto==1.1.1"]
+        "fast": ["tgcrypto==1.2.0"]
     },
     cmdclass={
         "clean": Clean,
