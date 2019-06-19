@@ -88,17 +88,9 @@ class BaseClient:
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
     def __init__(self):
-        self.is_bot = None
-        self.dc_id = None
-        self.auth_key = None
-        self.user_id = None
-        self.date = None
+        self.storage = None
 
         self.rnd_id = MsgId
-
-        self.peers_by_id = {}
-        self.peers_by_username = {}
-        self.peers_by_phone = {}
 
         self.markdown = Markdown(self)
         self.html = HTML(self)

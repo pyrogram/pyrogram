@@ -18,16 +18,16 @@
 
 import base64
 import struct
-from base64 import b64decode, b64encode
 from typing import Union, List
 
 import pyrogram
+
 from . import BaseClient
 from ...api import types
 
 
 def decode(s: str) -> bytes:
-    s = b64decode(s + "=" * (-len(s) % 4), "-_")
+    s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
     assert s[-1] == 2
@@ -59,7 +59,7 @@ def encode(s: bytes) -> str:
 
             r += bytes([i])
 
-    return b64encode(r, b"-_").decode().rstrip("=")
+    return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
 
 def get_peer_id(input_peer) -> int:

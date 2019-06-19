@@ -34,6 +34,7 @@ from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt,
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
+
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -70,12 +71,14 @@ class Session:
         64: "[64] invalid container"
     }
 
-    def __init__(self,
-                 client: pyrogram,
-                 dc_id: int,
-                 auth_key: bytes,
-                 is_media: bool = False,
-                 is_cdn: bool = False):
+    def __init__(
+        self,
+        client: pyrogram,
+        dc_id: int,
+        auth_key: bytes,
+        is_media: bool = False,
+        is_cdn: bool = False
+    ):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
@@ -113,7 +116,12 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
+            self.connection = Connection(
+                self.dc_id,
+                self.client.storage.test_mode,
+                self.client.ipv6,
+                self.client.proxy
+            )
 
             try:
                 self.connection.connect()

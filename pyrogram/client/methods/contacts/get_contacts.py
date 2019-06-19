@@ -46,5 +46,4 @@ class GetContacts(BaseClient):
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total contacts: {}".format(len(self.peers_by_phone)))
                 return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)
