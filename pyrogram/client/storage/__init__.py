@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .abstract import SessionStorage, SessionDoesNotExist
-from .memory import MemorySessionStorage
-from .json import JsonSessionStorage
-from .string import StringSessionStorage
-from .sqlite import SQLiteSessionStorage
+from .memory_storage import MemoryStorage
+from .file_storage import FileStorage
+from .storage import Storage

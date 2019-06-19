@@ -26,14 +26,13 @@ import shutil
 import tempfile
 import threading
 import time
-import warnings
 from configparser import ConfigParser
 from hashlib import sha256, md5
 from importlib import import_module
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
-from typing import Union, List, Type
+from typing import Union, List
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import TLObject
@@ -205,24 +204,9 @@ class Client(Methods, BaseClient):
         no_updates: bool = None,
         takeout: bool = None
     ):
+        super().__init__()
 
-        if isinstance(session_name, str):
-            if session_name == ':memory:':
-                session_storage = MemorySessionStorage(self)
-            elif session_name.startswith(':'):
-                session_storage = StringSessionStorage(self, session_name)
-            else:
-                session_storage = SQLiteSessionStorage(self, session_name)
-        elif isinstance(session_name, SessionStorage):
-            session_storage = session_name
-        else:
-            raise RuntimeError('Wrong session_name passed, expected str or SessionConfig subclass')
-
-        super().__init__(session_storage)
-
-        super().__init__(session_storage)
-
-        self.session_name = str(session_name)  # TODO: build correct session name
+        self.session_name = session_name
         self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
         self.app_version = app_version
@@ -232,7 +216,7 @@ class Client(Methods, BaseClient):
         self.ipv6 = ipv6
         # TODO: Make code consistent, use underscore for private/protected fields
         self._proxy = proxy
-        self.session_storage.test_mode = test_mode
+        self.test_mode = test_mode
         self.bot_token = bot_token
         self.phone_number = phone_number
         self.phone_code = phone_code

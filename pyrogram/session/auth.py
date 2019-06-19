@@ -22,10 +22,12 @@ from hashlib import sha1
 from io import BytesIO
 from os import urandom
 
+import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.api.core import TLObject, Long, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
+
 from .internals import MsgId
 
 log = logging.getLogger(__name__)
@@ -34,11 +36,11 @@ log = logging.getLogger(__name__)
 class Auth:
     MAX_RETRIES = 5
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict):
+    def __init__(self, client: "pyrogram.Client", dc_id: int):
         self.dc_id = dc_id
-        self.test_mode = test_mode
-        self.ipv6 = ipv6
-        self.proxy = proxy
+        self.test_mode = client.storage.test_mode
+        self.ipv6 = client.ipv6
+        self.proxy = client.proxy
 
         self.connection = None
 

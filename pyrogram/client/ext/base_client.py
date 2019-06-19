@@ -27,7 +27,6 @@ from threading import Lock
 from pyrogram import __version__
 from ..style import Markdown, HTML
 from ...session.internals import MsgId
-from ..session_storage import SessionStorage
 
 
 class BaseClient:

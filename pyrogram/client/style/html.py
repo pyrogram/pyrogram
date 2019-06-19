@@ -31,16 +31,14 @@ from pyrogram.api.types import (
 )
 from pyrogram.errors import PeerIdInvalid
 from . import utils
-from ..session_storage import SessionStorage
 
 
 class HTML:
     HTML_RE = re.compile(r"<(\w+)(?: href=([\"'])([^<]+)\2)?>([^>]+)</\1>")
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, session_storage: SessionStorage, client: "pyrogram.BaseClient" = None):
+    def __init__(self, client: "pyrogram.BaseClient" = None):
         self.client = client
-        self.session_storage = session_storage
 
     def parse(self, message: str):
         entities = []
@@ -56,9 +54,10 @@ class HTML:
 
                 if mention:
                     user_id = int(mention.group(1))
+
                     try:
-                        input_user = self.session_storage.get_peer_by_id(user_id)
-                    except KeyError:
+                        input_user = self.client.resolve_peer(user_id)
+                    except PeerIdInvalid:
                         input_user = None
 
                     entity = (
