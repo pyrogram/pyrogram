@@ -87,13 +87,13 @@ class BaseClient:
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
-    def __init__(self, session_storage: SessionStorage):
-        self.session_storage = session_storage
+    def __init__(self):
+        self.storage = None
 
         self.rnd_id = MsgId
 
-        self.markdown = Markdown(self.session_storage, self)
-        self.html = HTML(self.session_storage, self)
+        self.markdown = Markdown(self)
+        self.html = HTML(self)
 
         self.session = None
         self.media_sessions = {}

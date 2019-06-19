@@ -16,15 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import base64
-import json
 import logging
-import os
-import shutil
 import time
 from threading import Thread, Event, Lock
-
-from . import utils
 
 log = logging.getLogger(__name__)
 
@@ -81,10 +75,13 @@ class Syncer:
 
     @classmethod
     def sync(cls, client):
-        client.session_storage.date = int(time.time())
         try:
-            client.session_storage.save(sync=True)
+            start = time.time()
+            client.storage.save()
         except Exception as e:
             log.critical(e, exc_info=True)
         else:
-            log.info("Synced {}".format(client.session_name))
+            log.info('Synced "{}" in {:.6} ms'.format(
+                client.storage.name,
+                (time.time() - start) * 1000
+            ))
