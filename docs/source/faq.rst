@@ -205,6 +205,34 @@ mechanism is also `confirmed <https://twitter.com/telegram/status/42713144665519
 it's currently not possible to have your account migrated, in any way, simply because the feature was once planned but
 not yet implemented.
 
+Why is my client reacting slowly in supergroups?
+------------------------------------------------
+
+This issue affects only some supergroups or only some members within the same supergroup. Mostly, it affects supergroups
+whose creator's account (and thus the supergroup itself) lives inside a **different DC**, far away from yours, but could
+also depend on where a member is connecting from.
+
+Because of how Telegram works internally, every single message you receive from and send to other members must pass
+through the creator's DC, and in the worst case where you, the creator and another member all belong to three different
+DCs, the other member messages have to go through from its DC to the creator's DC and finally to your DC. This process
+will inevitably take its time.
+
+    To confirm this theory and see it by yourself, you can test in a supergroup where you are sure all parties live
+    inside the same DC. In this case the responses will be faster.
+
+Another reason that makes responses come slowly is that messages are **dispatched by priority**. Depending on the kind
+of member, some users receive messages faster than others and for big and busy supergroups the delay might become
+noticeable, especially if you are among the lower end of the priority list:
+
+1. Creator.
+2. Administrators.
+3. Bots.
+4. Mentioned users.
+5. Recent online users.
+6. Everyone else.
+
+Thanks `@Manuel15 <https://t.me/PyrogramChat/76990>`_ for this list.
+
 I keep getting PEER_ID_INVALID error!
 -------------------------------------
 
