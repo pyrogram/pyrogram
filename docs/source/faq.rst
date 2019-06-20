@@ -1,6 +1,9 @@
 Pyrogram FAQ
 ============
 
+.. role:: strike
+    :class: strike
+
 This FAQ page provides answers to common questions about Pyrogram and, to some extent, Telegram in general.
 
 .. tip::
@@ -102,9 +105,11 @@ one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
 Can I use Bot API's file_ids in Pyrogram?
 -----------------------------------------
 
-Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram...
+:strike:`Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.`
 
-...at least for now.
+Starting from :doc:`Pyrogram v0.14.1 (Layer 100) <releases/v0.14.1>`, the file_id format of all photo-like objects has
+changed. Types affected are: :obj:`~pyrogram.Thumbnail`, :obj:`~pyrogram.ChatPhoto` and :obj:`~pyrogram.Photo`. Any
+other file id remains compatible with the Bot API.
 
 Telegram is slowly changing some server's internals and it's doing it in such a way that file ids are going to break
 inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
