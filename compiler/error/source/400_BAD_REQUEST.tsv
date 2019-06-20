@@ -106,3 +106,4 @@ CHAT_LINK_EXISTS	The action failed because the supergroup is linked to a channel
 LINK_NOT_MODIFIED	The chat link was not modified because you tried to link to the same target
 BROADCAST_ID_INVALID	The channel is invalid
 MEGAGROUP_ID_INVALID	The supergroup is invalid
+BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
