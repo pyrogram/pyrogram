@@ -29,7 +29,7 @@ Terms
         achieve high quality and availability for services.
 
     RPC
-        Acronym for Remote Procedure call, that is, a function which gets executed at some remote place (i.e. Telegram
+        Acronym for Remote Procedure Call, that is, a function which gets executed at some remote place (i.e. Telegram
         server) and not in your local machine.
 
     RPCError
