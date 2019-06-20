@@ -77,7 +77,7 @@ class FileStorage(MemoryStorage):
 
         if file_exists:
             try:
-                with open(path, encoding="utf-8") as f:
+                with open(str(path), encoding="utf-8") as f:
                     session_json = json.load(f)
             except ValueError:
                 pass
@@ -98,7 +98,7 @@ class FileStorage(MemoryStorage):
             log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
 
         self.conn = sqlite3.connect(
-            path,
+            str(path),
             timeout=1,
             check_same_thread=False
         )
