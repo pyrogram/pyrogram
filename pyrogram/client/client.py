@@ -990,7 +990,7 @@ class Client(Methods, BaseClient):
 
     def load_config(self):
         parser = ConfigParser()
-        parser.read(self.config_file)
+        parser.read(str(self.config_file))
 
         if self.api_id and self.api_hash:
             pass

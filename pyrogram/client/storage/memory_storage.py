@@ -46,7 +46,7 @@ class MemoryStorage(Storage):
 
     def create(self):
         with self.lock, self.conn:
-            with open(Path(__file__).parent / "schema.sql", "r") as schema:
+            with open(str(Path(__file__).parent / "schema.sql"), "r") as schema:
                 self.conn.executescript(schema.read())
 
             self.conn.execute(
