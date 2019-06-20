@@ -107,3 +107,4 @@ LINK_NOT_MODIFIED	The chat link was not modified because you tried to link to th
 BROADCAST_ID_INVALID	The channel is invalid
 MEGAGROUP_ID_INVALID	The supergroup is invalid
 BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
+START_PARAM_INVALID	The start parameter is invalid
