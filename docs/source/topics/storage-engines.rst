@@ -31,7 +31,7 @@ File Storage
 ^^^^^^^^^^^^
 
 This is the most common storage engine. It is implemented by using **SQLite**, which will store the session and peers
-details. The database will be saved to disk as a single portable file and is designed to efficiently save and retrieve
+details. The database will be saved to disk as a single portable file and is designed to efficiently store and retrieve
 peers whenever they are needed.
 
 To use this type of engine, simply pass any name of your choice to the ``session_name`` parameter of the
@@ -51,7 +51,7 @@ session database will be automatically loaded.
 Memory Storage
 ^^^^^^^^^^^^^^
 
-In case you don't want to have any session file saved on disk, you can use an in-memory storage by passing the special
+In case you don't want to have any session file saved to disk, you can use an in-memory storage by passing the special
 session name "**:memory:**" to the ``session_name`` parameter of the :obj:`~pyrogram.Client` constructor:
 
 .. code-block:: python
@@ -61,15 +61,11 @@ session name "**:memory:**" to the ``session_name`` parameter of the :obj:`~pyro
     with Client(":memory:") as app:
         print(app.get_me())
 
-This database is still backed by SQLite, but exists purely in memory. However, once you stop a client, the entire
-database is discarded and the session details used for logging in again will be lost forever.
+This storage engine is still backed by SQLite, but the database exists purely in memory. This means that, once you stop a
+client, the entire database is discarded and the session details used for logging in again will be lost forever.
 
 Session Strings
 ---------------
-
-Session strings are useful when you want to run authorized Pyrogram clients on platforms like
-`Heroku <https://www.heroku.com/>`_, where their ephemeral filesystems makes it much harder for a file-based storage
-engine to properly work as intended.
 
 In case you want to use an in-memory storage, but also want to keep access to the session you created, call
 :meth:`~pyrogram.Client.export_session_string` anytime before stopping the client...
@@ -81,8 +77,8 @@ In case you want to use an in-memory storage, but also want to keep access to th
     with Client(":memory:") as app:
         print(app.export_session_string())
 
-...and save the resulting string somewhere. You can use this string as session name the next time you want to login
-using the same session; the storage used will still be completely in-memory:
+...and save the resulting (quite long) string somewhere. You can use this string as session name the next time you want
+to login using the same session; the storage used will still be completely in-memory:
 
 .. code-block:: python
 
@@ -93,3 +89,11 @@ using the same session; the storage used will still be completely in-memory:
     with Client(session_string) as app:
         print(app.get_me())
 
+Session strings are useful when you want to run authorized Pyrogram clients on platforms like
+`Heroku <https://www.heroku.com/>`_, where their ephemeral filesystems makes it much harder for a file-based storage
+engine to properly work as intended.
+
+But, why is the session string so long? Can't it be shorter? No, it can't. The session string already packs the bare
+minimum data Pyrogram needs to successfully reconnect to an authorized session, and the 2048-bits auth key is the major
+contributor to the overall length. Needless to repeat that this string, as well as any other session storage, represent
+strictly personal data. Keep them safe.
