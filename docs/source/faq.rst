@@ -185,9 +185,12 @@ IP addresses are now kept as aliases.
     DC2, "AMS, Amsterdam, NL", ``149.154.167.40``, ``2001:67c:4e8:f002::e``
     DC3*, "MIA, Miami FL, USA", ``149.154.175.117``, ``2001:b28:f23d:f003::e``
 
+.. centered:: More info about the Test Environment can be found :doc:`here <topics/test-servers>`.
+
 ***** Alias DC
 
-More info about the Test Environment can be found :doc:`here <topics/test-servers>`.
+Thanks to `@FrayxRulez <https://t.me/tgbetachat/104921>`_ for telling about alias DCs.
+
 
 I want to migrate my account from DCX to DCY.
 ---------------------------------------------
@@ -204,6 +207,8 @@ decide to automatically migrate a user in case of prolonged usages from a distan
 mechanism is also `confirmed <https://twitter.com/telegram/status/427131446655197184>`_ to exist by Telegram itself,
 it's currently not possible to have your account migrated, in any way, simply because the feature was once planned but
 not yet implemented.
+
+Thanks to `@gabriel <https://t.me/AnotherGroup/217699>`_ for confirming the feature was not implemented yet.
 
 Why is my client reacting slowly in supergroups?
 ------------------------------------------------
@@ -231,7 +236,7 @@ noticeable, especially if you are among the lower end of the priority list:
 5. Recent online users.
 6. Everyone else.
 
-Thanks `@Manuel15 <https://t.me/PyrogramChat/76990>`_ for this list.
+Thanks to `@Manuel15 <https://t.me/PyrogramChat/76990>`_ for the priority list.
 
 I keep getting PEER_ID_INVALID error!
 -------------------------------------
@@ -276,7 +281,7 @@ Having said that, here's a list of what Telegram definitely doesn't like:
 - Spam, sending unsolicited messages or adding people to unwanted groups and channels.
 - Virtual/VoIP and cheap real numbers, because they are relatively easy to get and likely used for spam/flood.
 
-And here's a good explanation of how, probably, the system works:
+And thanks to `@koteeq <https://t.me/koteeq>`_, here's a good explanation of how, probably, the system works:
 
 .. raw:: html
 
@@ -285,8 +290,7 @@ And here's a good explanation of how, probably, the system works:
         data-telegram-post="PyrogramChat/69424"
         data-width="100%">
     </script>
-
-.. centered:: Join the discussion at `@Pyrogram <https://t.me/pyrogram>`_
+    <br><br>
 
 However, you might be right, and your account was deactivated/limited without any good reason. This could happen because
 of mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at
