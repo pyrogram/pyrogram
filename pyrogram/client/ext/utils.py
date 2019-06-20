@@ -17,18 +17,20 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import base64
 import struct
 import sys
-from base64 import b64decode, b64encode
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import Union
+from typing import Union, List
+
+import pyrogram
 
 from . import BaseClient
 from ...api import types
 
 
 def decode(s: str) -> bytes:
-    s = b64decode(s + "=" * (-len(s) % 4), "-_")
+    s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
     assert s[-1] == 2
@@ -60,7 +62,7 @@ def encode(s: bytes) -> str:
 
             r += bytes([i])
 
-    return b64encode(r, b"-_").decode().rstrip("=")
+    return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
 
 async def ainput(prompt: str = ""):
@@ -147,3 +149,69 @@ def get_input_media_from_file_id(
             )
 
         raise ValueError("Unknown media type: {}".format(file_id_str))
+
+
+async def parse_messages(client, messages: types.messages.Messages, replies: int = 1) -> List["pyrogram.Message"]:
+    users = {i.id: i for i in messages.users}
+    chats = {i.id: i for i in messages.chats}
+
+    if not messages.messages:
+        return pyrogram.List()
+
+    parsed_messages = []
+
+    for message in messages.messages:
+        parsed_messages.append(await pyrogram.Message._parse(client, message, users, chats, replies=0))
+
+    if replies:
+        messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
+        reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
+
+        if reply_message_ids:
+            reply_messages = await client.get_messages(
+                parsed_messages[0].chat.id,
+                reply_to_message_ids=reply_message_ids,
+                replies=replies - 1
+            )
+
+            for message in parsed_messages:
+                reply_id = messages_with_replies[message.message_id]
+
+                for reply in reply_messages:
+                    if reply.message_id == reply_id:
+                        message.reply_to_message = reply
+
+    return pyrogram.List(parsed_messages)
+
+
+def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
+    messages = update.messages
+    channel_id = getattr(update, "channel_id", None)
+
+    parsed_messages = []
+
+    for message in messages:
+        parsed_messages.append(
+            pyrogram.Message(
+                message_id=message,
+                chat=pyrogram.Chat(
+                    id=int("-100" + str(channel_id)),
+                    type="channel",
+                    client=client
+                ) if channel_id is not None else None,
+                client=client
+            )
+        )
+
+    return pyrogram.List(parsed_messages)
+
+
+def unpack_inline_message_id(inline_message_id: str) -> types.InputBotInlineMessageID:
+    r = inline_message_id + "=" * (-len(inline_message_id) % 4)
+    r = struct.unpack("<iqq", base64.b64decode(r, altchars="-_"))
+
+    return types.InputBotInlineMessageID(
+        dc_id=r[0],
+        id=r[1],
+        access_hash=r[2]
+    )

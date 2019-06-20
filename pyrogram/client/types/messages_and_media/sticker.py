@@ -95,7 +95,7 @@ class Sticker(Object):
         self.width = width
         self.height = height
         self.emoji = emoji
-        self.set_name = set_name,
+        self.set_name = set_name
         self.thumbs = thumbs
         # self.mask_position = mask_position
 

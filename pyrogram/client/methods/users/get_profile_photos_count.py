@@ -18,6 +18,8 @@
 
 from typing import Union
 
+from pyrogram.api import functions, types
+
 from ...ext import BaseClient
 
 
@@ -38,4 +40,28 @@ class GetProfilePhotosCount(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return await self.get_profile_photos(chat_id, limit=1).total_count
+        peer_id = await self.resolve_peer(chat_id)
+
+        if isinstance(peer_id, types.InputPeerChannel):
+            r = await self.send(
+                functions.messages.GetSearchCounters(
+                    peer=peer_id,
+                    filters=[types.InputMessagesFilterChatPhotos()],
+                )
+            )
+
+            return r[0].count
+        else:
+            r = await self.send(
+                functions.photos.GetUserPhotos(
+                    user_id=peer_id,
+                    offset=0,
+                    max_id=0,
+                    limit=1
+                )
+            )
+
+            if isinstance(r, types.photos.Photos):
+                return len(r.photos)
+            else:
+                return r.count

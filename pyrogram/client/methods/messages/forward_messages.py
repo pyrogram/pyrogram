@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Iterable
+from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
+
 from ...ext import BaseClient
 
 
@@ -32,7 +33,7 @@ class ForwardMessages(BaseClient):
         disable_notification: bool = None,
         as_copy: bool = False,
         remove_caption: bool = False
-    ) -> "pyrogram.Messages":
+    ) -> List["pyrogram.Message"]:
         """Forward messages of any kind.
 
         Parameters:
@@ -64,9 +65,9 @@ class ForwardMessages(BaseClient):
                 Defaults to False.
 
         Returns:
-            :obj:`Message` | :obj:`Messages`: In case *message_ids* was an integer, the single forwarded message is
-            returned, otherwise, in case *message_ids* was an iterable, the returned value will be an object containing
-            a list of messages, even if such iterable contained just a single element.
+            :obj:`Message` | List of :obj:`Message`: In case *message_ids* was an integer, the single forwarded message
+            is returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of
+            messages, even if such iterable contained just a single element.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -79,9 +80,9 @@ class ForwardMessages(BaseClient):
             forwarded_messages = []
 
             for chunk in [message_ids[i:i + 200] for i in range(0, len(message_ids), 200)]:
-                messages = await self.get_messages(chat_id=from_chat_id, message_ids=chunk)  # type: pyrogram.Messages
+                messages = await self.get_messages(chat_id=from_chat_id, message_ids=chunk)
 
-                for message in messages.messages:
+                for message in messages:
                     forwarded_messages.append(
                         await message.forward(
                             chat_id,
@@ -91,11 +92,7 @@ class ForwardMessages(BaseClient):
                         )
                     )
 
-            return pyrogram.Messages(
-                client=self,
-                total_count=len(forwarded_messages),
-                messages=forwarded_messages
-            ) if is_iterable else forwarded_messages[0]
+            return pyrogram.List(forwarded_messages) if is_iterable else forwarded_messages[0]
         else:
             r = await self.send(
                 functions.messages.ForwardMessages(
@@ -116,13 +113,9 @@ class ForwardMessages(BaseClient):
                 if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
                     forwarded_messages.append(
                         await pyrogram.Message._parse(
-                        self, i.message,
-                        users, chats
+                            self, i.message,
+                            users, chats
+                        )
                     )
-                )
 
-            return pyrogram.Messages(
-                client=self,
-                total_count=len(forwarded_messages),
-                messages=forwarded_messages
-            ) if is_iterable else forwarded_messages[0]
+            return pyrogram.List(forwarded_messages) if is_iterable else forwarded_messages[0]

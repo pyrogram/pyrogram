@@ -17,12 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from typing import Union
 
 from pyrogram.api import types, functions
 from pyrogram.client.ext import BaseClient
-from pyrogram.errors import FloodWait
 
 log = logging.getLogger(__name__)
 
@@ -51,34 +49,20 @@ class GetHistoryCount(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
 
-        peer = await self.resolve_peer(chat_id)
+        r = await self.send(
+            functions.messages.GetHistory(
+                peer=await self.resolve_peer(chat_id),
+                offset_id=0,
+                offset_date=0,
+                add_offset=0,
+                limit=1,
+                max_id=0,
+                min_id=0,
+                hash=0
+            )
+        )
 
-        if not isinstance(peer, types.InputPeerChannel):
-            offset = 0
-            limit = 100
-
-            while True:
-                try:
-                    r = await self.send(
-                        functions.messages.GetHistory(
-                            peer=peer,
-                            offset_id=1,
-                            offset_date=0,
-                            add_offset=-offset - limit,
-                            limit=limit,
-                            max_id=0,
-                            min_id=0,
-                            hash=0
-                        )
-                    )
-                except FloodWait as e:
-                    log.warning("Sleeping for {}s".format(e.x))
-                    time.sleep(e.x)
-                    continue
-
-                if not r.messages:
-                    return offset
-
-                offset += len(r.messages)
-
-        return (await self.get_history(chat_id=chat_id, limit=1)).total_count
+        if isinstance(r, types.messages.Messages):
+            return len(r.messages)
+        else:
+            return r.count

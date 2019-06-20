@@ -21,6 +21,7 @@ from typing import Union
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import UserNotParticipant
+
 from ...ext import BaseClient
 
 
@@ -51,13 +52,18 @@ class GetChatMember(BaseClient):
         user = await self.resolve_peer(user_id)
 
         if isinstance(chat, types.InputPeerChat):
-            full_chat = await self.send(
+            r = await self.send(
                 functions.messages.GetFullChat(
                     chat_id=chat.chat_id
                 )
             )
 
-            for member in pyrogram.ChatMembers._parse(self, full_chat).chat_members:
+            members = r.full_chat.participants.participants
+            users = {i.id: i for i in r.users}
+
+            for member in members:
+                member = pyrogram.ChatMember._parse(self, member, users)
+
                 if isinstance(user, types.InputPeerSelf):
                     if member.user.is_self:
                         return member

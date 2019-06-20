@@ -16,34 +16,35 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import asyncio
-import logging
-from typing import List
-
 import pyrogram
 from pyrogram.api import functions
-from pyrogram.errors import FloodWait
-from ...ext import BaseClient
-
-log = logging.getLogger(__name__)
+from pyrogram.client.ext import BaseClient, utils
 
 
-class GetContacts(BaseClient):
-    async def get_contacts(self) -> List["pyrogram.User"]:
-        # TODO: Create a Users object and return that
-        """Get contacts from your Telegram address book.
+class EditInlineReplyMarkup(BaseClient):
+    async def edit_inline_reply_markup(
+        self,
+        inline_message_id: str,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> bool:
+        """Edit only the reply markup of **inline** messages sent via the bot (for inline bots).
+
+        Parameters:
+            inline_message_id (``str``):
+                Identifier of the inline message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
 
         Returns:
-            List of :obj:`User`: On success, a list of users is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        while True:
-            try:
-                contacts = await self.send(functions.contacts.GetContacts(hash=0))
-            except FloodWait as e:
-                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
-                await asyncio.sleep(e.x)
-            else:
-                return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)
+        return await self.send(
+            functions.messages.EditInlineBotMessage(
+                id=utils.unpack_inline_message_id(inline_message_id),
+                reply_markup=reply_markup.write() if reply_markup else None,
+            )
+        )

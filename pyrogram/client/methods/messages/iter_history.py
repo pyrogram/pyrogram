@@ -18,9 +18,9 @@
 
 from typing import Union, Optional, AsyncGenerator
 
+import pyrogram
 from async_generator import async_generator, yield_
 
-import pyrogram
 from ...ext import BaseClient
 
 
@@ -76,14 +76,14 @@ class IterHistory(BaseClient):
         limit = min(100, total)
 
         while True:
-            messages = (await self.get_history(
+            messages = await self.get_history(
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
                 offset_id=offset_id,
                 offset_date=offset_date,
                 reverse=reverse
-            )).messages
+            )
 
             if not messages:
                 return

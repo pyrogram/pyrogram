@@ -172,3 +172,151 @@ class CallbackQuery(Object, Update):
             url=url,
             cache_time=cache_time
         )
+
+    def edit_text(
+        self,
+        text: str,
+        parse_mode: str = "",
+        disable_web_page_preview: bool = None,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> Union["pyrogram.Message", bool]:
+        """Edit the text of messages attached to this callback query.
+
+        Bound method *edit_message_text* of :obj:`CallbackQuery`.
+
+        Parameters:
+            text (``str``):
+                New text of the message.
+
+            parse_mode (``str``, *optional*):
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        if self.inline_message_id is None:
+            return self._client.edit_message_text(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                text=text,
+                parse_mode=parse_mode,
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_text(
+                inline_message_id=self.inline_message_id,
+                text=text,
+                parse_mode=parse_mode,
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=reply_markup
+            )
+
+    def edit_caption(
+        self,
+        caption: str,
+        parse_mode: str = "",
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> Union["pyrogram.Message", bool]:
+        """Edit the caption of media messages attached to this callback query.
+
+        Bound method *edit_message_caption* of :obj:`CallbackQuery`.
+
+        Parameters:
+            caption (``str``):
+                New caption of the message.
+
+            parse_mode (``str``, *optional*):
+                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
+                URLs in your message. Defaults to "markdown".
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return self.edit_text(caption, parse_mode, reply_markup)
+
+    def edit_media(
+        self,
+        media: "pyrogram.InputMedia",
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> Union["pyrogram.Message", bool]:
+        """Edit animation, audio, document, photo or video messages attached to this callback query.
+
+        Bound method *edit_message_media* of :obj:`CallbackQuery`.
+
+        Parameters:
+            media (:obj:`InputMedia`):
+                One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        if self.inline_message_id is None:
+            return self._client.edit_message_media(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                media=media,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_media(
+                inline_message_id=self.inline_message_id,
+                media=media,
+                reply_markup=reply_markup
+            )
+
+    def edit_reply_markup(
+        self,
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+    ) -> Union["pyrogram.Message", bool]:
+        """Edit only the reply markup of messages attached to this callback query.
+
+        Bound method *edit_message_reply_markup* of :obj:`CallbackQuery`.
+
+        Parameters:
+            reply_markup (:obj:`InlineKeyboardMarkup`):
+                An InlineKeyboardMarkup object.
+
+        Returns:
+            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
+            returned, otherwise True is returned (message sent via the bot, as inline query result).
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        if self.inline_message_id is None:
+            return self._client.edit_message_reply_markup(
+                chat_id=self.message.chat.id,
+                message_id=self.message.message_id,
+                reply_markup=reply_markup
+            )
+        else:
+            return self._client.edit_inline_reply_markup(
+                inline_message_id=self.inline_message_id,
+                reply_markup=reply_markup
+            )

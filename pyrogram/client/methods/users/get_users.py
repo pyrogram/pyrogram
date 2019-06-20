@@ -57,7 +57,7 @@ class GetUsers(BaseClient):
             )
         )
 
-        users = []
+        users = pyrogram.List()
 
         for i in r:
             users.append(pyrogram.User._parse(self, i))

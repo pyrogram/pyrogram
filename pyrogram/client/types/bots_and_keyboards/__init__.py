@@ -16,12 +16,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .bots_and_keyboards import *
-from .inline_mode import *
-from .input_media import *
-from .input_message_content import *
-from .list import List
-from .messages_and_media import *
-from .object import Object
-from .update import *
-from .user_and_chats import *
+from .callback_game import CallbackGame
+from .callback_query import CallbackQuery
+from .force_reply import ForceReply
+from .game_high_score import GameHighScore
+from .inline_keyboard_button import InlineKeyboardButton
+from .inline_keyboard_markup import InlineKeyboardMarkup
+from .keyboard_button import KeyboardButton
+from .reply_keyboard_markup import ReplyKeyboardMarkup
+from .reply_keyboard_remove import ReplyKeyboardRemove
+
+__all__ = [
+    "CallbackGame", "CallbackQuery", "ForceReply", "GameHighScore", "InlineKeyboardButton", "InlineKeyboardMarkup",
+    "KeyboardButton", "ReplyKeyboardMarkup", "ReplyKeyboardRemove"
+]

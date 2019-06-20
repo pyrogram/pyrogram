@@ -28,9 +28,9 @@ class EditMessageReplyMarkup(BaseClient):
         self,
         chat_id: Union[int, str],
         message_id: int,
-        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None,
     ) -> "pyrogram.Message":
-        """Edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+        """Edit only the reply markup of messages sent by the bot.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -45,18 +45,16 @@ class EditMessageReplyMarkup(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message` | ``bool``: In case the edited message is sent by the bot, the edited message is returned,
-            otherwise, True is returned in case the edited message is send by the user.
+            :obj:`Message`: On success, the edited message is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-
         r = await self.send(
             functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
-                reply_markup=reply_markup.write() if reply_markup else None
+                reply_markup=reply_markup.write() if reply_markup else None,
             )
         )
 

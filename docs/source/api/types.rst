@@ -30,10 +30,8 @@ Users & Chats
     - :class:`ChatPreview`
     - :class:`ChatPhoto`
     - :class:`ChatMember`
-    - :class:`ChatMembers`
     - :class:`ChatPermissions`
     - :class:`Dialog`
-    - :class:`Dialogs`
 
 Messages & Media
 ^^^^^^^^^^^^^^^^
@@ -42,10 +40,8 @@ Messages & Media
     :columns: 5
 
     - :class:`Message`
-    - :class:`Messages`
     - :class:`MessageEntity`
     - :class:`Photo`
-    - :class:`ProfilePhotos`
     - :class:`Thumbnail`
     - :class:`Audio`
     - :class:`Document`
@@ -61,8 +57,8 @@ Messages & Media
     - :class:`Poll`
     - :class:`PollOption`
 
-Keyboards
-^^^^^^^^^
+Bots & Keyboards
+^^^^^^^^^^^^^^^^
 
 .. hlist::
     :columns: 4
@@ -75,7 +71,6 @@ Keyboards
     - :class:`ForceReply`
     - :class:`CallbackQuery`
     - :class:`GameHighScore`
-    - :class:`GameHighScores`
     - :class:`CallbackGame`
 
 Input Media
@@ -123,17 +118,13 @@ Details
 .. autoclass:: ChatPreview()
 .. autoclass:: ChatPhoto()
 .. autoclass:: ChatMember()
-.. autoclass:: ChatMembers()
 .. autoclass:: ChatPermissions()
 .. autoclass:: Dialog()
-.. autoclass:: Dialogs()
 
 ..  Messages & Media
 .. autoclass:: Message()
-.. autoclass:: Messages()
 .. autoclass:: MessageEntity()
 .. autoclass:: Photo()
-.. autoclass:: ProfilePhotos()
 .. autoclass:: Thumbnail()
 .. autoclass:: Audio()
 .. autoclass:: Document()
@@ -149,7 +140,7 @@ Details
 .. autoclass:: Poll()
 .. autoclass:: PollOption()
 
-..  Keyboards
+..  Bots & Keyboards
 .. autoclass:: ReplyKeyboardMarkup()
 .. autoclass:: KeyboardButton()
 .. autoclass:: ReplyKeyboardRemove()
@@ -158,7 +149,6 @@ Details
 .. autoclass:: ForceReply()
 .. autoclass:: CallbackQuery()
 .. autoclass:: GameHighScore()
-.. autoclass:: GameHighScores()
 .. autoclass:: CallbackGame()
 
 ..  Input Media

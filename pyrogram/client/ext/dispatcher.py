@@ -22,6 +22,8 @@ from collections import OrderedDict
 
 import pyrogram
 from pyrogram.api import types
+
+from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
@@ -65,7 +67,7 @@ class Dispatcher:
             return await pyrogram.Message._parse(self.client, update.message, users, chats), MessageHandler
 
         async def deleted_messages_parser(update, users, chats):
-            return pyrogram.Messages._parse_deleted(self.client, update), DeletedMessagesHandler
+            return utils.parse_deleted_messages(self.client, update), DeletedMessagesHandler
 
         async def callback_query_parser(update, users, chats):
             return await pyrogram.CallbackQuery._parse(self.client, update, users), CallbackQueryHandler
@@ -106,6 +108,7 @@ class Dispatcher:
             await i
 
         self.update_worker_tasks.clear()
+        self.groups.clear()
 
         log.info("Stopped {} UpdateWorkerTasks".format(self.workers))
 

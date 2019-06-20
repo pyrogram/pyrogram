@@ -18,6 +18,10 @@
 
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
+from .edit_inline_caption import EditInlineCaption
+from .edit_inline_media import EditInlineMedia
+from .edit_inline_reply_markup import EditInlineReplyMarkup
+from .edit_inline_text import EditInlineText
 from .edit_message_caption import EditMessageCaption
 from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
@@ -82,6 +86,10 @@ class Messages(
     SendCachedMedia,
     GetHistoryCount,
     SendAnimatedSticker,
-    ReadHistory
+    ReadHistory,
+    EditInlineText,
+    EditInlineCaption,
+    EditInlineMedia,
+    EditInlineReplyMarkup
 ):
     pass

@@ -168,12 +168,13 @@ setup(
     python_requires="~=3.4",
     packages=find_packages(exclude=["compiler*"]),
     package_data={
-        "pyrogram.client.ext": ["mime.types"]
+        "pyrogram.client.ext": ["mime.types"],
+        "pyrogram.client.storage": ["schema.sql"]
     },
     zip_safe=False,
     install_requires=requires,
     extras_require={
-        "fast": ["tgcrypto==1.1.1"]
+        "fast": ["tgcrypto==1.2.0"]
     },
     cmdclass={
         "clean": Clean,

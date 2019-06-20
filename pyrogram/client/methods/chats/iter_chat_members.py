@@ -19,10 +19,10 @@
 from string import ascii_lowercase
 from typing import Union, AsyncGenerator, Optional
 
-from async_generator import async_generator, yield_
-
 import pyrogram
+from async_generator import async_generator, yield_
 from pyrogram.api import types
+
 from ...ext import BaseClient
 
 
@@ -103,13 +103,13 @@ class IterChatMembers(BaseClient):
             offset = 0
 
             while True:
-                chat_members = (await self.get_chat_members(
+                chat_members = await self.get_chat_members(
                     chat_id=chat_id,
                     offset=offset,
                     limit=limit,
                     query=q,
                     filter=filter
-                )).chat_members
+                )
 
                 if not chat_members:
                     break

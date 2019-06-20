@@ -16,34 +16,44 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import Union, List
 
-import pyrogram
-from pyrogram.api import functions
+from pyrogram.api import functions, types
+
 from ...ext import BaseClient
 
 
-class AddContacts(BaseClient):
-    async def add_contacts(
+class ArchiveChats(BaseClient):
+    async def archive_chats(
         self,
-        contacts: List["pyrogram.InputPhoneContact"]
-    ):
-        """Add contacts to your Telegram address book.
+        chat_ids: Union[int, str, List[Union[int, str]]],
+    ) -> bool:
+        """Archive one or more chats.
 
         Parameters:
-            contacts (List of :obj:`InputPhoneContact`):
-                The contact list to be added
+            chat_ids (``int`` | ``str`` | List[``int``, ``str``]):
+                Unique identifier (int) or username (str) of the target chat.
+                You can also pass a list of ids (int) or usernames (str).
 
         Returns:
-            :obj:`types.contacts.ImportedContacts`
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        imported_contacts = await self.send(
-            functions.contacts.ImportContacts(
-                contacts=contacts
+
+        if not isinstance(chat_ids, list):
+            chat_ids = [chat_ids]
+
+        await self.send(
+            functions.folders.EditPeerFolders(
+                folder_peers=[
+                    types.InputFolderPeer(
+                        peer=await self.resolve_peer(chat),
+                        folder_id=1
+                    ) for chat in chat_ids
+                ]
             )
         )
 
-        return imported_contacts
+        return True

@@ -16,31 +16,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
-
 import pyrogram
 from pyrogram.client.ext import BaseClient
 
 
-class EditMessageCaption(BaseClient):
-    async def edit_message_caption(
+class EditInlineCaption(BaseClient):
+    async def edit_inline_caption(
         self,
-        chat_id: Union[int, str],
-        message_id: int,
+        inline_message_id: str,
         caption: str,
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
-    ) -> "pyrogram.Message":
-        """Edit the caption of media messages.
+    ) -> bool:
+        """Edit the caption of **inline** media messages.
 
         Parameters:
-            chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
-
-            message_id (``int``):
-                Message identifier in the chat specified in chat_id.
+            inline_message_id (``str``):
+                Identifier of the inline message.
 
             caption (``str``):
                 New caption of the media message.
@@ -53,14 +45,13 @@ class EditMessageCaption(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message`: On success, the edited message is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self.edit_message_text(
-            chat_id=chat_id,
-            message_id=message_id,
+        return await self.edit_inline_text(
+            inline_message_id=inline_message_id,
             text=caption,
             parse_mode=parse_mode,
             reply_markup=reply_markup

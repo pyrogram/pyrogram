@@ -1,7 +1,7 @@
 ## Include
 include README.md COPYING COPYING.lesser NOTICE requirements.txt
 recursive-include compiler *.py *.tl *.tsv *.txt
-recursive-include pyrogram mime.types
+recursive-include pyrogram mime.types schema.sql
 
 ## Exclude
 prune pyrogram/api/errors/exceptions

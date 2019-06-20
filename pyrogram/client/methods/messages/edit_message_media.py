@@ -37,12 +37,10 @@ class EditMessageMedia(BaseClient):
         media: InputMedia,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
-        """Edit audio, document, photo, or video messages.
+        """Edit animation, audio, document, photo or video messages.
 
-        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise,
-        message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
-        Use previously uploaded file via its file_id or specify a URL. On success, if the edited message was sent
-        by the bot, the edited Message is returned, otherwise True is returned.
+        If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, the
+        message type can be changed arbitrarily.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -53,7 +51,7 @@ class EditMessageMedia(BaseClient):
             message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            media (:obj:`InputMedia`)
+            media (:obj:`InputMedia`):
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
@@ -92,8 +90,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 2)
-
-        if isinstance(media, InputMediaVideo):
+        elif isinstance(media, InputMediaVideo):
             if os.path.exists(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
@@ -130,8 +127,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 4)
-
-        if isinstance(media, InputMediaAudio):
+        elif isinstance(media, InputMediaAudio):
             if os.path.exists(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
@@ -167,8 +163,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 9)
-
-        if isinstance(media, InputMediaAnimation):
+        elif isinstance(media, InputMediaAnimation):
             if os.path.exists(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
@@ -206,8 +201,7 @@ class EditMessageMedia(BaseClient):
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, 10)
-
-        if isinstance(media, InputMediaDocument):
+        elif isinstance(media, InputMediaDocument):
             if os.path.exists(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
@@ -243,8 +237,8 @@ class EditMessageMedia(BaseClient):
             functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
-                reply_markup=reply_markup.write() if reply_markup else None,
                 media=media,
+                reply_markup=reply_markup.write() if reply_markup else None,
                 **await style.parse(caption)
             )
         )

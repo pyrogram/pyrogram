@@ -31,10 +31,8 @@ Utilities
     - :meth:`~Client.run`
     - :meth:`~Client.add_handler`
     - :meth:`~Client.remove_handler`
-    - :meth:`~Client.send`
-    - :meth:`~Client.resolve_peer`
-    - :meth:`~Client.save_file`
     - :meth:`~Client.stop_transmission`
+    - :meth:`~Client.export_session_string`
 
 Messages
 ^^^^^^^^
@@ -58,11 +56,15 @@ Messages
     - :meth:`~Client.send_venue`
     - :meth:`~Client.send_contact`
     - :meth:`~Client.send_cached_media`
-    - :meth:`~Client.send_chat_action`
     - :meth:`~Client.edit_message_text`
     - :meth:`~Client.edit_message_caption`
-    - :meth:`~Client.edit_message_reply_markup`
     - :meth:`~Client.edit_message_media`
+    - :meth:`~Client.edit_message_reply_markup`
+    - :meth:`~Client.edit_inline_text`
+    - :meth:`~Client.edit_inline_caption`
+    - :meth:`~Client.edit_inline_media`
+    - :meth:`~Client.edit_inline_reply_markup`
+    - :meth:`~Client.send_chat_action`
     - :meth:`~Client.delete_messages`
     - :meth:`~Client.get_messages`
     - :meth:`~Client.get_history`
@@ -104,6 +106,8 @@ Chats
     - :meth:`~Client.get_dialogs_count`
     - :meth:`~Client.restrict_chat`
     - :meth:`~Client.update_chat_username`
+    - :meth:`~Client.archive_chats`
+    - :meth:`~Client.unarchive_chats`
 
 Users
 ^^^^^
@@ -157,6 +161,18 @@ Bots
     - :meth:`~Client.set_game_score`
     - :meth:`~Client.get_game_high_scores`
 
+Advanced Usage (Raw API)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Learn more about these methods at :doc:`Advanced Usage <../topics/advanced-usage>`.
+
+.. hlist::
+    :columns: 4
+
+    - :meth:`~Client.send`
+    - :meth:`~Client.resolve_peer`
+    - :meth:`~Client.save_file`
+
 -----
 
 Details
@@ -170,10 +186,8 @@ Details
 .. automethod:: Client.run()
 .. automethod:: Client.add_handler()
 .. automethod:: Client.remove_handler()
-.. automethod:: Client.send()
-.. automethod:: Client.resolve_peer()
-.. automethod:: Client.save_file()
 .. automethod:: Client.stop_transmission()
+.. automethod:: Client.export_session_string()
 
 ..  Messages
 .. automethod:: Client.send_message()
@@ -195,8 +209,12 @@ Details
 .. automethod:: Client.send_chat_action()
 .. automethod:: Client.edit_message_text()
 .. automethod:: Client.edit_message_caption()
-.. automethod:: Client.edit_message_reply_markup()
 .. automethod:: Client.edit_message_media()
+.. automethod:: Client.edit_message_reply_markup()
+.. automethod:: Client.edit_inline_text()
+.. automethod:: Client.edit_inline_caption()
+.. automethod:: Client.edit_inline_media()
+.. automethod:: Client.edit_inline_reply_markup()
 .. automethod:: Client.delete_messages()
 .. automethod:: Client.get_messages()
 .. automethod:: Client.get_history()
@@ -233,6 +251,8 @@ Details
 .. automethod:: Client.get_dialogs_count()
 .. automethod:: Client.restrict_chat()
 .. automethod:: Client.update_chat_username()
+.. automethod:: Client.archive_chats()
+.. automethod:: Client.unarchive_chats()
 
 ..  Users
 .. automethod:: Client.get_me()
@@ -265,3 +285,8 @@ Details
 .. automethod:: Client.send_game()
 .. automethod:: Client.set_game_score()
 .. automethod:: Client.get_game_high_scores()
+
+.. Advanced Usage
+.. automethod:: Client.send()
+.. automethod:: Client.resolve_peer()
+.. automethod:: Client.save_file()

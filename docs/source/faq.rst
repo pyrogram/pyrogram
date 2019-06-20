@@ -53,6 +53,22 @@ Why Pyrogram?
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
+How stable and reliable is Pyrogram?
+------------------------------------
+
+So far, since its first public release, Pyrogram has always shown itself to be quite reliable in handling client-server
+interconnections and just as stable when keeping long running applications online. The only annoying issues faced are
+actually coming from Telegram servers internal errors and down times, from which Pyrogram is able to recover itself
+automatically.
+
+To challenge the framework, the creator is constantly keeping a public
+`welcome bot <https://github.com/pyrogram/pyrogram/blob/develop/examples/welcomebot.py>`_ online 24/7 on his own,
+relatively-busy account for well over a year now.
+
+In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten
+:doc:`using Pyrogram <powered-by>` and is serving more than 200,000 Monthly Active Users since
+then, uninterruptedly and without any need for restarting it.
+
 What can MTProto do more than the Bot API?
 ------------------------------------------
 
@@ -134,20 +150,60 @@ in a bunch of seconds:
     import logging
     logging.basicConfig(level=logging.INFO)
 
-Another way to confirm you aren't able to connect to Telegram is by pinging these IP addresses and see whether ping
-fails or not:
+Another way to confirm you aren't able to connect to Telegram is by pinging the IP addresses below and see whether ping
+fails or not.
 
-- DC1: ``149.154.175.50``
-- DC2: ``149.154.167.51``
-- DC3: ``149.154.175.100``
-- DC4: ``149.154.167.91``
-- DC5: ``91.108.56.149``
+What are the IP addresses of Telegram Data Centers?
+---------------------------------------------------
+
+The Telegram cloud is currently composed by a decentralized, multi-DC infrastructure (each of which can work
+independently) spread in 5 different locations. However, some of the less busy DCs have been lately dismissed and their
+IP addresses are now kept as aliases.
+
+.. csv-table:: Production Environment
+    :header: ID, Location, IPv4, IPv6
+    :widths: auto
+    :align: center
+
+    DC1, "MIA, Miami FL, USA", ``149.154.175.50``, ``2001:b28:f23d:f001::a``
+    DC2, "AMS, Amsterdam, NL", ``149.154.167.51``, ``2001:67c:4e8:f002::a``
+    DC3*, "MIA, Miami FL, USA", ``149.154.175.100``, ``2001:b28:f23d:f003::a``
+    DC4, "AMS, Amsterdam, NL", ``149.154.167.91``, ``2001:67c:4e8:f004::a``
+    DC5, "SIN, Singapore, SG", ``91.108.56.149``, ``2001:b28:f23f:f005::a``
+
+.. csv-table:: Test Environment
+    :header: ID, Location, IPv4, IPv6
+    :widths: auto
+    :align: center
+
+    DC1, "MIA, Miami FL, USA", ``149.154.175.10``, ``2001:b28:f23d:f001::e``
+    DC2, "AMS, Amsterdam, NL", ``149.154.167.40``, ``2001:67c:4e8:f002::e``
+    DC3*, "MIA, Miami FL, USA", ``149.154.175.117``, ``2001:b28:f23d:f003::e``
+
+***** Alias DC
+
+More info about the Test Environment can be found :doc:`here <topics/test-servers>`.
+
+I want to migrate my account from DCX to DCY.
+---------------------------------------------
+
+This question is often asked by people who find their account(s) always being connected to DC1 - USA (for example), but
+are connecting from a place far away (e.g DC4 - Europe), thus resulting in slower interactions when using the API
+because of the great physical distance between the user and its associated DC.
+
+When registering an account for the first time, is up to Telegram to decide which DC the new user is going to be created
+in, based on the phone number origin.
+
+Even though Telegram `documentations <https://core.telegram.org/api/datacenter#user-migration>`_ state the server might
+decide to automatically migrate a user in case of prolonged usages from a distant, unusual location and albeit this
+mechanism is also `confirmed <https://twitter.com/telegram/status/427131446655197184>`_ to exist by Telegram itself,
+it's currently not possible to have your account migrated, in any way, simply because the feature was once planned but
+not yet implemented.
 
 I keep getting PEER_ID_INVALID error!
--------------------------------------------
+-------------------------------------
 
-The error in question is ``[400 PEER_ID_INVALID]``, and could mean several
-things:
+The error in question is ``[400 PEER_ID_INVALID]``, and could mean several things:
 
 - The chat id you tried to use is simply wrong, double check it.
 - The chat id refers to a group or channel you are not a member of.

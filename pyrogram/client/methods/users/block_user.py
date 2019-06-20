@@ -16,12 +16,30 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .bots_and_keyboards import *
-from .inline_mode import *
-from .input_media import *
-from .input_message_content import *
-from .list import List
-from .messages_and_media import *
-from .object import Object
-from .update import *
-from .user_and_chats import *
+from typing import Union
+
+from pyrogram.api import functions
+
+from ...ext import BaseClient
+
+
+class BlockUser(BaseClient):
+    async def block_user(
+        self,
+        user_id: Union[int, str]
+    ) -> bool:
+        """Block a user.
+
+        Returns:
+            ``bool``: True on success
+
+        Raises:
+            RPCError: In case of Telegram RPC Error.
+        """
+        return bool(
+            await self.send(
+                functions.contact.Block(
+                    id=await self.resolve_peer(user_id)
+                )
+            )
+        )

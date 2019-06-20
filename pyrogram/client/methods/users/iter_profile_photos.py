@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Generator
-
-from async_generator import async_generator, yield_
+from typing import Union, AsyncGenerator, Optional
 
 import pyrogram
+from async_generator import async_generator, yield_
+
 from ...ext import BaseClient
 
 
@@ -31,7 +31,7 @@ class IterProfilePhotos(BaseClient):
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 0,
-    ) -> Generator["pyrogram.Photo", None, None]:
+    ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
         """Iterate through a chat or a user profile photos sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_profile_photos` in a loop, thus
@@ -62,11 +62,11 @@ class IterProfilePhotos(BaseClient):
         limit = min(100, total)
 
         while True:
-            photos = self.get_profile_photos(
+            photos = await self.get_profile_photos(
                 chat_id=chat_id,
                 offset=offset,
                 limit=limit
-            ).photos
+            )
 
             if not photos:
                 return

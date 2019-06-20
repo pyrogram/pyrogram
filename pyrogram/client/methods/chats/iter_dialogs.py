@@ -18,9 +18,9 @@
 
 from typing import AsyncGenerator, Optional
 
+import pyrogram
 from async_generator import async_generator, yield_
 
-import pyrogram
 from ...ext import BaseClient
 
 
@@ -56,9 +56,9 @@ class IterDialogs(BaseClient):
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
-        pinned_dialogs = (await self.get_dialogs(
+        pinned_dialogs = await self.get_dialogs(
             pinned_only=True
-        )).dialogs
+        )
 
         for dialog in pinned_dialogs:
             await yield_(dialog)
@@ -69,10 +69,10 @@ class IterDialogs(BaseClient):
                 return
 
         while True:
-            dialogs = (await self.get_dialogs(
+            dialogs = await self.get_dialogs(
                 offset_date=offset_date,
                 limit=limit
-            )).dialogs
+            )
 
             if not dialogs:
                 return

@@ -100,3 +100,9 @@ ACCESS_TOKEN_INVALID	The bot access token is invalid
 INVITE_HASH_EXPIRED	The chat invite link is no longer valid
 USER_BANNED_IN_CHANNEL	You are limited, check @SpamBot for details
 MESSAGE_EDIT_TIME_EXPIRED	You can no longer edit this message
+FOLDER_ID_INVALID	The folder id is invalid
+MEGAGROUP_PREHISTORY_HIDDEN	The action failed because the supergroup has the pre-history hidden
+CHAT_LINK_EXISTS	The action failed because the supergroup is linked to a channel
+LINK_NOT_MODIFIED	The chat link was not modified because you tried to link to the same target
+BROADCAST_ID_INVALID	The channel is invalid
+MEGAGROUP_ID_INVALID	The supergroup is invalid

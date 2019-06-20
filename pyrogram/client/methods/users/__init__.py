@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .block_user import BlockUser
 from .delete_profile_photos import DeleteProfilePhotos
 from .get_me import GetMe
 from .get_profile_photos import GetProfilePhotos
@@ -24,10 +25,12 @@ from .get_user_dc import GetUserDC
 from .get_users import GetUsers
 from .iter_profile_photos import IterProfilePhotos
 from .set_profile_photo import SetProfilePhoto
+from .unblock_user import UnblockUser
 from .update_username import UpdateUsername
 
 
 class Users(
+    BlockUser,
     GetProfilePhotos,
     SetProfilePhoto,
     DeleteProfilePhotos,
@@ -36,6 +39,7 @@ class Users(
     UpdateUsername,
     GetProfilePhotosCount,
     GetUserDC,
-    IterProfilePhotos
+    IterProfilePhotos,
+    UnblockUser
 ):
     pass

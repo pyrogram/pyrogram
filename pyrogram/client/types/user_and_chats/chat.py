@@ -20,6 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import types
+
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from ..object import Object
@@ -36,14 +37,17 @@ class Chat(Object):
             Type of chat, can be either "private", "bot", "group", "supergroup" or "channel".
 
         is_verified (``bool``, *optional*):
-            True, if this chat has been verified by Telegram. Supergroups and channels only.
+            True, if this chat has been verified by Telegram. Supergroups, channels and bots only.
 
         is_restricted (``bool``, *optional*):
-            True, if this chat has been restricted. Supergroups and channels only.
+            True, if this chat has been restricted. Supergroups, channels and bots only.
             See *restriction_reason* for details.
 
         is_scam (``bool``, *optional*):
-            True, if this chat has been flagged for scam. Supergroups and channels only.
+            True, if this chat has been flagged for scam. Supergroups, channels and bots only.
+
+        is_support (``bool``):
+            True, if this chat is part of the Telegram support team. Users and bots only.
 
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
@@ -92,8 +96,8 @@ class Chat(Object):
     """
 
     __slots__ = [
-        "id", "type", "is_verified", "is_restricted", "is_scam", "title", "username", "first_name", "last_name",
-        "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
+        "id", "type", "is_verified", "is_restricted", "is_scam", "is_support", "title", "username", "first_name",
+        "last_name", "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
         "members_count", "restriction_reason", "permissions"
     ]
 
@@ -106,6 +110,7 @@ class Chat(Object):
         is_verified: bool = None,
         is_restricted: bool = None,
         is_scam: bool = None,
+        is_support: bool = None,
         title: str = None,
         username: str = None,
         first_name: str = None,
@@ -127,6 +132,7 @@ class Chat(Object):
         self.is_verified = is_verified
         self.is_restricted = is_restricted
         self.is_scam = is_scam
+        self.is_support = is_support
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -148,6 +154,10 @@ class Chat(Object):
         return Chat(
             id=peer_id,
             type="bot" if user.bot else "private",
+            is_verified=getattr(user, "verified", None),
+            is_restricted=getattr(user, "restricted", None),
+            is_scam=getattr(user, "scam", None),
+            is_support=getattr(user, "support", None),
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
@@ -257,3 +267,49 @@ class Chat(Object):
             return Chat._parse_user_chat(client, chat)
         else:
             return Chat._parse_channel_chat(client, chat)
+
+    async def archive(self):
+        """Bound method *archive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.archive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.archive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return await self._client.archive_chats(self.id)
+
+    async def unarchive(self):
+        """Bound method *unarchive* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unarchive_chats(-100123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.unarchive()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return await self._client.unarchive_chats(self.id)

@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .archive_chats import ArchiveChats
 from .delete_chat_photo import DeleteChatPhoto
 from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
@@ -36,6 +37,7 @@ from .restrict_chat_member import RestrictChatMember
 from .set_chat_description import SetChatDescription
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
+from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
@@ -64,6 +66,8 @@ class Chats(
     IterChatMembers,
     UpdateChatUsername,
     RestrictChat,
-    GetDialogsCount
+    GetDialogsCount,
+    ArchiveChats,
+    UnarchiveChats
 ):
     pass

@@ -16,33 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
-
 import pyrogram
-from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient
+from pyrogram.api import functions
+from pyrogram.client.ext import BaseClient, utils
 
 
-class EditMessageText(BaseClient):
-    async def edit_message_text(
+class EditInlineText(BaseClient):
+    async def edit_inline_text(
         self,
-        chat_id: Union[int, str],
-        message_id: int,
+        inline_message_id: str,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
-    ) -> "pyrogram.Message":
-        """Edit the text of messages.
+    ) -> bool:
+        """Edit the text of **inline** messages.
 
         Parameters:
-            chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
-
-            message_id (``int``):
-                Message identifier in the chat specified in chat_id.
+            inline_message_id (``str``):
+                Identifier of the inline message.
 
             text (``str``):
                 New text of the message.
@@ -58,27 +50,18 @@ class EditMessageText(BaseClient):
                 An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message`: On success, the edited message is returned.
+            ``bool``: On success, True is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
         style = self.html if parse_mode.lower() == "html" else self.markdown
 
-        r = await self.send(
-            functions.messages.EditMessage(
-                peer=await self.resolve_peer(chat_id),
-                id=message_id,
+        return await self.send(
+            functions.messages.EditInlineBotMessage(
+                id=utils.unpack_inline_message_id(inline_message_id),
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **await style.parse(text)
+                **style.parse(text)
             )
         )
-
-        for i in r.updates:
-            if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return await pyrogram.Message._parse(
-                    self, i.message,
-                    {i.id: i for i in r.users},
-                    {i.id: i for i in r.chats}
-                )

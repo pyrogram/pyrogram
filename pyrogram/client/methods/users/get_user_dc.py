@@ -24,7 +24,13 @@ from ...ext import BaseClient
 
 class GetUserDC(BaseClient):
     async def get_user_dc(self, user_id: Union[int, str]) -> Union[int, None]:
-        """Get the assigned data center (DC) of a user.
+        """Get the assigned DC (data center) of a user.
+
+        .. note::
+
+            This information is approximate: it is based on where Telegram stores a user profile pictures and does not
+            by any means tell you the user location (i.e. a user might travel far away, but will still connect to its
+            assigned DC). More info at `FAQs <../faq#what-are-the-ip-addresses-of-telegram-data-centers>`_.
 
         Parameters:
             user_id (``int`` | ``str``):
@@ -33,7 +39,8 @@ class GetUserDC(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            ``int`` | ``None``: The DC identifier as integer, or None in case it wasn't possible to get it.
+            ``int`` | ``None``: The DC identifier as integer, or None in case it wasn't possible to get it (i.e. the
+            user has no profile picture or has the privacy setting enabled).
 
         Raises:
             RPCError: In case of a Telegram RPC error.

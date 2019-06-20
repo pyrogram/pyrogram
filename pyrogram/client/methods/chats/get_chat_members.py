@@ -18,11 +18,12 @@
 
 import asyncio
 import logging
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
+
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class GetChatMembers(BaseClient):
         limit: int = 200,
         query: str = "",
         filter: str = Filters.ALL
-    ) -> "pyrogram.ChatMembers":
+    ) -> List["pyrogram.ChatMember"]:
         """Get a chunk of the members list of a chat.
 
         You can get up to 200 chat members at once.
@@ -59,15 +60,16 @@ class GetChatMembers(BaseClient):
 
             offset (``int``, *optional*):
                 Sequential number of the first member to be returned.
-                Defaults to 0 [1]_.
+                Only applicable to supergroups and channels. Defaults to 0 [1]_.
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
                 Defaults to 200, which is also the maximum server limit allowed per method call.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Defaults to "" (empty string) [2]_.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
@@ -78,6 +80,7 @@ class GetChatMembers(BaseClient):
                 *"bots"* - bots only,
                 *"recent"* - recent members only,
                 *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
                 Defaults to *"all"*.
 
         .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
@@ -86,7 +89,7 @@ class GetChatMembers(BaseClient):
         .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Returns:
-            :obj:`ChatMembers`: On success, an object containing a list of chat members is returned.
+            List of :obj:`ChatMember`: On success, a list of chat members is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -95,14 +98,16 @@ class GetChatMembers(BaseClient):
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            return pyrogram.ChatMembers._parse(
-                self,
-                await self.send(
-                    functions.messages.GetFullChat(
-                        chat_id=peer.chat_id
-                    )
+            r = await self.send(
+                functions.messages.GetFullChat(
+                    chat_id=peer.chat_id
                 )
             )
+
+            members = r.full_chat.participants.participants
+            users = {i.id: i for i in r.users}
+
+            return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
         elif isinstance(peer, types.InputPeerChannel):
             filter = filter.lower()
 
@@ -123,18 +128,20 @@ class GetChatMembers(BaseClient):
 
             while True:
                 try:
-                    return pyrogram.ChatMembers._parse(
-                        self,
-                        await self.send(
-                            functions.channels.GetParticipants(
-                                channel=peer,
-                                filter=filter,
-                                offset=offset,
-                                limit=limit,
-                                hash=0
-                            )
+                    r = await self.send(
+                        functions.channels.GetParticipants(
+                            channel=peer,
+                            filter=filter,
+                            offset=offset,
+                            limit=limit,
+                            hash=0
                         )
                     )
+
+                    members = r.participants
+                    users = {i.id: i for i in r.users}
+
+                    return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
                 except FloodWait as e:
                     log.warning("Sleeping for {}s".format(e.x))
                     await asyncio.sleep(e.x)

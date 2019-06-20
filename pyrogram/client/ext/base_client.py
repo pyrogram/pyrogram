@@ -20,8 +20,11 @@ import asyncio
 import os
 import platform
 import re
+import sys
+from pathlib import Path
 
 from pyrogram import __version__
+
 from ..style import Markdown, HTML
 from ...session.internals import MsgId
 
@@ -44,6 +47,8 @@ class BaseClient:
 
     LANG_CODE = "en"
 
+    PARENT_DIR = Path(sys.argv[0]).parent
+
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
@@ -51,8 +56,8 @@ class BaseClient:
     DOWNLOAD_WORKERS = 4
     OFFLINE_SLEEP = 900
     WORKERS = 4
-    WORKDIR = "."
-    CONFIG_FILE = "./config.ini"
+    WORKDIR = PARENT_DIR
+    CONFIG_FILE = PARENT_DIR / "config.ini"
 
     MEDIA_TYPE_ID = {
         0: "photo_thumbnail",
@@ -83,17 +88,9 @@ class BaseClient:
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
     def __init__(self):
-        self.is_bot = None
-        self.dc_id = None
-        self.auth_key = None
-        self.user_id = None
-        self.date = None
+        self.storage = None
 
         self.rnd_id = MsgId
-
-        self.peers_by_id = {}
-        self.peers_by_username = {}
-        self.peers_by_phone = {}
 
         self.markdown = Markdown(self)
         self.html = HTML(self)
@@ -154,4 +151,22 @@ class BaseClient:
         pass
 
     def get_profile_photos(self, *args, **kwargs):
+        pass
+
+    def edit_message_text(self, *args, **kwargs):
+        pass
+
+    def edit_inline_text(self, *args, **kwargs):
+        pass
+
+    def edit_message_media(self, *args, **kwargs):
+        pass
+
+    def edit_inline_media(self, *args, **kwargs):
+        pass
+
+    def edit_message_reply_markup(self, *args, **kwargs):
+        pass
+
+    def edit_inline_reply_markup(self, *args, **kwargs):
         pass

@@ -29,7 +29,6 @@ import shutil
 import tempfile
 import time
 from configparser import ConfigParser
-from datetime import datetime
 from hashlib import sha256, md5
 from importlib import import_module
 from pathlib import Path
@@ -54,6 +53,7 @@ from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
 from .ext.utils import ainput
 from .methods import Methods
+from .storage import Storage, FileStorage, MemoryStorage
 
 log = logging.getLogger(__name__)
 
@@ -63,8 +63,13 @@ class Client(Methods, BaseClient):
 
     Parameters:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
-            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Pass a string of your choice to give a name to the client session, e.g.: "*my_account*". This name will be
+            used to save a file on disk that stores details needed to reconnect without asking again for credentials.
+            Alternatively, if you don't want a file to be saved on disk, pass the special name "**:memory:**" to start
+            an in-memory session that will be discarded as soon as you stop the Client. In order to reconnect again
+            using a memory storage without having to login again, you can use
+            :meth:`~pyrogram.Client.export_session_string` before stopping the client to get a session string you can
+            pass here as argument.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
@@ -178,7 +183,7 @@ class Client(Methods, BaseClient):
 
     def __init__(
         self,
-        session_name: str,
+        session_name: Union[str, Storage],
         api_id: Union[int, str] = None,
         api_hash: str = None,
         app_version: str = None,
@@ -225,11 +230,22 @@ class Client(Methods, BaseClient):
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
-        self.workdir = workdir
-        self.config_file = config_file
+        self.workdir = Path(workdir)
+        self.config_file = Path(config_file)
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
+
+        if isinstance(session_name, str):
+            if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
+                session_name = re.sub(r"[\n\s]+", "", session_name)
+                self.storage = MemoryStorage(session_name)
+            else:
+                self.storage = FileStorage(session_name, self.workdir)
+        elif isinstance(session_name, Storage):
+            self.storage = session_name
+        else:
+            raise ValueError("Unknown storage engine")
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -271,50 +287,32 @@ class Client(Methods, BaseClient):
         if self.is_started:
             raise ConnectionError("Client has already been started")
 
-        if self.BOT_TOKEN_RE.match(self.session_name):
-            self.is_bot = True
-            self.bot_token = self.session_name
-            self.session_name = self.session_name.split(":")[0]
-            log.warning('\nWARNING: You are using a bot token as session name!\n'
-                        'This usage will be deprecated soon. Please use a session file name to load '
-                        'an existing session and the bot_token argument to create new sessions.\n'
-                        'More info: https://docs.pyrogram.org/intro/auth#bot-authorization\n')
-
         self.load_config()
         await self.load_session()
         self.load_plugins()
 
-        self.session = Session(
-            self,
-            self.dc_id,
-            self.auth_key
-        )
+        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
         await self.session.start()
         self.is_started = True
 
         try:
-            if self.user_id is None:
+            if self.storage.user_id is None:
                 if self.bot_token is None:
-                    self.is_bot = False
+                    self.storage.is_bot = False
                     await self.authorize_user()
                 else:
-                    self.is_bot = True
+                    self.storage.is_bot = True
                     await self.authorize_bot()
 
-                self.save_session()
-
-            if not self.is_bot:
+            if not self.storage.is_bot:
                 if self.takeout:
                     self.takeout_id = (await self.send(functions.account.InitTakeoutSession())).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
 
                 now = time.time()
 
-                if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                    self.peers_by_username = {}
-                    self.peers_by_phone = {}
-
+                if abs(now - self.storage.date) > Client.OFFLINE_SLEEP:
                     await self.get_initial_dialogs()
                     await self.get_contacts()
                 else:
@@ -516,19 +514,14 @@ class Client(Methods, BaseClient):
         except UserMigrate as e:
             await self.session.stop()
 
-            self.dc_id = e.x
-            self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
-
-            self.session = Session(
-                self,
-                self.dc_id,
-                self.auth_key
-            )
+            self.storage.dc_id = e.x
+            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
+            self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
             await self.session.start()
             await self.authorize_bot()
         else:
-            self.user_id = r.user.id
+            self.storage.user_id = r.user.id
 
             print("Logged in successfully as @{}".format(r.user.username))
 
@@ -569,20 +562,10 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 await self.session.stop()
 
-                self.dc_id = e.x
+                self.storage.dc_id = e.x
+                self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
 
-                self.auth_key = await Auth(
-                    self.dc_id,
-                    self.test_mode,
-                    self.ipv6,
-                    self._proxy
-                ).create()
-
-                self.session = Session(
-                    self,
-                    self.dc_id,
-                    self.auth_key
-                )
+                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
                 await self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
@@ -762,13 +745,13 @@ class Client(Methods, BaseClient):
             )
 
         self.password = None
-        self.user_id = r.user.id
+        self.storage.user_id = r.user.id
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
     def fetch_peers(
         self,
-        entities: List[
+        peers: List[
             Union[
                 types.User,
                 types.Chat, types.ChatForbidden,
@@ -777,64 +760,57 @@ class Client(Methods, BaseClient):
         ]
     ) -> bool:
         is_min = False
+        parsed_peers = []
 
-        for entity in entities:
-            if isinstance(entity, types.User):
-                user_id = entity.id
+        for peer in peers:
+            username = None
+            phone_number = None
 
-                access_hash = entity.access_hash
+            if isinstance(peer, types.User):
+                peer_id = peer.id
+                access_hash = peer.access_hash
 
-                if access_hash is None:
-                    is_min = True
-                    continue
+                username = peer.username
+                phone_number = peer.phone
 
-                username = entity.username
-                phone = entity.phone
-
-                input_peer = types.InputPeerUser(
-                    user_id=user_id,
-                    access_hash=access_hash
-                )
-
-                self.peers_by_id[user_id] = input_peer
-
-                if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
-
-                if phone is not None:
-                    self.peers_by_phone[phone] = input_peer
-
-            if isinstance(entity, (types.Chat, types.ChatForbidden)):
-                chat_id = entity.id
-                peer_id = -chat_id
-
-                input_peer = types.InputPeerChat(
-                    chat_id=chat_id
-                )
-
-                self.peers_by_id[peer_id] = input_peer
-
-            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
-                channel_id = entity.id
-                peer_id = int("-100" + str(channel_id))
-
-                access_hash = entity.access_hash
+                if peer.bot:
+                    peer_type = "bot"
+                else:
+                    peer_type = "user"
 
                 if access_hash is None:
                     is_min = True
                     continue
 
-                username = getattr(entity, "username", None)
+                if username is not None:
+                    username = username.lower()
+            elif isinstance(peer, (types.Chat, types.ChatForbidden)):
+                peer_id = -peer.id
+                access_hash = 0
+                peer_type = "group"
+            elif isinstance(peer, (types.Channel, types.ChannelForbidden)):
+                peer_id = int("-100" + str(peer.id))
+                access_hash = peer.access_hash
 
-                input_peer = types.InputPeerChannel(
-                    channel_id=channel_id,
-                    access_hash=access_hash
-                )
+                username = getattr(peer, "username", None)
 
-                self.peers_by_id[peer_id] = input_peer
+                if peer.broadcast:
+                    peer_type = "channel"
+                else:
+                    peer_type = "supergroup"
+
+                if access_hash is None:
+                    is_min = True
+                    continue
 
                 if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
+                    username = username.lower()
+            else:
+                continue
+
+            parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
+
+        self.storage.update_peers(parsed_peers)
 
         return is_min
 
@@ -849,37 +825,7 @@ class Client(Methods, BaseClient):
             final_file_path = ""
 
             try:
-                data, file_name, done, progress, progress_args, path = packet
-
-                directory, file_name = os.path.split(file_name)
-                directory = directory or "downloads"
-
-                media_type_str = Client.MEDIA_TYPE_ID[data.media_type]
-
-                if not data.file_name:
-                    guessed_extension = self.guess_extension(data.mime_type)
-
-                    if data.media_type in (0, 1, 2, 14):
-                        extension = ".jpg"
-                    elif data.media_type == 3:
-                        extension = guessed_extension or ".ogg"
-                    elif data.media_type in (4, 10, 13):
-                        extension = guessed_extension or ".mp4"
-                    elif data.media_type == 5:
-                        extension = guessed_extension or ".zip"
-                    elif data.media_type == 8:
-                        extension = guessed_extension or ".webp"
-                    elif data.media_type == 9:
-                        extension = guessed_extension or ".mp3"
-                    else:
-                        continue
-
-                    file_name = "{}_{}_{}{}".format(
-                        media_type_str,
-                        datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                        self.rnd_id(),
-                        extension
-                    )
+                data, directory, file_name, done, progress, progress_args, path = packet
 
                 temp_file_path = await self.get_file(
                     media_type=data.media_type,
@@ -1092,71 +1038,75 @@ class Client(Methods, BaseClient):
                 self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
 
         if self.plugins:
-            self.plugins["enabled"] = bool(self.plugins.get("enabled", True))
-            self.plugins["include"] = "\n".join(self.plugins.get("include", [])) or None
-            self.plugins["exclude"] = "\n".join(self.plugins.get("exclude", [])) or None
+            self.plugins = {
+                "enabled": bool(self.plugins.get("enabled", True)),
+                "root": self.plugins.get("root", None),
+                "include": self.plugins.get("include", []),
+                "exclude": self.plugins.get("exclude", [])
+            }
         else:
             try:
                 section = parser["plugins"]
 
                 self.plugins = {
                     "enabled": section.getboolean("enabled", True),
-                    "root": section.get("root"),
-                    "include": section.get("include") or None,
-                    "exclude": section.get("exclude") or None
+                    "root": section.get("root", None),
+                    "include": section.get("include", []),
+                    "exclude": section.get("exclude", [])
                 }
-            except KeyError:
-                self.plugins = {}
 
-        if self.plugins:
-            for option in ["include", "exclude"]:
-                if self.plugins[option] is not None:
-                    self.plugins[option] = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in self.plugins[option].strip().split("\n")
-                    ]
+                include = self.plugins["include"]
+                exclude = self.plugins["exclude"]
+
+                if include:
+                    self.plugins["include"] = include.strip().split("\n")
+
+                if exclude:
+                    self.plugins["exclude"] = exclude.strip().split("\n")
+
+            except KeyError:
+                self.plugins = None
 
     async def load_session(self):
-        try:
-            with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
-                s = json.load(f)
-        except FileNotFoundError:
-            self.dc_id = 1
-            self.date = 0
-            self.auth_key = await Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
-        else:
-            self.dc_id = s["dc_id"]
-            self.test_mode = s["test_mode"]
-            self.auth_key = base64.b64decode("".join(s["auth_key"]))
-            self.user_id = s["user_id"]
-            self.date = s.get("date", 0)
-            # TODO: replace default with False once token session name will be deprecated
-            self.is_bot = s.get("is_bot", self.is_bot)
+        self.storage.open()
 
-            for k, v in s.get("peers_by_id", {}).items():
-                self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
+        session_empty = any([
+            self.storage.test_mode is None,
+            self.storage.auth_key is None,
+            self.storage.user_id is None,
+            self.storage.is_bot is None
+        ])
 
-            for k, v in s.get("peers_by_username", {}).items():
-                peer = self.peers_by_id.get(v, None)
+        if session_empty:
+            self.storage.dc_id = 1
+            self.storage.date = 0
 
-                if peer:
-                    self.peers_by_username[k] = peer
-
-            for k, v in s.get("peers_by_phone", {}).items():
-                peer = self.peers_by_id.get(v, None)
-
-                if peer:
-                    self.peers_by_phone[k] = peer
+            self.storage.test_mode = self.test_mode
+            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
+            self.storage.user_id = None
+            self.storage.is_bot = None
 
     def load_plugins(self):
-        if self.plugins.get("enabled", False):
-            root = self.plugins["root"]
-            include = self.plugins["include"]
-            exclude = self.plugins["exclude"]
+        if self.plugins:
+            plugins = self.plugins.copy()
+
+            for option in ["include", "exclude"]:
+                if plugins[option]:
+                    plugins[option] = [
+                        (i.split()[0], i.split()[1:] or None)
+                        for i in self.plugins[option]
+                    ]
+        else:
+            return
+
+        if plugins.get("enabled", False):
+            root = plugins["root"]
+            include = plugins["include"]
+            exclude = plugins["exclude"]
 
             count = 0
 
-            if include is None:
+            if not include:
                 for path in sorted(Path(root).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
                     module = import_module(module_path)
@@ -1213,7 +1163,7 @@ class Client(Methods, BaseClient):
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
-            if exclude is not None:
+            if exclude:
                 for path, handlers in exclude:
                     module_path = root + "." + path
                     warn_non_existent_functions = True
@@ -1258,28 +1208,7 @@ class Client(Methods, BaseClient):
                 log.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
 
-    def save_session(self):
-        auth_key = base64.b64encode(self.auth_key).decode()
-        auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
-
-        os.makedirs(self.workdir, exist_ok=True)
-
-        with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), "w", encoding="utf-8") as f:
-            json.dump(
-                dict(
-                    dc_id=self.dc_id,
-                    test_mode=self.test_mode,
-                    auth_key=auth_key,
-                    user_id=self.user_id,
-                    date=self.date,
-                    is_bot=self.is_bot,
-                ),
-                f,
-                indent=4
-            )
-
-    async def get_initial_dialogs_chunk(self,
-                                        offset_date: int = 0):
+    async def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
                 r = await self.send(
@@ -1296,7 +1225,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 await asyncio.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(len(self.peers_by_id)))
+                log.info("Total peers: {}".format(self.storage.peers_count))
                 return r
 
     async def get_initial_dialogs(self):
@@ -1335,7 +1264,7 @@ class Client(Methods, BaseClient):
             KeyError: In case the peer doesn't exist in the internal database.
         """
         try:
-            return self.peers_by_id[peer_id]
+            return self.storage.get_peer_by_id(peer_id)
         except KeyError:
             if type(peer_id) is str:
                 if peer_id in ("self", "me"):
@@ -1346,15 +1275,17 @@ class Client(Methods, BaseClient):
                 try:
                     int(peer_id)
                 except ValueError:
-                    if peer_id not in self.peers_by_username:
+                    try:
+                        return self.storage.get_peer_by_username(peer_id)
+                    except KeyError:
                         await self.send(functions.contacts.ResolveUsername(username=peer_id
                                                                            )
                                         )
 
-                    return self.peers_by_username[peer_id]
+                        return self.storage.get_peer_by_username(peer_id)
                 else:
                     try:
-                        return self.peers_by_phone[peer_id]
+                        return self.storage.get_peer_by_phone_number(peer_id)
                     except KeyError:
                         raise PeerIdInvalid
 
@@ -1362,7 +1293,10 @@ class Client(Methods, BaseClient):
                 self.fetch_peers(
                     await self.send(
                         functions.users.GetUsers(
-                            id=[types.InputUser(user_id=peer_id, access_hash=0)]
+                            id=[types.InputUser(
+                                user_id=peer_id,
+                                access_hash=0
+                            )]
                         )
                     )
                 )
@@ -1370,7 +1304,10 @@ class Client(Methods, BaseClient):
                 if str(peer_id).startswith("-100"):
                     await self.send(
                         functions.channels.GetChannels(
-                            id=[types.InputChannel(channel_id=int(str(peer_id)[4:]), access_hash=0)]
+                            id=[types.InputChannel(
+                                channel_id=int(str(peer_id)[4:]),
+                                access_hash=0
+                            )]
                         )
                     )
                 else:
@@ -1381,7 +1318,7 @@ class Client(Methods, BaseClient):
                     )
 
             try:
-                return self.peers_by_id[peer_id]
+                return self.storage.get_peer_by_id(peer_id)
             except KeyError:
                 raise PeerIdInvalid
 
@@ -1469,7 +1406,7 @@ class Client(Methods, BaseClient):
         is_missing_part = file_id is not None
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
-        pool = [Session(self, self.dc_id, self.auth_key, is_media=True) for _ in range(pool_size)]
+        pool = [Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True) for _ in range(pool_size)]
         workers = [asyncio.ensure_future(worker(session)) for session in pool for _ in range(workers_count)]
         queue = asyncio.Queue(16)
 
@@ -1559,7 +1496,7 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.dc_id:
+                if dc_id != self.storage.dc_id:
                     exported_auth = await self.send(
                         functions.auth.ExportAuthorization(
                             dc_id=dc_id
@@ -1569,9 +1506,7 @@ class Client(Methods, BaseClient):
                     session = Session(
                         self,
                         dc_id,
-                        await Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
-                        is_media=True
-                    )
+                        await Auth(self, dc_id).create(), is_media=True)
 
                     await session.start()
 
@@ -1584,12 +1519,7 @@ class Client(Methods, BaseClient):
                         )
                     )
                 else:
-                    session = Session(
-                        self,
-                        dc_id,
-                        self.auth_key,
-                        is_media=True
-                    )
+                    session = Session(self, dc_id, self.storage.auth_key, is_media=True)
 
                     await session.start()
 
@@ -1677,10 +1607,7 @@ class Client(Methods, BaseClient):
                         cdn_session = Session(
                             self,
                             r.dc_id,
-                            await Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
-                            is_media=True,
-                            is_cdn=True
-                        )
+                            await Auth(self, r.dc_id).create(), is_media=True, is_cdn=True)
 
                         await cdn_session.start()
 
@@ -1776,3 +1703,11 @@ class Client(Methods, BaseClient):
 
         if extensions:
             return extensions.split(" ")[0]
+
+    def export_session_string(self):
+        """Export the current session as serialized string.
+
+        Returns:
+            ``str``: The session serialized into a printable, url-safe string.
+        """
+        return self.storage.export_session_string()
