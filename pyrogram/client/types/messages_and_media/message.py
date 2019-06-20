@@ -727,6 +727,8 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
+    reply = reply_text
+
     def reply_animation(
         self,
         animation: str,
@@ -2408,6 +2410,8 @@ class Message(Object, Update):
             disable_web_page_preview=disable_web_page_preview,
             reply_markup=reply_markup
         )
+
+    edit = edit_text
 
     def edit_caption(
         self,
