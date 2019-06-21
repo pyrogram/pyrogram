@@ -173,14 +173,14 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit_text(
+    def edit_message_text(
         self,
         text: str,
         parse_mode: str = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Edit the text of messages attached to this callback query.
+        """Edit the text of messages attached to callback queries.
 
         Bound method *edit_message_text* of :obj:`CallbackQuery`.
 
@@ -223,13 +223,13 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
 
-    def edit_caption(
+    def edit_message_caption(
         self,
         caption: str,
         parse_mode: str = "",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Edit the caption of media messages attached to this callback query.
+        """Edit the caption of media messages attached to callback queries.
 
         Bound method *edit_message_caption* of :obj:`CallbackQuery`.
 
@@ -251,14 +251,14 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self.edit_text(caption, parse_mode, reply_markup)
+        return self.edit_message_text(caption, parse_mode, reply_markup)
 
-    def edit_media(
+    def edit_message_media(
         self,
         media: "pyrogram.InputMedia",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Edit animation, audio, document, photo or video messages attached to this callback query.
+        """Edit animation, audio, document, photo or video messages attached to callback queries.
 
         Bound method *edit_message_media* of :obj:`CallbackQuery`.
 
@@ -290,11 +290,11 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
 
-    def edit_reply_markup(
+    def edit_message_reply_markup(
         self,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
-        """Edit only the reply markup of messages attached to this callback query.
+        """Edit only the reply markup of messages attached to callback queries.
 
         Bound method *edit_message_reply_markup* of :obj:`CallbackQuery`.
 

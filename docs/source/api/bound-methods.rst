@@ -81,13 +81,13 @@ CallbackQuery
 ^^^^^^^^^^^^^
 
 .. hlist::
-    :columns: 4
+    :columns: 3
 
     - :meth:`~CallbackQuery.answer`
-    - :meth:`~CallbackQuery.edit_text`
-    - :meth:`~CallbackQuery.edit_caption`
-    - :meth:`~CallbackQuery.edit_media`
-    - :meth:`~CallbackQuery.edit_reply_markup`
+    - :meth:`~CallbackQuery.edit_message_text`
+    - :meth:`~CallbackQuery.edit_message_caption`
+    - :meth:`~CallbackQuery.edit_message_media`
+    - :meth:`~CallbackQuery.edit_message_reply_markup`
 
 InlineQuery
 ^^^^^^^^^^^
@@ -141,10 +141,10 @@ Details
 
 .. CallbackQuery
 .. automethod:: CallbackQuery.answer()
-.. automethod:: CallbackQuery.edit_text()
-.. automethod:: CallbackQuery.edit_caption()
-.. automethod:: CallbackQuery.edit_media()
-.. automethod:: CallbackQuery.edit_reply_markup()
+.. automethod:: CallbackQuery.edit_message_text()
+.. automethod:: CallbackQuery.edit_message_caption()
+.. automethod:: CallbackQuery.edit_message_media()
+.. automethod:: CallbackQuery.edit_message_reply_markup()
 
 .. InlineQuery
 .. automethod:: InlineQuery.answer()
