@@ -59,10 +59,10 @@ class Dispatcher:
         self.workers = workers
 
         self.update_worker_tasks = []
+        self.locks_list = []
+
         self.updates_queue = asyncio.Queue()
         self.groups = OrderedDict()
-
-        self.lock = asyncio.Lock()
 
         async def message_parser(update, users, chats):
             return await pyrogram.Message._parse(self.client, update.message, users, chats), MessageHandler
@@ -95,8 +95,10 @@ class Dispatcher:
 
     async def start(self):
         for i in range(self.workers):
+            self.locks_list.append(asyncio.Lock())
+
             self.update_worker_tasks.append(
-                asyncio.ensure_future(self.update_worker())
+                asyncio.ensure_future(self.update_worker(self.locks_list[-1]))
             )
 
         log.info("Started {} UpdateWorkerTasks".format(self.workers))
@@ -115,26 +117,38 @@ class Dispatcher:
 
     def add_handler(self, handler, group: int):
         async def fn():
-            async with self.lock:
+            for lock in self.locks_list:
+                await lock.acquire()
+
+            try:
                 if group not in self.groups:
                     self.groups[group] = []
                     self.groups = OrderedDict(sorted(self.groups.items()))
 
                 self.groups[group].append(handler)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
 
         asyncio.get_event_loop().run_until_complete(fn())
 
     def remove_handler(self, handler, group: int):
         async def fn():
-            async with self.lock:
+            for lock in self.locks_list:
+                await lock.acquire()
+
+            try:
                 if group not in self.groups:
                     raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
                 self.groups[group].remove(handler)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
 
         asyncio.get_event_loop().run_until_complete(fn())
 
-    async def update_worker(self):
+    async def update_worker(self, lock):
         while True:
             packet = await self.updates_queue.get()
 
@@ -151,7 +165,7 @@ class Dispatcher:
                     else (None, type(None))
                 )
 
-                async with self.lock:
+                async with lock:
                     for group in self.groups.values():
                         for handler in group:
                             args = None
