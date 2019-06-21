@@ -114,19 +114,25 @@ class Dispatcher:
         log.info("Stopped {} UpdateWorkerTasks".format(self.workers))
 
     def add_handler(self, handler, group: int):
-        with self.lock:
-            if group not in self.groups:
-                self.groups[group] = []
-                self.groups = OrderedDict(sorted(self.groups.items()))
+        async def fn():
+            async with self.lock:
+                if group not in self.groups:
+                    self.groups[group] = []
+                    self.groups = OrderedDict(sorted(self.groups.items()))
 
-            self.groups[group].append(handler)
+                self.groups[group].append(handler)
+
+        asyncio.get_event_loop().run_until_complete(fn())
 
     def remove_handler(self, handler, group: int):
-        with self.lock:
-            if group not in self.groups:
-                raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
+        async def fn():
+            async with self.lock:
+                if group not in self.groups:
+                    raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
-            self.groups[group].remove(handler)
+                self.groups[group].remove(handler)
+
+        asyncio.get_event_loop().run_until_complete(fn())
 
     async def update_worker(self):
         while True:
@@ -145,7 +151,7 @@ class Dispatcher:
                     else (None, type(None))
                 )
 
-                with self.lock:
+                async with self.lock:
                     for group in self.groups.values():
                         for handler in group:
                             args = None
