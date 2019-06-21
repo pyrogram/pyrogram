@@ -61,10 +61,10 @@ class Dispatcher:
         self.workers = workers
 
         self.workers_list = []
+        self.locks_list = []
+
         self.updates_queue = Queue()
         self.groups = OrderedDict()
-
-        self.lock = Lock()
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
@@ -92,10 +92,13 @@ class Dispatcher:
 
     def start(self):
         for i in range(self.workers):
+            self.locks_list.append(Lock())
+
             self.workers_list.append(
                 Thread(
                     target=self.update_worker,
-                    name="UpdateWorker#{}".format(i + 1)
+                    name="UpdateWorker#{}".format(i + 1),
+                    args=(self.locks_list[-1],)
                 )
             )
 
@@ -109,24 +112,37 @@ class Dispatcher:
             worker.join()
 
         self.workers_list.clear()
+        self.locks_list.clear()
         self.groups.clear()
 
     def add_handler(self, handler, group: int):
-        with self.lock:
+        for lock in self.locks_list:
+            lock.acquire()
+
+        try:
             if group not in self.groups:
                 self.groups[group] = []
                 self.groups = OrderedDict(sorted(self.groups.items()))
 
             self.groups[group].append(handler)
+        finally:
+            for lock in self.locks_list:
+                lock.release()
 
     def remove_handler(self, handler, group: int):
-        with self.lock:
+        for lock in self.locks_list:
+            lock.acquire()
+
+        try:
             if group not in self.groups:
                 raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
             self.groups[group].remove(handler)
+        finally:
+            for lock in self.locks_list:
+                lock.release()
 
-    def update_worker(self):
+    def update_worker(self, lock):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
 
@@ -146,7 +162,7 @@ class Dispatcher:
                     else (None, type(None))
                 )
 
-                with self.lock:
+                with lock:
                     for group in self.groups.values():
                         for handler in group:
                             args = None
