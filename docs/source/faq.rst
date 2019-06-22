@@ -68,7 +68,7 @@ To challenge the framework, the creator is constantly keeping a public
 `welcome bot <https://github.com/pyrogram/pyrogram/blob/develop/examples/welcomebot.py>`_ online 24/7 on his own,
 relatively-busy account for well over a year now.
 
-In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten
+In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten from scratch
 :doc:`using Pyrogram <powered-by>` and is serving more than 200,000 Monthly Active Users since
 then, uninterruptedly and without any need for restarting it.
 
@@ -134,8 +134,8 @@ If you -- even accidentally -- fail to do so, all the previous session copies wi
 and eventually the server will start throwing the error ``[406 AUTH_KEY_DUPLICATED]``, inviting you to login again.
 
 Why is that so? Because the server has recognized two identical sessions are running in two different locations, and
-concludes it could possibly be due to a cloned/stolen device. Having the session ended in such occasions will protect
-the user's privacy.
+concludes it could possibly be due to a cloned/stolen device. Having the session terminated in such occasions will
+protect the user's privacy.
 
 So, the only correct way to run multiple clients on the same account is authorizing your account (either user or bot)
 from the beginning every time, and use one separate session for each parallel client you are going to use.
