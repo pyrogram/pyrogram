@@ -66,3 +66,15 @@ html_theme_options = {
 
 html_logo = "_images/pyrogram.png"
 html_favicon = "_images/favicon.ico"
+
+latex_engine = "xelatex"
+latex_logo = "_images/pyrogram.png"
+
+latex_elements = {
+    "pointsize": "12pt",
+    "fontpkg": r"""
+        \setmainfont{Noto Sans}
+        \setsansfont{Roboto Slab}
+        \setmonofont{Ubuntu Mono}
+        """
+}
