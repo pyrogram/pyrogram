@@ -108,3 +108,4 @@ BROADCAST_ID_INVALID	The channel is invalid
 MEGAGROUP_ID_INVALID	The supergroup is invalid
 BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
 START_PARAM_INVALID	The start parameter is invalid
+ARTICLE_TITLE_EMPTY	The article title is empty
