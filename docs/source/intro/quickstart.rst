@@ -46,4 +46,4 @@ In the next few pages of the introduction, we'll take a much more in-depth look 
 Feeling eager to continue? You can take a shortcut to :doc:`Calling Methods <../start/invoking>` and come back later to
 learn some more details.
 
-.. _community: //t.me/Pyrogram
+.. _community: https://t.me/Pyrogram

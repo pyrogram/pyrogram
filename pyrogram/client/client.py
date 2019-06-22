@@ -1114,7 +1114,7 @@ class Client(Methods, BaseClient):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).pyrogram_plugin
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1149,7 +1149,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).pyrogram_plugin
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1187,7 +1187,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).pyrogram_plugin
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)

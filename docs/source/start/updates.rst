@@ -96,14 +96,3 @@ to do so is by decorating your callback function with the :meth:`~pyrogram.Clien
 
 
     app.run()
-
-
-.. note::
-
-    Due to how these decorators work in Pyrogram, they will wrap your defined callback function in a tuple consisting of
-    ``(handler, group)``; this will be the value held by your function identifier (e.g.: *my_function* from the example
-    above).
-
-    In case, for some reason, you want to get your own function back after it has been decorated, you need to access
-    ``my_function[0].callback``, that is, the *callback* field of the *handler* object which is the first element in the
-    tuple, accessed by bracket notation *[0]*.
