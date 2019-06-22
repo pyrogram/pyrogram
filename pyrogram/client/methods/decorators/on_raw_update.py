@@ -16,10 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Tuple
+from typing import Callable
 
 import pyrogram
-from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
@@ -37,18 +36,15 @@ class OnRawUpdate(BaseClient):
                 The group identifier, defaults to 0.
         """
 
-        def decorator(func: callable) -> Tuple[Handler, int]:
-            if isinstance(func, tuple):
-                func = func[0].callback
+        def decorator(func: Callable) -> Callable:
+            if isinstance(self, pyrogram.Client):
+                self.add_handler(pyrogram.RawUpdateHandler(func), group)
+            else:
+                func.pyrogram_plugin = (
+                    pyrogram.RawUpdateHandler(func),
+                    group if self is None else group
+                )
 
-            handler = pyrogram.RawUpdateHandler(func)
-
-            if isinstance(self, int):
-                return handler, group if self is None else group
-
-            if self is not None:
-                self.add_handler(handler, group)
-
-            return handler, group
+            return func
 
         return decorator
