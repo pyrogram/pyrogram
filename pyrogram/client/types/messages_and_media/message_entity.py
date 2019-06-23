@@ -60,6 +60,9 @@ class MessageEntity(Object):
         types.MessageEntityItalic.ID: "italic",
         types.MessageEntityCode.ID: "code",
         types.MessageEntityPre.ID: "pre",
+        types.MessageEntityUnderline.ID: "underline",
+        types.MessageEntityStrike.ID: "strike",
+        types.MessageEntityBlockquote.ID: "blockquote",
         types.MessageEntityTextUrl.ID: "text_link",
         types.MessageEntityMentionName.ID: "text_mention",
         types.MessageEntityPhone.ID: "phone_number"
