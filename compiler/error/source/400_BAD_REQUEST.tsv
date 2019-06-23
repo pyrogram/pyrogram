@@ -12,10 +12,10 @@ PHONE_NUMBER_UNOCCUPIED	The phone number is not yet being used
 USERS_TOO_FEW	Not enough users (to create a chat, for example)
 USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
-FILE_PART_INVALID	The file part number is invalid
-FILE_PARTS_INVALID	The number of file parts is invalid
+FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 2999
+FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 3000
 FILE_PART_X_MISSING	Part {x} of the file is missing from storage
-MD5_CHECKSUM_INVALID	The MD5 checksums do not match
+MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
 PHOTO_INVALID_DIMENSIONS	The photo dimensions are invalid
 FIELD_NAME_INVALID	The field with the name FIELD_NAME is invalid
 FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
@@ -41,7 +41,7 @@ PERSISTENT_TIMESTAMP_EMPTY	The pts is empty
 CDN_METHOD_INVALID	The method can't be used on CDN DCs
 VOLUME_LOC_NOT_FOUND	The volume location can't be found
 FILE_ID_INVALID	The file id is invalid
-LOCATION_INVALID	The file location is invalid
+LOCATION_INVALID	The file address is invalid
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 PHONE_NUMBER_BANNED	The phone number is banned
 ABOUT_TOO_LONG	The about text is too long
@@ -109,3 +109,8 @@ MEGAGROUP_ID_INVALID	The supergroup is invalid
 BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
 START_PARAM_INVALID	The start parameter is invalid
 ARTICLE_TITLE_EMPTY	The article title is empty
+FILE_PART_TOO_BIG	The size limit (512 KB) for the content of the file part has been exceeded
+FILE_PART_EMPTY	The file part sent is empty
+FILE_PART_SIZE_INVALID	512 KB cannot be evenly divided by part_size
+FILE_PART_SIZE_CHANGED	The part size is different from the size of one of the previous parts in the same file
+FILE_MIGRATE_X	The file is in Data Center No. {x}

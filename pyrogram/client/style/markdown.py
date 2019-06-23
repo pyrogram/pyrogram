@@ -26,6 +26,8 @@ from pyrogram.api.types import (
     MessageEntityCode as Code,
     MessageEntityTextUrl as Url,
     MessageEntityPre as Pre,
+    MessageEntityUnderline as Underline,
+    MessageEntityStrike as Strike,
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention
 )
@@ -36,6 +38,8 @@ from . import utils
 class Markdown:
     BOLD_DELIMITER = "**"
     ITALIC_DELIMITER = "__"
+    UNDERLINE_DELIMITER = "--"
+    STRIKE_DELIMITER = "~~"
     CODE_DELIMITER = "`"
     PRE_DELIMITER = "```"
 
@@ -46,6 +50,8 @@ class Markdown:
                 for i in [
                     PRE_DELIMITER,
                     CODE_DELIMITER,
+                    STRIKE_DELIMITER,
+                    UNDERLINE_DELIMITER,
                     ITALIC_DELIMITER,
                     BOLD_DELIMITER
                 ]
@@ -91,6 +97,10 @@ class Markdown:
                     entity = Bold(offset=start, length=len(body))
                 elif style == self.ITALIC_DELIMITER:
                     entity = Italic(offset=start, length=len(body))
+                elif style == self.UNDERLINE_DELIMITER:
+                    entity = Underline(offset=start, length=len(body))
+                elif style == self.STRIKE_DELIMITER:
+                    entity = Strike(offset=start, length=len(body))
                 elif style == self.CODE_DELIMITER:
                     entity = Code(offset=start, length=len(body))
                 elif style == self.PRE_DELIMITER:
@@ -124,6 +134,10 @@ class Markdown:
                 style = self.BOLD_DELIMITER
             elif type == "italic":
                 style = self.ITALIC_DELIMITER
+            elif type == "underline":
+                style = self.UNDERLINE_DELIMITER
+            elif type == "strike":
+                style = self.STRIKE_DELIMITER
             elif type == "code":
                 style = self.CODE_DELIMITER
             elif type == "pre":

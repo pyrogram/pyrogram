@@ -26,6 +26,9 @@ from pyrogram.api.types import (
     MessageEntityCode as Code,
     MessageEntityTextUrl as Url,
     MessageEntityPre as Pre,
+    MessageEntityUnderline as Underline,
+    MessageEntityStrike as Strike,
+    MessageEntityBlockquote as Blockquote,
     MessageEntityMentionName as MentionInvalid,
     InputMessageEntityMentionName as Mention,
 )
@@ -75,6 +78,12 @@ class HTML:
                     entity = Code(offset=start, length=len(body))
                 elif style == "pre":
                     entity = Pre(offset=start, length=len(body), language="")
+                elif style == "u":
+                    entity = Underline(offset=start, length=len(body))
+                elif style in ["strike", "s", "del"]:
+                    entity = Strike(offset=start, length=len(body))
+                elif style == "blockquote":
+                    entity = Blockquote(offset=start, length=len(body))
                 else:
                     continue
 
@@ -107,6 +116,12 @@ class HTML:
                 style = "code"
             elif type == "pre":
                 style = "pre"
+            elif type == "underline":
+                style = "u"
+            elif type == "strike":
+                style = "s"
+            elif type == "blockquote":
+                style = "blockquote"
             elif type == "text_link":
                 offset += 15 + len(url)
                 message = message[:start] + message[start:].replace(
