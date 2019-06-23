@@ -130,7 +130,7 @@ class Dispatcher:
                 for lock in self.locks_list:
                     lock.release()
 
-        asyncio.get_event_loop().run_until_complete(fn())
+        asyncio.get_event_loop().create_task(fn())
 
     def remove_handler(self, handler, group: int):
         async def fn():
@@ -146,7 +146,7 @@ class Dispatcher:
                 for lock in self.locks_list:
                     lock.release()
 
-        asyncio.get_event_loop().run_until_complete(fn())
+        asyncio.get_event_loop().create_task(fn())
 
     async def update_worker(self, lock):
         while True:
