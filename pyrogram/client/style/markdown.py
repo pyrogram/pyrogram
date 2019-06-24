@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import html
 import re
 
 import pyrogram
@@ -89,10 +90,14 @@ class Markdown:
         for match in re.finditer(Markdown.URL_RE, text):
             start, stop = match.span()
             full = match.group(0)
+
             body, url = match.groups()
+            body = html.escape(body)
+
             replace = '<a href="{}">{}</a>'.format(url, body)
 
             text = text[:start + offset] + replace + text[stop + offset:]
+
             offset += len(replace) - len(full)
 
         return self.html.parse(text)
