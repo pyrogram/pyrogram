@@ -24,66 +24,76 @@ from .html import HTML
 
 
 class Markdown:
-    BOLD_DELIMITER = "**"
-    ITALIC_DELIMITER = "__"
-    UNDERLINE_DELIMITER = "--"
-    STRIKE_DELIMITER = "~~"
-    CODE_DELIMITER = "`"
-    PRE_DELIMITER = "```"
+    BOLD_DELIM = "**"
+    ITALIC_DELIM = "__"
+    UNDERLINE_DELIM = "--"
+    STRIKE_DELIM = "~~"
+    CODE_DELIM = "`"
+    PRE_DELIM = "```"
 
     MARKDOWN_RE = re.compile(r"({d})".format(
         d="|".join(
             ["".join(i) for i in [
                 [r"\{}".format(j) for j in i]
                 for i in [
-                    PRE_DELIMITER,
-                    CODE_DELIMITER,
-                    STRIKE_DELIMITER,
-                    UNDERLINE_DELIMITER,
-                    ITALIC_DELIMITER,
-                    BOLD_DELIMITER
+                    PRE_DELIM,
+                    CODE_DELIM,
+                    STRIKE_DELIM,
+                    UNDERLINE_DELIM,
+                    ITALIC_DELIM,
+                    BOLD_DELIM
                 ]
             ]]
         )))
 
     URL_RE = re.compile(r"\[([^[]+)]\(([^(]+)\)")
 
+    OPENING_TAG = "<{}>"
+    CLOSING_TAG = "</{}>"
+    URL_MARKUP = '<a href="{}">{}</a>'
+    FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
+
     def __init__(self, client: "pyrogram.BaseClient"):
         self.html = HTML(client)
 
     def parse(self, text: str):
+        text = html.escape(text)
+
         offset = 0
-        delimiters = set()
+        delims = set()
 
         for i, match in enumerate(re.finditer(Markdown.MARKDOWN_RE, text)):
             start, stop = match.span()
-            delimiter = match.group(1)
+            delim = match.group(1)
 
-            if delimiter == Markdown.BOLD_DELIMITER:
+            if delim == Markdown.BOLD_DELIM:
                 tag = "b"
-            elif delimiter == Markdown.ITALIC_DELIMITER:
+            elif delim == Markdown.ITALIC_DELIM:
                 tag = "i"
-            elif delimiter == Markdown.UNDERLINE_DELIMITER:
+            elif delim == Markdown.UNDERLINE_DELIM:
                 tag = "u"
-            elif delimiter == Markdown.STRIKE_DELIMITER:
+            elif delim == Markdown.STRIKE_DELIM:
                 tag = "s"
-            elif delimiter == Markdown.CODE_DELIMITER:
+            elif delim == Markdown.CODE_DELIM:
                 tag = "code"
-            elif delimiter == Markdown.PRE_DELIMITER:
+            elif delim == Markdown.PRE_DELIM:
                 tag = "pre"
             else:
                 continue
 
-            if delimiter not in delimiters:
-                delimiters.add(delimiter)
-                tag = "<{}>".format(tag)
+            if delim not in Markdown.FIXED_WIDTH_DELIMS and any(x in delims for x in Markdown.FIXED_WIDTH_DELIMS):
+                continue
+
+            if delim not in delims:
+                delims.add(delim)
+                tag = Markdown.OPENING_TAG.format(tag)
             else:
-                delimiters.remove(delimiter)
-                tag = "</{}>".format(tag)
+                delims.remove(delim)
+                tag = Markdown.CLOSING_TAG.format(tag)
 
             text = text[:start + offset] + tag + text[stop + offset:]
 
-            offset += len(tag) - len(delimiter)
+            offset += len(tag) - len(delim)
 
         offset = 0
 
@@ -92,9 +102,7 @@ class Markdown:
             full = match.group(0)
 
             body, url = match.groups()
-            body = html.escape(body)
-
-            replace = '<a href="{}">{}</a>'.format(url, body)
+            replace = Markdown.URL_MARKUP.format(url, body)
 
             text = text[:start + offset] + replace + text[stop + offset:]
 
