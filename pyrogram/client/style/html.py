@@ -20,11 +20,11 @@ import html
 import re
 from collections import OrderedDict
 from html.parser import HTMLParser
+from struct import unpack
 
 import pyrogram
 from pyrogram.api import types
 from pyrogram.errors import PeerIdInvalid
-from . import utils
 
 
 class Parser(HTMLParser):
@@ -111,11 +111,28 @@ class Parser(HTMLParser):
 
 
 class HTML:
+    # SMP = Supplementary Multilingual Plane: https://en.wikipedia.org/wiki/Plane_(Unicode)#Overview
+    SMP_RE = re.compile(r"[\U00010000-\U0010FFFF]")
+
     def __init__(self, client: "pyrogram.BaseClient" = None):
         self.client = client
 
+    @staticmethod
+    def add_surrogates(text):
+        # Replace each SMP code point with a surrogate pair
+        return HTML.SMP_RE.sub(
+            lambda match:  # Split SMP in two surrogates
+            "".join(chr(i) for i in unpack("<HH", match.group().encode("utf-16le"))),
+            text
+        )
+
+    @staticmethod
+    def remove_surrogates(text):
+        # Replace each surrogate pair with a SMP code point
+        return text.encode("utf-16", "surrogatepass").decode("utf-16")
+
     def parse(self, text: str):
-        text = utils.add_surrogates(str(text or "").strip())
+        text = HTML.add_surrogates(str(text or "").strip())
 
         parser = Parser(self.client)
         parser.feed(text)
@@ -123,6 +140,6 @@ class HTML:
 
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
-            ("message", utils.remove_surrogates(parser.text)),
+            ("message", HTML.remove_surrogates(parser.text)),
             ("entities", parser.entities)
         ])
