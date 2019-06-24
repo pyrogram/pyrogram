@@ -17,22 +17,9 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from collections import OrderedDict
 
 import pyrogram
-from pyrogram.api.types import (
-    MessageEntityBold as Bold,
-    MessageEntityItalic as Italic,
-    MessageEntityCode as Code,
-    MessageEntityTextUrl as Url,
-    MessageEntityPre as Pre,
-    MessageEntityUnderline as Underline,
-    MessageEntityStrike as Strike,
-    MessageEntityMentionName as MentionInvalid,
-    InputMessageEntityMentionName as Mention
-)
-from pyrogram.errors import PeerIdInvalid
-from . import utils
+from .html import HTML
 
 
 class Markdown:
@@ -43,10 +30,10 @@ class Markdown:
     CODE_DELIMITER = "`"
     PRE_DELIMITER = "```"
 
-    MARKDOWN_RE = re.compile(r"({d})([\w\W]*?)\1|\[([^[]+?)\]\(([^(]+?)\)".format(
+    MARKDOWN_RE = re.compile(r"({d})".format(
         d="|".join(
             ["".join(i) for i in [
-                ["\{}".format(j) for j in i]
+                [r"\{}".format(j) for j in i]
                 for i in [
                     PRE_DELIMITER,
                     CODE_DELIMITER,
@@ -56,107 +43,56 @@ class Markdown:
                     BOLD_DELIMITER
                 ]
             ]]
-        )
-    ))
-    MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
+        )))
 
-    def __init__(self, client: "pyrogram.BaseClient" = None):
-        self.client = client
+    URL_RE = re.compile(r"\[([^[]+)]\(([^(]+)\)")
 
-    def parse(self, message: str):
-        message = utils.add_surrogates(str(message or "")).strip()
-        entities = []
+    def __init__(self, client: "pyrogram.BaseClient"):
+        self.html = HTML(client)
+
+    def parse(self, text: str):
         offset = 0
+        delimiters = set()
 
-        for match in self.MARKDOWN_RE.finditer(message):
-            start = match.start() - offset
-            style, body, text, url = match.groups()
+        for i, match in enumerate(re.finditer(Markdown.MARKDOWN_RE, text)):
+            start, stop = match.span()
+            delimiter = match.group(1)
 
-            if url:
-                mention = self.MENTION_RE.match(url)
-
-                if mention:
-                    user_id = int(mention.group(1))
-
-                    try:
-                        input_user = self.client.resolve_peer(user_id)
-                    except PeerIdInvalid:
-                        input_user = None
-
-                    entity = (
-                        Mention(offset=start, length=len(text), user_id=input_user)
-                        if input_user else MentionInvalid(offset=start, length=len(text), user_id=user_id)
-                    )
-                else:
-                    entity = Url(offset=start, length=len(text), url=url)
-
-                body = text
-                offset += len(url) + 4
-            else:
-                if style == self.BOLD_DELIMITER:
-                    entity = Bold(offset=start, length=len(body))
-                elif style == self.ITALIC_DELIMITER:
-                    entity = Italic(offset=start, length=len(body))
-                elif style == self.UNDERLINE_DELIMITER:
-                    entity = Underline(offset=start, length=len(body))
-                elif style == self.STRIKE_DELIMITER:
-                    entity = Strike(offset=start, length=len(body))
-                elif style == self.CODE_DELIMITER:
-                    entity = Code(offset=start, length=len(body))
-                elif style == self.PRE_DELIMITER:
-                    entity = Pre(offset=start, length=len(body), language="")
-                else:
-                    continue
-
-                offset += len(style) * 2
-
-            entities.append(entity)
-            message = message.replace(match.group(), body)
-
-        # TODO: OrderedDict to be removed in Python3.6
-        return OrderedDict([
-            ("message", utils.remove_surrogates(message)),
-            ("entities", entities)
-        ])
-
-    def unparse(self, message: str, entities: list):
-        message = utils.add_surrogates(message).strip()
-        offset = 0
-
-        for entity in entities:
-            start = entity.offset + offset
-            type = entity.type
-            url = entity.url
-            user = entity.user
-            sub = message[start: start + entity.length]
-
-            if type == "bold":
-                style = self.BOLD_DELIMITER
-            elif type == "italic":
-                style = self.ITALIC_DELIMITER
-            elif type == "underline":
-                style = self.UNDERLINE_DELIMITER
-            elif type == "strike":
-                style = self.STRIKE_DELIMITER
-            elif type == "code":
-                style = self.CODE_DELIMITER
-            elif type == "pre":
-                style = self.PRE_DELIMITER
-            elif type == "text_link":
-                offset += 4 + len(url)
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}]({})".format(sub, url), 1)
-                continue
-            elif type == "text_mention":
-                offset += 17 + len(str(user.id))
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}](tg://user?id={})".format(sub, user.id), 1)
-                continue
+            if delimiter == Markdown.BOLD_DELIMITER:
+                tag = "b"
+            elif delimiter == Markdown.ITALIC_DELIMITER:
+                tag = "i"
+            elif delimiter == Markdown.UNDERLINE_DELIMITER:
+                tag = "u"
+            elif delimiter == Markdown.STRIKE_DELIMITER:
+                tag = "s"
+            elif delimiter == Markdown.CODE_DELIMITER:
+                tag = "code"
+            elif delimiter == Markdown.PRE_DELIMITER:
+                tag = "pre"
             else:
                 continue
 
-            offset += len(style) * 2
-            message = message[:start] + message[start:].replace(
-                sub, "{0}{1}{0}".format(style, sub), 1)
+            if delimiter not in delimiters:
+                delimiters.add(delimiter)
+                tag = "<{}>".format(tag)
+            else:
+                delimiters.remove(delimiter)
+                tag = "</{}>".format(tag)
 
-        return utils.remove_surrogates(message)
+            text = text[:start + offset] + tag + text[stop + offset:]
+
+            offset += len(tag) - len(delimiter)
+
+        offset = 0
+
+        for match in re.finditer(Markdown.URL_RE, text):
+            start, stop = match.span()
+            full = match.group(0)
+            body, url = match.groups()
+            replace = '<a href="{}">{}</a>'.format(url, body)
+
+            text = text[:start + offset] + replace + text[stop + offset:]
+            offset += len(replace) - len(full)
+
+        return self.html.parse(text)
