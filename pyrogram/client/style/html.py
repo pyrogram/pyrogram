@@ -93,7 +93,10 @@ class Parser(HTMLParser):
         self.text += data
 
     def handle_endtag(self, tag):
-        start_tag = self.tags.pop()
+        try:
+            start_tag = self.tags.pop()
+        except IndexError:
+            return
 
         if start_tag != tag:
             line, offset = self.getpos()
@@ -113,6 +116,7 @@ class HTML:
 
     def parse(self, text: str):
         text = utils.add_surrogates(str(text or "").strip())
+        text = "<p>{}</p>".format(text)
 
         parser = Parser(self.client)
         parser.feed(text)
