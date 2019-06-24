@@ -116,7 +116,6 @@ class HTML:
 
         parser = Parser(self.client)
         parser.feed(text)
-        print(parser.entities)
 
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
