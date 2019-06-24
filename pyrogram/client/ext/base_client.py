@@ -24,7 +24,6 @@ import sys
 from pathlib import Path
 
 from pyrogram import __version__
-
 from ..style import Markdown, HTML
 from ...session.internals import MsgId
 
@@ -105,7 +104,7 @@ class BaseClient:
         self.takeout_id = None
 
         self.updates_queue = asyncio.Queue()
-        self.updates_worker_task = None
+        self.updates_worker_tasks = []
         self.download_queue = asyncio.Queue()
         self.download_worker_tasks = []
 
