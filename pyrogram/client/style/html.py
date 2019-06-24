@@ -116,10 +116,10 @@ class HTML:
 
     def parse(self, text: str):
         text = utils.add_surrogates(str(text or "").strip())
-        text = "<p>{}</p>".format(text)
 
         parser = Parser(self.client)
         parser.feed(text)
+        parser.close()
 
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
