@@ -37,8 +37,7 @@ class Parser(HTMLParser):
 
         self.text = ""
         self.entities = []
-        self.temp_entities = []
-        self.tags = []
+        self.tag_entities = {}
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -81,30 +80,22 @@ class Parser(HTMLParser):
         else:
             return
 
-        self.tags.append(tag)
-        self.temp_entities.append(entity(offset=len(self.text), length=0, **extra))
+        if tag not in self.tag_entities:
+            self.tag_entities[tag] = []
+
+        self.tag_entities[tag].append(entity(offset=len(self.text), length=0, **extra))
 
     def handle_data(self, data):
         data = html.unescape(data)
 
-        for entity in self.temp_entities:
-            entity.length += len(data)
+        for entities in self.tag_entities.values():
+            for entity in entities:
+                entity.length += len(data)
 
         self.text += data
 
     def handle_endtag(self, tag):
-        try:
-            start_tag = self.tags.pop()
-        except IndexError:
-            return
-
-        if start_tag != tag:
-            line, offset = self.getpos()
-            offset += 1
-
-            raise ValueError("Expected end tag </{}>, but found </{}> at {}:{}".format(start_tag, tag, line, offset))
-
-        self.entities.append(self.temp_entities.pop())
+        self.entities.append(self.tag_entities[tag].pop())
 
     def error(self, message):
         pass
