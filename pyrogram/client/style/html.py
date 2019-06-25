@@ -134,3 +134,47 @@ class HTML:
             ("message", utils.remove_surrogates(parser.text)),
             ("entities", parser.entities)
         ])
+
+    @staticmethod
+    def unparse(text: str, entities: list):
+        text = utils.add_surrogates(text)
+        copy = text
+
+        for entity in entities:
+            start = entity.offset
+            end = start + entity.length
+
+            type = entity.type
+
+            url = entity.url
+            user = entity.user
+
+            sub = copy[start:end]
+
+            if type == "bold":
+                style = "b"
+            elif type == "italic":
+                style = "i"
+            elif type == "underline":
+                style = "u"
+            elif type == "strike":
+                style = "s"
+            elif type == "code":
+                style = "code"
+            elif type == "pre":
+                style = "pre"
+            elif type == "blockquote":
+                style = "blockquote"
+            elif type == "text_link":
+                text = text[:start] + text[start:].replace(sub, '<a href="{}">{}</a>'.format(url, sub), 1)
+                continue
+            elif type == "text_mention":
+                text = text[:start] + text[start:].replace(
+                    sub, '<a href="tg://user?id={}">{}</a>'.format(user.id, sub), 1)
+                continue
+            else:
+                continue
+
+            text = text[:start] + text[start:].replace(sub, "<{0}>{1}</{0}>".format(style, sub), 1)
+
+        return utils.remove_surrogates(text)

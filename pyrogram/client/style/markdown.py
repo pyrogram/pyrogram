@@ -20,17 +20,18 @@ import html
 import re
 
 import pyrogram
+from . import utils
 from .html import HTML
+
+BOLD_DELIM = "**"
+ITALIC_DELIM = "__"
+UNDERLINE_DELIM = "--"
+STRIKE_DELIM = "~~"
+CODE_DELIM = "`"
+PRE_DELIM = "```"
 
 
 class Markdown:
-    BOLD_DELIM = "**"
-    ITALIC_DELIM = "__"
-    UNDERLINE_DELIM = "--"
-    STRIKE_DELIM = "~~"
-    CODE_DELIM = "`"
-    PRE_DELIM = "```"
-
     MARKDOWN_RE = re.compile(r"({d})".format(
         d="|".join(
             ["".join(i) for i in [
@@ -66,17 +67,17 @@ class Markdown:
             start, stop = match.span()
             delim = match.group(1)
 
-            if delim == Markdown.BOLD_DELIM:
+            if delim == BOLD_DELIM:
                 tag = "b"
-            elif delim == Markdown.ITALIC_DELIM:
+            elif delim == ITALIC_DELIM:
                 tag = "i"
-            elif delim == Markdown.UNDERLINE_DELIM:
+            elif delim == UNDERLINE_DELIM:
                 tag = "u"
-            elif delim == Markdown.STRIKE_DELIM:
+            elif delim == STRIKE_DELIM:
                 tag = "s"
-            elif delim == Markdown.CODE_DELIM:
+            elif delim == CODE_DELIM:
                 tag = "code"
-            elif delim == Markdown.PRE_DELIM:
+            elif delim == PRE_DELIM:
                 tag = "pre"
             else:
                 continue
@@ -109,3 +110,48 @@ class Markdown:
             offset += len(replace) - len(full)
 
         return self.html.parse(text)
+
+    @staticmethod
+    def unparse(text: str, entities: list):
+        text = utils.add_surrogates(text)
+        copy = text
+
+        for entity in entities:
+            start = entity.offset
+            end = start + entity.length
+
+            type = entity.type
+
+            url = entity.url
+            user = entity.user
+
+            sub = copy[start:end]
+
+            if type == "bold":
+                style = BOLD_DELIM
+            elif type == "italic":
+                style = ITALIC_DELIM
+            elif type == "underline":
+                style = UNDERLINE_DELIM
+            elif type == "strike":
+                style = STRIKE_DELIM
+            elif type == "code":
+                style = CODE_DELIM
+            elif type == "pre":
+                style = PRE_DELIM
+            # TODO: Blockquote for MD
+            # elif type == "blockquote":
+            #     style = ...
+            elif type == "text_link":
+                text = text[:start] + text[start:].replace(sub, '[{1}]({0})'.format(url, sub), 1)
+                continue
+            elif type == "text_mention":
+                text = text[:start] + text[start:].replace(
+                    sub, '[{1}](tg://user?id={0})'.format(user.id, sub), 1)
+                continue
+            else:
+                continue
+
+            text = text[:start] + text[start:].replace(sub, "{0}{1}{0}".format(style, sub), 1)
+
+        return utils.remove_surrogates(text)
