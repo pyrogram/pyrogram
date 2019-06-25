@@ -31,6 +31,7 @@ from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
+from ...style import utils
 
 
 class Str(str):
@@ -57,6 +58,9 @@ class Str(str):
     @property
     def html(self):
         return self._client.html.unparse(self, self._entities)
+
+    def __getitem__(self, item):
+        return utils.remove_surrogates(utils.add_surrogates(self)[item])
 
 
 class Message(Object, Update):
