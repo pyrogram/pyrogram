@@ -16,147 +16,142 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import html
 import re
-from collections import OrderedDict
 
 import pyrogram
-from pyrogram.api.types import (
-    MessageEntityBold as Bold,
-    MessageEntityItalic as Italic,
-    MessageEntityCode as Code,
-    MessageEntityTextUrl as Url,
-    MessageEntityPre as Pre,
-    MessageEntityUnderline as Underline,
-    MessageEntityStrike as Strike,
-    MessageEntityMentionName as MentionInvalid,
-    InputMessageEntityMentionName as Mention
-)
-from pyrogram.errors import PeerIdInvalid
 from . import utils
+from .html import HTML
+
+BOLD_DELIM = "**"
+ITALIC_DELIM = "__"
+UNDERLINE_DELIM = "--"
+STRIKE_DELIM = "~~"
+CODE_DELIM = "`"
+PRE_DELIM = "```"
 
 
 class Markdown:
-    BOLD_DELIMITER = "**"
-    ITALIC_DELIMITER = "__"
-    UNDERLINE_DELIMITER = "--"
-    STRIKE_DELIMITER = "~~"
-    CODE_DELIMITER = "`"
-    PRE_DELIMITER = "```"
-
-    MARKDOWN_RE = re.compile(r"({d})([\w\W]*?)\1|\[([^[]+?)\]\(([^(]+?)\)".format(
+    MARKDOWN_RE = re.compile(r"({d})".format(
         d="|".join(
             ["".join(i) for i in [
-                ["\{}".format(j) for j in i]
+                [r"\{}".format(j) for j in i]
                 for i in [
-                    PRE_DELIMITER,
-                    CODE_DELIMITER,
-                    STRIKE_DELIMITER,
-                    UNDERLINE_DELIMITER,
-                    ITALIC_DELIMITER,
-                    BOLD_DELIMITER
+                    PRE_DELIM,
+                    CODE_DELIM,
+                    STRIKE_DELIM,
+                    UNDERLINE_DELIM,
+                    ITALIC_DELIM,
+                    BOLD_DELIM
                 ]
             ]]
-        )
-    ))
-    MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
+        )))
 
-    def __init__(self, client: "pyrogram.BaseClient" = None):
-        self.client = client
+    URL_RE = re.compile(r"\[([^[]+)]\(([^(]+)\)")
 
-    async def parse(self, message: str):
-        message = utils.add_surrogates(str(message or "")).strip()
-        entities = []
+    OPENING_TAG = "<{}>"
+    CLOSING_TAG = "</{}>"
+    URL_MARKUP = '<a href="{}">{}</a>'
+    FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
+
+    def __init__(self, client: "pyrogram.BaseClient"):
+        self.html = HTML(client)
+
+    async def parse(self, text: str):
+        text = html.escape(text)
+
         offset = 0
+        delims = set()
 
-        for match in self.MARKDOWN_RE.finditer(message):
-            start = match.start() - offset
-            style, body, text, url = match.groups()
+        for i, match in enumerate(re.finditer(Markdown.MARKDOWN_RE, text)):
+            start, stop = match.span()
+            delim = match.group(1)
 
-            if url:
-                mention = self.MENTION_RE.match(url)
-
-                if mention:
-                    user_id = int(mention.group(1))
-
-                    try:
-                        input_user = await self.client.resolve_peer(user_id)
-                    except PeerIdInvalid:
-                        input_user = None
-
-                    entity = (
-                        Mention(offset=start, length=len(text), user_id=input_user)
-                        if input_user else MentionInvalid(offset=start, length=len(text), user_id=user_id)
-                    )
-                else:
-                    entity = Url(offset=start, length=len(text), url=url)
-
-                body = text
-                offset += len(url) + 4
+            if delim == BOLD_DELIM:
+                tag = "b"
+            elif delim == ITALIC_DELIM:
+                tag = "i"
+            elif delim == UNDERLINE_DELIM:
+                tag = "u"
+            elif delim == STRIKE_DELIM:
+                tag = "s"
+            elif delim == CODE_DELIM:
+                tag = "code"
+            elif delim == PRE_DELIM:
+                tag = "pre"
             else:
-                if style == self.BOLD_DELIMITER:
-                    entity = Bold(offset=start, length=len(body))
-                elif style == self.ITALIC_DELIMITER:
-                    entity = Italic(offset=start, length=len(body))
-                elif style == self.UNDERLINE_DELIMITER:
-                    entity = Underline(offset=start, length=len(body))
-                elif style == self.STRIKE_DELIMITER:
-                    entity = Strike(offset=start, length=len(body))
-                elif style == self.CODE_DELIMITER:
-                    entity = Code(offset=start, length=len(body))
-                elif style == self.PRE_DELIMITER:
-                    entity = Pre(offset=start, length=len(body), language="")
-                else:
-                    continue
+                continue
 
-                offset += len(style) * 2
+            if delim not in Markdown.FIXED_WIDTH_DELIMS and any(x in delims for x in Markdown.FIXED_WIDTH_DELIMS):
+                continue
 
-            entities.append(entity)
-            message = message.replace(match.group(), body)
+            if delim not in delims:
+                delims.add(delim)
+                tag = Markdown.OPENING_TAG.format(tag)
+            else:
+                delims.remove(delim)
+                tag = Markdown.CLOSING_TAG.format(tag)
 
-        # TODO: OrderedDict to be removed in Python3.6
-        return OrderedDict([
-            ("message", utils.remove_surrogates(message)),
-            ("entities", entities)
-        ])
+            text = text[:start + offset] + tag + text[stop + offset:]
 
-    def unparse(self, message: str, entities: list):
-        message = utils.add_surrogates(message).strip()
+            offset += len(tag) - len(delim)
+
         offset = 0
+
+        for match in re.finditer(Markdown.URL_RE, text):
+            start, stop = match.span()
+            full = match.group(0)
+
+            body, url = match.groups()
+            replace = Markdown.URL_MARKUP.format(url, body)
+
+            text = text[:start + offset] + replace + text[stop + offset:]
+
+            offset += len(replace) - len(full)
+
+        return await self.html.parse(text)
+
+    @staticmethod
+    def unparse(text: str, entities: list):
+        text = utils.add_surrogates(text)
+        copy = text
 
         for entity in entities:
-            start = entity.offset + offset
+            start = entity.offset
+            end = start + entity.length
+
             type = entity.type
+
             url = entity.url
             user = entity.user
-            sub = message[start: start + entity.length]
+
+            sub = copy[start:end]
 
             if type == "bold":
-                style = self.BOLD_DELIMITER
+                style = BOLD_DELIM
             elif type == "italic":
-                style = self.ITALIC_DELIMITER
+                style = ITALIC_DELIM
             elif type == "underline":
-                style = self.UNDERLINE_DELIMITER
+                style = UNDERLINE_DELIM
             elif type == "strike":
-                style = self.STRIKE_DELIMITER
+                style = STRIKE_DELIM
             elif type == "code":
-                style = self.CODE_DELIMITER
+                style = CODE_DELIM
             elif type == "pre":
-                style = self.PRE_DELIMITER
+                style = PRE_DELIM
+            # TODO: Blockquote for MD
+            # elif type == "blockquote":
+            #     style = ...
             elif type == "text_link":
-                offset += 4 + len(url)
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}]({})".format(sub, url), 1)
+                text = text[:start] + text[start:].replace(sub, '[{1}]({0})'.format(url, sub), 1)
                 continue
             elif type == "text_mention":
-                offset += 17 + len(str(user.id))
-                message = message[:start] + message[start:].replace(
-                    sub, "[{}](tg://user?id={})".format(sub, user.id), 1)
+                text = text[:start] + text[start:].replace(
+                    sub, '[{1}](tg://user?id={0})'.format(user.id, sub), 1)
                 continue
             else:
                 continue
 
-            offset += len(style) * 2
-            message = message[:start] + message[start:].replace(
-                sub, "{0}{1}{0}".format(style, sub), 1)
+            text = text[:start] + text[start:].replace(sub, "{0}{1}{0}".format(style, sub), 1)
 
-        return utils.remove_surrogates(message)
+        return utils.remove_surrogates(text)

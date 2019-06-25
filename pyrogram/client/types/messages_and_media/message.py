@@ -31,32 +31,30 @@ from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
+from ...style import utils, Markdown, HTML
 
 
 class Str(str):
     def __init__(self, *args):
         super().__init__()
 
-        self._client = None
-        self._entities = None
+        self.entities = None
 
-    def init(self, client, entities):
-        self._client = client
-        self._entities = entities
+    def init(self, entities):
+        self.entities = entities
 
-        return self
-
-    @property
-    def text(self):
         return self
 
     @property
     def markdown(self):
-        return self._client.markdown.unparse(self, self._entities)
+        return Markdown.unparse(self, self.entities)
 
     @property
     def html(self):
-        return self._client.html.unparse(self, self._entities)
+        return HTML.unparse(self, self.entities)
+
+    def __getitem__(self, item):
+        return utils.remove_surrogates(utils.add_surrogates(self)[item])
 
 
 class Message(Object, Update):
@@ -486,7 +484,7 @@ class Message(Object, Update):
 
         if isinstance(message, types.Message):
             entities = [MessageEntity._parse(client, entity, users) for entity in message.entities]
-            entities = list(filter(lambda x: x is not None, entities))
+            entities = pyrogram.List(filter(lambda x: x is not None, entities))
 
             forward_from = None
             forward_sender_name = None
@@ -603,8 +601,8 @@ class Message(Object, Update):
                 date=message.date,
                 chat=Chat._parse(client, message, users, chats),
                 from_user=User._parse(client, users.get(message.from_id, None)),
-                text=Str(message.message).init(client, entities) or None if media is None else None,
-                caption=Str(message.message).init(client, entities) or None if media is not None else None,
+                text=Str(message.message).init(entities) or None if media is None else None,
+                caption=Str(message.message).init(entities) or None if media is not None else None,
                 entities=entities or None if media is None else None,
                 caption_entities=entities or None if media is not None else None,
                 author_signature=message.post_author,
