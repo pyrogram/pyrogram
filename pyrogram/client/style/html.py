@@ -95,7 +95,16 @@ class Parser(HTMLParser):
         self.text += data
 
     def handle_endtag(self, tag):
-        self.entities.append(self.tag_entities[tag].pop())
+        try:
+            self.entities.append(self.tag_entities[tag].pop())
+        except (KeyError, IndexError):
+            line, offset = self.getpos()
+            offset += 1
+
+            raise ValueError("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
+        else:
+            if not self.tag_entities[tag]:
+                self.tag_entities.pop(tag)
 
     def error(self, message):
         pass
@@ -111,6 +120,14 @@ class HTML:
         parser = Parser(self.client)
         parser.feed(text)
         parser.close()
+
+        if parser.tag_entities:
+            unclosed_tags = []
+
+            for tag, entities in parser.tag_entities.items():
+                unclosed_tags.append("<{}> (x{})".format(tag, len(entities)))
+
+            raise ValueError("Unclosed tags: {}".format(", ".join(unclosed_tags)))
 
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
