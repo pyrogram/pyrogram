@@ -64,16 +64,8 @@ class Parser(HTMLParser):
             mention = Parser.MENTION_RE.match(url)
 
             if mention:
-                user_id = int(mention.group(1))
-
-                try:
-                    user = self.client.resolve_peer(user_id)
-                except PeerIdInvalid:
-                    entity = types.MessageEntityMentionName
-                    extra["user_id"] = user_id
-                else:
-                    entity = types.InputMessageEntityMentionName
-                    extra["user_id"] = user
+                entity = types.InputMessageEntityMentionName
+                extra["user_id"] = int(mention.group(1))
             else:
                 entity = types.MessageEntityTextUrl
                 extra["url"] = url
@@ -129,10 +121,21 @@ class HTML:
 
             raise ValueError("Unclosed tags: {}".format(", ".join(unclosed_tags)))
 
+        entities = []
+
+        for entity in parser.entities:
+            if isinstance(entity, types.InputMessageEntityMentionName):
+                try:
+                    entity.user_id = self.client.resolve_peer(entity.user_id)
+                except PeerIdInvalid:
+                    continue
+
+            entities.append(entity)
+
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
             ("message", utils.remove_surrogates(parser.text)),
-            ("entities", parser.entities)
+            ("entities", entities)
         ])
 
     @staticmethod
