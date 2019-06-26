@@ -18,6 +18,7 @@
 
 import html
 import re
+from typing import Union
 
 import pyrogram
 from . import utils
@@ -30,42 +31,52 @@ STRIKE_DELIM = "~~"
 CODE_DELIM = "`"
 PRE_DELIM = "```"
 
+MARKDOWN_RE = re.compile(r"({d})|\[(.+?)\]\((.+?)\)".format(
+    d="|".join(
+        ["".join(i) for i in [
+            [r"\{}".format(j) for j in i]
+            for i in [
+                PRE_DELIM,
+                CODE_DELIM,
+                STRIKE_DELIM,
+                UNDERLINE_DELIM,
+                ITALIC_DELIM,
+                BOLD_DELIM
+            ]
+        ]]
+    )))
+
+OPENING_TAG = "<{}>"
+CLOSING_TAG = "</{}>"
+URL_MARKUP = '<a href="{}">{}</a>'
+FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
+
 
 class Markdown:
-    MARKDOWN_RE = re.compile(r"({d})".format(
-        d="|".join(
-            ["".join(i) for i in [
-                [r"\{}".format(j) for j in i]
-                for i in [
-                    PRE_DELIM,
-                    CODE_DELIM,
-                    STRIKE_DELIM,
-                    UNDERLINE_DELIM,
-                    ITALIC_DELIM,
-                    BOLD_DELIM
-                ]
-            ]]
-        )))
-
-    URL_RE = re.compile(r"\[([^[]+)]\(([^(]+)\)")
-
-    OPENING_TAG = "<{}>"
-    CLOSING_TAG = "</{}>"
-    URL_MARKUP = '<a href="{}">{}</a>'
-    FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
-
-    def __init__(self, client: "pyrogram.BaseClient"):
+    def __init__(self, client: Union["pyrogram.BaseClient", None]):
         self.html = HTML(client)
 
-    def parse(self, text: str):
-        text = html.escape(text)
+    def parse(self, text: str, strict: bool = False):
+        if strict:
+            text = html.escape(text)
 
-        offset = 0
         delims = set()
+        is_fixed_width = False
 
-        for i, match in enumerate(re.finditer(Markdown.MARKDOWN_RE, text)):
-            start, stop = match.span()
-            delim = match.group(1)
+        for i, match in enumerate(re.finditer(MARKDOWN_RE, text)):
+            start, _ = match.span()
+            delim, text_url, url = match.groups()
+            full = match.group(0)
+
+            if delim in FIXED_WIDTH_DELIMS:
+                is_fixed_width = not is_fixed_width
+
+            if is_fixed_width and delim not in FIXED_WIDTH_DELIMS:
+                continue
+
+            if text_url:
+                text = utils.replace_once(text, full, URL_MARKUP.format(url, text_url), start)
+                continue
 
             if delim == BOLD_DELIM:
                 tag = "b"
@@ -82,32 +93,14 @@ class Markdown:
             else:
                 continue
 
-            if delim not in Markdown.FIXED_WIDTH_DELIMS and any(x in delims for x in Markdown.FIXED_WIDTH_DELIMS):
-                continue
-
             if delim not in delims:
                 delims.add(delim)
-                tag = Markdown.OPENING_TAG.format(tag)
+                tag = OPENING_TAG.format(tag)
             else:
                 delims.remove(delim)
-                tag = Markdown.CLOSING_TAG.format(tag)
+                tag = CLOSING_TAG.format(tag)
 
-            text = text[:start + offset] + tag + text[stop + offset:]
-
-            offset += len(tag) - len(delim)
-
-        offset = 0
-
-        for match in re.finditer(Markdown.URL_RE, text):
-            start, stop = match.span()
-            full = match.group(0)
-
-            body, url = match.groups()
-            replace = Markdown.URL_MARKUP.format(url, body)
-
-            text = text[:start + offset] + replace + text[stop + offset:]
-
-            offset += len(replace) - len(full)
+            text = utils.replace_once(text, delim, tag, start)
 
         return self.html.parse(text)
 
