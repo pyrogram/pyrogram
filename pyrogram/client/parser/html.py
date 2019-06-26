@@ -20,6 +20,7 @@ import html
 import re
 from collections import OrderedDict
 from html.parser import HTMLParser
+from typing import Union
 
 import pyrogram
 from pyrogram.api import types
@@ -103,7 +104,7 @@ class Parser(HTMLParser):
 
 
 class HTML:
-    def __init__(self, client: "pyrogram.BaseClient" = None):
+    def __init__(self, client: Union["pyrogram.BaseClient", None]):
         self.client = client
 
     def parse(self, text: str):
@@ -126,7 +127,8 @@ class HTML:
         for entity in parser.entities:
             if isinstance(entity, types.InputMessageEntityMentionName):
                 try:
-                    entity.user_id = self.client.resolve_peer(entity.user_id)
+                    if self.client is not None:
+                        entity.user_id = self.client.resolve_peer(entity.user_id)
                 except PeerIdInvalid:
                     continue
 
@@ -135,7 +137,7 @@ class HTML:
         # TODO: OrderedDict to be removed in Python 3.6
         return OrderedDict([
             ("message", utils.remove_surrogates(parser.text)),
-            ("entities", entities)
+            ("entities", sorted(entities, key=lambda e: e.offset))
         ])
 
     @staticmethod
