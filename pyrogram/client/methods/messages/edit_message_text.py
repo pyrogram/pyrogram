@@ -48,8 +48,11 @@ class EditMessageText(BaseClient):
                 New text of the message.
 
             parse_mode (``str``, *optional*):
-                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
-                URLs in your message. Defaults to "markdown".
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
