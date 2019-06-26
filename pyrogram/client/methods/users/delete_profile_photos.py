@@ -16,23 +16,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from base64 import b64decode
 from struct import unpack
 from typing import List, Union
 
 from pyrogram.api import functions, types
+from pyrogram.client.ext import utils
+
 from ...ext import BaseClient
 
 
 class DeleteProfilePhotos(BaseClient):
     def delete_profile_photos(
         self,
-        id: Union[str, List[str]]
+        photo_ids: Union[str, List[str]]
     ) -> bool:
         """Delete your own profile photos.
 
         Parameters:
-            id (``str`` | ``list``):
+            photo_ids (``str`` | List of ``str``):
                 A single :obj:`Photo` id as string or multiple ids as list of strings for deleting
                 more than one photos at once.
 
@@ -42,16 +43,16 @@ class DeleteProfilePhotos(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        id = id if isinstance(id, list) else [id]
+        photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = []
 
-        for i in id:
-            s = unpack("<qq", b64decode(i + "=" * (-len(i) % 4), "-_"))
+        for photo_id in photo_ids:
+            unpacked = unpack("<iiqqc", utils.decode(photo_id))
 
             input_photos.append(
                 types.InputPhoto(
-                    id=s[0],
-                    access_hash=s[1],
+                    id=unpacked[2],
+                    access_hash=unpacked[3],
                     file_reference=b""
                 )
             )
