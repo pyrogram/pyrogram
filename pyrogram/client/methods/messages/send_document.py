@@ -31,7 +31,7 @@ class SendDocument(BaseClient):
         chat_id: Union[int, str],
         document: str,
         thumb: str = None, caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -67,8 +67,11 @@ class SendDocument(BaseClient):
                 Document caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
-                URLs in your caption. Defaults to "markdown".
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -112,7 +115,6 @@ class SendDocument(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
         file = None
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         try:
             if os.path.exists(document):
@@ -143,7 +145,7 @@ class SendDocument(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **await style.parse(caption)
+                            **await self.parser(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:

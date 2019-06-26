@@ -29,7 +29,7 @@ class EditMessageText(BaseClient):
         chat_id: Union[int, str],
         message_id: int,
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
@@ -48,8 +48,11 @@ class EditMessageText(BaseClient):
                 New text of the message.
 
             parse_mode (``str``, *optional*):
-                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
-                URLs in your message. Defaults to "markdown".
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -63,7 +66,6 @@ class EditMessageText(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         r = await self.send(
             functions.messages.EditMessage(
@@ -71,7 +73,7 @@ class EditMessageText(BaseClient):
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **await style.parse(text)
+                **await self.parser.parse(text, parse_mode)
             )
         )
 

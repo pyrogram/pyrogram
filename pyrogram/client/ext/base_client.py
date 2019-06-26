@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 from pyrogram import __version__
-from ..style import Markdown, HTML
+from ..parser import Parser
 from ...session.internals import MsgId
 
 
@@ -91,8 +91,7 @@ class BaseClient:
 
         self.rnd_id = MsgId
 
-        self.markdown = Markdown(self)
-        self.html = HTML(self)
+        self.parser = Parser(self)
 
         self.session = None
         self.media_sessions = {}

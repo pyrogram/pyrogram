@@ -40,8 +40,11 @@ class InputMediaVideo(InputMedia):
             Caption of the video to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
-            in your caption. Defaults to "markdown".
+            By default, texts are parsed using both Markdown and HTML styles.
+            You can combine both syntaxes together.
+            Pass "markdown" to enable Markdown-style parsing only.
+            Pass "html" to enable HTML-style parsing only.
+            Pass None to completely disable style parsing.
 
         width (``int``, *optional*):
             Video width.
