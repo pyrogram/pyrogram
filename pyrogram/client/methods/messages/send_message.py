@@ -28,7 +28,7 @@ class SendMessage(BaseClient):
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -74,8 +74,7 @@ class SendMessage(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        style = self.html if parse_mode.lower() == "html" else self.markdown
-        message, entities = style.parse(text).values()
+        message, entities = self.parser.parse(text, parse_mode).values()
 
         r = self.send(
             functions.messages.SendMessage(

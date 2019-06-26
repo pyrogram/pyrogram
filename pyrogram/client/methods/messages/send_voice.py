@@ -31,7 +31,7 @@ class SendVoice(BaseClient):
         chat_id: Union[int, str],
         voice: str,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -110,7 +110,6 @@ class SendVoice(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
         file = None
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         try:
             if os.path.exists(voice):
@@ -142,7 +141,7 @@ class SendVoice(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **style.parse(caption)
+                            **self.parser.parse(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:

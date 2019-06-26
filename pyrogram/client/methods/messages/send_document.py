@@ -32,7 +32,7 @@ class SendDocument(BaseClient):
         document: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -113,7 +113,6 @@ class SendDocument(BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
         file = None
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         try:
             if os.path.exists(document):
@@ -144,7 +143,7 @@ class SendDocument(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **style.parse(caption)
+                            **self.parser(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:

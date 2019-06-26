@@ -16,9 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import types
 from .input_message_content import InputMessageContent
-from ...style import HTML, Markdown
+from ...parser import Parser
 
 
 class InputTextMessageContent(InputMessageContent):
@@ -38,7 +40,7 @@ class InputTextMessageContent(InputMessageContent):
 
     __slots__ = ["message_text", "parse_mode", "disable_web_page_preview"]
 
-    def __init__(self, message_text: str, parse_mode: str = "", disable_web_page_preview: bool = None):
+    def __init__(self, message_text: str, parse_mode: Union[str, None] = "", disable_web_page_preview: bool = None):
         super().__init__()
 
         self.message_text = message_text
@@ -49,5 +51,5 @@ class InputTextMessageContent(InputMessageContent):
         return types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
             reply_markup=reply_markup.write() if reply_markup else None,
-            **(HTML() if self.parse_mode.lower() == "html" else Markdown()).parse(self.message_text)
+            **(Parser(None)).parse(self.message_text, self.parse_mode)
         )

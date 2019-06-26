@@ -31,7 +31,7 @@ from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
-from ...style import utils, Markdown, HTML
+from ...parser import utils, Parser
 
 
 class Str(str):
@@ -47,11 +47,11 @@ class Str(str):
 
     @property
     def markdown(self):
-        return Markdown.unparse(self, self.entities)
+        return Parser.unparse(self, self.entities, False)
 
     @property
     def html(self):
-        return HTML.unparse(self, self.entities)
+        return Parser.unparse(self, self.entities, True)
 
     def __getitem__(self, item):
         return utils.remove_surrogates(utils.add_surrogates(self)[item])

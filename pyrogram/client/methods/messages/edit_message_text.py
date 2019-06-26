@@ -29,7 +29,7 @@ class EditMessageText(BaseClient):
         chat_id: Union[int, str],
         message_id: int,
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
@@ -63,7 +63,6 @@ class EditMessageText(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         r = self.send(
             functions.messages.EditMessage(
@@ -71,7 +70,7 @@ class EditMessageText(BaseClient):
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(text)
+                **self.parser.parse(text, parse_mode)
             )
         )
 
