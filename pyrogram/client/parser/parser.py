@@ -42,7 +42,7 @@ class Parser:
         if mode == "":
             return self.markdown.parse(text)
 
-        if mode in ["markdown", "md"]:
+        if mode in "markdown":
             return self.markdown.parse(text, True)
 
         if mode == "html":
