@@ -28,8 +28,8 @@ Welcome to Pyrogram
     api/bound-methods
     api/handlers
     api/decorators
-    api/filters
     api/errors
+    api/filters
 
 .. toctree::
     :hidden:

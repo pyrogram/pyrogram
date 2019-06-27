@@ -1,7 +1,7 @@
 Available Methods
 =================
 
-All Pyrogram methods listed here are bound to a :class:`~pyrogram.Client` instance.
+This page is about Pyrogram methods. All the methods listed here are bound to a :class:`~pyrogram.Client` instance.
 
 .. code-block:: python
     :emphasize-lines: 6
