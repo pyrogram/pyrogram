@@ -81,6 +81,8 @@ def start():
 
                 sub_classes = []
 
+                f_all.write("        \"_\": \"{}\",\n".format(super_class))
+
                 for j, row in enumerate(reader):
                     if j == 0:
                         continue
@@ -90,13 +92,13 @@ def start():
                     if not row:  # Row is empty (blank line)
                         continue
 
-                    id, message = row
+                    error_id, error_message = row
 
-                    sub_class = caml(re.sub(r"_X", "_", id))
+                    sub_class = caml(re.sub(r"_X", "_", error_id))
 
-                    f_all.write("        \"{}\": \"{}\",\n".format(id, sub_class))
+                    f_all.write("        \"{}\": \"{}\",\n".format(error_id, sub_class))
 
-                    sub_classes.append((sub_class, id, message))
+                    sub_classes.append((sub_class, error_id, error_message))
 
                 with open("{}/template/class.txt".format(HOME), "r", encoding="utf-8") as f_class_template:
                     class_template = f_class_template.read()
