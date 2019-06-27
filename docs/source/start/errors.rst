@@ -28,7 +28,7 @@ Error Categories
 ----------------
 
 The ``RPCError`` packs together all the possible errors Telegram could raise, but to make things tidier, Pyrogram
-provides categories of errors, which are named after the common HTTP errors and subclass-ed from the RPCError:
+provides categories of errors, which are named after the common HTTP errors and are subclass-ed from the RPCError:
 
 .. code-block:: python
 
@@ -71,14 +71,22 @@ RPCError, thus building a class of error hierarchy such as this:
 Unknown Errors
 --------------
 
-In case Pyrogram does not know anything yet about a specific error, it raises a special ``520 - UnknownError`` exception
-and logs it in the ``unknown_errors.txt`` file. Users are invited to report these unknown errors.
+In case Pyrogram does not know anything about a specific error yet, it raises a generic error from its known category,
+for example, an unknown error with error code ``400``, will be raised as a ``BadRequest``. This way you can catch the
+whole category of errors and be sure to also handle these unknown errors.
+
+In case a whole class of errors is unknown (that is, an error code that is unknown), Pyrogram will raise a special
+``520 UnknownError`` exception.
+
+In both cases, Pyrogram will log them in the ``unknown_errors.txt`` file. Users are invited to report
+these unknown errors in the `discussion group <https://t.me/pyrogram>`_.
 
 Errors with Values
 ------------------
 
 Exception objects may also contain some informative values. For example, ``FloodWait`` holds the amount of seconds you
-have to wait before you can try again. The value is always stored in the ``x`` field of the returned exception object:
+have to wait before you can try again, some other errors contain the DC number on which the request must be repeated on.
+The value is stored in the ``x`` attribute of the exception object:
 
 .. code-block:: python
 
@@ -88,4 +96,4 @@ have to wait before you can try again. The value is always stored in the ``x`` f
     try:
         ...
     except FloodWait as e:
-        time.sleep(e.x)  # Wait before trying again
+        time.sleep(e.x)  # Wait "x" seconds before continuing
