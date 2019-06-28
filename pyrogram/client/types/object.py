@@ -50,7 +50,7 @@ class Object(metaclass=Meta):
                 else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
                 if attr.endswith("date")
                 else (attr, getattr(obj, attr))
-                for attr in obj.__slots__
+                for attr in getattr(obj, "__slots__", [])
                 if getattr(obj, attr) is not None
             ]
         )
