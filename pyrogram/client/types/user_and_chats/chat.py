@@ -312,3 +312,110 @@ class Chat(Object):
         """
 
         return self._client.unarchive_chats(self.id)
+
+    def set_title(self, title: str) -> bool:
+        """Bound method *set_title* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_title(
+                chat_id=chat_id,
+                title=title
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_title("Lounge")
+
+        Note:
+            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
+            setting is off.
+
+        Parameters:
+            title (``str``):
+                New chat title, 1-255 characters.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of Telegram RPC error.
+            ValueError: In case a chat_id belongs to user.
+        """
+
+        return self._client.set_chat_title(
+            chat_id=self.id,
+            title=title
+        )
+
+    def set_description(self, description: str) -> bool:
+        """Bound method *set_description* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_description(
+                chat_id=chat_id,
+                description=description
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_chat_description("Don't spam!")
+
+        Parameters:
+            description (``str``):
+                New chat description, 0-255 characters.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of Telegram RPC error.
+            ValueError If a chat_id doesn't belong to a supergroup or a channel.
+        """
+
+        return self._client.set_chat_description(
+            chat_id=self.id,
+            description=description
+        )
+
+
+    def set_photo(self, photo: str) -> bool:
+        """Bound method *set_photo* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_photo(
+                chat_id=chat_id,
+                photo=photo
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_photo("photo.png")
+
+        Parameters:
+            photo (``str``):
+                New chat photo. You can pass a :obj:`Photo` id or a file path to upload a new photo.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            ValueError: if a chat_id belongs to user.
+        """
+
+        return self._client.set_chat_photo(
+            chat_id=self.id,
+            photo=photo
+        )
