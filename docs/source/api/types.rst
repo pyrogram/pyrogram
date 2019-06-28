@@ -1,7 +1,7 @@
 Available Types
 ===============
 
-All Pyrogram types listed here are accessible through the main package directly.
+This page is about Pyrogram types. All types listed here are accessible through the main package directly.
 
 .. code-block:: python
     :emphasize-lines: 1

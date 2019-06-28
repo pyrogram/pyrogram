@@ -1,8 +1,8 @@
 Using Filters
 =============
 
-So far we've seen how to register a callback function that executes every time a specific update comes from the server,
-but there's much more than that to come.
+So far we've seen :doc:`how to register a callback function <../start/updates>` that executes every time a specific update
+comes from the server, but there's much more than that to come.
 
 Here we'll discuss about :class:`~pyrogram.Filters`. Filters enable a fine-grain control over what kind of
 updates are allowed or not to be passed in your callback functions, based on their inner details.

@@ -95,5 +95,5 @@ engine to properly work as intended.
 
 But, why is the session string so long? Can't it be shorter? No, it can't. The session string already packs the bare
 minimum data Pyrogram needs to successfully reconnect to an authorized session, and the 2048-bits auth key is the major
-contributor to the overall length. Needless to repeat that this string, as well as any other session storage, represent
+contributor to the overall length. Needless to say that this string, as well as any other session storage, represent
 strictly personal data. Keep them safe.
