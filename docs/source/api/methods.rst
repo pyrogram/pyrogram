@@ -124,6 +124,8 @@ Users
     - :meth:`~Client.delete_profile_photos`
     - :meth:`~Client.update_username`
     - :meth:`~Client.get_user_dc`
+    - :meth:`~Client.block_user`
+    - :meth:`~Client.unblock_user`
 
 Contacts
 ^^^^^^^^
@@ -264,6 +266,8 @@ Details
 .. automethod:: Client.delete_profile_photos()
 .. automethod:: Client.update_username()
 .. automethod:: Client.get_user_dc()
+.. automethod:: Client.block_user()
+.. automethod:: Client.unblock_user()
 
 ..  Contacts
 .. automethod:: Client.add_contacts()
