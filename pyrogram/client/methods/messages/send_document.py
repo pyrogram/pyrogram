@@ -145,7 +145,7 @@ class SendDocument(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **await self.parser(caption, parse_mode)
+                            **await self.parser.parse(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:
