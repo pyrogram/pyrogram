@@ -78,7 +78,7 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
             "**bold**, "
             "__italic__, "
             "--underline--, "
-            "~~strikethrough~~, "
+            "~~strike~~, "
             "[mention](tg://user?id=23122162), "
             "[URL](https://pyrogram.org), "
             "`code`, "
@@ -128,7 +128,7 @@ The following tags are currently supported:
             "<b>bold</b>, "
             "<i>italic</i>, "
             "<u>underline</u>, "
-            "<s>strikethrough</s>, "
+            "<s>strike</s>, "
             "<a href=\"tg://user?id=23122162\">mention</a>, "
             "<a href=\"https://pyrogram.org/\">URL</a>, "
             "<code>code</code>\n\n"
@@ -210,13 +210,13 @@ Here there are some example texts you can try sending:
 **Markdown**:
 
 - ``**bold, --underline--**``
-- ``**bold __italic --underline ~~striked~~--__**``
+- ``**bold __italic --underline ~~strike~~--__**``
 - ``**bold __and** italic__``
 
 **HTML**:
 
 - ``<b>bold, <u>underline</u></b>``
-- ``<b>bold <i>italic <u>underline <s>striked</s></u></i></b>``
+- ``<b>bold <i>italic <u>underline <s>strike</s></u></i></b>``
 - ``<b>bold <i>and</b> italic</i>``
 
 **Combined**:
