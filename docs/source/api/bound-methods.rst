@@ -67,6 +67,13 @@ Chat
 
     - :meth:`~Chat.archive`
     - :meth:`~Chat.unarchive`
+    - :meth:`~Chat.set_title`
+    - :meth:`~Chat.set_description`
+    - :meth:`~Chat.set_photo`
+    - :meth:`~Chat.kick_member`
+    - :meth:`~Chat.unban_member`
+    - :meth:`~Chat.restrict_member`
+    - :meth:`~Chat.promote_member`
 
 User
 ^^^^
@@ -134,6 +141,13 @@ Details
 .. Chat
 .. automethod:: Chat.archive()
 .. automethod:: Chat.unarchive()
+.. automethod:: Chat.set_title()
+.. automethod:: Chat.set_description)
+.. automethod:: Chat.set_photo()
+.. automethod:: Chat.kick_member()
+.. automethod:: Chat.unban_member()
+.. automethod:: Chat.restrict_member()
+.. automethod:: Chat.promote_member()
 
 .. User
 .. automethod:: User.archive()
