@@ -48,18 +48,15 @@ class ExportChatInviteLink(BaseClient):
 
         Raises:
             RPCError: In case of a Telegram RPC error.
+            ValueError: In case the chat_id belongs to a user.
         """
         peer = self.resolve_peer(chat_id)
 
-        if isinstance(peer, types.InputPeerChat):
+        if isinstance(peer, (types.InputPeerChannel, types.InputPeerChat)):
             return self.send(
                 functions.messages.ExportChatInvite(
                     peer=peer
                 )
             ).link
-        elif isinstance(peer, types.InputPeerChannel):
-            return self.send(
-                functions.channels.ExportInvite(
-                    channel=peer
-                )
-            ).link
+        else:
+            raise ValueError('The chat_id "{}" belongs to a user'.format(chat_id))
