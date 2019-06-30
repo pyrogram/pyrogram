@@ -313,6 +313,7 @@ class Chat(Object):
 
         return self._client.unarchive_chats(self.id)
 
+    # TODO: Remove notes about "All Members Are Admins" for basic groups, the attribute doesn't exist anymore
     def set_title(self, title: str) -> bool:
         """Bound method *set_title* of :obj:`Chat`.
 
