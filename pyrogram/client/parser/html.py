@@ -108,7 +108,7 @@ class HTML:
         self.client = client
 
     def parse(self, text: str):
-        text = utils.add_surrogates(str(text or "").strip())
+        text = utils.add_surrogates(text)
 
         parser = Parser(self.client)
         parser.feed(text)

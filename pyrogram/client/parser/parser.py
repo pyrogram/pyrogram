@@ -31,6 +31,8 @@ class Parser:
         self.markdown = Markdown(client)
 
     def parse(self, text: str, mode: str = ""):
+        text = str(text or "").strip()
+
         if mode is None:
             return OrderedDict([
                 ("message", text),
