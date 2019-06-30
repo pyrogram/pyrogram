@@ -510,7 +510,6 @@ class Chat(Object):
 
     def restrict_member(
         self,
-        chat_id: Union[int, str],
         user_id: Union[int, str],
         until_date: int = 0,
         can_send_messages: bool = False,
@@ -582,7 +581,6 @@ class Chat(Object):
         """
 
         return self._client.restrict_chat_member(
-            self,
             chat_id=self.id,
             user_id=user_id,
             until_date=until_date,
@@ -597,7 +595,7 @@ class Chat(Object):
         )
 
     def promote_member(
-        chat_id: Union[int, str],
+        self,
         user_id: Union[int, str],
         can_change_info: bool = True,
         can_post_messages: bool = False,
