@@ -378,7 +378,7 @@ class Chat(Object):
 
         Raises:
             RPCError: In case of Telegram RPC error.
-            ValueError If a chat_id doesn't belong to a supergroup or a channel.
+            ValueError: If a chat_id doesn't belong to a supergroup or a channel.
         """
 
         return self._client.set_chat_description(
