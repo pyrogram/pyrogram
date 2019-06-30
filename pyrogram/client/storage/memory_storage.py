@@ -59,8 +59,8 @@ class MemoryStorage(Storage):
                 (1, None, None, 0, None, None)
             )
 
-    def _import_session_string(self, string_session: str):
-        decoded = base64.urlsafe_b64decode(string_session + "=" * (-len(string_session) % 4))
+    def _import_session_string(self, session_string: str):
+        decoded = base64.urlsafe_b64decode(session_string + "=" * (-len(session_string) % 4))
         return struct.unpack(self.SESSION_STRING_FMT, decoded)
 
     def export_session_string(self):
