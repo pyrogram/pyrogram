@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import html
+
 import pyrogram
 from pyrogram.api import types
 from .chat_photo import ChatPhoto
@@ -133,6 +135,12 @@ class User(Object):
         self.phone_number = phone_number
         self.photo = photo
         self.restriction_reason = restriction_reason
+
+    def __format__(self, format_spec):
+        if format_spec == "mention":
+            return '<a href="tg://user?id={0}">{1}</a>'.format(self.id, html.escape(self.first_name))
+
+        return html.escape(str(self))
 
     @staticmethod
     def _parse(client, user: types.User) -> "User" or None:
