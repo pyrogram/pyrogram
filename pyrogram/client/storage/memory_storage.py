@@ -86,8 +86,6 @@ class MemoryStorage(Storage):
             self.dc_id, self.test_mode, self.auth_key, self.user_id, self.is_bot = imported_session_string
             self.date = 0
 
-        self.name = ":memory:" + str(self.user_id or "<unknown>")
-
     # noinspection PyAttributeOutsideInit
     def save(self):
         self.date = int(time.time())
