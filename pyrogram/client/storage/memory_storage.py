@@ -59,8 +59,8 @@ class MemoryStorage(Storage):
                 (1, None, None, 0, None, None)
             )
 
-    def _import_session_string(self, string_session: str):
-        decoded = base64.urlsafe_b64decode(string_session + "=" * (-len(string_session) % 4))
+    def _import_session_string(self, session_string: str):
+        decoded = base64.urlsafe_b64decode(session_string + "=" * (-len(session_string) % 4))
         return struct.unpack(self.SESSION_STRING_FMT, decoded)
 
     def export_session_string(self):
@@ -85,8 +85,6 @@ class MemoryStorage(Storage):
 
             self.dc_id, self.test_mode, self.auth_key, self.user_id, self.is_bot = imported_session_string
             self.date = 0
-
-        self.name = ":memory:" + str(self.user_id or "<unknown>")
 
     # noinspection PyAttributeOutsideInit
     def save(self):
@@ -132,7 +130,7 @@ class MemoryStorage(Storage):
                 access_hash=access_hash
             )
 
-        raise ValueError("Invalid peer type")
+        raise ValueError("Invalid peer type: {}".format(peer_type))
 
     def get_peer_by_id(self, peer_id: int):
         r = self.conn.execute(
@@ -141,7 +139,7 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("ID not found")
+            raise KeyError("ID not found: {}".format(peer_id))
 
         return self._get_input_peer(*r)
 
@@ -152,10 +150,10 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Username not found")
+            raise KeyError("Username not found: {}".format(username))
 
         if abs(time.time() - r[3]) > self.USERNAME_TTL:
-            raise KeyError("Username expired")
+            raise KeyError("Username expired: {}".format(username))
 
         return self._get_input_peer(*r[:3])
 
@@ -166,7 +164,7 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Phone number not found")
+            raise KeyError("Phone number not found: {}".format(phone_number))
 
         return self._get_input_peer(*r)
 

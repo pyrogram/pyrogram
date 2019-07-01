@@ -2,7 +2,7 @@ User-agent: *
 
 Allow: /
 
-Disallow: /dev/*
-Disallow: /old/*
+Disallow: /dev*
+Disallow: /v0*
 
 Sitemap: https://docs.pyrogram.org/sitemap.xml

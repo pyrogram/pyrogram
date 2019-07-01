@@ -4,7 +4,7 @@ recursive-include compiler *.py *.tl *.tsv *.txt
 recursive-include pyrogram mime.types schema.sql
 
 ## Exclude
-prune pyrogram/api/errors/exceptions
+prune pyrogram/errors/exceptions
 prune pyrogram/api/functions
 prune pyrogram/api/types
 exclude pyrogram/api/all.py
