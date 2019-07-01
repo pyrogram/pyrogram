@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from . import InputMedia
 
 
@@ -47,6 +49,6 @@ class InputMediaPhoto(InputMedia):
         self,
         media: str,
         caption: str = "",
-        parse_mode: str = ""
+        parse_mode: Union[str, None] = ""
     ):
         super().__init__(media, caption, parse_mode)

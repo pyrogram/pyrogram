@@ -66,8 +66,6 @@ class SendMediaGroup(BaseClient):
         multi_media = []
 
         for i in media:
-            style = self.html if i.parse_mode.lower() == "html" else self.markdown
-
             if isinstance(i, pyrogram.InputMediaPhoto):
                 if os.path.exists(i.media):
                     while True:
@@ -138,7 +136,7 @@ class SendMediaGroup(BaseClient):
                 types.InputSingleMedia(
                     media=media,
                     random_id=self.rnd_id(),
-                    **await style.parse(i.caption)
+                    **await self.parser.parse(i.caption, i.parse_mode)
                 )
             )
 

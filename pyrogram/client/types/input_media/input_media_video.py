@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from . import InputMedia
 
 
@@ -66,7 +68,7 @@ class InputMediaVideo(InputMedia):
         media: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = "",
         width: int = 0,
         height: int = 0,
         duration: int = 0,
