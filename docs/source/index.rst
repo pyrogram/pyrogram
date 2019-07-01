@@ -106,7 +106,7 @@ Welcome to Pyrogram
 
     @app.on_message(Filters.private)
     def hello(client, message):
-        message.reply("Hello {}".format(message.from_user.first_name))
+        message.reply_text("Hello {}".format(message.from_user.first_name))
 
 
     app.run()
