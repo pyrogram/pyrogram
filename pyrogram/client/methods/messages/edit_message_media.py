@@ -63,8 +63,8 @@ class EditMessageMedia(BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        style = self.html if media.parse_mode.lower() == "html" else self.markdown
         caption = media.caption
+        parse_mode = media.parse_mode
 
         if isinstance(media, InputMediaPhoto):
             if os.path.exists(media.media):
@@ -239,7 +239,7 @@ class EditMessageMedia(BaseClient):
                 id=message_id,
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **style.parse(caption)
+                **self.parser.parse(caption, parse_mode)
             )
         )
 
