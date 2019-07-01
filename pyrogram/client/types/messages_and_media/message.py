@@ -575,10 +575,12 @@ class Message(Object, Update):
                         else:
                             document = pyrogram.Document._parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):
-                    web_page = True
-                    media = None
+                    if isinstance(media.webpage, types.WebPage):
+                        web_page = pyrogram.WebPage._parse(client, media.webpage)
+
                 elif isinstance(media, types.MessageMediaPoll):
                     poll = pyrogram.Poll._parse(client, media)
+
                 else:
                     media = None
 
