@@ -40,6 +40,11 @@ class RPCError(Exception):
             'caused by "{}"'.format(rpc_name)
         ))
 
+        try:
+            self.x = int(x)
+        except (ValueError, TypeError):
+            self.x = x
+
         if is_unknown:
             with open("unknown_errors.txt", "a", encoding="utf-8") as f:
                 f.write("{}\t{}\t{}\n".format(datetime.now(), x, rpc_name))
