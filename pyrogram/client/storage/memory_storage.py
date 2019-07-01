@@ -130,7 +130,7 @@ class MemoryStorage(Storage):
                 access_hash=access_hash
             )
 
-        raise ValueError("Invalid peer type")
+        raise ValueError("Invalid peer type: {}".format(peer_type))
 
     def get_peer_by_id(self, peer_id: int):
         r = self.conn.execute(
@@ -139,7 +139,7 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("ID not found")
+            raise KeyError("ID not found: {}".format(peer_id))
 
         return self._get_input_peer(*r)
 
@@ -150,10 +150,10 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Username not found")
+            raise KeyError("Username not found: {}".format(username))
 
         if abs(time.time() - r[3]) > self.USERNAME_TTL:
-            raise KeyError("Username expired")
+            raise KeyError("Username expired: {}".format(username))
 
         return self._get_input_peer(*r[:3])
 
@@ -164,7 +164,7 @@ class MemoryStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Phone number not found")
+            raise KeyError("Phone number not found: {}".format(phone_number))
 
         return self._get_input_peer(*r)
 
