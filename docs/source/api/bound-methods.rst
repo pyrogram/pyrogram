@@ -142,7 +142,7 @@ Details
 .. automethod:: Chat.archive()
 .. automethod:: Chat.unarchive()
 .. automethod:: Chat.set_title()
-.. automethod:: Chat.set_description)
+.. automethod:: Chat.set_description()
 .. automethod:: Chat.set_photo()
 .. automethod:: Chat.kick_member()
 .. automethod:: Chat.unban_member()

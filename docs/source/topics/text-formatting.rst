@@ -202,7 +202,7 @@ Nested and Overlapping Entities
 -------------------------------
 
 You can also style texts with more than one decoration at once by nesting entities together. For example, you can send
-a text message with both :bold-underline:`bold and underline` styles, or a text that has both :italic-strike:`italic and
+a text message with both :bold-underline:`bold and underline` styles, or a text that has both :strike-italic:`italic and
 strike` styles, and you can still combine both Markdown and HTML together.
 
 Here there are some example texts you can try sending:
