@@ -36,10 +36,10 @@ class WebPage(Object):
             Display URL for this webpage.
 
         type (``str``, *optional*):
-            Type of webpage, can be `article`, `photo`, `gif`, `video` or `document` afaik. #TODO
+            Type of webpage preview, known types (at the time of writing) are `article`, `photo`, `gif`, `video` and `document`.
 
         site_name (``str``, *optional*):
-            Site name.
+            Webpage site name.
 
         title (``str``, *optional*):
             Title of this webpage.
@@ -48,25 +48,25 @@ class WebPage(Object):
             Description of this webpage.
 
         audio (:obj:`Audio`, *optional*):
-            Webpage is an audio file, information about the file.
+            Webpage preview is an audio file, information about the file.
 
         document (:obj:`Document`, *optional*):
-            Webpage is a general file, information about the file.
+            Webpage preview is a general file, information about the file.
 
         photo (:obj:`Photo`, *optional*):
-            Webpage is a photo, information about the photo.
+            Webpage preview is a photo, information about the photo.
 
         animation (:obj:`Animation`, *optional*):
-            Webpage is an animation, information about the animation.
+            Webpage preview is an animation, information about the animation.
 
         video (:obj:`Video`, *optional*):
-            Webpage is a video, information about the video.abs
+            Webpage preview is a video, information about the video.
 
         embed_url (``str``, *optional*):
             Embedded content URL.
 
         embed_type (``str``, *optional*):
-            Embedded content type, can be `iframe` #TODO
+            Embedded content type, like `iframe`
 
         embed_width (``int``, *optional*):
             Embedded content width.
@@ -75,10 +75,10 @@ class WebPage(Object):
             Embedded content height.
 
         duration (``int``, *optional*):
-            :shrug:
+            Uknown at the time of writing.
 
         author (``str``, *optional*):
-            Author of the webpage, eg the Twitter user.
+            Author of the webpage, eg the Twitter user for a tweet, or the author in an article.
     """
 
     __slots__ = [

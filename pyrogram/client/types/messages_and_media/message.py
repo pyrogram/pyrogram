@@ -177,11 +177,8 @@ class Message(Object, Update):
         venue (:obj:`Venue`, *optional*):
             Message is a venue, information about the venue.
 
-        web_page (``bool``, *optional*):
+        web_page (:obj:`WebPage`, *optional*):
             Message was sent with a webpage preview.
-            **Note:** Support for web pages is still basic; a simple boolean is set in case the message contains a
-            web page preview. In future versions this property could turn into a full web page object that contains
-            more details.
 
         poll (:obj:`Poll`, *optional*):
             Message is a native poll, information about the poll.
