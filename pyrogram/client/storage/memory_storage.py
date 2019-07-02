@@ -195,7 +195,7 @@ class MemoryStorage(Storage):
 
     @async_property
     async def dc_id(self):
-        return await self._get("cd_id")
+        return await self._get("dc_id")
 
     async def set_dc_id(self, value):
         await self._set("dc_id", value)
