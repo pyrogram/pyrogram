@@ -18,12 +18,11 @@
 
 import pyrogram
 from pyrogram.api import types
-from .photo import Photo
 from ..object import Object
 
 
 class WebPage(Object):
-    #TODO: hash, cached_page
+    # TODO: hash, cached_page
     """A webpage preview
 
     Parameters:
@@ -81,7 +80,7 @@ class WebPage(Object):
         author (``str``, *optional*):
             Author of the webpage, eg the Twitter user.
     """
-    
+
     __slots__ = [
         "id", "url", "display_url", "type", "site_name", "title", "description",
         "audio", "document", "photo", "animation", "video",
@@ -110,9 +109,9 @@ class WebPage(Object):
         embed_height: int = None,
         duration: int = None,
         author: str = None
-    ) -> "pyrogram.WebPage" :
+    ) -> "pyrogram.WebPage":
         super().__init__(client)
-        
+
         self.id = id
         self.url = url
         self.display_url = display_url
@@ -131,7 +130,7 @@ class WebPage(Object):
         self.embed_height = embed_height
         self.duration = duration
         self.author = author
-        
+
     @staticmethod
     def _parse(client, webpage: types.WebPage) -> "WebPage":
         audio = None
