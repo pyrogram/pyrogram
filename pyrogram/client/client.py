@@ -289,28 +289,28 @@ class Client(Methods, BaseClient):
         await self.load_session()
         self.load_plugins()
 
-        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+        self.session = Session(self, await self.storage.dc_id, await self.storage.auth_key)
 
         await self.session.start()
         self.is_started = True
 
         try:
-            if self.storage.user_id is None:
+            if await self.storage.user_id is None:
                 if self.bot_token is None:
-                    self.storage.is_bot = False
+                    await self.storage.set_is_bot(False)
                     await self.authorize_user()
                 else:
-                    self.storage.is_bot = True
+                    await self.storage.set_is_bot(True)
                     await self.authorize_bot()
 
-            if not self.storage.is_bot:
+            if not await self.storage.is_bot:
                 if self.takeout:
                     self.takeout_id = (await self.send(functions.account.InitTakeoutSession())).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
 
                 now = time.time()
 
-                if abs(now - self.storage.date) > Client.OFFLINE_SLEEP:
+                if abs(now - await self.storage.date) > Client.OFFLINE_SLEEP:
                     await self.get_initial_dialogs()
                     await self.get_contacts()
                 else:
@@ -524,14 +524,15 @@ class Client(Methods, BaseClient):
         except UserMigrate as e:
             await self.session.stop()
 
-            self.storage.dc_id = e.x
-            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-            self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+            await self.storage.set_dc_id(e.x)
+            auth_key = await Auth(self, e.x).create()
+            await self.storage.set_auth_key(auth_key)
+            self.session = Session(self, e.x, auth_key)
 
             await self.session.start()
             await self.authorize_bot()
         else:
-            self.storage.user_id = r.user.id
+            await self.storage.set_user_id(r.user.id)
 
             print("Logged in successfully as @{}".format(r.user.username))
 
@@ -572,10 +573,11 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 await self.session.stop()
 
-                self.storage.dc_id = e.x
-                self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
+                await self.storage.set_dc_id(e.x)
+                auth_key = await Auth(self, e.x).create()
+                await self.storage.set_auth_key(auth_key)
 
-                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+                self.session = Session(self, e.x, auth_key)
 
                 await self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
@@ -755,11 +757,11 @@ class Client(Methods, BaseClient):
             )
 
         self.password = None
-        self.storage.user_id = r.user.id
+        self.storage.set_user_id(r.user.id)
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
-    def fetch_peers(
+    async def fetch_peers(
         self,
         peers: List[
             Union[
@@ -820,7 +822,7 @@ class Client(Methods, BaseClient):
 
             parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
 
-        self.storage.update_peers(parsed_peers)
+        await self.storage.update_peers(parsed_peers)
 
         return is_min
 
@@ -997,8 +999,8 @@ class Client(Methods, BaseClient):
 
         r = await self.session.send(data, retries, timeout)
 
-        self.fetch_peers(getattr(r, "users", []))
-        self.fetch_peers(getattr(r, "chats", []))
+        await self.fetch_peers(getattr(r, "users", []))
+        await self.fetch_peers(getattr(r, "chats", []))
 
         return r
 
@@ -1074,23 +1076,23 @@ class Client(Methods, BaseClient):
                 self.plugins = None
 
     async def load_session(self):
-        self.storage.open()
+        await self.storage.open()
 
         session_empty = any([
-            self.storage.test_mode is None,
-            self.storage.auth_key is None,
-            self.storage.user_id is None,
-            self.storage.is_bot is None
+            await self.storage.test_mode is None,
+            await self.storage.auth_key is None,
+            await self.storage.user_id is None,
+            await self.storage.is_bot is None
         ])
 
         if session_empty:
-            self.storage.dc_id = 1
-            self.storage.date = 0
+            await self.storage.set_dc_id(1)
+            await self.storage.set_date(0)
 
-            self.storage.test_mode = self.test_mode
-            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-            self.storage.user_id = None
-            self.storage.is_bot = None
+            await self.storage.set_test_mode(self.test_mode)
+            await self.storage.set_auth_key(await Auth(self, 1).create())
+            await self.storage.set_user_id(None)
+            await self.storage.set_is_bot(None)
 
     def load_plugins(self):
         if self.plugins:
@@ -1231,7 +1233,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 await asyncio.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(self.storage.peers_count))
+                log.info("Total peers: {}".format(await self.storage.peers_count))
                 return r
 
     async def get_initial_dialogs(self):
@@ -1270,7 +1272,7 @@ class Client(Methods, BaseClient):
             KeyError: In case the peer doesn't exist in the internal database.
         """
         try:
-            return self.storage.get_peer_by_id(peer_id)
+            return await self.storage.get_peer_by_id(peer_id)
         except KeyError:
             if type(peer_id) is str:
                 if peer_id in ("self", "me"):
@@ -1282,21 +1284,21 @@ class Client(Methods, BaseClient):
                     int(peer_id)
                 except ValueError:
                     try:
-                        return self.storage.get_peer_by_username(peer_id)
+                        return await self.storage.get_peer_by_username(peer_id)
                     except KeyError:
                         await self.send(functions.contacts.ResolveUsername(username=peer_id
                                                                            )
                                         )
 
-                        return self.storage.get_peer_by_username(peer_id)
+                        return await self.storage.get_peer_by_username(peer_id)
                 else:
                     try:
-                        return self.storage.get_peer_by_phone_number(peer_id)
+                        return await self.storage.get_peer_by_phone_number(peer_id)
                     except KeyError:
                         raise PeerIdInvalid
 
             if peer_id > 0:
-                self.fetch_peers(
+                await self.fetch_peers(
                     await self.send(
                         functions.users.GetUsers(
                             id=[types.InputUser(
@@ -1324,7 +1326,7 @@ class Client(Methods, BaseClient):
                     )
 
             try:
-                return self.storage.get_peer_by_id(peer_id)
+                return await self.storage.get_peer_by_id(peer_id)
             except KeyError:
                 raise PeerIdInvalid
 
@@ -1412,7 +1414,7 @@ class Client(Methods, BaseClient):
         is_missing_part = file_id is not None
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
-        pool = [Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True) for _ in range(pool_size)]
+        pool = [Session(self, await self.storage.dc_id, await self.storage.auth_key, is_media=True) for _ in range(pool_size)]
         workers = [asyncio.ensure_future(worker(session)) for session in pool for _ in range(workers_count)]
         queue = asyncio.Queue(16)
 
@@ -1502,7 +1504,7 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.storage.dc_id:
+                if dc_id != await self.storage.dc_id:
                     exported_auth = await self.send(
                         functions.auth.ExportAuthorization(
                             dc_id=dc_id
@@ -1525,7 +1527,7 @@ class Client(Methods, BaseClient):
                         )
                     )
                 else:
-                    session = Session(self, dc_id, self.storage.auth_key, is_media=True)
+                    session = Session(self, dc_id, await self.storage.auth_key, is_media=True)
 
                     await session.start()
 
@@ -1710,10 +1712,10 @@ class Client(Methods, BaseClient):
         if extensions:
             return extensions.split(" ")[0]
 
-    def export_session_string(self):
+    async def export_session_string(self):
         """Export the current session as serialized string.
 
         Returns:
             ``str``: The session serialized into a printable, url-safe string.
         """
-        return self.storage.export_session_string()
+        return await self.storage.export_session_string()

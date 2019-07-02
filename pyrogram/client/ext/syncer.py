@@ -39,7 +39,7 @@ class Syncer:
             cls.lock = asyncio.Lock()
 
         async with cls.lock:
-            cls.sync(client)
+            await cls.sync(client)
 
             cls.clients[id(client)] = client
 
@@ -78,10 +78,10 @@ class Syncer:
                 break
 
     @classmethod
-    def sync(cls, client):
+    async def sync(cls, client):
         try:
             start = time.time()
-            client.storage.save()
+            await client.storage.save()
         except Exception as e:
             log.critical(e, exc_info=True)
         else:

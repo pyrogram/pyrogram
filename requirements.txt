@@ -2,3 +2,5 @@ pyaes==1.6.1
 pysocks==1.7.0
 async_lru==1.0.1
 async_generator==1.10
+async-property==0.2.1
+aiosqlite==0.10.0

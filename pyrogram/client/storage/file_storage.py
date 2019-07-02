@@ -19,11 +19,10 @@
 import base64
 import json
 import logging
-import sqlite3
 from pathlib import Path
 from threading import Lock
 
-from .memory_storage import MemoryStorage
+from .memory_storage import MemoryStorage, sqlite3
 
 log = logging.getLogger(__name__)
 
@@ -40,15 +39,15 @@ class FileStorage(MemoryStorage):
         self.lock = Lock()
 
     # noinspection PyAttributeOutsideInit
-    def migrate_from_json(self, session_json: dict):
-        self.open()
+    async def migrate_from_json(self, session_json: dict):
+        await self.open()
 
-        self.dc_id = session_json["dc_id"]
-        self.test_mode = session_json["test_mode"]
-        self.auth_key = base64.b64decode("".join(session_json["auth_key"]))
-        self.user_id = session_json["user_id"]
-        self.date = session_json.get("date", 0)
-        self.is_bot = session_json.get("is_bot", False)
+        await self.set_dc_id(session_json["dc_id"])
+        await self.set_test_mode(session_json["test_mode"])
+        await self.set_auth_key(base64.b64decode("".join(session_json["auth_key"])))
+        await self.set_user_id(session_json["user_id"])
+        await self.set_date(session_json.get("date", 0))
+        await self.set_is_bot(session_json.get("is_bot", False))
 
         peers_by_id = session_json.get("peers_by_id", {})
         peers_by_phone = session_json.get("peers_by_phone", {})
@@ -69,9 +68,9 @@ class FileStorage(MemoryStorage):
             peers[v][4] = k
 
         # noinspection PyTypeChecker
-        self.update_peers(peers.values())
+        await self.update_peers(peers.values())
 
-    def open(self):
+    async def open(self):
         path = self.database
         file_exists = path.is_file()
 
@@ -88,7 +87,7 @@ class FileStorage(MemoryStorage):
 
                 log.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
 
-                self.migrate_from_json(session_json)
+                await self.migrate_from_json(session_json)
 
                 log.warning("Done! The session has been successfully converted from JSON to SQLite storage")
 
@@ -97,14 +96,14 @@ class FileStorage(MemoryStorage):
         if Path(path.name + ".OLD").is_file():
             log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
 
-        self.conn = sqlite3.connect(
+        self.conn = await sqlite3.connect(
             str(path),
             timeout=1,
             check_same_thread=False
         )
 
         if not file_exists:
-            self.create()
+            await self.create()
 
-        with self.conn:
-            self.conn.execute("VACUUM")
+        async with self.conn:
+            await self.conn.execute("VACUUM")
