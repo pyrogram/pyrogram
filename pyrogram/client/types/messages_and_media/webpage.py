@@ -37,8 +37,8 @@ class WebPage(Object):
 
         type (``str``, *optional*):
             Type of webpage preview, known types (at the time of writing) are:
-            `article`, `photo`, `gif`, `video` and `document`,
-            `telegram_user`, `telegram_bot`, `telegram_channel`, `telegram_megagroup`.
+            *"article"*, *"photo"*, *"gif"*, *"video"* and *"document"*,
+            *"telegram_user"*, *"telegram_bot"*, *"telegram_channel"*, *"telegram_megagroup"*.
 
         site_name (``str``, *optional*):
             Webpage site name.
