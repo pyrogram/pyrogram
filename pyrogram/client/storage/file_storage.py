@@ -43,12 +43,12 @@ class FileStorage(MemoryStorage):
     def migrate_from_json(self, session_json: dict):
         self.open()
 
-        self.dc_id = session_json["dc_id"]
-        self.test_mode = session_json["test_mode"]
-        self.auth_key = base64.b64decode("".join(session_json["auth_key"]))
-        self.user_id = session_json["user_id"]
-        self.date = session_json.get("date", 0)
-        self.is_bot = session_json.get("is_bot", False)
+        self.set_dc_id(session_json["dc_id"])
+        self.set_test_mode(session_json["test_mode"])
+        self.set_auth_key(base64.b64decode("".join(session_json["auth_key"])))
+        self.set_user_id(session_json["user_id"])
+        self.set_date(session_json.get("date", 0))
+        self.set_is_bot(session_json.get("is_bot", False))
 
         peers_by_id = session_json.get("peers_by_id", {})
         peers_by_phone = session_json.get("peers_by_phone", {})

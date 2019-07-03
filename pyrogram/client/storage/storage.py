@@ -45,54 +45,41 @@ class Storage:
     def export_session_string(self):
         raise NotImplementedError
 
-    @property
-    def peers_count(self):
+    def get_peers_count(self):
         raise NotImplementedError
 
-    @property
-    def dc_id(self):
+    def get_dc_id(self):
         raise NotImplementedError
 
-    @dc_id.setter
-    def dc_id(self, value):
+    def set_dc_id(self, value):
         raise NotImplementedError
 
-    @property
-    def test_mode(self):
+    def get_test_mode(self):
         raise NotImplementedError
 
-    @test_mode.setter
-    def test_mode(self, value):
+    def set_test_mode(self, value):
         raise NotImplementedError
 
-    @property
-    def auth_key(self):
+    def get_auth_key(self):
         raise NotImplementedError
 
-    @auth_key.setter
-    def auth_key(self, value):
+    def set_auth_key(self, value):
         raise NotImplementedError
 
-    @property
-    def date(self):
+    def get_date(self):
         raise NotImplementedError
 
-    @date.setter
-    def date(self, value):
+    def set_date(self, value):
         raise NotImplementedError
 
-    @property
-    def user_id(self):
+    def get_user_id(self):
         raise NotImplementedError
 
-    @user_id.setter
-    def user_id(self, value):
+    def set_user_id(self, value):
         raise NotImplementedError
 
-    @property
-    def is_bot(self):
+    def get_is_bot(self):
         raise NotImplementedError
 
-    @is_bot.setter
-    def is_bot(self, value):
+    def set_is_bot(self, value):
         raise NotImplementedError

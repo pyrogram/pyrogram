@@ -66,11 +66,11 @@ class MemoryStorage(Storage):
     def export_session_string(self):
         packed = struct.pack(
             self.SESSION_STRING_FMT,
-            self.dc_id,
-            self.test_mode,
-            self.auth_key,
-            self.user_id,
-            self.is_bot
+            self.get_dc_id(),
+            self.get_test_mode(),
+            self.get_auth_key(),
+            self.get_user_id(),
+            self.get_is_bot()
         )
 
         return base64.urlsafe_b64encode(packed).decode().rstrip("=")
@@ -168,21 +168,18 @@ class MemoryStorage(Storage):
 
         return self._get_input_peer(*r)
 
-    @property
-    def peers_count(self):
+    def get_peers_count(self):
         return self.conn.execute(
             "SELECT COUNT(*) FROM peers"
         ).fetchone()[0]
 
-    def _get(self):
-        attr = inspect.stack()[1].function
+    def _get(self, attr):
 
         return self.conn.execute(
             "SELECT {} FROM sessions".format(attr)
         ).fetchone()[0]
 
-    def _set(self, value):
-        attr = inspect.stack()[1].function
+    def _set(self, attr, value):
 
         with self.lock, self.conn:
             self.conn.execute(
@@ -190,50 +187,38 @@ class MemoryStorage(Storage):
                 (value,)
             )
 
-    @property
-    def dc_id(self):
-        return self._get()
+    def get_dc_id(self):
+        return self._get("dc_id")
 
-    @dc_id.setter
-    def dc_id(self, value):
-        self._set(value)
+    def set_dc_id(self, value):
+        return self._set("dc_id", value)
 
-    @property
-    def test_mode(self):
-        return self._get()
+    def get_test_mode(self):
+        return self._get("test_mode")
 
-    @test_mode.setter
-    def test_mode(self, value):
-        self._set(value)
+    def set_test_mode(self, value):
+        return self._set("test_mode", value)
 
-    @property
-    def auth_key(self):
-        return self._get()
+    def get_auth_key(self):
+        return self._get("auth_key")
 
-    @auth_key.setter
-    def auth_key(self, value):
-        self._set(value)
+    def set_auth_key(self, value):
+        return self._set("auth_key", value)
 
-    @property
-    def date(self):
-        return self._get()
+    def get_date(self):
+        return self._get("date")
 
-    @date.setter
-    def date(self, value):
-        self._set(value)
+    def set_date(self, value):
+        return self._set("date", value)
 
-    @property
-    def user_id(self):
-        return self._get()
+    def get_user_id(self):
+        return self._get("user_id")
 
-    @user_id.setter
-    def user_id(self, value):
-        self._set(value)
+    def set_user_id(self, value):
+        return self._set("user_id", value)
 
-    @property
-    def is_bot(self):
-        return self._get()
+    def get_is_bot(self):
+        return self._get("is_bot")
 
-    @is_bot.setter
-    def is_bot(self, value):
-        self._set(value)
+    def set_is_bot(self, value):
+        return self._set("is_bot", value)

@@ -282,28 +282,28 @@ class Client(Methods, BaseClient):
         self.load_session()
         self.load_plugins()
 
-        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+        self.session = Session(self, self.storage.get_dc_id(), self.storage.get_auth_key())
 
         self.session.start()
         self.is_started = True
 
         try:
-            if self.storage.user_id is None:
+            if self.storage.get_user_id() is None:
                 if self.bot_token is None:
-                    self.storage.is_bot = False
+                    self.storage.set_is_bot(False)
                     self.authorize_user()
                 else:
-                    self.storage.is_bot = True
+                    self.storage.set_is_bot(True)
                     self.authorize_bot()
 
-            if not self.storage.is_bot:
+            if not self.storage.get_is_bot():
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
 
                 now = time.time()
 
-                if abs(now - self.storage.date) > Client.OFFLINE_SLEEP:
+                if abs(now - self.storage.get_date()) > Client.OFFLINE_SLEEP:
                     self.get_initial_dialogs()
                     self.get_contacts()
                 else:
@@ -381,6 +381,7 @@ class Client(Methods, BaseClient):
         self.media_sessions.clear()
 
         self.is_started = False
+        self.storage.close()
         self.session.stop()
 
         return self
@@ -502,15 +503,15 @@ class Client(Methods, BaseClient):
         except UserMigrate as e:
             self.session.stop()
 
-            self.storage.dc_id = e.x
-            self.storage.auth_key = Auth(self, self.storage.dc_id).create()
-            self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+            self.storage.set_dc_id(e.x)
+            self.storage.set_auth_key(Auth(self, self.storage.get_dc_id()).create())
+            self.session = Session(self, self.storage.get_dc_id(), self.storage.get_auth_key())
 
             self.session.start()
 
             self.authorize_bot()
         else:
-            self.storage.user_id = r.user.id
+            self.storage.set_user_id(r.user.id)
 
             print("Logged in successfully as @{}".format(r.user.username))
 
@@ -551,10 +552,10 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 self.session.stop()
 
-                self.storage.dc_id = e.x
-                self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+                self.storage.set_dc_id(e.x)
+                self.storage.set_auth_key(Auth(self, self.storage.get_dc_id()).create())
 
-                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+                self.session = Session(self, self.storage.get_dc_id(), self.storage.get_auth_key())
 
                 self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
@@ -734,7 +735,7 @@ class Client(Methods, BaseClient):
             )
 
         self.password = None
-        self.storage.user_id = r.user.id
+        self.storage.set_user_id(r.user.id)
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
@@ -1063,20 +1064,20 @@ class Client(Methods, BaseClient):
         self.storage.open()
 
         session_empty = any([
-            self.storage.test_mode is None,
-            self.storage.auth_key is None,
-            self.storage.user_id is None,
-            self.storage.is_bot is None
+            self.storage.get_test_mode() is None,
+            self.storage.get_auth_key() is None,
+            self.storage.get_user_id() is None,
+            self.storage.get_is_bot() is None
         ])
 
         if session_empty:
-            self.storage.dc_id = 1
-            self.storage.date = 0
+            self.storage.set_dc_id(1)
+            self.storage.set_date(0)
 
-            self.storage.test_mode = self.test_mode
-            self.storage.auth_key = Auth(self, self.storage.dc_id).create()
-            self.storage.user_id = None
-            self.storage.is_bot = None
+            self.storage.set_test_mode(self.test_mode)
+            self.storage.set_auth_key(Auth(self, self.storage.get_dc_id()).create())
+            self.storage.set_user_id(None)
+            self.storage.set_is_bot(None)
 
     def load_plugins(self):
         if self.plugins:
@@ -1217,7 +1218,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(self.storage.peers_count))
+                log.info("Total peers: {}".format(self.storage.get_peers_count()))
                 return r
 
     def get_initial_dialogs(self):
@@ -1229,6 +1230,7 @@ class Client(Methods, BaseClient):
         while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
             dialogs = self.get_initial_dialogs_chunk(offset_date)
             offset_date = utils.get_offset_date(dialogs)
+            self.storage.set_date(offset_date)
 
         self.get_initial_dialogs_chunk()
 
@@ -1386,7 +1388,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True)
+        session = Session(self, self.storage.get_dc_id(), self.storage.get_auth_key(), is_media=True)
         session.start()
 
         try:
@@ -1472,7 +1474,7 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.storage.dc_id:
+                if dc_id != self.storage.get_dc_id():
                     exported_auth = self.send(
                         functions.auth.ExportAuthorization(
                             dc_id=dc_id
@@ -1492,7 +1494,7 @@ class Client(Methods, BaseClient):
                         )
                     )
                 else:
-                    session = Session(self, dc_id, self.storage.auth_key, is_media=True)
+                    session = Session(self, dc_id, self.storage.get_auth_key(), is_media=True)
 
                     session.start()
 
