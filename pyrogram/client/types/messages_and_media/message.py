@@ -177,11 +177,8 @@ class Message(Object, Update):
         venue (:obj:`Venue`, *optional*):
             Message is a venue, information about the venue.
 
-        web_page (``bool``, *optional*):
+        web_page (:obj:`WebPage`, *optional*):
             Message was sent with a webpage preview.
-            **Note:** Support for web pages is still basic; a simple boolean is set in case the message contains a
-            web page preview. In future versions this property could turn into a full web page object that contains
-            more details.
 
         poll (:obj:`Poll`, *optional*):
             Message is a native poll, information about the poll.
@@ -575,10 +572,14 @@ class Message(Object, Update):
                         else:
                             document = pyrogram.Document._parse(client, doc, file_name)
                 elif isinstance(media, types.MessageMediaWebPage):
-                    web_page = True
-                    media = None
+                    if isinstance(media.webpage, types.WebPage):
+                        web_page = pyrogram.WebPage._parse(client, media.webpage)
+                    else:
+                        media = None
+
                 elif isinstance(media, types.MessageMediaPoll):
                     poll = pyrogram.Poll._parse(client, media)
+
                 else:
                     media = None
 
