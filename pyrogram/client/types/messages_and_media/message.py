@@ -574,6 +574,8 @@ class Message(Object, Update):
                 elif isinstance(media, types.MessageMediaWebPage):
                     if isinstance(media.webpage, types.WebPage):
                         web_page = pyrogram.WebPage._parse(client, media.webpage)
+                    else:
+                        media = None
 
                 elif isinstance(media, types.MessageMediaPoll):
                     poll = pyrogram.Poll._parse(client, media)
