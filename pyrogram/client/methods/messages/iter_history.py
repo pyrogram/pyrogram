@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Optional, AsyncGenerator
+from typing import Union, Optional, Generator
 
 import pyrogram
 from async_generator import async_generator, yield_
@@ -34,7 +34,7 @@ class IterHistory(BaseClient):
         offset_id: int = 0,
         offset_date: int = 0,
         reverse: bool = False
-    ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_history` in a loop, thus saving

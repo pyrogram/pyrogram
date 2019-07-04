@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import AsyncGenerator, Optional
+from typing import Generator, Optional
 
 import pyrogram
 from async_generator import async_generator, yield_
@@ -30,7 +30,7 @@ class IterDialogs(BaseClient):
         self,
         limit: int = 0,
         offset_date: int = None
-    ) -> Optional[AsyncGenerator["pyrogram.Dialog", None]]:
+    ) -> Optional[Generator["pyrogram.Dialog", None, None]]:
         """Iterate through a user's dialogs sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_dialogs` in a loop, thus saving

@@ -19,7 +19,6 @@
 from typing import Union, List
 
 from pyrogram.api import functions, types
-
 from ...ext import BaseClient
 
 
@@ -45,14 +44,19 @@ class ArchiveChats(BaseClient):
         if not isinstance(chat_ids, list):
             chat_ids = [chat_ids]
 
+        folder_peers = []
+
+        for chat in chat_ids:
+            folder_peers.append(
+                types.InputFolderPeer(
+                    peer=await self.resolve_peer(chat),
+                    folder_id=1
+                )
+            )
+
         await self.send(
             functions.folders.EditPeerFolders(
-                folder_peers=[
-                    types.InputFolderPeer(
-                        peer=await self.resolve_peer(chat),
-                        folder_id=1
-                    ) for chat in chat_ids
-                ]
+                folder_peers=folder_peers
             )
         )
 

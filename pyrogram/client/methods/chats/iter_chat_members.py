@@ -17,7 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from string import ascii_lowercase
-from typing import Union, AsyncGenerator, Optional
+from typing import Union, Generator, Optional
 
 import pyrogram
 from async_generator import async_generator, yield_
@@ -47,7 +47,7 @@ class IterChatMembers(BaseClient):
         limit: int = 0,
         query: str = "",
         filter: str = Filters.ALL
-    ) -> Optional[AsyncGenerator["pyrogram.ChatMember", None]]:
+    ) -> Optional[Generator["pyrogram.ChatMember", None, None]]:
         """Iterate through the members of a chat sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_chat_members` in a loop, thus saving you

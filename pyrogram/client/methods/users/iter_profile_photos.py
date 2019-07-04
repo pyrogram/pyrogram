@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, AsyncGenerator, Optional
+from typing import Union, Generator, Optional
 
 import pyrogram
 from async_generator import async_generator, yield_
@@ -31,7 +31,7 @@ class IterProfilePhotos(BaseClient):
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["pyrogram.Message", None]]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Iterate through a chat or a user profile photos sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_profile_photos` in a loop, thus

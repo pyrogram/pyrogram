@@ -447,7 +447,8 @@ class Client(Methods, BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        run = asyncio.get_event_loop().run_until_complete
+        loop = asyncio.get_event_loop()
+        run = loop.run_until_complete
 
         run(self.start())
 
@@ -459,6 +460,8 @@ class Client(Methods, BaseClient):
 
         if self.is_started:
             run(self.stop())
+
+        loop.close()
 
         return coroutine
 
