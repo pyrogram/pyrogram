@@ -54,6 +54,7 @@ Messages & Media
     - :class:`Venue`
     - :class:`Sticker`
     - :class:`Game`
+    - :class:`WebPage`
     - :class:`Poll`
     - :class:`PollOption`
 
@@ -137,6 +138,7 @@ Details
 .. autoclass:: Venue()
 .. autoclass:: Sticker()
 .. autoclass:: Game()
+.. autoclass:: WebPage()
 .. autoclass:: Poll()
 .. autoclass:: PollOption()
 

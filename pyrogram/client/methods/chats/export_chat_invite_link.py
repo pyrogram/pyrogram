@@ -52,11 +52,17 @@ class ExportChatInviteLink(BaseClient):
         """
         peer = await self.resolve_peer(chat_id)
 
-        if isinstance(peer, (types.InputPeerChannel, types.InputPeerChat)):
-            return await self.send(
+        if isinstance(peer, types.InputPeerChat):
+            return (await self.send(
                 functions.messages.ExportChatInvite(
                     peer=peer
                 )
-            ).link
+            )).link
+        elif isinstance(peer, types.InputPeerChannel):
+            return (await self.send(
+                functions.channels.ExportInvite(
+                    channel=peer
+                )
+            )).link
         else:
             raise ValueError('The chat_id "{}" belongs to a user'.format(chat_id))
