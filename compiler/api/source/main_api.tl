@@ -1364,4 +1364,7 @@ langpack.getLanguage#6a596502 lang_pack:string lang_code:string = LangPackLangua
 folders.editPeerFolders#6847d0ab folder_peers:Vector<InputFolderPeer> = Updates;
 folders.deleteFolder#1c295881 folder_id:int = Updates;
 
+// Ports
+channels.exportInvite#c7560885 channel:InputChannel = ExportedChatInvite;
+
 // LAYER 102
