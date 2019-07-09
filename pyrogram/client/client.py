@@ -395,8 +395,10 @@ class Client(Methods, BaseClient):
         self.start()
 
     def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Block the main script execution until a signal (e.g.: from CTRL+C) is received.
-        Once the signal is received, the client will automatically stop and the main script will continue its execution.
+        """Block the main script execution until a signal is received.
+
+        Once the signal is received (e.g.: from CTRL+C), the client will automatically stop and the main script will
+        continue its execution.
 
         This is used after starting one or more clients and is useful for event-driven applications only, that are,
         applications which react upon incoming Telegram updates through handlers, rather than executing a set of methods
