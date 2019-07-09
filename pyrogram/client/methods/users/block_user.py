@@ -38,7 +38,7 @@ class BlockUser(BaseClient):
         """
         return bool(
             self.send(
-                functions.contact.Block(
+                functions.contacts.Block(
                     id=self.resolve_peer(user_id)
                 )
             )

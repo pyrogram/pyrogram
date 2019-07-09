@@ -38,7 +38,7 @@ class UnblockUser(BaseClient):
         """
         return bool(
             self.send(
-                functions.contact.Unblock(
+                functions.contacts.Unblock(
                     id=self.resolve_peer(user_id)
                 )
             )
