@@ -9,7 +9,7 @@ For Humans - str(obj)
 ---------------------
 
 If you want a nicely formatted, human readable JSON representation of any object in the API -- namely, any object from
-:doc:`Pyrogram types <../api/types>`, :doc:`raw functions <../telegram/functions/index>` and
+:doc:`Pyrogram types <../api/types/index>`, :doc:`raw functions <../telegram/functions/index>` and
 :doc:`raw types <../telegram/types/index>` -- you can use use ``str(obj)``.
 
 .. code-block:: python

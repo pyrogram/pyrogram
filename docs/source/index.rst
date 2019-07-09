@@ -142,9 +142,9 @@ API Reference
     :columns: 2
 
     - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
-    - :doc:`Available Methods <api/methods>`: List of available high-level methods.
-    - :doc:`Available Types <api/types>`: List of available high-level types.
-    - :doc:`Bound Methods <api/bound-methods>`: List of convenient bound methods.
+    - :doc:`Available Methods <api/methods/index>`: List of available high-level methods.
+    - :doc:`Available Types <api/types/index>`: List of available high-level types.
+    - :doc:`Bound Methods <api/bound-methods/index>`: List of convenient bound methods.
 
 Meta
 ^^^^

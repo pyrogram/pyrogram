@@ -1,9 +1,9 @@
 Advanced Usage
 ==============
 
-Pyrogram's API, which consists of well documented convenience :doc:`methods <../api/methods>` and facade
-:doc:`types <../api/types>`, exists to provide a much easier interface to the undocumented and often confusing Telegram
-API.
+Pyrogram's API, which consists of well documented convenience :doc:`methods <../api/methods/index>` and facade
+:doc:`types <../api/types/index>`, exists to provide a much easier interface to the undocumented and often confusing
+Telegram API.
 
 In this section, you'll be shown the alternative way of communicating with Telegram using Pyrogram: the main "raw"
 Telegram API with its functions and types.
@@ -23,21 +23,21 @@ some pitfalls to take into consideration when working with the raw API.
     Every available high-level methods in Pyrogram is built on top of these raw functions.
 
     Nothing stops you from using the raw functions only, but they are rather complex and
-    :doc:`plenty of them <../api/methods>` are already re-implemented by providing a much simpler and cleaner interface
-    which is very similar to the Bot API (yet much more powerful).
+    :doc:`plenty of them <../api/methods/index>` are already re-implemented by providing a much simpler and cleaner
+    interface which is very similar to the Bot API (yet much more powerful).
 
     If you think a raw function should be wrapped and added as a high-level method, feel free to ask in our Community_!
 
 Invoking Functions
 ^^^^^^^^^^^^^^^^^^
 
-Unlike the :doc:`methods <../api/methods>` found in Pyrogram's API, which can be called in the usual simple way,
+Unlike the :doc:`methods <../api/methods/index>` found in Pyrogram's API, which can be called in the usual simple way,
 functions to be invoked from the raw Telegram API have a different way of usage and are more complex.
 
-First of all, both :doc:`raw functions <../telegram/functions/index>` and :doc:`raw types <../telegram/types/index>` live in their
-respective packages (and sub-packages): ``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist as Python
-classes, meaning you need to create an instance of each every time you need them and fill them in with the correct
-values using named arguments.
+First of all, both :doc:`raw functions <../telegram/functions/index>` and :doc:`raw types <../telegram/types/index>`
+live in their respective packages (and sub-packages): ``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist
+as Python classes, meaning you need to create an instance of each every time you need them and fill them in with the
+correct values using named arguments.
 
 Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.send` method provided by the
 Client class and pass the function object you created.
