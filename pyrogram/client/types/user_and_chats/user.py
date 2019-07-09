@@ -215,17 +215,23 @@ class User(Object):
 
         return self._client.unarchive_chats(self.id)
     
-    
     def block(self):
         """Bound method *block* of :obj:`User`.
+        
         Use as a shortcut for:
+        
         .. code-block:: python
+        
             client.block_user(123456789)
+            
         Example:
             .. code-block:: python
+            
                 user.block()
+                
         Returns:
             True on success.
+            
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
@@ -235,14 +241,21 @@ class User(Object):
 
     def unblock(self):
         """Bound method *unblock* of :obj:`User`.
+        
         Use as a shortcut for:
+        
         .. code-block:: python
+        
             client.unblock_user(123456789)
+            
         Example:
             .. code-block:: python
+            
                 user.unblock()
+                
         Returns:
             True on success.
+            
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
