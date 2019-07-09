@@ -32,12 +32,12 @@ class RPCError(Exception):
     NAME = None
     MESSAGE = "{x}"
 
-    def __init__(self, x: int or RawRPCError, rpc_name: str, is_unknown: bool):
-        super().__init__("[{} {}]: {} ({})".format(
+    def __init__(self, x: int or RawRPCError = None, rpc_name: str = None, is_unknown: bool = False):
+        super().__init__("[{} {}]: {} {}".format(
             self.CODE,
             self.ID or self.NAME,
             self.MESSAGE.format(x=x),
-            'caused by "{}"'.format(rpc_name)
+            '(caused by "{}")'.format(rpc_name) if rpc_name else ""
         ))
 
         try:
