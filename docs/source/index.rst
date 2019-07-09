@@ -23,9 +23,9 @@ Welcome to Pyrogram
     :caption: API Reference
 
     api/client
-    api/methods
-    api/types
-    api/bound-methods
+    api/methods/index
+    api/types/index
+    api/bound-methods/index
     api/handlers
     api/decorators
     api/errors
