@@ -255,7 +255,7 @@ def pyrogram_api():
     shutil.rmtree(root, ignore_errors=True)
     os.mkdir(root)
 
-    with open("template/methods.rst") as f:
+    with open(HOME + "/template/methods.rst") as f:
         template = f.read()
 
     with open(root + "/index.rst", "w") as f:
@@ -349,7 +349,7 @@ def pyrogram_api():
     shutil.rmtree(root, ignore_errors=True)
     os.mkdir(root)
 
-    with open("template/types.rst") as f:
+    with open(HOME + "/template/types.rst") as f:
         template = f.read()
 
     with open(root + "/index.rst", "w") as f:
@@ -439,7 +439,7 @@ def pyrogram_api():
     shutil.rmtree(root, ignore_errors=True)
     os.mkdir(root)
 
-    with open("template/bound-methods.rst") as f:
+    with open(HOME + "/template/bound-methods.rst") as f:
         template = f.read()
 
     with open(root + "/index.rst", "w") as f:
