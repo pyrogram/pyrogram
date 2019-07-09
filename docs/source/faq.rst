@@ -170,11 +170,11 @@ IP addresses are now kept as aliases.
     :widths: auto
     :align: center
 
-    DC1, "MIA, Miami FL, USA", ``149.154.175.50``, ``2001:b28:f23d:f001::a``
+    DC1, "MIA, Miami FL, USA", ``149.154.175.53``, ``2001:b28:f23d:f001::a``
     DC2, "AMS, Amsterdam, NL", ``149.154.167.51``, ``2001:67c:4e8:f002::a``
     DC3*, "MIA, Miami FL, USA", ``149.154.175.100``, ``2001:b28:f23d:f003::a``
     DC4, "AMS, Amsterdam, NL", ``149.154.167.91``, ``2001:67c:4e8:f004::a``
-    DC5, "SIN, Singapore, SG", ``91.108.56.149``, ``2001:b28:f23f:f005::a``
+    DC5, "SIN, Singapore, SG", ``91.108.56.130``, ``2001:b28:f23f:f005::a``
 
 .. csv-table:: Test Environment
     :header: ID, Location, IPv4, IPv6
