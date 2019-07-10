@@ -77,9 +77,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
 
             (types.UpdateUserStatus,):
-                lambda upd, usr, cht: (
-                    pyrogram.UserStatus._parse(self.client, upd.status, upd.user_id), UserStatusHandler
-                ),
+                lambda upd, usr, cht: (pyrogram.User._parse_user_status(self.client, upd), UserStatusHandler),
 
             (types.UpdateBotInlineQuery,):
                 lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
