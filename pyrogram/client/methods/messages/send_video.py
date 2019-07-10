@@ -89,6 +89,7 @@ class SendVideo(BaseClient):
 
             supports_streaming (``bool``, *optional*):
                 Pass True, if the uploaded video is suitable for streaming.
+                Defaults to True.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
