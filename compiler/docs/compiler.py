@@ -279,7 +279,6 @@ def pyrogram_api():
         users_chats="""
         Users & Chats
             User
-            UserStatus
             Chat
             ChatPreview
             ChatPhoto
