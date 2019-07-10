@@ -65,13 +65,13 @@ class RestrictChatMember(BaseClient):
 
             can_send_other_messages (``bool``, *optional*):
                 Pass True, if the user can send animations, games, stickers and use inline bots,
-                implies can_send_media_messages.
+                implies can_send_messages.
 
             can_add_web_page_previews (``bool``, *optional*):
-                Pass True, if the user may add web page previews to their messages, implies can_send_media_messages.
+                Pass True, if the user may add web page previews to their messages, implies can_send_messages.
 
             can_send_polls (``bool``, *optional*):
-                Pass True, if the user can send polls, implies can_send_media_messages.
+                Pass True, if the user can send polls, implies can_send_messages.
 
             can_change_info (``bool``, *optional*):
                 Pass True, if the user can change the chat title, photo and other settings.
@@ -109,7 +109,6 @@ class RestrictChatMember(BaseClient):
 
         if can_send_other_messages:
             send_messages = None
-            send_media = None
             send_stickers = None
             send_gifs = None
             send_games = None
@@ -117,7 +116,6 @@ class RestrictChatMember(BaseClient):
 
         if can_add_web_page_previews:
             send_messages = None
-            send_media = None
             embed_links = None
 
         if can_send_polls:
