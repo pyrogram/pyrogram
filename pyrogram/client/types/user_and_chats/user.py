@@ -75,6 +75,12 @@ class User(Object):
         language_code (``str``, *optional*):
             IETF language tag of the user's language.
 
+        dc_id (``int``, *optional*):
+            User's or bot's assigned DC (data center). Available only in case the user has set a public profile photo.
+            Note that this information is approximate: it is based on where Telegram stores a user profile pictures and
+            does not by any means tell you the user location (i.e. a user might travel far away, but will still connect
+            to its assigned DC). More info at `FAQs </faq#what-are-the-ip-addresses-of-telegram-data-centers>`_.
+
         phone_number (``str``, *optional*):
             User's phone number.
 
@@ -88,8 +94,8 @@ class User(Object):
 
     __slots__ = [
         "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "is_verified", "is_restricted",
-        "is_scam", "is_support", "first_name", "last_name", "status", "username", "language_code", "phone_number",
-        "photo", "restriction_reason"
+        "is_scam", "is_support", "first_name", "last_name", "status", "username", "language_code", "dc_id",
+        "phone_number", "photo", "restriction_reason"
     ]
 
     def __init__(
@@ -111,6 +117,7 @@ class User(Object):
         status: UserStatus = None,
         username: str = None,
         language_code: str = None,
+        dc_id: int = None,
         phone_number: str = None,
         photo: ChatPhoto = None,
         restriction_reason: str = None
@@ -132,6 +139,7 @@ class User(Object):
         self.status = status
         self.username = username
         self.language_code = language_code
+        self.dc_id = dc_id
         self.phone_number = phone_number
         self.photo = photo
         self.restriction_reason = restriction_reason
@@ -163,6 +171,7 @@ class User(Object):
             status=UserStatus._parse(client, user.status, user.id, user.bot),
             username=user.username,
             language_code=user.lang_code,
+            dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
             photo=ChatPhoto._parse(client, user.photo, user.id),
             restriction_reason=user.restriction_reason,
@@ -214,7 +223,7 @@ class User(Object):
         """
 
         return self._client.unarchive_chats(self.id)
-    
+
     def block(self):
         """Bound method *block* of :obj:`User`.
         
@@ -238,7 +247,6 @@ class User(Object):
 
         return self._client.block_user(self.id)
 
-
     def unblock(self):
         """Bound method *unblock* of :obj:`User`.
         
@@ -261,4 +269,3 @@ class User(Object):
         """
 
         return self._client.unblock_user(self.id)
-    
