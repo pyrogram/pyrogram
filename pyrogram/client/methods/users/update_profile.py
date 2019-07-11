@@ -39,7 +39,7 @@ class UpdateProfile(BaseClient):
                 Pass the last name as string.
             about (``str``):
                 The new about.
-                Pass the about as string. 70 charcters max.
+                Pass the about as string. 70 characters max.
         Returns:
             ``bool``: True on success.
         Raises:
