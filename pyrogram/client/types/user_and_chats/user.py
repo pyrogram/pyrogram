@@ -20,61 +20,80 @@ import html
 
 import pyrogram
 from pyrogram.api import types
-
 from .chat_photo import ChatPhoto
-from .user_status import UserStatus
 from ..object import Object
+from ..update import Update
 
 
-class User(Object):
+class User(Object, Update):
     """A Telegram user or bot.
 
     Parameters:
         id (``int``):
             Unique identifier for this user or bot.
 
-        is_self(``bool``):
+        is_self(``bool``, *optional*):
             True, if this user is you yourself.
 
-        is_contact(``bool``):
+        is_contact(``bool``, *optional*):
             True, if this user is in your contacts.
 
-        is_mutual_contact(``bool``):
+        is_mutual_contact(``bool``, *optional*):
             True, if you both have each other's contact.
 
-        is_deleted(``bool``):
+        is_deleted(``bool``, *optional*):
             True, if this user is deleted.
 
-        is_bot (``bool``):
+        is_bot (``bool``, *optional*):
             True, if this user is a bot.
 
-        is_verified (``bool``):
+        is_verified (``bool``, *optional*):
             True, if this user has been verified by Telegram.
 
-        is_restricted (``bool``):
+        is_restricted (``bool``, *optional*):
             True, if this user has been restricted. Bots only.
             See *restriction_reason* for details.
 
-        is_scam (``bool``):
+        is_scam (``bool``, *optional*):
             True, if this user has been flagged for scam.
 
-        is_support (``bool``):
+        is_support (``bool``, *optional*):
             True, if this user is part of the Telegram support team.
 
-        first_name (``str``):
+        first_name (``str``, *optional*):
             User's or bot's first name.
-
-        status (:obj:`UserStatus <pyrogram.UserStatus>`, *optional*):
-            User's Last Seen status. Empty for bots.
 
         last_name (``str``, *optional*):
             User's or bot's last name.
+
+        status (``str``, *optional*):
+            User's Last Seen & Online status.
+            Can be one of the following:
+            "*online*", user is online right now.
+            "*offline*", user is currently offline.
+            "*recently*", user with hidden last seen time who was online between 1 second and 2-3 days ago.
+            "*within_week*", user with hidden last seen time who was online between 2-3 and seven days ago.
+            "*within_month*", user with hidden last seen time who was online between 6-7 days and a month ago.
+            "*long_time_ago*", blocked user or user with hidden last seen time who was online more than a month ago.
+            *None*, for bots.
+
+        last_online_date (``int``, *optional*):
+            Last online date of a user. Only available in case status is "*offline*".
+
+        next_offline_date (``int``, *optional*):
+            Date when a user will automatically go offline. Only available in case status is "*online*".
 
         username (``str``, *optional*):
             User's or bot's username.
 
         language_code (``str``, *optional*):
             IETF language tag of the user's language.
+
+        dc_id (``int``, *optional*):
+            User's or bot's assigned DC (data center). Available only in case the user has set a public profile photo.
+            Note that this information is approximate; it is based on where Telegram stores a user profile pictures and
+            does not by any means tell you the user location (i.e. a user might travel far away, but will still connect
+            to its assigned DC). More info at `FAQs </faq#what-are-the-ip-addresses-of-telegram-data-centers>`_.
 
         phone_number (``str``, *optional*):
             User's phone number.
@@ -89,8 +108,8 @@ class User(Object):
 
     __slots__ = [
         "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "is_verified", "is_restricted",
-        "is_scam", "is_support", "first_name", "last_name", "status", "username", "language_code", "phone_number",
-        "photo", "restriction_reason"
+        "is_scam", "is_support", "first_name", "last_name", "status", "last_online_date", "next_offline_date",
+        "username", "language_code", "dc_id", "phone_number", "photo", "restriction_reason"
     ]
 
     def __init__(
@@ -98,20 +117,23 @@ class User(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         id: int,
-        is_self: bool,
-        is_contact: bool,
-        is_mutual_contact: bool,
-        is_deleted: bool,
-        is_bot: bool,
-        is_verified: bool,
-        is_restricted: bool,
-        is_scam: bool,
-        is_support: bool,
-        first_name: str,
+        is_self: bool = None,
+        is_contact: bool = None,
+        is_mutual_contact: bool = None,
+        is_deleted: bool = None,
+        is_bot: bool = None,
+        is_verified: bool = None,
+        is_restricted: bool = None,
+        is_scam: bool = None,
+        is_support: bool = None,
+        first_name: str = None,
         last_name: str = None,
-        status: UserStatus = None,
+        status: str = None,
+        last_online_date: int = None,
+        next_offline_date: int = None,
         username: str = None,
         language_code: str = None,
+        dc_id: int = None,
         phone_number: str = None,
         photo: ChatPhoto = None,
         restriction_reason: str = None
@@ -131,8 +153,11 @@ class User(Object):
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
+        self.last_online_date = last_online_date
+        self.next_offline_date = next_offline_date
         self.username = username
         self.language_code = language_code
+        self.dc_id = dc_id
         self.phone_number = phone_number
         self.photo = photo
         self.restriction_reason = restriction_reason
@@ -161,12 +186,54 @@ class User(Object):
             is_support=user.support,
             first_name=user.first_name,
             last_name=user.last_name,
-            status=UserStatus._parse(client, user.status, user.id, user.bot),
+            **User._parse_status(user.status, user.bot),
             username=user.username,
             language_code=user.lang_code,
+            dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
             photo=ChatPhoto._parse(client, user.photo, user.id),
             restriction_reason=user.restriction_reason,
+            client=client
+        )
+
+    @staticmethod
+    def _parse_status(user_status: types.UpdateUserStatus, is_bot: bool = False):
+        if isinstance(user_status, types.UserStatusOnline):
+            status, date = "online", user_status.expires
+        elif isinstance(user_status, types.UserStatusOffline):
+            status, date = "offline", user_status.was_online
+        elif isinstance(user_status, types.UserStatusRecently):
+            status, date = "recently", None
+        elif isinstance(user_status, types.UserStatusLastWeek):
+            status, date = "within_week", None
+        elif isinstance(user_status, types.UserStatusLastMonth):
+            status, date = "within_month", None
+        else:
+            status, date = "long_time_ago", None
+
+        last_online_date = None
+        next_offline_date = None
+
+        if is_bot:
+            status = None
+
+        if status == "online":
+            next_offline_date = date
+
+        if status == "offline":
+            last_online_date = date
+
+        return {
+            "status": status,
+            "last_online_date": last_online_date,
+            "next_offline_date": next_offline_date
+        }
+
+    @staticmethod
+    def _parse_user_status(client, user_status: types.UpdateUserStatus):
+        return User(
+            id=user_status.user_id,
+            **User._parse_status(user_status.status),
             client=client
         )
 
@@ -215,3 +282,49 @@ class User(Object):
         """
 
         return await self._client.unarchive_chats(self.id)
+
+    def block(self):
+        """Bound method *block* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.block_user(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.block()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.block_user(self.id)
+
+    def unblock(self):
+        """Bound method *unblock* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unblock_user(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.unblock()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unblock_user(self.id)

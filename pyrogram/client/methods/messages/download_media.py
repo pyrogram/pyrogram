@@ -87,7 +87,7 @@ class DownloadMedia(BaseClient):
 
         Raises:
             RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if the message doesn't contain any downloadable media
+            ValueError: if the message doesn't contain any downloadable media
         """
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")

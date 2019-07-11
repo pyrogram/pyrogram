@@ -39,8 +39,12 @@ with open("README.md", encoding="utf-8") as f:
 
 class Clean(Command):
     DIST = ["./build", "./dist", "./Pyrogram.egg-info"]
-    API = ["pyrogram/api/errors/exceptions", "pyrogram/api/functions", "pyrogram/api/types", "pyrogram/api/all.py"]
-    DOCS = ["docs/source/telegram", "docs/build"]
+    API = ["pyrogram/errors/exceptions", "pyrogram/api/functions", "pyrogram/api/types", "pyrogram/api/all.py"]
+    DOCS = [
+        "docs/source/telegram", "docs/build", "docs/source/api/methods", "docs/source/api/types",
+        "docs/source/api/bound-methods"
+    ]
+
     ALL = DIST + API + DOCS
 
     description = "Clean generated files"
@@ -122,7 +126,6 @@ class Generate(Command):
 if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     api_compiler.start()
     error_compiler.start()
-    docs_compiler.start()
 
 setup(
     name="Pyrogram",

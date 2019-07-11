@@ -74,7 +74,7 @@ class Dispatcher:
             return await pyrogram.CallbackQuery._parse(self.client, update, users), CallbackQueryHandler
 
         async def user_status_parser(update, users, chats):
-            return pyrogram.UserStatus._parse(self.client, update.status, update.user_id), UserStatusHandler
+            return pyrogram.User._parse_user_status(self.client, update), UserStatusHandler
 
         async def inline_query_parser(update, users, chats):
             return pyrogram.InlineQuery._parse(self.client, update, users), InlineQueryHandler
