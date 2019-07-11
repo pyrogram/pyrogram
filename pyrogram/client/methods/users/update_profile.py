@@ -34,10 +34,10 @@ class UpdateProfile(BaseClient):
             first_name (``str``):
                 The new first name.
                 Pass the first name as string.
-            first_name (``str``):
+            last_name (``str``):
                 The new last name.
                 Pass the last name as string.
-            first_name (``str``):
+            about (``str``):
                 The new about.
                 Pass the about as string. 70 charcters max.
         Returns:
