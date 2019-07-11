@@ -386,7 +386,6 @@ class Chat(Object):
             description=description
         )
 
-
     def set_photo(self, photo: str) -> bool:
         """Bound method *set_photo* of :obj:`Chat`.
 
@@ -688,6 +687,9 @@ class Chat(Object):
 
                 chat.join()
 
+        Note:
+            This only works for public groups and channels that have set a username.
+
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
 
@@ -695,7 +697,7 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.join_chat(self.id)
+        return self._client.join_chat(self.username)
 
     def leave(self):
         """Bound method *leave* of :obj:`Chat`.
@@ -716,4 +718,3 @@ class Chat(Object):
         """
 
         return self._client.leave_chat(self.id)
-    
