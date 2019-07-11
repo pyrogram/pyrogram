@@ -674,9 +674,6 @@ class Chat(Object):
             can_promote_members=can_promote_members
         )
     
-    
-    
-    
     def join(self):
         """Bound method *join* of :obj:`Chat`.
 
@@ -699,7 +696,6 @@ class Chat(Object):
         """
 
         return self._client.join_chat(self.id)
-
 
     def leave(self):
         """Bound method *leave* of :obj:`Chat`.
