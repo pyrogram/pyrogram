@@ -17,6 +17,7 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import html
+import logging
 import re
 from collections import OrderedDict
 from html.parser import HTMLParser
@@ -26,6 +27,8 @@ import pyrogram
 from pyrogram.api import types
 from pyrogram.errors import PeerIdInvalid
 from . import utils
+
+log = logging.getLogger(__name__)
 
 
 class Parser(HTMLParser):
@@ -94,7 +97,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            raise ValueError("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
+            log.warning("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -120,7 +123,7 @@ class HTML:
             for tag, entities in parser.tag_entities.items():
                 unclosed_tags.append("<{}> (x{})".format(tag, len(entities)))
 
-            raise ValueError("Unclosed tags: {}".format(", ".join(unclosed_tags)))
+            log.warning("Unclosed tags: {}".format(", ".join(unclosed_tags)))
 
         entities = []
 
