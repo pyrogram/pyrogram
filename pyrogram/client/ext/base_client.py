@@ -89,6 +89,8 @@ class BaseClient:
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
+    is_idling = False
+
     def __init__(self):
         self.storage = None
 
@@ -102,7 +104,6 @@ class BaseClient:
         self.media_sessions_lock = Lock()
 
         self.is_started = None
-        self.is_idle = None
 
         self.takeout_id = None
 

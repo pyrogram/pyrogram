@@ -394,37 +394,60 @@ class Client(Methods, BaseClient):
         self.stop()
         self.start()
 
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+    @staticmethod
+    def idle(stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Block the main script execution until a signal is received.
 
-        Once the signal is received (e.g.: from CTRL+C), the client will automatically stop and the main script will
-        continue its execution.
+        This static method will run an infinite loop in order to block the main script execution and prevent it from
+        exiting while having client(s) that are still running in the background.
 
-        This is used after starting one or more clients and is useful for event-driven applications only, that are,
-        applications which react upon incoming Telegram updates through handlers, rather than executing a set of methods
-        sequentially.
+        It is useful for event-driven application only, that are, applications which react upon incoming Telegram
+        updates through handlers, rather than executing a set of methods sequentially.
 
-        The way Pyrogram works, will keep your handlers in a pool of workers, which are executed concurrently outside
-        the main script; calling idle() will ensure the client(s) will be kept alive by not letting the main script to
-        end, until you decide to quit.
+        The way Pyrogram works, it will keep your handlers in a pool of worker threads, which are executed concurrently
+        outside the main thread; calling idle() will ensure the client(s) will be kept alive by not letting the main
+        script to end, until you decide to quit.
+
+        Once a signal is received (e.g.: from CTRL+C) the inner infinite loop will break and your main script will
+        continue. Don't forget to call :meth:`~Client.stop` for each running client before the script ends.
 
         Parameters:
             stop_signals (``tuple``, *optional*):
                 Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
+                Defaults to *(SIGINT, SIGTERM, SIGABRT)*.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 13
+
+                from pyrogram import Client
+
+                app1 = Client("account1")
+                app2 = Client("account2")
+                app3 = Client("account3")
+
+                ...  # Set handlers up
+
+                app1.start()
+                app2.start()
+                app3.start()
+
+                Client.idle()
+
+                app1.stop()
+                app2.stop()
+                app3.stop()
         """
 
-        # TODO: Maybe make this method static and don't automatically stop
-
         def signal_handler(*args):
-            self.is_idle = False
+            Client.is_idling = False
 
         for s in stop_signals:
             signal(s, signal_handler)
 
-        self.is_idle = True
+        Client.is_idling = True
 
-        while self.is_idle:
+        while Client.is_idling:
             time.sleep(1)
 
         self.stop()
