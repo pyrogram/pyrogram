@@ -673,3 +673,47 @@ class Chat(Object):
             can_pin_messages=can_pin_messages,
             can_promote_members=can_promote_members
         )
+    
+    def join(self):
+        """Bound method *join* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.join_chat(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.join()
+
+        Returns:
+            :obj:`Chat`: On success, a chat object is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.join_chat(self.id)
+
+    def leave(self):
+        """Bound method *leave* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.leave_chat(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.leave()
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.leave_chat(self.id)
+    
