@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UpdateProfile(BaseClient):
-    def set_profile_photo(
+    def update_profile(
         self,
         first_name: str = None,
         last_name: str = None,
