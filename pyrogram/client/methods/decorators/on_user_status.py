@@ -44,7 +44,7 @@ class OnUserStatus(BaseClient):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.UserStatusHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.pyrogram_plugin = (
+                func.handler = (
                     pyrogram.UserStatusHandler(func, self),
                     group if filters is None else filters
                 )

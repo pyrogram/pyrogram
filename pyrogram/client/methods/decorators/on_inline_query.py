@@ -46,7 +46,7 @@ class OnInlineQuery(BaseClient):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.InlineQueryHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.pyrogram_plugin = (
+                func.handler = (
                     pyrogram.InlineQueryHandler(func, self),
                     group if filters is None else filters
                 )
