@@ -31,7 +31,7 @@ class SendVoice(BaseClient):
         chat_id: Union[int, str],
         voice: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,

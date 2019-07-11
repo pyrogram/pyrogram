@@ -32,7 +32,7 @@ class SendDocument(BaseClient):
         document: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[

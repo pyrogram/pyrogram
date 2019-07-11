@@ -28,7 +28,7 @@ class EditInlineText(BaseClient):
         self,
         inline_message_id: str,
         text: str,
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:

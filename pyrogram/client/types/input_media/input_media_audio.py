@@ -65,7 +65,7 @@ class InputMediaAudio(InputMedia):
         media: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: int = "",
         title: str = ""

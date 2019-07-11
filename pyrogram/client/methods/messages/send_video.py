@@ -31,7 +31,7 @@ class SendVideo(BaseClient):
         chat_id: Union[int, str],
         video: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,

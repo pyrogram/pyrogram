@@ -19,7 +19,6 @@
 from collections import OrderedDict
 from typing import Union
 
-
 import pyrogram
 from .html import HTML
 from .markdown import Markdown
@@ -27,11 +26,15 @@ from .markdown import Markdown
 
 class Parser:
     def __init__(self, client: Union["pyrogram.BaseClient", None]):
+        self.client = client
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    def parse(self, text: str, mode: str = ""):
+    def parse(self, text: str, mode: Union[str, None] = object):
         text = str(text or "").strip()
+
+        if mode == object:
+            mode = self.client.parse_mode
 
         if mode is None:
             return OrderedDict([
@@ -41,7 +44,7 @@ class Parser:
 
         mode = mode.lower()
 
-        if mode == "":
+        if mode == "combined":
             return self.markdown.parse(text)
 
         if mode in ["markdown", "md"]:
@@ -49,6 +52,11 @@ class Parser:
 
         if mode == "html":
             return self.html.parse(text)
+
+        raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
+            ", ".join('"{}"'.format(m) for m in self.client.PARSE_MODES[:-1]),
+            mode
+        ))
 
     @staticmethod
     def unparse(text: str, entities: list, is_html: bool):

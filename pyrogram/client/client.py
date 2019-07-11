@@ -491,6 +491,84 @@ class Client(Methods, BaseClient):
         """
         raise Client.StopTransmission
 
+    def export_session_string(self):
+        """Export the current authorized session as a serialized string.
+
+        Session strings are useful for storing in-memory authorized sessions in a portable, serialized string.
+        More detailed information about session strings can be found at the dedicated page of
+        :doc:`Storage Engines <../../topics/storage-engines>`.
+
+        Has no parameters.
+
+        Returns:
+            ``str``: The session serialized into a printable, url-safe string.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 6
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    print(app.export_session_string())
+        """
+        return self.storage.export_session_string()
+
+    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+        """Set the parse mode to be used globally by the client.
+
+        When setting the parse mode with this method, all methods having a *parse_mode* parameter will follow the global
+        value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and combined
+        together.
+
+        Parameters:
+            parse_mode (``str``):
+                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
+                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
+                completely.
+
+        Raises:
+            ValueError: In case the provided *parse_mode* is not a valid parse mode.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 10,14,18,22
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    # Default combined mode: Markdown + HTML
+                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+
+                    # Force Markdown-only, HTML is disabled
+                    app.set_parse_mode("markdown")
+                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+
+                    # Force HTML-only, Markdown is disabled
+                    app.set_parse_mode("html")
+                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+
+                    # Disable the parser completely
+                    app.set_parse_mode(None)
+                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+
+                    # Bring back the default combined mode
+                    app.set_parse_mode()
+                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+        """
+
+        if parse_mode not in self.PARSE_MODES:
+            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
+                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
+                parse_mode
+            ))
+
+        self.parse_mode = parse_mode
+
     def authorize_bot(self):
         try:
             r = self.send(

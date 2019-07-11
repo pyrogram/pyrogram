@@ -31,7 +31,7 @@ class SendAudio(BaseClient):
         chat_id: Union[int, str],
         audio: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: str = None,
         title: str = None,

@@ -59,6 +59,8 @@ class BaseClient:
     WORKDIR = PARENT_DIR
     CONFIG_FILE = PARENT_DIR / "config.ini"
 
+    PARSE_MODES = ["combined", "markdown", "md", "html", None]
+
     MEDIA_TYPE_ID = {
         0: "photo_thumbnail",
         1: "chat_photo",
@@ -93,6 +95,7 @@ class BaseClient:
         self.rnd_id = MsgId
 
         self.parser = Parser(self)
+        self.parse_mode = "combined"
 
         self.session = None
         self.media_sessions = {}

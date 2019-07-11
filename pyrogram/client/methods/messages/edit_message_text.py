@@ -29,7 +29,7 @@ class EditMessageText(BaseClient):
         chat_id: Union[int, str],
         message_id: int,
         text: str,
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":

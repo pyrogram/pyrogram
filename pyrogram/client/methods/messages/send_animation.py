@@ -32,7 +32,7 @@ class SendAnimation(BaseClient):
         animation: str,
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,

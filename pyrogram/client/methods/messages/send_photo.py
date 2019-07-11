@@ -31,7 +31,7 @@ class SendPhoto(BaseClient):
         chat_id: Union[int, str],
         photo: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,

@@ -28,7 +28,7 @@ class SendMessage(BaseClient):
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
