@@ -412,11 +412,15 @@ def pyrogram_api():
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
+            Chat.join
+            Chat.leave
         """,
         user="""
         User
             User.archive
             User.unarchive
+            User.block
+            User.unblock
         """,
         callback_query="""
         Callback Query
