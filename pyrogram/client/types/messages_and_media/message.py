@@ -2868,6 +2868,38 @@ class Message(Object, Update):
                 raise ValueError("This button is not supported yet")
         else:
             self.reply(button, quote=quote)
+            
+            
+     def retract_vote(
+        self,
+    ) -> "Poll":
+        """Bound method *retract_vote* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.retract_vote(
+                chat_id=message.chat.id,
+                message_id=message_id,
+            )
+        Example:
+            .. code-block:: python
+
+                message.retract_vote()
+
+        Returns:
+            :obj:`Poll`
+            On success, the poll with the retracted vote is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.retract_vote(
+            chat_id=self.chat.id,
+            message_id=self.message_id
+        )
 
     def download(
         self,
