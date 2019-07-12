@@ -2957,7 +2957,7 @@ class Message(Object, Update):
 
         return self._client.vote_poll(
             chat_id=self.chat.id,
-            message_id= self.message_id,
+            message_id=self.message_id,
             option=option
         )
 
