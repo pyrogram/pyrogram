@@ -28,13 +28,6 @@ __version__ = "0.16.0.asyncio-dev"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __copyright__ = "Copyright (C) 2017-2019 Dan <https://github.com/delivrance>"
 
-try:
-    import uvloop
-except ImportError:
-    pass
-else:
-    uvloop.install()
-
 from .errors import RPCError
 from .client import *
 from .client.handlers import *
