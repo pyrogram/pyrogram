@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
-import inspect
 import logging
 import math
 import mimetypes
@@ -452,20 +451,16 @@ class Client(Methods, BaseClient):
         loop = asyncio.get_event_loop()
         run = loop.run_until_complete
 
-        run(self.start())
+        if coroutine is not None:
+            run(coroutine)
+        else:
+            run(self.start())
+            run(self.idle())
 
-        run(
-            coroutine if inspect.iscoroutine(coroutine)
-            else coroutine() if coroutine
-            else self.idle()
-        )
-
-        if self.is_started:
-            run(self.stop())
+            # TODO: Uncomment this once idle() gets refactored
+            # run(self.stop())
 
         loop.close()
-
-        return coroutine
 
     def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
