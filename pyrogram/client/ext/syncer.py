@@ -59,7 +59,7 @@ class Syncer:
     @classmethod
     def start(cls):
         cls.event.clear()
-        asyncio.ensure_future(cls.worker())
+        asyncio.create_task(cls.worker())
 
     @classmethod
     def stop(cls):

@@ -98,7 +98,7 @@ class Dispatcher:
             self.locks_list.append(asyncio.Lock())
 
             self.update_worker_tasks.append(
-                asyncio.ensure_future(self.update_worker(self.locks_list[-1]))
+                asyncio.create_task(self.update_worker(self.locks_list[-1]))
             )
 
         log.info("Started {} UpdateWorkerTasks".format(self.workers))
