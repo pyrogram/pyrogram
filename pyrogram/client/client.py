@@ -577,20 +577,8 @@ class Client(Methods, BaseClient):
 
         password_invalid_raises = self.password is not None
 
-        def default_recovery_callback(email_pattern: str) -> str:
-            print("An e-mail containing the recovery code has been sent to {}".format(email_pattern))
-            return input("Enter password recovery code: ")
-
         while True:
             try:
-                r = self.send(functions.auth.RequestPasswordRecovery())
-
-                self.recovery_code = (
-                    default_recovery_callback(r.email_pattern) if self.recovery_code is None
-                    else str(self.recovery_code(r.email_pattern)) if callable(self.recovery_code)
-                    else str(self.recovery_code)
-                )
-
                 r = self.send(
                     functions.auth.RecoverPassword(
                         code=self.recovery_code
