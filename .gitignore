@@ -11,6 +11,9 @@ pyrogram/api/all.py
 # PyCharm stuff
 .idea/
 
+# VS Code
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -78,6 +81,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/source/_build
 
 # PyBuilder
 target/
