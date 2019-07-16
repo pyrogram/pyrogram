@@ -136,7 +136,7 @@ class Filters:
     poll = create(lambda _, m: m.poll, "PollFilter")
     """Filter messages that contain :obj:`Poll` objects."""
 
-    private = create(lambda _, m: bool(m.chat and m.chat.type == "private"), "PrivateFilter")
+    private = create(lambda _, m: bool(m.chat and m.chat.type in {"private", "bot"}), "PrivateFilter")
     """Filter messages sent in private chats."""
 
     group = create(lambda _, m: bool(m.chat and m.chat.type in {"group", "supergroup"}), "GroupFilter")
