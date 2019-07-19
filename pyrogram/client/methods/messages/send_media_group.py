@@ -31,7 +31,6 @@ log = logging.getLogger(__name__)
 
 class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
-    # TODO: Figure out how to send albums using URLs
     def send_media_group(
         self,
         chat_id: Union[int, str],
@@ -88,7 +87,24 @@ class SendMediaGroup(BaseClient):
                         id=types.InputPhoto(
                             id=media.photo.id,
                             access_hash=media.photo.access_hash,
-                            file_reference=b""
+                            file_reference=media.photo.file_reference
+                        )
+                    )
+                elif i.media.startswith("http"):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaPhotoExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = types.InputMediaPhoto(
+                        id=types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash,
+                            file_reference=media.photo.file_reference
                         )
                     )
                 else:
@@ -126,7 +142,24 @@ class SendMediaGroup(BaseClient):
                         id=types.InputDocument(
                             id=media.document.id,
                             access_hash=media.document.access_hash,
-                            file_reference=b""
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                elif i.media.startswith("http"):
+                    media = self.send(
+                        functions.messages.UploadMedia(
+                            peer=self.resolve_peer(chat_id),
+                            media=types.InputMediaDocumentExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = types.InputMediaDocument(
+                        id=types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
                         )
                     )
                 else:
