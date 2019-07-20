@@ -60,7 +60,7 @@ class SendVideo(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            video (``str``):
+            video (``str`` | file-like object):
                 Video to send.
                 Pass a file_id as string to send a video that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a video from the Internet, or
