@@ -34,7 +34,10 @@ class Parser:
         text = str(text or "").strip()
 
         if mode == object:
-            mode = self.client.parse_mode
+            if self.client:
+                mode = self.client.parse_mode
+            else:
+                mode = "combined"
 
         if mode is None:
             return OrderedDict([
@@ -54,7 +57,7 @@ class Parser:
             return self.html.parse(text)
 
         raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-            ", ".join('"{}"'.format(m) for m in self.client.PARSE_MODES[:-1]),
+            ", ".join('"{}"'.format(m) for m in pyrogram.Client.PARSE_MODES[:-1]),
             mode
         ))
 

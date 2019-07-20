@@ -176,7 +176,7 @@ class CallbackQuery(Object, Update):
     def edit_message_text(
         self,
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
@@ -229,7 +229,7 @@ class CallbackQuery(Object, Update):
     def edit_message_caption(
         self,
         caption: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
         """Edit the caption of media messages attached to callback queries.

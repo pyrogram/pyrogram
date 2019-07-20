@@ -654,7 +654,7 @@ class Message(Object, Update):
         self,
         text: str,
         quote: bool = None,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -736,7 +736,7 @@ class Message(Object, Update):
         animation: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -873,7 +873,7 @@ class Message(Object, Update):
         audio: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: str = None,
         title: str = None,
@@ -1010,7 +1010,7 @@ class Message(Object, Update):
         file_id: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1218,7 +1218,7 @@ class Message(Object, Update):
         quote: bool = None,
         thumb: str = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1613,7 +1613,7 @@ class Message(Object, Update):
         photo: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2007,7 +2007,7 @@ class Message(Object, Update):
         video: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -2267,7 +2267,7 @@ class Message(Object, Update):
         voice: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2384,7 +2384,7 @@ class Message(Object, Update):
     def edit_text(
         self,
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
@@ -2442,7 +2442,7 @@ class Message(Object, Update):
     def edit_caption(
         self,
         caption: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit_caption* of :obj:`Message`.

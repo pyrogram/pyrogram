@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 import pyrogram
 from pyrogram.client.ext import BaseClient
 
@@ -25,7 +27,7 @@ class EditInlineCaption(BaseClient):
         self,
         inline_message_id: str,
         caption: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:
         """Edit the caption of **inline** media messages.
