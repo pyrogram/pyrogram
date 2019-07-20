@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,7 +29,7 @@ class SendAudio(BaseClient):
     def send_audio(
         self,
         chat_id: Union[int, str],
-        audio: str,
+        audio: Union[str, io.IOBase],
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
@@ -57,11 +57,12 @@ class SendAudio(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            audio (``str``):
+            audio (``str``, file-like object):
                 Audio file to send.
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
                 pass a file path as string to upload a new audio file that exists on your local machine.
+                pass a readable file-like object with .name
 
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
@@ -132,11 +133,34 @@ class SendAudio(BaseClient):
         file = None
 
         try:
-            if os.path.exists(audio):
+            if isinstance(audio, str):
+                if os.path.exists(audio):
+                    thumb = None if thumb is None else self.save_file(thumb)
+                    file = self.save_file(audio, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(audio) or "audio/mpeg",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeAudio(
+                                duration=duration,
+                                performer=performer,
+                                title=title
+                            ),
+                            types.DocumentAttributeFilename(file_name=os.path.basename(audio))
+                        ]
+                    )
+                elif audio.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=audio
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(audio, 9)
+            elif hasattr(audio, "read"):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(audio) or "audio/mpeg",
+                    mime_type=self.guess_mime_type(audio.name) or "audio/mpeg",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -145,15 +169,9 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(file_name=os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=os.path.basename(audio.name))
                     ]
                 )
-            elif audio.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=audio
-                )
-            else:
-                media = utils.get_input_media_from_file_id(audio, 9)
 
             while True:
                 try:

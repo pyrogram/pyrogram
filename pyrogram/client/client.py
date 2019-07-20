@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import logging
 import math
 import mimetypes
@@ -1420,7 +1420,7 @@ class Client(Methods, BaseClient):
 
     def save_file(
         self,
-        path: str,
+        path: Union[str, io.IOBase],
         file_id: int = None,
         file_part: int = 0,
         progress: callable = None,
@@ -1473,9 +1473,20 @@ class Client(Methods, BaseClient):
 
         Raises:
             RPCError: In case of a Telegram RPC error.
+            ValueError: if path is not str or file-like readable object
         """
         part_size = 512 * 1024
-        file_size = os.path.getsize(path)
+        if isinstance(path, str):
+            fp = open(path, 'rb')
+            filename = os.path.basename(path)
+        elif hasattr(path, 'write'):
+            fp = path
+            filename = fp.name
+        else:
+            raise ValueError("Invalid path passed! Pass file pointer or path to file")
+        fp.seek(0, os.SEEK_END)
+        file_size = fp.tell()
+        fp.seek(0)
 
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
@@ -1493,67 +1504,74 @@ class Client(Methods, BaseClient):
         session.start()
 
         try:
-            with open(path, "rb") as f:
-                f.seek(part_size * file_part)
+            fp.seek(part_size * file_part)
 
-                while True:
-                    chunk = f.read(part_size)
+            while True:
+                chunk = fp.read(part_size)
 
-                    if not chunk:
-                        if not is_big:
-                            md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
-                        break
-
-                    for _ in range(3):
-                        if is_big:
-                            rpc = functions.upload.SaveBigFilePart(
-                                file_id=file_id,
-                                file_part=file_part,
-                                file_total_parts=file_total_parts,
-                                bytes=chunk
-                            )
-                        else:
-                            rpc = functions.upload.SaveFilePart(
-                                file_id=file_id,
-                                file_part=file_part,
-                                bytes=chunk
-                            )
-
-                        if session.send(rpc):
-                            break
-                    else:
-                        raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
-
-                    if is_missing_part:
-                        return
-
+                if not chunk:
                     if not is_big:
-                        md5_sum.update(chunk)
+                        md5_sum = "".join([hex(i)[2:].zfill(2) for i in md5_sum.digest()])
+                    break
 
-                    file_part += 1
+                for _ in range(3):
+                    if is_big:
+                        rpc = functions.upload.SaveBigFilePart(
+                            file_id=file_id,
+                            file_part=file_part,
+                            file_total_parts=file_total_parts,
+                            bytes=chunk
+                        )
+                    else:
+                        rpc = functions.upload.SaveFilePart(
+                            file_id=file_id,
+                            file_part=file_part,
+                            bytes=chunk
+                        )
 
-                    if progress:
-                        progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+                    if session.send(rpc):
+                        break
+                else:
+                    raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
+
+                if is_missing_part:
+                    return
+
+                if not is_big:
+                    md5_sum.update(chunk)
+
+                file_part += 1
+
+                if progress:
+                    progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
         except Client.StopTransmission:
+            if isinstance(path, str):
+                fp.close()
             raise
         except Exception as e:
+            if isinstance(path, str):
+                fp.close()
             log.error(e, exc_info=True)
         else:
+            if isinstance(path, str):
+                fp.close()
             if is_big:
                 return types.InputFileBig(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=filename,
 
                 )
             else:
                 return types.InputFile(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=filename,
                     md5_checksum=md5_sum
                 )
         finally:
+            if isinstance(path, str):
+                fp.close()
             session.stop()
 
     def get_file(

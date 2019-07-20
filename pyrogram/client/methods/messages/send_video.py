@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,7 +29,7 @@ class SendVideo(BaseClient):
     def send_video(
         self,
         chat_id: Union[int, str],
-        video: str,
+        video: Union[str, io.IOBase],
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
@@ -61,6 +61,7 @@ class SendVideo(BaseClient):
                 Pass a file_id as string to send a video that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a video from the Internet, or
                 pass a file path as string to upload a new video that exists on your local machine.
+                pass a readable file-like object with .name
 
             caption (``str``, *optional*):
                 Video caption, 0-1024 characters.
@@ -135,11 +136,35 @@ class SendVideo(BaseClient):
         file = None
 
         try:
-            if os.path.exists(video):
+            if isinstance(video, str):
+                if os.path.exists(video):
+                    thumb = None if thumb is None else self.save_file(thumb)
+                    file = self.save_file(video, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(video) or "video/mp4",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeVideo(
+                                supports_streaming=supports_streaming or None,
+                                duration=duration,
+                                w=width,
+                                h=height
+                            ),
+                            types.DocumentAttributeFilename(file_name=os.path.basename(video))
+                        ]
+                    )
+                elif video.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=video
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(video, 4)
+            elif hasattr(video, "read"):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video) or "video/mp4",
+                    mime_type=self.guess_mime_type(video.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -149,15 +174,9 @@ class SendVideo(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(file_name=os.path.basename(video))
+                        types.DocumentAttributeFilename(file_name=video.name)
                     ]
                 )
-            elif video.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=video
-                )
-            else:
-                media = utils.get_input_media_from_file_id(video, 4)
 
             while True:
                 try:

@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,7 +29,7 @@ class SendSticker(BaseClient):
     def send_sticker(
         self,
         chat_id: Union[int, str],
-        sticker: str,
+        sticker: Union[str, io.IOBase],
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -54,6 +54,7 @@ class SendSticker(BaseClient):
                 Pass a file_id as string to send a sticker that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
                 pass a file path as string to upload a new sticker that exists on your local machine.
+                pass a readable file-like object with .name
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -98,21 +99,31 @@ class SendSticker(BaseClient):
         file = None
 
         try:
-            if os.path.exists(sticker):
+            if isinstance(sticker, str):
+                if os.path.exists(sticker):
+                    file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(sticker) or "image/webp",
+                        file=file,
+                        attributes=[
+                            types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
+                        ]
+                    )
+                elif sticker.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=sticker
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(sticker, 8)
+            elif hasattr(sticker, "read"):
                 file = self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(sticker) or "image/webp",
                     file=file,
                     attributes=[
-                        types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
+                        types.DocumentAttributeFilename(file_name=sticker.name)
                     ]
                 )
-            elif sticker.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=sticker
-                )
-            else:
-                media = utils.get_input_media_from_file_id(sticker, 8)
 
             while True:
                 try:

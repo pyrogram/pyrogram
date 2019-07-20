@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,7 +29,7 @@ class SendAnimatedSticker(BaseClient):
     def send_animated_sticker(
         self,
         chat_id: Union[int, str],
-        animated_sticker: str,
+        animated_sticker: Union[str, io.IOBase],
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -49,11 +49,12 @@ class SendAnimatedSticker(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            animated_sticker (``str``):
+            animated_sticker (``str`` | file-like object):
                 Animated sticker to send.
                 Pass a file_id as string to send a animated sticker that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a .webp animated sticker file from the Internet, or
                 pass a file path as string to upload a new animated sticker that exists on your local machine.
+                pass a readable file-like object with .name
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -98,21 +99,32 @@ class SendAnimatedSticker(BaseClient):
         file = None
 
         try:
-            if os.path.exists(animated_sticker):
+            if isinstance(animated_sticker, str):
+                if os.path.exists(animated_sticker):
+                    file = self.save_file(animated_sticker, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(animated_sticker) or "application/x-tgsticker",
+                        file=file,
+                        attributes=[
+                            types.DocumentAttributeFilename(file_name=os.path.basename(animated_sticker))
+                        ]
+                    )
+                elif animated_sticker.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=animated_sticker
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(animated_sticker, 5)
+            elif hasattr(animated_sticker, "read"):
                 file = self.save_file(animated_sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(animated_sticker) or "application/x-tgsticker",
+                    mime_type=self.guess_mime_type(animated_sticker.name) or "application/x-tgsticker",
                     file=file,
                     attributes=[
-                        types.DocumentAttributeFilename(file_name=os.path.basename(animated_sticker))
+                        types.DocumentAttributeFilename(file_name=animated_sticker.name)
                     ]
                 )
-            elif animated_sticker.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=animated_sticker
-                )
-            else:
-                media = utils.get_input_media_from_file_id(animated_sticker, 5)
+
 
             while True:
                 try:

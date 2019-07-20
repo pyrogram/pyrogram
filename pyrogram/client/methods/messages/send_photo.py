@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,7 +29,7 @@ class SendPhoto(BaseClient):
     def send_photo(
         self,
         chat_id: Union[int, str],
-        photo: str,
+        photo: Union[str, io.IOBase],
         caption: str = "",
         parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
@@ -52,11 +52,12 @@ class SendPhoto(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            photo (``str``):
+            photo (``str`` | file-like object):
                 Photo to send.
                 Pass a file_id as string to send a photo that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
                 pass a file path as string to upload a new photo that exists on your local machine.
+                pass a readable file-like object with .name
 
             caption (``bool``, *optional*):
                 Photo caption, 0-1024 characters.
@@ -117,19 +118,26 @@ class SendPhoto(BaseClient):
         file = None
 
         try:
-            if os.path.exists(photo):
+            if isinstance(photo, str):
+                if os.path.exists(photo):
+                    file = self.save_file(photo, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedPhoto(
+                        file=file,
+                        ttl_seconds=ttl_seconds
+                    )
+                elif photo.startswith("http"):
+                    media = types.InputMediaPhotoExternal(
+                        url=photo,
+                        ttl_seconds=ttl_seconds
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(photo, 2)
+            elif hasattr(photo, "read"):
                 file = self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedPhoto(
                     file=file,
                     ttl_seconds=ttl_seconds
                 )
-            elif photo.startswith("http"):
-                media = types.InputMediaPhotoExternal(
-                    url=photo,
-                    ttl_seconds=ttl_seconds
-                )
-            else:
-                media = utils.get_input_media_from_file_id(photo, 2)
 
             while True:
                 try:
