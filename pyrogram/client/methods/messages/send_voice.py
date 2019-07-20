@@ -15,7 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,6 +29,7 @@ class SendVoice(BaseClient):
     def send_voice(
         self,
         chat_id: Union[int, str],
+        voice: Union[str, io.IOBase],
         voice: str,
         file_ref=None,
         caption: str = "",
@@ -54,11 +55,12 @@ class SendVoice(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            voice (``str``):
+            voice (``str``, file-like object):
                 Audio file to send.
                 Pass a file_id as string to send an audio that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
                 pass a file path as string to upload a new audio that exists on your local machine.
+                pass a readable file-like object with .name
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -132,11 +134,30 @@ class SendVoice(BaseClient):
         file = None
 
         try:
-            if os.path.exists(voice):
+            if isinstance(voice, str):
+                if os.path.exists(voice):
+                    file = self.save_file(voice, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(voice) or "audio/mpeg",
+                        file=file,
+                        attributes=[
+                            types.DocumentAttributeAudio(
+                                voice=True,
+                                duration=duration
+                            )
+                        ]
+                    )
+                elif voice.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=voice
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(voice, file_ref, 3)
+            elif hasattr(voice, "read"):
                 file = self.save_file(voice, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(voice) or "audio/mpeg",
-                    file=file,
+                    mime_type=self.guess_mime_type(voice.name) or "audio/mpeg",
+                    file=file.name,
                     attributes=[
                         types.DocumentAttributeAudio(
                             voice=True,
@@ -144,12 +165,6 @@ class SendVoice(BaseClient):
                         )
                     ]
                 )
-            elif voice.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=voice
-                )
-            else:
-                media = utils.get_input_media_from_file_id(voice, file_ref, 3)
 
             while True:
                 try:

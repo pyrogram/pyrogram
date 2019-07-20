@@ -15,7 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import io
 import os
 from typing import Union
 
@@ -29,6 +29,7 @@ class SendAnimation(BaseClient):
     def send_animation(
         self,
         chat_id: Union[int, str],
+        animation: Union[str, io.IOBase],
         animation: str,
         file_ref: str = None,
         caption: str = "",
@@ -59,11 +60,13 @@ class SendAnimation(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            animation (``str``):
+            animation (``str``| file-like object):
                 Animation to send.
                 Pass a file_id as string to send an animation that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
                 pass a file path as string to upload a new animation that exists on your local machine.
+                pass a readable file-like object with .name
+
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -163,11 +166,36 @@ class SendAnimation(BaseClient):
         file = None
 
         try:
-            if os.path.exists(animation):
+            if isinstance(animation, str):
+                if os.path.exists(animation):
+                    thumb = None if thumb is None else self.save_file(thumb)
+                    file = self.save_file(animation, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(animation) or "video/mp4",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeVideo(
+                                supports_streaming=True,
+                                duration=duration,
+                                w=width,
+                                h=height
+                            ),
+                            types.DocumentAttributeFilename(file_name=file_name or os.path.basename(animation)),
+                            types.DocumentAttributeAnimated()
+                        ]
+                    )
+                elif animation.startswith("http"):
+                    media = types.InputMediaDocumentExternal(
+                        url=animation
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(animation, file_ref, 10)
+            elif hasattr(animation, "read"):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(animation, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(animation) or "video/mp4",
+                    mime_type=self.guess_mime_type(animation.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -177,17 +205,10 @@ class SendAnimation(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(animation)),
+                        types.DocumentAttributeFilename(file_name=animation.name),
                         types.DocumentAttributeAnimated()
                     ]
                 )
-            elif animation.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=animation
-                )
-            else:
-                media = utils.get_input_media_from_file_id(animation, file_ref, 10)
-
             while True:
                 try:
                     r = self.send(
