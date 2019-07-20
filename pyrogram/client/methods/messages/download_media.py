@@ -17,7 +17,9 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import io
 import os
+import re
 import struct
 import time
 from datetime import datetime
@@ -37,6 +39,7 @@ class DownloadMedia(BaseClient):
         message: Union["pyrogram.Message", str],
         file_ref: str = None,
         file_name: str = DEFAULT_DOWNLOAD_DIR,
+        out: io.IOBase = None,
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -57,6 +60,9 @@ class DownloadMedia(BaseClient):
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
+
+            out (``io.IOBase``, *optional*):
+                A custom *file-like object* to be used when downloading file. Overrides file_name
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -238,6 +244,13 @@ class DownloadMedia(BaseClient):
                 extension
             )
 
+        if not out:
+            out = open(os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name))), 'wb')
+            os.makedirs(directory, exist_ok=True)
+            to_file = True
+        else:
+            to_file = False
+        self.download_queue.put((data, done, progress, progress_args, out, path, to_file))
         # Cast to string because Path objects aren't supported by Python 3.5
         self.download_queue.put((data, str(directory), str(file_name), done, progress, progress_args, path))
 
