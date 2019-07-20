@@ -118,7 +118,7 @@ class SendSticker(BaseClient):
             elif hasattr(sticker, "read"):
                 file = self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(sticker) or "image/webp",
+                    mime_type=self.guess_mime_type(sticker.name) or "image/webp",
                     file=file,
                     attributes=[
                         types.DocumentAttributeFilename(file_name=sticker.name)
