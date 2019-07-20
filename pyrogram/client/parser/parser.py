@@ -36,7 +36,7 @@ class Parser:
         if mode == object:
             mode = self.client.parse_mode
 
-        if mode is None:
+        if mode in (None, "", object):
             return OrderedDict([
                 ("message", text),
                 ("entities", [])
