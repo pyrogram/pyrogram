@@ -56,7 +56,7 @@ class SendDocument(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            document (``str``):
+            document (``str`` | file-like object):
                 File to send.
                 Pass a file_id as string to send a file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
