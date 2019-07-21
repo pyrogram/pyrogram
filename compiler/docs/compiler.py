@@ -341,6 +341,8 @@ def pyrogram_api():
             InlineQuery
             InlineQueryResult
             InlineQueryResultArticle
+            InlineQueryResultPhoto
+            InlineQueryResultAnimation
         """,
         input_message_content="""
         InputMessageContent
