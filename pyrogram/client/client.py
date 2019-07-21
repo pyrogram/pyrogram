@@ -450,8 +450,6 @@ class Client(Methods, BaseClient):
         while Client.is_idling:
             time.sleep(1)
 
-        self.stop()
-
     def run(self):
         """Start the Client and automatically idle the main script.
 
@@ -464,6 +462,7 @@ class Client(Methods, BaseClient):
         """
         self.start()
         self.idle()
+        self.stop()
 
     def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
