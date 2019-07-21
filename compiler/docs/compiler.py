@@ -204,6 +204,12 @@ def pyrogram_api():
             update_chat_username
             archive_chats
             unarchive_chats
+            add_chat_members
+            create_channel
+            create_group
+            create_supergroup
+            delete_channel
+            delete_supergroup
         """,
         users="""
         Users
