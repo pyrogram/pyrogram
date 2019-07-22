@@ -2949,7 +2949,7 @@ class Message(Object, Update):
                 Index of the poll option you want to vote for (0 to 9).
             
         Returns:
-            On success, the poll with the chosen option is returned.
+            :obj:`Poll`: On success, the poll with the chosen option is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
