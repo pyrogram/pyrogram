@@ -2871,8 +2871,8 @@ class Message(Object, Update):
             
             
      def retract_vote(
-        self,
-    ) -> "Poll":
+         self,
+     ) -> "Poll":
         """Bound method *retract_vote* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -2883,14 +2883,14 @@ class Message(Object, Update):
                 chat_id=message.chat.id,
                 message_id=message_id,
             )
+            
         Example:
             .. code-block:: python
 
                 message.retract_vote()
 
         Returns:
-            :obj:`Poll`
-            On success, the poll with the retracted vote is returned.
+            :obj:`Poll`: On success, the poll with the retracted vote is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
