@@ -240,6 +240,7 @@ class Filters:
 
         def func(flt, message):
             text = message.text or message.caption
+            message.command = None
 
             if text:
                 for p in flt.p:
