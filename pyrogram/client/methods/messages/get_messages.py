@@ -66,6 +66,7 @@ class GetMessages(BaseClient):
 
         Raises:
             RPCError: In case of a Telegram RPC error.
+            ValueError: In case of invalid arguments.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids
@@ -74,7 +75,7 @@ class GetMessages(BaseClient):
         )
 
         if ids is None:
-            raise ValueError("No argument supplied")
+            raise ValueError("No argument supplied. Either pass message_ids or reply_to_message_ids")
 
         peer = self.resolve_peer(chat_id)
 
