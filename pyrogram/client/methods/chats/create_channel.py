@@ -38,6 +38,11 @@ class CreateChannel(BaseClient):
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
+
+        Example:
+            .. code-block:: python
+
+                app.create_channel("Channel Title", "Channel Description")
         """
         r = self.send(
             functions.channels.CreateChannel(

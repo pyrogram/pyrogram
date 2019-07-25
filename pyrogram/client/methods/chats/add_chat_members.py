@@ -47,6 +47,18 @@ class AddChatMembers(BaseClient):
 
         Returns:
             ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                # Add one member to a group or channel
+                app.add_chat_members(chat_id, user_id)
+
+                # Add multiple members to a group or channel
+                app.add_chat_members(chat_id, [user_id1, user_id2, user_id3])
+
+                # Change forward_limit (for basic groups only)
+                app.add_chat_members(chat_id, user_id, forward_limit=25)
         """
         peer = self.resolve_peer(chat_id)
 

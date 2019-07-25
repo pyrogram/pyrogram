@@ -63,8 +63,16 @@ class EditMessageText(BaseClient):
         Returns:
             :obj:`Message`: On success, the edited message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Simple edit text
+                app.edit_message_text(chat_id, message_id, "new text")
+
+                # Take the same text message, remove the web page preview only
+                app.edit_message_text(
+                    chat_id, message_id, message.text,
+                    disable_web_page_preview=True)
         """
 
         r = self.send(

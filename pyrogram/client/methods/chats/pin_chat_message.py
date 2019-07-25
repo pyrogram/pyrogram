@@ -47,8 +47,14 @@ class PinChatMessage(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Pin with notification
+                app.pin_chat_message(chat_id, message_id)
+
+                # Pin without notification
+                app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
         self.send(
             functions.messages.UpdatePinnedMessage(

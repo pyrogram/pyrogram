@@ -33,6 +33,11 @@ class DeleteSupergroup(BaseClient):
 
         Returns:
             ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                app.delete_supergroup(supergroup_id)
         """
         self.send(
             functions.channels.DeleteChannel(

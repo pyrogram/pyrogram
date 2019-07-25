@@ -85,8 +85,19 @@ class RestrictChatMember(BaseClient):
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from time import time
+
+                # Completely restrict chat member forever
+                app.restrict_chat_member(chat_id, user_id)
+
+                # Chat member can't send messages for 24h
+                app.restrict_chat_member(chat_id, user_id, int(time.time() + 86400))
+
+                # Chat member can only send text messages
+                app.restrict_chat_member(chat_id, user_id, can_send_messages=True)
         """
         send_messages = True
         send_media = True

@@ -46,6 +46,11 @@ class CreateGroup(BaseClient):
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
+
+        Example:
+            .. code-block:: python
+
+                app.create_group("Group Title", user_id)
         """
         if not isinstance(users, list):
             users = [users]

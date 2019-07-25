@@ -81,8 +81,17 @@ class AnswerInlineQuery(BaseClient):
         Returns:
             ``bool``: True, on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InlineQueryResultArticle, InputTextMessageContent
+
+                app.answer_inline_query(
+                    inline_query_id,
+                    results=[
+                        InlineQueryResultArticle(
+                            "Title",
+                            InputTextMessageContent("Message content"))])
         """
         return self.send(
             functions.messages.SetInlineBotResults(

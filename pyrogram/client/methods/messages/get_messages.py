@@ -64,8 +64,25 @@ class GetMessages(BaseClient):
             returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of messages,
             even if such iterable contained just a single element.
 
+        Example:
+            .. code-block:: python
+
+                # Get one message
+                app.get_messages("pyrogramchat", 51110)
+
+                # Get more than one message (list of messages)
+                app.get_messages("pyrogramchat", [44625, 51110])
+
+                # Get message by ignoring any replied-to message
+                app.get_messages(chat_id, message_id, replies=0)
+
+                # Get message with all chained replied-to messages
+                app.get_messages(chat_id, message_id, replies=-1)
+
+                # Get the replied-to message of a message
+                app.get_messages(chat_id, reply_to_message_ids=message_id)
+
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case of invalid arguments.
         """
         ids, ids_type = (

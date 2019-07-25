@@ -47,8 +47,16 @@ class EditMessageReplyMarkup(BaseClient):
         Returns:
             :obj:`Message`: On success, the edited message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+
+                # Bots only
+                app.edit_message_reply_markup(
+                    chat_id, message_id,
+                    InlineKeyboardMarkup([[
+                        InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
         r = self.send(
             functions.messages.EditMessage(

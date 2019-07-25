@@ -43,8 +43,14 @@ class ReadHistory(BaseClient):
         Returns:
             ``bool`` - On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Mark the whole chat as read
+                app.read_history("pyrogramlounge")
+
+                # Mark messages as read only up to the given message id
+                app.read_history("pyrogramlounge", 123456)
         """
 
         peer = self.resolve_peer(chat_id)

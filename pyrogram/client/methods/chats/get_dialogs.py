@@ -56,8 +56,14 @@ class GetDialogs(BaseClient):
         Returns:
             List of :obj:`Dialog`: On success, a list of dialogs is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Get first 100 dialogs
+                app.get_dialogs()
+
+                # Get pinned dialogs
+                app.get_dialogs(pinned_only=True)
         """
 
         while True:

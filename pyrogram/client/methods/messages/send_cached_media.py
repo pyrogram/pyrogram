@@ -79,8 +79,10 @@ class SendCachedMedia(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent media message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_cached_media("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
         """
 
         r = self.send(

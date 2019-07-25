@@ -50,8 +50,17 @@ class DeleteMessages(BaseClient):
         Returns:
             ``bool``: True on success, False otherwise.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Delete one message
+                app.delete_messages(chat_id, message_id)
+
+                # Delete multiple messages at once
+                app.delete_messages(chat_id, list_of_message_ids)
+
+                # Delete messages only on your side (without revoking)
+                app.delete_messages(chat_id, message_id, revoke=False)
         """
         peer = self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]

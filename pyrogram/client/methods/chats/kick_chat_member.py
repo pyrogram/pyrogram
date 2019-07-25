@@ -57,8 +57,16 @@ class KickChatMember(BaseClient):
             :obj:`Message` | ``bool``: On success, a service message will be returned (when applicable), otherwise, in
             case a message object couldn't be returned, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from time import time
+
+                # Ban chat member forever
+                app.kick_chat_member(chat_id, user_id)
+
+                # Kick chat member and automatically unban after 24h
+                app.kick_chat_member(chat_id, user_id, int(time.time() + 86400))
         """
         chat_peer = self.resolve_peer(chat_id)
         user_peer = self.resolve_peer(user_id)

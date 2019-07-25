@@ -30,7 +30,7 @@ class EditInlineCaption(BaseClient):
         parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:
-        """Edit the caption of **inline** media messages.
+        """Edit the caption of inline media messages.
 
         Parameters:
             inline_message_id (``str``):
@@ -52,8 +52,11 @@ class EditInlineCaption(BaseClient):
         Returns:
             ``bool``: On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Bots only
+                app.edit_inline_caption(inline_message_id, "new media caption")
         """
         return self.edit_inline_text(
             inline_message_id=inline_message_id,

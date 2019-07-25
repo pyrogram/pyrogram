@@ -74,9 +74,44 @@ class SendMessage(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent text message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 2,5,8,11,21-23,26-33
+
+                # Simple example
+                app.send_message("haskell", "Thanks for creating **Pyrogram**!")
+
+                # Disable web page previews
+                app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
+
+                # Reply to a message using its id
+                app.send_message("me", "this is a reply", reply_to_message_id=12345)
+
+                # Force HTML-only styles for this request only
+                app.send_message("me", "**not bold**, <i>italic<i>", parse_mode="html")
+
+                ##
+                # For bots only, send messages with keyboards attached
+                ##
+
+                from pyrogram import (
+                    ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton)
+
+                # Send a normal keyboard
+                app.send_message(
+                    chat_id, "Look at that button!",
+                    reply_markup=ReplyKeyboardMarkup([["Nice!"]]))
+
+                # Send an inline keyboard
+                app.send_message(
+                    chat_id, "These are inline buttons",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton("Data", callback_data="hidden_callback_data")],
+                            [InlineKeyboardButton("Docs", url="https://docs.pyrogram.org")]
+                        ]))
         """
+
         message, entities = self.parser.parse(text, parse_mode).values()
 
         r = self.send(

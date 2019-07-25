@@ -66,8 +66,10 @@ class SendPoll(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent poll message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
         r = self.send(
             functions.messages.SendMedia(

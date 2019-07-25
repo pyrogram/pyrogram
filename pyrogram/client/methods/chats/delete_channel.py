@@ -33,6 +33,11 @@ class DeleteChannel(BaseClient):
 
         Returns:
             ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                app.delete_channel(channel_id)
         """
         self.send(
             functions.channels.DeleteChannel(
