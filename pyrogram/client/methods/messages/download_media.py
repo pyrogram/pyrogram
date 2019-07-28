@@ -214,7 +214,8 @@ class DownloadMedia(BaseClient):
                 extension
             )
 
-        self.download_queue.put((data, directory, file_name, done, progress, progress_args, path))
+        # Cast to string because Path objects aren't supported by Python 3.5
+        self.download_queue.put((data, str(directory), str(file_name), done, progress, progress_args, path))
 
         if block:
             done.wait()
