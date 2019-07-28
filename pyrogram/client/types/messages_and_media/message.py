@@ -2857,6 +2857,38 @@ class Message(Object, Update):
                 raise ValueError("This button is not supported yet")
         else:
             self.reply(button, quote=quote)
+            
+            
+     def retract_vote(
+         self,
+     ) -> "Poll":
+        """Bound method *retract_vote* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.retract_vote(
+                chat_id=message.chat.id,
+                message_id=message_id,
+            )
+            
+        Example:
+            .. code-block:: python
+
+                message.retract_vote()
+
+        Returns:
+            :obj:`Poll`: On success, the poll with the retracted vote is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.retract_vote(
+            chat_id=self.chat.id,
+            message_id=self.message_id
+        )
 
     def download(
         self,
@@ -2924,6 +2956,43 @@ class Message(Object, Update):
             block=block,
             progress=progress,
             progress_args=progress_args,
+        )
+    def vote(
+        self,
+        option: int,
+    ) -> "Poll":
+        """Bound method *vote* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.vote_poll(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                option=1
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.vote(6)
+
+        Parameters:
+            option (``int``):
+                Index of the poll option you want to vote for (0 to 9).
+            
+        Returns:
+            :obj:`Poll`: On success, the poll with the chosen option is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.vote_poll(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            option=option
         )
 
     def pin(self, disable_notification: bool = None) -> "Message":
