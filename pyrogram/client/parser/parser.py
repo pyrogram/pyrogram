@@ -31,7 +31,7 @@ class Parser:
         self.markdown = Markdown(client)
 
     def parse(self, text: str, mode: Union[str, None] = object):
-        text = str(text).strip()
+        text = str(text).strip() if text is not None else ""
 
         if mode == object:
             if self.client:
