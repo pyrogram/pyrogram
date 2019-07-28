@@ -2857,11 +2857,10 @@ class Message(Object, Update):
                 raise ValueError("This button is not supported yet")
         else:
             self.reply(button, quote=quote)
-            
-            
-     def retract_vote(
-         self,
-     ) -> "Poll":
+
+    def retract_vote(
+        self,
+    ) -> "pyrogram.Poll":
         """Bound method *retract_vote* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -2957,10 +2956,11 @@ class Message(Object, Update):
             progress=progress,
             progress_args=progress_args,
         )
+
     def vote(
         self,
         option: int,
-    ) -> "Poll":
+    ) -> "pyrogram.Poll":
         """Bound method *vote* of :obj:`Message`.
 
         Use as a shortcut for:
