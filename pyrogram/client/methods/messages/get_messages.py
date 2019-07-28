@@ -28,6 +28,9 @@ from ...ext import BaseClient, utils
 log = logging.getLogger(__name__)
 
 
+# TODO: Rewrite using a flag for replied messages and have message_ids non-optional
+
+
 class GetMessages(BaseClient):
     def get_messages(
         self,
@@ -36,7 +39,8 @@ class GetMessages(BaseClient):
         reply_to_message_ids: Union[int, Iterable[int]] = None,
         replies: int = 1
     ) -> Union["pyrogram.Message", List["pyrogram.Message"]]:
-        """Get one or more messages that belong to a specific chat.
+        """Get one or more messages from a chat by using message identifiers.
+
         You can retrieve up to 200 messages at once.
 
         Parameters:
