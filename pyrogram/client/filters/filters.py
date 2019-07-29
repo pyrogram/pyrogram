@@ -18,6 +18,7 @@
 
 import re
 from typing import Callable
+from shlex import split
 
 from .filter import Filter
 from ..types.bots_and_keyboards import InlineKeyboardMarkup, ReplyKeyboardMarkup
@@ -212,8 +213,8 @@ class Filters:
     def command(
         commands: str or list,
         prefix: str or list = "/",
-        separator: str = " ",
-        case_sensitive: bool = False
+        case_sensitive: bool = False,
+        posix: bool = True
     ):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
@@ -229,13 +230,13 @@ class Filters:
                 Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."].
                 Can be None or "" (empty string) to allow commands with no prefix at all.
 
-            separator (``str``, *optional*):
-                The command arguments separator. Defaults to " " (white space).
-                Examples: /start first second, /start-first-second, /start.first.second.
-
             case_sensitive (``bool``, *optional*):
                 Pass True if you want your command(s) to be case sensitive. Defaults to False.
                 Examples: when True, command="Start" would trigger /Start but not /start.
+
+            posix (``bool``, *optional*):
+                Pass False if you don't want to use shlex posix mode, Defaults to True.
+                It will strip quotes, and has some other behaviors, read more https://docs.python.org/3/library/shlex.html#parsing-rules
         """
 
         def func(flt, message):
@@ -245,7 +246,7 @@ class Filters:
             if text:
                 for p in flt.p:
                     if text.startswith(p):
-                        s = text.split(flt.s)
+                        s = split(text, posix=flt.psx)
                         c, a = s[0][len(p):], s[1:]
                         c = c if flt.cs else c.lower()
                         message.command = ([c] + a) if c in flt.c else None
@@ -257,7 +258,7 @@ class Filters:
         commands = {c if case_sensitive else c.lower() for c in commands}
         prefixes = set(prefix) if prefix else {""}
 
-        return create(func, "CommandFilter", c=commands, p=prefixes, s=separator, cs=case_sensitive)
+        return create(func, "CommandFilter", c=commands, p=prefixes, cs=case_sensitive, psx=posix)
 
     @staticmethod
     def regex(pattern, flags: int = 0):
