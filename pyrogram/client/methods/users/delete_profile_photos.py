@@ -40,8 +40,17 @@ class DeleteProfilePhotos(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Get the photos to be deleted
+                photos = app.get_profile_photos("me")
+
+                # Delete one photo
+                app.delete_profile_photos(photos[0].file_id)
+
+                # Delete the rest of the photos
+                app.delete_profile_photos([p.file_id for p in photos[1:]])
         """
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = []

@@ -37,8 +37,13 @@ class GetChatMembersCount(BaseClient):
             ``int``: On success, the chat members count is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case a chat id belongs to user.
+
+        Example:
+            .. code-block:: python
+
+                count = app.get_chat_members_count("pyrogramchat")
+                print(count)
         """
         peer = await self.resolve_peer(chat_id)
 

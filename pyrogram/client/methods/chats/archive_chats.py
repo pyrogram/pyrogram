@@ -37,8 +37,14 @@ class ArchiveChats(BaseClient):
         Returns:
             ``bool``: On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Archive chat
+                app.archive_chats(chat_id)
+
+                # Archive multiple chats at once
+                app.archive_chats([chat_id1, chat_id2, chat_id3])
         """
 
         if not isinstance(chat_ids, list):

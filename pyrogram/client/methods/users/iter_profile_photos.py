@@ -54,8 +54,11 @@ class IterProfilePhotos(BaseClient):
         Returns:
             ``Generator``: A generator yielding :obj:`Photo` objects.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                for photo in app.iter_profile_photos("haskell"):
+                    print(photo.file_id)
         """
         current = 0
         total = limit or (1 << 31)

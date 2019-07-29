@@ -31,8 +31,11 @@ class GetDialogsCount(BaseClient):
         Returns:
             ``int``: On success, the dialogs count is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                count = app.get_dialogs_count()
+                print(count)
         """
 
         if pinned_only:

@@ -174,6 +174,17 @@ class Client(Methods, BaseClient):
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.
             Defaults to False (normal session).
+
+    Example:
+        .. code-block:: python
+
+            from pyrogram import Client
+
+            app = Client("my_account")
+
+            with app:
+                app.send_message("me", "Hi!")
+
     """
 
     terms_of_service_displayed = False
@@ -275,11 +286,28 @@ class Client(Methods, BaseClient):
         self._proxy.update(value)
 
     async def start(self):
-        """Start the Client.
+        """Start the client.
+
+        This method connects the client to Telegram and, in case of new sessions, automatically manages the full login
+        process using an interactive prompt (by default).
+
+        Has no parameters.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ConnectionError: In case you try to start an already started Client.
+            ConnectionError: In case you try to start an already started client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 4
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
@@ -346,8 +374,25 @@ class Client(Methods, BaseClient):
     async def stop(self):
         """Stop the Client.
 
+        This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Has no parameters.
+
         Raises:
-            ConnectionError: In case you try to stop an already stopped Client.
+            ConnectionError: In case you try to stop an already stopped client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
@@ -392,61 +437,118 @@ class Client(Methods, BaseClient):
     async def restart(self):
         """Restart the Client.
 
+        This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
+        a client using a single method.
+
+        Has no parameters.
+
         Raises:
             ConnectionError: In case you try to restart a stopped Client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.restart()
+
+                ...  # Call other API methods
+
+                app.stop()
         """
         await self.stop()
         await self.start()
 
-    async def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+    @staticmethod
+    async def idle(stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
         """Block the main script execution until a signal is received.
 
-        Once the signal is received (e.g.: from CTRL+C), the client will automatically stop and the main script will
-        continue its execution.
+        This static method will run an infinite loop in order to block the main script execution and prevent it from
+        exiting while having client(s) that are still running in the background.
 
-        This is used after starting one or more clients and is useful for event-driven applications only, that are,
-        applications which react upon incoming Telegram updates through handlers, rather than executing a set of methods
-        sequentially.
+        It is useful for event-driven application only, that are, applications which react upon incoming Telegram
+        updates through handlers, rather than executing a set of methods sequentially.
 
-        The way Pyrogram works, will keep your handlers in a pool of workers, which are executed concurrently outside
-        the main script; calling idle() will ensure the client(s) will be kept alive by not letting the main script to
-        end, until you decide to quit.
+        The way Pyrogram works, it will keep your handlers in a pool of worker threads, which are executed concurrently
+        outside the main thread; calling idle() will ensure the client(s) will be kept alive by not letting the main
+        script to end, until you decide to quit.
+
+        Once a signal is received (e.g.: from CTRL+C) the inner infinite loop will break and your main script will
+        continue. Don't forget to call :meth:`~Client.stop` for each running client before the script ends.
 
         Parameters:
             stop_signals (``tuple``, *optional*):
                 Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
-        """
+                Defaults to *(SIGINT, SIGTERM, SIGABRT)*.
 
-        # TODO: Maybe make this method static and don't automatically stop
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 13
+
+                from pyrogram import Client
+
+                app1 = Client("account1")
+                app2 = Client("account2")
+                app3 = Client("account3")
+
+                ...  # Set handlers up
+
+                app1.start()
+                app2.start()
+                app3.start()
+
+                Client.idle()
+
+                app1.stop()
+                app2.stop()
+                app3.stop()
+        """
 
         def signal_handler(*args):
             log.info("Stop signal received ({}). Exiting...".format(args[0]))
-            self.is_idle = False
+            Client.is_idling = False
 
         for s in stop_signals:
             signal(s, signal_handler)
 
-        self.is_idle = True
+        Client.is_idling = True
 
-        while self.is_idle:
+        while Client.is_idling:
             await asyncio.sleep(1)
 
-        await self.stop()
-
     def run(self, coroutine=None):
-        """Start the Client and automatically idle the main script.
+        """Start the client, idle the main script and finally stop the client.
 
-        This is a convenience method that literally just calls :meth:`~Client.start` and :meth:`~Client.idle`. It makes
-        running a client less verbose, but is not suitable in case you want to run more than one client in a single main
-        script, since :meth:`~Client.idle` will block.
+        This is a convenience method that calls :meth:`~Client.start`, :meth:`~Client.idle` and :meth:`~Client.stop` in
+        sequence. It makes running a client less verbose, but is not suitable in case you want to run more than one
+        client in a single main script, since idle() will block after starting the own client.
+
+        Has no parameters.
 
         Args:
             coroutine: (``Coroutine``, *optional*):
                 Pass a coroutine to run it until is complete.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
+            ConnectionError: In case you try to run an already started client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 7
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                ...  # Set handlers up
+
+                app.run()
         """
         loop = asyncio.get_event_loop()
         run = loop.run_until_complete
@@ -455,19 +557,18 @@ class Client(Methods, BaseClient):
             run(coroutine)
         else:
             run(self.start())
-            run(self.idle())
-
-            # TODO: Uncomment this once idle() gets refactored
-            # run(self.stop())
+            run(Client.idle())
+            run(self.stop())
 
         loop.close()
 
     def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
 
-        You can register multiple handlers, but at most one handler within a group
-        will be used for a single update. To handle the same update more than once, register
-        your handler using a different group id (lower group id == higher priority).
+        You can register multiple handlers, but at most one handler within a group will be used for a single update.
+        To handle the same update more than once, register your handler using a different group id (lower group id
+        == higher priority). This mechanism is explained in greater details at
+        :doc:`More on Updates <../../topics/more-on-updates>`.
 
         Parameters:
             handler (``Handler``):
@@ -477,7 +578,22 @@ class Client(Methods, BaseClient):
                 The group identifier, defaults to 0.
 
         Returns:
-            ``tuple``: A tuple consisting of (handler, group).
+            ``tuple``: A tuple consisting of *(handler, group)*.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client, MessageHandler
+
+                def dump(client, message):
+                    print(message)
+
+                app = Client("my_account")
+
+                app.add_handler(MessageHandler(dump))
+
+                app.run()
         """
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = handler.callback
@@ -489,9 +605,8 @@ class Client(Methods, BaseClient):
     def remove_handler(self, handler: Handler, group: int = 0):
         """Remove a previously-registered update handler.
 
-        Make sure to provide the right group that the handler was added in. You can use
-        the return value of the :meth:`~Client.add_handler` method, a tuple of (handler, group), and
-        pass it directly.
+        Make sure to provide the right group where the handler was added in. You can use the return value of the
+        :meth:`~Client.add_handler` method, a tuple of *(handler, group)*, and pass it directly.
 
         Parameters:
             handler (``Handler``):
@@ -499,6 +614,24 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 11
+
+                from pyrogram import Client, MessageHandler
+
+                def dump(client, message):
+                    print(message)
+
+                app = Client("my_account")
+
+                handler = app.add_handler(MessageHandler(dump))
+
+                # Starred expression to unpack (handler, group)
+                app.remove_handler(*handler)
+
+                app.run()
         """
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = None
@@ -507,9 +640,108 @@ class Client(Methods, BaseClient):
 
     def stop_transmission(self):
         """Stop downloading or uploading a file.
-        Must be called inside a progress callback function.
+
+        This method must be called inside a progress callback function in order to stop the transmission at the
+        desired time. The progress callback is called every time a file chunk is uploaded/downloaded.
+
+        Has no parameters.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 9
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                # Example to stop transmission once the upload progress reaches 50%
+                # Useless in practice, but shows how to stop on command
+                def progress(client, current, total):
+                    if (current * 100 / total) > 50:
+                        client.stop_transmission()
+
+                with app:
+                    app.send_document("me", "files.zip", progress=progress)
         """
         raise Client.StopTransmission
+
+    def export_session_string(self):
+        """Export the current authorized session as a serialized string.
+
+        Session strings are useful for storing in-memory authorized sessions in a portable, serialized string.
+        More detailed information about session strings can be found at the dedicated page of
+        :doc:`Storage Engines <../../topics/storage-engines>`.
+
+        Has no parameters.
+
+        Returns:
+            ``str``: The session serialized into a printable, url-safe string.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 6
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    print(app.export_session_string())
+        """
+        return self.storage.export_session_string()
+
+    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+        """Set the parse mode to be used globally by the client.
+
+        When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
+        global value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and
+        combined together.
+
+        Parameters:
+            parse_mode (``str``):
+                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
+                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
+                completely.
+
+        Raises:
+            ValueError: In case the provided *parse_mode* is not a valid parse mode.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 10,14,18,22
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    # Default combined mode: Markdown + HTML
+                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+
+                    # Force Markdown-only, HTML is disabled
+                    app.set_parse_mode("markdown")
+                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+
+                    # Force HTML-only, Markdown is disabled
+                    app.set_parse_mode("html")
+                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+
+                    # Disable the parser completely
+                    app.set_parse_mode(None)
+                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+
+                    # Bring back the default combined mode
+                    app.set_parse_mode()
+                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+        """
+
+        if parse_mode not in self.PARSE_MODES:
+            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
+                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
+                parse_mode
+            ))
+
+        self.parse_mode = parse_mode
 
     async def authorize_bot(self):
         try:
@@ -1084,7 +1316,7 @@ class Client(Methods, BaseClient):
         ])
 
         if session_empty:
-            self.storage.dc_id = 1
+            self.storage.dc_id = 4
             self.storage.date = 0
 
             self.storage.test_mode = self.test_mode
@@ -1120,7 +1352,7 @@ class Client(Methods, BaseClient):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).pyrogram_plugin
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1155,7 +1387,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).pyrogram_plugin
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1193,7 +1425,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).pyrogram_plugin
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
@@ -1355,23 +1587,22 @@ class Client(Methods, BaseClient):
                 In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -1709,11 +1940,3 @@ class Client(Methods, BaseClient):
 
         if extensions:
             return extensions.split(" ")[0]
-
-    def export_session_string(self):
-        """Export the current session as serialized string.
-
-        Returns:
-            ``str``: The session serialized into a printable, url-safe string.
-        """
-        return self.storage.export_session_string()

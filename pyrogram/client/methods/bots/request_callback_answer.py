@@ -53,8 +53,12 @@ class RequestCallbackAnswer(BaseClient):
             or as an alert.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             TimeoutError: In case the bot fails to answer within 10 seconds.
+
+        Example:
+            .. code-block:: python
+
+                app.request_callback_answer(chat_id, message_id, "callback_data")
         """
 
         # Telegram only wants bytes, but we are allowed to pass strings too.

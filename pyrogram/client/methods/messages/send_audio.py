@@ -31,7 +31,7 @@ class SendAudio(BaseClient):
         chat_id: Union[int, str],
         audio: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: str = None,
         title: str = None,
@@ -99,23 +99,22 @@ class SendAudio(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -125,8 +124,26 @@ class SendAudio(BaseClient):
             :obj:`Message` | ``None``: On success, the sent audio message is returned, otherwise, in case the upload
             is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 2,5,8-10,13-16
+
+                # Send audio file by uploading from file
+                app.send_audio("me", "audio.mp3")
+
+                # Add caption to the audio
+                app.send_audio("me", "audio.mp3", caption="shoegaze")
+
+                # Set audio metadata
+                app.send_audio(
+                    "me", "audio.mp3",
+                    title="Printemps émeraude", performer="Alcest", duration=440)
+
+                # Keep track of the progress while uploading
+                def progress(current, total):
+                    print("{:.1f}%".format(current * 100 / total))
+
+                app.send_audio("me", "audio.mp3", progress=progress)
         """
         file = None
 

@@ -27,7 +27,7 @@ class EditInlineReplyMarkup(BaseClient):
         inline_message_id: str,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:
-        """Edit only the reply markup of **inline** messages sent via the bot (for inline bots).
+        """Edit only the reply markup of inline messages sent via the bot (for inline bots).
 
         Parameters:
             inline_message_id (``str``):
@@ -39,8 +39,16 @@ class EditInlineReplyMarkup(BaseClient):
         Returns:
             ``bool``: On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+
+                # Bots only
+                app.edit_inline_reply_markup(
+                    inline_message_id,
+                    InlineKeyboardMarkup([[
+                        InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
         return await self.send(
             functions.messages.EditInlineBotMessage(

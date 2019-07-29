@@ -35,3 +35,6 @@ class InputMessageContent(Object):
 
     def __init__(self):
         super().__init__()
+
+    def write(self, reply_markup):
+        raise NotImplementedError

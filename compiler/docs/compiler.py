@@ -136,6 +136,7 @@ def pyrogram_api():
             remove_handler
             stop_transmission
             export_session_string
+            set_parse_mode
         """,
         messages="""
         Messages
@@ -203,6 +204,12 @@ def pyrogram_api():
             update_chat_username
             archive_chats
             unarchive_chats
+            add_chat_members
+            create_channel
+            create_group
+            create_supergroup
+            delete_channel
+            delete_supergroup
         """,
         users="""
         Users
@@ -334,6 +341,8 @@ def pyrogram_api():
             InlineQuery
             InlineQueryResult
             InlineQueryResultArticle
+            InlineQueryResultPhoto
+            InlineQueryResultAnimation
         """,
         input_message_content="""
         InputMessageContent
@@ -412,11 +421,15 @@ def pyrogram_api():
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
+            Chat.join
+            Chat.leave
         """,
         user="""
         User
             User.archive
             User.unarchive
+            User.block
+            User.unblock
         """,
         callback_query="""
         Callback Query

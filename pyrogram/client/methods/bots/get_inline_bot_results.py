@@ -27,7 +27,7 @@ class GetInlineBotResults(BaseClient):
     async def get_inline_bot_results(
         self,
         bot: Union[int, str],
-        query: str,
+        query: str = "",
         offset: str = "",
         latitude: float = None,
         longitude: float = None
@@ -40,8 +40,9 @@ class GetInlineBotResults(BaseClient):
                 Unique identifier of the inline bot you want to get results from. You can specify
                 a @username (str) or a bot ID (int).
 
-            query (``str``):
+            query (``str``, *optional*):
                 Text of the query (up to 512 characters).
+                Defaults to "" (empty string).
 
             offset (``str``, *optional*):
                 Offset of the results to be returned.
@@ -58,8 +59,13 @@ class GetInlineBotResults(BaseClient):
             :obj:`BotResults <pyrogram.api.types.messages.BotResults>`: On Success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             TimeoutError: In case the bot fails to answer within 10 seconds.
+
+        Example:
+            .. code-block:: python
+
+                results = app.get_inline_bot_results("pyrogrambot")
+                print(results)
         """
         # TODO: Don't return the raw type
 

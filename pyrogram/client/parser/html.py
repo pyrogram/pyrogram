@@ -86,7 +86,8 @@ class Parser(HTMLParser):
 
         for entities in self.tag_entities.values():
             for entity in entities:
-                entity.length += len(data)
+                entity.offset += len(data) - len(data.lstrip())  # Ignore left whitespaces for offsets
+                entity.length += len(data.strip())  # Ignore all whitespaces (left + right) for lengths
 
         self.text += data
 

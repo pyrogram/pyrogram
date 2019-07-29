@@ -80,8 +80,20 @@ class IterChatMembers(BaseClient):
         Returns:
             ``Generator``: A generator yielding :obj:`ChatMember` objects.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Iterate though all chat members
+                for member in app.iter_chat_members("pyrogramchat"):
+                    print(member.user.first_name)
+
+                # Iterate though all administrators
+                for member in app.iter_chat_members("pyrogramchat", filter="administrators"):
+                    print(member.user.first_name)
+
+                # Iterate though all bots
+                for member in app.iter_chat_members("pyrogramchat", filter="bots"):
+                    print(member.user.first_name)
         """
         current = 0
         yielded = set()

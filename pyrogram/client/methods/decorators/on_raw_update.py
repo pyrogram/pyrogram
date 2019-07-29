@@ -40,7 +40,7 @@ class OnRawUpdate(BaseClient):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.RawUpdateHandler(func), group)
             else:
-                func.pyrogram_plugin = (
+                func.handler = (
                     pyrogram.RawUpdateHandler(func),
                     group if self is None else group
                 )

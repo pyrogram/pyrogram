@@ -92,8 +92,19 @@ class GetChatMembers(BaseClient):
             List of :obj:`ChatMember`: On success, a list of chat members is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case you used an invalid filter or a chat id that belongs to a user.
+
+        Example:
+            .. code-block:: python
+
+                # Get first 200 recent members
+                app.get_chat_members("pyrogramchat")
+
+                # Get all administrators
+                app.get_chat_members("pyrogramchat", filter="administrators")
+
+                # Get all bots
+                app.get_chat_members("pyrogramchat", filter="bots")
         """
         peer = await self.resolve_peer(chat_id)
 

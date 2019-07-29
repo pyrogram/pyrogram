@@ -37,9 +37,16 @@ class LeaveChat(BaseClient):
 
             delete (``bool``, *optional*):
                 Deletes the group chat dialog after leaving (for simple group chats, not supergroups).
+                Defaults to False.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Leave chat or channel
+                app.leave_chat(chat_id)
+
+                # Leave basic chat and also delete the dialog
+                app.leave_chat(chat_id, delete=True)
         """
         peer = await self.resolve_peer(chat_id)
 

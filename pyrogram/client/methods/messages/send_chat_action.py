@@ -64,8 +64,22 @@ class SendChatAction(BaseClient):
             ``bool``: On success, True is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ValueError: In case the provided string is not a valid ChatAction.
+            ValueError: In case the provided string is not a valid chat action.
+
+        Example:
+            .. code-block:: python
+
+                # Send "typing" chat action
+                app.send_chat_action(chat_id, "typing")
+
+                # Send "upload_video" chat action
+                app.send_chat_action(chat_id, "upload_video")
+
+                # Send "playing" chat action
+                app.send_chat_action(chat_id, "playing")
+
+                # Cancel any current chat action
+                app.send_chat_action(chat_id, "cancel")
         """
 
         try:

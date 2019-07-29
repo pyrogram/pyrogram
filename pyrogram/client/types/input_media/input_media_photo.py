@@ -49,6 +49,6 @@ class InputMediaPhoto(InputMedia):
         self,
         media: str,
         caption: str = "",
-        parse_mode: Union[str, None] = ""
+        parse_mode: Union[str, None] = object
     ):
         super().__init__(media, caption, parse_mode)

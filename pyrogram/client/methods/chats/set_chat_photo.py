@@ -17,12 +17,11 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from base64 import b64decode
 from struct import unpack
 from typing import Union
 
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 
 class SetChatPhoto(BaseClient):
@@ -32,38 +31,43 @@ class SetChatPhoto(BaseClient):
         photo: str
     ) -> bool:
         """Set a new profile photo for the chat.
-        Photos can't be changed for private chats.
-        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
-        Note:
-            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
-            setting is off.
+        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
             photo (``str``):
-                New chat photo. You can pass a :obj:`Photo` id or a file path to upload a new photo.
+                New chat photo. You can pass a :obj:`Photo` file_id or a file path to upload a new photo from your local
+                machine.
 
         Returns:
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: if a chat_id belongs to user.
+
+        Example:
+            .. code-block:: python
+
+                # Set chat photo using a local file
+                app.set_chat_photo(chat_id, "photo.jpg")
+
+                # Set chat photo using an exiting Photo file_id
+                app.set_chat_photo(chat_id, photo.file_id)
         """
         peer = await self.resolve_peer(chat_id)
 
         if os.path.exists(photo):
             photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
         else:
-            s = unpack("<qq", b64decode(photo + "=" * (-len(photo) % 4), "-_"))
+            unpacked = unpack("<iiqqc", utils.decode(photo))
 
             photo = types.InputChatPhoto(
                 id=types.InputPhoto(
-                    id=s[0],
-                    access_hash=s[1],
+                    id=unpacked[2],
+                    access_hash=unpacked[3],
                     file_reference=b""
                 )
             )

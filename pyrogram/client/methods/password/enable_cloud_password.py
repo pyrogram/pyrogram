@@ -48,8 +48,19 @@ class EnableCloudPassword(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case there is already a cloud password enabled.
+
+        Example:
+            .. code-block:: python
+
+                # Enable password without hint and email
+                app.enable_cloud_password("password")
+
+                # Enable password with hint and without email
+                app.enable_cloud_password("password", hint="hint")
+
+                # Enable password with hint and email
+                app.enable_cloud_password("password", hint="hint", email="user@email.com")
         """
         r = await self.send(functions.account.GetPassword())
 

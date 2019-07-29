@@ -45,8 +45,11 @@ class GetChatMember(BaseClient):
         Returns:
             :obj:`ChatMember`: On success, a chat member is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                dan = app.get_chat_member("pyrogramchat", "haskell")
+                print(dan)
         """
         chat = await self.resolve_peer(chat_id)
         user = await self.resolve_peer(user_id)

@@ -71,8 +71,17 @@ class GetHistory(BaseClient):
         Returns:
             List of :obj:`Message` - On success, a list of the retrieved messages is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Get the last 100 messages of a chat
+                app.get_history("pyrogramchat")
+
+                # Get the last 3 messages of a chat
+                app.get_history("pyrogramchat", limit=3)
+
+                # Get 3 messages after skipping the first 5
+                app.get_history("pyrogramchat", offset=5, limit=3)
         """
 
         offset_id = offset_id or (1 if reverse else 0)

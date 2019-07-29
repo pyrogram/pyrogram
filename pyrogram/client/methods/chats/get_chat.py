@@ -44,8 +44,13 @@ class GetChat(BaseClient):
             otherwise, a chat preview object is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case the chat invite link points to a chat you haven't joined yet.
+
+        Example:
+            .. code-block:: python
+
+                chat = app.get_chat("pyrogram")
+                print(chat)
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))
 

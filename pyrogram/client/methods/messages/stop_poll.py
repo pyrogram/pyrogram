@@ -49,8 +49,10 @@ class StopPoll(BaseClient):
         Returns:
             :obj:`Poll`: On success, the stopped poll with the final results is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.stop_poll(chat_id, message_id)
         """
         poll = (await self.get_messages(chat_id, message_id)).poll
 

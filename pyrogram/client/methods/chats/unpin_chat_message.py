@@ -38,8 +38,10 @@ class UnpinChatMessage(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.unpin_chat_message(chat_id)
         """
         await self.send(
             functions.messages.UpdatePinnedMessage(

@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from uuid import uuid4
+
+from ..bots_and_keyboards import InlineKeyboardMarkup
+from ..input_message_content import InputMessageContent
 from ..object import Object
 
 """- :obj:`InlineQueryResultCachedAudio`
@@ -45,15 +49,25 @@ class InlineQueryResult(Object):
     Pyrogram currently supports results of the following types:
 
     - :obj:`InlineQueryResultArticle`
+    - :obj:`InlineQueryResultPhoto`
+    - :obj:`InlineQueryResultAnimation`
     """
 
-    __slots__ = ["type", "id"]
+    __slots__ = ["type", "id", "input_message_content", "reply_markup"]
 
-    def __init__(self, type: str, id: str):
+    def __init__(
+        self,
+        type: str,
+        id: str,
+        input_message_content: InputMessageContent,
+        reply_markup: InlineKeyboardMarkup
+    ):
         super().__init__()
 
         self.type = type
-        self.id = id
+        self.id = str(uuid4()) if id is None else id
+        self.input_message_content = input_message_content
+        self.reply_markup = reply_markup
 
     async def write(self):
         pass

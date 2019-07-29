@@ -412,9 +412,9 @@ class Session:
             if retries == 0:
                 raise e from None
 
-            (log.warning if retries < 3 else log.info)(
+            (log.warning if retries < 2 else log.info)(
                 "{}: {} Retrying {}".format(
-                    Session.MAX_RETRIES - retries,
+                    Session.MAX_RETRIES - retries + 1,
                     datetime.now(), type(data)))
 
             await asyncio.sleep(0.5)

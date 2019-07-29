@@ -144,7 +144,8 @@ I started a client and nothing happens!
 ---------------------------------------
 
 If you are connecting from Russia, China or Iran :doc:`you need a proxy <topics/proxy>`, because Telegram could be
-partially or totally blocked in those countries.
+partially or totally blocked in those countries. More information about this block can be found at
+`Wikipedia <https://en.wikipedia.org/wiki/Blocking_Telegram_in_Russia>`_.
 
 Another possible cause might be network issues, either yours or Telegram's. To confirm this, add the following code on
 the top of your script and run it again. You should see some error mentioning a socket timeout or an unreachable network
@@ -161,9 +162,9 @@ fails or not.
 What are the IP addresses of Telegram Data Centers?
 ---------------------------------------------------
 
-The Telegram cloud is currently composed by a decentralized, multi-DC infrastructure (each of which can work
-independently) spread in 5 different locations. However, some of the less busy DCs have been lately dismissed and their
-IP addresses are now kept as aliases.
+The Telegram cloud is currently composed by a decentralized, multi-DC infrastructure (currently 5 DCs, each of which can
+work independently) spread in different locations worldwide. However, some of the less busy DCs have been lately
+dismissed and their IP addresses are now kept as aliases to the nearest one.
 
 .. csv-table:: Production Environment
     :header: ID, Location, IPv4, IPv6

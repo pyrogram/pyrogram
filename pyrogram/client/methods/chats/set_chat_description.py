@@ -42,8 +42,12 @@ class SetChatDescription(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if a chat_id doesn't belong to a supergroup or a channel.
+            ValueError: if a chat_id doesn't belong to a supergroup or a channel.
+
+        Example:
+            .. code-block:: python
+
+                app.set_chat_description(chat_id, "New Description")
         """
         peer = await self.resolve_peer(chat_id)
 

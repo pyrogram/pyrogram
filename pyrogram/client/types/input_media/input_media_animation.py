@@ -63,7 +63,7 @@ class InputMediaAnimation(InputMedia):
         media: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         width: int = 0,
         height: int = 0,
         duration: int = 0

@@ -46,8 +46,16 @@ class ChangeCloudPassword(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case there is no cloud password to change.
+
+        Example:
+            .. code-block:: python
+
+                # Change password only
+                app.change_cloud_password("current_password", "new_password")
+
+                # Change password and hint
+                app.change_cloud_password("current_password", "new_password", new_hint="hint")
         """
         r = await self.send(functions.account.GetPassword())
 

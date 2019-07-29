@@ -16,38 +16,44 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class SetProfilePhoto(BaseClient):
-    async def set_profile_photo(
+class CreateSupergroup(BaseClient):
+    def create_supergroup(
         self,
-        photo: str
-    ) -> bool:
-        """Set a new profile photo.
+        title: str,
+        description: str = ""
+    ) -> "pyrogram.Chat":
+        """Create a new supergroup.
 
-        This method only works for Users.
-        Bots profile photos must be set using BotFather.
+        .. note::
+
+            If you want to create a new basic group, use :meth:`~pyrogram.Client.create_group` instead.
 
         Parameters:
-            photo (``str``):
-                Profile photo to set.
-                Pass a file path as string to upload a new photo that exists on your local machine.
+            title (``title``):
+                The supergroup title.
+
+            description (``str``, *optional*):
+                The supergroup description.
 
         Returns:
-            ``bool``: True on success.
+            :obj:`Chat`: On success, a chat object is returned.
 
         Example:
             .. code-block:: python
 
-                app.set_profile_photo("new_photo.jpg")
+                app.create_supergroup("Supergroup Title", "Supergroup Description")
         """
-
-        return bool(
-            await self.send(
-                functions.photos.UploadProfilePhoto(
-                    file=await self.save_file(photo)
-                )
+        r = self.send(
+            functions.channels.CreateChannel(
+                title=title,
+                about=description,
+                megagroup=True
             )
         )
+
+        return pyrogram.Chat._parse_chat(self, r.chats[0])

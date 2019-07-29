@@ -37,8 +37,15 @@ class AddContacts(BaseClient):
         Returns:
             :obj:`types.contacts.ImportedContacts`
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InputPhoneContact
+
+                app.add_contacts([
+                    InputPhoneContact("39123456789", "Foo"),
+                    InputPhoneContact("38987654321", "Bar"),
+                    InputPhoneContact("01234567891", "Baz")])
         """
         imported_contacts = await self.send(
             functions.contacts.ImportContacts(

@@ -51,8 +51,11 @@ class GetGameHighScores(BaseClient):
         Returns:
             List of :obj:`GameHighScore`: On success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                scores = app.get_game_high_scores(user_id, chat_id, message_id)
+                print(scores)
         """
         # TODO: inline_message_id
 

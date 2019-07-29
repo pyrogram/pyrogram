@@ -136,7 +136,7 @@ class Filters:
     poll = create(lambda _, m: m.poll, "PollFilter")
     """Filter messages that contain :obj:`Poll` objects."""
 
-    private = create(lambda _, m: bool(m.chat and m.chat.type == "private"), "PrivateFilter")
+    private = create(lambda _, m: bool(m.chat and m.chat.type in {"private", "bot"}), "PrivateFilter")
     """Filter messages sent in private chats."""
 
     group = create(lambda _, m: bool(m.chat and m.chat.type in {"group", "supergroup"}), "GroupFilter")
@@ -240,6 +240,7 @@ class Filters:
 
         def func(flt, message):
             text = message.text or message.caption
+            message.command = None
 
             if text:
                 for p in flt.p:
@@ -272,11 +273,15 @@ class Filters:
                 RegEx flags.
         """
 
-        def f(_, m):
-            m.matches = [i for i in _.p.finditer(m.text or m.caption or "")]
-            return bool(m.matches)
+        def func(flt, message):
+            text = message.text or message.caption
 
-        return create(f, "RegexFilter", p=re.compile(pattern, flags))
+            if text:
+                message.matches = list(flt.p.finditer(text)) or None
+
+            return bool(message.matches)
+
+        return create(func, "RegexFilter", p=re.compile(pattern, flags))
 
     # noinspection PyPep8Naming
     class user(Filter, set):

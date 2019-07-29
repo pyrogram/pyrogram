@@ -29,7 +29,7 @@ class SendCachedMedia(BaseClient):
         chat_id: Union[int, str],
         file_id: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -79,8 +79,10 @@ class SendCachedMedia(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent media message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_cached_media("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
         """
 
         r = await self.send(

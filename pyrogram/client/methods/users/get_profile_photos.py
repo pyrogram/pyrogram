@@ -51,8 +51,17 @@ class GetProfilePhotos(BaseClient):
         Returns:
             List of :obj:`Photo`: On success, a list of profile photos is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Get the first 100 profile photos of a user
+                app.get_profile_photos("haskell")
+
+                # Get only the first profile photo of a user
+                app.get_profile_photos("haskell", limit=1)
+
+                # Get 3 profile photos of a user, skip the first 5
+                app.get_profile_photos("haskell", limit=3, offset=5)
         """
         peer_id = await self.resolve_peer(chat_id)
 

@@ -26,10 +26,13 @@ class GetMe(BaseClient):
         """Get your own user identity.
 
         Returns:
-            :obj:`User`: Basic information about the user or bot.
+            :obj:`User`: Information about the own logged in user/bot.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                me = app.get_me()
+                print(me)
         """
         return pyrogram.User._parse(
             self,

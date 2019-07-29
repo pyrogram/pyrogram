@@ -47,8 +47,12 @@ class SetChatTitle(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case a chat id belongs to user.
+
+        Example:
+            .. code-block:: python
+
+                app.set_chat_title(chat_id, "New Title")
         """
         peer = await self.resolve_peer(chat_id)
 

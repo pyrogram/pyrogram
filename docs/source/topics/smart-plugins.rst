@@ -316,9 +316,9 @@ attribute. Here's an example:
 Unloading
 ^^^^^^^^^
 
-In order to unload a plugin, or any other handler, all you need to do is obtain a reference to it by importing the
-relevant module and call :meth:`~pyrogram.Client.remove_handler` Client's method with your function
-name preceded by the star ``*`` operator as argument. Example:
+In order to unload a plugin, all you need to do is obtain a reference to it by importing the relevant module and call
+:meth:`~pyrogram.Client.remove_handler` Client's method with your function's *handler* special attribute preceded by the
+star ``*`` operator as argument. Example:
 
 -   ``main.py``
 
@@ -328,14 +328,14 @@ name preceded by the star ``*`` operator as argument. Example:
 
         ...
 
-        app.remove_handler(*echo)
+        app.remove_handler(*echo.handler)
 
 The star ``*`` operator is used to unpack the tuple into positional arguments so that *remove_handler* will receive
 exactly what is needed. The same could have been achieved with:
 
 .. code-block:: python
 
-    handler, group = echo
+    handler, group = echo.handler
     app.remove_handler(handler, group)
 
 Loading
@@ -352,4 +352,4 @@ using :meth:`~pyrogram.Client.add_handler` instead. Example:
 
         ...
 
-        app.add_handler(*echo)
+        app.add_handler(*echo.handler)

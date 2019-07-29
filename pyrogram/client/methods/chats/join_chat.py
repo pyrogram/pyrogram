@@ -36,8 +36,14 @@ class JoinChat(BaseClient):
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Join chat via username
+                app.join_chat("pyrogram")
+
+                # Join chat via invite link
+                app.join_chat("https://t.me/joinchat/AAAAAE0QmSW3IUmm3UFR7A")
         """
         match = self.INVITE_LINK_RE.match(chat_id)
 

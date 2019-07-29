@@ -16,38 +16,33 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+
+from typing import Union
+
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
-class SetProfilePhoto(BaseClient):
-    async def set_profile_photo(
-        self,
-        photo: str
-    ) -> bool:
-        """Set a new profile photo.
-
-        This method only works for Users.
-        Bots profile photos must be set using BotFather.
+class DeleteSupergroup(BaseClient):
+    def delete_supergroup(self, chat_id: Union[int, str]) -> bool:
+        """Delete a supergroup.
 
         Parameters:
-            photo (``str``):
-                Profile photo to set.
-                Pass a file path as string to upload a new photo that exists on your local machine.
+            chat_id (``int`` | ``str``):
+                The id of the supergroup to be deleted.
 
         Returns:
-            ``bool``: True on success.
+            ``bool``: On success, True is returned.
 
         Example:
             .. code-block:: python
 
-                app.set_profile_photo("new_photo.jpg")
+                app.delete_supergroup(supergroup_id)
         """
-
-        return bool(
-            await self.send(
-                functions.photos.UploadProfilePhoto(
-                    file=await self.save_file(photo)
-                )
+        self.send(
+            functions.channels.DeleteChannel(
+                channel=self.resolve_peer(chat_id)
             )
         )
+
+        return True
