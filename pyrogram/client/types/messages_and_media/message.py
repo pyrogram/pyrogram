@@ -2620,7 +2620,7 @@ class Message(Object, Update):
                     disable_notification=disable_notification
                 )
             elif self.media:
-                caption = self.caption.html if self.caption and not remove_caption else None
+                caption = self.caption.html if self.caption and not remove_caption else ""
 
                 send_media = partial(
                     self._client.send_cached_media,
