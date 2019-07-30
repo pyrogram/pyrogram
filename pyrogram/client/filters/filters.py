@@ -246,10 +246,15 @@ class Filters:
             if text:
                 for p in flt.p:
                     if text.startswith(p):
-                        s = split(text, posix=flt.psx)
-                        c, a = s[0][len(p):], s[1:]
+                        c = text[len(p):].split(None, 1)[0]
                         c = c if flt.cs else c.lower()
-                        message.command = ([c] + a) if c in flt.c else None
+                        if c not in flt.c:
+                            return False
+                        try:
+                            a = split(text, posix=flt.psx)[1:]
+                            message.command = ([c] + a)
+                        except ValueError as e:
+                            message.command = {"text": text[len(p):], "error": e}
                         break
 
             return bool(message.command)
