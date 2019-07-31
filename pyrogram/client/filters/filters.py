@@ -212,9 +212,8 @@ class Filters:
     @staticmethod
     def command(
         commands: str or list,
-        prefix: str or list = "/",
-        case_sensitive: bool = False,
-        posix: bool = True
+        prefixes: str or list = "/",
+        case_sensitive: bool = False
     ):
         """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
@@ -225,18 +224,14 @@ class Filters:
                 a command arrives, the command itself and its arguments will be stored in the *command*
                 field of the :obj:`Message`.
 
-            prefix (``str`` | ``list``, *optional*):
+            prefixes (``str`` | ``list``, *optional*):
                 A prefix or a list of prefixes as string the filter should look for.
-                Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."].
-                Can be None or "" (empty string) to allow commands with no prefix at all.
+                Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."], list(".:!").
+                Pass None or "" (empty string) to allow commands with no prefix at all.
 
             case_sensitive (``bool``, *optional*):
                 Pass True if you want your command(s) to be case sensitive. Defaults to False.
                 Examples: when True, command="Start" would trigger /Start but not /start.
-
-            posix (``bool``, *optional*):
-                Pass False if you don't want to use shlex posix mode, Defaults to True.
-                It will strip quotes, and has some other behaviors, read more https://docs.python.org/3/library/shlex.html#parsing-rules
         """
 
         def func(flt, message):
@@ -244,26 +239,37 @@ class Filters:
             message.command = None
 
             if text:
-                for p in flt.p:
-                    if text.startswith(p):
-                        c = text[len(p):].split(None, 1)[0]
-                        c = c if flt.cs else c.lower()
-                        if c not in flt.c:
+                for prefix in flt.prefixes:
+                    if text.startswith(prefix):
+                        command = text[len(prefix):].split()[0]
+                        command = command if flt.case_sensitive else command.lower()
+
+                        if command not in flt.commands:
                             return False
-                        try:
-                            a = split(text, posix=flt.psx)[1:]
-                            message.command = ([c] + a)
-                        except ValueError as e:
-                            message.command = {"text": text[len(p):], "error": e}
+
+                        text = text.replace("\\", "\\\\")
+
+                        args = shlex.split(text)[1:]
+                        message.command = [command] + args
+
                         break
 
             return bool(message.command)
 
         commands = commands if type(commands) is list else [commands]
         commands = {c if case_sensitive else c.lower() for c in commands}
-        prefixes = set(prefix) if prefix else {""}
 
-        return create(func, "CommandFilter", c=commands, p=prefixes, cs=case_sensitive, psx=posix)
+        prefixes = [] if prefixes is None else prefixes
+        prefixes = prefixes if type(prefixes) is list else [prefixes]
+        prefixes = set(prefixes) if prefixes else {""}
+
+        return create(
+            func,
+            "CommandFilter",
+            commands=commands,
+            prefixes=prefixes,
+            case_sensitive=case_sensitive
+        )
 
     @staticmethod
     def regex(pattern, flags: int = 0):
