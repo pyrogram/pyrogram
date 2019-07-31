@@ -146,29 +146,29 @@ class BaseClient:
     async def answer_inline_query(self, *args, **kwargs):
         pass
 
+    async def get_profile_photos(self, *args, **kwargs):
+        pass
+
+    async def edit_message_text(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_text(self, *args, **kwargs):
+        pass
+
+    async def edit_message_media(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_media(self, *args, **kwargs):
+        pass
+
+    async def edit_message_reply_markup(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_reply_markup(self, *args, **kwargs):
+        pass
+
     def guess_mime_type(self, *args, **kwargs):
         pass
 
     def guess_extension(self, *args, **kwargs):
-        pass
-
-    def get_profile_photos(self, *args, **kwargs):
-        pass
-
-    def edit_message_text(self, *args, **kwargs):
-        pass
-
-    def edit_inline_text(self, *args, **kwargs):
-        pass
-
-    def edit_message_media(self, *args, **kwargs):
-        pass
-
-    def edit_inline_media(self, *args, **kwargs):
-        pass
-
-    def edit_message_reply_markup(self, *args, **kwargs):
-        pass
-
-    def edit_inline_reply_markup(self, *args, **kwargs):
         pass
