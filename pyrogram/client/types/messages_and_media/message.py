@@ -602,10 +602,26 @@ class Message(Object, Update):
                 date=message.date,
                 chat=Chat._parse(client, message, users, chats),
                 from_user=User._parse(client, users.get(message.from_id, None)),
-                text=Str(message.message).init(entities) or None if media is None else None,
-                caption=Str(message.message).init(entities) or None if media is not None else None,
-                entities=entities or None if media is None else None,
-                caption_entities=entities or None if media is not None else None,
+                text=(
+                    Str(message.message).init(entities) or None
+                    if media is None or web_page is not None
+                    else None
+                ),
+                caption=(
+                    Str(message.message).init(entities) or None
+                    if media is not None and web_page is None
+                    else None
+                ),
+                entities=(
+                    entities or None
+                    if media is None or web_page is not None
+                    else None
+                ),
+                caption_entities=(
+                    entities or None
+                    if media is not None and web_page is None
+                    else None
+                ),
                 author_signature=message.post_author,
                 forward_from=forward_from,
                 forward_sender_name=forward_sender_name,
