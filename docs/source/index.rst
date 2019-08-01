@@ -40,14 +40,14 @@ Welcome to Pyrogram
     topics/more-on-updates
     topics/config-file
     topics/smart-plugins
-    topics/scheduling
     topics/auto-auth
     topics/session-settings
     topics/tgcrypto
     topics/storage-engines
     topics/text-formatting
-    topics/serialize
+    topics/serializing
     topics/proxy
+    topics/scheduling
     topics/bots-interaction
     topics/mtproto-vs-botapi
     topics/debugging
