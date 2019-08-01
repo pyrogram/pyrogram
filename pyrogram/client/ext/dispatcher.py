@@ -166,8 +166,13 @@ class Dispatcher:
                             args = None
 
                             if isinstance(handler, handler_type):
-                                if handler.check(parsed_update):
-                                    args = (parsed_update,)
+                                try:
+                                    if handler.check(parsed_update):
+                                        args = (parsed_update,)
+                                except Exception as e:
+                                    log.error(e, exc_info=True)
+                                    continue
+
                             elif isinstance(handler, RawUpdateHandler):
                                 args = (update, users, chats)
 
