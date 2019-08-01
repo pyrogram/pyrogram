@@ -25,6 +25,7 @@ from pyrogram.api import types
 from ..object import Object
 from ..update import Update
 from ..user_and_chats import User
+from ...ext import utils
 
 
 class CallbackQuery(Object, Update):
@@ -90,16 +91,7 @@ class CallbackQuery(Object, Update):
         inline_message_id = None
 
         if isinstance(callback_query, types.UpdateBotCallbackQuery):
-            peer = callback_query.peer
-
-            if isinstance(peer, types.PeerUser):
-                peer_id = peer.user_id
-            elif isinstance(peer, types.PeerChat):
-                peer_id = -peer.chat_id
-            else:
-                peer_id = int("-100" + str(peer.channel_id))
-
-            message = client.get_messages(peer_id, callback_query.msg_id)
+            message = client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
         elif isinstance(callback_query, types.UpdateInlineBotCallbackQuery):
             inline_message_id = b64encode(
                 pack(

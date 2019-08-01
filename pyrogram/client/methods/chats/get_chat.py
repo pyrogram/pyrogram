@@ -20,7 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 
 class GetChat(BaseClient):
@@ -70,7 +70,7 @@ class GetChat(BaseClient):
                 chat_id = -r.chat.id
 
             if isinstance(r.chat, types.Channel):
-                chat_id = int("-100" + str(r.chat.id))
+                chat_id = utils.get_channel_id(r.chat.id)
 
         peer = self.resolve_peer(chat_id)
 

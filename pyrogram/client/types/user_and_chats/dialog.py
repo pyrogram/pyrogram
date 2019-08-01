@@ -21,6 +21,7 @@ import pyrogram
 from pyrogram.api import types
 from ..object import Object
 from ..user_and_chats import Chat
+from ...ext import utils
 
 
 class Dialog(Object):
@@ -70,18 +71,9 @@ class Dialog(Object):
 
     @staticmethod
     def _parse(client, dialog: types.Dialog, messages, users, chats) -> "Dialog":
-        chat_id = dialog.peer
-
-        if isinstance(chat_id, types.PeerUser):
-            chat_id = chat_id.user_id
-        elif isinstance(chat_id, types.PeerChat):
-            chat_id = -chat_id.chat_id
-        else:
-            chat_id = int("-100" + str(chat_id.channel_id))
-
         return Dialog(
             chat=Chat._parse_dialog(client, dialog.peer, users, chats),
-            top_message=messages.get(chat_id),
+            top_message=messages.get(utils.get_peer_id(dialog.peer)),
             unread_messages_count=dialog.unread_count,
             unread_mentions_count=dialog.unread_mentions_count,
             unread_mark=dialog.unread_mark,

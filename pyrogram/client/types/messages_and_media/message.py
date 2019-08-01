@@ -31,7 +31,8 @@ from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
-from ...parser import utils, Parser
+from ...ext import utils
+from ...parser import utils as parser_utils, Parser
 
 
 class Str(str):
@@ -54,7 +55,7 @@ class Str(str):
         return Parser.unparse(self, self.entities, True)
 
     def __getitem__(self, item):
-        return utils.remove_surrogates(utils.add_surrogates(self)[item])
+        return parser_utils.remove_surrogates(parser_utils.add_surrogates(self)[item])
 
 
 class Message(Object, Update):
@@ -446,7 +447,7 @@ class Message(Object, Update):
                 new_chat_title=new_chat_title,
                 new_chat_photo=new_chat_photo,
                 delete_chat_photo=delete_chat_photo,
-                migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
+                migrate_to_chat_id=utils.get_channel_id(migrate_to_chat_id) if migrate_to_chat_id else None,
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,

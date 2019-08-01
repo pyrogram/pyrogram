@@ -23,6 +23,7 @@ from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from ..object import Object
+from ...ext import utils
 
 
 class Chat(Object):
@@ -180,7 +181,7 @@ class Chat(Object):
 
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
-        peer_id = int("-100" + str(channel.id))
+        peer_id = utils.get_channel_id(channel.id)
 
         return Chat(
             id=peer_id,
@@ -672,7 +673,7 @@ class Chat(Object):
             can_pin_messages=can_pin_messages,
             can_promote_members=can_promote_members
         )
-    
+
     def join(self):
         """Bound method *join* of :obj:`Chat`.
 

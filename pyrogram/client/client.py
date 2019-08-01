@@ -1015,7 +1015,7 @@ class Client(Methods, BaseClient):
                 access_hash = 0
                 peer_type = "group"
             elif isinstance(peer, (types.Channel, types.ChannelForbidden)):
-                peer_id = int("-100" + str(peer.id))
+                peer_id = utils.get_channel_id(peer.id)
                 access_hash = peer.access_hash
 
                 username = getattr(peer, "username", None)
@@ -1131,7 +1131,7 @@ class Client(Methods, BaseClient):
                                 try:
                                     diff = self.send(
                                         functions.updates.GetChannelDifference(
-                                            channel=self.resolve_peer(int("-100" + str(channel_id))),
+                                            channel=self.resolve_peer(utils.get_channel_id(channel_id)),
                                             filter=types.ChannelMessagesFilter(
                                                 ranges=[types.MessageRange(
                                                     min_id=update.message.id,
@@ -1519,33 +1519,38 @@ class Client(Methods, BaseClient):
                     except KeyError:
                         raise PeerIdInvalid
 
-            if peer_id > 0:
+            peer_type = utils.get_type(peer_id)
+
+            if peer_type == "user":
                 self.fetch_peers(
                     self.send(
                         functions.users.GetUsers(
-                            id=[types.InputUser(
-                                user_id=peer_id,
-                                access_hash=0
-                            )]
+                            id=[
+                                types.InputUser(
+                                    user_id=peer_id,
+                                    access_hash=0
+                                )
+                            ]
                         )
                     )
                 )
+            elif peer_type == "chat":
+                self.send(
+                    functions.messages.GetChats(
+                        id=[-peer_id]
+                    )
+                )
             else:
-                if str(peer_id).startswith("-100"):
-                    self.send(
-                        functions.channels.GetChannels(
-                            id=[types.InputChannel(
-                                channel_id=int(str(peer_id)[4:]),
+                self.send(
+                    functions.channels.GetChannels(
+                        id=[
+                            types.InputChannel(
+                                channel_id=utils.get_channel_id(peer_id),
                                 access_hash=0
-                            )]
-                        )
+                            )
+                        ]
                     )
-                else:
-                    self.send(
-                        functions.messages.GetChats(
-                            id=[-peer_id]
-                        )
-                    )
+                )
 
             try:
                 return self.storage.get_peer_by_id(peer_id)

@@ -18,10 +18,11 @@
 
 import base64
 import struct
-from typing import Union, List
+from typing import List
+from typing import Union
 
 import pyrogram
-
+from pyrogram.api.types import PeerUser, PeerChat, PeerChannel
 from . import BaseClient
 from ...api import types
 
@@ -60,23 +61,6 @@ def encode(s: bytes) -> str:
             r += bytes([i])
 
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
-
-
-def get_peer_id(input_peer) -> int:
-    return (
-        input_peer.user_id if isinstance(input_peer, types.InputPeerUser)
-        else -input_peer.chat_id if isinstance(input_peer, types.InputPeerChat)
-        else int("-100" + str(input_peer.channel_id))
-    )
-
-
-def get_input_peer(peer_id: int, access_hash: int):
-    return (
-        types.InputPeerUser(user_id=peer_id, access_hash=access_hash) if peer_id > 0
-        else types.InputPeerChannel(channel_id=int(str(peer_id)[4:]), access_hash=access_hash)
-        if (str(peer_id).startswith("-100") and access_hash)
-        else types.InputPeerChat(chat_id=-peer_id)
-    )
 
 
 def get_offset_date(dialogs):
@@ -183,7 +167,7 @@ def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
             pyrogram.Message(
                 message_id=message,
                 chat=pyrogram.Chat(
-                    id=int("-100" + str(channel_id)),
+                    id=get_channel_id(channel_id),
                     type="channel",
                     client=client
                 ) if channel_id is not None else None,
@@ -203,3 +187,39 @@ def unpack_inline_message_id(inline_message_id: str) -> types.InputBotInlineMess
         id=r[1],
         access_hash=r[2]
     )
+
+
+MIN_CHANNEL_ID = -1002147483647
+MAX_CHANNEL_ID = -1000000000000
+MIN_CHAT_ID = -2147483647
+MAX_USER_ID = 2147483647
+
+
+def get_peer_id(peer: Union[PeerUser, PeerChat, PeerChannel]) -> int:
+    if isinstance(peer, PeerUser):
+        return peer.user_id
+
+    if isinstance(peer, PeerChat):
+        return -peer.chat_id
+
+    if isinstance(peer, PeerChannel):
+        return MAX_CHANNEL_ID - peer.channel_id
+
+    raise ValueError("Peer type invalid: {}".format(peer))
+
+
+def get_type(peer_id: int) -> str:
+    if peer_id < 0:
+        if MIN_CHAT_ID <= peer_id:
+            return "chat"
+
+        if MIN_CHANNEL_ID <= peer_id < MAX_CHANNEL_ID:
+            return "channel"
+    elif 0 < peer_id <= MAX_USER_ID:
+        return "user"
+
+    raise ValueError("Peer id invalid: {}".format(peer_id))
+
+
+def get_channel_id(peer_id: int) -> int:
+    return MAX_CHANNEL_ID - peer_id

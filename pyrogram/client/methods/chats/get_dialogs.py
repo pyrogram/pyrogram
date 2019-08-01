@@ -23,7 +23,7 @@ from typing import List
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
 
@@ -100,10 +100,8 @@ class GetDialogs(BaseClient):
                     chat_id = to_id.user_id
                 else:
                     chat_id = message.from_id
-            elif isinstance(to_id, types.PeerChat):
-                chat_id = -to_id.chat_id
             else:
-                chat_id = int("-100" + str(to_id.channel_id))
+                chat_id = utils.get_peer_id(to_id)
 
             messages[chat_id] = pyrogram.Message._parse(self, message, users, chats)
 
