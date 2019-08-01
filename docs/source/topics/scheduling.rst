@@ -1,22 +1,33 @@
-Scheduling tasks
+Scheduling Tasks
 ================
 
-Pyrogram itself as Telegram MTProto API Framework contains only stuff
-related to Telegram. Scheduling is out of it's scope.
+Scheduling tasks means executing one or more functions periodically at pre-defined intervals or after a delay. This is
+useful, for example, to send recurring messages to specific chats or users.
 
-But it is easy to integrate pyrogram with your favourite scheduler.
+Since there's no built-in task scheduler in Pyrogram, this page will only show examples on how to integrate Pyrogram
+with the main Python schedule libraries such as ``schedule`` and ``apscheduler``. For more detailed information, you can
+visit and learn from each library documentation.
 
-schedule
---------
+Using ``schedule``
+------------------
+
+- Install with ``pip3 install schedule``
+- Documentation: https://schedule.readthedocs.io
 
 .. code-block:: python
 
     import time
+
     import schedule
+
+    from pyrogram import Client
+
+    app = Client("my_account")
 
 
     def job():
         app.send_message("me", "Hi!")
+
 
     schedule.every(3).seconds.do(job)
 
@@ -25,16 +36,21 @@ schedule
             schedule.run_pending()
             time.sleep(1)
 
-Note that schedule is not suitable for async version of pyrogram.
-For more information read `library <https://schedule.readthedocs.io/>`_ docs.
 
-apscheduler
------------
+
+Using ``apscheduler``
+---------------------
+
+- Install with ``pip3 install apscheduler``
+- Documentation: https://apscheduler.readthedocs.io
 
 .. code-block:: python
 
-    import time
     from apscheduler.schedulers.background import BackgroundScheduler
+
+    from pyrogram import Client
+
+    app = Client("my_account")
 
 
     def job():
@@ -42,16 +58,21 @@ apscheduler
 
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(job, 'interval', seconds=3)
+    scheduler.add_job(job, "interval", seconds=3)
 
     scheduler.start()
     app.run()
 
-Apscheduler supports async version of pyrogram too, here is async example:
+``apscheduler`` does also support async code, here's an example with
+`Pyrogram Asyncio <https://docs.pyrogram.org/intro/install.html#asynchronous>`_:
 
 .. code-block:: python
 
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+    from pyrogram import Client
+
+    app = Client("my_account")
 
 
     async def job():
@@ -59,9 +80,8 @@ Apscheduler supports async version of pyrogram too, here is async example:
 
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(job, 'interval', seconds=3)
+    scheduler.add_job(job, "interval", seconds=3)
 
     scheduler.start()
     app.run()
 
-For more information read `library <https://apscheduler.readthedocs.io/>`_ docs.
