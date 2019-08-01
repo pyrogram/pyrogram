@@ -20,17 +20,17 @@ from collections import OrderedDict
 from io import BytesIO
 from json import dumps
 
+from ..all import objects
+
 
 class TLObject:
-    all = {}
-
     __slots__ = []
 
     QUALNAME = "Base"
 
     @staticmethod
     def read(b: BytesIO, *args):  # TODO: Rename b -> data
-        return TLObject.all[int.from_bytes(b.read(4), "little")].read(b, *args)
+        return objects[int.from_bytes(b.read(4), "little")].read(b, *args)
 
     def write(self, *args) -> bytes:
         pass
