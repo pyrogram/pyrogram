@@ -21,7 +21,6 @@ from typing import List, Union
 
 from pyrogram.api import functions, types
 from pyrogram.client.ext import utils
-
 from ...ext import BaseClient
 
 

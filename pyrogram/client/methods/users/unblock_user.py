@@ -18,8 +18,7 @@
 
 from typing import Union
 
-import pyrogram
-from pyrogram.api import functions, types
+from pyrogram.api import functions
 from ...ext import BaseClient
 
 

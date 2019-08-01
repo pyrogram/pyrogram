@@ -21,8 +21,9 @@ import struct
 from typing import List
 from typing import Union
 
-import pyrogram
 from pyrogram.api.types import PeerUser, PeerChat, PeerChannel
+
+import pyrogram
 from . import BaseClient
 from ...api import types
 

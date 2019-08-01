@@ -22,6 +22,7 @@ from pyrogram.api.types import (
     KeyboardButtonUrl, KeyboardButtonCallback,
     KeyboardButtonSwitchInline, KeyboardButtonGame
 )
+
 from .callback_game import CallbackGame
 from ..object import Object
 

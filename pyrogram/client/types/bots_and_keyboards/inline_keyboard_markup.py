@@ -19,6 +19,7 @@
 from typing import List
 
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
+
 from . import InlineKeyboardButton
 from ..object import Object
 

@@ -21,8 +21,9 @@ from datetime import datetime
 from importlib import import_module
 from typing import Type
 
-from pyrogram.api.core import TLObject
 from pyrogram.api.types import RpcError as RawRPCError
+
+from pyrogram.api.core import TLObject
 from .exceptions.all import exceptions
 
 
