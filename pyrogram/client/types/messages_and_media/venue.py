@@ -44,8 +44,6 @@ class Venue(Object):
 
     """
 
-    __slots__ = ["location", "title", "address", "foursquare_id", "foursquare_type"]
-
     def __init__(
         self,
         *,

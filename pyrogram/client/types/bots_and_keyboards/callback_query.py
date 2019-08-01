@@ -61,8 +61,6 @@ class CallbackQuery(Object, Update):
 
     """
 
-    __slots__ = ["id", "from_user", "chat_instance", "message", "inline_message_id", "data", "game_short_name"]
-
     def __init__(
         self,
         *,

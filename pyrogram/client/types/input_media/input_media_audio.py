@@ -58,8 +58,6 @@ class InputMediaAudio(InputMedia):
             Title of the audio
     """
 
-    __slots__ = ["thumb", "duration", "performer", "title"]
-
     def __init__(
         self,
         media: str,

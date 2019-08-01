@@ -48,7 +48,6 @@ class InlineQuery(Object, Update):
         location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
     """
-    __slots__ = ["id", "from_user", "query", "offset", "location"]
 
     def __init__(
         self,

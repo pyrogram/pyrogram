@@ -47,8 +47,6 @@ class Dialog(Object):
             True, if the dialog is pinned.
     """
 
-    __slots__ = ["chat", "top_message", "unread_messages_count", "unread_mentions_count", "unread_mark", "is_pinned"]
-
     def __init__(
         self,
         *,

@@ -95,12 +95,6 @@ class Chat(Object):
             Information about the chat default permissions, for groups and supergroups.
     """
 
-    __slots__ = [
-        "id", "type", "is_verified", "is_restricted", "is_scam", "is_support", "title", "username", "first_name",
-        "last_name", "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
-        "members_count", "restriction_reason", "permissions"
-    ]
-
     def __init__(
         self,
         *,

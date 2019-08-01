@@ -43,8 +43,6 @@ class Thumbnail(Object):
             File size.
     """
 
-    __slots__ = ["file_id", "width", "height", "file_size"]
-
     def __init__(
         self,
         *,

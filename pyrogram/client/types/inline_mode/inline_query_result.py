@@ -53,8 +53,6 @@ class InlineQueryResult(Object):
     - :obj:`InlineQueryResultAnimation`
     """
 
-    __slots__ = ["type", "id", "input_message_content", "reply_markup"]
-
     def __init__(
         self,
         type: str,

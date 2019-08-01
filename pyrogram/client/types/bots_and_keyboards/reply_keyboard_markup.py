@@ -50,8 +50,6 @@ class ReplyKeyboardMarkup(Object):
             select the new language. Other users in the group don't see the keyboard.
     """
 
-    __slots__ = ["keyboard", "resize_keyboard", "one_time_keyboard", "selective"]
-
     def __init__(
         self,
         keyboard: List[List[Union[KeyboardButton, str]]],

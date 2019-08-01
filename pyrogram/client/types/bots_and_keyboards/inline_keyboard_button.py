@@ -59,10 +59,6 @@ class InlineKeyboardButton(Object):
 
     # TODO: Add callback_game and pay fields
 
-    __slots__ = [
-        "text", "url", "callback_data", "switch_inline_query", "switch_inline_query_current_chat", "callback_game"
-    ]
-
     def __init__(
         self,
         text: str,

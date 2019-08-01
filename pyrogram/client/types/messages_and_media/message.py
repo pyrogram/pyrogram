@@ -264,17 +264,6 @@ class Message(Object, Update):
 
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
 
-    __slots__ = [
-        "message_id", "date", "chat", "from_user", "forward_from", "forward_sender_name", "forward_from_chat",
-        "forward_from_message_id", "forward_signature", "forward_date", "reply_to_message", "mentioned", "empty",
-        "service", "media", "edit_date", "media_group_id", "author_signature", "text", "entities", "caption_entities",
-        "audio", "document", "photo", "sticker", "animation", "game", "video", "voice", "video_note", "caption",
-        "contact", "location", "venue", "web_page", "poll", "new_chat_members", "left_chat_member", "new_chat_title",
-        "new_chat_photo", "delete_chat_photo", "group_chat_created", "supergroup_chat_created", "channel_chat_created",
-        "migrate_to_chat_id", "migrate_from_chat_id", "pinned_message", "game_high_score", "views", "via_bot",
-        "outgoing", "matches", "command", "reply_markup"
-    ]
-
     def __init__(
         self,
         *,

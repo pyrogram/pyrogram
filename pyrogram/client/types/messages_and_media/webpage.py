@@ -83,12 +83,6 @@ class WebPage(Object):
             Author of the webpage, eg the Twitter user for a tweet, or the author in an article.
     """
 
-    __slots__ = [
-        "id", "url", "display_url", "type", "site_name", "title", "description",
-        "audio", "document", "photo", "animation", "video",
-        "embed_url", "embed_type", "embed_width", "embed_height", "duration", "author"
-    ]
-
     def __init__(
         self,
         *,

@@ -35,8 +35,6 @@ class ChatPhoto(Object):
             Unique file identifier of big (640x640) chat photo. This file_id can be used only for photo download.
     """
 
-    __slots__ = ["small_file_id", "big_file_id"]
-
     def __init__(
         self,
         *,

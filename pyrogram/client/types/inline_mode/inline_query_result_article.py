@@ -49,8 +49,6 @@ class InlineQueryResultArticle(InlineQueryResult):
             Inline keyboard attached to the message.
     """
 
-    __slots__ = ["title", "url", "description", "thumb_url"]
-
     def __init__(
         self,
         title: str,

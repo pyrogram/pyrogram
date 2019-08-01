@@ -29,8 +29,6 @@ class Meta(type, metaclass=type("", (type,), {"__str__": lambda _: "~hi"})):
 
 
 class Object(metaclass=Meta):
-    __slots__ = ["_client"]
-
     def __init__(self, client: "pyrogram.BaseClient" = None):
         self._client = client
 
@@ -50,7 +48,7 @@ class Object(metaclass=Meta):
                 else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
                 if attr.endswith("date")
                 else (attr, getattr(obj, attr))
-                for attr in getattr(obj, "__slots__", [])
+                for attr in filter(lambda x: not x.startswith("_"), obj.__dict__)
                 if getattr(obj, attr) is not None
             ]
         )
@@ -63,13 +61,13 @@ class Object(metaclass=Meta):
             self.__class__.__name__,
             ", ".join(
                 "{}={}".format(attr, repr(getattr(self, attr)))
-                for attr in self.__slots__
+                for attr in filter(lambda x: not x.startswith("_"), self.__dict__)
                 if getattr(self, attr) is not None
             )
         )
 
     def __eq__(self, other: "Object") -> bool:
-        for attr in self.__slots__:
+        for attr in self.__dict__:
             try:
                 if getattr(self, attr) != getattr(other, attr):
                     return False

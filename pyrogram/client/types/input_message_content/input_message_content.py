@@ -31,8 +31,6 @@ class InputMessageContent(Object):
     - :obj:`InputTextMessageContent`
     """
 
-    __slots__ = []
-
     def __init__(self):
         super().__init__()
 
