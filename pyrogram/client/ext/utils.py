@@ -21,9 +21,8 @@ import struct
 from typing import List
 from typing import Union
 
-from pyrogram.api.types import PeerUser, PeerChat, PeerChannel
-
 import pyrogram
+from pyrogram.api.types import PeerUser, PeerChat, PeerChannel
 from . import BaseClient
 from ...api import types
 
@@ -32,10 +31,17 @@ def decode(s: str) -> bytes:
     s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
-    assert s[-1] == 2
+    try:
+        assert s[-1] == 2
+        skip = 1
+    except AssertionError:
+        assert s[-2] == 22
+        assert s[-1] == 4
+        skip = 2
 
     i = 0
-    while i < len(s) - 1:
+
+    while i < len(s) - skip:
         if s[i] != 0:
             r += bytes([s[i]])
         else:
@@ -51,7 +57,7 @@ def encode(s: bytes) -> str:
     r = b""
     n = 0
 
-    for i in s + bytes([2]):
+    for i in s + bytes([22]) + bytes([4]):
         if i == 0:
             n += 1
         else:
