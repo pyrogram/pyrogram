@@ -138,21 +138,22 @@ class DownloadMedia(BaseClient):
             media_type = decoded[0]
 
             if media_type == 1:
-                unpacked = struct.unpack("<iiqqib", decoded)
-                dc_id, peer_id, volume_id, local_id, is_big = unpacked[1:]
+                unpacked = struct.unpack("<iiqqqiiiqi", decoded)
+                dc_id, photo_id, _, volume_id, size_type, peer_id, _, peer_access_hash, local_id = unpacked[1:]
 
                 data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
                     peer_id=peer_id,
+                    peer_access_hash=peer_access_hash,
                     volume_id=volume_id,
                     local_id=local_id,
-                    is_big=bool(is_big)
+                    is_big=size_type == 3
                 )
             elif media_type in (0, 2, 14):
-                unpacked = struct.unpack("<iiqqc", decoded)
-                dc_id, document_id, access_hash, thumb_size = unpacked[1:]
+                unpacked = struct.unpack("<iiqqqiiii", decoded)
+                dc_id, document_id, access_hash, volume_id, _, _, thumb_size, local_id = unpacked[1:]
 
                 data = FileData(
                     **get_existing_attributes(),
@@ -160,7 +161,7 @@ class DownloadMedia(BaseClient):
                     dc_id=dc_id,
                     document_id=document_id,
                     access_hash=access_hash,
-                    thumb_size=thumb_size.decode()
+                    thumb_size=chr(thumb_size)
                 )
             elif media_type in (3, 4, 5, 8, 9, 10, 13):
                 unpacked = struct.unpack("<iiqq", decoded)

@@ -104,8 +104,8 @@ def get_input_media_from_file_id(
             raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
 
         if media_type == 2:
-            unpacked = struct.unpack("<iiqqc", decoded)
-            dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+            unpacked = struct.unpack("<iiqqqiiii", decoded)
+            dc_id, file_id, access_hash, volume_id, _, _, type, local_id = unpacked[1:]
 
             return types.InputMediaPhoto(
                 id=types.InputPhoto(
