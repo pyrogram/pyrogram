@@ -52,20 +52,40 @@ class ChatPhoto(Object):
         if not isinstance(chat_photo, (types.UserProfilePhoto, types.ChatPhoto)):
             return None
 
+        photo_id = getattr(chat_photo, "photo_id", 0)
         loc_small = chat_photo.photo_small
         loc_big = chat_photo.photo_big
+
+        peer = client.resolve_peer(peer_id)
+
+        if isinstance(peer, types.InputPeerUser):
+            peer_id = peer.user_id
+            peer_access_hash = peer.access_hash
+            x = 0
+        elif isinstance(peer, types.InputPeerChat):
+            peer_id = -peer.chat_id
+            peer_access_hash = 0
+            x = -1
+        else:
+            peer_id += 1000727379968
+            peer_access_hash = peer.access_hash
+            x = -234
 
         return ChatPhoto(
             small_file_id=encode(
                 pack(
-                    "<iiqqib",
-                    1, chat_photo.dc_id, peer_id, loc_small.volume_id, loc_small.local_id, 0
+                    "<iiqqqiiiqi",
+                    1, chat_photo.dc_id, photo_id,
+                    0, loc_small.volume_id,
+                    2, peer_id, x, peer_access_hash, loc_small.local_id
                 )
             ),
             big_file_id=encode(
                 pack(
-                    "<iiqqib",
-                    1, chat_photo.dc_id, peer_id, loc_big.volume_id, loc_big.local_id, 1
+                    "<iiqqqiiiqi",
+                    1, chat_photo.dc_id, photo_id,
+                    0, loc_big.volume_id,
+                    3, peer_id, x, peer_access_hash, loc_big.local_id
                 )
             ),
             client=client
