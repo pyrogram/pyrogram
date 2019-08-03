@@ -123,8 +123,8 @@ class Session:
             try:
                 await self.connection.connect()
 
-                self.net_worker_task = asyncio.create_task(self.net_worker())
-                self.recv_task = asyncio.create_task(self.recv())
+                self.net_worker_task = asyncio.ensure_future(self.net_worker())
+                self.recv_task = asyncio.ensure_future(self.recv())
 
                 self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
                 self.current_salt = FutureSalt(
@@ -137,7 +137,7 @@ class Session:
                 self.current_salt = \
                     (await self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT)).salts[0]
 
-                self.next_salt_task = asyncio.create_task(self.next_salt())
+                self.next_salt_task = asyncio.ensure_future(self.next_salt())
 
                 if not self.is_cdn:
                     await self._send(
@@ -157,7 +157,7 @@ class Session:
                         timeout=self.START_TIMEOUT
                     )
 
-                self.ping_task = asyncio.create_task(self.ping())
+                self.ping_task = asyncio.ensure_future(self.ping())
 
                 log.info("Session initialized: Layer {}".format(layer))
                 log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
@@ -351,7 +351,7 @@ class Session:
                     log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
 
                 if self.is_connected.is_set():
-                    asyncio.create_task(self.restart())
+                    asyncio.ensure_future(self.restart())
 
                 break
 

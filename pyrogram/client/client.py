@@ -352,14 +352,14 @@ class Client(Methods, BaseClient):
 
         for _ in range(Client.UPDATES_WORKERS):
             self.updates_worker_tasks.append(
-                asyncio.create_task(self.updates_worker())
+                asyncio.ensure_future(self.updates_worker())
             )
 
         log.info("Started {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
 
         for _ in range(Client.DOWNLOAD_WORKERS):
             self.download_worker_tasks.append(
-                asyncio.create_task(self.download_worker())
+                asyncio.ensure_future(self.download_worker())
             )
 
         log.info("Started {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
@@ -1623,7 +1623,7 @@ class Client(Methods, BaseClient):
                     return
 
                 try:
-                    await asyncio.create_task(session.send(data))
+                    await asyncio.ensure_future(session.send(data))
                 except Exception as e:
                     log.error(e)
 
@@ -1644,7 +1644,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
         pool = [Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True) for _ in range(pool_size)]
-        workers = [asyncio.create_task(worker(session)) for session in pool for _ in range(workers_count)]
+        workers = [asyncio.ensure_future(worker(session)) for session in pool for _ in range(workers_count)]
         queue = asyncio.Queue(16)
 
         try:
