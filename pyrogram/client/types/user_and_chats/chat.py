@@ -231,6 +231,7 @@ class Chat(Object):
 
             if isinstance(full_chat, types.ChatFull):
                 parsed_chat = Chat._parse_chat_chat(client, chat)
+                parsed_chat.description = full_chat.about or None
 
                 if isinstance(full_chat.participants, types.ChatParticipants):
                     parsed_chat.members_count = len(full_chat.participants.participants)
