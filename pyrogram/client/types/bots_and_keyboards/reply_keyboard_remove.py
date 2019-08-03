@@ -38,8 +38,6 @@ class ReplyKeyboardRemove(Object):
             keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
     """
 
-    __slots__ = ["selective"]
-
     def __init__(
         self,
         selective: bool = None

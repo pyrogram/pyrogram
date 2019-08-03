@@ -61,11 +61,6 @@ class Video(Object):
             Video thumbnails.
     """
 
-    __slots__ = [
-        "file_id", "width", "height", "duration", "file_name", "mime_type", "supports_streaming", "file_size", "date",
-        "thumbs"
-    ]
-
     def __init__(
         self,
         *,

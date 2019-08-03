@@ -22,15 +22,15 @@ from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
 
+from pyrogram.api.all import layer
+
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types
-from pyrogram.api.all import layer
 from pyrogram.api.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
 from pyrogram.connection import Connection
 from pyrogram.crypto import MTProto
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
-
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)

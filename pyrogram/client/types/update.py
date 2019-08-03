@@ -26,8 +26,6 @@ class ContinuePropagation(StopAsyncIteration):
 
 
 class Update:
-    __slots__ = []
-
     def stop_propagation(self):
         raise StopPropagation
 

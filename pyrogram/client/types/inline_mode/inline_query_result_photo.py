@@ -68,11 +68,6 @@ class InlineQueryResultPhoto(InlineQueryResult):
             Content of the message to be sent instead of the photo.
     """
 
-    __slots__ = [
-        "photo_url", "thumb_url", "title", "description", "caption", "parse_mode", "reply_markup",
-        "input_message_content"
-    ]
-
     def __init__(
         self,
         photo_url: str,

@@ -48,8 +48,6 @@ class Poll(Object, Update):
             Index of your chosen option (0-9), None in case you haven't voted yet.
     """
 
-    __slots__ = ["id", "question", "options", "is_closed", "total_voters", "chosen_option"]
-
     def __init__(
         self,
         *,

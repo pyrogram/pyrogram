@@ -37,8 +37,6 @@ class InputPhoneContact(Object):
             Contact's last name
     """
 
-    __slots__ = []
-
     def __init__(self, phone: str, first_name: str, last_name: str = ""):
         super().__init__(None)
 

@@ -37,8 +37,6 @@ class ForceReply(Object):
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
     """
 
-    __slots__ = ["selective"]
-
     def __init__(
         self,
         selective: bool = None

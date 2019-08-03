@@ -30,7 +30,6 @@ class InputMedia(Object):
     - :obj:`InputMediaPhoto`
     - :obj:`InputMediaVideo`
     """
-    __slots__ = ["media", "caption", "parse_mode"]
 
     def __init__(self, media: str, caption: str, parse_mode: str):
         super().__init__()

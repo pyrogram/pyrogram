@@ -47,8 +47,6 @@ class Voice(Object):
             Date the voice was sent in Unix time.
     """
 
-    __slots__ = ["file_id", "duration", "waveform", "mime_type", "file_size", "date"]
-
     def __init__(
         self,
         *,

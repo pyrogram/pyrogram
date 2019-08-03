@@ -37,8 +37,6 @@ class GameHighScore(Object):
             Position in high score table for the game.
     """
 
-    __slots__ = ["user", "score", "position"]
-
     def __init__(
         self,
         *,

@@ -48,8 +48,6 @@ class Game(Object):
             Upload via BotFather.
     """
 
-    __slots__ = ["id", "title", "short_name", "description", "photo", "animation"]
-
     def __init__(
         self,
         *,

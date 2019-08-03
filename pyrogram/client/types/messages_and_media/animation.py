@@ -58,8 +58,6 @@ class Animation(Object):
             Animation thumbnails.
     """
 
-    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "duration", "thumbs"]
-
     def __init__(
         self,
         *,

@@ -54,8 +54,6 @@ class ChatMember(Object):
             Information about the member permissions.
     """
 
-    __slots__ = ["user", "status", "date", "is_member", "invited_by", "promoted_by", "restricted_by", "permissions"]
-
     def __init__(
         self,
         *,

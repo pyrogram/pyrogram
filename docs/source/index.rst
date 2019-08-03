@@ -45,8 +45,9 @@ Welcome to Pyrogram
     topics/tgcrypto
     topics/storage-engines
     topics/text-formatting
-    topics/serialize
+    topics/serializing
     topics/proxy
+    topics/scheduling
     topics/bots-interaction
     topics/mtproto-vs-botapi
     topics/debugging

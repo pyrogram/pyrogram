@@ -66,10 +66,6 @@ class Sticker(Object):
 
     # TODO: Add mask position
 
-    __slots__ = [
-        "file_id", "file_name", "mime_type", "file_size", "date", "width", "height", "emoji", "set_name", "thumbs"
-    ]
-
     def __init__(
         self,
         *,

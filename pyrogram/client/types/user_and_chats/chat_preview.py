@@ -45,8 +45,6 @@ class ChatPreview(Object):
             Preview of some of the chat members.
     """
 
-    __slots__ = ["title", "type", "members_count", "photo", "members"]
-
     def __init__(
         self,
         *,

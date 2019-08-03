@@ -192,7 +192,6 @@ dismissed and their IP addresses are now kept as aliases to the nearest one.
 
 Thanks to `@FrayxRulez <https://t.me/tgbetachat/104921>`_ for telling about alias DCs.
 
-
 I want to migrate my account from DCX to DCY.
 ---------------------------------------------
 
@@ -246,9 +245,13 @@ The error in question is ``[400 PEER_ID_INVALID]``, and could mean several thing
 
 - The chat id you tried to use is simply wrong, double check it.
 - The chat id refers to a group or channel you are not a member of.
-- The chat id refers to a user you have't seen yet (from contacts, groups in common, forwarded messages or private
-  chats).
 - The chat id argument you passed is in form of a string; you have to convert it into an integer with ``int(chat_id)``.
+- The chat id refers to a user your current session haven't met yet.
+
+About the last point: in order for you to meet a user and thus communicate with them, you should ask yourself how to
+contact people using official apps. The answer is the same for Pyrogram too and involves normal usages such as searching
+for usernames, meet them in a common group, have their phone contacts saved, getting a message mentioning them (either a
+forward or a mention in the message text).
 
 UnicodeEncodeError: '<encoding>' codec can't encode …
 -----------------------------------------------------
@@ -257,6 +260,14 @@ Where ``<encoding>`` might be *ascii*, *cp932*, *charmap* or anything else other
 shows up when you try to print something and has very little to do with Pyrogram itself as it is strictly related to
 your own terminal. To fix it, either find a way to change the encoding settings of your terminal to UTF-8 or switch to a
 better terminal altogether.
+
+Uploading with URLs gives error WEBPAGE_CURL_FAILED
+---------------------------------------------------
+
+When uploading media files using an URL, the server automatically tries to download the media and uploads it to the
+Telegram cloud. This error usually happens in case the provided URL is not publicly accessible by Telegram itself or the
+media exceeds 20 MB in size. In such cases, your only option is to download the media yourself and upload from your
+local machine.
 
 My verification code expires immediately!
 -----------------------------------------

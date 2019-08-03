@@ -23,6 +23,7 @@ from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from ..object import Object
+from ...ext import utils
 
 
 class Chat(Object):
@@ -93,12 +94,6 @@ class Chat(Object):
         permissions (:obj:`ChatPermissions` *optional*):
             Information about the chat default permissions, for groups and supergroups.
     """
-
-    __slots__ = [
-        "id", "type", "is_verified", "is_restricted", "is_scam", "is_support", "title", "username", "first_name",
-        "last_name", "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
-        "members_count", "restriction_reason", "permissions"
-    ]
 
     def __init__(
         self,
@@ -180,7 +175,7 @@ class Chat(Object):
 
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
-        peer_id = int("-100" + str(channel.id))
+        peer_id = utils.get_channel_id(channel.id)
 
         return Chat(
             id=peer_id,
