@@ -42,6 +42,9 @@ class Sticker(Object):
         height (``int``):
             Sticker height.
 
+        is_animated (``bool``):
+            True, if the sticker is animated
+
         file_name (``str``, *optional*):
             Sticker file name.
 
@@ -73,6 +76,7 @@ class Sticker(Object):
         file_id: str,
         width: int,
         height: int,
+        is_animated: bool,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -90,6 +94,7 @@ class Sticker(Object):
         self.date = date
         self.width = width
         self.height = height
+        self.is_animated = is_animated
         self.emoji = emoji
         self.set_name = set_name
         self.thumbs = thumbs
@@ -131,8 +136,9 @@ class Sticker(Object):
                     sticker.access_hash
                 )
             ),
-            width=image_size_attributes.w if image_size_attributes else 0,
-            height=image_size_attributes.h if image_size_attributes else 0,
+            width=image_size_attributes.w if image_size_attributes else 512,
+            height=image_size_attributes.h if image_size_attributes else 512,
+            is_animated=sticker.mime_type == "application/x-tgsticker",
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

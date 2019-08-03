@@ -146,7 +146,6 @@ def pyrogram_api():
             send_audio
             send_document
             send_sticker
-            send_animated_sticker
             send_video
             send_animation
             send_voice
@@ -190,6 +189,7 @@ def pyrogram_api():
             delete_chat_photo
             set_chat_title
             set_chat_description
+            set_chat_permissions
             pin_chat_message
             unpin_chat_message
             get_chat
@@ -200,7 +200,6 @@ def pyrogram_api():
             get_dialogs
             iter_dialogs
             get_dialogs_count
-            restrict_chat
             update_chat_username
             archive_chats
             unarchive_chats

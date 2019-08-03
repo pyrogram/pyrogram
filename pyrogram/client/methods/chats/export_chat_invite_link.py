@@ -57,16 +57,10 @@ class ExportChatInviteLink(BaseClient):
         """
         peer = await self.resolve_peer(chat_id)
 
-        if isinstance(peer, types.InputPeerChat):
+        if isinstance(peer, (types.InputPeerChat, types.InputPeerChannel)):
             return (await self.send(
                 functions.messages.ExportChatInvite(
                     peer=peer
-                )
-            )).link
-        elif isinstance(peer, types.InputPeerChannel):
-            return (await self.send(
-                functions.channels.ExportInvite(
-                    channel=peer
                 )
             )).link
         else:
