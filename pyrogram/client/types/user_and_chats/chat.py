@@ -92,7 +92,7 @@ class Chat(Object):
             This field is available only in case *is_restricted* is True.
 
         permissions (:obj:`ChatPermissions` *optional*):
-            Information about the chat default permissions, for groups and supergroups.
+            Default chat member permissions, for groups and supergroups.
     """
 
     def __init__(

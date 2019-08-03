@@ -20,54 +20,26 @@ from typing import Union
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient
-from ...types.user_and_chats import Chat
+from ...types.user_and_chats import Chat, ChatPermissions
 
 
-class RestrictChat(BaseClient):
-    def restrict_chat(
+class SetChatPermissions(BaseClient):
+    def set_chat_permissions(
         self,
         chat_id: Union[int, str],
-        can_send_messages: bool = False,
-        can_send_media_messages: bool = False,
-        can_send_other_messages: bool = False,
-        can_add_web_page_previews: bool = False,
-        can_send_polls: bool = False,
-        can_change_info: bool = False,
-        can_invite_users: bool = False,
-        can_pin_messages: bool = False
+        permissions: ChatPermissions,
     ) -> Chat:
-        """Restrict a chat.
-        Pass True for all boolean parameters to lift restrictions from a chat.
+        """Set default chat permissions for all members.
+
+        You must be an administrator in the group or a supergroup for this to work and must have the
+        *can_restrict_members* admin rights.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            can_send_messages (``bool``, *optional*):
-                Pass True, if the user can send text messages, contacts, locations and venues.
-
-            can_send_media_messages (``bool``, *optional*):
-                Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
-                implies can_send_messages.
-
-            can_send_other_messages (``bool``, *optional*):
-                Pass True, if the user can send animations, games, stickers and use inline bots,
-                implies can_send_messages.
-
-            can_add_web_page_previews (``bool``, *optional*):
-                Pass True, if the user may add web page previews to their messages, implies can_send_messages.
-
-            can_send_polls (``bool``, *optional*):
-                Pass True, if the user can send polls, implies can_send_messages.
-
-            can_change_info (``bool``, *optional*):
-                Pass True, if the user can change the chat title, photo and other settings.
-
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the user can invite new users to the chat.
-
-            can_pin_messages (``bool``, *optional*):
-                Pass True, if the user can pin messages.
+            permissions (:obj:`ChatPermissions`):
+                New default chat permissions.
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -75,11 +47,20 @@ class RestrictChat(BaseClient):
         Example:
             .. code-block:: python
 
-                # Completely restrict chat
-                app.restrict_chat(chat_id)
+                from pyrogram import ChatPermissions
 
-                # All chat members can only send text messages
-                app.restrict_chat(chat_id, can_send_messages=True)
+                # Completely restrict chat
+                app.set_chat_permissions(chat_id, ChatPermissions())
+
+                # Chat members can only send text messages, media, stickers and GIFs
+                app.set_chat_permissions(
+                    chat_id,
+                    ChatPermissions(
+                        can_send_messages=True,
+                        can_send_media_messages=True,
+                        can_send_other_messages=True
+                    )
+                )
         """
         send_messages = True
         send_media = True
@@ -93,35 +74,35 @@ class RestrictChat(BaseClient):
         invite_users = True
         pin_messages = True
 
-        if can_send_messages:
+        if permissions.can_send_messages:
             send_messages = None
 
-        if can_send_media_messages:
+        if permissions.can_send_media_messages:
             send_messages = None
             send_media = None
 
-        if can_send_other_messages:
+        if permissions.can_send_other_messages:
             send_messages = None
             send_stickers = None
             send_gifs = None
             send_games = None
             send_inline = None
 
-        if can_add_web_page_previews:
+        if permissions.can_add_web_page_previews:
             send_messages = None
             embed_links = None
 
-        if can_send_polls:
+        if permissions.can_send_polls:
             send_messages = None
             send_polls = None
 
-        if can_change_info:
+        if permissions.can_change_info:
             change_info = None
 
-        if can_invite_users:
+        if permissions.can_invite_users:
             invite_users = None
 
-        if can_pin_messages:
+        if permissions.can_pin_messages:
             pin_messages = None
 
         r = self.send(
