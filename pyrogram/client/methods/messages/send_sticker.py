@@ -41,7 +41,7 @@ class SendSticker(BaseClient):
         progress: callable = None,
         progress_args: tuple = ()
     ) -> Union["pyrogram.Message", None]:
-        """Send .webp stickers.
+        """Send static .webp or animated .tgs stickers.
 
         Parameters:
             chat_id (``int`` | ``str``):

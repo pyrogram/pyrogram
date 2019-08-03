@@ -146,7 +146,6 @@ def pyrogram_api():
             send_audio
             send_document
             send_sticker
-            send_animated_sticker
             send_video
             send_animation
             send_voice
