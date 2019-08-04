@@ -43,8 +43,10 @@ class RetractVote(BaseClient):
         Returns:
             :obj:`Poll`: On success, the poll with the retracted vote is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.retract_vote(chat_id, message_id)
         """
         r = self.send(
             functions.messages.SendVote(

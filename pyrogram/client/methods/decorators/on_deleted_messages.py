@@ -47,7 +47,7 @@ class OnDeletedMessages(BaseClient):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.DeletedMessagesHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.pyrogram_plugin = (
+                func.handler = (
                     pyrogram.DeletedMessagesHandler(func, self),
                     group if filters is None else filters
                 )

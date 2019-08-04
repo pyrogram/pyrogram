@@ -56,14 +56,12 @@ class InputMediaAnimation(InputMedia):
             Animation duration.
     """
 
-    __slots__ = ["thumb", "width", "height", "duration"]
-
     def __init__(
         self,
         media: str,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         width: int = 0,
         height: int = 0,
         duration: int = 0

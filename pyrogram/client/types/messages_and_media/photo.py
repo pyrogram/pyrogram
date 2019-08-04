@@ -49,8 +49,6 @@ class Photo(Object):
             Available thumbnails of this photo.
     """
 
-    __slots__ = ["file_id", "width", "height", "file_size", "date", "thumbs"]
-
     def __init__(
         self,
         *,

@@ -16,17 +16,33 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from io import BytesIO
 
-from ..tl_object import TLObject
+from typing import Union
+
+from pyrogram.api import functions
+from ...ext import BaseClient
 
 
-class Null(TLObject):
-    ID = 0x56730bcc
+class DeleteChannel(BaseClient):
+    def delete_channel(self, chat_id: Union[int, str]) -> bool:
+        """Delete a channel.
 
-    @staticmethod
-    def read(b: BytesIO, *args) -> None:
-        return None
+        Parameters:
+            chat_id (``int`` | ``str``):
+                The id of the channel to be deleted.
 
-    def __new__(cls) -> bytes:
-        return cls.ID.to_bytes(4, "little")
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                app.delete_channel(channel_id)
+        """
+        self.send(
+            functions.channels.DeleteChannel(
+                channel=self.resolve_peer(chat_id)
+            )
+        )
+
+        return True

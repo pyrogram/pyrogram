@@ -41,9 +41,7 @@ class InputTextMessageContent(InputMessageContent):
             Disables link previews for links in this message.
     """
 
-    __slots__ = ["message_text", "parse_mode", "disable_web_page_preview"]
-
-    def __init__(self, message_text: str, parse_mode: Union[str, None] = "", disable_web_page_preview: bool = None):
+    def __init__(self, message_text: str, parse_mode: Union[str, None] = object, disable_web_page_preview: bool = None):
         super().__init__()
 
         self.message_text = message_text

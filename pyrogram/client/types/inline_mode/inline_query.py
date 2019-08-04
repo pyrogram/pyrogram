@@ -48,7 +48,6 @@ class InlineQuery(Object, Update):
         location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
     """
-    __slots__ = ["id", "from_user", "query", "offset", "location"]
 
     def __init__(
         self,
@@ -87,7 +86,8 @@ class InlineQuery(Object, Update):
         self,
         results: List[InlineQueryResult],
         cache_time: int = 300,
-        is_personal: bool = None,
+        is_gallery: bool = False,
+        is_personal: bool = False,
         next_offset: str = "",
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
@@ -116,9 +116,13 @@ class InlineQuery(Object, Update):
                 The maximum amount of time in seconds that the result of the inline query may be cached on the server.
                 Defaults to 300.
 
+            is_gallery (``bool``, *optional*):
+                Pass True, if results should be displayed in gallery mode instead of list mode.
+                Defaults to False.
+
             is_personal (``bool``, *optional*):
                 Pass True, if results may be cached on the server side only for the user that sent the query.
-                By default, results may be returned to any user who sends the same query.
+                By default (False), results may be returned to any user who sends the same query.
 
             next_offset (``str``, *optional*):
                 Pass the offset that a client should send in the next query with the same text to receive more results.
@@ -145,6 +149,7 @@ class InlineQuery(Object, Update):
             inline_query_id=self.id,
             results=results,
             cache_time=cache_time,
+            is_gallery=is_gallery,
             is_personal=is_personal,
             next_offset=next_offset,
             switch_pm_text=switch_pm_text,

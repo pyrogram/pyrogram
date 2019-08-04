@@ -42,8 +42,6 @@ class Contact(Object):
             Additional data about the contact in the form of a vCard.
     """
 
-    __slots__ = ["phone_number", "first_name", "last_name", "user_id", "vcard"]
-
     def __init__(
         self,
         *,

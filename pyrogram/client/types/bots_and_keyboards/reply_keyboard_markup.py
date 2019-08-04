@@ -20,6 +20,7 @@ from typing import List, Union
 
 from pyrogram.api.types import KeyboardButtonRow
 from pyrogram.api.types import ReplyKeyboardMarkup as RawReplyKeyboardMarkup
+
 from . import KeyboardButton
 from ..object import Object
 
@@ -48,8 +49,6 @@ class ReplyKeyboardMarkup(Object):
             Example: A user requests to change the bot's language, bot replies to the request with a keyboard to
             select the new language. Other users in the group don't see the keyboard.
     """
-
-    __slots__ = ["keyboard", "resize_keyboard", "one_time_keyboard", "selective"]
 
     def __init__(
         self,

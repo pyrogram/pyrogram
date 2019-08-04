@@ -24,7 +24,6 @@ from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
-    # TODO: Add Users type and use that
     def get_users(
         self,
         user_ids: Union[Iterable[Union[int, str]], int, str]
@@ -43,8 +42,14 @@ class GetUsers(BaseClient):
             returned, otherwise, in case *user_ids* was an iterable a list of users is returned, even if the iterable
             contained one item only.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Get information about one user
+                app.get_users("haskell")
+
+                # Get information about multiple users at once
+                app.get_users([user1, user2, user3])
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]

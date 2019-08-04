@@ -40,8 +40,10 @@ class UpdateUsername(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.update_username("new_username")
         """
 
         return bool(

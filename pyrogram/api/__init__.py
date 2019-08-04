@@ -19,8 +19,7 @@
 from importlib import import_module
 
 from .all import objects
-from .core.tl_object import TLObject
 
 for k, v in objects.items():
     path, name = v.rsplit(".", 1)
-    TLObject.all[k] = getattr(import_module(path), name)
+    objects[k] = getattr(import_module(path), name)

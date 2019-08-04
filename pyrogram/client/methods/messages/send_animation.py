@@ -32,7 +32,7 @@ class SendAnimation(BaseClient):
         animation: str,
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -66,7 +66,7 @@ class SendAnimation(BaseClient):
                 Animation caption, 0-1024 characters.
 
             unsave (``bool``, *optional*):
-                By default, the server will save into your own collection any new animation GIF you send.
+                By default, the server will save into your own collection any new animation you send.
                 Pass True to automatically unsave the sent animation. Defaults to False.
 
             parse_mode (``str``, *optional*):
@@ -103,23 +103,22 @@ class SendAnimation(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -129,8 +128,23 @@ class SendAnimation(BaseClient):
             :obj:`Message` | ``None``: On success, the sent animation message is returned, otherwise, in case the upload
             is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Send animation by uploading from local file
+                app.send_animation("me", "animation.gif")
+
+                # Add caption to the animation
+                app.send_animation("me", "animation.gif", caption="cat")
+
+                # Unsave the animation once is sent
+                app.send_animation("me", "animation.gif", unsave=True)
+
+                # Keep track of the progress while uploading
+                def progress(current, total):
+                    print("{:.1f}%".format(current * 100 / total))
+
+                app.send_animation("me", "animation.gif", progress=progress)
         """
         file = None
 

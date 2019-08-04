@@ -47,21 +47,20 @@ class ExportChatInviteLink(BaseClient):
             ``str``: On success, the exported invite link is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case the chat_id belongs to a user.
+
+        Example:
+            .. code-block:: python
+
+                link = app.export_chat_invite_link(chat_id)
+                print(link)
         """
         peer = self.resolve_peer(chat_id)
 
-        if isinstance(peer, types.InputPeerChat):
+        if isinstance(peer, (types.InputPeerChat, types.InputPeerChannel)):
             return self.send(
                 functions.messages.ExportChatInvite(
                     peer=peer
-                )
-            ).link
-        elif isinstance(peer, types.InputPeerChannel):
-            return self.send(
-                functions.channels.ExportInvite(
-                    channel=peer
                 )
             ).link
         else:

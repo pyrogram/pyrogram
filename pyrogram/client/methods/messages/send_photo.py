@@ -31,7 +31,7 @@ class SendPhoto(BaseClient):
         chat_id: Union[int, str],
         photo: str,
         caption: str = "",
-        parse_mode: Union[str, None] = "",
+        parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -85,23 +85,22 @@ class SendPhoto(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -111,8 +110,20 @@ class SendPhoto(BaseClient):
             :obj:`Message` | ``None``: On success, the sent photo message is returned, otherwise, in case the upload
             is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Send photo by uploading from local file
+                app.send_photo("me", "photo.jpg")
+
+                # Send photo by uploading from URL
+                app.send_photo("me", "https://i.imgur.com/BQBTP7d.png")
+
+                # Add caption to a photo
+                app.send_photo("me", "photo.jpg", caption="Holidays!")
+
+                # Send self-destructing photo
+                app.send_photo("me", "photo.jpg", ttl_seconds=10)
         """
         file = None
 

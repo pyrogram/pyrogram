@@ -59,6 +59,8 @@ class BaseClient:
     WORKDIR = PARENT_DIR
     CONFIG_FILE = PARENT_DIR / "config.ini"
 
+    PARSE_MODES = ["combined", "markdown", "md", "html", None]
+
     MEDIA_TYPE_ID = {
         0: "photo_thumbnail",
         1: "chat_photo",
@@ -87,19 +89,21 @@ class BaseClient:
 
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
+    is_idling = False
+
     def __init__(self):
         self.storage = None
 
         self.rnd_id = MsgId
 
         self.parser = Parser(self)
+        self.parse_mode = "combined"
 
         self.session = None
         self.media_sessions = {}
         self.media_sessions_lock = Lock()
 
         self.is_started = None
-        self.is_idle = None
 
         self.takeout_id = None
 

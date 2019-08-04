@@ -19,7 +19,6 @@
 from typing import Union
 
 from pyrogram.api import functions, types
-
 from ...ext import BaseClient
 
 
@@ -36,8 +35,11 @@ class GetProfilePhotosCount(BaseClient):
         Returns:
             ``int``: On success, the user profile photos count is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                count = app.get_profile_photos_count("haskell")
+                print(count)
         """
 
         peer_id = self.resolve_peer(chat_id)

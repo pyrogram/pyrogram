@@ -58,10 +58,6 @@ class Audio(Object):
             Thumbnails of the music file album cover.
     """
 
-    __slots__ = [
-        "file_id", "file_name", "mime_type", "file_size", "date", "duration", "performer", "title", "thumbs"
-    ]
-
     def __init__(
         self,
         *,

@@ -43,12 +43,10 @@ class InputMediaPhoto(InputMedia):
             Pass None to completely disable style parsing.
     """
 
-    __slots__ = []
-
     def __init__(
         self,
         media: str,
         caption: str = "",
-        parse_mode: Union[str, None] = ""
+        parse_mode: Union[str, None] = object
     ):
         super().__init__(media, caption, parse_mode)

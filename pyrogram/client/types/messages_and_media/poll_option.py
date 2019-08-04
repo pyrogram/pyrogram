@@ -35,8 +35,6 @@ class PollOption(Object):
             The data this poll option is holding.
     """
 
-    __slots__ = ["text", "voter_count", "data"]
-
     def __init__(
         self,
         *,

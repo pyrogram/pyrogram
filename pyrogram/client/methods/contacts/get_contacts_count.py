@@ -27,8 +27,11 @@ class GetContactsCount(BaseClient):
         Returns:
             ``int``: On success, the contacts count is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                count = app.get_contacts_count()
+                print(count)
         """
 
         return len(self.send(functions.contacts.GetContacts(hash=0)).contacts)

@@ -49,8 +49,6 @@ class Document(Object):
             Document thumbnails as defined by sender.
     """
 
-    __slots__ = ["file_id", "file_name", "mime_type", "file_size", "date", "thumbs"]
-
     def __init__(
         self,
         *,

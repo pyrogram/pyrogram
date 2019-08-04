@@ -16,29 +16,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any
-
 from pyrogram.api import types
 from .inline_query_result import InlineQueryResult
+from ..bots_and_keyboards import InlineKeyboardMarkup
+from ..input_message_content import InputMessageContent
 
 
 class InlineQueryResultArticle(InlineQueryResult):
     """Link to an article or web page.
 
-    TODO: Hide url?
-
     Parameters:
-        id (``str``):
-            Unique identifier for this result, 1-64 bytes.
-
         title (``str``):
             Title for the result.
 
         input_message_content (:obj:`InputMessageContent`):
             Content of the message to be sent.
 
-        reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
-            Inline keyboard attached to the message.
+        id (``str``, *optional*):
+            Unique identifier for this result, 1-64 bytes.
+            Defaults to a randomly generated UUID4.
 
         url (``str``, *optional*):
             URL of the result.
@@ -47,46 +43,32 @@ class InlineQueryResultArticle(InlineQueryResult):
             Short description of the result.
 
         thumb_url (``str``, *optional*):
-            Url of the thumbnail for the result.
+            URL of the thumbnail for the result.
 
-        thumb_width (``int``, *optional*):
-            Thumbnail width.
-
-        thumb_height (``int``, *optional*):
-            Thumbnail height.
+        reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+            Inline keyboard attached to the message.
     """
-
-    __slots__ = [
-        "title", "input_message_content", "reply_markup", "url", "description", "thumb_url", "thumb_width",
-        "thumb_height"
-    ]
 
     def __init__(
         self,
-        id: Any,
         title: str,
-        input_message_content,
-        reply_markup=None,
+        input_message_content: InputMessageContent,
+        id: str = None,
+        reply_markup: InlineKeyboardMarkup = None,
         url: str = None,
         description: str = None,
-        thumb_url: str = None,
-        thumb_width: int = 0,
-        thumb_height: int = 0
+        thumb_url: str = None
     ):
-        super().__init__("article", id)
+        super().__init__("article", id, input_message_content, reply_markup)
 
         self.title = title
-        self.input_message_content = input_message_content
-        self.reply_markup = reply_markup
         self.url = url
         self.description = description
         self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
 
     def write(self):
         return types.InputBotInlineResult(
-            id=str(self.id),
+            id=self.id,
             type=self.type,
             send_message=self.input_message_content.write(self.reply_markup),
             title=self.title,
@@ -96,11 +78,6 @@ class InlineQueryResultArticle(InlineQueryResult):
                 url=self.thumb_url,
                 size=0,
                 mime_type="image/jpeg",
-                attributes=[
-                    types.DocumentAttributeImageSize(
-                        w=self.thumb_width,
-                        h=self.thumb_height
-                    )
-                ]
+                attributes=[]
             ) if self.thumb_url else None
         )

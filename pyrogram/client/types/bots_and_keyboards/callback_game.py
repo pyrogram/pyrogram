@@ -25,7 +25,5 @@ class CallbackGame(Object):
     Use BotFather to set up your game.
     """
 
-    __slots__ = []
-
     def __init__(self):
         super().__init__()
