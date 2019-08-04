@@ -139,7 +139,7 @@ class SendVoice(BaseClient):
                 file = self.save_file(voice, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(voice.name) or "audio/mpeg",
-                    file=file.name,
+                    file=file,
                     attributes=[
                         types.DocumentAttributeAudio(
                             voice=True,
