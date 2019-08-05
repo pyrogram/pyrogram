@@ -250,8 +250,8 @@ The error in question is ``[400 PEER_ID_INVALID]``, and could mean several thing
 
 About the last point: in order for you to meet a user and thus communicate with them, you should ask yourself how to
 contact people using official apps. The answer is the same for Pyrogram too and involves normal usages such as searching
-for usernames, meet them in a common group, have their phone contacts saved, getting a message mentioning them (either a
-forward or a mention in the message text).
+for usernames, meeting them in a common group, have their phone contacts saved or getting a message mentioning them,
+either a forward or a mention in the message text.
 
 UnicodeEncodeError: '<encoding>' codec can't encode …
 -----------------------------------------------------
