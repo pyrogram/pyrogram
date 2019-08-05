@@ -153,7 +153,7 @@ class Client(Methods, BaseClient):
 
         workdir (``str``, *optional*):
             Define a custom working directory. The working directory is the location in your filesystem
-            where Pyrogram will store your session files. Defaults to "." (current directory).
+            where Pyrogram will store your session files. Defaults to the parent directory of the main script.
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
