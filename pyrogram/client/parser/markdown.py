@@ -107,44 +107,44 @@ class Markdown:
     @staticmethod
     def unparse(text: str, entities: list):
         text = utils.add_surrogates(text)
-        copy = text
+
+        entities_offsets = []
 
         for entity in entities:
+            entity_type = entity.type
             start = entity.offset
             end = start + entity.length
 
-            type = entity.type
-
-            url = entity.url
-            user = entity.user
-
-            sub = copy[start:end]
-
-            if type == "bold":
-                style = BOLD_DELIM
-            elif type == "italic":
-                style = ITALIC_DELIM
-            elif type == "underline":
-                style = UNDERLINE_DELIM
-            elif type == "strike":
-                style = STRIKE_DELIM
-            elif type == "code":
-                style = CODE_DELIM
-            elif type == "pre":
-                style = PRE_DELIM
-            # TODO: Blockquote for MD
-            # elif type == "blockquote":
-            #     style = ...
-            elif type == "text_link":
-                text = text[:start] + text[start:].replace(sub, '[{1}]({0})'.format(url, sub), 1)
-                continue
-            elif type == "text_mention":
-                text = text[:start] + text[start:].replace(
-                    sub, '[{1}](tg://user?id={0})'.format(user.id, sub), 1)
-                continue
+            if entity_type == "bold":
+                start_tag = end_tag = "**"
+            elif entity_type == "italic":
+                start_tag = end_tag = "__"
+            elif entity_type == "underline":
+                start_tag = end_tag = "--"
+            elif entity_type == "strike":
+                start_tag = end_tag = "~~"
+            elif entity_type == "code":
+                start_tag = end_tag = "`"
+            elif entity_type in ("pre", "blockquote"):
+                start_tag = end_tag = "```"
+            elif entity_type == "text_link":
+                url = entity.url
+                start_tag = "["
+                end_tag = "]({})".format(url)
+            elif entity_type == "text_mention":
+                user = entity.user
+                start_tag = "["
+                end_tag = "](tg://user?id={})".format(user.id)
             else:
                 continue
 
-            text = text[:start] + text[start:].replace(sub, "{0}{1}{0}".format(style, sub), 1)
+            entities_offsets.append((start_tag, start,))
+            entities_offsets.append((end_tag, end,))
+
+        # sorting by offset (desc)
+        entities_offsets.sort(key=lambda x: -x[1])
+
+        for entity, offset in entities_offsets:
+            text = text[:offset]+entity+text[offset:]
 
         return utils.remove_surrogates(text)

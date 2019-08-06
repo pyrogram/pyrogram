@@ -147,43 +147,38 @@ class HTML:
     @staticmethod
     def unparse(text: str, entities: list):
         text = utils.add_surrogates(text)
-        copy = text
+
+        entities_offsets = []
 
         for entity in entities:
+            entity_type = entity.type
             start = entity.offset
             end = start + entity.length
 
-            type = entity.type
-
-            url = entity.url
-            user = entity.user
-
-            sub = copy[start:end]
-
-            if type == "bold":
-                style = "b"
-            elif type == "italic":
-                style = "i"
-            elif type == "underline":
-                style = "u"
-            elif type == "strike":
-                style = "s"
-            elif type == "code":
-                style = "code"
-            elif type == "pre":
-                style = "pre"
-            elif type == "blockquote":
-                style = "blockquote"
-            elif type == "text_link":
-                text = text[:start] + text[start:].replace(sub, '<a href="{}">{}</a>'.format(url, sub), 1)
-                continue
-            elif type == "text_mention":
-                text = text[:start] + text[start:].replace(
-                    sub, '<a href="tg://user?id={}">{}</a>'.format(user.id, sub), 1)
-                continue
+            if entity_type in ("bold", "italic", "underline", "strike"):
+                start_tag = "<{}>".format(entity_type[0])
+                end_tag = "</{}>".format(entity_type[0])
+            elif entity_type in ("code", "pre", "blockquote"):
+                start_tag = "<{}>".format(entity_type)
+                end_tag = "</{}>".format(entity_type)
+            elif entity_type == "text_link":
+                url = entity.url
+                start_tag = '<a href="{}">'.format(url)
+                end_tag = "</a>"
+            elif entity_type == "text_mention":
+                user = entity.user
+                start_tag = '<a href="tg://user?id={}">'.format(user.id)
+                end_tag = "</a>"
             else:
                 continue
 
-            text = text[:start] + text[start:].replace(sub, "<{0}>{1}</{0}>".format(style, sub), 1)
+            entities_offsets.append((start_tag, start,))
+            entities_offsets.append((end_tag, end,))
+
+        # sorting by offset (desc)
+        entities_offsets.sort(key=lambda x: -x[1])
+
+        for entity, offset in entities_offsets:
+            text = text[:offset]+entity+text[offset:]
 
         return utils.remove_surrogates(text)
