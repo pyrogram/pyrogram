@@ -18,7 +18,6 @@
 
 import re
 from typing import Callable
-from shlex import split
 
 from .filter import Filter
 from ..types.bots_and_keyboards import InlineKeyboardMarkup, ReplyKeyboardMarkup
@@ -233,6 +232,7 @@ class Filters:
                 Pass True if you want your command(s) to be case sensitive. Defaults to False.
                 Examples: when True, command="Start" would trigger /Start but not /start.
         """
+        command_re = re.compile(r"([\"'])(?!\\)(.*?)(?<!\\)\1|(\S+)")
 
         def func(flt, message):
             text = message.text or message.caption
@@ -241,16 +241,16 @@ class Filters:
             if text:
                 for prefix in flt.prefixes:
                     if text.startswith(prefix):
-                        command = text[len(prefix):].split()[0]
-                        command = command if flt.case_sensitive else command.lower()
+                        # groups are 1-indexed, group(1) is the quote, group(2) is the text
+                        # between the quotes, group(3) is unquoted, whitespace-split text
+                        args = [m.group(2) or m.group(3) or ""
+                                for m in re.finditer(command_re, text[len(prefix):])]
+                        command = args[0] if flt.case_sensitive else args[0].lower()
 
                         if command not in flt.commands:
                             return False
 
-                        text = text.replace("\\", "\\\\")
-
-                        args = shlex.split(text)[1:]
-                        message.command = [command] + args
+                        message.command = args
 
                         break
 
