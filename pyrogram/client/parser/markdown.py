@@ -116,17 +116,17 @@ class Markdown:
             end = start + entity.length
 
             if entity_type == "bold":
-                start_tag = end_tag = "**"
+                start_tag = end_tag = BOLD_DELIM
             elif entity_type == "italic":
-                start_tag = end_tag = "__"
+                start_tag = end_tag = ITALIC_DELIM
             elif entity_type == "underline":
-                start_tag = end_tag = "--"
+                start_tag = end_tag = UNDERLINE_DELIM
             elif entity_type == "strike":
-                start_tag = end_tag = "~~"
+                start_tag = end_tag = STRIKE_DELIM
             elif entity_type == "code":
-                start_tag = end_tag = "`"
+                start_tag = end_tag = CODE_DELIM
             elif entity_type in ("pre", "blockquote"):
-                start_tag = end_tag = "```"
+                start_tag = end_tag = PRE_DELIM
             elif entity_type == "text_link":
                 url = entity.url
                 start_tag = "["
@@ -145,6 +145,6 @@ class Markdown:
         entities_offsets.sort(key=lambda x: -x[1])
 
         for entity, offset in entities_offsets:
-            text = text[:offset]+entity+text[offset:]
+            text = text[:offset] + entity + text[offset:]
 
         return utils.remove_surrogates(text)
