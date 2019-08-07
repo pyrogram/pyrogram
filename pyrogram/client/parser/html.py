@@ -179,6 +179,6 @@ class HTML:
         entities_offsets.sort(key=lambda x: -x[1])
 
         for entity, offset in entities_offsets:
-            text = text[:offset]+entity+text[offset:]
+            text = text[:offset] + entity + text[offset:]
 
         return utils.remove_surrogates(text)
