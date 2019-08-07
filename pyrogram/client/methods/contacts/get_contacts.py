@@ -30,14 +30,16 @@ log = logging.getLogger(__name__)
 
 class GetContacts(BaseClient):
     def get_contacts(self) -> List["pyrogram.User"]:
-        # TODO: Create a Users object and return that
         """Get contacts from your Telegram address book.
 
         Returns:
             List of :obj:`User`: On success, a list of users is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                contacts = app.get_contacts()
+                print(contacts)
         """
         while True:
             try:
@@ -46,5 +48,4 @@ class GetContacts(BaseClient):
                 log.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total contacts: {}".format(len(self.peers_by_phone)))
                 return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)

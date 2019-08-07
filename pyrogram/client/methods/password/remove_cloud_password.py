@@ -36,8 +36,12 @@ class RemoveCloudPassword(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case there is no cloud password to remove.
+
+        Example:
+            .. code-block:: python
+
+                app.remove_cloud_password("password")
         """
         r = self.send(functions.account.GetPassword())
 

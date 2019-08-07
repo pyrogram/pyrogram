@@ -21,7 +21,6 @@ from .delete_profile_photos import DeleteProfilePhotos
 from .get_me import GetMe
 from .get_profile_photos import GetProfilePhotos
 from .get_profile_photos_count import GetProfilePhotosCount
-from .get_user_dc import GetUserDC
 from .get_users import GetUsers
 from .iter_profile_photos import IterProfilePhotos
 from .set_profile_photo import SetProfilePhoto
@@ -38,7 +37,6 @@ class Users(
     GetMe,
     UpdateUsername,
     GetProfilePhotosCount,
-    GetUserDC,
     IterProfilePhotos,
     UnblockUser
 ):

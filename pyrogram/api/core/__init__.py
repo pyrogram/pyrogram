@@ -22,8 +22,5 @@ from .gzip_packed import GzipPacked
 from .list import List
 from .message import Message
 from .msg_container import MsgContainer
-from .primitives import (
-    Bool, BoolTrue, BoolFalse, Bytes, Double,
-    Int, Long, Int128, Int256, Null, String, Vector
-)
+from .primitives import *
 from .tl_object import TLObject

@@ -29,8 +29,6 @@ class StrippedThumbnail(Object):
             Thumbnail data
     """
 
-    __slots__ = ["data"]
-
     def __init__(
         self,
         *,

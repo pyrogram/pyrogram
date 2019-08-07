@@ -18,6 +18,10 @@
 
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
+from .edit_inline_caption import EditInlineCaption
+from .edit_inline_media import EditInlineMedia
+from .edit_inline_reply_markup import EditInlineReplyMarkup
+from .edit_inline_text import EditInlineText
 from .edit_message_caption import EditMessageCaption
 from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
@@ -29,7 +33,6 @@ from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
-from .send_animated_sticker import SendAnimatedSticker
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
@@ -81,7 +84,10 @@ class Messages(
     IterHistory,
     SendCachedMedia,
     GetHistoryCount,
-    SendAnimatedSticker,
-    ReadHistory
+    ReadHistory,
+    EditInlineText,
+    EditInlineCaption,
+    EditInlineMedia,
+    EditInlineReplyMarkup
 ):
     pass

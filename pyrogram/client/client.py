@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import base64
-import json
 import logging
 import math
 import mimetypes
@@ -28,7 +26,6 @@ import tempfile
 import threading
 import time
 from configparser import ConfigParser
-from datetime import datetime
 from hashlib import sha256, md5
 from importlib import import_module
 from pathlib import Path
@@ -53,6 +50,7 @@ from pyrogram.errors import (
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
+from .storage import Storage, FileStorage, MemoryStorage
 
 log = logging.getLogger(__name__)
 
@@ -62,8 +60,13 @@ class Client(Methods, BaseClient):
 
     Parameters:
         session_name (``str``):
-            Name to uniquely identify a session of either a User or a Bot, e.g.: "my_account". This name will be used
-            to save a file to disk that stores details needed for reconnecting without asking again for credentials.
+            Pass a string of your choice to give a name to the client session, e.g.: "*my_account*". This name will be
+            used to save a file on disk that stores details needed to reconnect without asking again for credentials.
+            Alternatively, if you don't want a file to be saved on disk, pass the special name "**:memory:**" to start
+            an in-memory session that will be discarded as soon as you stop the Client. In order to reconnect again
+            using a memory storage without having to login again, you can use
+            :meth:`~pyrogram.Client.export_session_string` before stopping the client to get a session string you can
+            pass here as argument.
 
         api_id (``int``, *optional*):
             The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
@@ -150,7 +153,7 @@ class Client(Methods, BaseClient):
 
         workdir (``str``, *optional*):
             Define a custom working directory. The working directory is the location in your filesystem
-            where Pyrogram will store your session files. Defaults to "." (current directory).
+            where Pyrogram will store your session files. Defaults to the parent directory of the main script.
 
         config_file (``str``, *optional*):
             Path of the configuration file. Defaults to ./config.ini
@@ -171,13 +174,24 @@ class Client(Methods, BaseClient):
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.
             Defaults to False (normal session).
+
+    Example:
+        .. code-block:: python
+
+            from pyrogram import Client
+
+            app = Client("my_account")
+
+            with app:
+                app.send_message("me", "Hi!")
+
     """
 
     terms_of_service_displayed = False
 
     def __init__(
         self,
-        session_name: str,
+        session_name: Union[str, Storage],
         api_id: Union[int, str] = None,
         api_hash: str = None,
         app_version: str = None,
@@ -224,11 +238,22 @@ class Client(Methods, BaseClient):
         self.first_name = first_name
         self.last_name = last_name
         self.workers = workers
-        self.workdir = workdir
-        self.config_file = config_file
+        self.workdir = Path(workdir)
+        self.config_file = Path(config_file)
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
+
+        if isinstance(session_name, str):
+            if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
+                session_name = re.sub(r"[\n\s]+", "", session_name)
+                self.storage = MemoryStorage(session_name)
+            else:
+                self.storage = FileStorage(session_name, self.workdir)
+        elif isinstance(session_name, Storage):
+            self.storage = session_name
+        else:
+            raise ValueError("Unknown storage engine")
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -255,59 +280,58 @@ class Client(Methods, BaseClient):
         self._proxy.update(value)
 
     def start(self):
-        """Start the Client.
+        """Start the client.
+
+        This method connects the client to Telegram and, in case of new sessions, automatically manages the full login
+        process using an interactive prompt (by default).
+
+        Has no parameters.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ConnectionError: In case you try to start an already started Client.
+            ConnectionError: In case you try to start an already started client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 4
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
         """
         if self.is_started:
             raise ConnectionError("Client has already been started")
-
-        if self.BOT_TOKEN_RE.match(self.session_name):
-            self.is_bot = True
-            self.bot_token = self.session_name
-            self.session_name = self.session_name.split(":")[0]
-            log.warning('\nWARNING: You are using a bot token as session name!\n'
-                        'This usage will be deprecated soon. Please use a session file name to load '
-                        'an existing session and the bot_token argument to create new sessions.\n'
-                        'More info: https://docs.pyrogram.org/intro/auth#bot-authorization\n')
 
         self.load_config()
         self.load_session()
         self.load_plugins()
 
-        self.session = Session(
-            self,
-            self.dc_id,
-            self.auth_key
-        )
+        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
         self.session.start()
         self.is_started = True
 
         try:
-            if self.user_id is None:
+            if self.storage.user_id is None:
                 if self.bot_token is None:
-                    self.is_bot = False
+                    self.storage.is_bot = False
                     self.authorize_user()
                 else:
-                    self.is_bot = True
+                    self.storage.is_bot = True
                     self.authorize_bot()
 
-                self.save_session()
-
-            if not self.is_bot:
+            if not self.storage.is_bot:
                 if self.takeout:
                     self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
                     log.warning("Takeout session {} initiated".format(self.takeout_id))
 
                 now = time.time()
 
-                if abs(now - self.date) > Client.OFFLINE_SLEEP:
-                    self.peers_by_username = {}
-                    self.peers_by_phone = {}
-
+                if abs(now - self.storage.date) > Client.OFFLINE_SLEEP:
                     self.get_initial_dialogs()
                     self.get_contacts()
                 else:
@@ -350,8 +374,25 @@ class Client(Methods, BaseClient):
     def stop(self):
         """Stop the Client.
 
+        This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Has no parameters.
+
         Raises:
-            ConnectionError: In case you try to stop an already stopped Client.
+            ConnectionError: In case you try to stop an already stopped client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
         """
         if not self.is_started:
             raise ConnectionError("Client is already stopped")
@@ -392,64 +433,125 @@ class Client(Methods, BaseClient):
     def restart(self):
         """Restart the Client.
 
+        This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
+        a client using a single method.
+
+        Has no parameters.
+
         Raises:
             ConnectionError: In case you try to restart a stopped Client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.restart()
+
+                ...  # Call other API methods
+
+                app.stop()
         """
         self.stop()
         self.start()
 
-    def idle(self, stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
-        """Block the main script execution until a signal (e.g.: from CTRL+C) is received.
-        Once the signal is received, the client will automatically stop and the main script will continue its execution.
+    @staticmethod
+    def idle(stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
+        """Block the main script execution until a signal is received.
 
-        This is used after starting one or more clients and is useful for event-driven applications only, that are,
-        applications which react upon incoming Telegram updates through handlers, rather than executing a set of methods
-        sequentially.
+        This static method will run an infinite loop in order to block the main script execution and prevent it from
+        exiting while having client(s) that are still running in the background.
 
-        The way Pyrogram works, will keep your handlers in a pool of workers, which are executed concurrently outside
-        the main script; calling idle() will ensure the client(s) will be kept alive by not letting the main script to
-        end, until you decide to quit.
+        It is useful for event-driven application only, that are, applications which react upon incoming Telegram
+        updates through handlers, rather than executing a set of methods sequentially.
+
+        The way Pyrogram works, it will keep your handlers in a pool of worker threads, which are executed concurrently
+        outside the main thread; calling idle() will ensure the client(s) will be kept alive by not letting the main
+        script to end, until you decide to quit.
+
+        Once a signal is received (e.g.: from CTRL+C) the inner infinite loop will break and your main script will
+        continue. Don't forget to call :meth:`~Client.stop` for each running client before the script ends.
 
         Parameters:
             stop_signals (``tuple``, *optional*):
                 Iterable containing signals the signal handler will listen to.
-                Defaults to (SIGINT, SIGTERM, SIGABRT).
+                Defaults to *(SIGINT, SIGTERM, SIGABRT)*.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 13
+
+                from pyrogram import Client
+
+                app1 = Client("account1")
+                app2 = Client("account2")
+                app3 = Client("account3")
+
+                ...  # Set handlers up
+
+                app1.start()
+                app2.start()
+                app3.start()
+
+                Client.idle()
+
+                app1.stop()
+                app2.stop()
+                app3.stop()
         """
 
-        # TODO: Maybe make this method static and don't automatically stop
-
         def signal_handler(*args):
-            self.is_idle = False
+            Client.is_idling = False
 
         for s in stop_signals:
             signal(s, signal_handler)
 
-        self.is_idle = True
+        Client.is_idling = True
 
-        while self.is_idle:
+        while Client.is_idling:
             time.sleep(1)
 
-        self.stop()
-
     def run(self):
-        """Start the Client and automatically idle the main script.
+        """Start the client, idle the main script and finally stop the client.
 
-        This is a convenience method that literally just calls :meth:`~Client.start` and :meth:`~Client.idle`. It makes
-        running a client less verbose, but is not suitable in case you want to run more than one client in a single main
-        script, since :meth:`~Client.idle` will block.
+        This is a convenience method that calls :meth:`~Client.start`, :meth:`~Client.idle` and :meth:`~Client.stop` in
+        sequence. It makes running a client less verbose, but is not suitable in case you want to run more than one
+        client in a single main script, since idle() will block after starting the own client.
+
+        Has no parameters.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
+            ConnectionError: In case you try to run an already started client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 7
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                ...  # Set handlers up
+
+                app.run()
         """
         self.start()
-        self.idle()
+        Client.idle()
+        self.stop()
 
     def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
 
-        You can register multiple handlers, but at most one handler within a group
-        will be used for a single update. To handle the same update more than once, register
-        your handler using a different group id (lower group id == higher priority).
+        You can register multiple handlers, but at most one handler within a group will be used for a single update.
+        To handle the same update more than once, register your handler using a different group id (lower group id
+        == higher priority). This mechanism is explained in greater details at
+        :doc:`More on Updates <../../topics/more-on-updates>`.
 
         Parameters:
             handler (``Handler``):
@@ -459,7 +561,22 @@ class Client(Methods, BaseClient):
                 The group identifier, defaults to 0.
 
         Returns:
-            ``tuple``: A tuple consisting of (handler, group).
+            ``tuple``: A tuple consisting of *(handler, group)*.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client, MessageHandler
+
+                def dump(client, message):
+                    print(message)
+
+                app = Client("my_account")
+
+                app.add_handler(MessageHandler(dump))
+
+                app.run()
         """
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = handler.callback
@@ -471,9 +588,8 @@ class Client(Methods, BaseClient):
     def remove_handler(self, handler: Handler, group: int = 0):
         """Remove a previously-registered update handler.
 
-        Make sure to provide the right group that the handler was added in. You can use
-        the return value of the :meth:`~Client.add_handler` method, a tuple of (handler, group), and
-        pass it directly.
+        Make sure to provide the right group where the handler was added in. You can use the return value of the
+        :meth:`~Client.add_handler` method, a tuple of *(handler, group)*, and pass it directly.
 
         Parameters:
             handler (``Handler``):
@@ -481,6 +597,24 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 11
+
+                from pyrogram import Client, MessageHandler
+
+                def dump(client, message):
+                    print(message)
+
+                app = Client("my_account")
+
+                handler = app.add_handler(MessageHandler(dump))
+
+                # Starred expression to unpack (handler, group)
+                app.remove_handler(*handler)
+
+                app.run()
         """
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = None
@@ -489,9 +623,108 @@ class Client(Methods, BaseClient):
 
     def stop_transmission(self):
         """Stop downloading or uploading a file.
-        Must be called inside a progress callback function.
+
+        This method must be called inside a progress callback function in order to stop the transmission at the
+        desired time. The progress callback is called every time a file chunk is uploaded/downloaded.
+
+        Has no parameters.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 9
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                # Example to stop transmission once the upload progress reaches 50%
+                # Useless in practice, but shows how to stop on command
+                def progress(client, current, total):
+                    if (current * 100 / total) > 50:
+                        client.stop_transmission()
+
+                with app:
+                    app.send_document("me", "files.zip", progress=progress)
         """
         raise Client.StopTransmission
+
+    def export_session_string(self):
+        """Export the current authorized session as a serialized string.
+
+        Session strings are useful for storing in-memory authorized sessions in a portable, serialized string.
+        More detailed information about session strings can be found at the dedicated page of
+        :doc:`Storage Engines <../../topics/storage-engines>`.
+
+        Has no parameters.
+
+        Returns:
+            ``str``: The session serialized into a printable, url-safe string.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 6
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    print(app.export_session_string())
+        """
+        return self.storage.export_session_string()
+
+    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+        """Set the parse mode to be used globally by the client.
+
+        When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
+        global value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and
+        combined together.
+
+        Parameters:
+            parse_mode (``str``):
+                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
+                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
+                completely.
+
+        Raises:
+            ValueError: In case the provided *parse_mode* is not a valid parse mode.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 10,14,18,22
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    # Default combined mode: Markdown + HTML
+                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+
+                    # Force Markdown-only, HTML is disabled
+                    app.set_parse_mode("markdown")
+                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+
+                    # Force HTML-only, Markdown is disabled
+                    app.set_parse_mode("html")
+                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+
+                    # Disable the parser completely
+                    app.set_parse_mode(None)
+                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+
+                    # Bring back the default combined mode
+                    app.set_parse_mode()
+                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+        """
+
+        if parse_mode not in self.PARSE_MODES:
+            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
+                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
+                parse_mode
+            ))
+
+        self.parse_mode = parse_mode
 
     def authorize_bot(self):
         try:
@@ -506,19 +739,15 @@ class Client(Methods, BaseClient):
         except UserMigrate as e:
             self.session.stop()
 
-            self.dc_id = e.x
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
-
-            self.session = Session(
-                self,
-                self.dc_id,
-                self.auth_key
-            )
+            self.storage.dc_id = e.x
+            self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+            self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
             self.session.start()
+
             self.authorize_bot()
         else:
-            self.user_id = r.user.id
+            self.storage.user_id = r.user.id
 
             print("Logged in successfully as @{}".format(r.user.username))
 
@@ -559,20 +788,10 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 self.session.stop()
 
-                self.dc_id = e.x
+                self.storage.dc_id = e.x
+                self.storage.auth_key = Auth(self, self.storage.dc_id).create()
 
-                self.auth_key = Auth(
-                    self.dc_id,
-                    self.test_mode,
-                    self.ipv6,
-                    self._proxy
-                ).create()
-
-                self.session = Session(
-                    self,
-                    self.dc_id,
-                    self.auth_key
-                )
+                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
 
                 self.session.start()
             except (PhoneNumberInvalid, PhoneNumberBanned) as e:
@@ -752,13 +971,13 @@ class Client(Methods, BaseClient):
             )
 
         self.password = None
-        self.user_id = r.user.id
+        self.storage.user_id = r.user.id
 
         print("Logged in successfully as {}".format(r.user.first_name))
 
     def fetch_peers(
         self,
-        entities: List[
+        peers: List[
             Union[
                 types.User,
                 types.Chat, types.ChatForbidden,
@@ -767,64 +986,57 @@ class Client(Methods, BaseClient):
         ]
     ) -> bool:
         is_min = False
+        parsed_peers = []
 
-        for entity in entities:
-            if isinstance(entity, types.User):
-                user_id = entity.id
+        for peer in peers:
+            username = None
+            phone_number = None
 
-                access_hash = entity.access_hash
+            if isinstance(peer, types.User):
+                peer_id = peer.id
+                access_hash = peer.access_hash
 
-                if access_hash is None:
-                    is_min = True
-                    continue
+                username = peer.username
+                phone_number = peer.phone
 
-                username = entity.username
-                phone = entity.phone
-
-                input_peer = types.InputPeerUser(
-                    user_id=user_id,
-                    access_hash=access_hash
-                )
-
-                self.peers_by_id[user_id] = input_peer
-
-                if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
-
-                if phone is not None:
-                    self.peers_by_phone[phone] = input_peer
-
-            if isinstance(entity, (types.Chat, types.ChatForbidden)):
-                chat_id = entity.id
-                peer_id = -chat_id
-
-                input_peer = types.InputPeerChat(
-                    chat_id=chat_id
-                )
-
-                self.peers_by_id[peer_id] = input_peer
-
-            if isinstance(entity, (types.Channel, types.ChannelForbidden)):
-                channel_id = entity.id
-                peer_id = int("-100" + str(channel_id))
-
-                access_hash = entity.access_hash
+                if peer.bot:
+                    peer_type = "bot"
+                else:
+                    peer_type = "user"
 
                 if access_hash is None:
                     is_min = True
                     continue
 
-                username = getattr(entity, "username", None)
+                if username is not None:
+                    username = username.lower()
+            elif isinstance(peer, (types.Chat, types.ChatForbidden)):
+                peer_id = -peer.id
+                access_hash = 0
+                peer_type = "group"
+            elif isinstance(peer, (types.Channel, types.ChannelForbidden)):
+                peer_id = utils.get_channel_id(peer.id)
+                access_hash = peer.access_hash
 
-                input_peer = types.InputPeerChannel(
-                    channel_id=channel_id,
-                    access_hash=access_hash
-                )
+                username = getattr(peer, "username", None)
 
-                self.peers_by_id[peer_id] = input_peer
+                if peer.broadcast:
+                    peer_type = "channel"
+                else:
+                    peer_type = "supergroup"
+
+                if access_hash is None:
+                    is_min = True
+                    continue
 
                 if username is not None:
-                    self.peers_by_username[username.lower()] = input_peer
+                    username = username.lower()
+            else:
+                continue
+
+            parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
+
+        self.storage.update_peers(parsed_peers)
 
         return is_min
 
@@ -842,39 +1054,7 @@ class Client(Methods, BaseClient):
             final_file_path = ""
 
             try:
-                data, file_name, done, progress, progress_args, path = packet
-
-                directory, file_name = os.path.split(file_name)
-                directory = directory or "downloads"
-
-                media_type_str = Client.MEDIA_TYPE_ID[data.media_type]
-
-                file_name = file_name or data.file_name
-
-                if not file_name:
-                    guessed_extension = self.guess_extension(data.mime_type)
-
-                    if data.media_type in (0, 1, 2, 14):
-                        extension = ".jpg"
-                    elif data.media_type == 3:
-                        extension = guessed_extension or ".ogg"
-                    elif data.media_type in (4, 10, 13):
-                        extension = guessed_extension or ".mp4"
-                    elif data.media_type == 5:
-                        extension = guessed_extension or ".zip"
-                    elif data.media_type == 8:
-                        extension = guessed_extension or ".webp"
-                    elif data.media_type == 9:
-                        extension = guessed_extension or ".mp3"
-                    else:
-                        continue
-
-                    file_name = "{}_{}_{}{}".format(
-                        media_type_str,
-                        datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                        self.rnd_id(),
-                        extension
-                    )
+                data, directory, file_name, done, progress, progress_args, path = packet
 
                 temp_file_path = self.get_file(
                     media_type=data.media_type,
@@ -951,7 +1131,7 @@ class Client(Methods, BaseClient):
                                 try:
                                     diff = self.send(
                                         functions.updates.GetChannelDifference(
-                                            channel=self.resolve_peer(int("-100" + str(channel_id))),
+                                            channel=self.resolve_peer(utils.get_channel_id(channel_id)),
                                             filter=types.ChannelMessagesFilter(
                                                 ranges=[types.MessageRange(
                                                     min_id=update.message.id,
@@ -1047,7 +1227,7 @@ class Client(Methods, BaseClient):
 
     def load_config(self):
         parser = ConfigParser()
-        parser.read(self.config_file)
+        parser.read(str(self.config_file))
 
         if self.api_id and self.api_hash:
             pass
@@ -1117,36 +1297,23 @@ class Client(Methods, BaseClient):
                 self.plugins = None
 
     def load_session(self):
-        try:
-            with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), encoding="utf-8") as f:
-                s = json.load(f)
-        except FileNotFoundError:
-            self.dc_id = 1
-            self.date = 0
-            self.auth_key = Auth(self.dc_id, self.test_mode, self.ipv6, self._proxy).create()
-        else:
-            self.dc_id = s["dc_id"]
-            self.test_mode = s["test_mode"]
-            self.auth_key = base64.b64decode("".join(s["auth_key"]))
-            self.user_id = s["user_id"]
-            self.date = s.get("date", 0)
-            # TODO: replace default with False once token session name will be deprecated
-            self.is_bot = s.get("is_bot", self.is_bot)
+        self.storage.open()
 
-            for k, v in s.get("peers_by_id", {}).items():
-                self.peers_by_id[int(k)] = utils.get_input_peer(int(k), v)
+        session_empty = any([
+            self.storage.test_mode is None,
+            self.storage.auth_key is None,
+            self.storage.user_id is None,
+            self.storage.is_bot is None
+        ])
 
-            for k, v in s.get("peers_by_username", {}).items():
-                peer = self.peers_by_id.get(v, None)
+        if session_empty:
+            self.storage.dc_id = 4
+            self.storage.date = 0
 
-                if peer:
-                    self.peers_by_username[k] = peer
-
-            for k, v in s.get("peers_by_phone", {}).items():
-                peer = self.peers_by_id.get(v, None)
-
-                if peer:
-                    self.peers_by_phone[k] = peer
+            self.storage.test_mode = self.test_mode
+            self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+            self.storage.user_id = None
+            self.storage.is_bot = None
 
     def load_plugins(self):
         if self.plugins:
@@ -1176,7 +1343,7 @@ class Client(Methods, BaseClient):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1211,7 +1378,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
@@ -1249,7 +1416,7 @@ class Client(Methods, BaseClient):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name)
+                            handler, group = getattr(module, name).handler
 
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
@@ -1270,26 +1437,6 @@ class Client(Methods, BaseClient):
                 log.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
 
-    def save_session(self):
-        auth_key = base64.b64encode(self.auth_key).decode()
-        auth_key = [auth_key[i: i + 43] for i in range(0, len(auth_key), 43)]
-
-        os.makedirs(self.workdir, exist_ok=True)
-
-        with open(os.path.join(self.workdir, "{}.session".format(self.session_name)), "w", encoding="utf-8") as f:
-            json.dump(
-                dict(
-                    dc_id=self.dc_id,
-                    test_mode=self.test_mode,
-                    auth_key=auth_key,
-                    user_id=self.user_id,
-                    date=self.date,
-                    is_bot=self.is_bot,
-                ),
-                f,
-                indent=4
-            )
-
     def get_initial_dialogs_chunk(self, offset_date: int = 0):
         while True:
             try:
@@ -1307,7 +1454,7 @@ class Client(Methods, BaseClient):
                 log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
                 time.sleep(e.x)
             else:
-                log.info("Total peers: {}".format(len(self.peers_by_id)))
+                log.info("Total peers: {}".format(self.storage.peers_count))
                 return r
 
     def get_initial_dialogs(self):
@@ -1345,7 +1492,7 @@ class Client(Methods, BaseClient):
             KeyError: In case the peer doesn't exist in the internal database.
         """
         try:
-            return self.peers_by_id[peer_id]
+            return self.storage.get_peer_by_id(peer_id)
         except KeyError:
             if type(peer_id) is str:
                 if peer_id in ("self", "me"):
@@ -1356,44 +1503,57 @@ class Client(Methods, BaseClient):
                 try:
                     int(peer_id)
                 except ValueError:
-                    if peer_id not in self.peers_by_username:
+                    try:
+                        return self.storage.get_peer_by_username(peer_id)
+                    except KeyError:
                         self.send(
                             functions.contacts.ResolveUsername(
                                 username=peer_id
                             )
                         )
 
-                    return self.peers_by_username[peer_id]
+                        return self.storage.get_peer_by_username(peer_id)
                 else:
                     try:
-                        return self.peers_by_phone[peer_id]
+                        return self.storage.get_peer_by_phone_number(peer_id)
                     except KeyError:
                         raise PeerIdInvalid
 
-            if peer_id > 0:
+            peer_type = utils.get_type(peer_id)
+
+            if peer_type == "user":
                 self.fetch_peers(
                     self.send(
                         functions.users.GetUsers(
-                            id=[types.InputUser(user_id=peer_id, access_hash=0)]
+                            id=[
+                                types.InputUser(
+                                    user_id=peer_id,
+                                    access_hash=0
+                                )
+                            ]
                         )
                     )
                 )
+            elif peer_type == "chat":
+                self.send(
+                    functions.messages.GetChats(
+                        id=[-peer_id]
+                    )
+                )
             else:
-                if str(peer_id).startswith("-100"):
-                    self.send(
-                        functions.channels.GetChannels(
-                            id=[types.InputChannel(channel_id=int(str(peer_id)[4:]), access_hash=0)]
-                        )
+                self.send(
+                    functions.channels.GetChannels(
+                        id=[
+                            types.InputChannel(
+                                channel_id=utils.get_channel_id(peer_id),
+                                access_hash=0
+                            )
+                        ]
                     )
-                else:
-                    self.send(
-                        functions.messages.GetChats(
-                            id=[-peer_id]
-                        )
-                    )
+                )
 
             try:
-                return self.peers_by_id[peer_id]
+                return self.storage.get_peer_by_id(peer_id)
             except KeyError:
                 raise PeerIdInvalid
 
@@ -1425,23 +1585,22 @@ class Client(Methods, BaseClient):
                 In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -1468,7 +1627,7 @@ class Client(Methods, BaseClient):
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
 
-        session = Session(self, self.dc_id, self.auth_key, is_media=True)
+        session = Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True)
         session.start()
 
         try:
@@ -1554,19 +1713,14 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.dc_id:
+                if dc_id != self.storage.dc_id:
                     exported_auth = self.send(
                         functions.auth.ExportAuthorization(
                             dc_id=dc_id
                         )
                     )
 
-                    session = Session(
-                        self,
-                        dc_id,
-                        Auth(dc_id, self.test_mode, self.ipv6, self._proxy).create(),
-                        is_media=True
-                    )
+                    session = Session(self, dc_id, Auth(self, dc_id).create(), is_media=True)
 
                     session.start()
 
@@ -1579,12 +1733,7 @@ class Client(Methods, BaseClient):
                         )
                     )
                 else:
-                    session = Session(
-                        self,
-                        dc_id,
-                        self.auth_key,
-                        is_media=True
-                    )
+                    session = Session(self, dc_id, self.storage.auth_key, is_media=True)
 
                     session.start()
 
@@ -1669,13 +1818,7 @@ class Client(Methods, BaseClient):
                     cdn_session = self.media_sessions.get(r.dc_id, None)
 
                     if cdn_session is None:
-                        cdn_session = Session(
-                            self,
-                            r.dc_id,
-                            Auth(r.dc_id, self.test_mode, self.ipv6, self._proxy).create(),
-                            is_media=True,
-                            is_cdn=True
-                        )
+                        cdn_session = Session(self, r.dc_id, Auth(self, r.dc_id).create(), is_media=True, is_cdn=True)
 
                         cdn_session.start()
 

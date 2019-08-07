@@ -20,52 +20,44 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.client.ext import BaseClient, utils
+from pyrogram.client.ext import BaseClient
 
 
 class EditMessageReplyMarkup(BaseClient):
     def edit_message_reply_markup(
         self,
+        chat_id: Union[int, str],
+        message_id: int,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None,
-        chat_id: Union[int, str] = None,
-        message_id: int = None,
-        inline_message_id: str = None
     ) -> "pyrogram.Message":
-        """Edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+        """Edit only the reply markup of messages sent by the bot.
 
         Parameters:
-            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
-                An InlineKeyboardMarkup object.
-
-            chat_id (``int`` | ``str``, *optional*):
-                Required if *inline_message_id* is not specified.
+            chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``, *optional*):
-                Required if *inline_message_id* is not specified.
+            message_id (``int``):
                 Message identifier in the chat specified in chat_id.
 
-            inline_message_id (``str``, *optional*):
-                Required if *chat_id* and *message_id* are not specified.
-                Identifier of the inline message.
+            reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
 
         Returns:
-            :obj:`Message` | ``bool``: On success, if the edited message was sent by the bot, the edited message is
-            returned, otherwise True is returned (message sent via the bot, as inline query result).
+            :obj:`Message`: On success, the edited message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+
+                # Bots only
+                app.edit_message_reply_markup(
+                    chat_id, message_id,
+                    InlineKeyboardMarkup([[
+                        InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
-        if inline_message_id is not None:
-            return self.send(
-                functions.messages.EditInlineBotMessage(
-                    id=utils.unpack_inline_message_id(inline_message_id),
-                    reply_markup=reply_markup.write() if reply_markup else None,
-                )
-            )
-
         r = self.send(
             functions.messages.EditMessage(
                 peer=self.resolve_peer(chat_id),

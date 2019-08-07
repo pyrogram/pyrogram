@@ -45,7 +45,9 @@ arrives:
 
     app.run()
 
-#.  Let's examine these four new pieces. First one: a callback function we defined which accepts two arguments -
+Let's examine these four new pieces.
+
+#.  A callback function we defined which accepts two arguments -
     *(client, message)*. This will be the function that gets executed every time a new message arrives and Pyrogram will
     call that function by passing the client instance and the new message instance as argument.
 
@@ -54,14 +56,14 @@ arrives:
         def my_function(client, message):
             print(message)
 
-#.  Second one: the :class:`~pyrogram.MessageHandler`. This object tells Pyrogram the function we defined above must
-    only handle updates that are in form of a :class:`~pyrogram.Message`:
+#.  The :class:`~pyrogram.MessageHandler`. This object tells Pyrogram the function we defined above must only handle
+    updates that are in form of a :class:`~pyrogram.Message`:
 
     .. code-block:: python
 
         my_handler = MessageHandler(my_function)
 
-#.  Third: the method :meth:`~pyrogram.Client.add_handler`. This method is used to actually register the handler and let
+#.  The method :meth:`~pyrogram.Client.add_handler`. This method is used to actually register the handler and let
     Pyrogram know it needs to be taken into consideration when new updates arrive and the internal dispatching phase
     begins.
 
@@ -69,7 +71,7 @@ arrives:
 
         app.add_handler(my_handler)
 
-#.  Last one, the :meth:`~pyrogram.Client.run` method. What this does is simply call :meth:`~pyrogram.Client.start` and
+#.  The :meth:`~pyrogram.Client.run` method. What this does is simply call :meth:`~pyrogram.Client.start` and
     a special method :meth:`~pyrogram.Client.idle` that keeps your main scripts alive until you press ``CTRL+C``; the
     client will be automatically stopped after that.
 
@@ -96,14 +98,3 @@ to do so is by decorating your callback function with the :meth:`~pyrogram.Clien
 
 
     app.run()
-
-
-.. note::
-
-    Due to how these decorators work in Pyrogram, they will wrap your defined callback function in a tuple consisting of
-    ``(handler, group)``; this will be the value held by your function identifier (e.g.: *my_function* from the example
-    above).
-
-    In case, for some reason, you want to get your own function back after it has been decorated, you need to access
-    ``my_function[0].callback``, that is, the *callback* field of the *handler* object which is the first element in the
-    tuple, accessed by bracket notation *[0]*.

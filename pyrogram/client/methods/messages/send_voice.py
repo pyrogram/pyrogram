@@ -31,7 +31,7 @@ class SendVoice(BaseClient):
         chat_id: Union[int, str],
         voice: str,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -62,8 +62,11 @@ class SendVoice(BaseClient):
                 Voice message caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
-                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
-                URLs in your caption. Defaults to "markdown".
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" or "md" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
 
             duration (``int``, *optional*):
                 Duration of the voice message in seconds.
@@ -80,23 +83,22 @@ class SendVoice(BaseClient):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -106,11 +108,19 @@ class SendVoice(BaseClient):
             :obj:`Message` | ``None``: On success, the sent voice message is returned, otherwise, in case the upload
             is deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Send voice note by uploading from local file
+                app.send_voice("me", "voice.ogg")
+
+                # Add caption to the voice note
+                app.send_voice("me", "voice.ogg", caption="voice note")
+
+                # Set voice note duration
+                app.send_voice("me", "voice.ogg", duration=20)
         """
         file = None
-        style = self.html if parse_mode.lower() == "html" else self.markdown
 
         try:
             if os.path.exists(voice):
@@ -142,7 +152,7 @@ class SendVoice(BaseClient):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **style.parse(caption)
+                            **self.parser.parse(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:

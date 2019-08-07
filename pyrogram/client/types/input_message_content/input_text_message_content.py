@@ -16,9 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from pyrogram.api import types
 from .input_message_content import InputMessageContent
-from ...style import HTML, Markdown
+from ...parser import Parser
 
 
 class InputTextMessageContent(InputMessageContent):
@@ -29,16 +31,17 @@ class InputTextMessageContent(InputMessageContent):
             Text of the message to be sent, 1-4096 characters.
 
         parse_mode (``str``, *optional*):
-            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
-            in your message. Defaults to "markdown".
+            By default, texts are parsed using both Markdown and HTML styles.
+            You can combine both syntaxes together.
+            Pass "markdown" or "md" to enable Markdown-style parsing only.
+            Pass "html" to enable HTML-style parsing only.
+            Pass None to completely disable style parsing.
 
         disable_web_page_preview (``bool``, *optional*):
             Disables link previews for links in this message.
     """
 
-    __slots__ = ["message_text", "parse_mode", "disable_web_page_preview"]
-
-    def __init__(self, message_text: str, parse_mode: str = "", disable_web_page_preview: bool = None):
+    def __init__(self, message_text: str, parse_mode: Union[str, None] = object, disable_web_page_preview: bool = None):
         super().__init__()
 
         self.message_text = message_text
@@ -49,5 +52,5 @@ class InputTextMessageContent(InputMessageContent):
         return types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
             reply_markup=reply_markup.write() if reply_markup else None,
-            **(HTML() if self.parse_mode.lower() == "html" else Markdown()).parse(self.message_text)
+            **(Parser(None)).parse(self.message_text, self.parse_mode)
         )

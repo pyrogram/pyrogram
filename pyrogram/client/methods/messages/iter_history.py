@@ -64,8 +64,11 @@ class IterHistory(BaseClient):
         Returns:
             ``Generator``: A generator yielding :obj:`Message` objects.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                for message in app.iter_history("pyrogram"):
+                    print(message.text)
         """
         offset_id = offset_id or (1 if reverse else 0)
         current = 0

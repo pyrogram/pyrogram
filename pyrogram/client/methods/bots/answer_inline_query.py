@@ -29,28 +29,34 @@ class AnswerInlineQuery(BaseClient):
         inline_query_id: str,
         results: List[InlineQueryResult],
         cache_time: int = 300,
-        is_personal: bool = None,
+        is_gallery: bool = False,
+        is_personal: bool = False,
         next_offset: str = "",
         switch_pm_text: str = "",
         switch_pm_parameter: str = ""
     ):
         """Send answers to an inline query.
-        No more than 50 results per query are allowed.
+
+        A maximum of 50 results per query is allowed.
 
         Parameters:
             inline_query_id (``str``):
                 Unique identifier for the answered query.
 
-            results (List of :obj:`InlineQueryResult <pyrogram.InlineQueryResult>`):
+            results (List of :obj:`InlineQueryResult`):
                 A list of results for the inline query.
 
             cache_time (``int``, *optional*):
                 The maximum amount of time in seconds that the result of the inline query may be cached on the server.
                 Defaults to 300.
 
+            is_gallery (``bool``, *optional*):
+                Pass True, if results should be displayed in gallery mode instead of list mode.
+                Defaults to False.
+
             is_personal (``bool``, *optional*):
                 Pass True, if results may be cached on the server side only for the user that sent the query.
-                By default, results may be returned to any user who sends the same query.
+                By default (False), results may be returned to any user who sends the same query.
 
             next_offset (``str``, *optional*):
                 Pass the offset that a client should send in the next query with the same text to receive more results.
@@ -75,15 +81,24 @@ class AnswerInlineQuery(BaseClient):
         Returns:
             ``bool``: True, on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InlineQueryResultArticle, InputTextMessageContent
+
+                app.answer_inline_query(
+                    inline_query_id,
+                    results=[
+                        InlineQueryResultArticle(
+                            "Title",
+                            InputTextMessageContent("Message content"))])
         """
         return self.send(
             functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
                 results=[r.write() for r in results],
                 cache_time=cache_time,
-                gallery=None,
+                gallery=is_gallery or None,
                 private=is_personal or None,
                 next_offset=next_offset or None,
                 switch_pm=types.InlineBotSwitchPM(

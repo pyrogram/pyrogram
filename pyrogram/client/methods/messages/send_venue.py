@@ -83,8 +83,12 @@ class SendVenue(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent venue message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_venue(
+                    "me", 51.500729, -0.124583,
+                    "Elizabeth Tower", "Westminster, London SW1A 0AA, UK")
         """
         r = self.send(
             functions.messages.SendMedia(

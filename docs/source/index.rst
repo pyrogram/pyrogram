@@ -1,6 +1,78 @@
 Welcome to Pyrogram
 ===================
 
+.. toctree::
+    :hidden:
+    :caption: Introduction
+
+    intro/quickstart
+    intro/install
+    intro/setup
+
+.. toctree::
+    :hidden:
+    :caption: Getting Started
+
+    start/auth
+    start/invoking
+    start/updates
+    start/errors
+
+.. toctree::
+    :hidden:
+    :caption: API Reference
+
+    api/client
+    api/methods/index
+    api/types/index
+    api/bound-methods/index
+    api/handlers
+    api/decorators
+    api/errors
+    api/filters
+
+.. toctree::
+    :hidden:
+    :caption: Topic Guides
+
+    topics/use-filters
+    topics/create-filters
+    topics/more-on-updates
+    topics/config-file
+    topics/smart-plugins
+    topics/auto-auth
+    topics/session-settings
+    topics/tgcrypto
+    topics/storage-engines
+    topics/text-formatting
+    topics/serializing
+    topics/proxy
+    topics/scheduling
+    topics/bots-interaction
+    topics/mtproto-vs-botapi
+    topics/debugging
+    topics/test-servers
+    topics/advanced-usage
+    topics/voice-calls
+
+.. toctree::
+    :hidden:
+    :caption: Meta
+
+    faq
+    glossary
+    powered-by
+    support-pyrogram
+    license
+    releases/index
+
+.. toctree::
+    :hidden:
+    :caption: Telegram API
+
+    telegram/functions/index
+    telegram/types/index
+
 .. raw:: html
 
     <div align="center">
@@ -35,7 +107,7 @@ Welcome to Pyrogram
 
     @app.on_message(Filters.private)
     def hello(client, message):
-        message.reply("Hello {}".format(message.from_user.first_name))
+        message.reply_text("Hello {}".format(message.from_user.first_name))
 
 
     app.run()
@@ -54,7 +126,7 @@ order using the :guilabel:`Next` button at the end of each page. Here below you 
 relevant pages for a quick access.
 
 First Steps
------------
+^^^^^^^^^^^
 
 .. hlist::
     :columns: 2
@@ -65,18 +137,18 @@ First Steps
     - :doc:`Error Handling <start/errors>`: How to handle API errors correctly.
 
 API Reference
--------------
+^^^^^^^^^^^^^
 
 .. hlist::
     :columns: 2
 
     - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
-    - :doc:`Available Methods <api/methods>`: List of available high-level methods.
-    - :doc:`Available Types <api/types>`: List of available high-level types.
-    - :doc:`Bound Methods <api/bound-methods>`: List of convenient bound methods.
+    - :doc:`Available Methods <api/methods/index>`: List of available high-level methods.
+    - :doc:`Available Types <api/types/index>`: List of available high-level types.
+    - :doc:`Bound Methods <api/bound-methods/index>`: List of convenient bound methods.
 
 Meta
-----
+^^^^
 
 .. hlist::
     :columns: 2
@@ -87,75 +159,5 @@ Meta
     - :doc:`Support Pyrogram <support-pyrogram>`: Ways to show your appreciation.
     - :doc:`About the License <license>`: Information about the Project license.
     - :doc:`Release Notes <releases/index>`: Release notes for Pyrogram releases.
-
-.. toctree::
-    :hidden:
-    :caption: Introduction
-
-    intro/quickstart
-    intro/install
-    intro/setup
-
-.. toctree::
-    :hidden:
-    :caption: Getting Started
-
-    start/auth
-    start/invoking
-    start/updates
-    start/errors
-
-.. toctree::
-    :hidden:
-    :caption: API Reference
-
-    api/client
-    api/methods
-    api/types
-    api/bound-methods
-    api/handlers
-    api/decorators
-    api/filters
-    api/errors
-
-.. toctree::
-    :hidden:
-    :caption: Topic Guides
-
-    topics/use-filters
-    topics/create-filters
-    topics/more-on-updates
-    topics/config-file
-    topics/smart-plugins
-    topics/auto-auth
-    topics/session-settings
-    topics/tgcrypto
-    topics/text-formatting
-    topics/serialize
-    topics/proxy
-    topics/bots-interaction
-    topics/mtproto-vs-botapi
-    topics/debugging
-    topics/test-servers
-    topics/advanced-usage
-    topics/voice-calls
-
-.. toctree::
-    :hidden:
-    :caption: Meta
-
-    faq
-    glossary
-    powered-by
-    support-pyrogram
-    license
-    releases/index
-
-.. toctree::
-    :hidden:
-    :caption: Telegram API
-
-    telegram/functions/index
-    telegram/types/index
 
 Last updated on |today|

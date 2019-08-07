@@ -41,8 +41,6 @@ class KeyboardButton(Object):
             Available in private chats only.
     """
 
-    __slots__ = ["text", "request_contact", "request_location"]
-
     def __init__(
         self,
         text: str,

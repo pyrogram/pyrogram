@@ -19,6 +19,7 @@
 from typing import List
 
 from pyrogram.api.types import ReplyInlineMarkup, KeyboardButtonRow
+
 from . import InlineKeyboardButton
 from ..object import Object
 
@@ -30,8 +31,6 @@ class InlineKeyboardMarkup(Object):
         inline_keyboard (List of List of :obj:`InlineKeyboardButton`):
             List of button rows, each represented by a List of InlineKeyboardButton objects.
     """
-
-    __slots__ = ["inline_keyboard"]
 
     def __init__(
         self,

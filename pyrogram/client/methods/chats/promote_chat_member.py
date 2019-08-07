@@ -78,8 +78,11 @@ class PromoteChatMember(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Promote chat member to supergroup admin
+                app.promote_chat_member(chat_id, user_id)
         """
         self.send(
             functions.channels.EditAdmin(

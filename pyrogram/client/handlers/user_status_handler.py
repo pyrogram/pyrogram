@@ -21,26 +21,24 @@ from .handler import Handler
 
 class UserStatusHandler(Handler):
     """The UserStatus handler class. Used to handle user status updates (user going online or offline).
-    It is intended to be used with :meth:`~Client.add_handler`
+    It is intended to be used with :meth:`~Client.add_handler`.
 
-    For a nicer way to register this handler, have a look at the
-    :meth:`~Client.on_user_status` decorator.
+    For a nicer way to register this handler, have a look at the :meth:`~Client.on_user_status` decorator.
 
     Parameters:
         callback (``callable``):
-            Pass a function that will be called when a new UserStatus update arrives. It takes *(client, user_status)*
+            Pass a function that will be called when a new user status update arrives. It takes *(client, user)*
             as positional arguments (look at the section below for a detailed description).
 
         filters (:obj:`Filters`):
-            Pass one or more filters to allow only a subset of messages to be passed
-            in your callback function.
+            Pass one or more filters to allow only a subset of users to be passed in your callback function.
 
     Other parameters:
         client (:obj:`Client`):
             The Client itself, useful when you want to call other API methods inside the user status handler.
 
-        user_status (:obj:`UserStatus`):
-            The received UserStatus update.
+        user (:obj:`User`):
+            The user containing the updated status.
     """
 
     def __init__(self, callback: callable, filters=None):

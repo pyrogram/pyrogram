@@ -47,8 +47,6 @@ class MessageEntity(Object):
             For "text_mention" only, the mentioned user.
     """
 
-    __slots__ = ["type", "offset", "length", "url", "user"]
-
     ENTITIES = {
         types.MessageEntityMention.ID: "mention",
         types.MessageEntityHashtag.ID: "hashtag",
@@ -60,6 +58,9 @@ class MessageEntity(Object):
         types.MessageEntityItalic.ID: "italic",
         types.MessageEntityCode.ID: "code",
         types.MessageEntityPre.ID: "pre",
+        types.MessageEntityUnderline.ID: "underline",
+        types.MessageEntityStrike.ID: "strike",
+        types.MessageEntityBlockquote.ID: "blockquote",
         types.MessageEntityTextUrl.ID: "text_link",
         types.MessageEntityMentionName.ID: "text_mention",
         types.MessageEntityPhone.ID: "phone_number"

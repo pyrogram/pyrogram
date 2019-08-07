@@ -478,7 +478,6 @@ def start():
 
         f.write("\n    0xbc799737: \"pyrogram.api.core.BoolFalse\",")
         f.write("\n    0x997275b5: \"pyrogram.api.core.BoolTrue\",")
-        f.write("\n    0x56730bcc: \"pyrogram.api.core.Null\",")
         f.write("\n    0x1cb5c415: \"pyrogram.api.core.Vector\",")
         f.write("\n    0x73f1f8dc: \"pyrogram.api.core.MsgContainer\",")
         f.write("\n    0xae500895: \"pyrogram.api.core.FutureSalts\",")

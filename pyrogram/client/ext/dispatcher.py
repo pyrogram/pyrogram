@@ -20,7 +20,7 @@ import logging
 import threading
 from collections import OrderedDict
 from queue import Queue
-from threading import Thread
+from threading import Thread, Lock
 
 import pyrogram
 from pyrogram.api import types
@@ -61,6 +61,8 @@ class Dispatcher:
         self.workers = workers
 
         self.workers_list = []
+        self.locks_list = []
+
         self.updates_queue = Queue()
         self.groups = OrderedDict()
 
@@ -75,9 +77,7 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
 
             (types.UpdateUserStatus,):
-                lambda upd, usr, cht: (
-                    pyrogram.UserStatus._parse(self.client, upd.status, upd.user_id), UserStatusHandler
-                ),
+                lambda upd, usr, cht: (pyrogram.User._parse_user_status(self.client, upd), UserStatusHandler),
 
             (types.UpdateBotInlineQuery,):
                 lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
@@ -90,10 +90,13 @@ class Dispatcher:
 
     def start(self):
         for i in range(self.workers):
+            self.locks_list.append(Lock())
+
             self.workers_list.append(
                 Thread(
                     target=self.update_worker,
-                    name="UpdateWorker#{}".format(i + 1)
+                    name="UpdateWorker#{}".format(i + 1),
+                    args=(self.locks_list[-1],)
                 )
             )
 
@@ -107,22 +110,37 @@ class Dispatcher:
             worker.join()
 
         self.workers_list.clear()
+        self.locks_list.clear()
         self.groups.clear()
 
     def add_handler(self, handler, group: int):
-        if group not in self.groups:
-            self.groups[group] = []
-            self.groups = OrderedDict(sorted(self.groups.items()))
+        for lock in self.locks_list:
+            lock.acquire()
 
-        self.groups[group].append(handler)
+        try:
+            if group not in self.groups:
+                self.groups[group] = []
+                self.groups = OrderedDict(sorted(self.groups.items()))
+
+            self.groups[group].append(handler)
+        finally:
+            for lock in self.locks_list:
+                lock.release()
 
     def remove_handler(self, handler, group: int):
-        if group not in self.groups:
-            raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
+        for lock in self.locks_list:
+            lock.acquire()
 
-        self.groups[group].remove(handler)
+        try:
+            if group not in self.groups:
+                raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
-    def update_worker(self):
+            self.groups[group].remove(handler)
+        finally:
+            for lock in self.locks_list:
+                lock.release()
+
+    def update_worker(self, lock):
         name = threading.current_thread().name
         log.debug("{} started".format(name))
 
@@ -142,29 +160,35 @@ class Dispatcher:
                     else (None, type(None))
                 )
 
-                for group in self.groups.values():
-                    for handler in group:
-                        args = None
+                with lock:
+                    for group in self.groups.values():
+                        for handler in group:
+                            args = None
 
-                        if isinstance(handler, handler_type):
-                            if handler.check(parsed_update):
-                                args = (parsed_update,)
-                        elif isinstance(handler, RawUpdateHandler):
-                            args = (update, users, chats)
+                            if isinstance(handler, handler_type):
+                                try:
+                                    if handler.check(parsed_update):
+                                        args = (parsed_update,)
+                                except Exception as e:
+                                    log.error(e, exc_info=True)
+                                    continue
 
-                        if args is None:
-                            continue
+                            elif isinstance(handler, RawUpdateHandler):
+                                args = (update, users, chats)
 
-                        try:
-                            handler.callback(self.client, *args)
-                        except pyrogram.StopPropagation:
-                            raise
-                        except pyrogram.ContinuePropagation:
-                            continue
-                        except Exception as e:
-                            log.error(e, exc_info=True)
+                            if args is None:
+                                continue
 
-                        break
+                            try:
+                                handler.callback(self.client, *args)
+                            except pyrogram.StopPropagation:
+                                raise
+                            except pyrogram.ContinuePropagation:
+                                continue
+                            except Exception as e:
+                                log.error(e, exc_info=True)
+
+                            break
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:

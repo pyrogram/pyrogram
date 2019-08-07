@@ -66,8 +66,14 @@ class SetGameScore(BaseClient):
             :obj:`Message` | ``bool``: On success, if the message was sent by the bot, the edited message is returned,
             True otherwise.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Set new score
+                app.set_game_score(user_id, 1000)
+
+                # Force set new score
+                app.set_game_score(user_id, 25, force=True)
         """
         r = self.send(
             functions.messages.SetGameScore(

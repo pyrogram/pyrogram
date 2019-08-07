@@ -43,8 +43,11 @@ class UnbanChatMember(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Unban chat member right now
+                app.unban_chat_member(chat_id, user_id)
         """
         self.send(
             functions.channels.EditBanned(

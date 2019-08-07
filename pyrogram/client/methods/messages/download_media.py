@@ -17,7 +17,10 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import binascii
+import os
 import struct
+import time
+from datetime import datetime
 from threading import Event
 from typing import Union
 
@@ -25,12 +28,14 @@ import pyrogram
 from pyrogram.client.ext import BaseClient, FileData, utils
 from pyrogram.errors import FileIdInvalid
 
+DEFAULT_DOWNLOAD_DIR = "downloads/"
+
 
 class DownloadMedia(BaseClient):
     def download_media(
         self,
         message: Union["pyrogram.Message", str],
-        file_name: str = "",
+        file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -52,24 +57,23 @@ class DownloadMedia(BaseClient):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (``callable``):
-                Pass a callback function to view the download progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+            progress (``callable``, *optional*):
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
-            progress_args (``tuple``):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes downloaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -80,8 +84,16 @@ class DownloadMedia(BaseClient):
             the download failed or was deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if the message doesn't contain any downloadable media
+            ValueError: if the message doesn't contain any downloadable media
+
+        Example:
+            .. code-block:: python
+
+                # Download from Message
+                app.download_media(message)
+
+                # Download from file id
+                app.download_media("CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
         """
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
@@ -169,7 +181,41 @@ class DownloadMedia(BaseClient):
         done = Event()
         path = [None]
 
-        self.download_queue.put((data, file_name, done, progress, progress_args, path))
+        directory, file_name = os.path.split(file_name)
+        file_name = file_name or data.file_name or ""
+
+        if not os.path.isabs(file_name):
+            directory = self.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
+
+        media_type_str = self.MEDIA_TYPE_ID[data.media_type]
+
+        if not file_name:
+            guessed_extension = self.guess_extension(data.mime_type)
+
+            if data.media_type in (0, 1, 2, 14):
+                extension = ".jpg"
+            elif data.media_type == 3:
+                extension = guessed_extension or ".ogg"
+            elif data.media_type in (4, 10, 13):
+                extension = guessed_extension or ".mp4"
+            elif data.media_type == 5:
+                extension = guessed_extension or ".zip"
+            elif data.media_type == 8:
+                extension = guessed_extension or ".webp"
+            elif data.media_type == 9:
+                extension = guessed_extension or ".mp3"
+            else:
+                extension = ".unknown"
+
+            file_name = "{}_{}_{}{}".format(
+                media_type_str,
+                datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                self.rnd_id(),
+                extension
+            )
+
+        # Cast to string because Path objects aren't supported by Python 3.5
+        self.download_queue.put((data, str(directory), str(file_name), done, progress, progress_args, path))
 
         if block:
             done.wait()

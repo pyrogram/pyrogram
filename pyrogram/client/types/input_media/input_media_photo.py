@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
 from . import InputMedia
 
 
@@ -34,16 +36,17 @@ class InputMediaPhoto(InputMedia):
             Caption of the photo to be sent, 0-1024 characters
 
         parse_mode (``str``, *optional*):
-            Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline URLs
-            in your caption. Defaults to "markdown".
+            By default, texts are parsed using both Markdown and HTML styles.
+            You can combine both syntaxes together.
+            Pass "markdown" or "md" to enable Markdown-style parsing only.
+            Pass "html" to enable HTML-style parsing only.
+            Pass None to completely disable style parsing.
     """
-
-    __slots__ = []
 
     def __init__(
         self,
         media: str,
         caption: str = "",
-        parse_mode: str = ""
+        parse_mode: Union[str, None] = object
     ):
         super().__init__(media, caption, parse_mode)

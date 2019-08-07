@@ -26,10 +26,11 @@ from os import urandom
 from queue import Queue
 from threading import Event, Thread
 
+from pyrogram.api.all import layer
+
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
-from pyrogram.api.all import layer
 from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
@@ -70,12 +71,14 @@ class Session:
         64: "[64] invalid container"
     }
 
-    def __init__(self,
-                 client: pyrogram,
-                 dc_id: int,
-                 auth_key: bytes,
-                 is_media: bool = False,
-                 is_cdn: bool = False):
+    def __init__(
+        self,
+        client: pyrogram,
+        dc_id: int,
+        auth_key: bytes,
+        is_media: bool = False,
+        is_cdn: bool = False
+    ):
         if not Session.notice_displayed:
             print("Pyrogram v{}, {}".format(__version__, __copyright__))
             print("Licensed under the terms of the " + __license__, end="\n\n")
@@ -113,7 +116,12 @@ class Session:
 
     def start(self):
         while True:
-            self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
+            self.connection = Connection(
+                self.dc_id,
+                self.client.storage.test_mode,
+                self.client.ipv6,
+                self.client.proxy
+            )
 
             try:
                 self.connection.connect()
@@ -431,9 +439,9 @@ class Session:
             if retries == 0:
                 raise e from None
 
-            (log.warning if retries < 3 else log.info)(
+            (log.warning if retries < 2 else log.info)(
                 "{}: {} Retrying {}".format(
-                    Session.MAX_RETRIES - retries,
+                    Session.MAX_RETRIES - retries + 1,
                     datetime.now(), type(data)))
 
             time.sleep(0.5)

@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 import pyrogram
-from pyrogram.client.handlers.handler import Handler
 from ...ext import BaseClient
 
 
@@ -28,12 +29,10 @@ class OnDisconnect(BaseClient):
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the :obj:`~pyrogram.DisconnectHandler`.
         """
 
-        def decorator(func: callable) -> Handler:
-            handler = pyrogram.DisconnectHandler(func)
+        def decorator(func: Callable) -> Callable:
+            if isinstance(self, pyrogram.Client):
+                self.add_handler(pyrogram.DisconnectHandler(func))
 
-            if self is not None:
-                self.add_handler(handler)
-
-            return handler
+            return func
 
         return decorator

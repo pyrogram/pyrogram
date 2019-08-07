@@ -74,8 +74,10 @@ class SendContact(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent contact message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_contact("me", "+39 123 456 7890", "Dan")
         """
         r = self.send(
             functions.messages.SendMedia(

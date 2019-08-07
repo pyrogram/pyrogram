@@ -28,7 +28,7 @@ class SendMessage(BaseClient):
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -51,8 +51,11 @@ class SendMessage(BaseClient):
                 Text of the message to be sent.
 
             parse_mode (``str``, *optional*):
-                Pass "markdown" or "html" if you want Telegram apps to show bold, italic, fixed-width text or inline
-                URLs in your message. Defaults to "markdown".
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" or "md" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -71,11 +74,45 @@ class SendMessage(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent text message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 2,5,8,11,21-23,26-33
+
+                # Simple example
+                app.send_message("haskell", "Thanks for creating **Pyrogram**!")
+
+                # Disable web page previews
+                app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
+
+                # Reply to a message using its id
+                app.send_message("me", "this is a reply", reply_to_message_id=12345)
+
+                # Force HTML-only styles for this request only
+                app.send_message("me", "**not bold**, <i>italic<i>", parse_mode="html")
+
+                ##
+                # For bots only, send messages with keyboards attached
+                ##
+
+                from pyrogram import (
+                    ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton)
+
+                # Send a normal keyboard
+                app.send_message(
+                    chat_id, "Look at that button!",
+                    reply_markup=ReplyKeyboardMarkup([["Nice!"]]))
+
+                # Send an inline keyboard
+                app.send_message(
+                    chat_id, "These are inline buttons",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton("Data", callback_data="hidden_callback_data")],
+                            [InlineKeyboardButton("Docs", url="https://docs.pyrogram.org")]
+                        ]))
         """
-        style = self.html if parse_mode.lower() == "html" else self.markdown
-        message, entities = style.parse(text).values()
+
+        message, entities = self.parser.parse(text, parse_mode).values()
 
         r = self.send(
             functions.messages.SendMessage(

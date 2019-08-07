@@ -31,7 +31,8 @@ class InputMessageContent(Object):
     - :obj:`InputTextMessageContent`
     """
 
-    __slots__ = []
-
     def __init__(self):
         super().__init__()
+
+    def write(self, reply_markup):
+        raise NotImplementedError

@@ -60,8 +60,10 @@ class SendInlineBotResult(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent inline result message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_inline_bot_result(chat_id, query_id, result_id)
         """
         return self.send(
             functions.messages.SendInlineBotResult(

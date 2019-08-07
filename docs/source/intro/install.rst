@@ -47,7 +47,7 @@ Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging 
 where asyncio shines the most by providing extra performance and efficiency while running on a single OS-level thread
 only.
 
-**A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5.3+ required).
+**A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5.3 or higher is required).
 Use this command to install (note "asyncio.zip" in the link):
 
 .. code-block:: text

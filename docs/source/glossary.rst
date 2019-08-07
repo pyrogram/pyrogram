@@ -29,7 +29,7 @@ Terms
         achieve high quality and availability for services.
 
     RPC
-        Acronym for Remote Procedure call, that is, a function which gets executed at some remote place (i.e. Telegram
+        Acronym for Remote Procedure Call, that is, a function which gets executed at some remote place (i.e. Telegram
         server) and not in your local machine.
 
     RPCError
@@ -58,7 +58,7 @@ Terms
         Pyrogram --- to automate some behaviours, like sending messages or reacting to text commands or any other event.
 
     Session
-        Also known as *login session*, is a strictly personal piece of information created and held by both parties
+        Also known as *login session*, is a strictly personal piece of data created and held by both parties
         (client and server) which is used to grant permission into a single account without having to start a new
         authorization process from scratch.
 

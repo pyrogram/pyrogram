@@ -1,6 +1,9 @@
 Pyrogram FAQ
 ============
 
+.. role:: strike
+    :class: strike
+
 This FAQ page provides answers to common questions about Pyrogram and, to some extent, Telegram in general.
 
 .. tip::
@@ -65,7 +68,7 @@ To challenge the framework, the creator is constantly keeping a public
 `welcome bot <https://github.com/pyrogram/pyrogram/blob/develop/examples/welcomebot.py>`_ online 24/7 on his own,
 relatively-busy account for well over a year now.
 
-In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten
+In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten from scratch
 :doc:`using Pyrogram <powered-by>` and is serving more than 200,000 Monthly Active Users since
 then, uninterruptedly and without any need for restarting it.
 
@@ -102,9 +105,11 @@ one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
 Can I use Bot API's file_ids in Pyrogram?
 -----------------------------------------
 
-Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram...
+:strike:`Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.`
 
-...at least for now.
+Starting from :doc:`Pyrogram v0.14.1 (Layer 100) <releases/v0.14.1>`, the file_id format of all photo-like objects has
+changed. Types affected are: :obj:`~pyrogram.Thumbnail`, :obj:`~pyrogram.ChatPhoto` and :obj:`~pyrogram.Photo`. Any
+other file id remains compatible with the Bot API.
 
 Telegram is slowly changing some server's internals and it's doing it in such a way that file ids are going to break
 inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
@@ -129,8 +134,8 @@ If you -- even accidentally -- fail to do so, all the previous session copies wi
 and eventually the server will start throwing the error ``[406 AUTH_KEY_DUPLICATED]``, inviting you to login again.
 
 Why is that so? Because the server has recognized two identical sessions are running in two different locations, and
-concludes it could possibly be due to a cloned/stolen device. Having the session ended in such occasions will protect
-the user's privacy.
+concludes it could possibly be due to a cloned/stolen device. Having the session terminated in such occasions will
+protect the user's privacy.
 
 So, the only correct way to run multiple clients on the same account is authorizing your account (either user or bot)
 from the beginning every time, and use one separate session for each parallel client you are going to use.
@@ -139,7 +144,8 @@ I started a client and nothing happens!
 ---------------------------------------
 
 If you are connecting from Russia, China or Iran :doc:`you need a proxy <topics/proxy>`, because Telegram could be
-partially or totally blocked in those countries.
+partially or totally blocked in those countries. More information about this block can be found at
+`Wikipedia <https://en.wikipedia.org/wiki/Blocking_Telegram_in_Russia>`_.
 
 Another possible cause might be network issues, either yours or Telegram's. To confirm this, add the following code on
 the top of your script and run it again. You should see some error mentioning a socket timeout or an unreachable network
@@ -156,20 +162,20 @@ fails or not.
 What are the IP addresses of Telegram Data Centers?
 ---------------------------------------------------
 
-The Telegram cloud is currently composed by a decentralized, multi-DC infrastructure (each of which can work
-independently) spread in 5 different locations. However, some of the less busy DCs have been lately dismissed and their
-IP addresses are now kept as aliases.
+The Telegram cloud is currently composed by a decentralized, multi-DC infrastructure (currently 5 DCs, each of which can
+work independently) spread in different locations worldwide. However, some of the less busy DCs have been lately
+dismissed and their IP addresses are now kept as aliases to the nearest one.
 
 .. csv-table:: Production Environment
     :header: ID, Location, IPv4, IPv6
     :widths: auto
     :align: center
 
-    DC1, "MIA, Miami FL, USA", ``149.154.175.50``, ``2001:b28:f23d:f001::a``
+    DC1, "MIA, Miami FL, USA", ``149.154.175.53``, ``2001:b28:f23d:f001::a``
     DC2, "AMS, Amsterdam, NL", ``149.154.167.51``, ``2001:67c:4e8:f002::a``
     DC3*, "MIA, Miami FL, USA", ``149.154.175.100``, ``2001:b28:f23d:f003::a``
     DC4, "AMS, Amsterdam, NL", ``149.154.167.91``, ``2001:67c:4e8:f004::a``
-    DC5, "SIN, Singapore, SG", ``91.108.56.149``, ``2001:b28:f23f:f005::a``
+    DC5, "SIN, Singapore, SG", ``91.108.56.130``, ``2001:b28:f23f:f005::a``
 
 .. csv-table:: Test Environment
     :header: ID, Location, IPv4, IPv6
@@ -180,9 +186,11 @@ IP addresses are now kept as aliases.
     DC2, "AMS, Amsterdam, NL", ``149.154.167.40``, ``2001:67c:4e8:f002::e``
     DC3*, "MIA, Miami FL, USA", ``149.154.175.117``, ``2001:b28:f23d:f003::e``
 
+.. centered:: More info about the Test Environment can be found :doc:`here <topics/test-servers>`.
+
 ***** Alias DC
 
-More info about the Test Environment can be found :doc:`here <topics/test-servers>`.
+Thanks to `@FrayxRulez <https://t.me/tgbetachat/104921>`_ for telling about alias DCs.
 
 I want to migrate my account from DCX to DCY.
 ---------------------------------------------
@@ -200,6 +208,36 @@ mechanism is also `confirmed <https://twitter.com/telegram/status/42713144665519
 it's currently not possible to have your account migrated, in any way, simply because the feature was once planned but
 not yet implemented.
 
+Thanks to `@gabriel <https://t.me/AnotherGroup/217699>`_ for confirming the feature was not implemented yet.
+
+Why is my client reacting slowly in supergroups?
+------------------------------------------------
+
+This issue affects only some supergroups or only some members within the same supergroup. Mostly, it affects supergroups
+whose creator's account (and thus the supergroup itself) lives inside a **different DC**, far away from yours, but could
+also depend on where a member is connecting from.
+
+Because of how Telegram works internally, every single message you receive from and send to other members must pass
+through the creator's DC, and in the worst case where you, the creator and another member all belong to three different
+DCs, the other member messages have to go through from its DC to the creator's DC and finally to your DC. This process
+will inevitably take its time.
+
+    To confirm this theory and see it by yourself, you can test in a supergroup where you are sure all parties live
+    inside the same DC. In this case the responses will be faster.
+
+Another reason that makes responses come slowly is that messages are **dispatched by priority**. Depending on the kind
+of member, some users receive messages faster than others and for big and busy supergroups the delay might become
+noticeable, especially if you are among the lower end of the priority list:
+
+1. Creator.
+2. Administrators.
+3. Bots.
+4. Mentioned users.
+5. Recent online users.
+6. Everyone else.
+
+Thanks to `@Manuel15 <https://t.me/PyrogramChat/76990>`_ for the priority list.
+
 I keep getting PEER_ID_INVALID error!
 -------------------------------------
 
@@ -207,9 +245,13 @@ The error in question is ``[400 PEER_ID_INVALID]``, and could mean several thing
 
 - The chat id you tried to use is simply wrong, double check it.
 - The chat id refers to a group or channel you are not a member of.
-- The chat id refers to a user you have't seen yet (from contacts, groups in common, forwarded messages or private
-  chats).
 - The chat id argument you passed is in form of a string; you have to convert it into an integer with ``int(chat_id)``.
+- The chat id refers to a user your current session haven't met yet.
+
+About the last point: in order for you to meet a user and thus communicate with them, you should ask yourself how to
+contact people using official apps. The answer is the same for Pyrogram too and involves normal usages such as searching
+for usernames, meeting them in a common group, have their phone contacts saved or getting a message mentioning them,
+either a forward or a mention in the message text.
 
 UnicodeEncodeError: '<encoding>' codec can't encode …
 -----------------------------------------------------
@@ -217,7 +259,15 @@ UnicodeEncodeError: '<encoding>' codec can't encode …
 Where ``<encoding>`` might be *ascii*, *cp932*, *charmap* or anything else other than **utf-8**. This error usually
 shows up when you try to print something and has very little to do with Pyrogram itself as it is strictly related to
 your own terminal. To fix it, either find a way to change the encoding settings of your terminal to UTF-8 or switch to a
-better one.
+better terminal altogether.
+
+Uploading with URLs gives error WEBPAGE_CURL_FAILED
+---------------------------------------------------
+
+When uploading media files using an URL, the server automatically tries to download the media and uploads it to the
+Telegram cloud. This error usually happens in case the provided URL is not publicly accessible by Telegram itself or the
+media exceeds 20 MB in size. In such cases, your only option is to download the media yourself and upload from your
+local machine.
 
 My verification code expires immediately!
 -----------------------------------------
@@ -243,7 +293,7 @@ Having said that, here's a list of what Telegram definitely doesn't like:
 - Spam, sending unsolicited messages or adding people to unwanted groups and channels.
 - Virtual/VoIP and cheap real numbers, because they are relatively easy to get and likely used for spam/flood.
 
-And here's a good explanation of how, probably, the system works:
+And thanks to `@koteeq <https://t.me/koteeq>`_, here's a good explanation of how, probably, the system works:
 
 .. raw:: html
 
@@ -252,8 +302,7 @@ And here's a good explanation of how, probably, the system works:
         data-telegram-post="PyrogramChat/69424"
         data-width="100%">
     </script>
-
-.. centered:: Join the discussion at `@Pyrogram <https://t.me/pyrogram>`_
+    <br><br>
 
 However, you might be right, and your account was deactivated/limited without any good reason. This could happen because
 of mistakes by either the automatic systems or a moderator. In such cases you can kindly email Telegram at

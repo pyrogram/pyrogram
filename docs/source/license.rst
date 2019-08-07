@@ -2,7 +2,7 @@ About the License
 =================
 
 .. image:: https://www.gnu.org/graphics/lgplv3-with-text-154x68.png
-    :align: right
+    :align: left
 
 Pyrogram is free software and is currently licensed under the terms of the
 `GNU Lesser General Public License v3 or later (LGPLv3+)`_. In short: you may use, redistribute and/or modify it

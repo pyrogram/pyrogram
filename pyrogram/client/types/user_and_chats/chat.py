@@ -23,6 +23,7 @@ from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from ..object import Object
+from ...ext import utils
 
 
 class Chat(Object):
@@ -91,14 +92,8 @@ class Chat(Object):
             This field is available only in case *is_restricted* is True.
 
         permissions (:obj:`ChatPermissions` *optional*):
-            Information about the chat default permissions, for groups and supergroups.
+            Default chat member permissions, for groups and supergroups.
     """
-
-    __slots__ = [
-        "id", "type", "is_verified", "is_restricted", "is_scam", "is_support", "title", "username", "first_name",
-        "last_name", "photo", "description", "invite_link", "pinned_message", "sticker_set_name", "can_set_sticker_set",
-        "members_count", "restriction_reason", "permissions"
-    ]
 
     def __init__(
         self,
@@ -180,7 +175,7 @@ class Chat(Object):
 
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
-        peer_id = int("-100" + str(channel.id))
+        peer_id = utils.get_channel_id(channel.id)
 
         return Chat(
             id=peer_id,
@@ -236,6 +231,7 @@ class Chat(Object):
 
             if isinstance(full_chat, types.ChatFull):
                 parsed_chat = Chat._parse_chat_chat(client, chat)
+                parsed_chat.description = full_chat.about or None
 
                 if isinstance(full_chat.participants, types.ChatParticipants):
                     parsed_chat.members_count = len(full_chat.participants.participants)
@@ -312,3 +308,409 @@ class Chat(Object):
         """
 
         return self._client.unarchive_chats(self.id)
+
+    # TODO: Remove notes about "All Members Are Admins" for basic groups, the attribute doesn't exist anymore
+    def set_title(self, title: str) -> bool:
+        """Bound method *set_title* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_title(
+                chat_id=chat_id,
+                title=title
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_title("Lounge")
+
+        Note:
+            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
+            setting is off.
+
+        Parameters:
+            title (``str``):
+                New chat title, 1-255 characters.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of Telegram RPC error.
+            ValueError: In case a chat_id belongs to user.
+        """
+
+        return self._client.set_chat_title(
+            chat_id=self.id,
+            title=title
+        )
+
+    def set_description(self, description: str) -> bool:
+        """Bound method *set_description* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_description(
+                chat_id=chat_id,
+                description=description
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_chat_description("Don't spam!")
+
+        Parameters:
+            description (``str``):
+                New chat description, 0-255 characters.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of Telegram RPC error.
+            ValueError: If a chat_id doesn't belong to a supergroup or a channel.
+        """
+
+        return self._client.set_chat_description(
+            chat_id=self.id,
+            description=description
+        )
+
+    def set_photo(self, photo: str) -> bool:
+        """Bound method *set_photo* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_photo(
+                chat_id=chat_id,
+                photo=photo
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.set_photo("photo.png")
+
+        Parameters:
+            photo (``str``):
+                New chat photo. You can pass a :obj:`Photo` id or a file path to upload a new photo.
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            ValueError: if a chat_id belongs to user.
+        """
+
+        return self._client.set_chat_photo(
+            chat_id=self.id,
+            photo=photo
+        )
+
+    def kick_member(
+        self,
+        user_id: Union[int, str],
+        until_date: int = 0
+    ) -> Union["pyrogram.Message", bool]:
+        """Bound method *kick_member* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.kick_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.kick_member(123456789)
+
+        Note:
+            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins" setting is
+            off in the target group. Otherwise members may only be removed by the group's creator or by the member
+            that added them.
+
+        Parameters:
+            user_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target user.
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            until_date (``int``, *optional*):
+                Date when the user will be unbanned, unix time.
+                If user is banned for more than 366 days or less than 30 seconds from the current time they are
+                considered to be banned forever. Defaults to 0 (ban forever).
+
+        Returns:
+            :obj:`Message` | ``bool``: On success, a service message will be returned (when applicable), otherwise, in
+            case a message object couldn't be returned, True is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.kick_chat_member(
+            chat_id=self.id,
+            user_id=user_id,
+            until_date=until_date
+        )
+
+    def unban_member(
+        self,
+        user_id: Union[int, str]
+    ) -> bool:
+        """Bound method *unban_member* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unban_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.unban_member(123456789)
+
+        Parameters:
+            user_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target user.
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.unban_chat_member(
+            chat_id=self.id,
+            user_id=user_id,
+        )
+
+    def restrict_member(
+        self,
+        user_id: Union[int, str],
+        until_date: int = 0,
+        can_send_messages: bool = False,
+        can_send_media_messages: bool = False,
+        can_send_other_messages: bool = False,
+        can_add_web_page_previews: bool = False,
+        can_send_polls: bool = False,
+        can_change_info: bool = False,
+        can_invite_users: bool = False,
+        can_pin_messages: bool = False
+    ) -> "pyrogram.Chat":
+        """Bound method *unban_member* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.restrict_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.restrict_member(123456789)
+
+        Parameters:
+            user_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target user.
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            until_date (``int``, *optional*):
+                Date when the user will be unbanned, unix time.
+                If user is banned for more than 366 days or less than 30 seconds from the current time they are
+                considered to be banned forever. Defaults to 0 (ban forever).
+
+            can_send_messages (``bool``, *optional*):
+                Pass True, if the user can send text messages, contacts, locations and venues.
+
+            can_send_media_messages (``bool``, *optional*):
+                Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
+                implies can_send_messages.
+
+            can_send_other_messages (``bool``, *optional*):
+                Pass True, if the user can send animations, games, stickers and use inline bots,
+                implies can_send_media_messages.
+
+            can_add_web_page_previews (``bool``, *optional*):
+                Pass True, if the user may add web page previews to their messages, implies can_send_media_messages.
+
+            can_send_polls (``bool``, *optional*):
+                Pass True, if the user can send polls, implies can_send_media_messages.
+
+            can_change_info (``bool``, *optional*):
+                Pass True, if the user can change the chat title, photo and other settings.
+
+            can_invite_users (``bool``, *optional*):
+                Pass True, if the user can invite new users to the chat.
+
+            can_pin_messages (``bool``, *optional*):
+                Pass True, if the user can pin messages.
+
+        Returns:
+            :obj:`Chat`: On success, a chat object is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.restrict_chat_member(
+            chat_id=self.id,
+            user_id=user_id,
+            until_date=until_date,
+            can_send_messages=can_send_messages,
+            can_send_media_messages=can_send_media_messages,
+            can_send_other_messages=can_send_other_messages,
+            can_add_web_page_previews=can_add_web_page_previews,
+            can_send_polls=can_send_polls,
+            can_change_info=can_change_info,
+            can_invite_users=can_invite_users,
+            can_pin_messages=can_pin_messages
+        )
+
+    def promote_member(
+        self,
+        user_id: Union[int, str],
+        can_change_info: bool = True,
+        can_post_messages: bool = False,
+        can_edit_messages: bool = False,
+        can_delete_messages: bool = True,
+        can_restrict_members: bool = True,
+        can_invite_users: bool = True,
+        can_pin_messages: bool = False,
+        can_promote_members: bool = False
+    ) -> bool:
+        """Bound method *promote_member* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.promote_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
+
+        Example:
+
+            .. code-block:: python
+
+                chat.promote_member(123456789)
+
+        Parameters:
+            user_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target user.
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            can_change_info (``bool``, *optional*):
+                Pass True, if the administrator can change chat title, photo and other settings.
+
+            can_post_messages (``bool``, *optional*):
+                Pass True, if the administrator can create channel posts, channels only.
+
+            can_edit_messages (``bool``, *optional*):
+                Pass True, if the administrator can edit messages of other users and can pin messages, channels only.
+
+            can_delete_messages (``bool``, *optional*):
+                Pass True, if the administrator can delete messages of other users.
+
+            can_restrict_members (``bool``, *optional*):
+                Pass True, if the administrator can restrict, ban or unban chat members.
+
+            can_invite_users (``bool``, *optional*):
+                Pass True, if the administrator can invite new users to the chat.
+
+            can_pin_messages (``bool``, *optional*):
+                Pass True, if the administrator can pin messages, supergroups only.
+
+            can_promote_members (``bool``, *optional*):
+                Pass True, if the administrator can add new administrators with a subset of his own privileges or
+                demote administrators that he has promoted, directly or indirectly (promoted by administrators that
+                were appointed by him).
+
+        Returns:
+            ``bool``: True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.promote_chat_member(
+            chat_id=self.id,
+            user_id=user_id,
+            can_change_info=can_change_info,
+            can_post_messages=can_post_messages,
+            can_edit_messages=can_edit_messages,
+            can_delete_messages=can_delete_messages,
+            can_restrict_members=can_restrict_members,
+            can_invite_users=can_invite_users,
+            can_pin_messages=can_pin_messages,
+            can_promote_members=can_promote_members
+        )
+
+    def join(self):
+        """Bound method *join* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.join_chat(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.join()
+
+        Note:
+            This only works for public groups and channels that have set a username.
+
+        Returns:
+            :obj:`Chat`: On success, a chat object is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.join_chat(self.username)
+
+    def leave(self):
+        """Bound method *leave* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.leave_chat(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.leave()
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.leave_chat(self.id)
