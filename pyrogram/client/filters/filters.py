@@ -232,7 +232,7 @@ class Filters:
                 Pass True if you want your command(s) to be case sensitive. Defaults to False.
                 Examples: when True, command="Start" would trigger /Start but not /start.
         """
-        command_re = re.compile(r"([\"'])(?!\\)(.*?)(?<!\\)\1|(\S+)")
+        command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
         def func(flt, message):
             text = message.text or message.caption
@@ -250,21 +250,21 @@ class Filters:
                 without_prefix = text[len(prefix):]
 
                 for cmd in flt.commands:
-
-                    if not re.match(pattern.format(cmd), without_prefix):
+                    if not re.match(pattern.format(re.escape(cmd)), without_prefix):
                         continue
 
                     # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                     # between the quotes, group(3) is unquoted, whitespace-split text
-                    without_command = without_prefix[len(cmd):]
+
+                    # Remove the escape character from the arguments
                     message.command = [cmd] + [
-                        m.group(2) or m.group(3) or ''
-                        for m in command_re.finditer(without_command)
+                        re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
+                        for m in command_re.finditer(without_prefix[len(cmd):])
                     ]
 
-                    break
+                    return True
 
-            return bool(message.command)
+            return False
 
         commands = commands if type(commands) is list else [commands]
         commands = {c if case_sensitive else c.lower() for c in commands}
