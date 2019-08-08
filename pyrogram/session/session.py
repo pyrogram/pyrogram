@@ -26,15 +26,15 @@ from os import urandom
 from queue import Queue
 from threading import Event, Thread
 
+from pyrogram.api.all import layer
+
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
-from pyrogram.api.all import layer
 from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
-
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -439,9 +439,9 @@ class Session:
             if retries == 0:
                 raise e from None
 
-            (log.warning if retries < 3 else log.info)(
+            (log.warning if retries < 2 else log.info)(
                 "{}: {} Retrying {}".format(
-                    Session.MAX_RETRIES - retries,
+                    Session.MAX_RETRIES - retries + 1,
                     datetime.now(), type(data)))
 
             time.sleep(0.5)

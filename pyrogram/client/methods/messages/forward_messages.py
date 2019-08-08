@@ -55,7 +55,8 @@ class ForwardMessages(BaseClient):
                 Users will receive a notification with no sound.
 
             as_copy (``bool``, *optional*):
-                Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
+                Pass True to forward messages without the forward header (i.e.: send a copy of the message content so
+                that it appears as originally sent by you).
                 Defaults to False.
 
             remove_caption (``bool``, *optional*):
@@ -68,8 +69,18 @@ class ForwardMessages(BaseClient):
             is returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of
             messages, even if such iterable contained just a single element.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 2,5,8
+
+                # Forward a single message
+                app.forward_messages("me", "pyrogram", 20)
+
+                # Forward multiple messages at once
+                app.forward_messages("me", "pyrogram", [3, 20, 27])
+
+                # Forward messages as copy
+                app.forward_messages("me", "pyrogram", 20, as_copy=True)
         """
 
         is_iterable = not isinstance(message_ids, int)

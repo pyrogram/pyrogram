@@ -45,8 +45,10 @@ class GetHistoryCount(BaseClient):
         Returns:
             ``int``: On success, the chat history count is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.get_history_count("pyrogramchat")
         """
 
         r = self.send(

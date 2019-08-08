@@ -20,7 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
-from ...ext import BaseClient
+from ...ext import BaseClient, utils
 
 
 class GetChat(BaseClient):
@@ -44,8 +44,13 @@ class GetChat(BaseClient):
             otherwise, a chat preview object is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case the chat invite link points to a chat you haven't joined yet.
+
+        Example:
+            .. code-block:: python
+
+                chat = app.get_chat("pyrogram")
+                print(chat)
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
@@ -65,7 +70,7 @@ class GetChat(BaseClient):
                 chat_id = -r.chat.id
 
             if isinstance(r.chat, types.Channel):
-                chat_id = int("-100" + str(r.chat.id))
+                chat_id = utils.get_channel_id(r.chat.id)
 
         peer = self.resolve_peer(chat_id)
 

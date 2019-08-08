@@ -28,6 +28,9 @@ from ...ext import BaseClient, utils
 log = logging.getLogger(__name__)
 
 
+# TODO: Rewrite using a flag for replied messages and have message_ids non-optional
+
+
 class GetMessages(BaseClient):
     def get_messages(
         self,
@@ -36,7 +39,8 @@ class GetMessages(BaseClient):
         reply_to_message_ids: Union[int, Iterable[int]] = None,
         replies: int = 1
     ) -> Union["pyrogram.Message", List["pyrogram.Message"]]:
-        """Get one or more messages that belong to a specific chat.
+        """Get one or more messages from a chat by using message identifiers.
+
         You can retrieve up to 200 messages at once.
 
         Parameters:
@@ -64,8 +68,26 @@ class GetMessages(BaseClient):
             returned, otherwise, in case *message_ids* was an iterable, the returned value will be a list of messages,
             even if such iterable contained just a single element.
 
+        Example:
+            .. code-block:: python
+
+                # Get one message
+                app.get_messages("pyrogramchat", 51110)
+
+                # Get more than one message (list of messages)
+                app.get_messages("pyrogramchat", [44625, 51110])
+
+                # Get message by ignoring any replied-to message
+                app.get_messages(chat_id, message_id, replies=0)
+
+                # Get message with all chained replied-to messages
+                app.get_messages(chat_id, message_id, replies=-1)
+
+                # Get the replied-to message of a message
+                app.get_messages(chat_id, reply_to_message_ids=message_id)
+
         Raises:
-            RPCError: In case of a Telegram RPC error.
+            ValueError: In case of invalid arguments.
         """
         ids, ids_type = (
             (message_ids, types.InputMessageID) if message_ids
@@ -74,7 +96,7 @@ class GetMessages(BaseClient):
         )
 
         if ids is None:
-            raise ValueError("No argument supplied")
+            raise ValueError("No argument supplied. Either pass message_ids or reply_to_message_ids")
 
         peer = self.resolve_peer(chat_id)
 

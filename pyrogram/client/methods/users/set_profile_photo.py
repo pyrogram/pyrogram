@@ -38,8 +38,10 @@ class SetProfilePhoto(BaseClient):
         Returns:
             ``bool``: True on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.set_profile_photo("new_photo.jpg")
         """
 
         return bool(

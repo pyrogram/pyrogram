@@ -106,12 +106,6 @@ class User(Object, Update):
             This field is available only in case *is_restricted* is True.
     """
 
-    __slots__ = [
-        "id", "is_self", "is_contact", "is_mutual_contact", "is_deleted", "is_bot", "is_verified", "is_restricted",
-        "is_scam", "is_support", "first_name", "last_name", "status", "last_online_date", "next_offline_date",
-        "username", "language_code", "dc_id", "phone_number", "photo", "restriction_reason"
-    ]
-
     def __init__(
         self,
         *,

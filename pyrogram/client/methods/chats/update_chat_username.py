@@ -42,8 +42,12 @@ class UpdateChatUsername(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: In case a chat id belongs to a user or chat.
+
+        Example:
+            .. code-block:: python
+
+                app.update_chat_username(chat_id, "new_username")
         """
 
         peer = self.resolve_peer(chat_id)

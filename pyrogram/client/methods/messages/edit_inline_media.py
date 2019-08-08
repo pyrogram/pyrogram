@@ -33,7 +33,7 @@ class EditInlineMedia(BaseClient):
         media: InputMedia,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:
-        """Edit **inline** animation, audio, document, photo or video messages.
+        """Edit inline animation, audio, document, photo or video messages.
 
         When the inline message is edited, a new file can't be uploaded. Use a previously uploaded file via its file_id
         or specify a URL.
@@ -52,8 +52,21 @@ class EditInlineMedia(BaseClient):
         Returns:
             ``bool``: On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InputMediaPhoto, InputMediaVideo, InputMediaAudio
+
+                # Bots only
+
+                # Replace the current media with a local photo
+                app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
+
+                # Replace the current media with a local video
+                app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
+
+                # Replace the current media with a local audio
+                app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode

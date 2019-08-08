@@ -59,8 +59,19 @@ class SendMediaGroup(BaseClient):
         Returns:
             List of :obj:`Message`: On success, a list of the sent messages is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                from pyrogram import InputMediaPhoto, InputMediaVideo
+
+                app.send_media_group(
+                    "me",
+                    [
+                        InputMediaPhoto("photo1.jpg"),
+                        InputMediaPhoto("photo2.jpg", caption="photo caption"),
+                        InputMediaVideo("video.mp4", caption="a video")
+                    ]
+                )
         """
         multi_media = []
 

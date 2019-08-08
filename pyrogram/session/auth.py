@@ -27,7 +27,6 @@ from pyrogram.api import functions, types
 from pyrogram.api.core import TLObject, Long, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
-
 from .internals import MsgId
 
 log = logging.getLogger(__name__)

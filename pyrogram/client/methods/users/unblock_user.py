@@ -18,8 +18,7 @@
 
 from typing import Union
 
-import pyrogram
-from pyrogram.api import functions, types
+from pyrogram.api import functions
 from ...ext import BaseClient
 
 
@@ -30,11 +29,19 @@ class UnblockUser(BaseClient):
     ) -> bool:
         """Unblock a user.
 
+        Parameters:
+            user_id (``int`` | ``str``)::
+                Unique identifier (int) or username (str) of the target user.
+                For you yourself you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
         Returns:
             ``bool``: True on success
 
-        Raises:
-            RPCError: In case of Telegram RPC Error.
+        Example:
+            .. code-block:: python
+
+                app.unblock_user(user_id)
         """
         return bool(
             self.send(

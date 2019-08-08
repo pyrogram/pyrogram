@@ -32,7 +32,7 @@ class EditInlineText(BaseClient):
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> bool:
-        """Edit the text of **inline** messages.
+        """Edit the text of inline messages.
 
         Parameters:
             inline_message_id (``str``):
@@ -57,8 +57,18 @@ class EditInlineText(BaseClient):
         Returns:
             ``bool``: On success, True is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Bots only
+
+                # Simple edit text
+                app.edit_inline_text(inline_message_id, "new text")
+
+                # Take the same text message, remove the web page preview only
+                app.edit_inline_text(
+                    inline_message_id, message.text,
+                    disable_web_page_preview=True)
         """
 
         return self.send(

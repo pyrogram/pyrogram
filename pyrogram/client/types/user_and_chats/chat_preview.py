@@ -20,7 +20,7 @@ from typing import List
 
 import pyrogram
 from pyrogram.api import types
-from .chat_photo import ChatPhoto
+from ..messages_and_media import Photo
 from ..object import Object
 from ..user_and_chats.user import User
 
@@ -32,48 +32,46 @@ class ChatPreview(Object):
         title (``str``):
             Title of the chat.
 
-        photo (:obj:`ChatPhoto`, *optional*):
-            Chat photo. Suitable for downloads only.
-
         type (``str``):
             Type of chat, can be either, "group", "supergroup" or "channel".
 
         members_count (``int``):
             Chat members count.
 
+        photo (:obj:`Photo`, *optional*):
+            Chat photo.
+
         members (List of :obj:`User`, *optional*):
             Preview of some of the chat members.
     """
-
-    __slots__ = ["title", "photo", "type", "members_count", "members"]
 
     def __init__(
         self,
         *,
         client: "pyrogram.BaseClient" = None,
         title: str,
-        photo: ChatPhoto = None,
         type: str,
         members_count: int,
+        photo: Photo = None,
         members: List[User] = None
     ):
         super().__init__(client)
 
         self.title = title
-        self.photo = photo
         self.type = type
         self.members_count = members_count
+        self.photo = photo
         self.members = members
 
     @staticmethod
     def _parse(client, chat_invite: types.ChatInvite) -> "ChatPreview":
         return ChatPreview(
             title=chat_invite.title,
-            photo=ChatPhoto._parse(client, chat_invite.photo),
             type=("group" if not chat_invite.channel else
                   "channel" if chat_invite.broadcast else
                   "supergroup"),
             members_count=chat_invite.participants_count,
+            photo=Photo._parse(client, chat_invite.photo),
             members=[User._parse(client, user) for user in chat_invite.participants] or None,
             client=client
         )

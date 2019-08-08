@@ -61,8 +61,6 @@ class InputMediaVideo(InputMedia):
             Pass True, if the uploaded video is suitable for streaming.
     """
 
-    __slots__ = ["thumb", "width", "height", "duration", "supports_streaming"]
-
     def __init__(
         self,
         media: str,

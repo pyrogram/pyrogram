@@ -47,8 +47,6 @@ class InputMediaDocument(InputMedia):
             Pass None to completely disable style parsing.
     """
 
-    __slots__ = ["thumb"]
-
     def __init__(
         self,
         media: str,

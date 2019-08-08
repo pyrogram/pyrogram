@@ -29,9 +29,9 @@ Configuration
 Having the API key from the previous step in handy, we can now begin to configure a Pyrogram project.
 There are two ways to do so, and you can choose what fits better for you:
 
--   First option (recommended): create a new ``config.ini`` file at the root of your working directory, copy-paste the
-    following and replace the **api_id** and **api_hash** values with your own. This is the preferred method because
-    allows you to keep your credentials out of your code without having to deal with how to load them:
+-   First option (recommended): create a new ``config.ini`` file next to your main script, copy-paste the following and
+    replace the **api_id** and **api_hash** values with your own. This is the preferred method because allows you to
+    keep your credentials out of your code without having to deal with how to load them:
 
     .. code-block:: ini
 

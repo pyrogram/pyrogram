@@ -114,3 +114,13 @@ FILE_PART_EMPTY	The file part sent is empty
 FILE_PART_SIZE_INVALID	512 KB cannot be evenly divided by part_size
 FILE_PART_SIZE_CHANGED	The part size is different from the size of one of the previous parts in the same file
 FILE_MIGRATE_X	The file is in Data Center No. {x}
+RESULT_TYPE_INVALID	The result type is invalid
+PHOTO_THUMB_URL_EMPTY	The photo thumb URL is empty
+PHOTO_THUMB_URL_INVALID	The photo thumb URL is invalid
+PHOTO_CONTENT_URL_EMPTY	The photo content URL is empty
+PHOTO_CONTENT_TYPE_INVALID	The photo content type is invalid
+WEBDOCUMENT_INVALID	The web document is invalid
+WEBDOCUMENT_URL_EMPTY	The web document URL is empty
+WEBDOCUMENT_URL_INVALID	The web document URL is invalid
+WEBDOCUMENT_MIME_INVALID	The web document mime type is invalid
+BUTTON_URL_INVALID	The button url is invalid

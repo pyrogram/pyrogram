@@ -62,8 +62,10 @@ class SendGame(BaseClient):
         Returns:
             :obj:`Message`: On success, the sent game message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.send_game(chat_id, "gamename")
         """
         r = self.send(
             functions.messages.SendMedia(

@@ -63,24 +63,23 @@ class DownloadMedia(BaseClient):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (``callable``):
-                Pass a callback function to view the download progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+            progress (``callable``, *optional*):
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
-            progress_args (``tuple``):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes downloaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -91,8 +90,16 @@ class DownloadMedia(BaseClient):
             the download failed or was deliberately stopped with :meth:`~Client.stop_transmission`, None is returned.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             ValueError: if the message doesn't contain any downloadable media
+
+        Example:
+            .. code-block:: python
+
+                # Download from Message
+                app.download_media(message)
+
+                # Download from file id
+                app.download_media("CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
         """
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
@@ -219,6 +226,7 @@ class DownloadMedia(BaseClient):
             to_file = True
         else:
             to_file = False
+
         self.download_queue.put((data, done, progress, progress_args, out, path, to_file))
 
         if block:

@@ -240,6 +240,7 @@ class Filters:
 
         def func(flt, message):
             text = message.text or message.caption
+            message.command = None
 
             if text:
                 for p in flt.p:
@@ -272,11 +273,15 @@ class Filters:
                 RegEx flags.
         """
 
-        def f(_, m):
-            m.matches = [i for i in _.p.finditer(m.text or m.caption or "")]
-            return bool(m.matches)
+        def func(flt, message):
+            text = message.text or message.caption
 
-        return create(f, "RegexFilter", p=re.compile(pattern, flags))
+            if text:
+                message.matches = list(flt.p.finditer(text)) or None
+
+            return bool(message.matches)
+
+        return create(func, "RegexFilter", p=re.compile(pattern, flags))
 
     # noinspection PyPep8Naming
     class user(Filter, set):

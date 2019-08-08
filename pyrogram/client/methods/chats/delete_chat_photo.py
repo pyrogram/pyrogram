@@ -28,12 +28,8 @@ class DeleteChatPhoto(BaseClient):
         chat_id: Union[int, str]
     ) -> bool:
         """Delete a chat photo.
-        Photos can't be changed for private chats.
-        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
-        Note:
-            In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
-            setting is off.
+        You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -43,8 +39,12 @@ class DeleteChatPhoto(BaseClient):
             ``bool``: True on success.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
-            ``ValueError`` if a chat_id belongs to user.
+            ValueError: if a chat_id belongs to user.
+
+        Example:
+            .. code-block:: python
+
+                app.delete_chat_photo(chat_id)
         """
         peer = self.resolve_peer(chat_id)
 

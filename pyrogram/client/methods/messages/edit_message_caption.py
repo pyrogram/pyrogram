@@ -28,7 +28,7 @@ class EditMessageCaption(BaseClient):
         chat_id: Union[int, str],
         message_id: int,
         caption: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
         """Edit the caption of media messages.
@@ -58,8 +58,10 @@ class EditMessageCaption(BaseClient):
         Returns:
             :obj:`Message`: On success, the edited message is returned.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                app.edit_message_caption(chat_id, message_id, "new media caption")
         """
         return self.edit_message_text(
             chat_id=chat_id,

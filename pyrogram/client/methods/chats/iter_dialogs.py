@@ -46,8 +46,12 @@ class IterDialogs(BaseClient):
         Returns:
             ``Generator``: A generator yielding :obj:`Dialog` objects.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Iterate through all dialogs
+                for dialog in app.iter_dialogs():
+                    print(dialog.chat.first_name or dialog.chat.title)
         """
         current = 0
         total = limit or (1 << 31) - 1

@@ -52,8 +52,6 @@ class VideoNote(Object):
             Video thumbnails.
     """
 
-    __slots__ = ["file_id", "mime_type", "file_size", "date", "length", "duration", "thumbs"]
-
     def __init__(
         self,
         *,

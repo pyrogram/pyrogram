@@ -31,7 +31,8 @@ from ..object import Object
 from ..update import Update
 from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
-from ...parser import utils, Parser
+from ...ext import utils
+from ...parser import utils as parser_utils, Parser
 
 
 class Str(str):
@@ -54,7 +55,7 @@ class Str(str):
         return Parser.unparse(self, self.entities, True)
 
     def __getitem__(self, item):
-        return utils.remove_surrogates(utils.add_surrogates(self)[item])
+        return parser_utils.remove_surrogates(parser_utils.add_surrogates(self)[item])
 
 
 class Message(Object, Update):
@@ -263,17 +264,6 @@ class Message(Object, Update):
 
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
 
-    __slots__ = [
-        "message_id", "date", "chat", "from_user", "forward_from", "forward_sender_name", "forward_from_chat",
-        "forward_from_message_id", "forward_signature", "forward_date", "reply_to_message", "mentioned", "empty",
-        "service", "media", "edit_date", "media_group_id", "author_signature", "text", "entities", "caption_entities",
-        "audio", "document", "photo", "sticker", "animation", "game", "video", "voice", "video_note", "caption",
-        "contact", "location", "venue", "web_page", "poll", "new_chat_members", "left_chat_member", "new_chat_title",
-        "new_chat_photo", "delete_chat_photo", "group_chat_created", "supergroup_chat_created", "channel_chat_created",
-        "migrate_to_chat_id", "migrate_from_chat_id", "pinned_message", "game_high_score", "views", "via_bot",
-        "outgoing", "matches", "command", "reply_markup"
-    ]
-
     def __init__(
         self,
         *,
@@ -446,7 +436,7 @@ class Message(Object, Update):
                 new_chat_title=new_chat_title,
                 new_chat_photo=new_chat_photo,
                 delete_chat_photo=delete_chat_photo,
-                migrate_to_chat_id=int("-100" + str(migrate_to_chat_id)) if migrate_to_chat_id else None,
+                migrate_to_chat_id=utils.get_channel_id(migrate_to_chat_id) if migrate_to_chat_id else None,
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
@@ -602,10 +592,26 @@ class Message(Object, Update):
                 date=message.date,
                 chat=Chat._parse(client, message, users, chats),
                 from_user=User._parse(client, users.get(message.from_id, None)),
-                text=Str(message.message).init(entities) or None if media is None else None,
-                caption=Str(message.message).init(entities) or None if media is not None else None,
-                entities=entities or None if media is None else None,
-                caption_entities=entities or None if media is not None else None,
+                text=(
+                    Str(message.message).init(entities) or None
+                    if media is None or web_page is not None
+                    else None
+                ),
+                caption=(
+                    Str(message.message).init(entities) or None
+                    if media is not None and web_page is None
+                    else None
+                ),
+                entities=(
+                    entities or None
+                    if media is None or web_page is not None
+                    else None
+                ),
+                caption_entities=(
+                    entities or None
+                    if media is not None and web_page is None
+                    else None
+                ),
                 author_signature=message.post_author,
                 forward_from=forward_from,
                 forward_sender_name=forward_sender_name,
@@ -654,7 +660,7 @@ class Message(Object, Update):
         self,
         text: str,
         quote: bool = None,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -736,7 +742,7 @@ class Message(Object, Update):
         animation: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -817,23 +823,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -873,7 +878,7 @@ class Message(Object, Update):
         audio: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: str = None,
         title: str = None,
@@ -954,23 +959,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -1010,7 +1014,7 @@ class Message(Object, Update):
         file_id: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1218,7 +1222,7 @@ class Message(Object, Update):
         quote: bool = None,
         thumb: str = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1286,23 +1290,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -1613,7 +1616,7 @@ class Message(Object, Update):
         photo: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1681,23 +1684,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -1859,23 +1861,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -2007,7 +2008,7 @@ class Message(Object, Update):
         video: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -2092,23 +2093,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -2214,23 +2214,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -2267,7 +2266,7 @@ class Message(Object, Update):
         voice: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2333,23 +2332,22 @@ class Message(Object, Update):
                 instructions to remove reply keyboard or to force a reply from the user.
 
             progress (``callable``, *optional*):
-                Pass a callback function to view the upload progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
             progress_args (``tuple``, *optional*):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
 
         Other Parameters:
-            client (:obj:`Client`):
-                The Client itself, useful when you want to call other API methods inside the callback function.
-
             current (``int``):
-                The amount of bytes uploaded so far.
+                The amount of bytes transmitted so far.
 
             total (``int``):
-                The size of the file.
+                The total size of the file.
 
             *args (``tuple``, *optional*):
                 Extra custom arguments as defined in the *progress_args* parameter.
@@ -2384,7 +2382,7 @@ class Message(Object, Update):
     def edit_text(
         self,
         text: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
@@ -2442,7 +2440,7 @@ class Message(Object, Update):
     def edit_caption(
         self,
         caption: str,
-        parse_mode: str = "",
+        parse_mode: Union[str, None] = object,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit_caption* of :obj:`Message`.
@@ -2619,9 +2617,6 @@ class Message(Object, Update):
             if self.game and not self._client.is_bot:
                 raise ValueError("Users cannot send messages with Game media type")
 
-            # TODO: Improve markdown parser. Currently html appears to be more stable, thus we use it here because users
-            #       can"t choose.
-
             if self.text:
                 return self._client.send_message(
                     chat_id,
@@ -2631,7 +2626,7 @@ class Message(Object, Update):
                     disable_notification=disable_notification
                 )
             elif self.media:
-                caption = self.caption.html if self.caption and not remove_caption else None
+                caption = self.caption.html if self.caption and not remove_caption else ""
 
                 send_media = partial(
                     self._client.send_cached_media,
@@ -2869,6 +2864,37 @@ class Message(Object, Update):
         else:
             self.reply(button, quote=quote)
 
+    def retract_vote(
+        self,
+    ) -> "pyrogram.Poll":
+        """Bound method *retract_vote* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.retract_vote(
+                chat_id=message.chat.id,
+                message_id=message_id,
+            )
+            
+        Example:
+            .. code-block:: python
+
+                message.retract_vote()
+
+        Returns:
+            :obj:`Poll`: On success, the poll with the retracted vote is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.retract_vote(
+            chat_id=self.chat.id,
+            message_id=self.message_id
+        )
+
     def download(
         self,
         file_name: str = "",
@@ -2904,14 +2930,27 @@ class Message(Object, Update):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (``callable``):
-                Pass a callback function to view the download progress.
-                The function must take *(client, current, total, \*args)* as positional arguments (look at the section
-                below for a detailed description).
+            progress (``callable``, *optional*):
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
 
-            progress_args (``tuple``):
-                Extra custom arguments for the progress callback function. Useful, for example, if you want to pass
-                a chat_id and a message_id in order to edit a message with the updated progress.
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
+
+        Other Parameters:
+            current (``int``):
+                The amount of bytes transmitted so far.
+
+            total (``int``):
+                The total size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the *progress_args* parameter.
+                You can either keep *\*args* or add every single extra argument in your function signature.
 
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.
@@ -2927,6 +2966,44 @@ class Message(Object, Update):
             block=block,
             progress=progress,
             progress_args=progress_args,
+        )
+
+    def vote(
+        self,
+        option: int,
+    ) -> "pyrogram.Poll":
+        """Bound method *vote* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.vote_poll(
+                chat_id=message.chat.id,
+                message_id=message.message_id,
+                option=1
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.vote(6)
+
+        Parameters:
+            option (``int``):
+                Index of the poll option you want to vote for (0 to 9).
+            
+        Returns:
+            :obj:`Poll`: On success, the poll with the chosen option is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.vote_poll(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            option=option
         )
 
     def pin(self, disable_notification: bool = None) -> "Message":

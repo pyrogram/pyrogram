@@ -56,8 +56,14 @@ class AnswerCallbackQuery(BaseClient):
         Returns:
             ``bool``: True, on success.
 
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        Example:
+            .. code-block:: python
+
+                # Answer without alert
+                app.answer_callback_query(query_id, text=text)
+
+                # Answer with alert
+                app.answer_callback_query(query_id, text=text, show_alert=True)
         """
         return self.send(
             functions.messages.SetBotCallbackAnswer(
