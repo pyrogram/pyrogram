@@ -238,21 +238,31 @@ class Filters:
             text = message.text or message.caption
             message.command = None
 
-            if text:
-                for prefix in flt.prefixes:
-                    if text.startswith(prefix):
-                        # groups are 1-indexed, group(1) is the quote, group(2) is the text
-                        # between the quotes, group(3) is unquoted, whitespace-split text
-                        args = [m.group(2) or m.group(3) or ""
-                                for m in re.finditer(command_re, text[len(prefix):])]
-                        command = args[0] if flt.case_sensitive else args[0].lower()
+            if not text:
+                return False
 
-                        if command not in flt.commands:
-                            return False
+            pattern = r"^{}(?:\s|$)" if flt.case_sensitive else r"(?i)^{}(?:\s|$)"
 
-                        message.command = args
+            for prefix in flt.prefixes:
+                if not text.startswith(prefix):
+                    continue
 
-                        break
+                without_prefix = text[len(prefix):]
+
+                for cmd in flt.commands:
+
+                    if not re.match(pattern.format(cmd), without_prefix):
+                        continue
+
+                    # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
+                    # between the quotes, group(3) is unquoted, whitespace-split text
+                    without_command = without_prefix[len(cmd):]
+                    message.command = [cmd] + [
+                        m.group(2) or m.group(3) or ''
+                        for m in command_re.finditer(without_command)
+                    ]
+
+                    break
 
             return bool(message.command)
 
