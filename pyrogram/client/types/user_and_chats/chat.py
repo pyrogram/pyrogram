@@ -714,3 +714,27 @@ class Chat(Object):
         """
 
         return self._client.leave_chat(self.id)
+
+
+    def export_invite_link(self):
+        """Bound method *export_invite_link* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.export_chat_invite_link(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.export_invite_link()
+
+        Returns:
+            ``str``: On success, the exported invite link is returned.
+
+        Raises:
+            ValueError: In case the chat_id belongs to a user.
+        """
+
+        return self._client.export_invite_link(self.id)
