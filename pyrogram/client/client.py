@@ -45,7 +45,7 @@ from pyrogram.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, ChannelPrivate, PhoneNumberOccupied,
-    PasswordRecoveryNa, PasswordEmpty
+    PasswordRecoveryNa, PasswordEmpty, AuthBytesInvalid
 )
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
@@ -1229,7 +1229,7 @@ class Client(Methods, BaseClient):
     def load_config(self):
         parser = ConfigParser()
         parser.read(str(self.config_file))
-        
+
         if self.bot_token:
             pass
         else:
@@ -1720,30 +1720,35 @@ class Client(Methods, BaseClient):
 
             if session is None:
                 if dc_id != self.storage.dc_id:
-                    exported_auth = self.send(
-                        functions.auth.ExportAuthorization(
-                            dc_id=dc_id
-                        )
-                    )
-
                     session = Session(self, dc_id, Auth(self, dc_id).create(), is_media=True)
-
                     session.start()
 
-                    self.media_sessions[dc_id] = session
-
-                    session.send(
-                        functions.auth.ImportAuthorization(
-                            id=exported_auth.id,
-                            bytes=exported_auth.bytes
+                    for _ in range(3):
+                        exported_auth = self.send(
+                            functions.auth.ExportAuthorization(
+                                dc_id=dc_id
+                            )
                         )
-                    )
+
+                        try:
+                            session.send(
+                                functions.auth.ImportAuthorization(
+                                    id=exported_auth.id,
+                                    bytes=exported_auth.bytes
+                                )
+                            )
+                        except AuthBytesInvalid:
+                            continue
+                        else:
+                            break
+                    else:
+                        session.stop()
+                        raise AuthBytesInvalid
                 else:
                     session = Session(self, dc_id, self.storage.auth_key, is_media=True)
-
                     session.start()
 
-                    self.media_sessions[dc_id] = session
+                self.media_sessions[dc_id] = session
 
         if media_type == 1:
             location = types.InputPeerPhotoFileLocation(
