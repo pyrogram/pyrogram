@@ -1313,7 +1313,7 @@ class Client(Methods, BaseClient):
         ])
 
         if session_empty:
-            self.storage.dc_id = 4
+            self.storage.dc_id = 2
             self.storage.date = 0
 
             self.storage.test_mode = self.test_mode
