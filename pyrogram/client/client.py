@@ -44,7 +44,7 @@ from pyrogram.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, ChannelPrivate, PhoneNumberOccupied,
-    PasswordRecoveryNa, PasswordEmpty
+    PasswordRecoveryNa, PasswordEmpty, AuthBytesInvalid
 )
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
@@ -1238,7 +1238,7 @@ class Client(Methods, BaseClient):
     def load_config(self):
         parser = ConfigParser()
         parser.read(str(self.config_file))
-        
+
         if self.bot_token:
             pass
         else:
@@ -1322,7 +1322,7 @@ class Client(Methods, BaseClient):
         ])
 
         if session_empty:
-            self.storage.dc_id = 4
+            self.storage.dc_id = 2
             self.storage.date = 0
 
             self.storage.test_mode = self.test_mode
@@ -1745,33 +1745,35 @@ class Client(Methods, BaseClient):
 
             if session is None:
                 if dc_id != self.storage.dc_id:
-                    exported_auth = await self.send(
-                        functions.auth.ExportAuthorization(
-                            dc_id=dc_id
-                        )
-                    )
-
-                    session = Session(
-                        self,
-                        dc_id,
-                        await Auth(self, dc_id).create(), is_media=True)
-
+                    session = Session(self, dc_id, await Auth(self, dc_id).create(), is_media=True)
                     await session.start()
 
-                    self.media_sessions[dc_id] = session
-
-                    await session.send(
-                        functions.auth.ImportAuthorization(
-                            id=exported_auth.id,
-                            bytes=exported_auth.bytes
+                    for _ in range(3):
+                        exported_auth = await self.send(
+                            functions.auth.ExportAuthorization(
+                                dc_id=dc_id
+                            )
                         )
-                    )
+
+                        try:
+                            await session.send(
+                                functions.auth.ImportAuthorization(
+                                    id=exported_auth.id,
+                                    bytes=exported_auth.bytes
+                                )
+                            )
+                        except AuthBytesInvalid:
+                            continue
+                        else:
+                            break
+                    else:
+                        await session.stop()
+                        raise AuthBytesInvalid
                 else:
                     session = Session(self, dc_id, self.storage.auth_key, is_media=True)
-
                     await session.start()
 
-                    self.media_sessions[dc_id] = session
+                self.media_sessions[dc_id] = session
 
         if media_type == 1:
             location = types.InputPeerPhotoFileLocation(
