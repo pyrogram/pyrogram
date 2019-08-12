@@ -280,6 +280,356 @@ class Client(Methods, BaseClient):
         self._proxy["enabled"] = bool(value.get("enabled", True))
         self._proxy.update(value)
 
+    def load_setting(self):
+        """Loading settings"""
+
+        if self.is_started:
+            raise ConnectionError("Client has already been started")
+
+        self.load_config()
+        self.load_session()
+        self.load_plugins()
+
+        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+
+        self.session.start()
+        self.is_started = True
+
+
+    def end_session(self):
+        self.is_started = False
+        self.session.stop()
+
+    def update(self):
+        for i in range(self.UPDATES_WORKERS):
+            self.updates_workers_list.append(
+                Thread(
+                    target=self.updates_worker,
+                    name="UpdatesWorker#{}".format(i + 1)
+                )
+            )
+
+            self.updates_workers_list[-1].start()
+
+    def download(self):
+        for i in range(self.DOWNLOAD_WORKERS):
+            self.download_workers_list.append(
+                Thread(
+                    target=self.download_worker,
+                    name="DownloadWorker#{}".format(i + 1)
+                )
+            )
+
+            self.download_workers_list[-1].start()
+
+    def get_hint(self):
+        r = self.send(functions.account.GetPassword())
+        self.end_session()
+        return r.hint
+
+    def get_recovery_code(self):
+        self.load_setting()
+
+        try:
+            r = self.send(functions.auth.RequestPasswordRecovery())
+        except Exception as e:
+            self.end_session()
+            raise e
+
+        self.end_session()
+
+        return r.email_pattern
+
+    def get_phone_code_hash(self):
+        """Generating a phone code hash"""
+        self.load_setting()
+
+        phone_number_invalid_raises = self.phone_number is not None
+
+        def default_phone_number_callback():
+            while True:
+                phone_number = input("Enter phone number: ")
+                confirm = input("Is \"{}\" correct? (y/n): ".format(phone_number))
+
+                if confirm in ("y", "1"):
+                    return phone_number
+                elif confirm in ("n", "2"):
+                    continue
+
+        while True:
+            self.phone_number = (
+                default_phone_number_callback() if self.phone_number is None
+                else str(self.phone_number()) if callable(self.phone_number)
+                else str(self.phone_number)
+            )
+
+            self.phone_number = self.phone_number.strip("+")
+
+            try:
+                r = self.send(
+                    functions.auth.SendCode(
+                        phone_number=self.phone_number,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        settings=types.CodeSettings()
+                    )
+                )
+            except (PhoneMigrate, NetworkMigrate) as e:
+                self.session.stop()
+
+                self.storage.dc_id = e.x
+                self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+
+                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+
+                self.session.start()
+            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
+                if phone_number_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_number = None
+            except FloodWait as e:
+                if phone_number_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+                self.end_session()
+                raise
+            else:
+                break
+
+        phone_registered = r.phone_registered
+        phone_code_hash = r.phone_code_hash
+        terms_of_service = r.terms_of_service
+
+        if terms_of_service and not Client.terms_of_service_displayed:
+            print("\n" + terms_of_service.text + "\n")
+            Client.terms_of_service_displayed = True
+
+        if self.force_sms:
+            self.send(
+                functions.auth.ResendCode(
+                    phone_number=self.phone_number,
+                    phone_code_hash=phone_code_hash
+                )
+            )
+
+        self.end_session()
+
+        return {'phone_registered': r.phone_registered,
+                'phone_code_hash': r.phone_code_hash}
+
+    def send_phone_code(self, phone_code_hash, phone_registered):
+        """Send phone code"""
+
+        self.load_setting()
+
+        phone_code_invalid_raises = self.phone_code is not None
+        first_name_invalid_raises = self.first_name is not None
+
+
+        while True:
+            if not phone_registered:
+                self.first_name = (
+                    input("First name: ") if self.first_name is None
+                    else str(self.first_name()) if callable(self.first_name)
+                    else str(self.first_name)
+                )
+
+                self.last_name = (
+                    input("Last name: ") if self.last_name is None
+                    else str(self.last_name()) if callable(self.last_name)
+                    else str(self.last_name)
+                )
+
+            self.phone_code = (
+                input("Enter phone code: ") if self.phone_code is None
+                else str(self.phone_code(self.phone_number)) if callable(self.phone_code)
+                else str(self.phone_code)
+            )
+
+            try:
+                if phone_registered:
+                    try:
+                        r = self.send(
+                            functions.auth.SignIn(
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code
+                            )
+                        )
+                    except PhoneNumberUnoccupied:
+                        log.warning("Phone number unregistered")
+                        phone_registered = False
+                        continue
+                else:
+                    try:
+                        r = self.send(
+                            functions.auth.SignUp(
+                                phone_number=self.phone_number,
+                                phone_code_hash=phone_code_hash,
+                                phone_code=self.phone_code,
+                                first_name=self.first_name,
+                                last_name=self.last_name
+                            )
+                        )
+                    except PhoneNumberOccupied:
+                        log.warning("Phone number already registered")
+                        phone_registered = True
+                        continue
+            except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
+                if phone_code_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.phone_code = None
+            except FirstnameInvalid as e:
+                if first_name_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.first_name = None
+            except SessionPasswordNeeded as e:
+                print(e.MESSAGE)
+                raise e
+            except FloodWait as e:
+                if phone_code_invalid_raises or first_name_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+                self.end_session()
+                raise
+            else:
+                break
+
+        self.user_id = r.user.id
+        self.dispatcher.start()
+        self.update()
+        self.download()
+
+        mimetypes.init()
+        Syncer.add(self)
+        return self
+
+    def send_password(self):
+        """Send cloud password"""
+
+        self.load_setting()
+
+        password_invalid_raises = self.password is not None
+
+        def default_password_callback(password_hint: str) -> str:
+            print("Hint: {}".format(password_hint))
+            return input("Enter password (empty to recover): ")
+
+        while True:
+            try:
+                r = self.send(functions.account.GetPassword())
+
+                self.password = (
+                    default_password_callback(r.hint) if self.password is None
+                    else str(self.password(r.hint) or "") if callable(self.password)
+                    else str(self.password)
+                )
+
+                r = self.send(
+                    functions.auth.CheckPassword(
+                        password=compute_check(r, self.password)
+                    )
+                )
+            except (PasswordEmpty, PasswordRecoveryNa, PasswordHashInvalid) as e:
+                if password_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.password = None
+                    self.recovery_code = None
+            except FloodWait as e:
+                if password_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
+                    self.password = None
+                    self.recovery_code = None
+            except Exception as e:
+                log.error(e, exc_info=True)
+                self.end_session()
+                raise
+            else:
+                break
+
+        self.password = None
+        self.user_id = r.user.id
+        self.dispatcher.start()
+        self.update()
+        self.download()
+
+        mimetypes.init()
+        Syncer.add(self)
+        return self
+
+    def send_recovery_code(self):
+
+        self.load_setting()
+
+        password_invalid_raises = self.password is not None
+
+        while True:
+            try:
+                r = self.send(
+                    functions.auth.RecoverPassword(
+                        code=self.recovery_code
+                    )
+                )
+            except (PasswordEmpty, PasswordRecoveryNa, PasswordHashInvalid) as e:
+                if password_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE)
+                    self.password = None
+                    self.recovery_code = None
+            except FloodWait as e:
+                if password_invalid_raises:
+                    self.end_session()
+                    raise
+                else:
+                    print(e.MESSAGE.format(x=e.x))
+                    time.sleep(e.x)
+                    self.password = None
+                    self.recovery_code = None
+            except Exception as e:
+                log.error(e, exc_info=True)
+                self.end_session()
+                raise
+            else:
+                break
+
+        self.password = None
+        self.user_id = r.user.id
+        self.dispatcher.start()
+        self.update()
+        self.download()
+
+        mimetypes.init()
+        Syncer.add(self)
+        return self
+
     def start(self):
         """Start the client.
 
@@ -1308,8 +1658,8 @@ class Client(Methods, BaseClient):
         session_empty = any([
             self.storage.test_mode is None,
             self.storage.auth_key is None,
-            self.storage.user_id is None,
-            self.storage.is_bot is None
+            # self.storage.user_id is None,
+            # self.storage.is_bot is None
         ])
 
         if session_empty:
