@@ -24,7 +24,7 @@ what you should do next:
 -  **Windows**: Install `Visual C++ 2015 Build Tools <http://landinghub.visualstudio.com/visual-cpp-build-tools>`_.
 -  **macOS**: A pop-up will automatically ask you to install the command line developer tools.
 -  **Linux**: Install a proper C compiler (``gcc``, ``clang``) and the Python header files (``python3-dev``).
--  **Termux (Android)**: Install ``clang`` and ``python-dev`` packages.
+-  **Termux (Android)**: Install ``clang`` package.
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
