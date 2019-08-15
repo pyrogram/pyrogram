@@ -1,3 +1,2 @@
 pyaes==1.6.1
 pysocks==1.7.0
-typing==3.6.6; python_version<"3.5"

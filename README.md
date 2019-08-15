@@ -56,7 +56,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 
 ### Requirements
 
-- Python 3.4 or higher.
+- Python 3.5.3 or higher.
 - A [Telegram API key](https://docs.pyrogram.org/intro/setup#api-keys).
 
 ### Installing
