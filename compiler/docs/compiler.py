@@ -201,6 +201,7 @@ def pyrogram_api():
             iter_dialogs
             get_dialogs_count
             update_chat_username
+            get_common_chats
             archive_chats
             unarchive_chats
             add_chat_members
