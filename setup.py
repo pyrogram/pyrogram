@@ -146,7 +146,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -168,7 +167,7 @@ setup(
         "Source": "https://github.com/pyrogram/pyrogram",
         "Documentation": "https://docs.pyrogram.org",
     },
-    python_requires="~=3.4",
+    python_requires="~=3.5",
     packages=find_packages(exclude=["compiler*"]),
     package_data={
         "pyrogram.client.ext": ["mime.types"],

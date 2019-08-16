@@ -291,8 +291,11 @@ Load/Unload Plugins at Runtime
 In the previous section we've explained how to specify which plugins to load and which to ignore before your Client
 starts. Here we'll show, instead, how to unload and load again a previously registered plugin at runtime.
 
-Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram updates
-) will be modified in such a way that, when you reference them later on, they will be actually pointing to a tuple of
+Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram
+updates) will be modified in such a way that a special ``handler`` attribute pointing to a tuple of
+*(handler: Handler, group: int)* is attached to the function object itself.
+
+when you reference them later on, they will be actually pointing to a tuple of
 *(handler: Handler, group: int)*. The actual callback function is therefore stored inside the handler's *callback*
 attribute. Here's an example:
 

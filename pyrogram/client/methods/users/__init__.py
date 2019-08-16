@@ -18,6 +18,7 @@
 
 from .block_user import BlockUser
 from .delete_profile_photos import DeleteProfilePhotos
+from .get_common_chats import GetCommonChats
 from .get_me import GetMe
 from .get_profile_photos import GetProfilePhotos
 from .get_profile_photos_count import GetProfilePhotosCount
@@ -30,6 +31,7 @@ from .update_username import UpdateUsername
 
 class Users(
     BlockUser,
+    GetCommonChats,
     GetProfilePhotos,
     SetProfilePhoto,
     DeleteProfilePhotos,

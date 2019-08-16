@@ -1,7 +1,6 @@
 ---
 name: Bug Report
 about: Create a bug report affecting the library
-labels: "bug"
 ---
 
 <!-- WARNING: Ignoring this template could lead to the issue being closed as incomplete -->

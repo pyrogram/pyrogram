@@ -9,7 +9,7 @@ We recommend using the latest versions of both Python 3 and pip.
 
 .. important::
 
-    Pyrogram supports **Python 3** only, starting from version 3.4. **PyPy** is supported too.
+    Pyrogram supports **Python 3** only, starting from version 3.5.3. **PyPy** is supported too.
 
 Install Pyrogram
 ----------------
