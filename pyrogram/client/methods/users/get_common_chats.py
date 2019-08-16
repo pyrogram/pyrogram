@@ -54,4 +54,4 @@ class GetCommonChats(BaseClient):
                 )
             )
 
-            return [pyrogram.Chat._parse_chat(self, x) for x in r.chats]
+            return pyrogram.List([pyrogram.Chat._parse_chat(self, x) for x in r.chats])
