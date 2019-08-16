@@ -28,30 +28,35 @@ class GetCommonChats(BaseClient):
         """Get the common chats you have with a user.
 
         Parameters:
-            user_id (``int``, ``str``):
+            user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            ``list``: A list of Chats.
+            List of :obj:`Chat`: On success, a list of the common chats is returned.
+            
+        Raises:
+            ValueError: If the user_id doesn't belong to a user.
 
         Example:
             .. code-block:: python
 
-            common = app.get_common_chats("haskell")
-            print(common)
+                common = app.get_common_chats("haskell")
+                print(common)
         """
 
-        peer_id = self.resolve_peer(user_id)
+        peer = self.resolve_peer(user_id)
 
-        if isinstance(peer_id, types.InputPeerUser):
+        if isinstance(peer, types.InputPeerUser):
             r = self.send(
                 functions.messages.GetCommonChats(
-                    user_id=peer_id,
+                    user_id=peer,
                     max_id=0,
                     limit=100,
                 )
             )
 
             return pyrogram.List([pyrogram.Chat._parse_chat(self, x) for x in r.chats])
+        
+        raise ValueError('The user_id "{}" doesn\'t belong to a user'.format(user_id))
