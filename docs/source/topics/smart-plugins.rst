@@ -291,10 +291,9 @@ Load/Unload Plugins at Runtime
 In the previous section we've explained how to specify which plugins to load and which to ignore before your Client
 starts. Here we'll show, instead, how to unload and load again a previously registered plugin at runtime.
 
-Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram updates
-) will be modified in such a way that, when you reference them later on, they will be actually pointing to a tuple of
-*(handler: Handler, group: int)*. The actual callback function is therefore stored inside the handler's *callback*
-attribute. Here's an example:
+Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram
+updates) will be modified in such a way that a special ``handler`` attribute pointing to a tuple of
+*(handler: Handler, group: int)* is attached to the function object itself.
 
 -   ``plugins/handlers.py``
 
@@ -306,12 +305,12 @@ attribute. Here's an example:
             message.reply(message.text)
 
         print(echo)
-        print(echo[0].callback)
+        print(echo.handler)
 
--   Printing ``echo`` will show something like ``(<MessageHandler object at 0x10e3abc50>, 0)``.
+-   Printing ``echo`` will show something like ``<function echo at 0x10e3b6598>``.
 
--   Printing ``echo[0].callback``, that is, the *callback* attribute of the first element of the tuple, which is an
-    Handler, will reveal the actual callback ``<function echo at 0x10e3b6598>``.
+-   Printing ``echo.handler`` will reveal the handler, that is, a tuple containing the actual handler and the group it
+    was registered on ``(<MessageHandler object at 0x10e3abc50>, 0)``.
 
 Unloading
 ^^^^^^^^^
