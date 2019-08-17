@@ -57,6 +57,9 @@ class GetNearbyChats(BaseClient):
             )
         )
 
+        if not r.updates:
+            return []
+
         chats = pyrogram.List([pyrogram.Chat._parse_chat(self, chat) for chat in r.chats])
         peers = r.updates[0].peers
 
