@@ -47,6 +47,7 @@ from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .get_nearby_chats import GetNearbyChats
 
 
 class Chats(
@@ -80,6 +81,7 @@ class Chats(
     CreateChannel,
     AddChatMembers,
     DeleteChannel,
-    DeleteSupergroup
+    DeleteSupergroup,
+    GetNearbyChats
 ):
     pass

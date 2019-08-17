@@ -93,6 +93,10 @@ class Chat(Object):
 
         permissions (:obj:`ChatPermissions` *optional*):
             Default chat member permissions, for groups and supergroups.
+
+        distance (``int``, *optional*):
+            Distance in meters of this group chat from your location.
+            Returned only in :meth:`~Client.get_nearby_chats`.
     """
 
     def __init__(
@@ -117,7 +121,8 @@ class Chat(Object):
         can_set_sticker_set: bool = None,
         members_count: int = None,
         restriction_reason: str = None,
-        permissions: "pyrogram.ChatPermissions" = None
+        permissions: "pyrogram.ChatPermissions" = None,
+        distance: int = None
     ):
         super().__init__(client)
 
@@ -140,6 +145,7 @@ class Chat(Object):
         self.members_count = members_count
         self.restriction_reason = restriction_reason
         self.permissions = permissions
+        self.distance = distance
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
@@ -170,6 +176,7 @@ class Chat(Object):
             title=chat.title,
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
+            members_count=getattr(chat, "participants_count", None),
             client=client
         )
 
@@ -188,6 +195,7 @@ class Chat(Object):
             photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
             restriction_reason=getattr(channel, "restriction_reason", None),
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
+            members_count=getattr(channel, "participants_count", None),
             client=client
         )
 

@@ -202,6 +202,7 @@ def pyrogram_api():
             get_dialogs_count
             update_chat_username
             get_common_chats
+            get_nearby_chats
             archive_chats
             unarchive_chats
             add_chat_members
