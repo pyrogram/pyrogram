@@ -170,6 +170,7 @@ class Chat(Object):
             title=chat.title,
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
+            members_count=getattr(chat, "participants_count", None),
             client=client
         )
 
@@ -188,6 +189,7 @@ class Chat(Object):
             photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
             restriction_reason=getattr(channel, "restriction_reason", None),
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
+            members_count=getattr(channel, "participants_count", None),
             client=client
         )
 
@@ -714,7 +716,6 @@ class Chat(Object):
         """
 
         return self._client.leave_chat(self.id)
-
 
     def export_invite_link(self):
         """Bound method *export_invite_link* of :obj:`Chat`.
