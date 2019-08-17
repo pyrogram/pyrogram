@@ -73,8 +73,8 @@ latex_logo = "_images/pyrogram.png"
 latex_elements = {
     "pointsize": "12pt",
     "fontpkg": r"""
-        \setmainfont{Noto Sans}
-        \setsansfont{Roboto Slab}
+        \setmainfont{Open Sans}
+        \setsansfont{Bitter}
         \setmonofont{Ubuntu Mono}
         """
 }
