@@ -383,14 +383,10 @@ class Session:
         if wait_response:
             try:
                 await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
-            except asyncio.TimeoutError:
-                pass
+            finally:
+                result = self.results.pop(msg_id).value
 
-            result = self.results.pop(msg_id).value
-
-            if result is None:
-                raise TimeoutError
-            elif isinstance(result, types.RpcError):
+            if isinstance(result, types.RpcError):
                 RPCError.raise_it(result, type(data))
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
