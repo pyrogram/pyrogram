@@ -279,21 +279,21 @@ class User(Object, Update):
 
     def block(self):
         """Bound method *block* of :obj:`User`.
-        
+
         Use as a shortcut for:
-        
+
         .. code-block:: python
-        
+
             client.block_user(123456789)
-            
+
         Example:
             .. code-block:: python
-            
+
                 user.block()
-                
+
         Returns:
             True on success.
-            
+
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
@@ -302,23 +302,46 @@ class User(Object, Update):
 
     def unblock(self):
         """Bound method *unblock* of :obj:`User`.
-        
+
         Use as a shortcut for:
-        
+
         .. code-block:: python
-        
+
             client.unblock_user(123456789)
-            
+
         Example:
             .. code-block:: python
-            
+
                 user.unblock()
-                
+
         Returns:
             True on success.
-            
+
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
 
         return self._client.unblock_user(self.id)
+
+    def get_common_chats(self):
+        """Bound method *get_common_chats* of :obj:`User`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.get_common_chats(123456789)
+
+        Example:
+            .. code-block:: python
+
+                user.get_common_chats()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return self._client.get_common_chats(self.id)
