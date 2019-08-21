@@ -66,7 +66,7 @@ class Thumbnail(Object):
     ) -> Union[List[Union[StrippedThumbnail, "Thumbnail"]], None]:
         if isinstance(media, types.Photo):
             raw_thumbnails = media.sizes[:-1]
-            media_type = 0
+            media_type = 2
         elif isinstance(media, types.Document):
             raw_thumbnails = media.thumbs
             media_type = 14
@@ -87,10 +87,10 @@ class Thumbnail(Object):
                     Thumbnail(
                         file_id=encode(
                             pack(
-                                "<iiqqc",
-                                media_type, media.dc_id,
-                                media.id, media.access_hash,
-                                thumbnail.type.encode()
+                                "<iiqqqiiii",
+                                media_type, media.dc_id, media.id, media.access_hash,
+                                thumbnail.location.volume_id, 1, 2, ord(thumbnail.type),
+                                thumbnail.location.local_id
                             )
                         ),
                         width=thumbnail.w,

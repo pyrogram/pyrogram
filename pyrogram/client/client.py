@@ -1064,6 +1064,7 @@ class Client(Methods, BaseClient):
                     access_hash=data.access_hash,
                     thumb_size=data.thumb_size,
                     peer_id=data.peer_id,
+                    peer_access_hash=data.peer_access_hash,
                     volume_id=data.volume_id,
                     local_id=data.local_id,
                     file_size=data.file_size,
@@ -1708,6 +1709,7 @@ class Client(Methods, BaseClient):
         access_hash: int,
         thumb_size: str,
         peer_id: int,
+        peer_access_hash: int,
         volume_id: int,
         local_id: int,
         file_size: int,
@@ -1752,7 +1754,10 @@ class Client(Methods, BaseClient):
 
         if media_type == 1:
             location = types.InputPeerPhotoFileLocation(
-                peer=self.resolve_peer(peer_id),
+                peer=types.InputPeerUser(
+                    user_id=peer_id,
+                    access_hash=peer_access_hash
+                ),
                 volume_id=volume_id,
                 local_id=local_id,
                 big=is_big or None
