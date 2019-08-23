@@ -121,7 +121,7 @@ class InlineQueryResultPhoto(InlineQueryResult):
                 if self.input_message_content
                 else types.InputBotInlineMessageMediaAuto(
                     reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **(Parser(None)).parse(self.caption, self.parse_mode)
+                    **await(Parser(None)).parse(self.caption, self.parse_mode)
                 )
             )
         )
