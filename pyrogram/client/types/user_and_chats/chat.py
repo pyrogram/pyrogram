@@ -43,6 +43,9 @@ class Chat(Object):
             True, if this chat has been restricted. Supergroups, channels and bots only.
             See *restriction_reason* for details.
 
+        is_creator (``bool``, *optional*):
+            True, if this chat owner is current user. Users only.
+
         is_scam (``bool``, *optional*):
             True, if this chat has been flagged for scam. Supergroups, channels and bots only.
 
@@ -107,6 +110,7 @@ class Chat(Object):
         type: str,
         is_verified: bool = None,
         is_restricted: bool = None,
+        is_creator: bool = None,
         is_scam: bool = None,
         is_support: bool = None,
         title: str = None,
@@ -130,6 +134,7 @@ class Chat(Object):
         self.type = type
         self.is_verified = is_verified
         self.is_restricted = is_restricted
+        self.is_creator = is_creator
         self.is_scam = is_scam
         self.is_support = is_support
         self.title = title
@@ -189,6 +194,7 @@ class Chat(Object):
             type="supergroup" if channel.megagroup else "channel",
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
+            is_creator=getattr(channel, "creator", None),
             is_scam=getattr(channel, "scam", None),
             title=channel.title,
             username=getattr(channel, "username", None),
