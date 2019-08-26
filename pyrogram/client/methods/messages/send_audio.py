@@ -36,6 +36,7 @@ class SendAudio(BaseClient):
         performer: str = None,
         title: str = None,
         thumb: str = None,
+        file_name: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -87,6 +88,10 @@ class SendAudio(BaseClient):
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
+
+            file_name (``str``, *optional*):
+                File name of the audio sent.
+                Defaults to file's path basename.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -162,7 +167,7 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(file_name=os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(audio))
                     ]
                 )
             elif audio.startswith("http"):
