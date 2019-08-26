@@ -29,7 +29,7 @@ class IterDialogs(BaseClient):
     async def iter_dialogs(
         self,
         limit: int = 0,
-        offset_date: int = None
+        offset_date: int = 0
     ) -> Optional[Generator["pyrogram.Dialog", None, None]]:
         """Iterate through a user's dialogs sequentially.
 
