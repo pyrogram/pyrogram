@@ -37,7 +37,7 @@ from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
-executor = ThreadPoolExecutor(max_workers=os.cpu_count() or 1)
+executor = ThreadPoolExecutor()
 
 class Result:
     def __init__(self):
