@@ -157,7 +157,7 @@ class Client(Methods, BaseClient):
             where Pyrogram will store your session files. Defaults to the parent directory of the main script.
 
         config_file (``str``, *optional*):
-            Path of the configuration file. Defaults to ./config.ini
+            Path of the configuration file, or None to avoid trying to read one. Defaults to ./config.ini
 
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
@@ -240,7 +240,7 @@ class Client(Methods, BaseClient):
         self.last_name = last_name
         self.workers = workers
         self.workdir = Path(workdir)
-        self.config_file = Path(config_file)
+        self.config_file = Path(config_file) if config_file is not None else None
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
@@ -1228,7 +1228,8 @@ class Client(Methods, BaseClient):
 
     def load_config(self):
         parser = ConfigParser()
-        parser.read(str(self.config_file))
+        if self.config_file:
+            parser.read(str(self.config_file))
 
         if self.bot_token:
             pass
