@@ -385,8 +385,8 @@ class Session:
                 await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
             except asyncio.TimeoutError:
                 pass
-
-            result = self.results.pop(msg_id).value
+            finally:
+                result = self.results.pop(msg_id).value
 
             if result is None:
                 raise TimeoutError
