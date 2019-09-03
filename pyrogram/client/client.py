@@ -1677,7 +1677,7 @@ class Client(Methods, BaseClient):
                     file_part += 1
 
                     if progress:
-                        progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+                        progress(min(file_part * part_size, file_size), file_size, *progress_args)
         except Client.StopTransmission:
             raise
         except Exception as e:
@@ -1808,7 +1808,6 @@ class Client(Methods, BaseClient):
 
                         if progress:
                             progress(
-                                self,
                                 min(offset, file_size)
                                 if file_size != 0
                                 else offset,
@@ -1891,7 +1890,6 @@ class Client(Methods, BaseClient):
 
                             if progress:
                                 progress(
-                                    self,
                                     min(offset, file_size)
                                     if file_size != 0
                                     else offset,
