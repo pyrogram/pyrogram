@@ -20,6 +20,7 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
+from pyrogram.errors import PeerIdInvalid
 from ..object import Object
 from ...ext.utils import encode
 
@@ -58,7 +59,10 @@ class ChatPhoto(Object):
         loc_small = chat_photo.photo_small
         loc_big = chat_photo.photo_big
 
-        peer = client.resolve_peer(peer_id)
+        try:
+            peer = client.resolve_peer(peer_id)
+        except PeerIdInvalid:
+            return None
 
         if isinstance(peer, types.InputPeerUser):
             peer_id = peer.user_id

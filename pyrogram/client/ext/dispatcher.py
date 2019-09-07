@@ -21,7 +21,13 @@ import logging
 from collections import OrderedDict
 
 import pyrogram
-from pyrogram.api import types
+from pyrogram.api.types import (
+    UpdateNewMessage, UpdateNewChannelMessage, UpdateNewScheduledMessage,
+    UpdateEditMessage, UpdateEditChannelMessage,
+    UpdateDeleteMessages, UpdateDeleteChannelMessages,
+    UpdateBotCallbackQuery, UpdateInlineBotCallbackQuery,
+    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll
+)
 from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
@@ -33,23 +39,24 @@ log = logging.getLogger(__name__)
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
-        types.UpdateNewMessage,
-        types.UpdateNewChannelMessage
+        UpdateNewMessage,
+        UpdateNewChannelMessage,
+        UpdateNewScheduledMessage
     )
 
     EDIT_MESSAGE_UPDATES = (
-        types.UpdateEditMessage,
-        types.UpdateEditChannelMessage
+        UpdateEditMessage,
+        UpdateEditChannelMessage,
     )
 
     DELETE_MESSAGES_UPDATES = (
-        types.UpdateDeleteMessages,
-        types.UpdateDeleteChannelMessages
+        UpdateDeleteMessages,
+        UpdateDeleteChannelMessages
     )
 
     CALLBACK_QUERY_UPDATES = (
-        types.UpdateBotCallbackQuery,
-        types.UpdateInlineBotCallbackQuery
+        UpdateBotCallbackQuery,
+        UpdateInlineBotCallbackQuery
     )
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
@@ -65,7 +72,10 @@ class Dispatcher:
         self.groups = OrderedDict()
 
         async def message_parser(update, users, chats):
-            return await pyrogram.Message._parse(self.client, update.message, users, chats), MessageHandler
+            return await pyrogram.Message._parse(
+                self.client, update.message, users, chats,
+                isinstance(update, UpdateNewScheduledMessage)
+            ), MessageHandler
 
         async def deleted_messages_parser(update, users, chats):
             return utils.parse_deleted_messages(self.client, update), DeletedMessagesHandler
@@ -86,9 +96,9 @@ class Dispatcher:
             Dispatcher.MESSAGE_UPDATES: message_parser,
             Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
             Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
-            (types.UpdateUserStatus,): user_status_parser,
-            (types.UpdateBotInlineQuery,): inline_query_parser,
-            (types.UpdateMessagePoll,): poll_parser
+            (UpdateUserStatus,): user_status_parser,
+            (UpdateBotInlineQuery,): inline_query_parser,
+            (UpdateMessagePoll,): poll_parser
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
