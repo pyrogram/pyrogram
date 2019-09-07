@@ -49,7 +49,6 @@ class BaseClient:
     PARENT_DIR = Path(sys.argv[0]).parent
 
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
-    BOT_TOKEN_RE = re.compile(r"^\d+:[\w-]+$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 1
     DOWNLOAD_WORKERS = 4
@@ -102,7 +101,8 @@ class BaseClient:
         self.media_sessions = {}
         self.media_sessions_lock = asyncio.Lock()
 
-        self.is_started = None
+        self.is_connected = None
+        self.is_initialized = None
 
         self.takeout_id = None
 

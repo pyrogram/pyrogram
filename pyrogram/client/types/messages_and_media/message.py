@@ -2743,7 +2743,7 @@ class Message(Object, Update):
             revoke=revoke
         )
 
-    async def click(self, x: int or str, y: int = 0, quote: bool = None, timeout: int = 10):
+    async def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:

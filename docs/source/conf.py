@@ -58,7 +58,7 @@ html_show_copyright = False
 html_theme_options = {
     "canonical_url": "https://docs.pyrogram.org/",
     "collapse_navigation": True,
-    "sticky_navigation": True,
+    "sticky_navigation": False,
     "logo_only": True,
     "display_version": True,
     "style_external_links": True
