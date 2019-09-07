@@ -18,7 +18,6 @@
 
 import logging
 import math
-import mimetypes
 import os
 import re
 import shutil
@@ -45,12 +44,13 @@ from pyrogram.errors import (
     PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
     PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
     VolumeLocNotFound, UserMigrate, ChannelPrivate, PhoneNumberOccupied,
-    PasswordRecoveryNa, PasswordEmpty, AuthBytesInvalid
-)
+    PasswordRecoveryNa, PasswordEmpty, AuthBytesInvalid,
+    BadRequest)
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
 from .storage import Storage, FileStorage, MemoryStorage
+from .types import User, SentCode, TermsOfService
 
 log = logging.getLogger(__name__)
 
@@ -188,8 +188,6 @@ class Client(Methods, BaseClient):
 
     """
 
-    terms_of_service_displayed = False
-
     def __init__(
         self,
         session_name: Union[str, Storage],
@@ -280,70 +278,64 @@ class Client(Methods, BaseClient):
         self._proxy["enabled"] = bool(value.get("enabled", True))
         self._proxy.update(value)
 
-    def start(self):
-        """Start the client.
+    def connect(self) -> bool:
+        """
+        Connect the client to Telegram servers.
 
-        This method connects the client to Telegram and, in case of new sessions, automatically manages the full login
-        process using an interactive prompt (by default).
-
-        Has no parameters.
+        Returns:
+            ``bool``: On success, in case the passed-in session is authorized, True is returned. Otherwise, in case
+            the session needs to be authorized, False is returned.
 
         Raises:
-            ConnectionError: In case you try to start an already started client.
-
-        Example:
-            .. code-block:: python
-                :emphasize-lines: 4
-
-                from pyrogram import Client
-
-                app = Client("my_account")
-                app.start()
-
-                ...  # Call API methods
-
-                app.stop()
+            ConnectionError: In case you try to connect an already connected client.
         """
-        if self.is_started:
-            raise ConnectionError("Client has already been started")
+        if self.is_connected:
+            raise ConnectionError("Client is already connected")
 
         self.load_config()
         self.load_session()
-        self.load_plugins()
 
         self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
-
         self.session.start()
-        self.is_started = True
 
-        try:
-            if self.storage.user_id is None:
-                if self.bot_token is None:
-                    self.storage.is_bot = False
-                    self.authorize_user()
-                else:
-                    self.storage.is_bot = True
-                    self.authorize_bot()
+        self.is_connected = True
 
-            if not self.storage.is_bot:
-                if self.takeout:
-                    self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
-                    log.warning("Takeout session {} initiated".format(self.takeout_id))
+        return bool(self.storage.user_id)
 
-                now = time.time()
+    def disconnect(self):
+        """Disconnect the client from Telegram servers.
 
-                if abs(now - self.storage.date) > Client.OFFLINE_SLEEP:
-                    self.get_initial_dialogs()
-                    self.get_contacts()
-                else:
-                    self.send(functions.messages.GetPinnedDialogs(folder_id=0))
-                    self.get_initial_dialogs_chunk()
-            else:
-                self.send(functions.updates.GetState())
-        except Exception as e:
-            self.is_started = False
-            self.session.stop()
-            raise e
+        Raises:
+            ConnectionError: In case you try to disconnect an already disconnected client or in case you try to
+                disconnect a client that needs to be terminated first.
+        """
+        if not self.is_connected:
+            raise ConnectionError("Client is already disconnected")
+
+        if self.is_initialized:
+            raise ConnectionError("Can't disconnect an initialized client")
+
+        self.session.stop()
+        self.storage.close()
+        self.is_connected = False
+
+    def initialize(self):
+        """Initialize the client by starting up workers.
+
+        This method will start updates and download workers.
+        It will also load plugins and start the internal dispatcher.
+
+        Raises:
+            ConnectionError: In case you try to initialize a disconnected client or in case you try to initialize an
+                already initialized client.
+        """
+        if not self.is_connected:
+            raise ConnectionError("Can't initialize a disconnected client")
+
+        if self.is_initialized:
+            raise ConnectionError("Client is already initialized")
+
+        self.load_plugins()
 
         for i in range(self.UPDATES_WORKERS):
             self.updates_workers_list.append(
@@ -367,36 +359,21 @@ class Client(Methods, BaseClient):
 
         self.dispatcher.start()
 
-        mimetypes.init()
         Syncer.add(self)
 
-        return self
+        self.is_initialized = True
 
-    def stop(self):
-        """Stop the Client.
+    def terminate(self):
+        """Terminate the client by shutting down workers.
 
-        This method disconnects the client from Telegram and stops the underlying tasks.
-
-        Has no parameters.
+        This method does the opposite of :meth:`~Client.initialize`.
+        It will stop the dispatcher and shut down updates and download workers.
 
         Raises:
-            ConnectionError: In case you try to stop an already stopped client.
-
-        Example:
-            .. code-block:: python
-                :emphasize-lines: 8
-
-                from pyrogram import Client
-
-                app = Client("my_account")
-                app.start()
-
-                ...  # Call API methods
-
-                app.stop()
+            ConnectionError: In case you try to terminate a client that is already terminated.
         """
-        if not self.is_started:
-            raise ConnectionError("Client is already stopped")
+        if not self.is_initialized:
+            raise ConnectionError("Client is already terminated")
 
         if self.takeout_id:
             self.send(functions.account.FinishTakeoutSession())
@@ -426,8 +403,490 @@ class Client(Methods, BaseClient):
 
         self.media_sessions.clear()
 
-        self.is_started = False
-        self.session.stop()
+        self.is_initialized = False
+
+    def send_code(self, phone_number: str) -> SentCode:
+        """Send the confirmation code to the given phone number.
+
+        Parameters:
+            phone_number (``str``):
+                Phone number in international format (includes the country prefix).
+
+        Returns:
+            :obj:`SentCode`: On success, an object containing information on the sent confirmation code is returned.
+
+        Raises:
+            BadRequest: In case the phone number is invalid.
+        """
+        phone_number = phone_number.strip(" +")
+
+        while True:
+            try:
+                r = self.send(
+                    functions.auth.SendCode(
+                        phone_number=phone_number,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        settings=types.CodeSettings()
+                    )
+                )
+            except (PhoneMigrate, NetworkMigrate) as e:
+                self.session.stop()
+
+                self.storage.dc_id = e.x
+                self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+
+                self.session.start()
+            else:
+                return SentCode._parse(r)
+
+    def resend_code(self, phone_number: str, phone_code_hash: str) -> SentCode:
+        """Re-send the confirmation code using a different type.
+
+        The type of the code to be re-sent is specified in the *next_type* attribute of the :obj:`SentCode` object
+        returned by :meth:`send_code`.
+
+        Parameters:
+            phone_number (``str``):
+                Phone number in international format (includes the country prefix).
+
+            phone_code_hash (``str``):
+                Confirmation code identifier.
+
+        Returns:
+            :obj:`SentCode`: On success, an object containing information on the re-sent confirmation code is returned.
+
+        Raises:
+            BadRequest: In case the arguments are invalid.
+        """
+        phone_number = phone_number.strip(" +")
+
+        r = self.send(
+            functions.auth.ResendCode(
+                phone_number=phone_number,
+                phone_code_hash=phone_code_hash
+            )
+        )
+
+        return SentCode._parse(r)
+
+    def sign_in(self, phone_number: str, phone_code_hash: str, phone_code: str) -> Union[User, TermsOfService, bool]:
+        """Authorize a user in Telegram with a valid confirmation code.
+
+        Parameters:
+            phone_number (``str``):
+                Phone number in international format (includes the country prefix).
+
+            phone_code_hash (``str``):
+                Code identifier taken from the result of :meth:`~Client.send_code`.
+
+            phone_code (``str``):
+                The valid confirmation code you received (either as Telegram message or as SMS in your phone number).
+
+        Returns:
+            :obj:`User` | :obj:`TermsOfService` | bool: On success, in case the authorization completed, the user is
+            returned. In case the phone number needs to be registered first AND the terms of services accepted (with
+            :meth:`~Client.accept_terms_of_service`), an object containing them is returned. In case the phone number
+            needs to be registered, but the terms of services don't need to be accepted, False is returned instead.
+
+        Raises:
+            BadRequest: In case the arguments are invalid.
+            SessionPasswordNeeded: In case a password is needed to sign in.
+        """
+        phone_number = phone_number.strip(" +")
+
+        r = self.send(
+            functions.auth.SignIn(
+                phone_number=phone_number,
+                phone_code_hash=phone_code_hash,
+                phone_code=phone_code
+            )
+        )
+
+        if isinstance(r, types.auth.AuthorizationSignUpRequired):
+            if r.terms_of_service:
+                return TermsOfService._parse(terms_of_service=r.terms_of_service)
+
+            return False
+        else:
+            self.storage.user_id = r.user.id
+            self.storage.is_bot = False
+
+            return User._parse(self, r.user)
+
+    def sign_up(self, phone_number: str, phone_code_hash: str, first_name: str, last_name: str = "") -> User:
+        """Register a new user in Telegram.
+
+        Parameters:
+            phone_number (``str``):
+                Phone number in international format (includes the country prefix).
+
+            phone_code_hash (``str``):
+                Code identifier taken from the result of :meth:`~Client.send_code`.
+
+            first_name (``str``):
+                New user first name.
+
+            last_name (``str``, *optional*):
+                New user last name. Defaults to "" (empty string).
+
+        Returns:
+            :obj:`User`: On success, the new registered user is returned.
+
+        Raises:
+            BadRequest: In case the arguments are invalid.
+        """
+        phone_number = phone_number.strip(" +")
+
+        r = self.send(
+            functions.auth.SignUp(
+                phone_number=phone_number,
+                first_name=first_name,
+                last_name=last_name,
+                phone_code_hash=phone_code_hash
+            )
+        )
+
+        self.storage.user_id = r.user.id
+        self.storage.is_bot = False
+
+        return User._parse(self, r.user)
+
+    def sign_in_bot(self, bot_token: str) -> User:
+        """Authorize a bot using its bot token generated by BotFather.
+
+        Parameters:
+            bot_token (``str``):
+                The bot token generated by BotFather
+
+        Returns:
+            :obj:`User`: On success, the bot identity is return in form of a user object.
+
+        Raises:
+            BadRequest: In case the bot token is invalid.
+        """
+        while True:
+            try:
+                r = self.send(
+                    functions.auth.ImportBotAuthorization(
+                        flags=0,
+                        api_id=self.api_id,
+                        api_hash=self.api_hash,
+                        bot_auth_token=bot_token
+                    )
+                )
+            except UserMigrate as e:
+                self.session.stop()
+
+                self.storage.dc_id = e.x
+                self.storage.auth_key = Auth(self, self.storage.dc_id).create()
+                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+
+                self.session.start()
+            else:
+                self.storage.user_id = r.user.id
+                self.storage.is_bot = True
+
+                return User._parse(self, r.user)
+
+    def get_password_hint(self) -> str:
+        """Get your Two-Step Verification password hint.
+
+        Returns:
+            ``str``: On success, the password hint as string is returned.
+        """
+        return self.send(functions.account.GetPassword()).hint
+
+    def check_password(self, password: str) -> User:
+        """Check your Two-Step Verification password and log in.
+
+        Parameters:
+            password (``str``):
+                Your Two-Step Verification password.
+
+        Returns:
+            :obj:`User`: On success, the authorized user is returned.
+
+        Raises:
+            BadRequest: In case the password is invalid.
+        """
+        r = self.send(
+            functions.auth.CheckPassword(
+                password=compute_check(
+                    self.send(functions.account.GetPassword()),
+                    password
+                )
+            )
+        )
+
+        self.storage.user_id = r.user.id
+        self.storage.is_bot = False
+
+        return User._parse(self, r.user)
+
+    def send_recovery_code(self) -> str:
+        """Send a code to your email to recover your password.
+
+        Returns:
+            ``str``: On success, the hidden email pattern is returned and a recovery code is sent to that email.
+
+        Raises:
+            BadRequest: In case no recovery email was set up.
+        """
+        return self.send(
+            functions.auth.RequestPasswordRecovery()
+        ).email_pattern
+
+    def recover_password(self, recovery_code: str) -> User:
+        """Recover your password with a recovery code and log in.
+
+        Parameters:
+            recovery_code (``str``):
+                The recovery code sent via email.
+
+        Returns:
+            :obj:`User`: On success, the authorized user is returned and the Two-Step Verification password reset.
+
+        Raises:
+            BadRequest: In case the recovery code is invalid.
+        """
+        r = self.send(
+            functions.auth.RecoverPassword(
+                code=recovery_code
+            )
+        )
+
+        self.storage.user_id = r.user.id
+        self.storage.is_bot = False
+
+        return User._parse(self, r.user)
+
+    def accept_terms_of_service(self, terms_of_service_id: str) -> bool:
+        """Accept the given terms of service.
+
+        Parameters:
+            terms_of_service_id (``str``):
+                The terms of service identifier.
+        """
+        r = self.send(
+            functions.help.AcceptTermsOfService(
+                id=types.DataJSON(
+                    data=terms_of_service_id
+                )
+            )
+        )
+
+        assert r
+
+        return True
+
+    def authorize(self) -> User:
+        if self.bot_token is not None:
+            return self.sign_in_bot(self.bot_token)
+
+        while True:
+            if self.phone_number is None:
+                while True:
+                    value = input("Enter phone number or bot token: ")
+                    confirm = input("Is \"{}\" correct? (y/n): ".format(value))
+
+                    if confirm in ("y", "1"):
+                        break
+                    elif confirm in ("n", "2"):
+                        continue
+
+                if ":" in value:
+                    self.bot_token = value
+                    return self.sign_in_bot(value)
+                else:
+                    self.phone_number = value
+
+            try:
+                sent_code = self.send_code(self.phone_number)
+            except BadRequest as e:
+                print(e.MESSAGE)
+                self.phone_number = None
+            except FloodWait as e:
+                print(e.MESSAGE.format(x=e.x))
+                time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+            else:
+                break
+
+        if self.force_sms:
+            sent_code = self.resend_code(self.phone_number, sent_code.phone_code_hash)
+
+        print("The confirmation code has been sent via {}".format(
+            {
+                "app": "Telegram app",
+                "sms": "SMS",
+                "call": "phone call",
+                "flash_call": "phone flash call"
+            }[sent_code.type]
+        ))
+
+        while True:
+            if self.phone_code is None:
+                self.phone_code = input("Enter confirmation code: ")
+
+            try:
+                signed_in = self.sign_in(self.phone_number, sent_code.phone_code_hash, self.phone_code)
+            except BadRequest as e:
+                print(e.MESSAGE)
+                self.phone_code = None
+            except SessionPasswordNeeded as e:
+                print(e.MESSAGE)
+
+                while True:
+                    print("Password hint: {}".format(self.get_password_hint()))
+
+                    if self.password is None:
+                        self.password = input("Enter password (empty to recover): ")
+
+                    try:
+                        if self.password == "":
+                            confirm = input("Confirm password recovery (y/n): ")
+
+                            if confirm in ("y", "1"):
+                                email_pattern = self.send_recovery_code()
+                                print("The recovery code has been sent to {}".format(email_pattern))
+
+                                while True:
+                                    recovery_code = input("Enter recovery code: ")
+
+                                    try:
+                                        return self.recover_password(recovery_code)
+                                    except BadRequest as e:
+                                        print(e.MESSAGE)
+                                    except FloodWait as e:
+                                        print(e.MESSAGE.format(x=e.x))
+                                        time.sleep(e.x)
+                                    except Exception as e:
+                                        log.error(e, exc_info=True)
+                                        raise
+
+                            elif confirm in ("n", "2"):
+                                self.password = None
+                        else:
+                            return self.check_password(self.password)
+                    except BadRequest as e:
+                        print(e.MESSAGE)
+                        self.password = None
+                    except FloodWait as e:
+                        print(e.MESSAGE.format(x=e.x))
+                        time.sleep(e.x)
+                    except Exception as e:
+                        log.error(e, exc_info=True)
+                        raise
+            except FloodWait as e:
+                print(e.MESSAGE.format(x=e.x))
+                time.sleep(e.x)
+            except Exception as e:
+                log.error(e, exc_info=True)
+            else:
+                break
+
+        if isinstance(signed_in, User):
+            return signed_in
+
+        while True:
+            self.first_name = input("Enter first name: ")
+            self.last_name = input("Enter last name (empty to skip): ")
+
+            try:
+                signed_up = self.sign_up(
+                    self.phone_number,
+                    sent_code.phone_code_hash,
+                    self.first_name,
+                    self.last_name
+                )
+            except BadRequest as e:
+                print(e.MESSAGE)
+                self.first_name = None
+                self.last_name = None
+            except FloodWait as e:
+                print(e.MESSAGE.format(x=e.x))
+                time.sleep(e.x)
+            else:
+                break
+
+        if isinstance(signed_in, TermsOfService):
+            print("\n" + signed_in.text + "\n")
+            self.accept_terms_of_service(signed_in.id)
+
+        return signed_up
+
+    def start(self):
+        """Start the client.
+
+        This method connects the client to Telegram and, in case of new sessions, automatically manages the full
+        authorization process using an interactive prompt.
+
+        Returns:
+            :obj:`Client`: The started client itself.
+
+        Raises:
+            ConnectionError: In case you try to start an already started client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 4
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
+        """
+        is_authorized = self.connect()
+
+        try:
+            if not is_authorized:
+                self.authorize()
+
+            if not self.storage.is_bot and self.takeout:
+                self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
+                log.warning("Takeout session {} initiated".format(self.takeout_id))
+
+            self.send(functions.updates.GetState())
+        except Exception as e:
+            self.disconnect()
+            raise e
+        else:
+            self.initialize()
+            return self
+
+    def stop(self):
+        """Stop the Client.
+
+        This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Returns:
+            :obj:`Client`: The stopped client itself.
+
+        Raises:
+            ConnectionError: In case you try to stop an already stopped client.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 8
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+                app.start()
+
+                ...  # Call API methods
+
+                app.stop()
+        """
+        self.terminate()
+        self.disconnect()
 
         return self
 
@@ -437,7 +896,8 @@ class Client(Methods, BaseClient):
         This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
         a client using a single method.
 
-        Has no parameters.
+        Returns:
+            :obj:`Client`: The restarted client itself.
 
         Raises:
             ConnectionError: In case you try to restart a stopped Client.
@@ -461,6 +921,8 @@ class Client(Methods, BaseClient):
         """
         self.stop()
         self.start()
+
+        return self
 
     @staticmethod
     def idle(stop_signals: tuple = (SIGINT, SIGTERM, SIGABRT)):
@@ -524,8 +986,6 @@ class Client(Methods, BaseClient):
         This is a convenience method that calls :meth:`~Client.start`, :meth:`~Client.idle` and :meth:`~Client.stop` in
         sequence. It makes running a client less verbose, but is not suitable in case you want to run more than one
         client in a single main script, since idle() will block after starting the own client.
-
-        Has no parameters.
 
         Raises:
             ConnectionError: In case you try to run an already started client.
@@ -628,8 +1088,6 @@ class Client(Methods, BaseClient):
         This method must be called inside a progress callback function in order to stop the transmission at the
         desired time. The progress callback is called every time a file chunk is uploaded/downloaded.
 
-        Has no parameters.
-
         Example:
             .. code-block:: python
                 :emphasize-lines: 9
@@ -655,8 +1113,6 @@ class Client(Methods, BaseClient):
         Session strings are useful for storing in-memory authorized sessions in a portable, serialized string.
         More detailed information about session strings can be found at the dedicated page of
         :doc:`Storage Engines <../../topics/storage-engines>`.
-
-        Has no parameters.
 
         Returns:
             ``str``: The session serialized into a printable, url-safe string.
@@ -1211,8 +1667,8 @@ class Client(Methods, BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        if not self.is_started:
-            raise ConnectionError("Client has not been started")
+        if not self.is_connected:
+            raise ConnectionError("Client has not been started yet")
 
         if self.no_updates:
             data = functions.InvokeWithoutUpdates(query=data)
@@ -1444,37 +1900,37 @@ class Client(Methods, BaseClient):
                 log.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
 
-    def get_initial_dialogs_chunk(self, offset_date: int = 0):
-        while True:
-            try:
-                r = self.send(
-                    functions.messages.GetDialogs(
-                        offset_date=offset_date,
-                        offset_id=0,
-                        offset_peer=types.InputPeerEmpty(),
-                        limit=self.DIALOGS_AT_ONCE,
-                        hash=0,
-                        exclude_pinned=True
-                    )
-                )
-            except FloodWait as e:
-                log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
-                time.sleep(e.x)
-            else:
-                log.info("Total peers: {}".format(self.storage.peers_count))
-                return r
-
-    def get_initial_dialogs(self):
-        self.send(functions.messages.GetPinnedDialogs(folder_id=0))
-
-        dialogs = self.get_initial_dialogs_chunk()
-        offset_date = utils.get_offset_date(dialogs)
-
-        while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-            dialogs = self.get_initial_dialogs_chunk(offset_date)
-            offset_date = utils.get_offset_date(dialogs)
-
-        self.get_initial_dialogs_chunk()
+    # def get_initial_dialogs_chunk(self, offset_date: int = 0):
+    #     while True:
+    #         try:
+    #             r = self.send(
+    #                 functions.messages.GetDialogs(
+    #                     offset_date=offset_date,
+    #                     offset_id=0,
+    #                     offset_peer=types.InputPeerEmpty(),
+    #                     limit=self.DIALOGS_AT_ONCE,
+    #                     hash=0,
+    #                     exclude_pinned=True
+    #                 )
+    #             )
+    #         except FloodWait as e:
+    #             log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
+    #             time.sleep(e.x)
+    #         else:
+    #             log.info("Total peers: {}".format(self.storage.peers_count))
+    #             return r
+    #
+    # def get_initial_dialogs(self):
+    #     self.send(functions.messages.GetPinnedDialogs(folder_id=0))
+    #
+    #     dialogs = self.get_initial_dialogs_chunk()
+    #     offset_date = utils.get_offset_date(dialogs)
+    #
+    #     while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
+    #         dialogs = self.get_initial_dialogs_chunk(offset_date)
+    #         offset_date = utils.get_offset_date(dialogs)
+    #
+    #     self.get_initial_dialogs_chunk()
 
     def resolve_peer(self, peer_id: Union[int, str]):
         """Get the InputPeer of a known peer id.
@@ -1495,9 +1951,11 @@ class Client(Methods, BaseClient):
             ``InputPeer``: On success, the resolved peer id is returned in form of an InputPeer object.
 
         Raises:
-            RPCError: In case of a Telegram RPC error.
             KeyError: In case the peer doesn't exist in the internal database.
         """
+        if not self.is_connected:
+            raise ConnectionError("Client has not been started yet")
+
         try:
             return self.storage.get_peer_by_id(peer_id)
         except KeyError:
@@ -1678,7 +2136,7 @@ class Client(Methods, BaseClient):
                     file_part += 1
 
                     if progress:
-                        progress(self, min(file_part * part_size, file_size), file_size, *progress_args)
+                        progress(min(file_part * part_size, file_size), file_size, *progress_args)
         except Client.StopTransmission:
             raise
         except Exception as e:
@@ -1813,7 +2271,6 @@ class Client(Methods, BaseClient):
 
                         if progress:
                             progress(
-                                self,
                                 min(offset, file_size)
                                 if file_size != 0
                                 else offset,
@@ -1896,7 +2353,6 @@ class Client(Methods, BaseClient):
 
                             if progress:
                                 progress(
-                                    self,
                                     min(offset, file_size)
                                     if file_size != 0
                                     else offset,

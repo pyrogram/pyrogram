@@ -128,10 +128,10 @@ def pyrogram_api():
         utilities="""
         Utilities
             start
-            stop
-            restart
             idle
+            stop
             run
+            restart
             add_handler
             remove_handler
             stop_transmission
@@ -249,6 +249,22 @@ def pyrogram_api():
             set_game_score
             get_game_high_scores
         """,
+        authorization="""
+        Authorization
+            connect
+            disconnect
+            initialize
+            terminate
+            send_code
+            resend_code
+            sign_in
+            sign_up
+            get_password_hint
+            check_password
+            send_recovery_code
+            recover_password
+            accept_terms_of_service
+        """,
         advanced="""
         Advanced
             send
@@ -349,6 +365,11 @@ def pyrogram_api():
         InputMessageContent
             InputMessageContent
             InputTextMessageContent
+        """,
+        authorization="""
+        Authorization
+            SentCode
+            TermsOfService
         """
     )
 

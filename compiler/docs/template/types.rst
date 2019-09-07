@@ -93,3 +93,16 @@ InputMessageContent
     :hidden:
 
     {input_message_content}
+
+Authorization
+-------------
+
+.. autosummary::
+    :nosignatures:
+
+    {authorization}
+
+.. toctree::
+    :hidden:
+
+    {authorization}

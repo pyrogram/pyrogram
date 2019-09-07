@@ -26,11 +26,10 @@ from os import urandom
 from queue import Queue
 from threading import Event, Thread
 
-from pyrogram.api.all import layer
-
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
 from pyrogram.api import functions, types, core
+from pyrogram.api.all import layer
 from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
@@ -440,9 +439,9 @@ class Session:
                 raise e from None
 
             (log.warning if retries < 2 else log.info)(
-                "{}: {} Retrying {}".format(
+                "[{}] Retrying {} due to {}".format(
                     Session.MAX_RETRIES - retries + 1,
-                    datetime.now(), type(data)))
+                    data.QUALNAME, e))
 
             time.sleep(0.5)
             return self.send(data, retries - 1, timeout)
