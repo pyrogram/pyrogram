@@ -35,6 +35,7 @@ class SendVideoNote(BaseClient):
         thumb: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "pyrogram.InlineKeyboardMarkup",
             "pyrogram.ReplyKeyboardMarkup",
@@ -76,6 +77,9 @@ class SendVideoNote(BaseClient):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -147,6 +151,7 @@ class SendVideoNote(BaseClient):
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
+                            schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
                             message=""
                         )
@@ -155,11 +160,15 @@ class SendVideoNote(BaseClient):
                     self.save_file(video_note, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
-                        if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        if isinstance(
+                            i,
+                            (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
+                        ):
                             return pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
-                                {i.id: i for i in r.chats}
+                                {i.id: i for i in r.chats},
+                                is_scheduled=isinstance(i, types.UpdateNewScheduledMessage)
                             )
         except BaseClient.StopTransmission:
             return None

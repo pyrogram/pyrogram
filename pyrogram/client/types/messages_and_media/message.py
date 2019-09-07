@@ -282,6 +282,8 @@ class Message(Object, Update):
         mentioned: bool = None,
         empty: bool = None,
         service: bool = None,
+        scheduled: bool = None,
+        from_scheduled: bool = None,
         media: bool = None,
         edit_date: int = None,
         media_group_id: str = None,
@@ -344,6 +346,8 @@ class Message(Object, Update):
         self.mentioned = mentioned
         self.empty = empty
         self.service = service
+        self.scheduled = scheduled
+        self.from_scheduled = from_scheduled
         self.media = media
         self.edit_date = edit_date
         self.media_group_id = media_group_id
@@ -387,7 +391,7 @@ class Message(Object, Update):
 
     @staticmethod
     def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
-               replies: int = 1):
+               is_scheduled: bool = False, replies: int = 1):
         if isinstance(message, types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 
@@ -620,6 +624,8 @@ class Message(Object, Update):
                 forward_signature=forward_signature,
                 forward_date=forward_date,
                 mentioned=message.mentioned,
+                scheduled=is_scheduled,
+                from_scheduled=message.from_scheduled,
                 media=bool(media) or None,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
