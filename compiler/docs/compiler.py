@@ -309,6 +309,7 @@ def pyrogram_api():
             ChatMember
             ChatPermissions
             Dialog
+            Restriction
         """,
         messages_media="""
         Messages & Media
