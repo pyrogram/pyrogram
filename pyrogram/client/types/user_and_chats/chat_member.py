@@ -33,6 +33,10 @@ class ChatMember(Object):
             The member's status in the chat.
             Can be "creator", "administrator", "member", "restricted", "left" or "kicked".
 
+        title (``str``, *optional*):
+            A custom title that will be shown to all members instead of "Owner" or "Admin".
+            Creator (owner) and administrators only. Can be None in case there's no custom title set.
+
         until_date (``int``, *optional*):
             Restricted and kicked only.
             Date when restrictions will be lifted for this user; unix time.
@@ -119,6 +123,7 @@ class ChatMember(Object):
         client: "pyrogram.BaseClient" = None,
         user: "pyrogram.User",
         status: str,
+        title: str = None,
         until_date: int = None,
         joined_date: int = None,
         invited_by: "pyrogram.User" = None,
@@ -148,6 +153,7 @@ class ChatMember(Object):
 
         self.user = user
         self.status = status
+        self.title = title
         self.until_date = until_date
         self.joined_date = joined_date
         self.invited_by = invited_by
@@ -193,6 +199,7 @@ class ChatMember(Object):
             return ChatMember(
                 user=user,
                 status="creator",
+                title=getattr(member, "rank", None),
                 client=client
             )
 
@@ -211,6 +218,7 @@ class ChatMember(Object):
             return ChatMember(
                 user=user,
                 status="administrator",
+                title=member.rank,
                 joined_date=member.date,
                 invited_by=invited_by,
                 promoted_by=pyrogram.User._parse(client, users[member.promoted_by]),
