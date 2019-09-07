@@ -208,6 +208,12 @@ class Filters:
     *animation*, *voice*, *video_note*, *contact*, *location*, *venue*, *poll*.
     """
 
+    scheduled = create(lambda _, m: bool(m.scheduled), "ScheduledFilter")
+    """Filter messages that have been scheduled (not yet sent)."""
+
+    from_scheduled = create(lambda _, m: bool(m.from_scheduled), "FromScheduledFilter")
+    """Filter new automatically sent messages that were previously scheduled."""
+
     @staticmethod
     def command(
         commands: str or list,
