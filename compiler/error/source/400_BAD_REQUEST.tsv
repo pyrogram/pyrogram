@@ -125,3 +125,4 @@ WEBDOCUMENT_URL_INVALID	The web document URL is invalid
 WEBDOCUMENT_MIME_INVALID	The web document mime type is invalid
 BUTTON_URL_INVALID	The button url is invalid
 AUTH_BYTES_INVALID	The authorization bytes are invalid
+CHANNELS_TOO_MUCH	You have joined too many channels or supergroups
