@@ -23,8 +23,9 @@ from typing import Union, Iterable, List
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
-
 from ...ext import BaseClient, utils
+
+log = logging.getLogger(__name__)
 
 
 # TODO: Rewrite using a flag for replied messages and have message_ids non-optional
@@ -115,7 +116,7 @@ class GetMessages(BaseClient):
             try:
                 r = await self.send(rpc)
             except FloodWait as e:
-                logging.warning("Sleeping for {}s".format(e.x))
+                log.warning("Sleeping for {}s".format(e.x))
                 await asyncio.sleep(e.x)
             else:
                 break

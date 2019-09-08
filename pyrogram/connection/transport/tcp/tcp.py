@@ -31,6 +31,8 @@ except ImportError as e:
 
     raise e
 
+log = logging.getLogger(__name__)
+
 
 class TCP:
     TIMEOUT = 10
@@ -65,7 +67,7 @@ class TCP:
                 password=proxy.get("password", None)
             )
 
-            logging.info("Using proxy {}:{}".format(hostname, port))
+            log.info("Using proxy {}:{}".format(hostname, port))
         else:
             self.socket = socks.socksocket(
                 socket.AF_INET6 if ipv6

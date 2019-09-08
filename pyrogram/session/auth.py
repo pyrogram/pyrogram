@@ -30,6 +30,8 @@ from pyrogram.connection import Connection
 from pyrogram.crypto import AES, RSA, Prime
 from .internals import MsgId
 
+log = logging.getLogger(__name__)
+
 
 class Auth:
     MAX_RETRIES = 5
@@ -76,34 +78,34 @@ class Auth:
             self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
-                logging.info("Start creating a new auth key on DC{}".format(self.dc_id))
+                log.info("Start creating a new auth key on DC{}".format(self.dc_id))
 
                 await self.connection.connect()
 
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
-                logging.debug("Send req_pq: {}".format(nonce))
+                log.debug("Send req_pq: {}".format(nonce))
                 res_pq = await self.send(functions.ReqPqMulti(nonce=nonce))
-                logging.debug("Got ResPq: {}".format(res_pq.server_nonce))
-                logging.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
+                log.debug("Got ResPq: {}".format(res_pq.server_nonce))
+                log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
 
                 for i in res_pq.server_public_key_fingerprints:
                     if i in RSA.server_public_keys:
-                        logging.debug("Using fingerprint: {}".format(i))
+                        log.debug("Using fingerprint: {}".format(i))
                         public_key_fingerprint = i
                         break
                     else:
-                        logging.debug("Fingerprint unknown: {}".format(i))
+                        log.debug("Fingerprint unknown: {}".format(i))
                 else:
                     raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
-                logging.debug("Start PQ factorization: {}".format(pq))
+                log.debug("Start PQ factorization: {}".format(pq))
                 start = time.time()
                 g = Prime.decompose(pq)
                 p, q = sorted((g, pq // g))  # p < q
-                logging.debug("Done PQ factorization ({}s): {} {}".format(round(time.time() - start, 3), p, q))
+                log.debug("Done PQ factorization ({}s): {} {}".format(round(time.time() - start, 3), p, q))
 
                 # Step 4
                 server_nonce = res_pq.server_nonce
@@ -123,10 +125,10 @@ class Auth:
                 data_with_hash = sha + data + padding
                 encrypted_data = RSA.encrypt(data_with_hash, public_key_fingerprint)
 
-                logging.debug("Done encrypt data with RSA")
+                log.debug("Done encrypt data with RSA")
 
                 # Step 5. TODO: Handle "server_DH_params_fail". Code assumes response is ok
-                logging.debug("Send req_DH_params")
+                log.debug("Send req_DH_params")
                 server_dh_params = await self.send(
                     functions.ReqDHParams(
                         nonce=nonce,
@@ -160,12 +162,12 @@ class Auth:
 
                 server_dh_inner_data = TLObject.read(BytesIO(answer))
 
-                logging.debug("Done decrypting answer")
+                log.debug("Done decrypting answer")
 
                 dh_prime = int.from_bytes(server_dh_inner_data.dh_prime, "big")
                 delta_time = server_dh_inner_data.server_time - time.time()
 
-                logging.debug("Delta time: {}".format(round(delta_time, 3)))
+                log.debug("Delta time: {}".format(round(delta_time, 3)))
 
                 # Step 6
                 g = server_dh_inner_data.g
@@ -186,7 +188,7 @@ class Auth:
                 data_with_hash = sha + data + padding
                 encrypted_data = AES.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
-                logging.debug("Send set_client_DH_params")
+                log.debug("Send set_client_DH_params")
                 set_client_dh_params_answer = await self.send(
                     functions.SetClientDHParams(
                         nonce=nonce,
@@ -209,7 +211,7 @@ class Auth:
                 #######################
 
                 assert dh_prime == Prime.CURRENT_DH_PRIME
-                logging.debug("DH parameters check: OK")
+                log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
                 g_b = int.from_bytes(g_b, "big")
@@ -218,12 +220,12 @@ class Auth:
                 assert 1 < g_b < dh_prime - 1
                 assert 2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64)
                 assert 2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64)
-                logging.debug("g_a and g_b validation: OK")
+                log.debug("g_a and g_b validation: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-values
                 answer = server_dh_inner_data.write()  # Call .write() to remove padding
                 assert answer_with_hash[:20] == sha1(answer).digest()
-                logging.debug("SHA1 hash values check: OK")
+                log.debug("SHA1 hash values check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-nonce-server-nonce-and-new-nonce-fields
                 # 1st message
@@ -236,14 +238,14 @@ class Auth:
                 assert nonce == set_client_dh_params_answer.nonce
                 assert server_nonce == set_client_dh_params_answer.server_nonce
                 server_nonce = server_nonce.to_bytes(16, "little", signed=True)
-                logging.debug("Nonce fields check: OK")
+                log.debug("Nonce fields check: OK")
 
                 # Step 9
                 server_salt = AES.xor(new_nonce[:8], server_nonce[:8])
 
-                logging.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
+                log.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
 
-                logging.info(
+                log.info(
                     "Done auth key exchange: {}".format(
                         set_client_dh_params_answer.__class__.__name__
                     )

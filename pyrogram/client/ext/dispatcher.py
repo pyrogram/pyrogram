@@ -34,6 +34,8 @@ from ..handlers import (
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
 )
 
+log = logging.getLogger(__name__)
+
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
@@ -183,7 +185,7 @@ class Dispatcher:
                                     if handler.check(parsed_update):
                                         args = (parsed_update,)
                                 except Exception as e:
-                                    logging.error(e, exc_info=True)
+                                    log.error(e, exc_info=True)
                                     continue
 
                             elif isinstance(handler, RawUpdateHandler):
@@ -199,10 +201,10 @@ class Dispatcher:
                             except pyrogram.ContinuePropagation:
                                 continue
                             except Exception as e:
-                                logging.error(e, exc_info=True)
+                                log.error(e, exc_info=True)
 
                             break
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)

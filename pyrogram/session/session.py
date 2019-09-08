@@ -32,6 +32,8 @@ from pyrogram.crypto import MTProto
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
 from .internals import MsgId, MsgFactory
 
+log = logging.getLogger(__name__)
+
 
 class Result:
     def __init__(self):
@@ -156,9 +158,9 @@ class Session:
 
                 self.ping_task = asyncio.ensure_future(self.ping())
 
-                logging.info("Session initialized: Layer {}".format(layer))
-                logging.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
-                logging.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+                log.info("Session initialized: Layer {}".format(layer))
+                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
+                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
 
             except AuthKeyDuplicated as e:
                 await self.stop()
@@ -173,7 +175,7 @@ class Session:
 
         self.is_connected.set()
 
-        logging.info("Session started")
+        log.info("Session started")
 
     async def stop(self):
         self.is_connected.clear()
@@ -205,9 +207,9 @@ class Session:
             try:
                 await self.client.disconnect_handler(self.client)
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
-        logging.info("Session stopped")
+        log.info("Session stopped")
 
     async def restart(self):
         await self.stop()
@@ -236,7 +238,7 @@ class Session:
                     else [data]
                 )
 
-                logging.debug(data)
+                log.debug(data)
 
                 for msg in messages:
                     if msg.seq_no % 2 != 0:
@@ -269,7 +271,7 @@ class Session:
                         self.results[msg_id].event.set()
 
                 if len(self.pending_acks) >= self.ACKS_THRESHOLD:
-                    logging.info("Send {} acks".format(len(self.pending_acks)))
+                    log.info("Send {} acks".format(len(self.pending_acks)))
 
                     try:
                         await self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
@@ -278,12 +280,12 @@ class Session:
                     else:
                         self.pending_acks.clear()
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
-        logging.info("NetWorkerTask stopped")
+        log.info("NetWorkerTask stopped")
 
     async def ping(self):
-        logging.info("PingTask started")
+        log.info("PingTask started")
 
         while True:
             try:
@@ -302,10 +304,10 @@ class Session:
             except (OSError, TimeoutError, RPCError):
                 pass
 
-        logging.info("PingTask stopped")
+        log.info("PingTask stopped")
 
     async def next_salt(self):
-        logging.info("NextSaltTask started")
+        log.info("NextSaltTask started")
 
         while True:
             now = datetime.now()
@@ -315,7 +317,7 @@ class Session:
             valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
             dt = (valid_until - now).total_seconds() - 900
 
-            logging.info("Next salt in {:.0f}m {:.0f}s ({})".format(
+            log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
                 dt // 60, dt % 60,
                 now + timedelta(seconds=dt)
             ))
@@ -333,10 +335,10 @@ class Session:
                 self.connection.close()
                 break
 
-        logging.info("NextSaltTask stopped")
+        log.info("NextSaltTask stopped")
 
     async def recv(self):
-        logging.info("RecvTask started")
+        log.info("RecvTask started")
 
         while True:
             packet = await self.connection.recv()
@@ -345,7 +347,7 @@ class Session:
                 self.recv_queue.put_nowait(None)
 
                 if packet:
-                    logging.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
 
                 if self.is_connected.is_set():
                     asyncio.ensure_future(self.restart())
@@ -354,7 +356,7 @@ class Session:
 
             self.recv_queue.put_nowait(packet)
 
-        logging.info("RecvTask stopped")
+        log.info("RecvTask stopped")
 
     async def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)

@@ -20,6 +20,8 @@ import asyncio
 import logging
 import time
 
+log = logging.getLogger(__name__)
+
 
 class Syncer:
     INTERVAL = 20
@@ -81,9 +83,9 @@ class Syncer:
             start = time.time()
             client.storage.save()
         except Exception as e:
-            logging.critical(e, exc_info=True)
+            log.critical(e, exc_info=True)
         else:
-            logging.info('Synced "{}" in {:.6} ms'.format(
+            log.info('Synced "{}" in {:.6} ms'.format(
                 client.storage.name,
                 (time.time() - start) * 1000
             ))

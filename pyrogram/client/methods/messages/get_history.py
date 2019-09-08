@@ -24,8 +24,9 @@ import pyrogram
 from pyrogram.api import functions
 from pyrogram.client.ext import utils
 from pyrogram.errors import FloodWait
-
 from ...ext import BaseClient
+
+log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
@@ -102,7 +103,7 @@ class GetHistory(BaseClient):
                     )
                 )
             except FloodWait as e:
-                logging.warning("Sleeping for {}s".format(e.x))
+                log.warning("Sleeping for {}s".format(e.x))
                 await asyncio.sleep(e.x)
             else:
                 break
