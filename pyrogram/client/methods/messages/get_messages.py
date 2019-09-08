@@ -25,8 +25,6 @@ from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient, utils
 
-log = logging.getLogger(__name__)
-
 
 # TODO: Rewrite using a flag for replied messages and have message_ids non-optional
 
@@ -116,7 +114,7 @@ class GetMessages(BaseClient):
             try:
                 r = self.send(rpc)
             except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
+                logging.warning("Sleeping for {}s".format(e.x))
                 time.sleep(e.x)
             else:
                 break

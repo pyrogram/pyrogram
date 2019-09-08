@@ -36,8 +36,6 @@ from pyrogram.crypto import AES, KDF
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
 from .internals import MsgId, MsgFactory
 
-log = logging.getLogger(__name__)
-
 
 class Result:
     def __init__(self):
@@ -171,9 +169,9 @@ class Session:
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
 
-                log.info("Session initialized: Layer {}".format(layer))
-                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
-                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+                logging.info("Session initialized: Layer {}".format(layer))
+                logging.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
+                logging.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
 
             except AuthKeyDuplicated as e:
                 self.stop()
@@ -188,7 +186,7 @@ class Session:
 
         self.is_connected.set()
 
-        log.debug("Session started")
+        logging.debug("Session started")
 
     def stop(self):
         self.is_connected.clear()
@@ -223,9 +221,9 @@ class Session:
             try:
                 self.client.disconnect_handler(self.client)
             except Exception as e:
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)
 
-        log.debug("Session stopped")
+        logging.debug("Session stopped")
 
     def restart(self):
         self.stop()
@@ -268,7 +266,7 @@ class Session:
 
     def net_worker(self):
         name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        logging.debug("{} started".format(name))
 
         while True:
             packet = self.recv_queue.get()
@@ -285,7 +283,7 @@ class Session:
                     else [data]
                 )
 
-                log.debug(data)
+                logging.debug(data)
 
                 for msg in messages:
                     if msg.seq_no % 2 != 0:
@@ -318,7 +316,7 @@ class Session:
                         self.results[msg_id].event.set()
 
                 if len(self.pending_acks) >= self.ACKS_THRESHOLD:
-                    log.info("Send {} acks".format(len(self.pending_acks)))
+                    logging.info("Send {} acks".format(len(self.pending_acks)))
 
                     try:
                         self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
@@ -327,12 +325,12 @@ class Session:
                     else:
                         self.pending_acks.clear()
             except Exception as e:
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        logging.debug("{} stopped".format(name))
 
     def ping(self):
-        log.debug("PingThread started")
+        logging.debug("PingThread started")
 
         while True:
             self.ping_thread_event.wait(self.PING_INTERVAL)
@@ -347,10 +345,10 @@ class Session:
             except (OSError, TimeoutError, RPCError):
                 pass
 
-        log.debug("PingThread stopped")
+        logging.debug("PingThread stopped")
 
     def next_salt(self):
-        log.debug("NextSaltThread started")
+        logging.debug("NextSaltThread started")
 
         while True:
             now = datetime.now()
@@ -360,7 +358,7 @@ class Session:
             valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
             dt = (valid_until - now).total_seconds() - 900
 
-            log.debug("Current salt: {} | Next salt in {:.0f}m {:.0f}s ({})".format(
+            logging.debug("Current salt: {} | Next salt in {:.0f}m {:.0f}s ({})".format(
                 self.current_salt.salt,
                 dt // 60,
                 dt % 60,
@@ -378,17 +376,17 @@ class Session:
                 self.connection.close()
                 break
 
-        log.debug("NextSaltThread stopped")
+        logging.debug("NextSaltThread stopped")
 
     def recv(self):
-        log.debug("RecvThread started")
+        logging.debug("RecvThread started")
 
         while True:
             packet = self.connection.recv()
 
             if packet is None or len(packet) == 4:
                 if packet:
-                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+                    logging.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
 
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
@@ -396,7 +394,7 @@ class Session:
 
             self.recv_queue.put(packet)
 
-        log.debug("RecvThread stopped")
+        logging.debug("RecvThread stopped")
 
     def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)

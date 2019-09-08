@@ -26,8 +26,6 @@ from pyrogram.client.ext import utils
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
-log = logging.getLogger(__name__)
-
 
 class GetHistory(BaseClient):
     def get_history(
@@ -103,7 +101,7 @@ class GetHistory(BaseClient):
                     )
                 )
             except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
+                logging.warning("Sleeping for {}s".format(e.x))
                 time.sleep(e.x)
             else:
                 break

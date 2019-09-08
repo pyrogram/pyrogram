@@ -18,12 +18,10 @@
 
 import logging
 
-log = logging.getLogger(__name__)
-
 try:
     import tgcrypto
 
-    log.info("Using TgCrypto")
+    logging.info("Using TgCrypto")
 
 
     class AES:
@@ -53,7 +51,7 @@ try:
 except ImportError:
     import pyaes
 
-    log.warning(
+    logging.warning(
         "TgCrypto is missing! "
         "Pyrogram will work the same, but at a much slower speed. "
         "More info: https://docs.pyrogram.org/topics/tgcrypto"

@@ -20,8 +20,6 @@ import logging
 import time
 from threading import Thread, Event, Lock
 
-log = logging.getLogger(__name__)
-
 
 class Syncer:
     INTERVAL = 20
@@ -79,9 +77,9 @@ class Syncer:
             start = time.time()
             client.storage.save()
         except Exception as e:
-            log.critical(e, exc_info=True)
+            logging.critical(e, exc_info=True)
         else:
-            log.info('Synced "{}" in {:.6} ms'.format(
+            logging.info('Synced "{}" in {:.6} ms'.format(
                 client.storage.name,
                 (time.time() - start) * 1000
             ))

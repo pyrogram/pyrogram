@@ -25,8 +25,6 @@ from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient, utils
 
-log = logging.getLogger(__name__)
-
 
 class GetDialogs(BaseClient):
     def get_dialogs(
@@ -82,7 +80,7 @@ class GetDialogs(BaseClient):
                         )
                     )
             except FloodWait as e:
-                log.warning("Sleeping {}s".format(e.x))
+                logging.warning("Sleeping {}s".format(e.x))
                 time.sleep(e.x)
             else:
                 break
@@ -111,6 +109,6 @@ class GetDialogs(BaseClient):
             if not isinstance(dialog, types.Dialog):
                 continue
 
-            parsed_dialogs.append(pyrogram.Dialog._parse(self, dialog, messages, users, chats))
+            parsed_dialogs.append(pyrogram.Dialogging._parse(self, dialog, messages, users, chats))
 
         return pyrogram.List(parsed_dialogs)

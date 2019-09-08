@@ -23,8 +23,6 @@ import time
 from .transport import *
 from ..session.internals import DataCenter
 
-log = logging.getLogger(__name__)
-
 
 class Connection:
     MAX_RETRIES = 3
@@ -53,14 +51,14 @@ class Connection:
             self.connection = self.mode(self.ipv6, self.proxy)
 
             try:
-                log.info("Connecting...")
+                logging.info("Connecting...")
                 self.connection.connect(self.address)
             except OSError as e:
-                log.warning(e)  # TODO: Remove
+                logging.warning(e)  # TODO: Remove
                 self.connection.close()
                 time.sleep(1)
             else:
-                log.info("Connected! {} DC{} - IPv{} - {}".format(
+                logging.info("Connected! {} DC{} - IPv{} - {}".format(
                     "Test" if self.test_mode else "Production",
                     self.dc_id,
                     "6" if self.ipv6 else "4",
@@ -68,12 +66,12 @@ class Connection:
                 ))
                 break
         else:
-            log.warning("Connection failed! Trying again...")
+            logging.warning("Connection failed! Trying again...")
             raise TimeoutError
 
     def close(self):
         self.connection.close()
-        log.info("Disconnected")
+        logging.info("Disconnected")
 
     def send(self, data: bytes):
         with self.lock:

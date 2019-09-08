@@ -16,14 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
 import os
 from struct import pack, unpack
 
 from .tcp import TCP
 from ....crypto.aes import AES
-
-log = logging.getLogger(__name__)
 
 
 class TCPIntermediateO(TCP):

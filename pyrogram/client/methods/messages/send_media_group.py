@@ -26,8 +26,6 @@ from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.errors import FloodWait
 
-log = logging.getLogger(__name__)
-
 
 class SendMediaGroup(BaseClient):
     # TODO: Add progress parameter
@@ -89,7 +87,7 @@ class SendMediaGroup(BaseClient):
                                 )
                             )
                         except FloodWait as e:
-                            log.warning("Sleeping for {}s".format(e.x))
+                            logging.warning("Sleeping for {}s".format(e.x))
                             time.sleep(e.x)
                         else:
                             break
@@ -144,7 +142,7 @@ class SendMediaGroup(BaseClient):
                                 )
                             )
                         except FloodWait as e:
-                            log.warning("Sleeping for {}s".format(e.x))
+                            logging.warning("Sleeping for {}s".format(e.x))
                             time.sleep(e.x)
                         else:
                             break
@@ -195,7 +193,7 @@ class SendMediaGroup(BaseClient):
                     )
                 )
             except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
+                logging.warning("Sleeping for {}s".format(e.x))
                 time.sleep(e.x)
             else:
                 break
