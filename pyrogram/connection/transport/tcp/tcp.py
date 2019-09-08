@@ -30,6 +30,8 @@ except ImportError as e:
 
     raise e
 
+log = logging.getLogger(__name__)
+
 
 class TCP(socks.socksocket):
     def __init__(self, ipv6: bool, proxy: dict):
@@ -55,7 +57,7 @@ class TCP(socks.socksocket):
                 password=proxy.get("password", None)
             )
 
-            logging.info("Using proxy {}:{}".format(hostname, port))
+            log.info("Using proxy {}:{}".format(hostname, port))
         else:
             super().__init__(
                 socket.AF_INET6 if ipv6

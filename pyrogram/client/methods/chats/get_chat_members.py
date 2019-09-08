@@ -25,6 +25,8 @@ from pyrogram.api import functions, types
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
+log = logging.getLogger(__name__)
+
 
 class Filters:
     ALL = "all"
@@ -151,7 +153,7 @@ class GetChatMembers(BaseClient):
 
                     return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
                 except FloodWait as e:
-                    logging.warning("Sleeping for {}s".format(e.x))
+                    log.warning("Sleeping for {}s".format(e.x))
                     time.sleep(e.x)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

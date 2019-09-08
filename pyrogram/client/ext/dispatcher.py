@@ -36,6 +36,8 @@ from ..handlers import (
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
 )
 
+log = logging.getLogger(__name__)
+
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
@@ -156,7 +158,7 @@ class Dispatcher:
 
     def update_worker(self, lock):
         name = threading.current_thread().name
-        logging.debug("{} started".format(name))
+        log.debug("{} started".format(name))
 
         while True:
             packet = self.updates_queue.get()
@@ -184,7 +186,7 @@ class Dispatcher:
                                     if handler.check(parsed_update):
                                         args = (parsed_update,)
                                 except Exception as e:
-                                    logging.error(e, exc_info=True)
+                                    log.error(e, exc_info=True)
                                     continue
 
                             elif isinstance(handler, RawUpdateHandler):
@@ -200,12 +202,12 @@ class Dispatcher:
                             except pyrogram.ContinuePropagation:
                                 continue
                             except Exception as e:
-                                logging.error(e, exc_info=True)
+                                log.error(e, exc_info=True)
 
                             break
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
-        logging.debug("{} stopped".format(name))
+        log.debug("{} stopped".format(name))

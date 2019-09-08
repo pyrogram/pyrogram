@@ -26,6 +26,8 @@ from threading import Lock
 
 from .memory_storage import MemoryStorage
 
+log = logging.getLogger(__name__)
+
 
 class FileStorage(MemoryStorage):
     FILE_EXTENSION = ".session"
@@ -81,20 +83,20 @@ class FileStorage(MemoryStorage):
             except ValueError:
                 pass
             else:
-                logging.warning("JSON session storage detected! Converting it into an SQLite session storage...")
+                log.warning("JSON session storage detected! Converting it into an SQLite session storage...")
 
                 path.rename(path.name + ".OLD")
 
-                logging.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
+                log.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
 
                 self.migrate_from_json(session_json)
 
-                logging.warning("Done! The session has been successfully converted from JSON to SQLite storage")
+                log.warning("Done! The session has been successfully converted from JSON to SQLite storage")
 
                 return
 
         if Path(path.name + ".OLD").is_file():
-            logging.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
+            log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
 
         self.conn = sqlite3.connect(
             str(path),

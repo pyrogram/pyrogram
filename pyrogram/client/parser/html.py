@@ -28,6 +28,8 @@ from pyrogram.api import types
 from pyrogram.errors import PeerIdInvalid
 from . import utils
 
+log = logging.getLogger(__name__)
+
 
 class Parser(HTMLParser):
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
@@ -95,7 +97,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            logging.warning("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
+            log.warning("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -121,7 +123,7 @@ class HTML:
             for tag, entities in parser.tag_entities.items():
                 unclosed_tags.append("<{}> (x{})".format(tag, len(entities)))
 
-            logging.warning("Unclosed tags: {}".format(", ".join(unclosed_tags)))
+            log.warning("Unclosed tags: {}".format(", ".join(unclosed_tags)))
 
         entities = []
 

@@ -48,6 +48,8 @@ from .methods import Methods
 from .storage import Storage, FileStorage, MemoryStorage
 from .types import User, SentCode, TermsOfService
 
+log = logging.getLogger(__name__)
+
 
 class Client(Methods, BaseClient):
     """Pyrogram Client, the main means for interacting with Telegram.
@@ -340,7 +342,7 @@ class Client(Methods, BaseClient):
 
         if self.takeout_id:
             self.send(functions.account.FinishTakeoutSession())
-            logging.warning("Takeout session {} finished".format(self.takeout_id))
+            log.warning("Takeout session {} finished".format(self.takeout_id))
 
         Syncer.remove(self)
         self.dispatcher.stop()
@@ -728,7 +730,7 @@ class Client(Methods, BaseClient):
                                         print(e.MESSAGE.format(x=e.x))
                                         time.sleep(e.x)
                                     except Exception as e:
-                                        logging.error(e, exc_info=True)
+                                        log.error(e, exc_info=True)
                                         raise
                             else:
                                 self.password = None
@@ -828,7 +830,7 @@ class Client(Methods, BaseClient):
 
             if not self.storage.is_bot and self.takeout:
                 self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
-                logging.warning("Takeout session {} initiated".format(self.takeout_id))
+                log.warning("Takeout session {} initiated".format(self.takeout_id))
 
             self.send(functions.updates.GetState())
         except (Exception, KeyboardInterrupt):
@@ -1227,7 +1229,7 @@ class Client(Methods, BaseClient):
 
     def download_worker(self):
         name = threading.current_thread().name
-        logging.debug("{} started".format(name))
+        log.debug("{} started".format(name))
 
         while True:
             packet = self.download_queue.get()
@@ -1262,7 +1264,7 @@ class Client(Methods, BaseClient):
                     os.makedirs(directory, exist_ok=True)
                     shutil.move(temp_file_path, final_file_path)
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
                 try:
                     os.remove(temp_file_path)
@@ -1276,11 +1278,11 @@ class Client(Methods, BaseClient):
             finally:
                 done.set()
 
-        logging.debug("{} stopped".format(name))
+        log.debug("{} stopped".format(name))
 
     def updates_worker(self):
         name = threading.current_thread().name
-        logging.debug("{} started".format(name))
+        log.debug("{} started".format(name))
 
         while True:
             updates = self.updates_queue.get()
@@ -1308,7 +1310,7 @@ class Client(Methods, BaseClient):
                         pts_count = getattr(update, "pts_count", None)
 
                         if isinstance(update, types.UpdateChannelTooLong):
-                            logging.warning(update)
+                            log.warning(update)
 
                         if isinstance(update, types.UpdateNewChannelMessage) and is_min:
                             message = update.message
@@ -1360,11 +1362,11 @@ class Client(Methods, BaseClient):
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates_queue.put((updates.update, {}, {}))
                 elif isinstance(updates, types.UpdatesTooLong):
-                    logging.info(updates)
+                    log.info(updates)
             except Exception as e:
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
-        logging.debug("{} stopped".format(name))
+        log.debug("{} stopped".format(name))
 
     def send(self, data: TLObject, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Send raw Telegram queries.
@@ -1539,7 +1541,7 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                logging.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
@@ -1553,12 +1555,12 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        logging.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
+                        log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        logging.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
+                        log.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
                             self.session_name, module_path))
                         continue
 
@@ -1574,13 +1576,13 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                logging.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
                         except Exception:
                             if warn_non_existent_functions:
-                                logging.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
             if exclude:
@@ -1591,12 +1593,12 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        logging.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
+                        log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        logging.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
+                        log.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
                             self.session_name, module_path))
                         continue
 
@@ -1612,20 +1614,20 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
 
-                                logging.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count -= 1
                         except Exception:
                             if warn_non_existent_functions:
-                                logging.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
             if count > 0:
-                logging.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
+                log.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
                     self.session_name, count, "s" if count > 1 else "", root))
             else:
-                logging.warning('[{}] No plugin loaded from "{}"'.format(
+                log.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
 
     # def get_initial_dialogs_chunk(self, offset_date: int = 0):
@@ -1642,10 +1644,10 @@ class Client(Methods, BaseClient):
     #                 )
     #             )
     #         except FloodWait as e:
-    #             logging.warning("get_dialogs flood: waiting {} seconds".format(e.x))
+    #             log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
     #             time.sleep(e.x)
     #         else:
-    #             logging.info("Total peers: {}".format(self.storage.peers_count))
+    #             log.info("Total peers: {}".format(self.storage.peers_count))
     #             return r
     #
     # def get_initial_dialogs(self):
@@ -1868,7 +1870,7 @@ class Client(Methods, BaseClient):
         except Client.StopTransmission:
             raise
         except Exception as e:
-            logging.error(e, exc_info=True)
+            log.error(e, exc_info=True)
         else:
             if is_big:
                 return types.InputFileBig(
@@ -2094,7 +2096,7 @@ class Client(Methods, BaseClient):
                     raise e
         except Exception as e:
             if not isinstance(e, Client.StopTransmission):
-                logging.error(e, exc_info=True)
+                log.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)
