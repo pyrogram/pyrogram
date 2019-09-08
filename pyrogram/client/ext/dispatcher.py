@@ -34,8 +34,6 @@ from ..handlers import (
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
 )
 
-log = logging.getLogger(__name__)
-
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
@@ -111,7 +109,7 @@ class Dispatcher:
                 asyncio.ensure_future(self.update_worker(self.locks_list[-1]))
             )
 
-        log.info("Started {} UpdateWorkerTasks".format(self.workers))
+        logging.info("Started {} UpdateWorkerTasks".format(self.workers))
 
     async def stop(self):
         for i in range(self.workers):
@@ -123,7 +121,7 @@ class Dispatcher:
         self.update_worker_tasks.clear()
         self.groups.clear()
 
-        log.info("Stopped {} UpdateWorkerTasks".format(self.workers))
+        logging.info("Stopped {} UpdateWorkerTasks".format(self.workers))
 
     def add_handler(self, handler, group: int):
         async def fn():
@@ -185,7 +183,7 @@ class Dispatcher:
                                     if handler.check(parsed_update):
                                         args = (parsed_update,)
                                 except Exception as e:
-                                    log.error(e, exc_info=True)
+                                    logging.error(e, exc_info=True)
                                     continue
 
                             elif isinstance(handler, RawUpdateHandler):
@@ -201,10 +199,10 @@ class Dispatcher:
                             except pyrogram.ContinuePropagation:
                                 continue
                             except Exception as e:
-                                log.error(e, exc_info=True)
+                                logging.error(e, exc_info=True)
 
                             break
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)

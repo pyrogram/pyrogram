@@ -19,13 +19,12 @@
 import base64
 import json
 import logging
+import os
 import sqlite3
 from pathlib import Path
 from threading import Lock
 
 from .memory_storage import MemoryStorage
-
-log = logging.getLogger(__name__)
 
 
 class FileStorage(MemoryStorage):
@@ -82,20 +81,20 @@ class FileStorage(MemoryStorage):
             except ValueError:
                 pass
             else:
-                log.warning("JSON session storage detected! Converting it into an SQLite session storage...")
+                logging.warning("JSON session storage detected! Converting it into an SQLite session storage...")
 
                 path.rename(path.name + ".OLD")
 
-                log.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
+                logging.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
 
                 self.migrate_from_json(session_json)
 
-                log.warning("Done! The session has been successfully converted from JSON to SQLite storage")
+                logging.warning("Done! The session has been successfully converted from JSON to SQLite storage")
 
                 return
 
         if Path(path.name + ".OLD").is_file():
-            log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
+            logging.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
 
         self.conn = sqlite3.connect(
             str(path),
@@ -108,3 +107,6 @@ class FileStorage(MemoryStorage):
 
         with self.conn:
             self.conn.execute("VACUUM")
+
+    def destroy(self):
+        os.remove(self.database)

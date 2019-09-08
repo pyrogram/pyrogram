@@ -25,8 +25,6 @@ from pyrogram.api import functions
 from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
-log = logging.getLogger(__name__)
-
 
 class GetContacts(BaseClient):
     async def get_contacts(self) -> List["pyrogram.User"]:
@@ -45,7 +43,7 @@ class GetContacts(BaseClient):
             try:
                 contacts = await self.send(functions.contacts.GetContacts(hash=0))
             except FloodWait as e:
-                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
+                logging.warning("get_contacts flood: waiting {} seconds".format(e.x))
                 await asyncio.sleep(e.x)
             else:
                 return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)

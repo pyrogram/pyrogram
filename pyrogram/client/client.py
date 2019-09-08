@@ -38,12 +38,8 @@ from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.errors import (
-    PhoneMigrate, NetworkMigrate, PhoneNumberInvalid,
-    PhoneNumberUnoccupied, PhoneCodeInvalid, PhoneCodeHashEmpty,
-    PhoneCodeExpired, PhoneCodeEmpty, SessionPasswordNeeded,
-    PasswordHashInvalid, FloodWait, PeerIdInvalid, FirstnameInvalid, PhoneNumberBanned,
-    VolumeLocNotFound, UserMigrate, ChannelPrivate, PhoneNumberOccupied,
-    PasswordRecoveryNa, PasswordEmpty, AuthBytesInvalid,
+    PhoneMigrate, NetworkMigrate, SessionPasswordNeeded,
+    FloodWait, PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate, AuthBytesInvalid,
     BadRequest)
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
@@ -51,8 +47,6 @@ from .ext.utils import ainput
 from .methods import Methods
 from .storage import Storage, FileStorage, MemoryStorage
 from .types import User, SentCode, TermsOfService
-
-log = logging.getLogger(__name__)
 
 
 class Client(Methods, BaseClient):
@@ -68,24 +62,24 @@ class Client(Methods, BaseClient):
             :meth:`~pyrogram.Client.export_session_string` before stopping the client to get a session string you can
             pass here as argument.
 
-        api_id (``int``, *optional*):
-            The *api_id* part of your Telegram API Key, as integer. E.g.: 12345
+        api_id (``int`` | ``str``, *optional*):
+            The *api_id* part of your Telegram API Key, as integer. E.g.: "12345".
             This is an alternative way to pass it if you don't want to use the *config.ini* file.
 
         api_hash (``str``, *optional*):
             The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef".
-            This is an alternative way to pass it if you don't want to use the *config.ini* file.
+            This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         app_version (``str``, *optional*):
-            Application version. Defaults to "Pyrogram X.Y.Z"
+            Application version. Defaults to "Pyrogram |version|".
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         device_model (``str``, *optional*):
-            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*
+            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*.
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         system_version (``str``, *optional*):
-            Operating System version. Defaults to *platform.system() + " " + platform.release()*
+            Operating System version. Defaults to *platform.system() + " " + platform.release()*.
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         lang_code (``str``, *optional*):
@@ -99,69 +93,52 @@ class Client(Methods, BaseClient):
         proxy (``dict``, *optional*):
             Your SOCKS5 Proxy settings as dict,
             e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
-            *username* and *password* can be omitted if your proxy doesn't require authorization.
+            The *username* and *password* can be omitted if your proxy doesn't require authorization.
             This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (``bool``, *optional*):
-            Enable or disable login to the test servers. Defaults to False.
-            Only applicable for new sessions and will be ignored in case previously
-            created sessions are loaded.
+            Enable or disable login to the test servers.
+            Only applicable for new sessions and will be ignored in case previously created sessions are loaded.
+            Defaults to False.
 
         bot_token (``str``, *optional*):
             Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
             This is an alternative way to set it if you don't want to use the *config.ini* file.
 
-        phone_number (``str`` | ``callable``, *optional*):
+        phone_number (``str``, *optional*):
             Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
-            Or pass a callback function which accepts no arguments and must return the correct phone number as string
-            (e.g., "391234567890").
             Only applicable for new sessions.
 
-        phone_code (``str`` | ``callable``, *optional*):
-            Pass the phone code as string (for test numbers only) to avoid entering it manually. Or pass a callback
-            function which accepts a single positional argument *(phone_number)* and must return the correct phone code
-            as string (e.g., "12345").
+        phone_code (``str``, *optional*):
+            Pass the phone code as string (for test numbers only) to avoid entering it manually.
             Only applicable for new sessions.
 
         password (``str``, *optional*):
             Pass your Two-Step Verification password as string (if you have one) to avoid entering it manually.
-            Or pass a callback function which accepts a single positional argument *(password_hint)* and must return
-            the correct password as string (e.g., "password").
             Only applicable for new sessions.
 
-        recovery_code (``callable``, *optional*):
-            Pass a callback function which accepts a single positional argument *(email_pattern)* and must return the
-            correct password recovery code as string (e.g., "987654").
-            Only applicable for new sessions.
-
-        force_sms (``str``, *optional*):
+        force_sms (``bool``, *optional*):
             Pass True to force Telegram sending the authorization code via SMS.
             Only applicable for new sessions.
-
-        first_name (``str``, *optional*):
-            Pass a First Name as string to avoid entering it manually. Or pass a callback function which accepts no
-            arguments and must return the correct name as string (e.g., "Dan"). It will be used to automatically create
-            a new Telegram account in case the phone number you passed is not registered yet.
-            Only applicable for new sessions.
-
-        last_name (``str``, *optional*):
-            Same purpose as *first_name*; pass a Last Name to avoid entering it manually. It can
-            be an empty string: "". Only applicable for new sessions.
+            Defaults to False.
 
         workers (``int``, *optional*):
-            Number of maximum concurrent workers for handling incoming updates. Defaults to 4.
+            Number of maximum concurrent workers for handling incoming updates.
+            Defaults to 4.
 
         workdir (``str``, *optional*):
-            Define a custom working directory. The working directory is the location in your filesystem
-            where Pyrogram will store your session files. Defaults to the parent directory of the main script.
+            Define a custom working directory. The working directory is the location in your filesystem where Pyrogram
+            will store your session files.
+            Defaults to the parent directory of the main script.
 
         config_file (``str``, *optional*):
-            Path of the configuration file. Defaults to ./config.ini
+            Path of the configuration file.
+            Defaults to ./config.ini
 
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
-            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
+            This is an alternative way setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -175,17 +152,6 @@ class Client(Methods, BaseClient):
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.
             Defaults to False (normal session).
-
-    Example:
-        .. code-block:: python
-
-            from pyrogram import Client
-
-            app = Client("my_account")
-
-            with app:
-                app.send_message("me", "Hi!")
-
     """
 
     def __init__(
@@ -202,12 +168,9 @@ class Client(Methods, BaseClient):
         test_mode: bool = False,
         bot_token: str = None,
         phone_number: str = None,
-        phone_code: Union[str, callable] = None,
+        phone_code: str = None,
         password: str = None,
-        recovery_code: callable = None,
         force_sms: bool = False,
-        first_name: str = None,
-        last_name: str = None,
         workers: int = BaseClient.WORKERS,
         workdir: str = BaseClient.WORKDIR,
         config_file: str = BaseClient.CONFIG_FILE,
@@ -232,10 +195,7 @@ class Client(Methods, BaseClient):
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
-        self.recovery_code = recovery_code
         self.force_sms = force_sms
-        self.first_name = first_name
-        self.last_name = last_name
         self.workers = workers
         self.workdir = Path(workdir)
         self.config_file = Path(config_file)
@@ -260,7 +220,10 @@ class Client(Methods, BaseClient):
         return self.start()
 
     def __exit__(self, *args):
-        self.stop()
+        try:
+            self.stop()
+        except ConnectionError:
+            pass
 
     async def __aenter__(self):
         return await self.start()
@@ -349,19 +312,17 @@ class Client(Methods, BaseClient):
                 asyncio.ensure_future(self.updates_worker())
             )
 
-        log.info("Started {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
+        logging.info("Started {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
 
         for _ in range(Client.DOWNLOAD_WORKERS):
             self.download_worker_tasks.append(
                 asyncio.ensure_future(self.download_worker())
             )
 
-        log.info("Started {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
+        logging.info("Started {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
 
         await self.dispatcher.start()
         await Syncer.add(self)
-
-        Syncer.add(self)
 
         self.is_initialized = True
 
@@ -379,7 +340,7 @@ class Client(Methods, BaseClient):
 
         if self.takeout_id:
             await self.send(functions.account.FinishTakeoutSession())
-            log.warning("Takeout session {} finished".format(self.takeout_id))
+            logging.warning("Takeout session {} finished".format(self.takeout_id))
 
         await Syncer.remove(self)
         await self.dispatcher.stop()
@@ -392,7 +353,7 @@ class Client(Methods, BaseClient):
 
         self.download_worker_tasks.clear()
 
-        log.info("Stopped {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
+        logging.info("Stopped {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
 
         for _ in range(Client.UPDATES_WORKERS):
             self.updates_queue.put_nowait(None)
@@ -402,7 +363,7 @@ class Client(Methods, BaseClient):
 
         self.updates_worker_tasks.clear()
 
-        log.info("Stopped {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
+        logging.info("Stopped {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
 
         for media_session in self.media_sessions.values():
             await media_session.stop()
@@ -689,36 +650,37 @@ class Client(Methods, BaseClient):
         return True
 
     async def authorize(self) -> User:
-        if self.bot_token is not None:
+        if self.bot_token:
             return await self.sign_in_bot(self.bot_token)
 
         while True:
-            if self.phone_number is None:
-                while True:
-                    value = await ainput("Enter phone number or bot token: ")
-                    confirm = await ainput("Is \"{}\" correct? (y/n): ".format(value))
-
-                    if confirm in ("y", "1"):
-                        break
-                    elif confirm in ("n", "2"):
-                        continue
-
-                if ":" in value:
-                    self.bot_token = value
-                    return await self.sign_in_bot(value)
-                else:
-                    self.phone_number = value
-
             try:
+                if not self.phone_number:
+                    while True:
+                        value = await ainput("Enter phone number or bot token: ")
+
+                        if not value:
+                            continue
+
+                        confirm = input("Is \"{}\" correct? (y/N): ".format(value)).lower()
+
+                        if confirm == "y":
+                            break
+
+                    if ":" in value:
+                        self.bot_token = value
+                        return await self.sign_in_bot(value)
+                    else:
+                        self.phone_number = value
+
                 sent_code = await self.send_code(self.phone_number)
             except BadRequest as e:
                 print(e.MESSAGE)
                 self.phone_number = None
+                self.bot_token = None
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
             else:
                 break
 
@@ -735,7 +697,7 @@ class Client(Methods, BaseClient):
         ))
 
         while True:
-            if self.phone_code is None:
+            if not self.phone_code:
                 self.phone_code = await ainput("Enter confirmation code: ")
 
             try:
@@ -749,14 +711,14 @@ class Client(Methods, BaseClient):
                 while True:
                     print("Password hint: {}".format(await self.get_password_hint()))
 
-                    if self.password is None:
+                    if not self.password:
                         self.password = await ainput("Enter password (empty to recover): ")
 
                     try:
-                        if self.password == "":
+                        if not self.password:
                             confirm = await ainput("Confirm password recovery (y/n): ")
 
-                            if confirm in ("y", "1"):
+                            if confirm == "y":
                                 email_pattern = await self.send_recovery_code()
                                 print("The recovery code has been sent to {}".format(email_pattern))
 
@@ -771,10 +733,9 @@ class Client(Methods, BaseClient):
                                         print(e.MESSAGE.format(x=e.x))
                                         time.sleep(e.x)
                                     except Exception as e:
-                                        log.error(e, exc_info=True)
+                                        logging.error(e, exc_info=True)
                                         raise
-
-                            elif confirm in ("n", "2"):
+                            else:
                                 self.password = None
                         else:
                             return await self.check_password(self.password)
@@ -784,14 +745,9 @@ class Client(Methods, BaseClient):
                     except FloodWait as e:
                         print(e.MESSAGE.format(x=e.x))
                         time.sleep(e.x)
-                    except Exception as e:
-                        log.error(e, exc_info=True)
-                        raise
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
             else:
                 break
 
@@ -799,20 +755,18 @@ class Client(Methods, BaseClient):
             return signed_in
 
         while True:
-            self.first_name = await ainput("Enter first name: ")
-            self.last_name = await ainput("Enter last name (empty to skip): ")
+            first_name = await ainput("Enter first name: ")
+            last_name = await ainput("Enter last name (empty to skip): ")
 
             try:
                 signed_up = await self.sign_up(
                     self.phone_number,
                     sent_code.phone_code_hash,
-                    self.first_name,
-                    self.last_name
+                    first_name,
+                    last_name
                 )
             except BadRequest as e:
                 print(e.MESSAGE)
-                self.first_name = None
-                self.last_name = None
             except FloodWait as e:
                 print(e.MESSAGE.format(x=e.x))
                 time.sleep(e.x)
@@ -825,7 +779,28 @@ class Client(Methods, BaseClient):
 
         return signed_up
 
-    def start(self):
+    async def log_out(self):
+        """Log out from Telegram and delete the *\\*.session* file.
+
+        When you log out, the current client is stopped and the storage session destroyed.
+        No more API calls can be made until you start the client and re-authorize again.
+
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                # Log out.
+                app.log_out()
+        """
+        await self.send(functions.auth.LogOut())
+        await self.stop()
+        self.storage.destroy()
+
+        return True
+
+    async def start(self):
         """Start the client.
 
         This method connects the client to Telegram and, in case of new sessions, automatically manages the full
@@ -850,25 +825,25 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        is_authorized = self.connect()
+        is_authorized = await self.connect()
 
         try:
             if not is_authorized:
-                self.authorize()
+                await self.authorize()
 
             if not self.storage.is_bot and self.takeout:
-                self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
-                log.warning("Takeout session {} initiated".format(self.takeout_id))
+                self.takeout_id = (await self.send(functions.account.InitTakeoutSession())).id
+                logging.warning("Takeout session {} initiated".format(self.takeout_id))
 
-            self.send(functions.updates.GetState())
-        except Exception as e:
-            self.disconnect()
-            raise e
+            await self.send(functions.updates.GetState())
+        except (Exception, KeyboardInterrupt):
+            await self.disconnect()
+            raise
         else:
-            self.initialize()
+            await self.initialize()
             return self
 
-    def stop(self):
+    async def stop(self):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.
@@ -892,8 +867,8 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.terminate()
-        self.disconnect()
+        await self.terminate()
+        await self.disconnect()
 
         return self
 
@@ -976,8 +951,8 @@ class Client(Methods, BaseClient):
                 app3.stop()
         """
 
-        def signal_handler(*args):
-            log.info("Stop signal received ({}). Exiting...".format(args[0]))
+        def signal_handler(_, __):
+            logging.info("Stop signal received ({}). Exiting...".format(_))
             Client.is_idling = False
 
         for s in stop_signals:
@@ -1199,254 +1174,6 @@ class Client(Methods, BaseClient):
 
         self.parse_mode = parse_mode
 
-    async def authorize_bot(self):
-        try:
-            r = await self.send(
-                functions.auth.ImportBotAuthorization(
-                    flags=0,
-                    api_id=self.api_id,
-                    api_hash=self.api_hash,
-                    bot_auth_token=self.bot_token
-                )
-            )
-        except UserMigrate as e:
-            await self.session.stop()
-
-            self.storage.dc_id = e.x
-            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-            self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
-
-            await self.session.start()
-            await self.authorize_bot()
-        else:
-            self.storage.user_id = r.user.id
-
-            print("Logged in successfully as @{}".format(r.user.username))
-
-    async def authorize_user(self):
-        phone_number_invalid_raises = self.phone_number is not None
-        phone_code_invalid_raises = self.phone_code is not None
-        password_invalid_raises = self.password is not None
-        first_name_invalid_raises = self.first_name is not None
-
-        async def default_phone_number_callback():
-            while True:
-                phone_number = await ainput("Enter phone number: ")
-                confirm = await ainput("Is \"{}\" correct? (y/n): ".format(phone_number))
-
-                if confirm in ("y", "1"):
-                    return phone_number
-                elif confirm in ("n", "2"):
-                    continue
-
-        while True:
-            self.phone_number = (
-                await default_phone_number_callback() if self.phone_number is None
-                else str(await self.phone_number()) if callable(self.phone_number)
-                else str(self.phone_number)
-            )
-
-            self.phone_number = self.phone_number.strip("+")
-
-            try:
-                r = await self.send(
-                    functions.auth.SendCode(
-                        phone_number=self.phone_number,
-                        api_id=self.api_id,
-                        api_hash=self.api_hash,
-                        settings=types.CodeSettings()
-                    )
-                )
-            except (PhoneMigrate, NetworkMigrate) as e:
-                await self.session.stop()
-
-                self.storage.dc_id = e.x
-                self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-
-                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
-
-                await self.session.start()
-            except (PhoneNumberInvalid, PhoneNumberBanned) as e:
-                if phone_number_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.phone_number = None
-            except FloodWait as e:
-                if phone_number_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE.format(x=e.x))
-                    await asyncio.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
-                raise
-            else:
-                break
-
-        phone_registered = r.phone_registered
-        phone_code_hash = r.phone_code_hash
-        terms_of_service = r.terms_of_service
-
-        if terms_of_service and not Client.terms_of_service_displayed:
-            print("\n" + terms_of_service.text + "\n")
-            Client.terms_of_service_displayed = True
-
-        if self.force_sms:
-            await self.send(
-                functions.auth.ResendCode(
-                    phone_number=self.phone_number,
-                    phone_code_hash=phone_code_hash
-                )
-            )
-
-        while True:
-            if not phone_registered:
-                self.first_name = (
-                    await ainput("First name: ") if self.first_name is None
-                    else str(await self.first_name()) if callable(self.first_name)
-                    else str(self.first_name)
-                )
-
-                self.last_name = (
-                    await ainput("Last name: ") if self.last_name is None
-                    else str(await self.last_name()) if callable(self.last_name)
-                    else str(self.last_name)
-                )
-
-            self.phone_code = (
-                await ainput("Enter phone code: ") if self.phone_code is None
-                else str(await self.phone_code(self.phone_number)) if callable(self.phone_code)
-                else str(self.phone_code)
-            )
-
-            try:
-                if phone_registered:
-                    try:
-                        r = await self.send(
-                            functions.auth.SignIn(
-                                phone_number=self.phone_number,
-                                phone_code_hash=phone_code_hash,
-                                phone_code=self.phone_code
-                            )
-                        )
-                    except PhoneNumberUnoccupied:
-                        log.warning("Phone number unregistered")
-                        phone_registered = False
-                        continue
-                else:
-                    try:
-                        r = await self.send(
-                            functions.auth.SignUp(
-                                phone_number=self.phone_number,
-                                phone_code_hash=phone_code_hash,
-                                phone_code=self.phone_code,
-                                first_name=self.first_name,
-                                last_name=self.last_name
-                            )
-                        )
-                    except PhoneNumberOccupied:
-                        log.warning("Phone number already registered")
-                        phone_registered = True
-                        continue
-            except (PhoneCodeInvalid, PhoneCodeEmpty, PhoneCodeExpired, PhoneCodeHashEmpty) as e:
-                if phone_code_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.phone_code = None
-            except FirstnameInvalid as e:
-                if first_name_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE)
-                    self.first_name = None
-            except SessionPasswordNeeded as e:
-                print(e.MESSAGE)
-
-                async def default_password_callback(password_hint: str) -> str:
-                    print("Hint: {}".format(password_hint))
-                    return await ainput("Enter password (empty to recover): ")
-
-                async def default_recovery_callback(email_pattern: str) -> str:
-                    print("An e-mail containing the recovery code has been sent to {}".format(email_pattern))
-                    return await ainput("Enter password recovery code: ")
-
-                while True:
-                    try:
-                        r = await self.send(functions.account.GetPassword())
-
-                        self.password = (
-                            await default_password_callback(r.hint) if self.password is None
-                            else str((await self.password(r.hint)) or "") if callable(self.password)
-                            else str(self.password)
-                        )
-
-                        if self.password == "":
-                            r = await self.send(functions.auth.RequestPasswordRecovery())
-
-                            self.recovery_code = (
-                                await default_recovery_callback(r.email_pattern) if self.recovery_code is None
-                                else str(await self.recovery_code(r.email_pattern)) if callable(self.recovery_code)
-                                else str(self.recovery_code)
-                            )
-
-                            r = await self.send(
-                                functions.auth.RecoverPassword(
-                                    code=self.recovery_code
-                                )
-                            )
-                        else:
-                            r = await self.send(
-                                functions.auth.CheckPassword(
-                                    password=compute_check(r, self.password)
-                                )
-                            )
-                    except (PasswordEmpty, PasswordRecoveryNa, PasswordHashInvalid) as e:
-                        if password_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE)
-                            self.password = None
-                            self.recovery_code = None
-                    except FloodWait as e:
-                        if password_invalid_raises:
-                            raise
-                        else:
-                            print(e.MESSAGE.format(x=e.x))
-                            await asyncio.sleep(e.x)
-                            self.password = None
-                            self.recovery_code = None
-                    except Exception as e:
-                        log.error(e, exc_info=True)
-                        raise
-                    else:
-                        break
-                break
-            except FloodWait as e:
-                if phone_code_invalid_raises or first_name_invalid_raises:
-                    raise
-                else:
-                    print(e.MESSAGE.format(x=e.x))
-                    await asyncio.sleep(e.x)
-            except Exception as e:
-                log.error(e, exc_info=True)
-                raise
-            else:
-                break
-
-        if terms_of_service:
-            assert await self.send(
-                functions.help.AcceptTermsOfService(
-                    id=terms_of_service.id
-                )
-            )
-
-        self.password = None
-        self.storage.user_id = r.user.id
-
-        print("Logged in successfully as {}".format(r.user.first_name))
-
     def fetch_peers(
         self,
         peers: List[
@@ -1546,7 +1273,7 @@ class Client(Methods, BaseClient):
                     os.makedirs(directory, exist_ok=True)
                     shutil.move(temp_file_path, final_file_path)
             except Exception as e:
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)
 
                 try:
                     os.remove(temp_file_path)
@@ -1587,7 +1314,7 @@ class Client(Methods, BaseClient):
                         pts_count = getattr(update, "pts_count", None)
 
                         if isinstance(update, types.UpdateChannelTooLong):
-                            log.warning(update)
+                            logging.warning(update)
 
                         if isinstance(update, types.UpdateNewChannelMessage) and is_min:
                             message = update.message
@@ -1639,14 +1366,11 @@ class Client(Methods, BaseClient):
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
                 elif isinstance(updates, types.UpdatesTooLong):
-                    log.warning(updates)
+                    logging.info(updates)
             except Exception as e:
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)
 
-    async def send(self,
-                   data: TLObject,
-                   retries: int = Session.MAX_RETRIES,
-                   timeout: float = Session.WAIT_TIMEOUT):
+    async def send(self, data: TLObject, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Send raw Telegram queries.
 
         This method makes it possible to manually call every single Telegram API method in a low-level manner.
@@ -1819,7 +1543,7 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                logging.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
@@ -1833,12 +1557,12 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
+                        logging.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
+                        logging.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
                             self.session_name, module_path))
                         continue
 
@@ -1854,13 +1578,13 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                logging.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                logging.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
             if exclude:
@@ -1871,12 +1595,12 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
+                        logging.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
+                        logging.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
                             self.session_name, module_path))
                         continue
 
@@ -1892,20 +1616,20 @@ class Client(Methods, BaseClient):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
 
-                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                logging.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count -= 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
+                                logging.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
             if count > 0:
-                log.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
+                logging.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
                     self.session_name, count, "s" if count > 1 else "", root))
             else:
-                log.warning('[{}] No plugin loaded from "{}"'.format(
+                logging.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
 
     # def get_initial_dialogs_chunk(self, offset_date: int = 0):
@@ -1922,10 +1646,10 @@ class Client(Methods, BaseClient):
     #                 )
     #             )
     #         except FloodWait as e:
-    #             log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
+    #             logging.warning("get_dialogs flood: waiting {} seconds".format(e.x))
     #             time.sleep(e.x)
     #         else:
-    #             log.info("Total peers: {}".format(self.storage.peers_count))
+    #             logging.info("Total peers: {}".format(self.storage.peers_count))
     #             return r
     #
     # def get_initial_dialogs(self):
@@ -1940,8 +1664,7 @@ class Client(Methods, BaseClient):
     #
     #     self.get_initial_dialogs_chunk()
 
-    async def resolve_peer(self,
-                           peer_id: Union[int, str]):
+    async def resolve_peer(self, peer_id: Union[int, str]):
         """Get the InputPeer of a known peer id.
         Useful whenever an InputPeer type is required.
 
@@ -1980,9 +1703,11 @@ class Client(Methods, BaseClient):
                     try:
                         return self.storage.get_peer_by_username(peer_id)
                     except KeyError:
-                        await self.send(functions.contacts.ResolveUsername(username=peer_id
-                                                                           )
-                                        )
+                        await self.send(
+                            functions.contacts.ResolveUsername(
+                                username=peer_id
+                            )
+                        )
 
                         return self.storage.get_peer_by_username(peer_id)
                 else:
@@ -2094,7 +1819,7 @@ class Client(Methods, BaseClient):
                 try:
                     await asyncio.ensure_future(session.send(data))
                 except Exception as e:
-                    log.error(e)
+                    logging.error(e)
 
         part_size = 512 * 1024
         file_size = os.path.getsize(path)
@@ -2160,7 +1885,7 @@ class Client(Methods, BaseClient):
         except Client.StopTransmission:
             raise
         except Exception as e:
-            log.error(e, exc_info=True)
+            logging.error(e, exc_info=True)
         else:
             if is_big:
                 return types.InputFileBig(
@@ -2392,7 +2117,7 @@ class Client(Methods, BaseClient):
                     raise e
         except Exception as e:
             if not isinstance(e, Client.StopTransmission):
-                log.error(e, exc_info=True)
+                logging.error(e, exc_info=True)
 
             try:
                 os.remove(file_name)

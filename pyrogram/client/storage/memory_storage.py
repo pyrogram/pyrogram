@@ -18,7 +18,6 @@
 
 import base64
 import inspect
-import logging
 import sqlite3
 import struct
 import time
@@ -28,8 +27,6 @@ from typing import List, Tuple
 
 from pyrogram.api import types
 from pyrogram.client.storage.storage import Storage
-
-log = logging.getLogger(__name__)
 
 
 class MemoryStorage(Storage):
@@ -96,6 +93,9 @@ class MemoryStorage(Storage):
     def close(self):
         with self.lock:
             self.conn.close()
+
+    def destroy(self):
+        pass
 
     def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
         with self.lock:

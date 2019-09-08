@@ -264,6 +264,7 @@ def pyrogram_api():
             send_recovery_code
             recover_password
             accept_terms_of_service
+            log_out
         """,
         advanced="""
         Advanced

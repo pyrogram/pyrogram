@@ -20,7 +20,6 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.errors import PeerIdInvalid
 from ..object import Object
 from ...ext.utils import encode
 
@@ -60,8 +59,10 @@ class ChatPhoto(Object):
         loc_big = chat_photo.photo_big
 
         try:
-            peer = client.resolve_peer(peer_id)
-        except PeerIdInvalid:
+            # We just want a local storage lookup by id, whose method is not async.
+            # Otherwise we have to turn this _parse method async and also all the other methods that use this one.
+            peer = client.storage.get_peer_by_id(peer_id)
+        except KeyError:
             return None
 
         if isinstance(peer, types.InputPeerUser):

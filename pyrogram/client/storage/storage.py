@@ -30,6 +30,9 @@ class Storage:
     def close(self):
         raise NotImplementedError
 
+    def destroy(self):
+        raise NotImplementedError
+
     def update_peers(self, peers):
         raise NotImplementedError
 
