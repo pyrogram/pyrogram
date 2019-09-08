@@ -19,6 +19,7 @@
 import base64
 import json
 import logging
+import os
 import sqlite3
 from pathlib import Path
 from threading import Lock
@@ -108,3 +109,6 @@ class FileStorage(MemoryStorage):
 
         with self.conn:
             self.conn.execute("VACUUM")
+
+    def destroy(self):
+        os.remove(self.database)

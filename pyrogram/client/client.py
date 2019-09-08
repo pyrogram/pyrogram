@@ -222,7 +222,10 @@ class Client(Methods, BaseClient):
         return self.start()
 
     def __exit__(self, *args):
-        self.stop()
+        try:
+            self.stop()
+        except ConnectionError:
+            pass
 
     @property
     def proxy(self):
@@ -772,6 +775,27 @@ class Client(Methods, BaseClient):
             self.accept_terms_of_service(signed_in.id)
 
         return signed_up
+
+    def log_out(self):
+        """Log out from Telegram and delete the *\\*.session* file.
+
+        When you log out, the current client is stopped and the storage session destroyed.
+        No more API calls can be made until you start the client and re-authorize again.
+
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Example:
+            .. code-block:: python
+
+                # Log out.
+                app.log_out()
+        """
+        self.send(functions.auth.LogOut())
+        self.stop()
+        self.storage.destroy()
+
+        return True
 
     def start(self):
         """Start the client.
@@ -1338,7 +1362,7 @@ class Client(Methods, BaseClient):
                 elif isinstance(updates, types.UpdateShort):
                     self.dispatcher.updates_queue.put((updates.update, {}, {}))
                 elif isinstance(updates, types.UpdatesTooLong):
-                    log.warning(updates)
+                    log.info(updates)
             except Exception as e:
                 log.error(e, exc_info=True)
 

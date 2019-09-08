@@ -97,6 +97,9 @@ class MemoryStorage(Storage):
         with self.lock:
             self.conn.close()
 
+    def destroy(self):
+        pass
+
     def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
         with self.lock:
             self.conn.executemany(
