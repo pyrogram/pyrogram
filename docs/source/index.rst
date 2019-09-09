@@ -40,7 +40,6 @@ Welcome to Pyrogram
     topics/more-on-updates
     topics/config-file
     topics/smart-plugins
-    topics/auto-auth
     topics/session-settings
     topics/tgcrypto
     topics/storage-engines
