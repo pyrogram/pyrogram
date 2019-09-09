@@ -18,9 +18,9 @@
 
 from typing import Generator, Optional
 
-import pyrogram
 from async_generator import async_generator, yield_
 
+import pyrogram
 from ...ext import BaseClient
 
 
@@ -38,7 +38,7 @@ class IterDialogs(BaseClient):
         single call.
 
         Parameters:
-            limit (``str``, *optional*):
+            limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.
                 By default, no limit is applied and all dialogs are returned.
 

@@ -36,7 +36,7 @@ class CreateGroup(BaseClient):
             If you want to create a new supergroup, use :meth:`~pyrogram.Client.create_supergroup` instead.
 
         Parameters:
-            title (``title``):
+            title (``str``):
                 The group title.
 
             users (``int`` | ``str`` | List of ``int`` or ``str``):

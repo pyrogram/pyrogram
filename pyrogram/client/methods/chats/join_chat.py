@@ -58,20 +58,9 @@ class JoinChat(BaseClient):
             elif isinstance(chat.chats[0], types.Channel):
                 return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
         else:
-            resolved_peer = await self.send(
-                functions.contacts.ResolveUsername(
-                    username=chat_id.lower().strip("@")
-                )
-            )
-
-            channel = types.InputPeerChannel(
-                channel_id=resolved_peer.chats[0].id,
-                access_hash=resolved_peer.chats[0].access_hash
-            )
-
             chat = await self.send(
                 functions.channels.JoinChannel(
-                    channel=channel
+                    channel=await self.resolve_peer(chat_id)
                 )
             )
 
