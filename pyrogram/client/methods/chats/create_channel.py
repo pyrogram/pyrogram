@@ -30,7 +30,7 @@ class CreateChannel(BaseClient):
         """Create a new broadcast channel.
 
         Parameters:
-            title (``title``):
+            title (``str``):
                 The channel title.
 
             description (``str``, *optional*):
