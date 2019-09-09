@@ -184,6 +184,7 @@ def pyrogram_api():
             unban_chat_member
             restrict_chat_member
             promote_chat_member
+            set_administrator_title
             export_chat_invite_link
             set_chat_photo
             delete_chat_photo

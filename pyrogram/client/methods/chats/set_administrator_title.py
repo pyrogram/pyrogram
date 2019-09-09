@@ -22,14 +22,17 @@ from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
-class SetCustomTitle(BaseClient):
-    def set_custom_title(
+class SetAdministratorTitle(BaseClient):
+    def set_administrator_title(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
         title: str,
     ) -> bool:
-        """Set a custom title to administrators or owners of a supergroup.
+        """Set a custom title (rank) to an administrator of a supergroup.
+
+        If you are an administrator of a supergroup (i.e. not the owner), you can only set the title of other
+        administrators who have been promoted by you. If you are the owner, you can change every administrator's title.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -49,8 +52,7 @@ class SetCustomTitle(BaseClient):
         Example:
             .. code-block:: python
 
-                # Set custom titles to owners or administrators of supergroups
-                app.set_custom_title(chat_id, user_id, "Custom Title")
+                app.set_administrator_title(chat_id, user_id, "ฅ^•ﻌ•^ฅ")
         """
         chat_id = self.resolve_peer(chat_id)
         user_id = self.resolve_peer(user_id)
