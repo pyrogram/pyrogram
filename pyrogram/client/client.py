@@ -1429,10 +1429,7 @@ class Client(Methods, BaseClient):
                 self.api_id = parser.getint("pyrogram", "api_id")
                 self.api_hash = parser.get("pyrogram", "api_hash")
             else:
-                raise AttributeError(
-                    "No API Key found. "
-                    "More info: https://docs.pyrogram.org/intro/setup#configuration"
-                )
+                raise AttributeError("No API Key found. More info: https://docs.pyrogram.org/intro/setup")
 
         for option in ["app_version", "device_model", "system_version", "lang_code"]:
             if getattr(self, option):
