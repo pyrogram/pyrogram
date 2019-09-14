@@ -1162,41 +1162,24 @@ class Client(Methods, BaseClient):
 
         self.parse_mode = parse_mode
 
-    def fetch_peers(
-        self,
-        peers: List[
-            Union[
-                types.User,
-                types.Chat, types.ChatForbidden,
-                types.Channel, types.ChannelForbidden
-            ]
-        ]
-    ) -> bool:
+    def fetch_peers(self, peers: List[Union[types.User, types.Chat, types.Channel]]) -> bool:
         is_min = False
         parsed_peers = []
 
         for peer in peers:
+            if getattr(peer, "min", False):
+                is_min = True
+                continue
+
             username = None
             phone_number = None
 
             if isinstance(peer, types.User):
                 peer_id = peer.id
                 access_hash = peer.access_hash
-
-                username = peer.username
+                username = (peer.username or "").lower() or None
                 phone_number = peer.phone
-
-                if peer.bot:
-                    peer_type = "bot"
-                else:
-                    peer_type = "user"
-
-                if access_hash is None:
-                    is_min = True
-                    continue
-
-                if username is not None:
-                    username = username.lower()
+                peer_type = "bot" if peer.bot else "user"
             elif isinstance(peer, (types.Chat, types.ChatForbidden)):
                 peer_id = -peer.id
                 access_hash = 0
@@ -1204,20 +1187,8 @@ class Client(Methods, BaseClient):
             elif isinstance(peer, (types.Channel, types.ChannelForbidden)):
                 peer_id = utils.get_channel_id(peer.id)
                 access_hash = peer.access_hash
-
-                username = getattr(peer, "username", None)
-
-                if peer.broadcast:
-                    peer_type = "channel"
-                else:
-                    peer_type = "supergroup"
-
-                if access_hash is None:
-                    is_min = True
-                    continue
-
-                if username is not None:
-                    username = username.lower()
+                username = (getattr(peer, "username", None) or "").lower() or None
+                peer_type = "channel" if peer.broadcast else "supergroup"
             else:
                 continue
 
