@@ -187,7 +187,7 @@ class User(Object, Update):
             language_code=user.lang_code,
             dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
-            photo=ChatPhoto._parse(client, user.photo, user.id),
+            photo=ChatPhoto._parse(client, user.photo, user.id, user.access_hash),
             restrictions=pyrogram.List([Restriction._parse(r) for r in user.restriction_reason]) or None,
             client=client
         )

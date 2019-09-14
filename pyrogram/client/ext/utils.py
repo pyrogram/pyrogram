@@ -215,7 +215,7 @@ def get_peer_id(peer: Union[PeerUser, PeerChat, PeerChannel]) -> int:
     raise ValueError("Peer type invalid: {}".format(peer))
 
 
-def get_type(peer_id: int) -> str:
+def get_peer_type(peer_id: int) -> str:
     if peer_id < 0:
         if MIN_CHAT_ID <= peer_id:
             return "chat"
