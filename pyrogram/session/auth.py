@@ -38,7 +38,7 @@ class Auth:
 
     def __init__(self, client: "pyrogram.Client", dc_id: int):
         self.dc_id = dc_id
-        self.test_mode = client.storage.test_mode
+        self.test_mode = client.storage.test_mode()
         self.ipv6 = client.ipv6
         self.proxy = client.proxy
 

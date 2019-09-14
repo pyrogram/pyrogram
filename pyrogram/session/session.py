@@ -114,7 +114,7 @@ class Session:
         while True:
             self.connection = Connection(
                 self.dc_id,
-                self.client.storage.test_mode,
+                self.client.storage.test_mode(),
                 self.client.ipv6,
                 self.client.proxy
             )

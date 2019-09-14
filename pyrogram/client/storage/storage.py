@@ -16,8 +16,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import base64
+import struct
+from typing import List, Tuple
+
 
 class Storage:
+    SESSION_STRING_FORMAT = ">B?256sI?"
+    SESSION_STRING_SIZE = 351
+
     def __init__(self, name: str):
         self.name = name
 
@@ -30,72 +37,47 @@ class Storage:
     def close(self):
         raise NotImplementedError
 
-    def destroy(self):
+    def delete(self):
         raise NotImplementedError
 
-    def update_peers(self, peers):
+    def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
         raise NotImplementedError
 
-    def get_peer_by_id(self, peer_id):
+    def get_peer_by_id(self, peer_id: int):
         raise NotImplementedError
 
-    def get_peer_by_username(self, username):
+    def get_peer_by_username(self, username: str):
         raise NotImplementedError
 
-    def get_peer_by_phone_number(self, phone_number):
+    def get_peer_by_phone_number(self, phone_number: str):
+        raise NotImplementedError
+
+    def dc_id(self, value: int = object):
+        raise NotImplementedError
+
+    def test_mode(self, value: bool = object):
+        raise NotImplementedError
+
+    def auth_key(self, value: bytes = object):
+        raise NotImplementedError
+
+    def date(self, value: int = object):
+        raise NotImplementedError
+
+    def user_id(self, value: int = object):
+        raise NotImplementedError
+
+    def is_bot(self, value: bool = object):
         raise NotImplementedError
 
     def export_session_string(self):
-        raise NotImplementedError
-
-    @property
-    def peers_count(self):
-        raise NotImplementedError
-
-    @property
-    def dc_id(self):
-        raise NotImplementedError
-
-    @dc_id.setter
-    def dc_id(self, value):
-        raise NotImplementedError
-
-    @property
-    def test_mode(self):
-        raise NotImplementedError
-
-    @test_mode.setter
-    def test_mode(self, value):
-        raise NotImplementedError
-
-    @property
-    def auth_key(self):
-        raise NotImplementedError
-
-    @auth_key.setter
-    def auth_key(self, value):
-        raise NotImplementedError
-
-    @property
-    def date(self):
-        raise NotImplementedError
-
-    @date.setter
-    def date(self, value):
-        raise NotImplementedError
-
-    @property
-    def user_id(self):
-        raise NotImplementedError
-
-    @user_id.setter
-    def user_id(self, value):
-        raise NotImplementedError
-
-    @property
-    def is_bot(self):
-        raise NotImplementedError
-
-    @is_bot.setter
-    def is_bot(self, value):
-        raise NotImplementedError
+        return base64.urlsafe_b64encode(
+            struct.pack(
+                self.SESSION_STRING_FORMAT,
+                self.dc_id(),
+                self.test_mode(),
+                self.auth_key(),
+                self.user_id(),
+                self.is_bot()
+            )
+        ).decode().rstrip("=")

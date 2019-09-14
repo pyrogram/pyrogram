@@ -162,7 +162,7 @@ class Chat(Object):
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo=ChatPhoto._parse(client, user.photo, peer_id),
+            photo=ChatPhoto._parse(client, user.photo, peer_id, user.access_hash),
             restrictions=pyrogram.List([Restriction._parse(r) for r in user.restriction_reason]) or None,
             client=client
         )
@@ -175,7 +175,7 @@ class Chat(Object):
             id=peer_id,
             type="group",
             title=chat.title,
-            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
+            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
             client=client
@@ -194,7 +194,7 @@ class Chat(Object):
             is_scam=getattr(channel, "scam", None),
             title=channel.title,
             username=getattr(channel, "username", None),
-            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
+            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id, channel.access_hash),
             restrictions=pyrogram.List([Restriction._parse(r) for r in restriction_reason]) or None,
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),

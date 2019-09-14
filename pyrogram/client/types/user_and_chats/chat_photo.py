@@ -20,6 +20,7 @@ from struct import pack
 
 import pyrogram
 from pyrogram.api import types
+from pyrogram.client.ext import utils
 from ..object import Object
 from ...ext.utils import encode
 
@@ -50,7 +51,7 @@ class ChatPhoto(Object):
         self.big_file_id = big_file_id
 
     @staticmethod
-    def _parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto, peer_id: int):
+    def _parse(client, chat_photo: types.UserProfilePhoto or types.ChatPhoto, peer_id: int, peer_access_hash: int):
         if not isinstance(chat_photo, (types.UserProfilePhoto, types.ChatPhoto)):
             return None
 
@@ -58,24 +59,14 @@ class ChatPhoto(Object):
         loc_small = chat_photo.photo_small
         loc_big = chat_photo.photo_big
 
-        try:
-            # We just want a local storage lookup by id, whose method is not async.
-            # Otherwise we have to turn this _parse method async and also all the other methods that use this one.
-            peer = client.storage.get_peer_by_id(peer_id)
-        except KeyError:
-            return None
+        peer_type = utils.get_peer_type(peer_id)
 
-        if isinstance(peer, types.InputPeerUser):
-            peer_id = peer.user_id
-            peer_access_hash = peer.access_hash
+        if peer_type == "user":
             x = 0
-        elif isinstance(peer, types.InputPeerChat):
-            peer_id = -peer.chat_id
-            peer_access_hash = 0
+        elif peer_type == "chat":
             x = -1
         else:
             peer_id += 1000727379968
-            peer_access_hash = peer.access_hash
             x = -234
 
         return ChatPhoto(

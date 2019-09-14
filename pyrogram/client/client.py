@@ -266,13 +266,13 @@ class Client(Methods, BaseClient):
         self.load_config()
         await self.load_session()
 
-        self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+        self.session = Session(self, self.storage.dc_id(), self.storage.auth_key())
 
         await self.session.start()
 
         self.is_connected = True
 
-        return bool(self.storage.user_id)
+        return bool(self.storage.user_id())
 
     async def disconnect(self):
         """Disconnect the client from Telegram servers.
@@ -402,9 +402,9 @@ class Client(Methods, BaseClient):
             except (PhoneMigrate, NetworkMigrate) as e:
                 await self.session.stop()
 
-                self.storage.dc_id = e.x
-                self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+                self.storage.dc_id(e.x)
+                self.storage.auth_key(await Auth(self, self.storage.dc_id()).create())
+                self.session = Session(self, self.storage.dc_id(), self.storage.auth_key())
 
                 await self.session.start()
             else:
@@ -480,8 +480,8 @@ class Client(Methods, BaseClient):
 
             return False
         else:
-            self.storage.user_id = r.user.id
-            self.storage.is_bot = False
+            self.storage.user_id(r.user.id)
+            self.storage.is_bot(False)
 
             return User._parse(self, r.user)
 
@@ -518,8 +518,8 @@ class Client(Methods, BaseClient):
             )
         )
 
-        self.storage.user_id = r.user.id
-        self.storage.is_bot = False
+        self.storage.user_id(r.user.id)
+        self.storage.is_bot(False)
 
         return User._parse(self, r.user)
 
@@ -549,14 +549,14 @@ class Client(Methods, BaseClient):
             except UserMigrate as e:
                 await self.session.stop()
 
-                self.storage.dc_id = e.x
-                self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-                self.session = Session(self, self.storage.dc_id, self.storage.auth_key)
+                self.storage.dc_id(e.x)
+                self.storage.auth_key(await Auth(self, self.storage.dc_id()).create())
+                self.session = Session(self, self.storage.dc_id(), self.storage.auth_key())
 
                 await self.session.start()
             else:
-                self.storage.user_id = r.user.id
-                self.storage.is_bot = True
+                self.storage.user_id(r.user.id)
+                self.storage.is_bot(True)
 
                 return User._parse(self, r.user)
 
@@ -590,8 +590,8 @@ class Client(Methods, BaseClient):
             )
         )
 
-        self.storage.user_id = r.user.id
-        self.storage.is_bot = False
+        self.storage.user_id(r.user.id)
+        self.storage.is_bot(False)
 
         return User._parse(self, r.user)
 
@@ -627,8 +627,8 @@ class Client(Methods, BaseClient):
             )
         )
 
-        self.storage.user_id = r.user.id
-        self.storage.is_bot = False
+        self.storage.user_id(r.user.id)
+        self.storage.is_bot(False)
 
         return User._parse(self, r.user)
 
@@ -784,7 +784,7 @@ class Client(Methods, BaseClient):
     async def log_out(self):
         """Log out from Telegram and delete the *\\*.session* file.
 
-        When you log out, the current client is stopped and the storage session destroyed.
+        When you log out, the current client is stopped and the storage session deleted.
         No more API calls can be made until you start the client and re-authorize again.
 
         Returns:
@@ -798,7 +798,7 @@ class Client(Methods, BaseClient):
         """
         await self.send(functions.auth.LogOut())
         await self.stop()
-        self.storage.destroy()
+        self.storage.delete()
 
         return True
 
@@ -833,7 +833,7 @@ class Client(Methods, BaseClient):
             if not is_authorized:
                 await self.authorize()
 
-            if not self.storage.is_bot and self.takeout:
+            if not self.storage.is_bot() and self.takeout:
                 self.takeout_id = (await self.send(functions.account.InitTakeoutSession())).id
                 log.warning("Takeout session {} initiated".format(self.takeout_id))
 
@@ -1176,41 +1176,24 @@ class Client(Methods, BaseClient):
 
         self.parse_mode = parse_mode
 
-    def fetch_peers(
-        self,
-        peers: List[
-            Union[
-                types.User,
-                types.Chat, types.ChatForbidden,
-                types.Channel, types.ChannelForbidden
-            ]
-        ]
-    ) -> bool:
+    def fetch_peers(self, peers: List[Union[types.User, types.Chat, types.Channel]]) -> bool:
         is_min = False
         parsed_peers = []
 
         for peer in peers:
+            if getattr(peer, "min", False):
+                is_min = True
+                continue
+
             username = None
             phone_number = None
 
             if isinstance(peer, types.User):
                 peer_id = peer.id
                 access_hash = peer.access_hash
-
-                username = peer.username
+                username = (peer.username or "").lower() or None
                 phone_number = peer.phone
-
-                if peer.bot:
-                    peer_type = "bot"
-                else:
-                    peer_type = "user"
-
-                if access_hash is None:
-                    is_min = True
-                    continue
-
-                if username is not None:
-                    username = username.lower()
+                peer_type = "bot" if peer.bot else "user"
             elif isinstance(peer, (types.Chat, types.ChatForbidden)):
                 peer_id = -peer.id
                 access_hash = 0
@@ -1218,20 +1201,8 @@ class Client(Methods, BaseClient):
             elif isinstance(peer, (types.Channel, types.ChannelForbidden)):
                 peer_id = utils.get_channel_id(peer.id)
                 access_hash = peer.access_hash
-
-                username = getattr(peer, "username", None)
-
-                if peer.broadcast:
-                    peer_type = "channel"
-                else:
-                    peer_type = "supergroup"
-
-                if access_hash is None:
-                    is_min = True
-                    continue
-
-                if username is not None:
-                    username = username.lower()
+                username = (getattr(peer, "username", None) or "").lower() or None
+                peer_type = "channel" if peer.broadcast else "supergroup"
             else:
                 continue
 
@@ -1494,20 +1465,20 @@ class Client(Methods, BaseClient):
         self.storage.open()
 
         session_empty = any([
-            self.storage.test_mode is None,
-            self.storage.auth_key is None,
-            self.storage.user_id is None,
-            self.storage.is_bot is None
+            self.storage.test_mode() is None,
+            self.storage.auth_key() is None,
+            self.storage.user_id() is None,
+            self.storage.is_bot() is None
         ])
 
         if session_empty:
-            self.storage.dc_id = 2
-            self.storage.date = 0
+            self.storage.dc_id(2)
+            self.storage.date(0)
 
-            self.storage.test_mode = self.test_mode
-            self.storage.auth_key = await Auth(self, self.storage.dc_id).create()
-            self.storage.user_id = None
-            self.storage.is_bot = None
+            self.storage.test_mode(self.test_mode)
+            self.storage.auth_key(await Auth(self, self.storage.dc_id()).create())
+            self.storage.user_id(None)
+            self.storage.is_bot(None)
 
     def load_plugins(self):
         if self.plugins:
@@ -1715,7 +1686,7 @@ class Client(Methods, BaseClient):
                     except KeyError:
                         raise PeerIdInvalid
 
-            peer_type = utils.get_type(peer_id)
+            peer_type = utils.get_peer_type(peer_id)
 
             if peer_type == "user":
                 self.fetch_peers(
@@ -1836,7 +1807,7 @@ class Client(Methods, BaseClient):
         is_missing_part = file_id is not None
         file_id = file_id or self.rnd_id()
         md5_sum = md5() if not is_big and not is_missing_part else None
-        pool = [Session(self, self.storage.dc_id, self.storage.auth_key, is_media=True) for _ in range(pool_size)]
+        pool = [Session(self, self.storage.dc_id(), self.storage.auth_key(), is_media=True) for _ in range(pool_size)]
         workers = [asyncio.ensure_future(worker(session)) for session in pool for _ in range(workers_count)]
         queue = asyncio.Queue(16)
 
@@ -1926,7 +1897,7 @@ class Client(Methods, BaseClient):
             session = self.media_sessions.get(dc_id, None)
 
             if session is None:
-                if dc_id != self.storage.dc_id:
+                if dc_id != self.storage.dc_id():
                     session = Session(self, dc_id, await Auth(self, dc_id).create(), is_media=True)
                     await session.start()
 
@@ -1952,7 +1923,7 @@ class Client(Methods, BaseClient):
                         await session.stop()
                         raise AuthBytesInvalid
                 else:
-                    session = Session(self, dc_id, self.storage.auth_key, is_media=True)
+                    session = Session(self, dc_id, self.storage.auth_key(), is_media=True)
                     await session.start()
 
                 self.media_sessions[dc_id] = session
