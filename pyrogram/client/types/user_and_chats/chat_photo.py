@@ -55,6 +55,9 @@ class ChatPhoto(Object):
         if not isinstance(chat_photo, (types.UserProfilePhoto, types.ChatPhoto)):
             return None
 
+        if not peer_access_hash:
+            return None
+
         photo_id = getattr(chat_photo, "photo_id", 0)
         loc_small = chat_photo.photo_small
         loc_big = chat_photo.photo_big
