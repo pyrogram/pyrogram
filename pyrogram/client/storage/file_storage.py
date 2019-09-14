@@ -113,5 +113,5 @@ class FileStorage(MemoryStorage):
             except sqlite3.OperationalError:
                 pass
 
-    def destroy(self):
+    def delete(self):
         os.remove(self.database)
