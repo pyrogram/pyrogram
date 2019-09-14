@@ -67,6 +67,17 @@ class FileStorage(SQLiteStorage):
         # noinspection PyTypeChecker
         self.update_peers(peers.values())
 
+    def update(self):
+        version = self.version()
+
+        if version == 1:
+            with self.lock, self.conn:
+                self.conn.execute("DELETE FROM peers")
+
+            version += 1
+
+        self.version(version)
+
     def open(self):
         path = self.database
         file_exists = path.is_file()
@@ -97,6 +108,8 @@ class FileStorage(SQLiteStorage):
 
         if not file_exists:
             self.create()
+        else:
+            self.update()
 
         with self.conn:
             try:  # Python 3.6.0 (exactly this version) is bugged and won't successfully execute the vacuum
