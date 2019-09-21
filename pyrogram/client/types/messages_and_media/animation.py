@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode, encode_file_ref
 
 
 class Animation(Object):
@@ -33,7 +33,7 @@ class Animation(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        file_ref (``bytes``):
+        file_ref (``str``):
             Up to date file reference.
 
         width (``int``):
@@ -66,7 +66,7 @@ class Animation(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        file_ref: bytes,
+        file_ref: str,
         width: int,
         height: int,
         duration: int,
@@ -106,7 +106,7 @@ class Animation(Object):
                     animation.access_hash
                 )
             ),
-            file_ref=animation.file_reference,
+            file_ref=encode_file_ref(animation.file_reference),
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),

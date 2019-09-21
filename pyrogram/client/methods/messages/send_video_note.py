@@ -30,6 +30,7 @@ class SendVideoNote(BaseClient):
         self,
         chat_id: Union[int, str],
         video_note: str,
+        file_ref: str = None,
         duration: int = 0,
         length: int = 1,
         thumb: str = None,
@@ -58,6 +59,10 @@ class SendVideoNote(BaseClient):
                 Pass a file_id as string to send a video note that exists on the Telegram servers, or
                 pass a file path as string to upload a new video note that exists on your local machine.
                 Sending video notes by a URL is currently unsupported.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -140,7 +145,7 @@ class SendVideoNote(BaseClient):
                     ]
                 )
             else:
-                media = utils.get_input_media_from_file_id(video_note, 13)
+                media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
 
             while True:
                 try:

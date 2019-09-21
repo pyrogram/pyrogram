@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode, encode_file_ref
 
 
 class Audio(Object):
@@ -33,7 +33,7 @@ class Audio(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        file_ref (``bytes``):
+        file_ref (``str``):
             Up to date file reference.
 
         duration (``int``):
@@ -66,7 +66,7 @@ class Audio(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        file_ref: bytes,
+        file_ref: str,
         duration: int,
         file_name: str = None,
         mime_type: str = None,
@@ -106,7 +106,7 @@ class Audio(Object):
                     audio.access_hash
                 )
             ),
-            file_ref=audio.file_reference,
+            file_ref=encode_file_ref(audio.file_reference),
             duration=audio_attributes.duration,
             performer=audio_attributes.performer,
             title=audio_attributes.title,

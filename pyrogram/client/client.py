@@ -1869,7 +1869,7 @@ class Client(Methods, BaseClient):
         peer_access_hash: int,
         volume_id: int,
         local_id: int,
-        file_ref: bytes,
+        file_ref: str,
         file_size: int,
         is_big: bool,
         progress: callable,
@@ -1909,6 +1909,8 @@ class Client(Methods, BaseClient):
                     session.start()
 
                 self.media_sessions[dc_id] = session
+
+        file_ref = utils.decode_file_ref(file_ref)
 
         if media_type == 1:
             location = types.InputPeerPhotoFileLocation(

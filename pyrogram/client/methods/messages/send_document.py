@@ -30,6 +30,7 @@ class SendDocument(BaseClient):
         self,
         chat_id: Union[int, str],
         document: str,
+        file_ref: str = None,
         thumb: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -58,6 +59,10 @@ class SendDocument(BaseClient):
                 Pass a file_id as string to send a file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             thumb (``str``, *optional*):
                 Thumbnail of the file sent.
@@ -149,7 +154,7 @@ class SendDocument(BaseClient):
                     url=document
                 )
             else:
-                media = utils.get_input_media_from_file_id(document, 5)
+                media = utils.get_input_media_from_file_id(document, file_ref, 5)
 
             while True:
                 try:

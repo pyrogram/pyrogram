@@ -70,6 +70,17 @@ def encode(s: bytes) -> str:
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
 
+def encode_file_ref(file_ref: bytes) -> str:
+    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
+
+
+def decode_file_ref(file_ref: str) -> bytes:
+    if file_ref is None:
+        return b""
+
+    return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
+
+
 def get_offset_date(dialogs):
     for m in reversed(dialogs.messages):
         if isinstance(m, types.MessageEmpty):
@@ -82,6 +93,7 @@ def get_offset_date(dialogs):
 
 def get_input_media_from_file_id(
     file_id_str: str,
+    file_ref: str = None,
     expected_media_type: int = None
 ) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
     try:
@@ -111,7 +123,7 @@ def get_input_media_from_file_id(
                 id=types.InputPhoto(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 
@@ -123,7 +135,7 @@ def get_input_media_from_file_id(
                 id=types.InputDocument(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 

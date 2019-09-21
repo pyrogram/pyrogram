@@ -25,7 +25,7 @@ from pyrogram.api import types, functions
 from pyrogram.errors import StickersetInvalid
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode, encode_file_ref
 
 
 class Sticker(Object):
@@ -35,7 +35,7 @@ class Sticker(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        file_ref (``bytes``):
+        file_ref (``str``):
             Up to date file reference.
 
         width (``int``):
@@ -76,7 +76,7 @@ class Sticker(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        file_ref: bytes,
+        file_ref: str,
         width: int,
         height: int,
         is_animated: bool,
@@ -140,7 +140,7 @@ class Sticker(Object):
                     sticker.access_hash
                 )
             ),
-            file_ref=sticker.file_reference,
+            file_ref=encode_file_ref(sticker.file_reference),
             width=image_size_attributes.w if image_size_attributes else 512,
             height=image_size_attributes.h if image_size_attributes else 512,
             is_animated=sticker.mime_type == "application/x-tgsticker",

@@ -21,7 +21,7 @@ from struct import pack
 import pyrogram
 from pyrogram.api import types
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode, encode_file_ref
 
 
 class Voice(Object):
@@ -31,7 +31,7 @@ class Voice(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        file_ref (``bytes``):
+        file_ref (``str``):
             Up to date file reference.
 
         duration (``int``):
@@ -55,7 +55,7 @@ class Voice(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        file_ref: bytes,
+        file_ref: str,
         duration: int,
         waveform: bytes = None,
         mime_type: str = None,
@@ -84,7 +84,7 @@ class Voice(Object):
                     voice.access_hash
                 )
             ),
-            file_ref=voice.file_reference,
+            file_ref=encode_file_ref(voice.file_reference),
             duration=attributes.duration,
             mime_type=voice.mime_type,
             file_size=voice.size,

@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode, encode_file_ref
 
 
 class VideoNote(Object):
@@ -33,7 +33,7 @@ class VideoNote(Object):
         file_id (``str``):
             Unique identifier for this file.
 
-        file_ref (``bytes``):
+        file_ref (``str``):
             Up to date file reference.
 
         length (``int``):
@@ -60,7 +60,7 @@ class VideoNote(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
-        file_ref: bytes,
+        file_ref: str,
         length: int,
         duration: int,
         thumbs: List[Thumbnail] = None,
@@ -91,7 +91,7 @@ class VideoNote(Object):
                     video_note.access_hash
                 )
             ),
-            file_ref=video_note.file_reference,
+            file_ref=encode_file_ref(video_note.file_reference),
             length=video_attributes.w,
             duration=video_attributes.duration,
             file_size=video_note.size,

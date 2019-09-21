@@ -28,6 +28,7 @@ class SendCachedMedia(BaseClient):
         self,
         chat_id: Union[int, str],
         file_id: str,
+        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
@@ -55,6 +56,10 @@ class SendCachedMedia(BaseClient):
             file_id (``str``):
                 Media to send.
                 Pass a file_id as string to send a media that exists on the Telegram servers.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             caption (``bool``, *optional*):
                 Media caption, 0-1024 characters.
@@ -92,7 +97,7 @@ class SendCachedMedia(BaseClient):
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=utils.get_input_media_from_file_id(file_id),
+                media=utils.get_input_media_from_file_id(file_id, file_ref),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),

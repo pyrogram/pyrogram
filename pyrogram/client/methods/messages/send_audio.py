@@ -30,6 +30,7 @@ class SendAudio(BaseClient):
         self,
         chat_id: Union[int, str],
         audio: str,
+        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
@@ -63,6 +64,10 @@ class SendAudio(BaseClient):
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
                 pass a file path as string to upload a new audio file that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
@@ -174,7 +179,7 @@ class SendAudio(BaseClient):
                     url=audio
                 )
             else:
-                media = utils.get_input_media_from_file_id(audio, 9)
+                media = utils.get_input_media_from_file_id(audio, file_ref, 9)
 
             while True:
                 try:
