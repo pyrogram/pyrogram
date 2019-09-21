@@ -128,3 +128,5 @@ AUTH_BYTES_INVALID	The authorization bytes are invalid
 CHANNELS_TOO_MUCH	You have joined too many channels or supergroups
 ADMIN_RANK_INVALID	The custom administrator title is invalid or is longer than 16 characters
 ADMIN_RANK_EMOJI_NOT_ALLOWED	Emojis are not allowed in custom administrator titles
+FILE_REFERENCE_EMPTY	The file reference is empty
+FILE_REFERENCE_INVALID	The file reference is invalid
