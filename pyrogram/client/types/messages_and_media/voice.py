@@ -21,7 +21,7 @@ from struct import pack
 import pyrogram
 from pyrogram.api import types
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Voice(Object):
@@ -30,6 +30,9 @@ class Voice(Object):
     Parameters:
         file_id (``str``):
             Unique identifier for this file.
+
+        file_ref (``str``):
+            Up to date file reference.
 
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
@@ -52,6 +55,7 @@ class Voice(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: str,
         duration: int,
         waveform: bytes = None,
         mime_type: str = None,
@@ -61,6 +65,7 @@ class Voice(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
@@ -70,7 +75,7 @@ class Voice(Object):
     @staticmethod
     def _parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
         return Voice(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     3,
@@ -79,6 +84,7 @@ class Voice(Object):
                     voice.access_hash
                 )
             ),
+            file_ref=encode_file_ref(voice.file_reference),
             duration=attributes.duration,
             mime_type=voice.mime_type,
             file_size=voice.size,

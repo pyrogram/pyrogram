@@ -77,35 +77,35 @@ class EditInlineMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 2)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
             if media.media.startswith("http"):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 4)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
             if media.media.startswith("http"):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 9)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
             if media.media.startswith("http"):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 10)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
             if media.media.startswith("http"):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 5)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
         return await self.send(
             functions.messages.EditInlineBotMessage(

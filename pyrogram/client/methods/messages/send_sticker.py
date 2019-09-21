@@ -30,6 +30,7 @@ class SendSticker(BaseClient):
         self,
         chat_id: Union[int, str],
         sticker: str,
+        file_ref: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -55,6 +56,10 @@ class SendSticker(BaseClient):
                 Pass a file_id as string to send a sticker that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
                 pass a file path as string to upload a new sticker that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -122,7 +127,7 @@ class SendSticker(BaseClient):
                     url=sticker
                 )
             else:
-                media = utils.get_input_media_from_file_id(sticker, 8)
+                media = utils.get_input_media_from_file_id(sticker, file_ref, 8)
 
             while True:
                 try:

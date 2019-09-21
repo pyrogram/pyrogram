@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Video(Object):
@@ -32,6 +32,9 @@ class Video(Object):
     Parameters:
         file_id (``str``):
             Unique identifier for this file.
+
+        file_ref (``str``):
+            Up to date file reference.
 
         width (``int``):
             Video width as defined by sender.
@@ -66,6 +69,7 @@ class Video(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: str,
         width: int,
         height: int,
         duration: int,
@@ -79,6 +83,7 @@ class Video(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.width = width
         self.height = height
         self.duration = duration
@@ -97,7 +102,7 @@ class Video(Object):
         file_name: str
     ) -> "Video":
         return Video(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     4,
@@ -106,6 +111,7 @@ class Video(Object):
                     video.access_hash
                 )
             ),
+            file_ref=encode_file_ref(video.file_reference),
             width=video_attributes.w,
             height=video_attributes.h,
             duration=video_attributes.duration,

@@ -119,7 +119,7 @@ class SendMediaGroup(BaseClient):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, 2)
+                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 2)
             elif isinstance(i, pyrogram.InputMediaVideo):
                 if os.path.exists(i.media):
                     while True:
@@ -174,7 +174,7 @@ class SendMediaGroup(BaseClient):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, 4)
+                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 4)
 
             multi_media.append(
                 types.InputSingleMedia(

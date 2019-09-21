@@ -30,6 +30,7 @@ class SendAnimation(BaseClient):
         self,
         chat_id: Union[int, str],
         animation: str,
+        file_ref: str = None,
         caption: str = "",
         unsave: bool = False,
         parse_mode: Union[str, None] = object,
@@ -62,6 +63,10 @@ class SendAnimation(BaseClient):
                 Pass a file_id as string to send an animation that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
                 pass a file path as string to upload a new animation that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             caption (``str``, *optional*):
                 Animation caption, 0-1024 characters.
@@ -176,7 +181,7 @@ class SendAnimation(BaseClient):
                     url=animation
                 )
             else:
-                media = utils.get_input_media_from_file_id(animation, 10)
+                media = utils.get_input_media_from_file_id(animation, file_ref, 10)
 
             while True:
                 try:
@@ -209,7 +214,7 @@ class SendAnimation(BaseClient):
 
                             if unsave:
                                 document = message.animation or message.document
-                                document_id = utils.get_input_media_from_file_id(document.file_id).id
+                                document_id = utils.get_input_media_from_file_id(document.file_id, document.file_ref).id
 
                                 await self.send(
                                     functions.messages.SaveGif(

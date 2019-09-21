@@ -22,7 +22,7 @@ import pyrogram
 from pyrogram.api import types
 from pyrogram.client.ext import utils
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode_file_id
 
 
 class ChatPhoto(Object):
@@ -73,7 +73,7 @@ class ChatPhoto(Object):
             x = -234
 
         return ChatPhoto(
-            small_file_id=encode(
+            small_file_id=encode_file_id(
                 pack(
                     "<iiqqqiiiqi",
                     1, chat_photo.dc_id, photo_id,
@@ -81,7 +81,7 @@ class ChatPhoto(Object):
                     2, peer_id, x, peer_access_hash, loc_small.local_id
                 )
             ),
-            big_file_id=encode(
+            big_file_id=encode_file_id(
                 pack(
                     "<iiqqqiiiqi",
                     1, chat_photo.dc_id, photo_id,

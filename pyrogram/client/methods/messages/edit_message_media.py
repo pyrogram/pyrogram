@@ -100,7 +100,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 2)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
             if os.path.exists(media.media):
                 media = await self.send(
@@ -137,7 +137,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 4)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
             if os.path.exists(media.media):
                 media = await self.send(
@@ -173,7 +173,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 9)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
             if os.path.exists(media.media):
                 media = await self.send(
@@ -211,7 +211,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 10)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
             if os.path.exists(media.media):
                 media = await self.send(
@@ -242,7 +242,7 @@ class EditMessageMedia(BaseClient):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, 5)
+                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
         r = await self.send(
             functions.messages.EditMessage(

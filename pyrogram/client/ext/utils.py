@@ -30,7 +30,7 @@ from . import BaseClient
 from ...api import types
 
 
-def decode(s: str) -> bytes:
+def decode_file_id(s: str) -> bytes:
     s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
@@ -56,7 +56,7 @@ def decode(s: str) -> bytes:
     return r
 
 
-def encode(s: bytes) -> str:
+def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
 
@@ -71,6 +71,17 @@ def encode(s: bytes) -> str:
             r += bytes([i])
 
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
+
+
+def encode_file_ref(file_ref: bytes) -> str:
+    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
+
+
+def decode_file_ref(file_ref: str) -> bytes:
+    if file_ref is None:
+        return b""
+
+    return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
 
 
 async def ainput(prompt: str = ""):
@@ -94,10 +105,11 @@ def get_offset_date(dialogs):
 
 def get_input_media_from_file_id(
     file_id_str: str,
+    file_ref: str = None,
     expected_media_type: int = None
 ) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
     try:
-        decoded = decode(file_id_str)
+        decoded = decode_file_id(file_id_str)
     except Exception:
         raise ValueError("Failed to decode file_id: {}".format(file_id_str))
     else:
@@ -123,7 +135,7 @@ def get_input_media_from_file_id(
                 id=types.InputPhoto(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 
@@ -135,7 +147,7 @@ def get_input_media_from_file_id(
                 id=types.InputDocument(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 
