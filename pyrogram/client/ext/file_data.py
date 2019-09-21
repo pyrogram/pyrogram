@@ -22,7 +22,7 @@ class FileData:
         self, *, media_type: int = None, dc_id: int = None, document_id: int = None, access_hash: int = None,
         thumb_size: str = None, peer_id: int = None, peer_access_hash: int = None, volume_id: int = None,
         local_id: int = None, is_big: bool = None, file_size: int = None, mime_type: str = None, file_name: str = None,
-        date: int = None
+        date: int = None, file_ref: bytes = None
     ):
         self.media_type = media_type
         self.dc_id = dc_id
@@ -38,3 +38,4 @@ class FileData:
         self.mime_type = mime_type
         self.file_name = file_name
         self.date = date
+        self.file_ref = file_ref

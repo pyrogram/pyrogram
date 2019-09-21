@@ -33,6 +33,9 @@ class Document(Object):
         file_id (``str``):
             Unique file identifier.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         file_name (``str``, *optional*):
             Original filename as defined by sender.
 
@@ -54,6 +57,7 @@ class Document(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -63,6 +67,7 @@ class Document(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -81,6 +86,7 @@ class Document(Object):
                     document.access_hash
                 )
             ),
+            file_ref=document.file_reference,
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,

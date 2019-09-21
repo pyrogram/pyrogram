@@ -31,6 +31,9 @@ class Voice(Object):
         file_id (``str``):
             Unique identifier for this file.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
 
@@ -52,6 +55,7 @@ class Voice(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         duration: int,
         waveform: bytes = None,
         mime_type: str = None,
@@ -61,6 +65,7 @@ class Voice(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
@@ -79,6 +84,7 @@ class Voice(Object):
                     voice.access_hash
                 )
             ),
+            file_ref=voice.file_reference,
             duration=attributes.duration,
             mime_type=voice.mime_type,
             file_size=voice.size,

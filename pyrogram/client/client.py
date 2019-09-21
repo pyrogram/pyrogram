@@ -1224,6 +1224,7 @@ class Client(Methods, BaseClient):
                     peer_access_hash=data.peer_access_hash,
                     volume_id=data.volume_id,
                     local_id=data.local_id,
+                    file_ref=data.file_ref,
                     file_size=data.file_size,
                     is_big=data.is_big,
                     progress=progress,
@@ -1868,6 +1869,7 @@ class Client(Methods, BaseClient):
         peer_access_hash: int,
         volume_id: int,
         local_id: int,
+        file_ref: bytes,
         file_size: int,
         is_big: bool,
         progress: callable,
@@ -1922,21 +1924,21 @@ class Client(Methods, BaseClient):
             location = types.InputPhotoFileLocation(
                 id=document_id,
                 access_hash=access_hash,
-                file_reference=b"",
+                file_reference=file_ref,
                 thumb_size=thumb_size
             )
         elif media_type == 14:
             location = types.InputDocumentFileLocation(
                 id=document_id,
                 access_hash=access_hash,
-                file_reference=b"",
+                file_reference=file_ref,
                 thumb_size=thumb_size
             )
         else:
             location = types.InputDocumentFileLocation(
                 id=document_id,
                 access_hash=access_hash,
-                file_reference=b"",
+                file_reference=file_ref,
                 thumb_size=""
             )
 

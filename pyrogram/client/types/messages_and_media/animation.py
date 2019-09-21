@@ -33,6 +33,9 @@ class Animation(Object):
         file_id (``str``):
             Unique identifier for this file.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         width (``int``):
             Animation width as defined by sender.
 
@@ -63,6 +66,7 @@ class Animation(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         width: int,
         height: int,
         duration: int,
@@ -75,6 +79,7 @@ class Animation(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -101,6 +106,7 @@ class Animation(Object):
                     animation.access_hash
                 )
             ),
+            file_ref=animation.file_reference,
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),

@@ -35,6 +35,7 @@ class DownloadMedia(BaseClient):
     def download_media(
         self,
         message: Union["pyrogram.Message", str],
+        file_ref: bytes = None,
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
@@ -46,6 +47,9 @@ class DownloadMedia(BaseClient):
             message (:obj:`Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
                 the file id as string.
+
+            file_ref (``bytes``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
 
             file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
@@ -122,12 +126,14 @@ class DownloadMedia(BaseClient):
             file_size = getattr(media, "file_size", None)
             mime_type = getattr(media, "mime_type", None)
             date = getattr(media, "date", None)
+            file_ref = getattr(media, "file_ref", None)
 
         data = FileData(
             file_name=media_file_name,
             file_size=file_size,
             mime_type=mime_type,
-            date=date
+            date=date,
+            file_ref=file_ref or b""
         )
 
         def get_existing_attributes() -> dict:

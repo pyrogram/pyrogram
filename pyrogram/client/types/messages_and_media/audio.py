@@ -33,6 +33,9 @@ class Audio(Object):
         file_id (``str``):
             Unique identifier for this file.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
 
@@ -63,6 +66,7 @@ class Audio(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         duration: int,
         file_name: str = None,
         mime_type: str = None,
@@ -75,6 +79,7 @@ class Audio(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -101,6 +106,7 @@ class Audio(Object):
                     audio.access_hash
                 )
             ),
+            file_ref=audio.file_reference,
             duration=audio_attributes.duration,
             performer=audio_attributes.performer,
             title=audio_attributes.title,

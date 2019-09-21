@@ -35,6 +35,9 @@ class Sticker(Object):
         file_id (``str``):
             Unique identifier for this file.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         width (``int``):
             Sticker width.
 
@@ -73,6 +76,7 @@ class Sticker(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         width: int,
         height: int,
         is_animated: bool,
@@ -87,6 +91,7 @@ class Sticker(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -135,6 +140,7 @@ class Sticker(Object):
                     sticker.access_hash
                 )
             ),
+            file_ref=sticker.file_reference,
             width=image_size_attributes.w if image_size_attributes else 512,
             height=image_size_attributes.h if image_size_attributes else 512,
             is_animated=sticker.mime_type == "application/x-tgsticker",

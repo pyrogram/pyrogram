@@ -33,6 +33,9 @@ class Photo(Object):
         file_id (``str``):
             Unique identifier for this photo.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         width (``int``):
             Photo width.
 
@@ -54,6 +57,7 @@ class Photo(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         width: int,
         height: int,
         file_size: int,
@@ -63,6 +67,7 @@ class Photo(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.width = width
         self.height = height
         self.file_size = file_size
@@ -83,6 +88,7 @@ class Photo(Object):
                         big.location.local_id
                     )
                 ),
+                file_ref=photo.file_reference,
                 width=big.w,
                 height=big.h,
                 file_size=big.size,

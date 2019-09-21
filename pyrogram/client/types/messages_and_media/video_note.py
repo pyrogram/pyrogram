@@ -33,6 +33,9 @@ class VideoNote(Object):
         file_id (``str``):
             Unique identifier for this file.
 
+        file_ref (``bytes``):
+            Up to date file reference.
+
         length (``int``):
             Video width and height as defined by sender.
 
@@ -57,6 +60,7 @@ class VideoNote(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: bytes,
         length: int,
         duration: int,
         thumbs: List[Thumbnail] = None,
@@ -67,6 +71,7 @@ class VideoNote(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
@@ -86,6 +91,7 @@ class VideoNote(Object):
                     video_note.access_hash
                 )
             ),
+            file_ref=video_note.file_reference,
             length=video_attributes.w,
             duration=video_attributes.duration,
             file_size=video_note.size,
