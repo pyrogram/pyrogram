@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class VideoNote(Object):
@@ -82,7 +82,7 @@ class VideoNote(Object):
     @staticmethod
     def _parse(client, video_note: types.Document, video_attributes: types.DocumentAttributeVideo) -> "VideoNote":
         return VideoNote(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     13,

@@ -21,7 +21,7 @@ from struct import pack
 import pyrogram
 from pyrogram.api import types
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Voice(Object):
@@ -75,7 +75,7 @@ class Voice(Object):
     @staticmethod
     def _parse(client, voice: types.Document, attributes: types.DocumentAttributeAudio) -> "Voice":
         return Voice(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     3,

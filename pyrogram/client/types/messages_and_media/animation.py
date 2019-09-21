@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Animation(Object):
@@ -97,7 +97,7 @@ class Animation(Object):
         file_name: str
     ) -> "Animation":
         return Animation(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     10,

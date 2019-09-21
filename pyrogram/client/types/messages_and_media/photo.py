@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Photo(Object):
@@ -80,7 +80,7 @@ class Photo(Object):
             big = photo.sizes[-1]
 
             return Photo(
-                file_id=encode(
+                file_id=encode_file_id(
                     pack(
                         "<iiqqqiiii",
                         2, photo.dc_id, photo.id, photo.access_hash,

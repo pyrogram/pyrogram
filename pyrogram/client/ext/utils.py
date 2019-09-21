@@ -27,7 +27,7 @@ from . import BaseClient
 from ...api import types
 
 
-def decode(s: str) -> bytes:
+def decode_file_id(s: str) -> bytes:
     s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
@@ -53,7 +53,7 @@ def decode(s: str) -> bytes:
     return r
 
 
-def encode(s: bytes) -> str:
+def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
 
@@ -97,7 +97,7 @@ def get_input_media_from_file_id(
     expected_media_type: int = None
 ) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
     try:
-        decoded = decode(file_id_str)
+        decoded = decode_file_id(file_id_str)
     except Exception:
         raise ValueError("Failed to decode file_id: {}".format(file_id_str))
     else:

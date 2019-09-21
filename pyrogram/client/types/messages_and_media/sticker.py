@@ -25,7 +25,7 @@ from pyrogram.api import types, functions
 from pyrogram.errors import StickersetInvalid
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Sticker(Object):
@@ -131,7 +131,7 @@ class Sticker(Object):
             set_name = None
 
         return Sticker(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     8,

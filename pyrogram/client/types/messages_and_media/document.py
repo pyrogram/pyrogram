@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode, encode_file_ref
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Document(Object):
@@ -77,7 +77,7 @@ class Document(Object):
     @staticmethod
     def _parse(client, document: types.Document, file_name: str) -> "Document":
         return Document(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     5,

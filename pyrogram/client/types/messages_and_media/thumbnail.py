@@ -21,7 +21,7 @@ from typing import Union, List
 
 import pyrogram
 from pyrogram.api import types
-from pyrogram.client.ext.utils import encode
+from pyrogram.client.ext.utils import encode_file_id
 from .stripped_thumbnail import StrippedThumbnail
 from ..object import Object
 
@@ -85,7 +85,7 @@ class Thumbnail(Object):
             if isinstance(thumbnail, types.PhotoSize):
                 thumbnails.append(
                     Thumbnail(
-                        file_id=encode(
+                        file_id=encode_file_id(
                             pack(
                                 "<iiqqqiiii",
                                 media_type, media.dc_id, media.id, media.access_hash,

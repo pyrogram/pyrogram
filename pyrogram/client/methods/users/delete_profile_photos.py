@@ -55,7 +55,7 @@ class DeleteProfilePhotos(BaseClient):
         input_photos = []
 
         for photo_id in photo_ids:
-            unpacked = unpack("<iiqqc", utils.decode(photo_id))
+            unpacked = unpack("<iiqqc", utils.decode_file_id(photo_id))
 
             input_photos.append(
                 types.InputPhoto(
