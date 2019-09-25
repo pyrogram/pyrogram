@@ -1881,19 +1881,23 @@ class Client(Methods, BaseClient):
             for session in pool:
                 await session.stop()
 
-    async def get_file(self, media_type: int,
-                       dc_id: int,
-                       document_id: int,
-                       access_hash: int,
-                       thumb_size: str,
-                       peer_id: int,
-                       peer_access_hash: int, volume_id: int,
-                       local_id: int,
-                       file_ref: str,file_size: int,
-
-                       is_big: bool,
-                       progress: callable,
-                       progress_args: tuple = ()) -> str:
+    async def get_file(
+        self,
+        media_type: int,
+        dc_id: int,
+        document_id: int,
+        access_hash: int,
+        thumb_size: str,
+        peer_id: int,
+        peer_access_hash: int,
+        volume_id: int,
+        local_id: int,
+        file_ref: str,
+        file_size: int,
+        is_big: bool,
+        progress: callable,
+        progress_args: tuple = ()
+    ) -> str:
         async with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
