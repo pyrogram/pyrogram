@@ -16,10 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import unpack
 from typing import List, Union
 
-from pyrogram.api import functions, types
+from pyrogram.api import functions
 from pyrogram.client.ext import utils
 from ...ext import BaseClient
 
@@ -52,18 +51,7 @@ class DeleteProfilePhotos(BaseClient):
                 app.delete_profile_photos([p.file_id for p in photos[1:]])
         """
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
-        input_photos = []
-
-        for photo_id in photo_ids:
-            unpacked = unpack("<iiqqc", utils.decode_file_id(photo_id))
-
-            input_photos.append(
-                types.InputPhoto(
-                    id=unpacked[2],
-                    access_hash=unpacked[3],
-                    file_reference=b""
-                )
-            )
+        input_photos = [utils.get_input_media_from_file_id(i).id for i in photo_ids]
 
         return bool(self.send(
             functions.photos.DeletePhotos(
