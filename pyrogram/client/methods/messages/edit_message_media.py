@@ -203,7 +203,7 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
             elif media.media.startswith("http"):
@@ -219,7 +219,7 @@ class EditMessageMedia(BaseClient):
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "application/zip",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=None if media.thumb is None else await self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
@@ -234,7 +234,7 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
             elif media.media.startswith("http"):
