@@ -165,7 +165,7 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
             elif media.media.startswith("http"):
