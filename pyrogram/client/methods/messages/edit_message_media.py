@@ -108,7 +108,7 @@ class EditMessageMedia(BaseClient):
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=None if media.thumb is None else await self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -145,7 +145,7 @@ class EditMessageMedia(BaseClient):
                         peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=None if media.thumb is None else await self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
