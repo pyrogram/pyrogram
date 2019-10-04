@@ -49,6 +49,7 @@ from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .mark_chat_unread import MarkChatUnread
 
 
 class Chats(
@@ -84,6 +85,7 @@ class Chats(
     DeleteChannel,
     DeleteSupergroup,
     GetNearbyChats,
-    SetAdministratorTitle
+    SetAdministratorTitle,
+    MarkChatUnread
 ):
     pass
