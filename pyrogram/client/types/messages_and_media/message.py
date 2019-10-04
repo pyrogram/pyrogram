@@ -282,6 +282,8 @@ class Message(Object, Update):
         mentioned: bool = None,
         empty: bool = None,
         service: bool = None,
+        scheduled: bool = None,
+        from_scheduled: bool = None,
         media: bool = None,
         edit_date: int = None,
         media_group_id: str = None,
@@ -344,6 +346,8 @@ class Message(Object, Update):
         self.mentioned = mentioned
         self.empty = empty
         self.service = service
+        self.scheduled = scheduled
+        self.from_scheduled = from_scheduled
         self.media = media
         self.edit_date = edit_date
         self.media_group_id = media_group_id
@@ -387,7 +391,7 @@ class Message(Object, Update):
 
     @staticmethod
     def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
-               replies: int = 1):
+               is_scheduled: bool = False, replies: int = 1):
         if isinstance(message, types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 
@@ -620,6 +624,8 @@ class Message(Object, Update):
                 forward_signature=forward_signature,
                 forward_date=forward_date,
                 mentioned=message.mentioned,
+                scheduled=is_scheduled,
+                from_scheduled=message.from_scheduled,
                 media=bool(media) or None,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
@@ -2636,20 +2642,28 @@ class Message(Object, Update):
 
                 if self.photo:
                     file_id = self.photo.file_id
+                    file_ref = self.photo.file_ref
                 elif self.audio:
                     file_id = self.audio.file_id
+                    file_ref = self.audio.file_ref
                 elif self.document:
                     file_id = self.document.file_id
+                    file_ref = self.document.file_ref
                 elif self.video:
                     file_id = self.video.file_id
+                    file_ref = self.video.file_ref
                 elif self.animation:
                     file_id = self.animation.file_id
+                    file_ref = self.animation.file_ref
                 elif self.voice:
                     file_id = self.voice.file_id
+                    file_ref = self.voice.file_ref
                 elif self.sticker:
                     file_id = self.sticker.file_id
+                    file_ref = self.sticker.file_ref
                 elif self.video_note:
                     file_id = self.video_note.file_id
+                    file_ref = self.video_note.file_ref
                 elif self.contact:
                     return self._client.send_contact(
                         chat_id,
@@ -2694,9 +2708,9 @@ class Message(Object, Update):
                     raise ValueError("Unknown media type")
 
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
-                    return send_media(file_id=file_id)
+                    return send_media(file_id=file_id, file_ref=file_ref)
                 else:
-                    return send_media(file_id=file_id, caption=caption, parse_mode="html")
+                    return send_media(file_id=file_id, file_ref=file_ref, caption=caption, parse_mode="html")
             else:
                 raise ValueError("Can't copy this message")
         else:
@@ -2743,7 +2757,7 @@ class Message(Object, Update):
             revoke=revoke
         )
 
-    def click(self, x: int or str, y: int = 0, quote: bool = None, timeout: int = 10):
+    def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:

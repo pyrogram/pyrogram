@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Photo(Object):
@@ -32,6 +32,9 @@ class Photo(Object):
     Parameters:
         file_id (``str``):
             Unique identifier for this photo.
+
+        file_ref (``str``):
+            Up to date file reference.
 
         width (``int``):
             Photo width.
@@ -54,6 +57,7 @@ class Photo(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: str,
         width: int,
         height: int,
         file_size: int,
@@ -63,6 +67,7 @@ class Photo(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.width = width
         self.height = height
         self.file_size = file_size
@@ -75,14 +80,15 @@ class Photo(Object):
             big = photo.sizes[-1]
 
             return Photo(
-                file_id=encode(
+                file_id=encode_file_id(
                     pack(
-                        "<iiqqc",
-                        2, photo.dc_id,
-                        photo.id, photo.access_hash,
-                        big.type.encode()
+                        "<iiqqqiiii",
+                        2, photo.dc_id, photo.id, photo.access_hash,
+                        big.location.volume_id, 1, 2, ord(big.type),
+                        big.location.local_id
                     )
                 ),
+                file_ref=encode_file_ref(photo.file_reference),
                 width=big.w,
                 height=big.h,
                 file_size=big.size,

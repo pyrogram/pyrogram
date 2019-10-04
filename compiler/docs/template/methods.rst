@@ -106,10 +106,24 @@ Bots
 
     {bots}
 
+Authorization
+-------------
+
+.. autosummary::
+    :nosignatures:
+
+    {authorization}
+
+.. toctree::
+    :hidden:
+
+    {authorization}
+
 Advanced
 --------
 
-Learn more about these methods at :doc:`Advanced Usage <../../topics/advanced-usage>`.
+Methods used only when dealing with the raw Telegram API.
+Learn more about how to use the raw API at :doc:`Advanced Usage <../../topics/advanced-usage>`.
 
 .. autosummary::
     :nosignatures:

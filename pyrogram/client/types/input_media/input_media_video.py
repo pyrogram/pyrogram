@@ -32,6 +32,10 @@ class InputMediaVideo(InputMedia):
             pass a file path as string to upload a new video that exists on your local machine.
             Sending video by a URL is currently unsupported.
 
+        file_ref (``str``, *optional*):
+            A valid file reference obtained by a recently fetched media message.
+            To be used in combination with a file id in case a file reference is needed.
+
         thumb (``str``):
             Thumbnail of the video sent.
             The thumbnail should be in JPEG format and less than 200 KB in size.
@@ -64,6 +68,7 @@ class InputMediaVideo(InputMedia):
     def __init__(
         self,
         media: str,
+        file_ref: str = None,
         thumb: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -72,7 +77,7 @@ class InputMediaVideo(InputMedia):
         duration: int = 0,
         supports_streaming: bool = True
     ):
-        super().__init__(media, caption, parse_mode)
+        super().__init__(media, file_ref, caption, parse_mode)
 
         self.thumb = thumb
         self.width = width

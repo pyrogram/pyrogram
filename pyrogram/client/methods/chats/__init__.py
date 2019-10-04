@@ -31,6 +31,7 @@ from .get_chat_members import GetChatMembers
 from .get_chat_members_count import GetChatMembersCount
 from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
+from .get_nearby_chats import GetNearbyChats
 from .iter_chat_members import IterChatMembers
 from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
@@ -39,6 +40,7 @@ from .leave_chat import LeaveChat
 from .pin_chat_message import PinChatMessage
 from .promote_chat_member import PromoteChatMember
 from .restrict_chat_member import RestrictChatMember
+from .set_administrator_title import SetAdministratorTitle
 from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
@@ -47,7 +49,6 @@ from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
-from .get_nearby_chats import GetNearbyChats
 
 
 class Chats(
@@ -82,6 +83,7 @@ class Chats(
     AddChatMembers,
     DeleteChannel,
     DeleteSupergroup,
-    GetNearbyChats
+    GetNearbyChats,
+    SetAdministratorTitle
 ):
     pass

@@ -16,25 +16,35 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from pyrogram.api import types
 from ..object import Object
 
 
-class InputMedia(Object):
-    """Content of a media message to be sent.
+class Restriction(Object):
+    """A restriction applied to bots or chats.
 
-    It should be one of:
+    Parameters:
+        platform (``str``):
+            The platform the restriction is applied to, e.g. "ios", "android"
 
-    - :obj:`InputMediaAnimation`
-    - :obj:`InputMediaDocument`
-    - :obj:`InputMediaAudio`
-    - :obj:`InputMediaPhoto`
-    - :obj:`InputMediaVideo`
+        reason (``str``):
+            The restriction reason, e.g. "porn", "copyright".
+
+        text (``str``):
+            The restriction text.
     """
 
-    def __init__(self, media: str, file_ref: str, caption: str, parse_mode: str):
-        super().__init__()
+    def __init__(self, *, platform: str, reason: str, text: str):
+        super().__init__(None)
 
-        self.media = media
-        self.file_ref = file_ref
-        self.caption = caption
-        self.parse_mode = parse_mode
+        self.platform = platform
+        self.reason = reason
+        self.text = text
+
+    @staticmethod
+    def _parse(restriction: types.RestrictionReason) -> "Restriction":
+        return Restriction(
+            platform=restriction.platform,
+            reason=restriction.reason,
+            text=restriction.text
+        )

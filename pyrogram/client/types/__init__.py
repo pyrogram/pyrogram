@@ -23,5 +23,6 @@ from .input_message_content import *
 from .list import List
 from .messages_and_media import *
 from .object import Object
+from .authorization import *
 from .update import *
 from .user_and_chats import *

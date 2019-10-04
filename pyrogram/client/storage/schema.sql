@@ -27,8 +27,8 @@ CREATE INDEX idx_peers_phone_number ON peers (phone_number);
 CREATE TRIGGER trg_peers_last_update_on
     AFTER UPDATE
     ON peers
-    BEGIN
-        UPDATE peers
-        SET last_update_on = CAST(STRFTIME('%s', 'now') AS INTEGER)
-        WHERE id = NEW.id;
-    END;
+BEGIN
+    UPDATE peers
+    SET last_update_on = CAST(STRFTIME('%s', 'now') AS INTEGER)
+    WHERE id = NEW.id;
+END;

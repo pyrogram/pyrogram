@@ -30,6 +30,7 @@ class SendAudio(BaseClient):
         self,
         chat_id: Union[int, str],
         audio: str,
+        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
@@ -38,6 +39,7 @@ class SendAudio(BaseClient):
         thumb: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "pyrogram.InlineKeyboardMarkup",
             "pyrogram.ReplyKeyboardMarkup",
@@ -62,6 +64,10 @@ class SendAudio(BaseClient):
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
                 pass a file path as string to upload a new audio file that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
@@ -94,6 +100,9 @@ class SendAudio(BaseClient):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -170,7 +179,7 @@ class SendAudio(BaseClient):
                     url=audio
                 )
             else:
-                media = utils.get_input_media_from_file_id(audio, 9)
+                media = utils.get_input_media_from_file_id(audio, file_ref, 9)
 
             while True:
                 try:
@@ -181,6 +190,7 @@ class SendAudio(BaseClient):
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
+                            schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
                             **self.parser.parse(caption, parse_mode)
                         )
@@ -189,11 +199,15 @@ class SendAudio(BaseClient):
                     self.save_file(audio, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
-                        if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        if isinstance(
+                            i,
+                            (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
+                        ):
                             return pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
-                                {i.id: i for i in r.chats}
+                                {i.id: i for i in r.chats},
+                                is_scheduled=isinstance(i, types.UpdateNewScheduledMessage)
                             )
         except BaseClient.StopTransmission:
             return None

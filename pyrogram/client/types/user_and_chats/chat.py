@@ -16,12 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
 import pyrogram
 from pyrogram.api import types
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
+from .restriction import Restriction
 from ..object import Object
 from ...ext import utils
 
@@ -87,8 +88,8 @@ class Chat(Object):
         members_count (``int``, *optional*):
             Chat members count, for groups, supergroups and channels only.
 
-        restriction_reason (``str``, *optional*):
-            The reason why this chat might be unavailable to some users.
+        restrictions (List of :obj:`Restriction`, *optional*):
+            The list of reasons why this chat might be unavailable to some users.
             This field is available only in case *is_restricted* is True.
 
         permissions (:obj:`ChatPermissions` *optional*):
@@ -120,7 +121,7 @@ class Chat(Object):
         sticker_set_name: str = None,
         can_set_sticker_set: bool = None,
         members_count: int = None,
-        restriction_reason: str = None,
+        restrictions: List[Restriction] = None,
         permissions: "pyrogram.ChatPermissions" = None,
         distance: int = None
     ):
@@ -143,7 +144,7 @@ class Chat(Object):
         self.sticker_set_name = sticker_set_name
         self.can_set_sticker_set = can_set_sticker_set
         self.members_count = members_count
-        self.restriction_reason = restriction_reason
+        self.restrictions = restrictions
         self.permissions = permissions
         self.distance = distance
 
@@ -161,8 +162,8 @@ class Chat(Object):
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            photo=ChatPhoto._parse(client, user.photo, peer_id),
-            restriction_reason=user.restriction_reason,
+            photo=ChatPhoto._parse(client, user.photo, peer_id, user.access_hash),
+            restrictions=pyrogram.List([Restriction._parse(r) for r in user.restriction_reason]) or None,
             client=client
         )
 
@@ -174,7 +175,7 @@ class Chat(Object):
             id=peer_id,
             type="group",
             title=chat.title,
-            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
+            photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
             client=client
@@ -183,6 +184,7 @@ class Chat(Object):
     @staticmethod
     def _parse_channel_chat(client, channel: types.Channel) -> "Chat":
         peer_id = utils.get_channel_id(channel.id)
+        restriction_reason = getattr(channel, "restriction_reason", [])
 
         return Chat(
             id=peer_id,
@@ -192,8 +194,8 @@ class Chat(Object):
             is_scam=getattr(channel, "scam", None),
             title=channel.title,
             username=getattr(channel, "username", None),
-            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id),
-            restriction_reason=getattr(channel, "restriction_reason", None),
+            photo=ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id, channel.access_hash),
+            restrictions=pyrogram.List([Restriction._parse(r) for r in restriction_reason]) or None,
             permissions=ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),
             client=client

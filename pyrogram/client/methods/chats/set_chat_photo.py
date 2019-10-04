@@ -17,7 +17,6 @@
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from struct import unpack
 from typing import Union
 
 from pyrogram.api import functions, types
@@ -62,15 +61,8 @@ class SetChatPhoto(BaseClient):
         if os.path.exists(photo):
             photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
         else:
-            unpacked = unpack("<iiqqc", utils.decode(photo))
-
-            photo = types.InputChatPhoto(
-                id=types.InputPhoto(
-                    id=unpacked[2],
-                    access_hash=unpacked[3],
-                    file_reference=b""
-                )
-            )
+            photo = utils.get_input_media_from_file_id(photo)
+            photo = types.InputChatPhoto(id=photo.id)
 
         if isinstance(peer, types.InputPeerChat):
             self.send(

@@ -23,7 +23,13 @@ from queue import Queue
 from threading import Thread, Lock
 
 import pyrogram
-from pyrogram.api import types
+from pyrogram.api.types import (
+    UpdateNewMessage, UpdateNewChannelMessage, UpdateNewScheduledMessage,
+    UpdateEditMessage, UpdateEditChannelMessage,
+    UpdateDeleteMessages, UpdateDeleteChannelMessages,
+    UpdateBotCallbackQuery, UpdateInlineBotCallbackQuery,
+    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll
+)
 from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
@@ -35,23 +41,24 @@ log = logging.getLogger(__name__)
 
 class Dispatcher:
     NEW_MESSAGE_UPDATES = (
-        types.UpdateNewMessage,
-        types.UpdateNewChannelMessage
+        UpdateNewMessage,
+        UpdateNewChannelMessage,
+        UpdateNewScheduledMessage
     )
 
     EDIT_MESSAGE_UPDATES = (
-        types.UpdateEditMessage,
-        types.UpdateEditChannelMessage
+        UpdateEditMessage,
+        UpdateEditChannelMessage,
     )
 
     DELETE_MESSAGES_UPDATES = (
-        types.UpdateDeleteMessages,
-        types.UpdateDeleteChannelMessages
+        UpdateDeleteMessages,
+        UpdateDeleteChannelMessages
     )
 
     CALLBACK_QUERY_UPDATES = (
-        types.UpdateBotCallbackQuery,
-        types.UpdateInlineBotCallbackQuery
+        UpdateBotCallbackQuery,
+        UpdateInlineBotCallbackQuery
     )
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
@@ -68,7 +75,16 @@ class Dispatcher:
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (pyrogram.Message._parse(self.client, upd.message, usr, cht), MessageHandler),
+                lambda upd, usr, cht: (
+                    pyrogram.Message._parse(
+                        self.client,
+                        upd.message,
+                        usr,
+                        cht,
+                        isinstance(upd, UpdateNewScheduledMessage)
+                    ),
+                    MessageHandler
+                ),
 
             Dispatcher.DELETE_MESSAGES_UPDATES:
                 lambda upd, usr, cht: (utils.parse_deleted_messages(self.client, upd), DeletedMessagesHandler),
@@ -76,13 +92,13 @@ class Dispatcher:
             Dispatcher.CALLBACK_QUERY_UPDATES:
                 lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
 
-            (types.UpdateUserStatus,):
+            (UpdateUserStatus,):
                 lambda upd, usr, cht: (pyrogram.User._parse_user_status(self.client, upd), UserStatusHandler),
 
-            (types.UpdateBotInlineQuery,):
+            (UpdateBotInlineQuery,):
                 lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
 
-            (types.UpdateMessagePoll,):
+            (UpdateMessagePoll,):
                 lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler)
         }
 
