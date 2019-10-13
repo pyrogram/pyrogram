@@ -747,3 +747,32 @@ class Chat(Object):
         """
 
         return self._client.export_invite_link(self.id)
+        
+    def set_slowmode(
+        self, 
+        seconds: int
+    ) -> bool:
+        """Bound method *set_slowmode* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_slowmode(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.set_slowmode(30) # Set slow mode to 1 message per 30 seconds
+                chat.set_slowmode(0) # Turn slow mode off
+
+        Returns:
+            ``bool``: True on success.
+            
+        Raises:
+            ValueError: if the chat_id is not a supergroup.
+            BadRequest: if an invalid number of seconds is specified.
+            ChatIdInvalid: if the chat is a channel instead of a supergroup
+        """
+        
+        return self._client.set_chat_slowmode(self.id, seconds)
