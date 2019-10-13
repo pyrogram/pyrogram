@@ -44,6 +44,7 @@ from .set_administrator_title import SetAdministratorTitle
 from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
+from .set_chat_slowmode import SetChatSlowmode
 from .set_chat_title import SetChatTitle
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
@@ -84,6 +85,7 @@ class Chats(
     DeleteChannel,
     DeleteSupergroup,
     GetNearbyChats,
-    SetAdministratorTitle
+    SetAdministratorTitle,
+    SetChatSlowmode
 ):
     pass
