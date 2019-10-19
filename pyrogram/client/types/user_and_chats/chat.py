@@ -44,7 +44,7 @@ class Chat(Object):
             See *restriction_reason* for details.
 
         is_creator (``bool``, *optional*):
-            True, if this chat owner is current user. Users only.
+            True, if this chat owner is the current user. Supergroups, channels and groups only.
 
         is_scam (``bool``, *optional*):
             True, if this chat has been flagged for scam. Supergroups, channels and bots only.
@@ -179,6 +179,7 @@ class Chat(Object):
             id=peer_id,
             type="group",
             title=chat.title,
+            is_creator=getattr(channel, "creator", None),
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
