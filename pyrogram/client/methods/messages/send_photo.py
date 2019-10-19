@@ -30,11 +30,13 @@ class SendPhoto(BaseClient):
         self,
         chat_id: Union[int, str],
         photo: str,
+        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "pyrogram.InlineKeyboardMarkup",
             "pyrogram.ReplyKeyboardMarkup",
@@ -58,6 +60,10 @@ class SendPhoto(BaseClient):
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
                 pass a file path as string to upload a new photo that exists on your local machine.
 
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
+
             caption (``bool``, *optional*):
                 Photo caption, 0-1024 characters.
 
@@ -79,6 +85,9 @@ class SendPhoto(BaseClient):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -140,7 +149,7 @@ class SendPhoto(BaseClient):
                     ttl_seconds=ttl_seconds
                 )
             else:
-                media = utils.get_input_media_from_file_id(photo, 2)
+                media = utils.get_input_media_from_file_id(photo, file_ref, 2)
 
             while True:
                 try:
@@ -151,6 +160,7 @@ class SendPhoto(BaseClient):
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
+                            schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
                             **self.parser.parse(caption, parse_mode)
                         )
@@ -159,11 +169,15 @@ class SendPhoto(BaseClient):
                     self.save_file(photo, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
-                        if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                        if isinstance(
+                            i,
+                            (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
+                        ):
                             return pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
-                                {i.id: i for i in r.chats}
+                                {i.id: i for i in r.chats},
+                                is_scheduled=isinstance(i, types.UpdateNewScheduledMessage)
                             )
         except BaseClient.StopTransmission:
             return None

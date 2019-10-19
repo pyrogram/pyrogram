@@ -39,7 +39,7 @@ class IterDialogs(BaseClient):
                 The offset date in Unix time taken from the top message of a :obj:`Dialog`.
                 Defaults to 0 (most recent dialog).
 
-            limit (``str``, *optional*):
+            limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.
                 By default, no limit is applied and all dialogs are returned.
 

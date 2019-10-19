@@ -97,7 +97,8 @@ class PromoteChatMember(BaseClient):
                     invite_users=can_invite_users or None,
                     pin_messages=can_pin_messages or None,
                     add_admins=can_promote_members or None,
-                )
+                ),
+                rank=""
             )
         )
 

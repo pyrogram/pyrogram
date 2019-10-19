@@ -35,6 +35,7 @@ class DownloadMedia(BaseClient):
     def download_media(
         self,
         message: Union["pyrogram.Message", str],
+        file_ref: str = None,
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
@@ -46,6 +47,10 @@ class DownloadMedia(BaseClient):
             message (:obj:`Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or
                 the file id as string.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
@@ -122,37 +127,40 @@ class DownloadMedia(BaseClient):
             file_size = getattr(media, "file_size", None)
             mime_type = getattr(media, "mime_type", None)
             date = getattr(media, "date", None)
+            file_ref = getattr(media, "file_ref", None)
 
         data = FileData(
             file_name=media_file_name,
             file_size=file_size,
             mime_type=mime_type,
-            date=date
+            date=date,
+            file_ref=file_ref
         )
 
         def get_existing_attributes() -> dict:
             return dict(filter(lambda x: x[1] is not None, data.__dict__.items()))
 
         try:
-            decoded = utils.decode(file_id_str)
+            decoded = utils.decode_file_id(file_id_str)
             media_type = decoded[0]
 
             if media_type == 1:
-                unpacked = struct.unpack("<iiqqib", decoded)
-                dc_id, peer_id, volume_id, local_id, is_big = unpacked[1:]
+                unpacked = struct.unpack("<iiqqqiiiqi", decoded)
+                dc_id, photo_id, _, volume_id, size_type, peer_id, _, peer_access_hash, local_id = unpacked[1:]
 
                 data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
                     peer_id=peer_id,
+                    peer_access_hash=peer_access_hash,
                     volume_id=volume_id,
                     local_id=local_id,
-                    is_big=bool(is_big)
+                    is_big=size_type == 3
                 )
             elif media_type in (0, 2, 14):
-                unpacked = struct.unpack("<iiqqc", decoded)
-                dc_id, document_id, access_hash, thumb_size = unpacked[1:]
+                unpacked = struct.unpack("<iiqqqiiii", decoded)
+                dc_id, document_id, access_hash, volume_id, _, _, thumb_size, local_id = unpacked[1:]
 
                 data = FileData(
                     **get_existing_attributes(),
@@ -160,7 +168,7 @@ class DownloadMedia(BaseClient):
                     dc_id=dc_id,
                     document_id=document_id,
                     access_hash=access_hash,
-                    thumb_size=thumb_size.decode()
+                    thumb_size=chr(thumb_size)
                 )
             elif media_type in (3, 4, 5, 8, 9, 10, 13):
                 unpacked = struct.unpack("<iiqq", decoded)

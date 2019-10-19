@@ -27,7 +27,7 @@ from . import BaseClient
 from ...api import types
 
 
-def decode(s: str) -> bytes:
+def decode_file_id(s: str) -> bytes:
     s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
     r = b""
 
@@ -53,7 +53,7 @@ def decode(s: str) -> bytes:
     return r
 
 
-def encode(s: bytes) -> str:
+def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
 
@@ -70,6 +70,17 @@ def encode(s: bytes) -> str:
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
 
+def encode_file_ref(file_ref: bytes) -> str:
+    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
+
+
+def decode_file_ref(file_ref: str) -> bytes:
+    if file_ref is None:
+        return b""
+
+    return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
+
+
 def get_offset_date(dialogs):
     for m in reversed(dialogs.messages):
         if isinstance(m, types.MessageEmpty):
@@ -82,10 +93,11 @@ def get_offset_date(dialogs):
 
 def get_input_media_from_file_id(
     file_id_str: str,
+    file_ref: str = None,
     expected_media_type: int = None
 ) -> Union[types.InputMediaPhoto, types.InputMediaDocument]:
     try:
-        decoded = decode(file_id_str)
+        decoded = decode_file_id(file_id_str)
     except Exception:
         raise ValueError("Failed to decode file_id: {}".format(file_id_str))
     else:
@@ -104,14 +116,14 @@ def get_input_media_from_file_id(
             raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
 
         if media_type == 2:
-            unpacked = struct.unpack("<iiqqc", decoded)
-            dc_id, file_id, access_hash, thumb_size = unpacked[1:]
+            unpacked = struct.unpack("<iiqqqiiii", decoded)
+            dc_id, file_id, access_hash, volume_id, _, _, type, local_id = unpacked[1:]
 
             return types.InputMediaPhoto(
                 id=types.InputPhoto(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 
@@ -123,7 +135,7 @@ def get_input_media_from_file_id(
                 id=types.InputDocument(
                     id=file_id,
                     access_hash=access_hash,
-                    file_reference=b""
+                    file_reference=decode_file_ref(file_ref)
                 )
             )
 
@@ -215,7 +227,7 @@ def get_peer_id(peer: Union[PeerUser, PeerChat, PeerChannel]) -> int:
     raise ValueError("Peer type invalid: {}".format(peer))
 
 
-def get_type(peer_id: int) -> str:
+def get_peer_type(peer_id: int) -> str:
     if peer_id < 0:
         if MIN_CHAT_ID <= peer_id:
             return "chat"

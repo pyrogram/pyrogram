@@ -28,10 +28,12 @@ class SendCachedMedia(BaseClient):
         self,
         chat_id: Union[int, str],
         file_id: str,
+        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "pyrogram.InlineKeyboardMarkup",
             "pyrogram.ReplyKeyboardMarkup",
@@ -55,6 +57,10 @@ class SendCachedMedia(BaseClient):
                 Media to send.
                 Pass a file_id as string to send a media that exists on the Telegram servers.
 
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
+
             caption (``bool``, *optional*):
                 Media caption, 0-1024 characters.
 
@@ -72,6 +78,9 @@ class SendCachedMedia(BaseClient):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
+
             reply_markup (:obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -88,19 +97,21 @@ class SendCachedMedia(BaseClient):
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=utils.get_input_media_from_file_id(file_id),
+                media=utils.get_input_media_from_file_id(file_id, file_ref),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
+                schedule_date=schedule_date,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 **self.parser.parse(caption, parse_mode)
             )
         )
 
         for i in r.updates:
-            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+            if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
                 return pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
-                    {i.id: i for i in r.chats}
+                    {i.id: i for i in r.chats},
+                    is_scheduled=isinstance(i, types.UpdateNewScheduledMessage)
                 )

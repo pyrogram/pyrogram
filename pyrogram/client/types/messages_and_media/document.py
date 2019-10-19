@@ -23,7 +23,7 @@ import pyrogram
 from pyrogram.api import types
 from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode
+from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Document(Object):
@@ -32,6 +32,9 @@ class Document(Object):
     Parameters:
         file_id (``str``):
             Unique file identifier.
+
+        file_ref (``str``):
+            Up to date file reference.
 
         file_name (``str``, *optional*):
             Original filename as defined by sender.
@@ -54,6 +57,7 @@ class Document(Object):
         *,
         client: "pyrogram.BaseClient" = None,
         file_id: str,
+        file_ref: str,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -63,6 +67,7 @@ class Document(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_ref = file_ref
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -72,7 +77,7 @@ class Document(Object):
     @staticmethod
     def _parse(client, document: types.Document, file_name: str) -> "Document":
         return Document(
-            file_id=encode(
+            file_id=encode_file_id(
                 pack(
                     "<iiqq",
                     5,
@@ -81,6 +86,7 @@ class Document(Object):
                     document.access_hash
                 )
             ),
+            file_ref=encode_file_ref(document.file_reference),
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,

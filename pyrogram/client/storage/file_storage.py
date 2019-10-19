@@ -19,36 +19,32 @@
 import base64
 import json
 import logging
+import os
 import sqlite3
 from pathlib import Path
-from threading import Lock
 
-from .memory_storage import MemoryStorage
+from .sqlite_storage import SQLiteStorage
 
 log = logging.getLogger(__name__)
 
 
-class FileStorage(MemoryStorage):
+class FileStorage(SQLiteStorage):
     FILE_EXTENSION = ".session"
 
     def __init__(self, name: str, workdir: Path):
         super().__init__(name)
 
-        self.workdir = workdir
         self.database = workdir / (self.name + self.FILE_EXTENSION)
-        self.conn = None  # type: sqlite3.Connection
-        self.lock = Lock()
 
-    # noinspection PyAttributeOutsideInit
     def migrate_from_json(self, session_json: dict):
         self.open()
 
-        self.dc_id = session_json["dc_id"]
-        self.test_mode = session_json["test_mode"]
-        self.auth_key = base64.b64decode("".join(session_json["auth_key"]))
-        self.user_id = session_json["user_id"]
-        self.date = session_json.get("date", 0)
-        self.is_bot = session_json.get("is_bot", False)
+        self.dc_id(session_json["dc_id"])
+        self.test_mode(session_json["test_mode"])
+        self.auth_key(base64.b64decode("".join(session_json["auth_key"])))
+        self.user_id(session_json["user_id"])
+        self.date(session_json.get("date", 0))
+        self.is_bot(session_json.get("is_bot", False))
 
         peers_by_id = session_json.get("peers_by_id", {})
         peers_by_phone = session_json.get("peers_by_phone", {})
@@ -70,6 +66,17 @@ class FileStorage(MemoryStorage):
 
         # noinspection PyTypeChecker
         self.update_peers(peers.values())
+
+    def update(self):
+        version = self.version()
+
+        if version == 1:
+            with self.lock, self.conn:
+                self.conn.execute("DELETE FROM peers")
+
+            version += 1
+
+        self.version(version)
 
     def open(self):
         path = self.database
@@ -97,14 +104,18 @@ class FileStorage(MemoryStorage):
         if Path(path.name + ".OLD").is_file():
             log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
 
-        self.conn = sqlite3.connect(
-            str(path),
-            timeout=1,
-            check_same_thread=False
-        )
+        self.conn = sqlite3.connect(str(path), timeout=1, check_same_thread=False)
 
         if not file_exists:
             self.create()
+        else:
+            self.update()
 
         with self.conn:
-            self.conn.execute("VACUUM")
+            try:  # Python 3.6.0 (exactly this version) is bugged and won't successfully execute the vacuum
+                self.conn.execute("VACUUM")
+            except sqlite3.OperationalError:
+                pass
+
+    def delete(self):
+        os.remove(self.database)
