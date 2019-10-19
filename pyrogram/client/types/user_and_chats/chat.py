@@ -180,7 +180,7 @@ class Chat(Object):
             id=peer_id,
             type="group",
             title=chat.title,
-            is_creator=getattr(channel, "creator", None),
+            is_creator=getattr(chat, "creator", None),
             photo=ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
