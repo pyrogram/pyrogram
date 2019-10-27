@@ -147,13 +147,23 @@ class DownloadMedia(BaseClient):
 
             if media_type == 1:
                 unpacked = struct.unpack("<iiqqqiiiqi", decoded)
-                dc_id, photo_id, _, volume_id, size_type, peer_id, _, peer_access_hash, local_id = unpacked[1:]
+                dc_id, photo_id, _, volume_id, size_type, peer_id, x, peer_access_hash, local_id = unpacked[1:]
+
+                if x == 0:
+                    peer_type = "user"
+                elif x == -1:
+                    peer_id = -peer_id
+                    peer_type = "chat"
+                else:
+                    peer_id = utils.get_channel_id(peer_id - 1000727379968)
+                    peer_type = "channel"
 
                 data = FileData(
                     **get_existing_attributes(),
                     media_type=media_type,
                     dc_id=dc_id,
                     peer_id=peer_id,
+                    peer_type=peer_type,
                     peer_access_hash=peer_access_hash,
                     volume_id=volume_id,
                     local_id=local_id,

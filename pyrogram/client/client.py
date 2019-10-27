@@ -1232,6 +1232,7 @@ class Client(Methods, BaseClient):
                     access_hash=data.access_hash,
                     thumb_size=data.thumb_size,
                     peer_id=data.peer_id,
+                    peer_type=data.peer_type,
                     peer_access_hash=data.peer_access_hash,
                     volume_id=data.volume_id,
                     local_id=data.local_id,
@@ -1889,6 +1890,7 @@ class Client(Methods, BaseClient):
         access_hash: int,
         thumb_size: str,
         peer_id: int,
+        peer_type: str,
         peer_access_hash: int,
         volume_id: int,
         local_id: int,
@@ -1936,11 +1938,23 @@ class Client(Methods, BaseClient):
         file_ref = utils.decode_file_ref(file_ref)
 
         if media_type == 1:
-            location = types.InputPeerPhotoFileLocation(
-                peer=types.InputPeerUser(
+            if peer_type == "user":
+                peer = types.InputPeerUser(
                     user_id=peer_id,
                     access_hash=peer_access_hash
-                ),
+                )
+            elif peer_type == "chat":
+                peer = types.InputPeerChat(
+                    chat_id=peer_id
+                )
+            else:
+                peer = types.InputPeerChannel(
+                    channel_id=peer_id,
+                    access_hash=peer_access_hash
+                )
+
+            location = types.InputPeerPhotoFileLocation(
+                peer=peer,
                 volume_id=volume_id,
                 local_id=local_id,
                 big=is_big or None
