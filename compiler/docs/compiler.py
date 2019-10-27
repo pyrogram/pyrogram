@@ -212,6 +212,7 @@ def pyrogram_api():
             create_supergroup
             delete_channel
             delete_supergroup
+            set_slow_mode
         """,
         users="""
         Users

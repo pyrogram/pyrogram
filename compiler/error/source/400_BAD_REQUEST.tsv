@@ -132,3 +132,4 @@ ADMIN_RANK_EMOJI_NOT_ALLOWED	Emojis are not allowed in custom administrator titl
 FILE_REFERENCE_EMPTY	The file reference is empty
 FILE_REFERENCE_INVALID	The file reference is invalid
 REPLY_MARKUP_TOO_LONG	The reply markup is too long
+SECONDS_INVALID	The seconds interval is invalid, for slow mode try with 0 (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h)
