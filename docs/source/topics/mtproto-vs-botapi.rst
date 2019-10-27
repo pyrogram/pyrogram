@@ -76,12 +76,6 @@ HTTP Bot API. Using Pyrogram you can:
 .. hlist::
     :columns: 1
 
-    - :guilabel:`+` **Get information about any public chat by usernames, even if not a member**
-    - :guilabel:`--` The Bot API simply doesn't support this
-
-.. hlist::
-    :columns: 1
-
     - :guilabel:`+` **Obtain information about any message existing in a chat using their ids**
     - :guilabel:`--` The Bot API simply doesn't support this
 
