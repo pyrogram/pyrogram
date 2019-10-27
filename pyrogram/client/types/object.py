@@ -32,8 +32,15 @@ class Object(metaclass=Meta):
     def __init__(self, client: "pyrogram.BaseClient" = None):
         self._client = client
 
-        if self._client is None:
-            del self._client
+    def bind(self, client: "pyrogram.BaseClient"):
+        """Bind a Client instance to this Pyrogram Object
+
+        Parameters:
+            client (:obj:`Client`):
+                The Client instance to bind this object with. Useful to re-enable bound methods after serializing and
+                deserializing Pyrogram objects with ``repr`` and ``eval``.
+        """
+        self._client = client
 
     @staticmethod
     def default(obj: "Object"):
