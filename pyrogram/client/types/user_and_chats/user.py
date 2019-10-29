@@ -124,6 +124,7 @@ class User(Object, Update):
         is_support: bool = None,
         first_name: str = None,
         last_name: str = None,
+        full_name: str = None,
         status: str = None,
         last_online_date: int = None,
         next_offline_date: int = None,
@@ -148,6 +149,7 @@ class User(Object, Update):
         self.is_support = is_support
         self.first_name = first_name
         self.last_name = last_name
+        self.full_name = full_name
         self.status = status
         self.last_online_date = last_online_date
         self.next_offline_date = next_offline_date
@@ -182,13 +184,17 @@ class User(Object, Update):
             is_support=user.support,
             first_name=user.first_name,
             last_name=user.last_name,
+            full_name=(user.first_name + " " +
+                       user.last_name if user.last_name else None),
             **User._parse_status(user.status, user.bot),
             username=user.username,
             language_code=user.lang_code,
             dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
-            photo=ChatPhoto._parse(client, user.photo, user.id, user.access_hash),
-            restrictions=pyrogram.List([Restriction._parse(r) for r in user.restriction_reason]) or None,
+            photo=ChatPhoto._parse(
+                client, user.photo, user.id, user.access_hash),
+            restrictions=pyrogram.List(
+                [Restriction._parse(r) for r in user.restriction_reason]) or None,
             client=client
         )
 
