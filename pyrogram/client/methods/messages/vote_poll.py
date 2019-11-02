@@ -59,7 +59,7 @@ class VotePoll(BaseClient):
             functions.messages.SendVote(
                 peer=self.resolve_peer(chat_id),
                 msg_id=message_id,
-                options=[poll.options[option]._data]
+                options=[poll.options[option].data]
             )
         )
 
