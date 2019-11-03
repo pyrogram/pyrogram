@@ -24,7 +24,7 @@ class UpdateName(BaseClient):
     def update_name(
         self,
         first_name: str,
-        last_name: str = None
+        last_name: str = ""
     ) -> bool:
         """Update your own name.
 
@@ -35,7 +35,7 @@ class UpdateName(BaseClient):
                 first_name to set.
 
             last_name (``str``, *optional*):
-                last_name to set. "" (empty string) or None to remove it.
+                last_name to set. Defaults to "" (empty string). 
 
         Returns:
             ``bool``: True on success.
