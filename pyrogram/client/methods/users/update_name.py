@@ -50,7 +50,7 @@ class UpdateName(BaseClient):
             self.send(
                 functions.account.UpdateProfile(
                     first_name=first_name,
-                    last_name=last_name or "",
+                    last_name=last_name,
                 )
             )
         )
