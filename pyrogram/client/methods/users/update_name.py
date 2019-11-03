@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
-
-
 from pyrogram.api import functions
 from ...ext import BaseClient
 
@@ -26,8 +23,8 @@ from ...ext import BaseClient
 class UpdateName(BaseClient):
     def update_name(
         self,
-        first_name: Union[str],
-        last_name: Union[str, None]
+        first_name: str,
+        last_name: str = None
     ) -> bool:
         """Update your own name.
 
@@ -37,7 +34,7 @@ class UpdateName(BaseClient):
             first_name (``str``):
                 first_name to set.
 
-            last_name (``str`` | ``None``):
+            last_name (``str``, *optional*):
                 last_name to set. "" (empty string) or None to remove it.
 
         Returns:
