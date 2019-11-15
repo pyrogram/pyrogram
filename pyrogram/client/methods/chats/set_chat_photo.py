@@ -27,7 +27,8 @@ class SetChatPhoto(BaseClient):
     async def set_chat_photo(
         self,
         chat_id: Union[int, str],
-        photo: str
+        photo: str,
+        file_ref: str = None,
     ) -> bool:
         """Set a new profile photo for the chat.
 
@@ -40,6 +41,10 @@ class SetChatPhoto(BaseClient):
             photo (``str``):
                 New chat photo. You can pass a :obj:`Photo` file_id or a file path to upload a new photo from your local
                 machine.
+                
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
         Returns:
             ``bool``: True on success.
@@ -54,14 +59,14 @@ class SetChatPhoto(BaseClient):
                 app.set_chat_photo(chat_id, "photo.jpg")
 
                 # Set chat photo using an exiting Photo file_id
-                app.set_chat_photo(chat_id, photo.file_id)
+                app.set_chat_photo(chat_id, photo.file_id, photo.file_ref)
         """
         peer = await self.resolve_peer(chat_id)
 
         if os.path.exists(photo):
             photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
         else:
-            photo = utils.get_input_media_from_file_id(photo)
+            photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
             photo = types.InputChatPhoto(id=photo.id)
 
         if isinstance(peer, types.InputPeerChat):
