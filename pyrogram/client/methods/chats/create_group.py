@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class CreateGroup(BaseClient):
-    def create_group(
+    async def create_group(
         self,
         title: str,
         users: Union[Union[int, str], List[Union[int, str]]]
@@ -55,10 +55,10 @@ class CreateGroup(BaseClient):
         if not isinstance(users, list):
             users = [users]
 
-        r = self.send(
+        r = await self.send(
             functions.messages.CreateChat(
                 title=title,
-                users=[self.resolve_peer(u) for u in users]
+                users=[await self.resolve_peer(u) for u in users]
             )
         )
 

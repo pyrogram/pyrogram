@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class GetCommonChats(BaseClient):
-    def get_common_chats(self, user_id: Union[int, str]) -> list:
+    async def get_common_chats(self, user_id: Union[int, str]) -> list:
         """Get the common chats you have with a user.
 
         Parameters:
@@ -46,10 +46,10 @@ class GetCommonChats(BaseClient):
                 print(common)
         """
 
-        peer = self.resolve_peer(user_id)
+        peer = await self.resolve_peer(user_id)
 
         if isinstance(peer, types.InputPeerUser):
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetCommonChats(
                     user_id=peer,
                     max_id=0,
