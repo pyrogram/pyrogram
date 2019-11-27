@@ -213,6 +213,9 @@ class Filters:
 
     from_scheduled = create(lambda _, m: bool(m.from_scheduled), "FromScheduledFilter")
     """Filter new automatically sent messages that were previously scheduled."""
+    
+    connected_channel = create(lambda _, m: bool(m.forward_from_chat and not m.from_user), "ConnectedChannelFilter")
+    """Filter messages coming from the channel connected to the chat."""
 
     @staticmethod
     def command(
