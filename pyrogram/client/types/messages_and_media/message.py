@@ -746,6 +746,7 @@ class Message(Object, Update):
     def reply_animation(
         self,
         animation: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -786,6 +787,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send an animation that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
                 pass a file path as string to upload a new animation that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -866,6 +871,7 @@ class Message(Object, Update):
         return self._client.send_animation(
             chat_id=self.chat.id,
             animation=animation,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             duration=duration,
@@ -882,6 +888,7 @@ class Message(Object, Update):
     def reply_audio(
         self,
         audio: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -922,6 +929,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
                 pass a file path as string to upload a new audio file that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -1002,6 +1013,7 @@ class Message(Object, Update):
         return self._client.send_audio(
             chat_id=self.chat.id,
             audio=audio,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             duration=duration,
@@ -1018,6 +1030,7 @@ class Message(Object, Update):
     def reply_cached_media(
         self,
         file_id: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -1050,6 +1063,10 @@ class Message(Object, Update):
             file_id (``str``):
                 Media to send.
                 Pass a file_id as string to send a media that exists on the Telegram servers.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -1092,6 +1109,7 @@ class Message(Object, Update):
         return self._client.send_cached_media(
             chat_id=self.chat.id,
             file_id=file_id,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             disable_notification=disable_notification,
@@ -1225,6 +1243,7 @@ class Message(Object, Update):
     def reply_document(
         self,
         document: str,
+        file_ref: str = None,
         quote: bool = None,
         thumb: str = None,
         caption: str = "",
@@ -1262,6 +1281,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send a file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -1333,6 +1356,7 @@ class Message(Object, Update):
         return self._client.send_document(
             chat_id=self.chat.id,
             document=document,
+            file_ref=file_ref,
             thumb=thumb,
             caption=caption,
             parse_mode=parse_mode,
@@ -1620,6 +1644,7 @@ class Message(Object, Update):
     def reply_photo(
         self,
         photo: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -1657,6 +1682,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send a photo that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
                 pass a file path as string to upload a new photo that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -1727,6 +1756,7 @@ class Message(Object, Update):
         return self._client.send_photo(
             chat_id=self.chat.id,
             photo=photo,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             ttl_seconds=ttl_seconds,
@@ -1815,6 +1845,7 @@ class Message(Object, Update):
     def reply_sticker(
         self,
         sticker: str,
+        file_ref: str = None,
         quote: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1849,6 +1880,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send a sticker that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
                 pass a file path as string to upload a new sticker that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -1904,6 +1939,7 @@ class Message(Object, Update):
         return self._client.send_sticker(
             chat_id=self.chat.id,
             sticker=sticker,
+            file_ref=file_ref,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup,
@@ -2012,6 +2048,7 @@ class Message(Object, Update):
     def reply_video(
         self,
         video: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -2053,6 +2090,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send a video that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a video from the Internet, or
                 pass a file path as string to upload a new video that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -2136,6 +2177,7 @@ class Message(Object, Update):
         return self._client.send_video(
             chat_id=self.chat.id,
             video=video,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             duration=duration,
@@ -2153,6 +2195,7 @@ class Message(Object, Update):
     def reply_video_note(
         self,
         video_note: str,
+        file_ref: str = None,
         quote: bool = None,
         duration: int = 0,
         length: int = 1,
@@ -2190,6 +2233,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send a video note that exists on the Telegram servers, or
                 pass a file path as string to upload a new video note that exists on your local machine.
                 Sending video notes by a URL is currently unsupported.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -2257,6 +2304,7 @@ class Message(Object, Update):
         return self._client.send_video_note(
             chat_id=self.chat.id,
             video_note=video_note,
+            file_ref=file_ref,
             duration=duration,
             length=length,
             thumb=thumb,
@@ -2270,6 +2318,7 @@ class Message(Object, Update):
     def reply_voice(
         self,
         voice: str,
+        file_ref: str = None,
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -2307,6 +2356,10 @@ class Message(Object, Update):
                 Pass a file_id as string to send an audio that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get an audio from the Internet, or
                 pass a file path as string to upload a new audio that exists on your local machine.
+
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
@@ -2375,6 +2428,7 @@ class Message(Object, Update):
         return self._client.send_voice(
             chat_id=self.chat.id,
             voice=voice,
+            file_ref=file_ref,
             caption=caption,
             parse_mode=parse_mode,
             duration=duration,
@@ -2911,6 +2965,7 @@ class Message(Object, Update):
 
     def download(
         self,
+        file_ref: str = None,
         file_name: str = "",
         block: bool = True,
         progress: callable = None,
@@ -2930,6 +2985,10 @@ class Message(Object, Update):
                 message.download()
 
         Parameters:
+            file_ref (``str``, *optional*):
+                A valid file reference obtained by a recently fetched media message.
+                To be used in combination with a file id in case a file reference is needed.
+
             file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
@@ -2971,6 +3030,7 @@ class Message(Object, Update):
         """
         return self._client.download_media(
             message=self,
+            file_ref=file_ref,
             file_name=file_name,
             block=block,
             progress=progress,
