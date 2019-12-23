@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 from pyrogram.api import functions
 from ...ext import BaseClient
 
@@ -27,31 +25,46 @@ class UpdateProfile(BaseClient):
         self,
         first_name: str = None,
         last_name: str = None,
-        about: str = None
+        bio: str = None
     ) -> bool:
-        """Update your pofile.
+        """Update your profile details such as first name, last name and bio.
+        
+        You can omit the parameters you don't want to change.
+        
         Parameters:
-            first_name (``str``):
+            first_name (``str``, *optional*):
                 The new first name.
-                Pass the first name as string.
-            last_name (``str``):
+        
+            last_name (``str``, *optional*):
                 The new last name.
-                Pass the last name as string.
-            about (``str``):
-                The new about.
-                Pass the about as string. 70 characters max.
+                Pass "" (empty string) to remove it.
+
+            bio (``str``, *optional*):
+                The new bio, also known as "about". Max 70 characters.
+                Pass "" (empty string) to remove it.
+                
         Returns:
             ``bool``: True on success.
-        Raises:
-            RPCError: In case of a Telegram RPC error.
+        
+        Example:
+            .. code-block:: python
+                
+                # Update your first name only
+                app.update_bio(first_name="Pyrogram")
+                
+                # Update first name and bio
+                app.update_bio(first_name="Pyrogram", bio="https://docs.pyrogram.org/")
+                
+                # Remove the last name
+                app.update_bio(last_name="")
         """
 
         return bool(
             self.send(
                 functions.account.UpdateProfile(
-                    first_name=self.first_name,
-                    last_name=self.last_name,
-                    about=self.about
+                    first_name=first_name,
+                    last_name=last_name,
+                    about=bio
                 )
             )
         )
