@@ -21,7 +21,7 @@ from .handler import Handler
 
 class DisconnectHandler(Handler):
     """The Disconnect handler class. Used to handle disconnections. It is intended to be used with
-    :meth:~Client.add_handler`
+    :meth:`~Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
     :meth:`~Client.on_disconnect` decorator.

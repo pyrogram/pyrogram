@@ -328,11 +328,17 @@ class Client(Methods, BaseClient):
 
         self.is_initialized = True
 
-    def terminate(self):
+    def terminate(self, block: bool = True):
         """Terminate the client by shutting down workers.
 
         This method does the opposite of :meth:`~Client.initialize`.
         It will stop the dispatcher and shut down updates and download workers.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been terminated. It is useful with ``block=False`` in
+                case you want to terminate the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Raises:
             ConnectionError: In case you try to terminate a client that is already terminated.
@@ -345,7 +351,7 @@ class Client(Methods, BaseClient):
             log.warning("Takeout session {} finished".format(self.takeout_id))
 
         Syncer.remove(self)
-        self.dispatcher.stop()
+        self.dispatcher.stop(block)
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
@@ -840,10 +846,16 @@ class Client(Methods, BaseClient):
             self.initialize()
             return self
 
-    def stop(self):
+    def stop(self, block: bool = True):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been stopped. It is useful with ``block=False`` in case
+                you want to stop the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The stopped client itself.
@@ -864,16 +876,22 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.terminate()
+        self.terminate(block)
         self.disconnect()
 
         return self
 
-    def restart(self):
+    def restart(self, block: bool = True):
         """Restart the Client.
 
         This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
         a client using a single method.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
+                you want to restart the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The restarted client itself.
@@ -898,7 +916,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.stop()
+        self.stop(block)
         self.start()
 
         return self
@@ -985,7 +1003,7 @@ class Client(Methods, BaseClient):
         Client.idle()
         self.stop()
 
-    def add_handler(self, handler: Handler, group: int = 0):
+    def add_handler(self, handler: Handler, group: int = 0, block: bool = True):
         """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group will be used for a single update.
@@ -999,6 +1017,11 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
+
+            block (``bool``, *optional*):
+                Blocks the code execution until the handler has been added. It is useful with ``block=False`` in case
+                you want to register a new handler *within* another handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             ``tuple``: A tuple consisting of *(handler, group)*.
@@ -1021,11 +1044,11 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = handler.callback
         else:
-            self.dispatcher.add_handler(handler, group)
+            self.dispatcher.add_handler(handler, group, block)
 
         return handler, group
 
-    def remove_handler(self, handler: Handler, group: int = 0):
+    def remove_handler(self, handler: Handler, group: int = 0, block: bool = True):
         """Remove a previously-registered update handler.
 
         Make sure to provide the right group where the handler was added in. You can use the return value of the
@@ -1037,6 +1060,13 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
+
+            block (``bool``, *optional*):
+                Blocks the code execution until the handler has been removed. It is useful with ``block=False`` in case
+                you want to remove a previously registered handler *within* another handler in order not to cause a
+                deadlock.
+                Defaults to True.
+
 
         Example:
             .. code-block:: python
@@ -1059,7 +1089,7 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = None
         else:
-            self.dispatcher.remove_handler(handler, group)
+            self.dispatcher.remove_handler(handler, group, block)
 
     def stop_transmission(self):
         """Stop downloading or uploading a file.
@@ -1221,6 +1251,7 @@ class Client(Methods, BaseClient):
                     access_hash=data.access_hash,
                     thumb_size=data.thumb_size,
                     peer_id=data.peer_id,
+                    peer_type=data.peer_type,
                     peer_access_hash=data.peer_access_hash,
                     volume_id=data.volume_id,
                     local_id=data.local_id,
@@ -1866,6 +1897,7 @@ class Client(Methods, BaseClient):
         access_hash: int,
         thumb_size: str,
         peer_id: int,
+        peer_type: str,
         peer_access_hash: int,
         volume_id: int,
         local_id: int,
@@ -1913,11 +1945,23 @@ class Client(Methods, BaseClient):
         file_ref = utils.decode_file_ref(file_ref)
 
         if media_type == 1:
-            location = types.InputPeerPhotoFileLocation(
-                peer=types.InputPeerUser(
+            if peer_type == "user":
+                peer = types.InputPeerUser(
                     user_id=peer_id,
                     access_hash=peer_access_hash
-                ),
+                )
+            elif peer_type == "chat":
+                peer = types.InputPeerChat(
+                    chat_id=peer_id
+                )
+            else:
+                peer = types.InputPeerChannel(
+                    channel_id=peer_id,
+                    access_hash=peer_access_hash
+                )
+
+            location = types.InputPeerPhotoFileLocation(
+                peer=peer,
                 volume_id=volume_id,
                 local_id=local_id,
                 big=is_big or None
