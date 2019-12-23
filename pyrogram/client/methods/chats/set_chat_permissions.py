@@ -107,7 +107,7 @@ class SetChatPermissions(BaseClient):
 
         r = await self.send(
             functions.messages.EditChatDefaultBannedRights(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 banned_rights=types.ChatBannedRights(
                     until_date=0,
                     send_messages=send_messages,

@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class DeleteChannel(BaseClient):
-    def delete_channel(self, chat_id: Union[int, str]) -> bool:
+    async def delete_channel(self, chat_id: Union[int, str]) -> bool:
         """Delete a channel.
 
         Parameters:
@@ -39,9 +39,9 @@ class DeleteChannel(BaseClient):
 
                 app.delete_channel(channel_id)
         """
-        self.send(
+        await self.send(
             functions.channels.DeleteChannel(
-                channel=self.resolve_peer(chat_id)
+                channel=await self.resolve_peer(chat_id)
             )
         )
 

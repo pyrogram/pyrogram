@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 
 class CreateChannel(BaseClient):
-    def create_channel(
+    async def create_channel(
         self,
         title: str,
         description: str = ""
@@ -44,7 +44,7 @@ class CreateChannel(BaseClient):
 
                 app.create_channel("Channel Title", "Channel Description")
         """
-        r = self.send(
+        r = await self.send(
             functions.channels.CreateChannel(
                 title=title,
                 about=description,
