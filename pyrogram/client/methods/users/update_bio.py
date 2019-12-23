@@ -34,7 +34,7 @@ class UpdateBio(BaseClient):
 
         Parameters:
             bio (``str`` | ``None``):
-                Bio to set. "" (empty string) or None to remove it.
+                Bio to set. Pass "" (empty string) or None to remove it.
 
         Returns:
             ``bool``: True on success.
