@@ -22,39 +22,32 @@ from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
 
 
-class DeleteAllUserMessages(BaseClient):
-    def delete_all_user_messages(
+class DeleteUserHistory(BaseClient):
+    def delete_user_history(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
     ) -> bool:
-        """Delete all of a user's messages in a chat.
+        """Delete all messages sent by a certain user in a supergroup.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
             user_id (``int`` | ``str``):
-                The user which you'd like all messages deleted.
-                Pass the user_id as int or username as str.
-
+                Unique identifier (int) or username (str) of the user whose messages will be deleted.
 
         Returns:
             ``bool``: True on success, False otherwise.
-
-        Raises:
-            RPCError: In case of a Telegram RPC error.
         """
-        chat = self.resolve_peer(chat_id)
-        user = self.resolve_peer(user_id)
 
         r = self.send(
             functions.channels.DeleteUserHistory(
-                channel=chat,
-                user_id=user
+                channel=self.resolve_peer(chat_id),
+                user_id=self.resolve_peer(user_id)
                 )
             )
 
-        # Deleting messages you don't have right onto, won't raise any error.
+        # Deleting messages you don't have right onto won't raise any error.
         # Check for pts_count, which is 0 in case deletes fail.
         return bool(r.pts_count)
