@@ -747,3 +747,23 @@ class Chat(Object):
         """
 
         return self._client.export_invite_link(self.id)
+
+    def mark_chat_unread(self):
+        """Bound method *mark_chat_unread* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.mark_chat_unread(123456789)
+
+        Example:
+            .. code-block:: python
+
+                chat.mark_chat_unread()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return self._client.mark_chat_unread(self.id)
