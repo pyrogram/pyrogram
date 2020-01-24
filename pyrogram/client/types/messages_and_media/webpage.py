@@ -77,7 +77,7 @@ class WebPage(Object):
             Embedded content height.
 
         duration (``int``, *optional*):
-            Uknown at the time of writing.
+            Unknown at the time of writing.
 
         author (``str``, *optional*):
             Author of the webpage, eg the Twitter user for a tweet, or the author in an article.
@@ -105,7 +105,7 @@ class WebPage(Object):
         embed_height: int = None,
         duration: int = None,
         author: str = None
-    ) -> "pyrogram.WebPage":
+    ):
         super().__init__(client)
 
         self.id = id

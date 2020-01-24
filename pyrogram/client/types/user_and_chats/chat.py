@@ -523,15 +523,8 @@ class Chat(Object):
     def restrict_member(
         self,
         user_id: Union[int, str],
+        permissions: ChatPermissions,
         until_date: int = 0,
-        can_send_messages: bool = False,
-        can_send_media_messages: bool = False,
-        can_send_other_messages: bool = False,
-        can_add_web_page_previews: bool = False,
-        can_send_polls: bool = False,
-        can_change_info: bool = False,
-        can_invite_users: bool = False,
-        can_pin_messages: bool = False
     ) -> "pyrogram.Chat":
         """Bound method *unban_member* of :obj:`Chat`.
 
@@ -541,49 +534,27 @@ class Chat(Object):
 
             client.restrict_chat_member(
                 chat_id=chat_id,
-                user_id=user_id
+                user_id=user_id,
+                permissions=ChatPermission()
             )
 
         Example:
             .. code-block:: python
 
-                chat.restrict_member(123456789)
+                chat.restrict_member(user_id, ChatPermission())
 
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
+            permissions (:obj:`ChatPermissions`):
+                New user permissions.
+
             until_date (``int``, *optional*):
                 Date when the user will be unbanned, unix time.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
                 considered to be banned forever. Defaults to 0 (ban forever).
-
-            can_send_messages (``bool``, *optional*):
-                Pass True, if the user can send text messages, contacts, locations and venues.
-
-            can_send_media_messages (``bool``, *optional*):
-                Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
-                implies can_send_messages.
-
-            can_send_other_messages (``bool``, *optional*):
-                Pass True, if the user can send animations, games, stickers and use inline bots,
-                implies can_send_media_messages.
-
-            can_add_web_page_previews (``bool``, *optional*):
-                Pass True, if the user may add web page previews to their messages, implies can_send_media_messages.
-
-            can_send_polls (``bool``, *optional*):
-                Pass True, if the user can send polls, implies can_send_media_messages.
-
-            can_change_info (``bool``, *optional*):
-                Pass True, if the user can change the chat title, photo and other settings.
-
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the user can invite new users to the chat.
-
-            can_pin_messages (``bool``, *optional*):
-                Pass True, if the user can pin messages.
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -596,14 +567,14 @@ class Chat(Object):
             chat_id=self.id,
             user_id=user_id,
             until_date=until_date,
-            can_send_messages=can_send_messages,
-            can_send_media_messages=can_send_media_messages,
-            can_send_other_messages=can_send_other_messages,
-            can_add_web_page_previews=can_add_web_page_previews,
-            can_send_polls=can_send_polls,
-            can_change_info=can_change_info,
-            can_invite_users=can_invite_users,
-            can_pin_messages=can_pin_messages
+            can_send_messages=permissions.can_send_messages,
+            can_send_media_messages=permissions.can_send_media_messages,
+            can_send_other_messages=permissions.can_send_other_messages,
+            can_add_web_page_previews=permissions.can_add_web_page_previews,
+            can_send_polls=permissions.can_send_polls,
+            can_change_info=permissions.can_change_info,
+            can_invite_users=permissions.can_invite_users,
+            can_pin_messages=permissions.can_pin_messages
         )
 
     def promote_member(
