@@ -62,7 +62,7 @@ class StopPoll(BaseClient):
                 id=message_id,
                 media=types.InputMediaPoll(
                     poll=types.Poll(
-                        id=poll.id,
+                        id=int(poll.id),
                         closed=True,
                         question="",
                         answers=[]
