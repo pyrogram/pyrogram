@@ -140,7 +140,7 @@ class Client(Methods, BaseClient):
 
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
-            This is an alternative way setup plugins if you don't want to use the *config.ini* file.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
