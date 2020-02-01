@@ -138,3 +138,7 @@ QUIZ_CORRECT_ANSWERS_EMPTY	The correct answers of the quiz are empty
 QUIZ_CORRECT_ANSWER_INVALID	The correct answers of the quiz are invalid
 QUIZ_CORRECT_ANSWERS_TOO_MUCH	The quiz contains too many correct answers
 OPTIONS_TOO_MUCH	The poll options are too many
+POLL_ANSWERS_INVALID	The poll answers are invalid
+POLL_QUESTION_INVALID	The poll question is invalid
+FRESH_CHANGE_ADMINS_FORBIDDEN	Recently logged-in users cannot change admins
+BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels
