@@ -118,61 +118,43 @@ class Dispatcher:
 
             self.workers_list[-1].start()
 
-    def stop(self, block: bool = True):
-        def do_it():
-            for _ in range(self.workers):
-                self.updates_queue.put(None)
+    def stop(self):
+        for _ in range(self.workers):
+            self.updates_queue.put(None)
 
-            for worker in self.workers_list:
-                worker.join()
+        for worker in self.workers_list:
+            worker.join()
 
-            self.workers_list.clear()
-            self.locks_list.clear()
-            self.groups.clear()
+        self.workers_list.clear()
+        self.locks_list.clear()
+        self.groups.clear()
 
-        if block:
-            do_it()
-        else:
-            Thread(target=do_it).start()
+    def add_handler(self, handler, group: int):
+        for lock in self.locks_list:
+            lock.acquire()
 
-    def add_handler(self, handler, group: int, block: bool = True):
-        def do_it():
+        try:
+            if group not in self.groups:
+                self.groups[group] = []
+                self.groups = OrderedDict(sorted(self.groups.items()))
+
+            self.groups[group].append(handler)
+        finally:
             for lock in self.locks_list:
-                lock.acquire()
+                lock.release()
 
-            try:
-                if group not in self.groups:
-                    self.groups[group] = []
-                    self.groups = OrderedDict(sorted(self.groups.items()))
+    def remove_handler(self, handler, group: int):
+        for lock in self.locks_list:
+            lock.acquire()
 
-                self.groups[group].append(handler)
-            finally:
-                for lock in self.locks_list:
-                    lock.release()
+        try:
+            if group not in self.groups:
+                raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
-        if block:
-            do_it()
-        else:
-            Thread(target=do_it).start()
-
-    def remove_handler(self, handler, group: int, block: bool = True):
-        def do_it():
+            self.groups[group].remove(handler)
+        finally:
             for lock in self.locks_list:
-                lock.acquire()
-
-            try:
-                if group not in self.groups:
-                    raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
-
-                self.groups[group].remove(handler)
-            finally:
-                for lock in self.locks_list:
-                    lock.release()
-
-        if block:
-            do_it()
-        else:
-            Thread(target=do_it).start()
+                lock.release()
 
     def update_worker(self, lock):
         name = threading.current_thread().name

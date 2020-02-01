@@ -328,17 +328,11 @@ class Client(Methods, BaseClient):
 
         self.is_initialized = True
 
-    def terminate(self, block: bool = True):
+    def terminate(self):
         """Terminate the client by shutting down workers.
 
         This method does the opposite of :meth:`~Client.initialize`.
         It will stop the dispatcher and shut down updates and download workers.
-
-        Parameters:
-            block (``bool``, *optional*):
-                Blocks the code execution until the client has been terminated. It is useful with ``block=False`` in
-                case you want to terminate the own client *within* an handler in order not to cause a deadlock.
-                Defaults to True.
 
         Raises:
             ConnectionError: In case you try to terminate a client that is already terminated.
@@ -351,7 +345,7 @@ class Client(Methods, BaseClient):
             log.warning("Takeout session {} finished".format(self.takeout_id))
 
         Syncer.remove(self)
-        self.dispatcher.stop(block)
+        self.dispatcher.stop()
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
@@ -846,16 +840,10 @@ class Client(Methods, BaseClient):
             self.initialize()
             return self
 
-    def stop(self, block: bool = True):
+    def stop(self):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.
-
-        Parameters:
-            block (``bool``, *optional*):
-                Blocks the code execution until the client has been stopped. It is useful with ``block=False`` in case
-                you want to stop the own client *within* an handler in order not to cause a deadlock.
-                Defaults to True.
 
         Returns:
             :obj:`Client`: The stopped client itself.
@@ -876,22 +864,16 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.terminate(block)
+        self.terminate()
         self.disconnect()
 
         return self
 
-    def restart(self, block: bool = True):
+    def restart(self):
         """Restart the Client.
 
         This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
         a client using a single method.
-
-        Parameters:
-            block (``bool``, *optional*):
-                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
-                you want to restart the own client *within* an handler in order not to cause a deadlock.
-                Defaults to True.
 
         Returns:
             :obj:`Client`: The restarted client itself.
@@ -916,7 +898,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.stop(block)
+        self.stop()
         self.start()
 
         return self
@@ -1003,7 +985,7 @@ class Client(Methods, BaseClient):
         Client.idle()
         self.stop()
 
-    def add_handler(self, handler: Handler, group: int = 0, block: bool = True):
+    def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group will be used for a single update.
@@ -1017,11 +999,6 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
-
-            block (``bool``, *optional*):
-                Blocks the code execution until the handler has been added. It is useful with ``block=False`` in case
-                you want to register a new handler *within* another handler in order not to cause a deadlock.
-                Defaults to True.
 
         Returns:
             ``tuple``: A tuple consisting of *(handler, group)*.
@@ -1044,11 +1021,11 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = handler.callback
         else:
-            self.dispatcher.add_handler(handler, group, block)
+            self.dispatcher.add_handler(handler, group)
 
         return handler, group
 
-    def remove_handler(self, handler: Handler, group: int = 0, block: bool = True):
+    def remove_handler(self, handler: Handler, group: int = 0):
         """Remove a previously-registered update handler.
 
         Make sure to provide the right group where the handler was added in. You can use the return value of the
@@ -1060,13 +1037,6 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
-
-            block (``bool``, *optional*):
-                Blocks the code execution until the handler has been removed. It is useful with ``block=False`` in case
-                you want to remove a previously registered handler *within* another handler in order not to cause a
-                deadlock.
-                Defaults to True.
-
 
         Example:
             .. code-block:: python
@@ -1089,7 +1059,7 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = None
         else:
-            self.dispatcher.remove_handler(handler, group, block)
+            self.dispatcher.remove_handler(handler, group)
 
     def stop_transmission(self):
         """Stop downloading or uploading a file.
