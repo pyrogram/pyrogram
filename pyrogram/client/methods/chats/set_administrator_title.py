@@ -80,6 +80,30 @@ class SetAdministratorTitle(BaseClient):
         else:
             raise ValueError("Custom titles can only be applied to owners or administrators of supergroups")
 
+        if not admin_rights.change_info:
+            admin_rights.change_info = None
+
+        if not admin_rights.post_messages:
+            admin_rights.post_messages = None
+
+        if not admin_rights.edit_messages:
+            admin_rights.edit_messages = None
+
+        if not admin_rights.delete_messages:
+            admin_rights.delete_messages = None
+
+        if not admin_rights.ban_users:
+            admin_rights.ban_users = None
+
+        if not admin_rights.invite_users:
+            admin_rights.invite_users = None
+
+        if not admin_rights.pin_messages:
+            admin_rights.pin_messages = None
+
+        if not admin_rights.add_admins:
+            admin_rights.add_admins = None
+
         self.send(
             functions.channels.EditAdmin(
                 channel=chat_id,
