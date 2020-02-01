@@ -29,6 +29,10 @@ class SendPoll(BaseClient):
         chat_id: Union[int, str],
         question: str,
         options: List[str],
+        is_anonymous: bool = True,
+        allows_multiple_answers: bool = None,
+        type: str = "regular",
+        correct_option_id: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -52,6 +56,22 @@ class SendPoll(BaseClient):
 
             options (List of ``str``):
                 List of answer options, 2-10 strings 1-100 characters each.
+
+            is_anonymous (``bool``, *optional*):
+                True, if the poll needs to be anonymous.
+                Defaults to True.
+
+            type (``str``, *optional*):
+                Poll type, "quiz" or "regular".
+                Defaults to "regular"
+
+            allows_multiple_answers (``bool``, *optional*):
+                True, if the poll allows multiple answers, ignored for polls in quiz mode.
+                Defaults to False
+
+            correct_option_id (``int``, *optional*):
+                0-based identifier of the correct answer option (the index of the correct option)
+                Required for polls in quiz mode.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -85,8 +105,12 @@ class SendPoll(BaseClient):
                         answers=[
                             types.PollAnswer(text=o, option=bytes([i]))
                             for i, o in enumerate(options)
-                        ]
-                    )
+                        ],
+                        multiple_choice=allows_multiple_answers or None,
+                        public_voters=not is_anonymous or None,
+                        quiz=type == "quiz" or None
+                    ),
+                    correct_answers=[bytes([correct_option_id])] if correct_option_id else None
                 ),
                 message="",
                 silent=disable_notification or None,
