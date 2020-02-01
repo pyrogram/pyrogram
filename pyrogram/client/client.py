@@ -840,10 +840,16 @@ class Client(Methods, BaseClient):
             self.initialize()
             return self
 
-    def stop(self):
+    def stop(self, block: bool = True):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
+                you want to stop the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The stopped client itself.
@@ -864,16 +870,28 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.terminate()
-        self.disconnect()
+        def do_it():
+            self.terminate()
+            self.disconnect()
+
+        if block:
+            do_it()
+        else:
+            Thread(target=do_it).start()
 
         return self
 
-    def restart(self):
+    def restart(self, block: bool = True):
         """Restart the Client.
 
         This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
         a client using a single method.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
+                you want to restart the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The restarted client itself.
@@ -898,8 +916,14 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.stop()
-        self.start()
+        def do_it():
+            self.stop()
+            self.start()
+
+        if block:
+            do_it()
+        else:
+            Thread(target=do_it).start()
 
         return self
 
