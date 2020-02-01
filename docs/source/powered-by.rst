@@ -15,7 +15,7 @@ Projects Showcase
 `YTAudioBot <https://t.me/ytaudio>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| **A YouTube audio downloader on Telegram, serving over 200k MAU.**
+| **A YouTube audio downloader on Telegram, serving over 450k active users each month.**
 | --- by `Dan <https://t.me/haskell>`_
 
 - Main: https://t.me/ytaudiobot
