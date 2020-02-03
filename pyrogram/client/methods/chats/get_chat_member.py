@@ -60,7 +60,7 @@ class GetChatMember(BaseClient):
                 )
             )
 
-            members = r.full_chat.participants.participants
+            members = getattr(r.full_chat.participants, "participants", [])
             users = {i.id: i for i in r.users}
 
             for member in members:
