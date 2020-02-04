@@ -110,7 +110,7 @@ class SendPoll(BaseClient):
                         public_voters=not is_anonymous or None,
                         quiz=type == "quiz" or None
                     ),
-                    correct_answers=[bytes([correct_option_id])] if correct_option_id else None
+                    correct_answers=[bytes([correct_option_id])] if not correct_option_id == None else None
                 ),
                 message="",
                 silent=disable_notification or None,
