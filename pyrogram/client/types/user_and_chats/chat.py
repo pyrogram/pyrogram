@@ -724,4 +724,4 @@ class Chat(Object):
             ValueError: In case the chat_id belongs to a user.
         """
 
-        return self._client.export_invite_link(self.id)
+        return self._client.export_chat_invite_link(self.id)
