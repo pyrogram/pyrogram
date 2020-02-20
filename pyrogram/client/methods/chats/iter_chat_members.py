@@ -99,14 +99,6 @@ class IterChatMembers(BaseClient):
         limit = min(200, total)
         resolved_chat_id = self.resolve_peer(chat_id)
 
-        filter = (
-            Filters.RECENT
-            if (not query
-                and filter == Filters.ALL
-                and self.get_chat_members_count(chat_id) <= 10000)
-            else filter
-        )
-
         if filter not in QUERYABLE_FILTERS:
             queries = [""]
 
