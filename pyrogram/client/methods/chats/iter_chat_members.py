@@ -101,7 +101,9 @@ class IterChatMembers(BaseClient):
 
         filter = (
             Filters.RECENT
-            if self.get_chat_members_count(chat_id) <= 10000 and filter == Filters.ALL
+            if (not query
+                and filter == Filters.ALL
+                and self.get_chat_members_count(chat_id) <= 10000)
             else filter
         )
 
