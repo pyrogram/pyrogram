@@ -21,11 +21,14 @@ from typing import List, Match, Union
 
 import pyrogram
 from pyrogram.api import types
+from pyrogram.api.functions.messages import GetPollVotes
 from pyrogram.client.types.input_media import InputMedia
 from pyrogram.errors import MessageIdsEmpty
 from .contact import Contact
 from .location import Location
 from .message_entity import MessageEntity
+from .poll_option import PollOption
+from .poll_option_vote import PollOptionVote
 from ..messages_and_media.photo import Photo
 from ..object import Object
 from ..update import Update
@@ -3108,3 +3111,45 @@ class Message(Object, Update):
             message_id=self.message_id,
             disable_notification=disable_notification
         )
+
+    def get_poll_option_votes(self, option: PollOption):
+        """Get votes for attached public poll option
+
+        Example:
+            .. code-block:: python
+
+                message.get_poll_option_votes(message.poll.options[0])
+
+        Parameters:
+            option (``pyrogram.PollOption``):
+                The poll option you want to get votes list for.
+
+        Returns:
+            List of :obj:``PollOptionVote``
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            ``ValueError``: If the message doesn't contain a poll or attached poll is anonymous
+        """
+        if not self.poll:
+            raise ValueError('This message doesn\'t contain a poll')
+
+        if self.poll.is_anonymous:
+            raise ValueError('Poll in this message is anonymous')
+
+        resp = self._client.send(GetPollVotes(
+            peer=self._client.resolve_peer(self.chat.id),
+            id=self.message_id,
+            option=option.data,
+            limit=0x7FFFFFFF
+        ))
+        users = {i.id: i for i in resp.users}
+        result = []
+        for vote in resp.votes:
+            result.append(PollOptionVote(
+                client=self._client,
+                user=User._parse(self._client, users.get(vote.user_id)),
+                date=vote.date
+            ))
+
+        return result

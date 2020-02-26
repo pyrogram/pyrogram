@@ -27,6 +27,7 @@ from .message_entity import MessageEntity
 from .photo import Photo
 from .poll import Poll
 from .poll_option import PollOption
+from .poll_option_vote import PollOptionVote
 from .sticker import Sticker
 from .stripped_thumbnail import StrippedThumbnail
 from .thumbnail import Thumbnail
@@ -38,5 +39,6 @@ from .webpage import WebPage
 
 __all__ = [
     "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
-    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice", "WebPage"
+    "StrippedThumbnail", "Poll", "PollOption", "PollOptionVote", "Sticker", "Venue", "Video", "VideoNote", "Voice",
+    "WebPage"
 ]
