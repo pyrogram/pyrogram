@@ -21,7 +21,7 @@ from ..object import Object
 
 
 class PollOptionVote(Object):
-    """Contains information about one answer option in a poll.
+    """Contains vote info for an option in a public poll.
 
     Parameters:
         user (``pyrogram.User``):
