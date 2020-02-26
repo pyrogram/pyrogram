@@ -1101,12 +1101,12 @@ class Client(Methods, BaseClient):
 
                 # Example to stop transmission once the upload progress reaches 50%
                 # Useless in practice, but shows how to stop on command
-                def progress(client, current, total):
+                def progress(current, total, client):
                     if (current * 100 / total) > 50:
                         client.stop_transmission()
 
                 with app:
-                    app.send_document("me", "files.zip", progress=progress)
+                    app.send_document("me", "files.zip", progress=progress, progress_args=(app,))
         """
         raise Client.StopTransmission
 
