@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -64,7 +64,7 @@ class SendPhoto(BaseClient):
                 A valid file reference obtained by a recently fetched media message.
                 To be used in combination with a file id in case a file reference is needed.
 
-            caption (``bool``, *optional*):
+            caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):

@@ -18,42 +18,36 @@
 
 from typing import Union
 
-import pyrogram
-from pyrogram.api import functions
+from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient
 
 
-class RetractVote(BaseClient):
-    def retract_vote(
+class DeleteUserHistory(BaseClient):
+    def delete_user_history(
         self,
         chat_id: Union[int, str],
-        message_id: int
-    ) -> "pyrogram.Poll":
-        """Retract your vote in a poll.
+        user_id: Union[int, str],
+    ) -> bool:
+        """Delete all messages sent by a certain user in a supergroup.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved Messages) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (``int``):
-                Identifier of the original message with the poll.
+            user_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the user whose messages will be deleted.
 
         Returns:
-            :obj:`Poll`: On success, the poll with the retracted vote is returned.
-
-        Example:
-            .. code-block:: python
-
-                app.retract_vote(chat_id, message_id)
+            ``bool``: True on success, False otherwise.
         """
-        r = self.send(
-            functions.messages.SendVote(
-                peer=self.resolve_peer(chat_id),
-                msg_id=message_id,
-                options=[]
-            )
-        )
 
-        return pyrogram.Poll._parse(self, r.updates[0])
+        r = self.send(
+            functions.channels.DeleteUserHistory(
+                channel=self.resolve_peer(chat_id),
+                user_id=self.resolve_peer(user_id)
+                )
+            )
+
+        # Deleting messages you don't have right onto won't raise any error.
+        # Check for pts_count, which is 0 in case deletes fail.
+        return bool(r.pts_count)

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -420,6 +420,9 @@ class Session:
             if result is None:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
+                if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+                    data = data.query
+
                 RPCError.raise_it(result, type(data))
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(

@@ -102,18 +102,16 @@ errors such as ``[400 MEDIA_EMPTY]``.
 The only exception are stickers' file ids; you can use them across different accounts without any problem, like this
 one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
 
-Can I use Bot API's file_ids in Pyrogram?
------------------------------------------
+Can I use Bot API's file_id values in Pyrogram?
+-----------------------------------------------
 
-:strike:`Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.`
+Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.
 
-Starting from :doc:`Pyrogram v0.14.1 (Layer 100) <releases/v0.14.1>`, the file_id format of all photo-like objects has
-changed. Types affected are: :obj:`~pyrogram.Thumbnail`, :obj:`~pyrogram.ChatPhoto` and :obj:`~pyrogram.Photo`. Any
-other file id remains compatible with the Bot API.
+**However...**
 
 Telegram is slowly changing some server's internals and it's doing it in such a way that file ids are going to break
 inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
-losing the *persistence* feature.
+losing the *persistence* feature (see `What is a file_ref and why do I need it?`_).
 
 This change will most likely affect the official :doc:`Bot API <topics/mtproto-vs-botapi>` too (unless Telegram
 implements some workarounds server-side to keep backwards compatibility, which Pyrogram could in turn make use of) and
@@ -252,6 +250,31 @@ About the last point: in order for you to meet a user and thus communicate with 
 contact people using official apps. The answer is the same for Pyrogram too and involves normal usages such as searching
 for usernames, meeting them in a common group, have their phone contacts saved or getting a message mentioning them,
 either a forward or a mention in the message text.
+
+What is a file_ref and why do I need it?
+----------------------------------------
+
+.. note::
+
+    This FAQ is currently applicable to user accounts only. Bot accounts are still doing fine without a file_ref
+    (even though this can change anytime since it's a Telegram's internal server behaviour).
+
+Similarly to what happens with users and chats which need to first be encountered in order to interact with them, media
+messages also need to be "seen" recently before downloading or re-sending without uploading as new file.
+
+**What is it meant by "they need to be seen recently"?**
+
+That means you have to fetch the original media messages prior any action in order to get a valid and up to date value
+called file reference (file_ref) which, in pair with a file_id, enables you to interact with the media. This file_ref
+value won't last forever (usually 24h, but could expire anytime) and in case of errors you have to get a refreshed
+file_ref by re-fetching the original message (fetching forwarded media messages does also work).
+
+**Ok, but what is a file_ref actually needed for?**
+
+Nobody knows for sure, but is likely because that's the correct approach for handling tons of files uploaded by users in
+Telegram's cloud. Which means, as soon as the media message still exists, a valid file_ref can be obtained, otherwise,
+in case there's no more messages referencing a specific media, Telegram is able to free disk space by deleting old
+files.
 
 Code hangs when I stop, restart, add/remove_handler
 ---------------------------------------------------

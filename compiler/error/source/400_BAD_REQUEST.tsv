@@ -133,3 +133,12 @@ FILE_REFERENCE_EMPTY	The file reference is empty
 FILE_REFERENCE_INVALID	The file reference is invalid
 REPLY_MARKUP_TOO_LONG	The reply markup is too long
 SECONDS_INVALID	The seconds interval is invalid, for slow mode try with 0 (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h)
+QUIZ_MULTIPLE_INVALID	A quiz can't have multiple answers
+QUIZ_CORRECT_ANSWERS_EMPTY	The correct answers of the quiz are empty
+QUIZ_CORRECT_ANSWER_INVALID	The correct answers of the quiz are invalid
+QUIZ_CORRECT_ANSWERS_TOO_MUCH	The quiz contains too many correct answers
+OPTIONS_TOO_MUCH	The poll options are too many
+POLL_ANSWERS_INVALID	The poll answers are invalid
+POLL_QUESTION_INVALID	The poll question is invalid
+FRESH_CHANGE_ADMINS_FORBIDDEN	Recently logged-in users cannot change admins
+BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels

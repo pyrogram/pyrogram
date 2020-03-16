@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -98,12 +98,6 @@ class IterChatMembers(BaseClient):
         total = limit or (1 << 31) - 1
         limit = min(200, total)
         resolved_chat_id = self.resolve_peer(chat_id)
-
-        filter = (
-            Filters.RECENT
-            if self.get_chat_members_count(chat_id) <= 10000 and filter == Filters.ALL
-            else filter
-        )
 
         if filter not in QUERYABLE_FILTERS:
             queries = [""]

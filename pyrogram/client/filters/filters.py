@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -58,7 +58,7 @@ class Filters:
     """This class provides access to all library-defined Filters available in Pyrogram.
 
     The Filters listed here are currently intended to be used with the :obj:`MessageHandler` only.
-    At the moment, if you want to filter updates coming from different `Handlers <Handlers.html>`_ you have to create
+    At the moment, if you want to filter updates coming from different `Handlers <handlers.html>`_ you have to create
     your own filters with :meth:`~Filters.create` and use them in the same way.
     """
 

@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -79,6 +79,30 @@ class SetAdministratorTitle(BaseClient):
             admin_rights = r.admin_rights
         else:
             raise ValueError("Custom titles can only be applied to owners or administrators of supergroups")
+
+        if not admin_rights.change_info:
+            admin_rights.change_info = None
+
+        if not admin_rights.post_messages:
+            admin_rights.post_messages = None
+
+        if not admin_rights.edit_messages:
+            admin_rights.edit_messages = None
+
+        if not admin_rights.delete_messages:
+            admin_rights.delete_messages = None
+
+        if not admin_rights.ban_users:
+            admin_rights.ban_users = None
+
+        if not admin_rights.invite_users:
+            admin_rights.invite_users = None
+
+        if not admin_rights.pin_messages:
+            admin_rights.pin_messages = None
+
+        if not admin_rights.add_admins:
+            admin_rights.add_admins = None
 
         self.send(
             functions.channels.EditAdmin(

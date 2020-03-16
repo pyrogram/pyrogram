@@ -1,5 +1,5 @@
 # Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 # This file is part of Pyrogram.
 #
@@ -26,7 +26,7 @@ import threading
 import time
 from configparser import ConfigParser
 from hashlib import sha256, md5
-from importlib import import_module
+from importlib import import_module, reload
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
@@ -140,7 +140,7 @@ class Client(Methods, BaseClient):
 
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
-            This is an alternative way setup plugins if you don't want to use the *config.ini* file.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -328,17 +328,11 @@ class Client(Methods, BaseClient):
 
         self.is_initialized = True
 
-    def terminate(self, block: bool = True):
+    def terminate(self):
         """Terminate the client by shutting down workers.
 
         This method does the opposite of :meth:`~Client.initialize`.
         It will stop the dispatcher and shut down updates and download workers.
-
-        Parameters:
-            block (``bool``, *optional*):
-                Blocks the code execution until the client has been terminated. It is useful with ``block=False`` in
-                case you want to terminate the own client *within* an handler in order not to cause a deadlock.
-                Defaults to True.
 
         Raises:
             ConnectionError: In case you try to terminate a client that is already terminated.
@@ -351,7 +345,7 @@ class Client(Methods, BaseClient):
             log.warning("Takeout session {} finished".format(self.takeout_id))
 
         Syncer.remove(self)
-        self.dispatcher.stop(block)
+        self.dispatcher.stop()
 
         for _ in range(self.DOWNLOAD_WORKERS):
             self.download_queue.put(None)
@@ -853,7 +847,7 @@ class Client(Methods, BaseClient):
 
         Parameters:
             block (``bool``, *optional*):
-                Blocks the code execution until the client has been stopped. It is useful with ``block=False`` in case
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
                 you want to stop the own client *within* an handler in order not to cause a deadlock.
                 Defaults to True.
 
@@ -876,8 +870,14 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.terminate(block)
-        self.disconnect()
+        def do_it():
+            self.terminate()
+            self.disconnect()
+
+        if block:
+            do_it()
+        else:
+            Thread(target=do_it).start()
 
         return self
 
@@ -916,8 +916,14 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        self.stop(block)
-        self.start()
+        def do_it():
+            self.stop()
+            self.start()
+
+        if block:
+            do_it()
+        else:
+            Thread(target=do_it).start()
 
         return self
 
@@ -1003,7 +1009,7 @@ class Client(Methods, BaseClient):
         Client.idle()
         self.stop()
 
-    def add_handler(self, handler: Handler, group: int = 0, block: bool = True):
+    def add_handler(self, handler: Handler, group: int = 0):
         """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group will be used for a single update.
@@ -1017,11 +1023,6 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
-
-            block (``bool``, *optional*):
-                Blocks the code execution until the handler has been added. It is useful with ``block=False`` in case
-                you want to register a new handler *within* another handler in order not to cause a deadlock.
-                Defaults to True.
 
         Returns:
             ``tuple``: A tuple consisting of *(handler, group)*.
@@ -1044,11 +1045,11 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = handler.callback
         else:
-            self.dispatcher.add_handler(handler, group, block)
+            self.dispatcher.add_handler(handler, group)
 
         return handler, group
 
-    def remove_handler(self, handler: Handler, group: int = 0, block: bool = True):
+    def remove_handler(self, handler: Handler, group: int = 0):
         """Remove a previously-registered update handler.
 
         Make sure to provide the right group where the handler was added in. You can use the return value of the
@@ -1060,13 +1061,6 @@ class Client(Methods, BaseClient):
 
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
-
-            block (``bool``, *optional*):
-                Blocks the code execution until the handler has been removed. It is useful with ``block=False`` in case
-                you want to remove a previously registered handler *within* another handler in order not to cause a
-                deadlock.
-                Defaults to True.
-
 
         Example:
             .. code-block:: python
@@ -1089,7 +1083,7 @@ class Client(Methods, BaseClient):
         if isinstance(handler, DisconnectHandler):
             self.disconnect_handler = None
         else:
-            self.dispatcher.remove_handler(handler, group, block)
+            self.dispatcher.remove_handler(handler, group)
 
     def stop_transmission(self):
         """Stop downloading or uploading a file.
@@ -1107,12 +1101,12 @@ class Client(Methods, BaseClient):
 
                 # Example to stop transmission once the upload progress reaches 50%
                 # Useless in practice, but shows how to stop on command
-                def progress(client, current, total):
+                def progress(current, total, client):
                     if (current * 100 / total) > 50:
                         client.stop_transmission()
 
                 with app:
-                    app.send_document("me", "files.zip", progress=progress)
+                    app.send_document("me", "files.zip", progress=progress, progress_args=(app,))
         """
         raise Client.StopTransmission
 
@@ -1531,7 +1525,7 @@ class Client(Methods, BaseClient):
             if not include:
                 for path in sorted(Path(root).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
-                    module = import_module(module_path)
+                    module = reload(import_module(module_path))
 
                     for name in vars(module).keys():
                         # noinspection PyBroadException
@@ -1553,7 +1547,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = import_module(module_path)
+                        module = reload(import_module(module_path))
                     except ImportError:
                         log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
@@ -1591,7 +1585,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = import_module(module_path)
+                        module = reload(import_module(module_path))
                     except ImportError:
                         log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
