@@ -24,7 +24,7 @@ Install Pyrogram
 
     .. code-block:: text
 
-        $ pip3 install -U pyrogram[fast]
+        $ pip3 install -U pyrogram tgcrypto
 
 Bleeding Edge
 -------------
