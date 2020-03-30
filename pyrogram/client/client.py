@@ -216,7 +216,7 @@ class Client(Methods, BaseClient):
         else:
             raise ValueError("Unknown storage engine")
 
-        self.dispatcher = Dispatcher(self, workers)
+        self.dispatcher = Dispatcher(self, 0 if no_updates else workers)
 
     def __enter__(self):
         return self.start()
@@ -302,15 +302,16 @@ class Client(Methods, BaseClient):
 
         self.load_plugins()
 
-        for i in range(self.UPDATES_WORKERS):
-            self.updates_workers_list.append(
-                Thread(
-                    target=self.updates_worker,
-                    name="UpdatesWorker#{}".format(i + 1)
+        if not self.no_updates:
+            for i in range(self.UPDATES_WORKERS):
+                self.updates_workers_list.append(
+                    Thread(
+                        target=self.updates_worker,
+                        name="UpdatesWorker#{}".format(i + 1)
+                    )
                 )
-            )
 
-            self.updates_workers_list[-1].start()
+                self.updates_workers_list[-1].start()
 
         for i in range(self.DOWNLOAD_WORKERS):
             self.download_workers_list.append(
@@ -355,13 +356,14 @@ class Client(Methods, BaseClient):
 
         self.download_workers_list.clear()
 
-        for _ in range(self.UPDATES_WORKERS):
-            self.updates_queue.put(None)
+        if not self.no_updates:
+            for _ in range(self.UPDATES_WORKERS):
+                self.updates_queue.put(None)
 
-        for i in self.updates_workers_list:
-            i.join()
+            for i in self.updates_workers_list:
+                i.join()
 
-        self.updates_workers_list.clear()
+            self.updates_workers_list.clear()
 
         for i in self.media_sessions.values():
             i.stop()
