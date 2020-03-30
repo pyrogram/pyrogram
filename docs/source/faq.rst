@@ -91,6 +91,18 @@ Using MTProto is the only way to communicate with the actual Telegram servers, a
 identify applications by means of a unique key; the bot token identifies a bot as a user and replaces the user's phone
 number only.
 
+Can I use Webhooks?
+-------------------
+
+Lots of people ask this question because they are used to the bot API, but things are different in Pyrogram!
+
+There is no webhook in Pyrogram, simply because there is no HTTP involved, by default. However, a similar technique is
+being used to make receiving updates efficient.
+
+Pyrogram uses persistent connections via TCP sockets to interact with the server and instead of actively asking for
+updates every time (polling), Pyrogram will simply sit down and wait for the server to send updates by itself
+the very moment they are available (server push).
+
 Can I use the same file_id across different accounts?
 -----------------------------------------------------
 
