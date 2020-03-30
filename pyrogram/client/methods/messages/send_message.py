@@ -80,7 +80,7 @@ class SendMessage(BaseClient):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8,11,21-23,26-33
+                :emphasize-lines: 2,5,8,11,21-23,26-32
 
                 # Simple example
                 app.send_message("haskell", "Thanks for creating **Pyrogram**!")
