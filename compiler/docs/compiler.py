@@ -174,6 +174,7 @@ def pyrogram_api():
             vote_poll
             stop_poll
             retract_vote
+            send_dice
             download_media
         """,
         chats="""
@@ -334,6 +335,7 @@ def pyrogram_api():
             WebPage
             Poll
             PollOption
+            Dice
         """,
         bots_keyboard="""
         Bots & Keyboards
