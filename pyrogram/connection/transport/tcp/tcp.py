@@ -19,6 +19,7 @@
 import ipaddress
 import logging
 import socket
+import time
 
 try:
     import socks
@@ -72,6 +73,9 @@ class TCP(socks.socksocket):
         except OSError:
             pass
         finally:
+            # A tiny sleep placed here helps avoiding .recv(n) hanging until the timeout.
+            # This is a workaround that seems to fix the occasional delayed stop of a client.
+            time.sleep(0.001)
             super().close()
 
     def recvall(self, length: int) -> bytes or None:
