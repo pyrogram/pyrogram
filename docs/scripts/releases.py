@@ -24,7 +24,7 @@ import pypandoc
 import requests
 
 URL = "https://api.github.com/repos/pyrogram/pyrogram/releases"
-DEST = Path("source/releases")
+DEST = Path("../source/releases")
 INTRO = """
 Release Notes
 =============

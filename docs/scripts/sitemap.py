@@ -66,7 +66,7 @@ with open("sitemap.xml", "w") as f:
             urls.append((path, now(), *dirs[folder]))
 
 
-    search("source")
+    search("../source")
 
     urls.sort(key=lambda x: x[3], reverse=True)
 
