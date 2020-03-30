@@ -494,7 +494,7 @@ class Client(Methods, BaseClient):
                 New user first name.
 
             last_name (``str``, *optional*):
-                New user last name. Defaults to "" (empty string).
+                New user last name. Defaults to "" (empty string, no last name).
 
         Returns:
             :obj:`User`: On success, the new registered user is returned.
