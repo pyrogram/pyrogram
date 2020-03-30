@@ -91,6 +91,18 @@ Using MTProto is the only way to communicate with the actual Telegram servers, a
 identify applications by means of a unique key; the bot token identifies a bot as a user and replaces the user's phone
 number only.
 
+Can I use Webhooks?
+-------------------
+
+Lots of people ask this question because they are used to the bot API, but things are different in Pyrogram!
+
+There is no webhook in Pyrogram, simply because there is no HTTP involved, by default. However, a similar technique is
+being used to make receiving updates efficient.
+
+Pyrogram uses persistent connections via TCP sockets to interact with the server and instead of actively asking for
+updates every time (polling), Pyrogram will simply sit down and wait for the server to send updates by itself
+the very moment they are available (server push).
+
 Can I use the same file_id across different accounts?
 -----------------------------------------------------
 
@@ -102,18 +114,16 @@ errors such as ``[400 MEDIA_EMPTY]``.
 The only exception are stickers' file ids; you can use them across different accounts without any problem, like this
 one: ``CAADBAADyg4AAvLQYAEYD4F7vcZ43AI``.
 
-Can I use Bot API's file_ids in Pyrogram?
------------------------------------------
+Can I use Bot API's file_id values in Pyrogram?
+-----------------------------------------------
 
-:strike:`Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.`
+Definitely! All file ids you might have taken from the Bot API are 100% compatible and re-usable in Pyrogram.
 
-Starting from :doc:`Pyrogram v0.14.1 (Layer 100) <releases/v0.14.1>`, the file_id format of all photo-like objects has
-changed. Types affected are: :obj:`~pyrogram.Thumbnail`, :obj:`~pyrogram.ChatPhoto` and :obj:`~pyrogram.Photo`. Any
-other file id remains compatible with the Bot API.
+**However...**
 
 Telegram is slowly changing some server's internals and it's doing it in such a way that file ids are going to break
 inevitably. Not only this, but it seems that the new, hypothetical, file ids could also possibly expire at anytime, thus
-losing the *persistence* feature.
+losing the *persistence* feature (see `What is a file_ref and why do I need it?`_).
 
 This change will most likely affect the official :doc:`Bot API <topics/mtproto-vs-botapi>` too (unless Telegram
 implements some workarounds server-side to keep backwards compatibility, which Pyrogram could in turn make use of) and
@@ -253,6 +263,44 @@ contact people using official apps. The answer is the same for Pyrogram too and 
 for usernames, meeting them in a common group, have their phone contacts saved or getting a message mentioning them,
 either a forward or a mention in the message text.
 
+What is a file_ref and why do I need it?
+----------------------------------------
+
+.. note::
+
+    This FAQ is currently applicable to user accounts only. Bot accounts are still doing fine without a file_ref
+    (even though this can change anytime since it's a Telegram's internal server behaviour).
+
+Similarly to what happens with users and chats which need to first be encountered in order to interact with them, media
+messages also need to be "seen" recently before downloading or re-sending without uploading as new file.
+
+**What is it meant by "they need to be seen recently"?**
+
+That means you have to fetch the original media messages prior any action in order to get a valid and up to date value
+called file reference (file_ref) which, in pair with a file_id, enables you to interact with the media. This file_ref
+value won't last forever (usually 24h, but could expire anytime) and in case of errors you have to get a refreshed
+file_ref by re-fetching the original message (fetching forwarded media messages does also work).
+
+**Ok, but what is a file_ref actually needed for?**
+
+Nobody knows for sure, but is likely because that's the correct approach for handling tons of files uploaded by users in
+Telegram's cloud. Which means, as soon as the media message still exists, a valid file_ref can be obtained, otherwise,
+in case there's no more messages referencing a specific media, Telegram is able to free disk space by deleting old
+files.
+
+Code hangs when I stop, restart, add/remove_handler
+---------------------------------------------------
+
+You tried to ``.stop()``, ``.restart()``, ``.add_handler()`` or ``.remove_handler()`` *inside* a running handler, but
+that can't be done because the way Pyrogram deals with handlers would make it hang.
+
+When calling one of the methods above inside an event handler, Pyrogram needs to wait for all running handlers to finish
+in order to safely continue. In other words, since your handler is blocking the execution by waiting for the called
+method to finish and since Pyrogram needs to wait for your handler to finish, you are left with a deadlock.
+
+The solution to this problem is to pass ``block=False`` to such methods so that they return immediately and the actual
+code called asynchronously.
+
 UnicodeEncodeError: '<encoding>' codec can't encode …
 -----------------------------------------------------
 
@@ -286,6 +334,11 @@ your system or find and kill the process that is locking the database. On Unix b
 If you want to run multiple clients on the same account, you must authorize your account (either user or bot)
 from the beginning every time, and use different session names for each parallel client you are going to use.
 
+sqlite3.OperationalError: unable to open database file
+------------------------------------------------------
+
+Stackoverflow to the rescue: https://stackoverflow.com/questions/4636970
+
 My verification code expires immediately!
 -----------------------------------------
 
@@ -294,6 +347,25 @@ messages you send and if an active verification code is found it will immediatel
 
 The reason behind this is to protect unaware users from giving their account access to any potential scammer, but if you
 legitimately want to share your account(s) verification codes, consider scrambling them, e.g. ``12345`` → ``1-2-3-4-5``.
+
+How can avoid Flood Waits?
+--------------------------
+
+Long story short: make less requests, and remember that the API is designed to be used by official apps, by real people;
+anything above normal usage could be limited.
+
+This question is being asked quite a lot of times, but the bottom line is that nobody knows the exact limits and it's
+unlikely that such information will be ever disclosed, because otherwise people could easily circumvent them and defeat
+their whole purpose.
+
+Do also note that Telegram wants to be a safe and reliable place and that limits exist to protect itself from abuses.
+Having said that, here's some insights about limits:
+
+- They are tuned by Telegram based on real people usage and can change anytime.
+- Some limits are be applied to single sessions, some others apply to the whole account.
+- Limits vary based on methods and the arguments passed to methods. For example: log-ins are expensive and thus have
+  stricter limits; replying to a user command could cause a flood wait in case the user starts flooding, but
+  such limit will only be applied to that particular chat (i.e.: other users are not affected).
 
 My account has been deactivated/limited!
 ----------------------------------------

@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
 
@@ -104,9 +104,17 @@ class ChatMember(Object):
             Restricted only.
             True, if the user is allowed to send audios, documents, photos, videos, video notes and voice notes.
 
-        can_send_other_messages (``bool``, *optional*):
-            Restricted only.
-            True, if the user is allowed to send animations, games, stickers and use inline bots.
+        can_send_stickers (``bool``, *optional*):
+            True, if the user is allowed to send stickers, implies can_send_media_messages.
+
+        can_send_animations (``bool``, *optional*):
+            True, if the user is allowed to send animations (GIFs), implies can_send_media_messages.
+
+        can_send_games (``bool``, *optional*):
+            True, if the user is allowed to send games, implies can_send_media_messages.
+
+        can_use_inline_bots (``bool``, *optional*):
+            True, if the user is allowed to use inline bots, implies can_send_media_messages.
 
         can_add_web_page_previews (``bool``, *optional*):
             Restricted only.
@@ -145,7 +153,10 @@ class ChatMember(Object):
         # Restricted user permissions
         can_send_messages: bool = None,  # Text, contacts, locations and venues
         can_send_media_messages: bool = None,  # Audios, documents, photos, videos, video notes and voice notes
-        can_send_other_messages: bool = None,  # Animations (GIFs), games, stickers, inline bot results
+        can_send_stickers: bool = None,
+        can_send_animations: bool = None,
+        can_send_games: bool = None,
+        can_use_inline_bots: bool = None,
         can_add_web_page_previews: bool = None,
         can_send_polls: bool = None
     ):
@@ -173,7 +184,10 @@ class ChatMember(Object):
 
         self.can_send_messages = can_send_messages
         self.can_send_media_messages = can_send_media_messages
-        self.can_send_other_messages = can_send_other_messages
+        self.can_send_stickers = can_send_stickers
+        self.can_send_animations = can_send_animations
+        self.can_send_games = can_send_games
+        self.can_use_inline_bots = can_use_inline_bots
         self.can_add_web_page_previews = can_add_web_page_previews
         self.can_send_polls = can_send_polls
 
@@ -246,10 +260,10 @@ class ChatMember(Object):
                 restricted_by=pyrogram.User._parse(client, users[member.kicked_by]),
                 can_send_messages=not denied_permissions.send_messages,
                 can_send_media_messages=not denied_permissions.send_media,
-                can_send_other_messages=(
-                    not denied_permissions.send_stickers or not denied_permissions.send_gifs or
-                    not denied_permissions.send_games or not denied_permissions.send_inline
-                ),
+                can_send_stickers=not denied_permissions.send_stickers,
+                can_send_animations=not denied_permissions.send_gifs,
+                can_send_games=not denied_permissions.send_games,
+                can_use_inline_bots=not denied_permissions.send_inline,
                 can_add_web_page_previews=not denied_permissions.embed_links,
                 can_send_polls=not denied_permissions.send_polls,
                 can_change_info=not denied_permissions.change_info,

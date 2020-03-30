@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
 import logging
@@ -26,7 +26,7 @@ import tempfile
 import time
 from configparser import ConfigParser
 from hashlib import sha256, md5
-from importlib import import_module
+from importlib import import_module, reload
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from typing import Union, List
@@ -140,7 +140,7 @@ class Client(Methods, BaseClient):
 
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
-            This is an alternative way setup plugins if you don't want to use the *config.ini* file.
+            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
@@ -216,7 +216,7 @@ class Client(Methods, BaseClient):
         else:
             raise ValueError("Unknown storage engine")
 
-        self.dispatcher = Dispatcher(self, workers)
+        self.dispatcher = Dispatcher(self, 0 if no_updates else workers)
 
     def __enter__(self):
         return self.start()
@@ -309,9 +309,10 @@ class Client(Methods, BaseClient):
 
         self.load_plugins()
 
-        for _ in range(Client.UPDATES_WORKERS):
-            self.updates_worker_tasks.append(
-                asyncio.ensure_future(self.updates_worker())
+        if not self.no_updates:
+            for _ in range(Client.UPDATES_WORKERS):
+                self.updates_worker_tasks.append(
+                    asyncio.ensure_future(self.updates_worker())
             )
 
         logging.info("Started {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
@@ -357,13 +358,14 @@ class Client(Methods, BaseClient):
 
         logging.info("Stopped {} DownloadWorkerTasks".format(Client.DOWNLOAD_WORKERS))
 
-        for _ in range(Client.UPDATES_WORKERS):
-            self.updates_queue.put_nowait(None)
+        if not self.no_updates:
+            for _ in range(Client.UPDATES_WORKERS):
+                self.updates_queue.put_nowait(None)
 
-        for task in self.updates_worker_tasks:
-            await task
+            for task in self.updates_worker_tasks:
+                await task
 
-        self.updates_worker_tasks.clear()
+            self.updates_worker_tasks.clear()
 
         logging.info("Stopped {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
 
@@ -499,7 +501,7 @@ class Client(Methods, BaseClient):
                 New user first name.
 
             last_name (``str``, *optional*):
-                New user last name. Defaults to "" (empty string).
+                New user last name. Defaults to "" (empty string, no last name).
 
         Returns:
             :obj:`User`: On success, the new registered user is returned.
@@ -845,10 +847,16 @@ class Client(Methods, BaseClient):
             await self.initialize()
             return self
 
-    async def stop(self):
+    async def stop(self, block: bool = True):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
+                you want to stop the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The stopped client itself.
@@ -869,16 +877,28 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        await self.terminate()
-        await self.disconnect()
+        async def do_it():
+            await self.terminate()
+            await self.disconnect()
+
+        if block:
+            await do_it()
+        else:
+            asyncio.ensure_future(do_it())
 
         return self
 
-    async def restart(self):
+    async def restart(self, block: bool = True):
         """Restart the Client.
 
         This method will first call :meth:`~Client.stop` and then :meth:`~Client.start` in a row in order to restart
         a client using a single method.
+
+        Parameters:
+            block (``bool``, *optional*):
+                Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
+                you want to restart the own client *within* an handler in order not to cause a deadlock.
+                Defaults to True.
 
         Returns:
             :obj:`Client`: The restarted client itself.
@@ -903,8 +923,14 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
-        await self.stop()
-        await self.start()
+        async def do_it():
+            await self.stop()
+            await self.start()
+
+        if block:
+            await do_it()
+        else:
+            asyncio.ensure_future(do_it())
 
         return self
 
@@ -1091,12 +1117,12 @@ class Client(Methods, BaseClient):
 
                 # Example to stop transmission once the upload progress reaches 50%
                 # Useless in practice, but shows how to stop on command
-                def progress(client, current, total):
+                def progress(current, total, client):
                     if (current * 100 / total) > 50:
                         client.stop_transmission()
 
                 with app:
-                    app.send_document("me", "files.zip", progress=progress)
+                    app.send_document("me", "files.zip", progress=progress, progress_args=(app,))
         """
         raise Client.StopTransmission
 
@@ -1505,7 +1531,7 @@ class Client(Methods, BaseClient):
             if not include:
                 for path in sorted(Path(root).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
-                    module = import_module(module_path)
+                    module = reload(import_module(module_path))
 
                     for name in vars(module).keys():
                         # noinspection PyBroadException
@@ -1527,7 +1553,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = import_module(module_path)
+                        module = reload(import_module(module_path))
                     except ImportError:
                         log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
@@ -1565,7 +1591,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = import_module(module_path)
+                        module = reload(import_module(module_path))
                     except ImportError:
                         log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
