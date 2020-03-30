@@ -99,6 +99,12 @@ class DownloadMedia(BaseClient):
 
                 # Download from file id
                 app.download_media("CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+
+                # Keep track of the progress while downloading
+                def progress(current, total):
+                    print("{:.1f}%".format(current * 100 / total))
+
+                app.download_media(message, progress=progress)
         """
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
