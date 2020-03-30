@@ -334,6 +334,11 @@ your system or find and kill the process that is locking the database. On Unix b
 If you want to run multiple clients on the same account, you must authorize your account (either user or bot)
 from the beginning every time, and use different session names for each parallel client you are going to use.
 
+sqlite3.OperationalError: unable to open database file
+------------------------------------------------------
+
+Stackoverflow to the rescue: https://stackoverflow.com/questions/4636970
+
 My verification code expires immediately!
 -----------------------------------------
 
@@ -342,6 +347,25 @@ messages you send and if an active verification code is found it will immediatel
 
 The reason behind this is to protect unaware users from giving their account access to any potential scammer, but if you
 legitimately want to share your account(s) verification codes, consider scrambling them, e.g. ``12345`` → ``1-2-3-4-5``.
+
+How can avoid Flood Waits?
+--------------------------
+
+Long story short: make less requests, and remember that the API is designed to be used by official apps, by real people;
+anything above normal usage could be limited.
+
+This question is being asked quite a lot of times, but the bottom line is that nobody knows the exact limits and it's
+unlikely that such information will be ever disclosed, because otherwise people could easily circumvent them and defeat
+their whole purpose.
+
+Do also note that Telegram wants to be a safe and reliable place and that limits exist to protect itself from abuses.
+Having said that, here's some insights about limits:
+
+- They are tuned by Telegram based on real people usage and can change anytime.
+- Some limits are be applied to single sessions, some others apply to the whole account.
+- Limits vary based on methods and the arguments passed to methods. For example: log-ins are expensive and thus have
+  stricter limits; replying to a user command could cause a flood wait in case the user starts flooding, but
+  such limit will only be applied to that particular chat (i.e.: other users are not affected).
 
 My account has been deactivated/limited!
 ----------------------------------------
