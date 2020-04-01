@@ -9,6 +9,12 @@ This is a collection of remarkable projects made with Pyrogram.
 
     If you'd like to propose a project that's worth being listed here, feel free to open a `Feature Request`_.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Projects Showcase
 -----------------
 

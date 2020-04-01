@@ -8,6 +8,12 @@ Telegram API.
 In this section, you'll be shown the alternative way of communicating with Telegram using Pyrogram: the main "raw"
 Telegram API with its functions and types.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Telegram Raw API
 ----------------
 

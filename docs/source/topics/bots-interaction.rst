@@ -3,6 +3,12 @@ Bots Interaction
 
 Users can interact with other bots via plain text messages as well as inline queries.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Inline Bots
 -----------
 

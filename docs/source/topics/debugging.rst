@@ -4,6 +4,12 @@ Debugging
 When working with the API, chances are you'll stumble upon bugs, get stuck and start wondering how to continue. Nothing
 to actually worry about -- that's normal -- and luckily for you, Pyrogram provides some commodities to help you in this.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Caveman Debugging
 -----------------
 

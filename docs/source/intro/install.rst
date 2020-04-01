@@ -11,6 +11,12 @@ We recommend using the latest versions of both Python 3 and pip.
 
     Pyrogram supports **Python 3** only, starting from version 3.5.3. **PyPy** is supported too.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Install Pyrogram
 ----------------
 

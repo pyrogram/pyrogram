@@ -8,6 +8,12 @@ to control the behaviour of your application. Pyrogram errors all live inside th
 
     from pyrogram import errors
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 RPCError
 --------
 
@@ -94,6 +100,6 @@ The value is stored in the ``x`` attribute of the exception object:
     from pyrogram.errors import FloodWait
 
     try:
-        ...
+        ...  # Your code
     except FloodWait as e:
         time.sleep(e.x)  # Wait "x" seconds before continuing

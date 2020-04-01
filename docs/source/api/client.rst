@@ -17,6 +17,8 @@ This page is about the Client class, which exposes high-level methods for an eas
     with app:
         app.send_message("me", "Hi!")
 
+-----
+
 Details
 -------
 

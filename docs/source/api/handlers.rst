@@ -20,6 +20,12 @@ For a much more convenient way of registering callback functions have a look at 
 
     app.run()
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 .. currentmodule:: pyrogram
 
 Index

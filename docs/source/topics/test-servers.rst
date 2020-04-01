@@ -18,6 +18,12 @@ Telegram's test servers without hassle. All you need to do is start a new sessio
     Don't worry about your contacts and chats, they will be kept untouched inside the production environment;
     accounts authorized on test servers reside in a different, parallel instance of a Telegram database.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Test Mode in Official Apps
 --------------------------
 

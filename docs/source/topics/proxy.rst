@@ -4,6 +4,12 @@ SOCKS5 Proxy
 Pyrogram supports proxies with and without authentication. This feature allows Pyrogram to exchange data with Telegram
 through an intermediate SOCKS5 proxy server.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Usage
 -----
 

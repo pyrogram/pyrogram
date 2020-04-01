@@ -4,6 +4,12 @@ Authorization
 Once a :doc:`project is set up <../intro/setup>`, you will still have to follow a few steps before you can actually use Pyrogram to make
 API calls. This section provides all the information you need in order to authorize yourself as user or bot.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 User Authorization
 ------------------
 

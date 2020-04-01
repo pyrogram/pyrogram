@@ -6,6 +6,12 @@ already superior to, what is usually called, the official Bot API, in many respe
 why Pyrogram might be a better choice for your project by comparing the two APIs, but first, let's make it clear what
 actually is the MTProto and the Bot API.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 What is the MTProto API?
 ------------------------
 

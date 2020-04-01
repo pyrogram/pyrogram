@@ -7,6 +7,12 @@ Library specifically written in C for Pyrogram [1]_ as a Python extension.
 TgCrypto is a replacement for the much slower PyAES and implements the crypto algorithms Telegram requires, namely
 **AES-IGE 256 bit** (used in MTProto v2.0) and **AES-CTR 256 bit** (used for CDN encrypted files).
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Installation
 ------------
 

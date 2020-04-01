@@ -4,6 +4,12 @@ Handling Updates
 Calling :doc:`API methods <invoking>` sequentially is cool, but how to react when, for example, a new message arrives?
 This page deals with updates and how to handle such events in Pyrogram. Let's have a look at how they work.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Defining Updates
 ----------------
 

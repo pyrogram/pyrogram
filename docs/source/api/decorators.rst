@@ -24,6 +24,12 @@ functions.
 
     app.run()
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 .. currentmodule:: pyrogram
 
 Index

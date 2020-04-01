@@ -4,6 +4,12 @@ Project Setup
 We have just :doc:`installed Pyrogram <install>`. In this page we'll discuss what you need to do in order to set up a
 project with the library. Let's see how it's done.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 API Keys
 --------
 

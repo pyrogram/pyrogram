@@ -9,6 +9,12 @@ for example) you can use :meth:`~pyrogram.Filters.create`.
 
     At the moment, the built-in filters are intended to be used with the :class:`~pyrogram.MessageHandler` only.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Custom Filters
 --------------
 
