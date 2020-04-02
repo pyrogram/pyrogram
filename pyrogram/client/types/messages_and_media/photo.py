@@ -42,6 +42,9 @@ class Photo(Object):
         height (``int``):
             Photo height.
 
+        ttl_seconds (``int``):
+            Time-to-live seconds, for secret photos.
+
         file_size (``int``):
             File size.
 
@@ -60,6 +63,7 @@ class Photo(Object):
         file_ref: str,
         width: int,
         height: int,
+        ttl_seconds: int,
         file_size: int,
         date: int,
         thumbs: List[Thumbnail]
@@ -70,12 +74,15 @@ class Photo(Object):
         self.file_ref = file_ref
         self.width = width
         self.height = height
+        self.ttl_seconds = ttl_seconds
         self.file_size = file_size
         self.date = date
         self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, photo: types.Photo) -> "Photo":
+    def _parse(client, media_photo: types.MessageMediaPhoto) -> "Photo":
+        photo = media_photo.photo
+
         if isinstance(photo, types.Photo):
             big = photo.sizes[-1]
 
@@ -91,6 +98,7 @@ class Photo(Object):
                 file_ref=encode_file_ref(photo.file_reference),
                 width=big.w,
                 height=big.h,
+                ttl_seconds=media_photo.ttl_seconds,
                 file_size=big.size,
                 date=photo.date,
                 thumbs=Thumbnail._parse(client, photo),
