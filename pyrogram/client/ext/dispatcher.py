@@ -28,12 +28,14 @@ from pyrogram.api.types import (
     UpdateEditMessage, UpdateEditChannelMessage,
     UpdateDeleteMessages, UpdateDeleteChannelMessages,
     UpdateBotCallbackQuery, UpdateInlineBotCallbackQuery,
-    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll
+    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll,
+    UpdateBotInlineSend
 )
 from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
-    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
+    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler,
+    ChosenInlineResultHandler
 )
 
 log = logging.getLogger(__name__)
@@ -99,7 +101,11 @@ class Dispatcher:
                 lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
 
             (UpdateMessagePoll,):
-                lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler)
+                lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler),
+
+            (UpdateBotInlineSend,):
+                lambda upd, usr, cht: (pyrogram.ChosenInlineResult._parse(self.client, upd, usr),
+                                       ChosenInlineResultHandler)
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
