@@ -8,6 +8,11 @@ general. Some words may as well link to dedicated articles in case the topic is 
 
     If you think something interesting could be added here, feel free to propose it by opening a `Feature Request`_.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
 
 Terms
 -----

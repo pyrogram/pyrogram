@@ -35,7 +35,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
-    "sphinx_copybutton"
+    "sphinx_copybutton",
+    "sphinx_tabs.tabs"
 ]
 
 master_doc = "index"

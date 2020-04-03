@@ -13,7 +13,8 @@ This FAQ page provides answers to common questions about Pyrogram and, to some e
 .. contents:: Contents
     :backlinks: none
     :local:
-    :depth: 1
+
+-----
 
 What is Pyrogram?
 -----------------
@@ -366,6 +367,20 @@ Having said that, here's some insights about limits:
 - Limits vary based on methods and the arguments passed to methods. For example: log-ins are expensive and thus have
   stricter limits; replying to a user command could cause a flood wait in case the user starts flooding, but
   such limit will only be applied to that particular chat (i.e.: other users are not affected).
+- You can catch Flood Wait exceptions in your code and wait the required seconds before continuing, this way:
+
+  .. code-block:: python
+
+      import time
+      from pyrogram.errors import FloodWait
+
+      try:
+          ...  # Your code
+      except FloodWait as e:
+          time.sleep(e.x)  # Wait "x" seconds before continuing
+
+
+  More info about error handling can be found `here <start/errors>`_.
 
 My account has been deactivated/limited!
 ----------------------------------------

@@ -5,6 +5,12 @@ Serializing means converting a Pyrogram object, which exists as Python class ins
 easily shared and stored anywhere. Pyrogram provides two formats for serializing its objects: one good looking for
 humans and another more compact for machines that is able to recover the original structures.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 For Humans - str(obj)
 ---------------------
 

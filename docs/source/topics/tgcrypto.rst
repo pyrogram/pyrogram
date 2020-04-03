@@ -21,10 +21,23 @@ The reason about being an optional package is that TgCrypto requires some extra 
 The errors you receive when trying to install TgCrypto are system dependent, but also descriptive enough to understand
 what you should do next:
 
--  **Windows**: Install `Visual C++ 2015 Build Tools <https://www.microsoft.com/en-us/download/details.aspx?id=48159>`_.
--  **macOS**: A pop-up will automatically ask you to install the command line developer tools.
--  **Linux**: Install a proper C compiler (``gcc``, ``clang``) and the Python header files (``python3-dev``).
--  **Termux (Android)**: Install ``clang`` package.
+.. tabs::
+
+    .. tab:: Windows
+
+        Install `Visual C++ 2015 Build Tools <https://www.microsoft.com/en-us/download/details.aspx?id=48159>`_.
+
+    .. tab:: macOS
+
+        A pop-up will automatically ask you to install the command line developer tools.
+
+    .. tab:: Linux
+
+        Install a proper C compiler (``gcc``, ``clang``) and the Python header files (``python3-dev``).
+
+    .. tab:: Termux
+
+        Install ``clang`` package.
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 

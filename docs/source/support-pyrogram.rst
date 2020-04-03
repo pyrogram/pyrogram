@@ -9,6 +9,8 @@ found it to be useful, give Pyrogram a `Star on GitHub`_. Your appreciation mean
     <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
     <br><br>
 
+-----
+
 Donate
 ------
 

@@ -26,12 +26,14 @@ from pyrogram.api.types import (
     UpdateEditMessage, UpdateEditChannelMessage,
     UpdateDeleteMessages, UpdateDeleteChannelMessages,
     UpdateBotCallbackQuery, UpdateInlineBotCallbackQuery,
-    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll
+    UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll,
+    UpdateBotInlineSend
 )
 from . import utils
 from ..handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
-    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler
+    UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler,
+    ChosenInlineResultHandler
 )
 
 log = logging.getLogger(__name__)
@@ -92,13 +94,17 @@ class Dispatcher:
         async def poll_parser(update, users, chats):
             return pyrogram.Poll._parse_update(self.client, update), PollHandler
 
+        async def chosen_inline_result_parser(update, users, chats):
+            return pyrogram.ChosenInlineResult._parse(self.client, update, users), ChosenInlineResultHandler
+
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
             Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
             Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
             (UpdateUserStatus,): user_status_parser,
             (UpdateBotInlineQuery,): inline_query_parser,
-            (UpdateMessagePoll,): poll_parser
+            (UpdateMessagePoll,): poll_parser,
+            (UpdateBotInlineSend,): chosen_inline_result_parser
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

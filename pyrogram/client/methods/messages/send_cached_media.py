@@ -61,7 +61,7 @@ class SendCachedMedia(BaseClient):
                 A valid file reference obtained by a recently fetched media message.
                 To be used in combination with a file id in case a file reference is needed.
 
-            caption (``bool``, *optional*):
+            caption (``str``, *optional*):
                 Media caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):

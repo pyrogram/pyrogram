@@ -366,6 +366,7 @@ def pyrogram_api():
             InlineQueryResultArticle
             InlineQueryResultPhoto
             InlineQueryResultAnimation
+            ChosenInlineResult
         """,
         input_message_content="""
         InputMessageContent

@@ -9,6 +9,12 @@ different Pyrogram applications with **minimal boilerplate code**.
 
     Smart Plugins are completely optional and disabled by default.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Introduction
 ------------
 

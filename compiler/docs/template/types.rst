@@ -13,8 +13,13 @@ This page is about Pyrogram types. All types listed here are accessible through 
     **Optional** fields may not exist when irrelevant -- i.e.: they will contain the value of ``None`` and aren't shown
     when, for example, using ``print()``.
 
-.. currentmodule:: pyrogram
+.. contents:: Contents
+    :backlinks: none
+    :local:
 
+-----
+
+.. currentmodule:: pyrogram
 
 Users & Chats
 -------------

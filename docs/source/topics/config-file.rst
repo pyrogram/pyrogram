@@ -4,6 +4,12 @@ Configuration File
 As already mentioned in previous pages, Pyrogram can be configured by the use of an INI file.
 This page explains how this file is structured, how to use it and why.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Introduction
 ------------
 

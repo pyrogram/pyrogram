@@ -8,6 +8,12 @@ Since there's no built-in task scheduler in Pyrogram, this page will only show e
 with the main Python schedule libraries such as ``schedule`` and ``apscheduler``. For more detailed information, you can
 visit and learn from each library documentation.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Using ``schedule``
 ------------------
 
