@@ -523,7 +523,7 @@ class Message(Object, Update):
 
             if media:
                 if isinstance(media, types.MessageMediaPhoto):
-                    photo = Photo._parse(client, media)
+                    photo = Photo._parse(client, media.photo, media.ttl_seconds)
                 elif isinstance(media, types.MessageMediaGeo):
                     location = Location._parse(client, media.geo)
                 elif isinstance(media, types.MessageMediaContact):
