@@ -449,6 +449,10 @@ def pyrogram_api():
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
+            Chat.get_member
+            Chat.get_members
+            Chat.iter_members
+            Chat.add_members
             Chat.join
             Chat.leave
         """,
