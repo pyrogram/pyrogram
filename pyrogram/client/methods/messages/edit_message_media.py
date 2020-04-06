@@ -92,7 +92,7 @@ class EditMessageMedia(BaseClient):
                     id=types.InputPhoto(
                         id=media.photo.id,
                         access_hash=media.photo.access_hash,
-                        file_reference=b""
+                        file_reference=media.photo.file_reference
                     )
                 )
             elif media.media.startswith("http"):
@@ -129,7 +129,7 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
             elif media.media.startswith("http"):
