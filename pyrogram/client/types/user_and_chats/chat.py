@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Generator, Optional
 
 import pyrogram
 from pyrogram.api import types
@@ -566,15 +566,8 @@ class Chat(Object):
         return self._client.restrict_chat_member(
             chat_id=self.id,
             user_id=user_id,
+            permissions=permissions,
             until_date=until_date,
-            can_send_messages=permissions.can_send_messages,
-            can_send_media_messages=permissions.can_send_media_messages,
-            can_send_other_messages=permissions.can_send_other_messages,
-            can_add_web_page_previews=permissions.can_add_web_page_previews,
-            can_send_polls=permissions.can_send_polls,
-            can_change_info=permissions.can_change_info,
-            can_invite_users=permissions.can_invite_users,
-            can_pin_messages=permissions.can_pin_messages
         )
 
     def promote_member(
@@ -725,3 +718,125 @@ class Chat(Object):
         """
 
         return self._client.export_chat_invite_link(self.id)
+
+    def get_member(
+        self,
+        user_id: Union[int, str],
+    ) -> "pyrogram.ChatMember":
+        """Bound method *get_member* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.get_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.get_member(user_id)
+
+        Returns:
+            :obj:`ChatMember`: On success, a chat member is returned.
+        """
+
+        return self._client.get_chat_member(
+            self.id,
+            user_id=user_id
+        )
+
+    def get_members(
+        self,
+        offset: int = 0,
+        limit: int = 200,
+        query: str = "",
+        filter: str = "all"
+    ) -> List["pyrogram.ChatMember"]:
+        """Bound method *get_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.get_chat_members(chat_id)
+
+        Example:
+            .. code-block:: python
+
+                # Get first 200 recent members
+                chat.get_members()
+
+        Returns:
+            List of :obj:`ChatMember`: On success, a list of chat members is returned.
+        """
+
+        return self._client.get_chat_members(
+            self.id,
+            offset=offset,
+            limit=limit,
+            query=query,
+            filter=filter
+        )
+
+    def iter_members(
+        self,
+        limit: int = 0,
+        query: str = "",
+        filter: str = "all"
+    ) -> Optional[Generator["pyrogram.ChatMember", None, None]]:
+        """Bound method *iter_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            for member in client.iter_chat_members(chat_id):
+                print(member.user.first_name)
+
+        Example:
+            .. code-block:: python
+
+                for member in chat.iter_members():
+                    print(member.user.first_name)
+
+        Returns:
+            ``Generator``: A generator yielding :obj:`ChatMember` objects.
+        """
+
+        return self._client.iter_chat_members(
+            self.id,
+            limit=limit,
+            query=query,
+            filter=filter
+        )
+
+    def add_members(
+        self,
+        user_ids: Union[Union[int, str], List[Union[int, str]]],
+        forward_limit: int = 100
+    ) -> bool:
+        """Bound method *add_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.add_chat_members(chat_id, user_id)
+
+        Example:
+            .. code-block:: python
+
+                chat.add_members(user_id)
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return self._client.add_chat_members(
+            self.id,
+            user_ids=user_ids,
+            forward_limit=forward_limit
+        )
