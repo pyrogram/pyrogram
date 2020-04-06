@@ -781,7 +781,7 @@ class Chat(Object):
             filter=filter
         )
 
-    async def iter_members(
+    def iter_members(
         self,
         limit: int = 0,
         query: str = "",
@@ -806,7 +806,7 @@ class Chat(Object):
             ``Generator``: A generator yielding :obj:`ChatMember` objects.
         """
 
-        return await self._client.iter_chat_members(
+        return self._client.iter_chat_members(
             self.id,
             limit=limit,
             query=query,
