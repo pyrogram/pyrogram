@@ -566,15 +566,8 @@ class Chat(Object):
         return await self._client.restrict_chat_member(
             chat_id=self.id,
             user_id=user_id,
+            permissions=permissions,
             until_date=until_date,
-            can_send_messages=permissions.can_send_messages,
-            can_send_media_messages=permissions.can_send_media_messages,
-            can_send_other_messages=permissions.can_send_other_messages,
-            can_add_web_page_previews=permissions.can_add_web_page_previews,
-            can_send_polls=permissions.can_send_polls,
-            can_change_info=permissions.can_change_info,
-            can_invite_users=permissions.can_invite_users,
-            can_pin_messages=permissions.can_pin_messages
         )
 
     async def promote_member(
@@ -725,7 +718,7 @@ class Chat(Object):
         """
 
         return await self._client.export_chat_invite_link(self.id)
-        
+
     async def get_member(
         self,
         user_id: Union[int, str],
@@ -749,18 +742,18 @@ class Chat(Object):
         Returns:
             :obj:`ChatMember`: On success, a chat member is returned.
         """
-        
+
         return await self._client.get_chat_member(
             self.id,
             user_id=user_id
         )
-        
+
     async def get_members(
         self,
         offset: int = 0,
         limit: int = 200,
         query: str = "",
-        filter: str = Filters.ALL
+        filter: str = "all"
     ) -> List["pyrogram.ChatMember"]:
         """Bound method *get_members* of :obj:`Chat`.
 
@@ -772,13 +765,14 @@ class Chat(Object):
 
         Example:
             .. code-block:: python
+
                 # Get first 200 recent members
                 chat.get_members()
 
         Returns:
             List of :obj:`ChatMember`: On success, a list of chat members is returned.
         """
-        
+
         return await self._client.get_chat_members(
             self.id,
             offset=offset,
@@ -786,12 +780,12 @@ class Chat(Object):
             query=query,
             filter=filter
         )
-        
+
     async def iter_members(
         self,
         limit: int = 0,
         query: str = "",
-        filter: str = Filters.ALL
+        filter: str = "all"
     ) -> Optional[Generator["pyrogram.ChatMember", None, None]]:
         """Bound method *iter_members* of :obj:`Chat`.
 
@@ -811,14 +805,14 @@ class Chat(Object):
         Returns:
             ``Generator``: A generator yielding :obj:`ChatMember` objects.
         """
-        
-        return self._client.iter_chat_members(
+
+        return await self._client.iter_chat_members(
             self.id,
             limit=limit,
             query=query,
             filter=filter
         )
-        
+
     async def add_members(
         self,
         user_ids: Union[Union[int, str], List[Union[int, str]]],

@@ -80,9 +80,7 @@ class Photo(Object):
         self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, media_photo: types.MessageMediaPhoto) -> "Photo":
-        photo = media_photo.photo
-
+    def _parse(client, photo: types.Photo, ttl_seconds: int = None) -> "Photo":
         if isinstance(photo, types.Photo):
             big = photo.sizes[-1]
 
@@ -98,7 +96,7 @@ class Photo(Object):
                 file_ref=encode_file_ref(photo.file_reference),
                 width=big.w,
                 height=big.h,
-                ttl_seconds=media_photo.ttl_seconds,
+                ttl_seconds=ttl_seconds,
                 file_size=big.size,
                 date=photo.date,
                 thumbs=Thumbnail._parse(client, photo),
