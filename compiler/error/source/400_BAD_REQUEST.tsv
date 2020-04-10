@@ -142,3 +142,4 @@ POLL_ANSWERS_INVALID	The poll answers are invalid
 POLL_QUESTION_INVALID	The poll question is invalid
 FRESH_CHANGE_ADMINS_FORBIDDEN	Recently logged-in users cannot change admins
 BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels
+INPUT_FILTER_INVALID	The filter is invalid for this query
