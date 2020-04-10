@@ -52,6 +52,7 @@ from .send_voice import SendVoice
 from .stop_poll import StopPoll
 from .vote_poll import VotePoll
 from .send_dice import SendDice
+from .search_messages import SearchMessages
 
 
 class Messages(
@@ -90,6 +91,7 @@ class Messages(
     EditInlineCaption,
     EditInlineMedia,
     EditInlineReplyMarkup,
-    SendDice
+    SendDice,
+    SearchMessages
 ):
     pass
