@@ -151,7 +151,10 @@ class SendMessage(BaseClient):
                 text=message,
                 date=r.date,
                 outgoing=r.out,
-                entities=entities,
+                entities=[
+                    pyrogram.MessageEntity._parse(None, entity, {})
+                    for entity in entities
+                ],
                 client=self
             )
 
