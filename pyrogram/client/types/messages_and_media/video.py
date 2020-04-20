@@ -51,6 +51,9 @@ class Video(Object):
         mime_type (``str``, *optional*):
             Mime type of a file as defined by sender.
 
+        ttl_seconds (``int``):
+            Time-to-live seconds, for secret photos.
+
         supports_streaming (``bool``, *optional*):
             True, if the video was uploaded with streaming support.
 
@@ -75,6 +78,7 @@ class Video(Object):
         duration: int,
         file_name: str = None,
         mime_type: str = None,
+        ttl_seconds: int = None,
         supports_streaming: bool = None,
         file_size: int = None,
         date: int = None,
@@ -89,6 +93,7 @@ class Video(Object):
         self.duration = duration
         self.file_name = file_name
         self.mime_type = mime_type
+        self.ttl_seconds = ttl_seconds
         self.supports_streaming = supports_streaming
         self.file_size = file_size
         self.date = date
@@ -99,7 +104,8 @@ class Video(Object):
         client,
         video: types.Document,
         video_attributes: types.DocumentAttributeVideo,
-        file_name: str
+        file_name: str,
+        ttl_seconds: int = None
     ) -> "Video":
         return Video(
             file_id=encode_file_id(
@@ -117,6 +123,7 @@ class Video(Object):
             duration=video_attributes.duration,
             file_name=file_name,
             mime_type=video.mime_type,
+            ttl_seconds=ttl_seconds,
             supports_streaming=video_attributes.supports_streaming,
             file_size=video.size,
             date=video.date,

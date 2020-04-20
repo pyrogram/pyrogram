@@ -561,7 +561,8 @@ class Message(Object, Update):
                             if video_attributes.round_message:
                                 video_note = pyrogram.VideoNote._parse(client, doc, video_attributes)
                             else:
-                                video = pyrogram.Video._parse(client, doc, video_attributes, file_name)
+                                video = pyrogram.Video._parse(client, doc, video_attributes, file_name,
+                                                              media.ttl_seconds)
                         elif types.DocumentAttributeSticker in attributes:
                             sticker = pyrogram.Sticker._parse(
                                 client, doc,
