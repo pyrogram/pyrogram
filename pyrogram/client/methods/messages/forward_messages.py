@@ -126,7 +126,7 @@ class ForwardMessages(BaseClient):
             chats = {i.id: i for i in r.chats}
 
             for i in r.updates:
-                if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
+                if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
                     forwarded_messages.append(
                         pyrogram.Message._parse(
                             self, i.message,
