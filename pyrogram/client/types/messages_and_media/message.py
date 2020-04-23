@@ -2634,7 +2634,8 @@ class Message(Object, Update):
         chat_id: int or str,
         disable_notification: bool = None,
         as_copy: bool = False,
-        remove_caption: bool = False
+        remove_caption: bool = False,
+        schedule_date: int = None
     ) -> "Message":
         """Bound method *forward* of :obj:`Message`.
 
@@ -2672,6 +2673,9 @@ class Message(Object, Update):
                 message. Has no effect if *as_copy* is not enabled.
                 Defaults to False.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
+
         Returns:
             On success, the forwarded Message is returned.
 
@@ -2691,7 +2695,8 @@ class Message(Object, Update):
                     text=self.text.html,
                     parse_mode="html",
                     disable_web_page_preview=not self.web_page,
-                    disable_notification=disable_notification
+                    disable_notification=disable_notification,
+                    schedule_date=schedule_date
                 )
             elif self.media:
                 caption = self.caption.html if self.caption and not remove_caption else ""
@@ -2699,7 +2704,8 @@ class Message(Object, Update):
                 send_media = partial(
                     self._client.send_cached_media,
                     chat_id=chat_id,
-                    disable_notification=disable_notification
+                    disable_notification=disable_notification,
+                    schedule_date=schedule_date
                 )
 
                 if self.photo:
@@ -2733,14 +2739,16 @@ class Message(Object, Update):
                         first_name=self.contact.first_name,
                         last_name=self.contact.last_name,
                         vcard=self.contact.vcard,
-                        disable_notification=disable_notification
+                        disable_notification=disable_notification,
+                        schedule_date=schedule_date
                     )
                 elif self.location:
                     return self._client.send_location(
                         chat_id,
                         latitude=self.location.latitude,
                         longitude=self.location.longitude,
-                        disable_notification=disable_notification
+                        disable_notification=disable_notification,
+                        schedule_date=schedule_date
                     )
                 elif self.venue:
                     return self._client.send_venue(
@@ -2751,14 +2759,16 @@ class Message(Object, Update):
                         address=self.venue.address,
                         foursquare_id=self.venue.foursquare_id,
                         foursquare_type=self.venue.foursquare_type,
-                        disable_notification=disable_notification
+                        disable_notification=disable_notification,
+                        schedule_date=schedule_date
                     )
                 elif self.poll:
                     return self._client.send_poll(
                         chat_id,
                         question=self.poll.question,
                         options=[opt.text for opt in self.poll.options],
-                        disable_notification=disable_notification
+                        disable_notification=disable_notification,
+                        schedule_date=schedule_date
                     )
                 elif self.game:
                     return self._client.send_game(
@@ -2780,7 +2790,8 @@ class Message(Object, Update):
                 chat_id=chat_id,
                 from_chat_id=self.chat.id,
                 message_ids=self.message_id,
-                disable_notification=disable_notification
+                disable_notification=disable_notification,
+                schedule_date=schedule_date
             )
 
     def delete(self, revoke: bool = True):
