@@ -27,6 +27,7 @@ class SendDice(BaseClient):
     def send_dice(
         self,
         chat_id: Union[int, str],
+        emoji: str = "🎲",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -44,6 +45,10 @@ class SendDice(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            emoji (``str``, *optional*):
+                Emoji on which the dice throw animation is based. Currently, must be one of "🎲" or "🎯".
+                Defauts to "🎲".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -65,13 +70,17 @@ class SendDice(BaseClient):
         Example:
             .. code-block:: python
 
+                # Send a dice
                 app.send_dice("pyrogramlounge")
+
+                # Send a dart
+                app.send_dice("pyrogramlounge", "🎯")
         """
 
         r = self.send(
             functions.messages.SendMedia(
                 peer=self.resolve_peer(chat_id),
-                media=types.InputMediaDice(),
+                media=types.InputMediaDice(emoticon=emoji),
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
