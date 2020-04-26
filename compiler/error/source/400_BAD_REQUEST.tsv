@@ -143,3 +143,5 @@ POLL_QUESTION_INVALID	The poll question is invalid
 FRESH_CHANGE_ADMINS_FORBIDDEN	Recently logged-in users cannot change admins
 BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels
 INPUT_FILTER_INVALID	The filter is invalid for this query
+EMOTICON_EMPTY	The emoticon parameter is empty
+EMOTICON_INVALID	The emoticon parameter is invalid

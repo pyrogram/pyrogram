@@ -60,6 +60,9 @@ class Video(Object):
         date (``int``, *optional*):
             Date the video was sent in Unix time.
 
+        ttl_seconds (``int``. *optional*):
+            Time-to-live seconds, for secret photos.
+
         thumbs (List of :obj:`Thumbnail`, *optional*):
             Video thumbnails.
     """
@@ -78,6 +81,7 @@ class Video(Object):
         supports_streaming: bool = None,
         file_size: int = None,
         date: int = None,
+        ttl_seconds: int = None,
         thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
@@ -92,6 +96,7 @@ class Video(Object):
         self.supports_streaming = supports_streaming
         self.file_size = file_size
         self.date = date
+        self.ttl_seconds = ttl_seconds
         self.thumbs = thumbs
 
     @staticmethod
@@ -99,7 +104,8 @@ class Video(Object):
         client,
         video: types.Document,
         video_attributes: types.DocumentAttributeVideo,
-        file_name: str
+        file_name: str,
+        ttl_seconds: int = None
     ) -> "Video":
         return Video(
             file_id=encode_file_id(
@@ -120,6 +126,7 @@ class Video(Object):
             supports_streaming=video_attributes.supports_streaming,
             file_size=video.size,
             date=video.date,
+            ttl_seconds=ttl_seconds,
             thumbs=Thumbnail._parse(client, video),
             client=client
         )
