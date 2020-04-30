@@ -307,7 +307,7 @@ class Message(Object, Update):
         contact: "pyrogram.Contact" = None,
         location: "pyrogram.Location" = None,
         venue: "pyrogram.Venue" = None,
-        web_page: bool = None,
+        web_page: "pyrogram.WebPage" = None,
         poll: "pyrogram.Poll" = None,
         dice: "pyrogram.Dice" = None,
         new_chat_members: List[User] = None,
