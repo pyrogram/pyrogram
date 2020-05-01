@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetSlowMode(BaseClient):
-    def set_slow_mode(
+    async def set_slow_mode(
         self,
         chat_id: Union[int, str],
         seconds: int,
@@ -47,9 +47,9 @@ class SetSlowMode(BaseClient):
                 app.set_slow_mode("pyrogramchat", 60)
         """
 
-        self.send(
+        await self.send(
             functions.channels.ToggleSlowMode(
-                channel=self.resolve_peer(chat_id),
+                channel=await self.resolve_peer(chat_id),
                 seconds=seconds
             )
         )
