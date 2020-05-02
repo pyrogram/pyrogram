@@ -52,6 +52,8 @@ napoleon_use_rtype = False
 
 pygments_style = "friendly"
 
+copybutton_prompt_text = "$ "
+
 html_title = "Pyrogram Documentation"
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
