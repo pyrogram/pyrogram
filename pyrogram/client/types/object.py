@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
+import typing
 from collections import OrderedDict
 from datetime import datetime
 from json import dumps
@@ -48,7 +48,9 @@ class Object(metaclass=Meta):
         if isinstance(obj, bytes):
             return repr(obj)
 
-        if isinstance(obj, re.Match):
+        # https://t.me/pyrogramchat/167281
+        # Instead of re.Match, which breaks for python <=3.6
+        if isinstance(obj, typing.Match):
             return repr(obj)
 
         return OrderedDict(
