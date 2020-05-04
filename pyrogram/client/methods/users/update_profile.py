@@ -50,13 +50,13 @@ class UpdateProfile(BaseClient):
             .. code-block:: python
                 
                 # Update your first name only
-                app.update_bio(first_name="Pyrogram")
+                app.update_profile(first_name="Pyrogram")
                 
                 # Update first name and bio
-                app.update_bio(first_name="Pyrogram", bio="https://docs.pyrogram.org/")
+                app.update_profile(first_name="Pyrogram", bio="https://docs.pyrogram.org/")
                 
                 # Remove the last name
-                app.update_bio(last_name="")
+                app.update_profile(last_name="")
         """
 
         return bool(
