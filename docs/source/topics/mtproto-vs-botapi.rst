@@ -56,7 +56,7 @@ HTTP Bot API. Using Pyrogram you can:
     :columns: 1
 
     - :guilabel:`+` **Upload & download any file, up to 1500 MB each (~1.5 GB)**
-    - :guilabel:`--` The Bot API allows uploads and downloads of files only up to 50 MB / 20 MB in size (respectively).
+    - :guilabel:`--` The Bot API only allows uploads and downloads of files up to 20 MB.
 
 .. hlist::
     :columns: 1
