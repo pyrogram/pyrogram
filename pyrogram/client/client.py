@@ -201,7 +201,6 @@ class Client(Methods, BaseClient):
         self.workers = workers
         self.workdir = Path(workdir)
         self.config_file = Path(config_file).resolve()
-        print('---' + self.config_file + '---')
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
