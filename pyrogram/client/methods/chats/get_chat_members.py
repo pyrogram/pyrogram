@@ -153,7 +153,7 @@ class GetChatMembers(BaseClient):
 
                     return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
                 except FloodWait as e:
-                    log.warning("Sleeping for {}s".format(e.x))
+                    log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
                     time.sleep(e.x)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
