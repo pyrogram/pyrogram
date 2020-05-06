@@ -116,7 +116,7 @@ class GetMessages(BaseClient):
             try:
                 r = self.send(rpc)
             except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
+                log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
                 time.sleep(e.x)
             else:
                 break
