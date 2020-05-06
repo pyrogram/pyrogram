@@ -200,7 +200,8 @@ class Client(Methods, BaseClient):
         self.force_sms = force_sms
         self.workers = workers
         self.workdir = Path(workdir)
-        self.config_file = Path(config_file)
+        self.config_file = Path(config_file).resolve()
+        print('---' + self.config_file + '---')
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout

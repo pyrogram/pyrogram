@@ -56,7 +56,7 @@ class BaseClient:
     OFFLINE_SLEEP = 900
     WORKERS = 4
     WORKDIR = PARENT_DIR
-    CONFIG_FILE = PARENT_DIR / "config.ini"
+    CONFIG_FILE = "config.ini"
 
     PARSE_MODES = ["combined", "markdown", "md", "html", None]
 
