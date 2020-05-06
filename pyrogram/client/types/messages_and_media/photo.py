@@ -42,14 +42,14 @@ class Photo(Object):
         height (``int``):
             Photo height.
 
-        ttl_seconds (``int``):
-            Time-to-live seconds, for secret photos.
-
         file_size (``int``):
             File size.
 
         date (``int``):
             Date the photo was sent in Unix time.
+
+        ttl_seconds (``int``, *optional*):
+            Time-to-live seconds, for secret photos.
 
         thumbs (List of :obj:`Thumbnail`, *optional*):
             Available thumbnails of this photo.
@@ -63,10 +63,10 @@ class Photo(Object):
         file_ref: str,
         width: int,
         height: int,
-        ttl_seconds: int,
         file_size: int,
         date: int,
-        thumbs: List[Thumbnail]
+        ttl_seconds: int = None,
+        thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
 
@@ -74,9 +74,9 @@ class Photo(Object):
         self.file_ref = file_ref
         self.width = width
         self.height = height
-        self.ttl_seconds = ttl_seconds
         self.file_size = file_size
         self.date = date
+        self.ttl_seconds = ttl_seconds
         self.thumbs = thumbs
 
     @staticmethod
@@ -96,9 +96,9 @@ class Photo(Object):
                 file_ref=encode_file_ref(photo.file_reference),
                 width=big.w,
                 height=big.h,
-                ttl_seconds=ttl_seconds,
                 file_size=big.size,
                 date=photo.date,
+                ttl_seconds=ttl_seconds,
                 thumbs=Thumbnail._parse(client, photo),
                 client=client
             )

@@ -26,6 +26,7 @@ from .get_users import GetUsers
 from .iter_profile_photos import IterProfilePhotos
 from .set_profile_photo import SetProfilePhoto
 from .unblock_user import UnblockUser
+from .update_profile import UpdateProfile
 from .update_username import UpdateUsername
 
 
@@ -40,6 +41,7 @@ class Users(
     UpdateUsername,
     GetProfilePhotosCount,
     IterProfilePhotos,
-    UnblockUser
+    UnblockUser,
+    UpdateProfile
 ):
     pass

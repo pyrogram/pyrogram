@@ -872,6 +872,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
+
         def do_it():
             self.terminate()
             self.disconnect()
@@ -918,6 +919,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
+
         def do_it():
             self.stop()
             self.start()
@@ -1525,7 +1527,7 @@ class Client(Methods, BaseClient):
             count = 0
 
             if not include:
-                for path in sorted(Path(root).rglob("*.py")):
+                for path in sorted(Path(root.replace(".", "/")).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
                     module = reload(import_module(module_path))
 
@@ -1587,7 +1589,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = reload(import_module(module_path))
+                        module = import_module(module_path)
                     except ImportError:
                         log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
