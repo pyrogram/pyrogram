@@ -101,6 +101,9 @@ class Chat(Object):
         distance (``int``, *optional*):
             Distance in meters of this group chat from your location.
             Returned only in :meth:`~Client.get_nearby_chats`.
+
+        linked_chat (:obj:`Chat`, *optional*):
+            The linked discussion group (in case of channels) or the linked channel (in case of supergroups).
     """
 
     def __init__(
@@ -127,7 +130,8 @@ class Chat(Object):
         members_count: int = None,
         restrictions: List[Restriction] = None,
         permissions: "pyrogram.ChatPermissions" = None,
-        distance: int = None
+        distance: int = None,
+        linked_chat: "pyrogram.Chat" = None
     ):
         super().__init__(client)
 
@@ -152,6 +156,7 @@ class Chat(Object):
         self.restrictions = restrictions
         self.permissions = permissions
         self.distance = distance
+        self.linked_chat = linked_chat
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
@@ -241,10 +246,14 @@ class Chat(Object):
         else:
             full_chat = chat_full.full_chat
             chat = None
+            linked_chat = None
 
-            for i in chat_full.chats:
-                if full_chat.id == i.id:
-                    chat = i
+            for c in chat_full.chats:
+                if full_chat.id == c.id:
+                    chat = c
+
+                if full_chat.linked_chat_id == c.id:
+                    linked_chat = c
 
             if isinstance(full_chat, types.ChatFull):
                 parsed_chat = Chat._parse_chat_chat(client, chat)
@@ -259,6 +268,7 @@ class Chat(Object):
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
+                parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
