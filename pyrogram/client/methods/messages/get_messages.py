@@ -112,14 +112,7 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        while True:
-            try:
-                r = self.send(rpc)
-            except FloodWait as e:
-                log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
-                time.sleep(e.x)
-            else:
-                break
+        r = self.send(rpc)
 
         messages = utils.parse_messages(self, r, replies=replies)
 

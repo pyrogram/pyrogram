@@ -85,28 +85,21 @@ class GetHistory(BaseClient):
 
         offset_id = offset_id or (1 if reverse else 0)
 
-        while True:
-            try:
-                messages = utils.parse_messages(
-                    self,
-                    self.send(
-                        functions.messages.GetHistory(
-                            peer=self.resolve_peer(chat_id),
-                            offset_id=offset_id,
-                            offset_date=offset_date,
-                            add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
-                            limit=limit,
-                            max_id=0,
-                            min_id=0,
-                            hash=0
-                        )
-                    )
+        messages = utils.parse_messages(
+            self,
+            self.send(
+                functions.messages.GetHistory(
+                    peer=self.resolve_peer(chat_id),
+                    offset_id=offset_id,
+                    offset_date=offset_date,
+                    add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
+                    limit=limit,
+                    max_id=0,
+                    min_id=0,
+                    hash=0
                 )
-            except FloodWait as e:
-                log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
-                time.sleep(e.x)
-            else:
-                break
+            )
+        )
 
         if reverse:
             messages.reverse()

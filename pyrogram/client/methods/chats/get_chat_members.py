@@ -136,24 +136,19 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            while True:
-                try:
-                    r = self.send(
-                        functions.channels.GetParticipants(
-                            channel=peer,
-                            filter=filter,
-                            offset=offset,
-                            limit=limit,
-                            hash=0
-                        )
-                    )
+            r = self.send(
+                functions.channels.GetParticipants(
+                    channel=peer,
+                    filter=filter,
+                    offset=offset,
+                    limit=limit,
+                    hash=0
+                )
+            )
 
-                    members = r.participants
-                    users = {i.id: i for i in r.users}
+            members = r.participants
+            users = {i.id: i for i in r.users}
 
-                    return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
-                except FloodWait as e:
-                    log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
-                    time.sleep(e.x)
+            return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

@@ -154,6 +154,12 @@ class Client(Methods, BaseClient):
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.
             Defaults to False (normal session).
+
+        sleep_threshold (``int``, *optional*):
+            Set a sleep threshold for flood wait exceptions happening globally in this client instance, below which any
+            request that raises a flood wait will be automatically invoked again after sleeping for the required amount
+            of time. Flood wait exceptions requiring higher waiting times will be raised.
+            Defaults to 60 (seconds).
     """
 
     def __init__(
@@ -178,7 +184,8 @@ class Client(Methods, BaseClient):
         config_file: str = BaseClient.CONFIG_FILE,
         plugins: dict = None,
         no_updates: bool = None,
-        takeout: bool = None
+        takeout: bool = None,
+        sleep_threshold: int = 60
     ):
         super().__init__()
 
@@ -204,6 +211,7 @@ class Client(Methods, BaseClient):
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
+        self.sleep_threshold = sleep_threshold
 
         if isinstance(session_name, str):
             if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
@@ -1401,13 +1409,31 @@ class Client(Methods, BaseClient):
         if not self.is_connected:
             raise ConnectionError("Client has not been started yet")
 
+        # Some raw methods that expect a query as argument are used here.
+        # Keep the original request query because is needed.
+        unwrapped_data = data
+
         if self.no_updates:
             data = functions.InvokeWithoutUpdates(query=data)
 
         if self.takeout_id:
             data = functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
 
-        r = self.session.send(data, retries, timeout)
+        while True:
+            try:
+                r = self.session.send(data, retries, timeout)
+            except FloodWait as e:
+                amount = e.x
+
+                if amount > self.sleep_threshold:
+                    raise
+
+                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
+                    self.session_name, amount, ".".join(unwrapped_data.QUALNAME.split(".")[1:])))
+
+                time.sleep(amount)
+            else:
+                break
 
         self.fetch_peers(getattr(r, "users", []))
         self.fetch_peers(getattr(r, "chats", []))

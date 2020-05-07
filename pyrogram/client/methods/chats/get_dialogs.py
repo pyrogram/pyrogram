@@ -66,26 +66,19 @@ class GetDialogs(BaseClient):
                 app.get_dialogs(pinned_only=True)
         """
 
-        while True:
-            try:
-                if pinned_only:
-                    r = self.send(functions.messages.GetPinnedDialogs(folder_id=0))
-                else:
-                    r = self.send(
-                        functions.messages.GetDialogs(
-                            offset_date=offset_date,
-                            offset_id=0,
-                            offset_peer=types.InputPeerEmpty(),
-                            limit=limit,
-                            hash=0,
-                            exclude_pinned=True
-                        )
-                    )
-            except FloodWait as e:
-                log.warning("[{}] Sleeping for {}s".format(self.session_name, e.x))
-                time.sleep(e.x)
-            else:
-                break
+        if pinned_only:
+            r = self.send(functions.messages.GetPinnedDialogs(folder_id=0))
+        else:
+            r = self.send(
+                functions.messages.GetDialogs(
+                    offset_date=offset_date,
+                    offset_id=0,
+                    offset_peer=types.InputPeerEmpty(),
+                    limit=limit,
+                    hash=0,
+                    exclude_pinned=True
+                )
+            )
 
         users = {i.id: i for i in r.users}
         chats = {i.id: i for i in r.chats}
