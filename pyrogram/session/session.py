@@ -33,7 +33,7 @@ from pyrogram.api.all import layer
 from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
 from pyrogram.connection import Connection
 from pyrogram.crypto import AES, KDF
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -50,6 +50,7 @@ class Session:
     NET_WORKERS = 1
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
+    SLEEP_THRESHOLD = 60
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
@@ -432,19 +433,44 @@ class Session:
             else:
                 return result
 
-    def send(self, data: TLObject, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
+    def send(
+        self,
+        data: TLObject,
+        retries: int = MAX_RETRIES,
+        timeout: float = WAIT_TIMEOUT,
+        sleep_threshold: float = SLEEP_THRESHOLD
+    ):
         self.is_connected.wait(self.WAIT_TIMEOUT)
 
-        try:
-            return self._send(data, timeout=timeout)
-        except (OSError, TimeoutError, InternalServerError) as e:
-            if retries == 0:
-                raise e from None
+        if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+            query = data.query
+        else:
+            query = data
 
-            (log.warning if retries < 2 else log.info)(
-                "[{}] Retrying {} due to {}".format(
-                    Session.MAX_RETRIES - retries + 1,
-                    data.QUALNAME, e))
+        query = ".".join(query.QUALNAME.split(".")[1:])
 
-            time.sleep(0.5)
-            return self.send(data, retries - 1, timeout)
+        while True:
+            try:
+                return self._send(data, timeout=timeout)
+            except FloodWait as e:
+                amount = e.x
+
+                if amount > sleep_threshold:
+                    raise
+
+                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
+                    self.client.session_name, amount, query))
+
+                time.sleep(amount)
+            except (OSError, TimeoutError, InternalServerError) as e:
+                if retries == 0:
+                    raise e from None
+
+                (log.warning if retries < 2 else log.info)(
+                    '[{}] Retrying "{}" due to {}'.format(
+                        Session.MAX_RETRIES - retries + 1,
+                        query, e))
+
+                time.sleep(0.5)
+
+                return self.send(data, retries - 1, timeout)

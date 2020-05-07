@@ -185,7 +185,7 @@ class Client(Methods, BaseClient):
         plugins: dict = None,
         no_updates: bool = None,
         takeout: bool = None,
-        sleep_threshold: int = 60
+        sleep_threshold: int = Session.SLEEP_THRESHOLD
     ):
         super().__init__()
 
@@ -1409,31 +1409,13 @@ class Client(Methods, BaseClient):
         if not self.is_connected:
             raise ConnectionError("Client has not been started yet")
 
-        # Some raw methods that expect a query as argument are used here.
-        # Keep the original request query because is needed.
-        unwrapped_data = data
-
         if self.no_updates:
             data = functions.InvokeWithoutUpdates(query=data)
 
         if self.takeout_id:
             data = functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
 
-        while True:
-            try:
-                r = self.session.send(data, retries, timeout)
-            except FloodWait as e:
-                amount = e.x
-
-                if amount > self.sleep_threshold:
-                    raise
-
-                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
-                    self.session_name, amount, ".".join(unwrapped_data.QUALNAME.split(".")[1:])))
-
-                time.sleep(amount)
-            else:
-                break
+        r = self.session.send(data, retries, timeout, self.sleep_threshold)
 
         self.fetch_peers(getattr(r, "users", []))
         self.fetch_peers(getattr(r, "chats", []))
