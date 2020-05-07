@@ -675,7 +675,7 @@ class Chat(Object):
                 chat.join()
 
         Note:
-            This only works for public groups and channels that have set a username.
+            This only works for public groups, channels that have set a username or linked chats.
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -684,7 +684,7 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.join_chat(self.username)
+        return self._client.join_chat(self.username or self.id)
 
     def leave(self):
         """Bound method *leave* of :obj:`Chat`.
