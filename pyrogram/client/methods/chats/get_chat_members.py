@@ -16,13 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import asyncio
 import logging
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -136,24 +134,19 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            while True:
-                try:
-                    r = await self.send(
-                        functions.channels.GetParticipants(
-                            channel=peer,
-                            filter=filter,
-                            offset=offset,
-                            limit=limit,
-                            hash=0
-                        )
-                    )
+            r = await self.send(
+                functions.channels.GetParticipants(
+                    channel=peer,
+                    filter=filter,
+                    offset=offset,
+                    limit=limit,
+                    hash=0
+                )
+            )
 
-                    members = r.participants
-                    users = {i.id: i for i in r.users}
+            members = r.participants
+            users = {i.id: i for i in r.users}
 
-                    return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
-                except FloodWait as e:
-                    log.warning("Sleeping for {}s".format(e.x))
-                    await asyncio.sleep(e.x)
+            return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

@@ -16,13 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import asyncio
 import logging
 from typing import List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient, utils
 
 log = logging.getLogger(__name__)
@@ -66,26 +64,19 @@ class GetDialogs(BaseClient):
                 app.get_dialogs(pinned_only=True)
         """
 
-        while True:
-            try:
-                if pinned_only:
-                    r = await self.send(functions.messages.GetPinnedDialogs(folder_id=0))
-                else:
-                    r = await self.send(
-                        functions.messages.GetDialogs(
-                            offset_date=offset_date,
-                            offset_id=0,
-                            offset_peer=types.InputPeerEmpty(),
-                            limit=limit,
-                            hash=0,
-                            exclude_pinned=True
-                        )
-                    )
-            except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
-                await asyncio.sleep(e.x)
-            else:
-                break
+        if pinned_only:
+            r = await self.send(functions.messages.GetPinnedDialogs(folder_id=0))
+        else:
+            r = await self.send(
+                functions.messages.GetDialogs(
+                    offset_date=offset_date,
+                    offset_id=0,
+                    offset_peer=types.InputPeerEmpty(),
+                    limit=limit,
+                    hash=0,
+                    exclude_pinned=True
+                )
+            )
 
         users = {i.id: i for i in r.users}
         chats = {i.id: i for i in r.chats}

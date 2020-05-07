@@ -78,21 +78,14 @@ class SendMediaGroup(BaseClient):
         for i in media:
             if isinstance(i, pyrogram.InputMediaPhoto):
                 if os.path.exists(i.media):
-                    while True:
-                        try:
-                            media = await self.send(
-                                functions.messages.UploadMedia(
-                                    peer=await self.resolve_peer(chat_id),
-                                    media=types.InputMediaUploadedPhoto(
-                                        file=await self.save_file(i.media)
-                                    )
-                                )
+                    media = await self.send(
+                        functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedPhoto(
+                                file=await self.save_file(i.media)
                             )
-                        except FloodWait as e:
-                            log.warning("Sleeping for {}s".format(e.x))
-                            await asyncio.sleep(e.x)
-                        else:
-                            break
+                        )
+                    )
 
                     media = types.InputMediaPhoto(
                         id=types.InputPhoto(
@@ -122,32 +115,25 @@ class SendMediaGroup(BaseClient):
                     media = utils.get_input_media_from_file_id(i.media, i.file_ref, 2)
             elif isinstance(i, pyrogram.InputMediaVideo):
                 if os.path.exists(i.media):
-                    while True:
-                        try:
-                            media = await self.send(
-                                functions.messages.UploadMedia(
-                                    peer=await self.resolve_peer(chat_id),
-                                    media=types.InputMediaUploadedDocument(
-                                        file=await self.save_file(i.media),
-                                        thumb=None if i.thumb is None else self.save_file(i.thumb),
-                                        mime_type=self.guess_mime_type(i.media) or "video/mp4",
-                                        attributes=[
-                                            types.DocumentAttributeVideo(
-                                                supports_streaming=i.supports_streaming or None,
-                                                duration=i.duration,
-                                                w=i.width,
-                                                h=i.height
-                                            ),
-                                            types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
-                                        ]
-                                    )
-                                )
+                    media = await self.send(
+                        functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=types.InputMediaUploadedDocument(
+                                file=await self.save_file(i.media),
+                                thumb=None if i.thumb is None else self.save_file(i.thumb),
+                                mime_type=self.guess_mime_type(i.media) or "video/mp4",
+                                attributes=[
+                                    types.DocumentAttributeVideo(
+                                        supports_streaming=i.supports_streaming or None,
+                                        duration=i.duration,
+                                        w=i.width,
+                                        h=i.height
+                                    ),
+                                    types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                ]
                             )
-                        except FloodWait as e:
-                            log.warning("Sleeping for {}s".format(e.x))
-                            await asyncio.sleep(e.x)
-                        else:
-                            break
+                        )
+                    )
 
                     media = types.InputMediaDocument(
                         id=types.InputDocument(
@@ -184,21 +170,14 @@ class SendMediaGroup(BaseClient):
                 )
             )
 
-        while True:
-            try:
-                r = await self.send(
-                    functions.messages.SendMultiMedia(
-                        peer=await self.resolve_peer(chat_id),
-                        multi_media=multi_media,
-                        silent=disable_notification or None,
-                        reply_to_msg_id=reply_to_message_id
-                    )
-                )
-            except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
-                await asyncio.sleep(e.x)
-            else:
-                break
+        r = await self.send(
+            functions.messages.SendMultiMedia(
+                peer=await self.resolve_peer(chat_id),
+                multi_media=multi_media,
+                silent=disable_notification or None,
+                reply_to_msg_id=reply_to_message_id
+            )
+        )
 
         return await utils.parse_messages(
             self,

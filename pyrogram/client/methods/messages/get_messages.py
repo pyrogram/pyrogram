@@ -112,14 +112,7 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        while True:
-            try:
-                r = await self.send(rpc)
-            except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
-                await asyncio.sleep(e.x)
-            else:
-                break
+        r = await self.send(rpc)
 
         messages = await utils.parse_messages(self, r, replies=replies)
 
