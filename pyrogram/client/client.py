@@ -1198,6 +1198,27 @@ class Client(Methods, BaseClient):
 
         self.parse_mode = parse_mode
 
+    def set_web_page_preview(self, disable_web_page_preview: bool = False):
+        """Set the *disable_web_page_preview* setting to be used globally by the client.
+
+        When setting the disable webpage preview status with this method, all other methods having a *disable_web_page_preview* parameter will follow the
+        global value by default.
+
+        Parameters:
+            disable_web_page_preview (``bool``):
+                The new status, can be *True*, for disable the webpage preview, or *False* to enable the webpage preview.
+
+        Raises:
+            ValueError: In case the provided *disable_web_page_preview* is not a bool.
+        """
+
+        if type(disable_web_page_preview) is not bool:
+            raise ValueError('disable_web_page_preview must be a bool. Not "{}"'.format(
+                disable_web_page_preview
+            ))
+
+        self.disable_web_page_preview = disable_web_page_preview
+
     def fetch_peers(self, peers: List[Union[types.User, types.Chat, types.Channel]]) -> bool:
         is_min = False
         parsed_peers = []
