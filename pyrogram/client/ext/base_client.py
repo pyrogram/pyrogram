@@ -113,6 +113,8 @@ class BaseClient:
         self.download_workers_list = []
 
         self.disconnect_handler = None
+        
+        self.disable_web_page_preview = False
 
     def send(self, *args, **kwargs):
         pass
