@@ -74,6 +74,9 @@ class EditMessageText(BaseClient):
                     chat_id, message_id, message.text,
                     disable_web_page_preview=True)
         """
+        
+        if disable_web_page_preview is None:
+            disable_web_page_preview = self.disable_web_page_preview
 
         r = self.send(
             functions.messages.EditMessage(
