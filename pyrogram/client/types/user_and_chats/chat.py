@@ -268,7 +268,8 @@ class Chat(Object):
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
-                parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
+                if linked_chat:
+                    parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = client.get_messages(
