@@ -115,6 +115,9 @@ class SendMessage(BaseClient):
                             [InlineKeyboardButton("Docs", url="https://docs.pyrogram.org")]
                         ]))
         """
+        
+        if disable_web_page_preview is None:
+            disable_web_page_preview = self.disable_web_page_preview
 
         message, entities = self.parser.parse(text, parse_mode).values()
 
