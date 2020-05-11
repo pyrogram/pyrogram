@@ -70,6 +70,9 @@ class EditInlineText(BaseClient):
                     inline_message_id, message.text,
                     disable_web_page_preview=True)
         """
+        
+        if disable_web_page_preview is None:
+            disable_web_page_preview = self.disable_web_page_preview
 
         return self.send(
             functions.messages.EditInlineBotMessage(
