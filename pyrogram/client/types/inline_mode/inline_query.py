@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Match
 
 import pyrogram
 from pyrogram.api import types
@@ -47,6 +47,10 @@ class InlineQuery(Object, Update):
 
         location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
+
+        matches (List of regex Matches, *optional*):
+            A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
+            the query of this inline query. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
     """
 
     def __init__(
@@ -57,7 +61,8 @@ class InlineQuery(Object, Update):
         from_user: User,
         query: str,
         offset: str,
-        location: Location = None
+        location: Location = None,
+        matches: List[Match] = None
     ):
         super().__init__(client)
 
@@ -66,6 +71,7 @@ class InlineQuery(Object, Update):
         self.query = query
         self.offset = offset
         self.location = location
+        self.matches = matches
 
     @staticmethod
     def _parse(client, inline_query: types.UpdateBotInlineQuery, users: dict) -> "InlineQuery":
