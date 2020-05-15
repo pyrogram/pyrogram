@@ -389,15 +389,4 @@ class Filters:
                              and message.from_user.is_self
                              and not message.outgoing)))
 
-    @staticmethod
-    def callback_data(data: str or bytes):
-        """Filter callback queries for their data.
-
-        Parameters:
-            data (``str`` | ``bytes``):
-                Pass the data you want to filter for.
-        """
-
-        return create(lambda flt, cb: cb.data == flt.data, "CallbackDataFilter", data=data)
-
     dan = create(lambda _, m: bool(m.from_user and m.from_user.id == 23122162), "DanFilter")
