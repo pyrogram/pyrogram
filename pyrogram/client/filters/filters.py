@@ -20,6 +20,7 @@ import re
 from typing import Callable
 
 from .filter import Filter
+from ..types import Message, CallbackQuery, InlineQuery
 from ..types.bots_and_keyboards import InlineKeyboardMarkup, ReplyKeyboardMarkup
 
 CUSTOM_FILTER_NAME = "CustomFilter"
@@ -288,26 +289,39 @@ class Filters:
         )
 
     @staticmethod
-    def regex(pattern, flags: int = 0):
-        """Filter message texts or captions that match a given regular expression pattern.
+    def regex(pattern: str, flags: int = 0):
+        """Filter updates that match a given regular expression pattern.
+
+        Can be applied to handlers that receive one of the following updates:
+
+        - :obj:`Message`: The filter will match ``text`` or ``caption``.
+        - :obj:`CallbackQuery`: The filter will match ``data``.
+        - :obj:`InlineQuery`: The filter will match ``query``.
+
+        When a pattern matches, all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ are
+        stored in the ``matches`` field of the update object itself.
 
         Parameters:
             pattern (``str``):
-                The RegEx pattern as string, it will be applied to the text or the caption of a message. When a pattern
-                matches, all the `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ are stored
-                in the *matches* field of the :obj:`Message` itself.
+                The regex pattern as string.
 
             flags (``int``, *optional*):
-                RegEx flags.
+                Regex flags.
         """
 
-        def func(flt, message):
-            text = message.text or message.caption
+        def func(flt, update):
+            if isinstance(update, Message):
+                value = update.text or update.caption
+            elif isinstance(update, CallbackQuery):
+                value = update.data
+            elif isinstance(update, InlineQuery):
+                value = update.query
+            else:
+                raise ValueError("Regex filter doesn't work with {}".format(type(update)))
 
-            if text:
-                message.matches = list(flt.p.finditer(text)) or None
+            update.matches = list(flt.p.finditer(value)) or None
 
-            return bool(message.matches)
+            return bool(update.matches)
 
         return create(func, "RegexFilter", p=re.compile(pattern, flags))
 

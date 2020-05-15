@@ -18,7 +18,7 @@
 
 from base64 import b64encode
 from struct import pack
-from typing import Union
+from typing import Union, List, Match
 
 import pyrogram
 from pyrogram.api import types
@@ -59,6 +59,9 @@ class CallbackQuery(Object, Update):
         game_short_name (``str``, *optional*):
             Short name of a Game to be returned, serves as the unique identifier for the game.
 
+        matches (List of regex Matches, *optional*):
+            A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
+            the data of this callback query. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
     """
 
     def __init__(
@@ -71,7 +74,8 @@ class CallbackQuery(Object, Update):
         message: "pyrogram.Message" = None,
         inline_message_id: str = None,
         data: Union[str, bytes] = None,
-        game_short_name: str = None
+        game_short_name: str = None,
+        matches: List[Match] = None
     ):
         super().__init__(client)
 
@@ -82,6 +86,7 @@ class CallbackQuery(Object, Update):
         self.inline_message_id = inline_message_id
         self.data = data
         self.game_short_name = game_short_name
+        self.matches = matches
 
     @staticmethod
     def _parse(client, callback_query, users) -> "CallbackQuery":
