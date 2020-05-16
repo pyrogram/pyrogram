@@ -323,7 +323,8 @@ class Filters:
             else:
                 raise ValueError("Regex filter doesn't work with {}".format(type(update)))
 
-            update.matches = list(flt.p.finditer(value)) or None
+            if value:
+                update.matches = list(flt.p.finditer(value)) or None
 
             return bool(update.matches)
 
