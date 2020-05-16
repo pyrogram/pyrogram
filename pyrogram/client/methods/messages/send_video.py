@@ -37,6 +37,7 @@ class SendVideo(BaseClient):
         width: int = 0,
         height: int = 0,
         thumb: str = None,
+        file_name: str = None,
         supports_streaming: bool = True,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -92,6 +93,10 @@ class SendVideo(BaseClient):
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
+
+            file_name (``str``, *optional*):
+                File name of the video sent.
+                Defaults to file's path basename.
 
             supports_streaming (``bool``, *optional*):
                 Pass True, if the uploaded video is suitable for streaming.
@@ -169,7 +174,7 @@ class SendVideo(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(file_name=os.path.basename(video))
+                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(video))
                     ]
                 )
             elif video.startswith("http"):
