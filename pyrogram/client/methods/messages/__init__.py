@@ -33,11 +33,14 @@ from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
+from .search_global import SearchGlobal
+from .search_messages import SearchMessages
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
+from .send_dice import SendDice
 from .send_document import SendDocument
 from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
@@ -51,8 +54,6 @@ from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
 from .stop_poll import StopPoll
 from .vote_poll import VotePoll
-from .send_dice import SendDice
-from .search_messages import SearchMessages
 
 
 class Messages(
@@ -92,6 +93,7 @@ class Messages(
     EditInlineMedia,
     EditInlineReplyMarkup,
     SendDice,
-    SearchMessages
+    SearchMessages,
+    SearchGlobal
 ):
     pass
