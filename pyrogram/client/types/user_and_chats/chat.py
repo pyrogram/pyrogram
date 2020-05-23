@@ -251,7 +251,7 @@ class Chat(Object):
             for c in chat_full.chats:
                 if full_chat.id == c.id:
                     chat = c
-                    
+
                 if isinstance(chat_full, types.ChannelFull):
                     if full_chat.linked_chat_id == c.id:
                         linked_chat = c
@@ -547,13 +547,13 @@ class Chat(Object):
             client.restrict_chat_member(
                 chat_id=chat_id,
                 user_id=user_id,
-                permissions=ChatPermission()
+                permissions=ChatPermissions()
             )
 
         Example:
             .. code-block:: python
 
-                chat.restrict_member(user_id, ChatPermission())
+                chat.restrict_member(user_id, ChatPermissions())
 
         Parameters:
             user_id (``int`` | ``str``):
