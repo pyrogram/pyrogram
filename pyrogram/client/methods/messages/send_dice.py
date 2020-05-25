@@ -38,7 +38,7 @@ class SendDice(BaseClient):
             "pyrogram.ForceReply"
         ] = None
     ) -> Union["pyrogram.Message", None]:
-        """Send a dice.
+        """Send a dice with a random value from 1 to 6.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -47,8 +47,8 @@ class SendDice(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             emoji (``str``, *optional*):
-                Emoji on which the dice throw animation is based. Currently, must be one of "🎲" or "🎯".
-                Defauts to "🎲".
+                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯" or "🏀".
+                Defaults to "🎲".
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -75,6 +75,9 @@ class SendDice(BaseClient):
 
                 # Send a dart
                 app.send_dice("pyrogramlounge", "🎯")
+
+                # Send a basketball
+                app.send_dice("pyrogramlounge", "🏀")
         """
 
         r = await self.send(

@@ -85,7 +85,7 @@ Requests against the official bot API endpoint are made via JSON/HTTP, but are h
 application that implements the MTProto protocol -- just like Pyrogram -- and uses its own API key, which is always
 required, but hidden to the public.
 
-.. figure:: https://i.imgur.com/C108qkX.png
+.. figure:: https://i.imgur.com/WvwBoZo.png
     :align: center
 
 Using MTProto is the only way to communicate with the actual Telegram servers, and the main API requires developers to

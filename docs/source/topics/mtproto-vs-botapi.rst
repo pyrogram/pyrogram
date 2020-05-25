@@ -35,7 +35,7 @@ accounts that are authorized via tokens instead of phone numbers. The Bot API is
 Telegram API, but runs on an intermediate server application that in turn communicates with the actual Telegram servers
 using MTProto.
 
-.. figure:: https://i.imgur.com/C108qkX.png
+.. figure:: https://i.imgur.com/WvwBoZo.png
     :align: center
 
 .. _Bot API: https://core.telegram.org/bots/api

@@ -176,6 +176,7 @@ def pyrogram_api():
             retract_vote
             send_dice
             search_messages
+            search_global
             download_media
         """,
         chats="""
