@@ -111,10 +111,11 @@ class HTML:
         self.client = client
 
     async def parse(self, text: str):
-        text = utils.add_surrogates(text)
+        # Strip whitespace characters from the end of the message, but preserve closing tags
+        text = re.sub(r"\s*(</[\w\W]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
-        parser.feed(text)
+        parser.feed(utils.add_surrogates(text))
         parser.close()
 
         if parser.tag_entities:
