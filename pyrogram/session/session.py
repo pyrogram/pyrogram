@@ -239,7 +239,7 @@ class Session:
                     else [data]
                 )
 
-                log.debug(data)
+                log.debug("Received:\n{}".format(data))
 
                 for msg in messages:
                     if msg.seq_no % 2 != 0:
@@ -365,6 +365,8 @@ class Session:
 
         if wait_response:
             self.results[msg_id] = Result()
+
+        log.debug("Sent:\n{}".format(message))
 
         payload = MTProto.pack(
             message,
