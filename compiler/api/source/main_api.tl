@@ -335,6 +335,7 @@ updateMessagePollVote#42f88f2c poll_id:long user_id:int options:Vector<bytes> = 
 updateDialogFilter#26ffde7d flags:# id:int filter:flags.0?DialogFilter = Update;
 updateDialogFilterOrder#a5d72105 order:Vector<int> = Update;
 updateDialogFilters#3504914f = Update;
+updatePhoneCallSignalingData#2661bf09 phone_call_id:long data:bytes = Update;
 
 updates.state#a56c2a3e pts:int qts:int date:int seq:int unread_count:int = updates.State;
 
@@ -399,7 +400,7 @@ inputDocumentEmpty#72f0eaae = InputDocument;
 inputDocument#1abfb575 id:long access_hash:long file_reference:bytes = InputDocument;
 
 documentEmpty#36f8c871 id:long = Document;
-document#9ba29cc1 flags:# id:long access_hash:long file_reference:bytes date:int mime_type:string size:int thumbs:flags.0?Vector<PhotoSize> dc_id:int attributes:Vector<DocumentAttribute> = Document;
+document#1e87342b flags:# id:long access_hash:long file_reference:bytes date:int mime_type:string size:int thumbs:flags.0?Vector<PhotoSize> video_thumbs:flags.1?Vector<VideoSize> dc_id:int attributes:Vector<DocumentAttribute> = Document;
 
 help.support#17c6b5f6 phone_number:string user:User = help.Support;
 
@@ -629,7 +630,7 @@ messages.botResults#947ca848 flags:# gallery:flags.0?true query_id:long next_off
 
 exportedMessageLink#5dab1af4 link:string html:string = ExportedMessageLink;
 
-messageFwdHeader#ec338270 flags:# from_id:flags.0?int from_name:flags.5?string date:int channel_id:flags.1?int channel_post:flags.2?int post_author:flags.3?string saved_from_peer:flags.4?Peer saved_from_msg_id:flags.4?int = MessageFwdHeader;
+messageFwdHeader#353a686b flags:# from_id:flags.0?int from_name:flags.5?string date:int channel_id:flags.1?int channel_post:flags.2?int post_author:flags.3?string saved_from_peer:flags.4?Peer saved_from_msg_id:flags.4?int psa_type:flags.6?string = MessageFwdHeader;
 
 auth.codeTypeSms#72a3158c = auth.CodeType;
 auth.codeTypeCall#741cd3e3 = auth.CodeType;
@@ -890,9 +891,6 @@ fileHash#6242c773 offset:int limit:int hash:bytes = FileHash;
 
 inputClientProxy#75588b3f address:string port:int = InputClientProxy;
 
-help.proxyDataEmpty#e09e1fb8 expires:int = help.ProxyData;
-help.proxyDataPromo#2bf7ee23 expires:int peer:Peer chats:Vector<Chat> users:Vector<User> = help.ProxyData;
-
 help.termsOfServiceUpdateEmpty#e3309f7f expires:int = help.TermsOfServiceUpdate;
 help.termsOfServiceUpdate#28ecf961 expires:int terms_of_service:help.TermsOfService = help.TermsOfServiceUpdate;
 
@@ -1117,6 +1115,11 @@ statsGraph#8ea464b6 flags:# json:DataJSON zoom_token:flags.0?string = StatsGraph
 messageInteractionCounters#ad4fc9bd msg_id:int views:int forwards:int = MessageInteractionCounters;
 
 stats.broadcastStats#bdf78394 period:StatsDateRangeDays followers:StatsAbsValueAndPrev views_per_post:StatsAbsValueAndPrev shares_per_post:StatsAbsValueAndPrev enabled_notifications:StatsPercentValue growth_graph:StatsGraph followers_graph:StatsGraph mute_graph:StatsGraph top_hours_graph:StatsGraph interactions_graph:StatsGraph iv_interactions_graph:StatsGraph views_by_source_graph:StatsGraph new_followers_by_source_graph:StatsGraph languages_graph:StatsGraph recent_message_interactions:Vector<MessageInteractionCounters> = stats.BroadcastStats;
+
+help.promoDataEmpty#98f6ac75 expires:int = help.PromoData;
+help.promoData#8c39793f flags:# proxy:flags.0?true expires:int peer:Peer chats:Vector<Chat> users:Vector<User> psa_type:flags.1?string psa_message:flags.2?string = help.PromoData;
+
+videoSize#435bb987 type:string location:FileLocation w:int h:int size:int = VideoSize;
 
 ---functions---
 
@@ -1389,7 +1392,6 @@ help.getAppChangelog#9010ef6f prev_app_version:string = Updates;
 help.setBotUpdatesStatus#ec22cfcd pending_updates_count:int message:string = Bool;
 help.getCdnConfig#52029342 = CdnConfig;
 help.getRecentMeUrls#3dc0f114 referer:string = help.RecentMeUrls;
-help.getProxyData#3d7758e1 = help.ProxyData;
 help.getTermsOfServiceUpdate#2ca51fd1 = help.TermsOfServiceUpdate;
 help.acceptTermsOfService#ee72f79a id:DataJSON = Bool;
 help.getDeepLinkInfo#3fedc75f path:string = help.DeepLinkInfo;
@@ -1399,6 +1401,8 @@ help.getPassportConfig#c661ad08 hash:int = help.PassportConfig;
 help.getSupportName#d360e72c = help.SupportName;
 help.getUserInfo#38a08d3 user_id:InputUser = help.UserInfo;
 help.editUserInfo#66b91b70 user_id:InputUser message:string entities:Vector<MessageEntity> = help.UserInfo;
+help.getPromoData#c0977421 = help.PromoData;
+help.hidePromoData#1e251c95 peer:InputPeer = Bool;
 
 channels.readHistory#cc104937 channel:InputChannel max_id:int = Bool;
 channels.deleteMessages#84c1fd4e channel:InputChannel id:Vector<int> = messages.AffectedMessages;
@@ -1462,6 +1466,7 @@ phone.receivedCall#17d54f61 peer:InputPhoneCall = Bool;
 phone.discardCall#b2cbc1c0 flags:# video:flags.0?true peer:InputPhoneCall duration:int reason:PhoneCallDiscardReason connection_id:long = Updates;
 phone.setCallRating#59ead627 flags:# user_initiative:flags.0?true peer:InputPhoneCall rating:int comment:string = Updates;
 phone.saveCallDebug#277add7e peer:InputPhoneCall debug:DataJSON = Bool;
+phone.sendSignalingData#ff7a9383 peer:InputPhoneCall data:bytes = Bool;
 
 langpack.getLangPack#f2f2330a lang_pack:string lang_code:string = LangPackDifference;
 langpack.getStrings#efea3803 lang_pack:string lang_code:string keys:Vector<string> = Vector<LangPackString>;
@@ -1472,7 +1477,7 @@ langpack.getLanguage#6a596502 lang_pack:string lang_code:string = LangPackLangua
 folders.editPeerFolders#6847d0ab folder_peers:Vector<InputFolderPeer> = Updates;
 folders.deleteFolder#1c295881 folder_id:int = Updates;
 
-stats.getBroadcastStats#e6300dba flags:# dark:flags.0?true channel:InputChannel tz_offset:int = stats.BroadcastStats;
+stats.getBroadcastStats#ab42441a flags:# dark:flags.0?true channel:InputChannel = stats.BroadcastStats;
 stats.loadAsyncGraph#621d5fa0 flags:# token:string x:flags.0?long = StatsGraph;
 
-// LAYER 112
+// LAYER 114
