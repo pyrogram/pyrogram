@@ -38,7 +38,7 @@ from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, SessionPasswordNeeded,
-    FloodWait, PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate, AuthBytesInvalid,
+    PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate, AuthBytesInvalid,
     BadRequest)
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
@@ -320,7 +320,7 @@ class Client(Methods, BaseClient):
             for _ in range(Client.UPDATES_WORKERS):
                 self.updates_worker_tasks.append(
                     asyncio.ensure_future(self.updates_worker())
-            )
+                )
 
         logging.info("Started {} UpdatesWorkerTasks".format(Client.UPDATES_WORKERS))
 
@@ -689,9 +689,6 @@ class Client(Methods, BaseClient):
                 print(e.MESSAGE)
                 self.phone_number = None
                 self.bot_token = None
-            except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
             else:
                 break
 
@@ -740,9 +737,6 @@ class Client(Methods, BaseClient):
                                         return await self.recover_password(recovery_code)
                                     except BadRequest as e:
                                         print(e.MESSAGE)
-                                    except FloodWait as e:
-                                        print(e.MESSAGE.format(x=e.x))
-                                        time.sleep(e.x)
                                     except Exception as e:
                                         log.error(e, exc_info=True)
                                         raise
@@ -753,12 +747,6 @@ class Client(Methods, BaseClient):
                     except BadRequest as e:
                         print(e.MESSAGE)
                         self.password = None
-                    except FloodWait as e:
-                        print(e.MESSAGE.format(x=e.x))
-                        time.sleep(e.x)
-            except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
             else:
                 break
 
@@ -778,9 +766,6 @@ class Client(Methods, BaseClient):
                 )
             except BadRequest as e:
                 print(e.MESSAGE)
-            except FloodWait as e:
-                print(e.MESSAGE.format(x=e.x))
-                time.sleep(e.x)
             else:
                 break
 
@@ -884,6 +869,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
+
         async def do_it():
             await self.terminate()
             await self.disconnect()
@@ -930,6 +916,7 @@ class Client(Methods, BaseClient):
 
                 app.stop()
         """
+
         async def do_it():
             await self.stop()
             await self.start()
@@ -1636,38 +1623,6 @@ class Client(Methods, BaseClient):
             else:
                 log.warning('[{}] No plugin loaded from "{}"'.format(
                     self.session_name, root))
-
-    # def get_initial_dialogs_chunk(self, offset_date: int = 0):
-    #     while True:
-    #         try:
-    #             r = self.send(
-    #                 functions.messages.GetDialogs(
-    #                     offset_date=offset_date,
-    #                     offset_id=0,
-    #                     offset_peer=types.InputPeerEmpty(),
-    #                     limit=self.DIALOGS_AT_ONCE,
-    #                     hash=0,
-    #                     exclude_pinned=True
-    #                 )
-    #             )
-    #         except FloodWait as e:
-    #             log.warning("get_dialogs flood: waiting {} seconds".format(e.x))
-    #             time.sleep(e.x)
-    #         else:
-    #             log.info("Total peers: {}".format(self.storage.peers_count))
-    #             return r
-    #
-    # def get_initial_dialogs(self):
-    #     self.send(functions.messages.GetPinnedDialogs(folder_id=0))
-    #
-    #     dialogs = self.get_initial_dialogs_chunk()
-    #     offset_date = utils.get_offset_date(dialogs)
-    #
-    #     while len(dialogs.dialogs) == self.DIALOGS_AT_ONCE:
-    #         dialogs = self.get_initial_dialogs_chunk(offset_date)
-    #         offset_date = utils.get_offset_date(dialogs)
-    #
-    #     self.get_initial_dialogs_chunk()
 
     async def resolve_peer(self, peer_id: Union[int, str]):
         """Get the InputPeer of a known peer id.
