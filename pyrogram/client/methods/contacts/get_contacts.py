@@ -17,12 +17,10 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from typing import List
 
 import pyrogram
 from pyrogram.api import functions
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -41,11 +39,5 @@ class GetContacts(BaseClient):
                 contacts = app.get_contacts()
                 print(contacts)
         """
-        while True:
-            try:
-                contacts = self.send(functions.contacts.GetContacts(hash=0))
-            except FloodWait as e:
-                log.warning("get_contacts flood: waiting {} seconds".format(e.x))
-                time.sleep(e.x)
-            else:
-                return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)
+        contacts = self.send(functions.contacts.GetContacts(hash=0))
+        return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)
