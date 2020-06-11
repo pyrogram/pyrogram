@@ -2984,7 +2984,6 @@ class Message(Object, Update):
 
     async def download(
         self,
-        file_ref: str = None,
         file_name: str = "",
         block: bool = True,
         progress: callable = None,
@@ -3004,10 +3003,6 @@ class Message(Object, Update):
                 message.download()
 
         Parameters:
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
-
             file_name (``str``, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
@@ -3049,7 +3044,6 @@ class Message(Object, Update):
         """
         return await self._client.download_media(
             message=self,
-            file_ref=file_ref,
             file_name=file_name,
             block=block,
             progress=progress,
