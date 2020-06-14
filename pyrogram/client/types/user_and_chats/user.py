@@ -160,7 +160,7 @@ class User(Object, Update):
 
     def __format__(self, format_spec):
         if format_spec == "mention":
-            return '<a href="tg://user?id={0}">{1}</a>'.format(self.id, html.escape(self.first_name))
+            return '<a href="tg://user?id={0}">{1}</a>'.format(self.id, html.escape(str(self.first_name)))
 
         return html.escape(str(self))
 
