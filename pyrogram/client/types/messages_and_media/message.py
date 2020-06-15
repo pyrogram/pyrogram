@@ -18,6 +18,7 @@
 
 from functools import partial
 from typing import List, Match, Union
+import logging
 
 import pyrogram
 from pyrogram.api import types
@@ -33,6 +34,8 @@ from ..user_and_chats.chat import Chat
 from ..user_and_chats.user import User
 from ...ext import utils
 from ...parser import utils as parser_utils, Parser
+
+log = logging.getLogger(__name__)
 
 
 class Str(str):
@@ -2684,12 +2687,10 @@ class Message(Object, Update):
         """
         if as_copy:
             if self.service:
-                raise ValueError("Unable to copy service messages")
-
-            if self.game and not self._client.is_bot:
-                raise ValueError("Users cannot send messages with Game media type")
-
-            if self.text:
+                log.warning("Unable to copy service messages, message_id: {}".format(self.message_id))
+            elif self.game and not self._client.is_bot:
+                log.warning("Users cannot send messages with Game media type, message_id: {}".format(self.message_id))
+            elif self.text:
                 return self._client.send_message(
                     chat_id,
                     text=self.text.html,
