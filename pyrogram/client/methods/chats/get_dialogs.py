@@ -75,8 +75,7 @@ class GetDialogs(BaseClient):
                     offset_id=0,
                     offset_peer=types.InputPeerEmpty(),
                     limit=limit,
-                    hash=0,
-                    exclude_pinned=True
+                    hash=0
                 )
             )
 
