@@ -71,5 +71,15 @@ Projects Showcase
 
 -----
 
+`Pyrubrum <https://github.com/hearot/pyrubrum>`_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+| **An intuitive framework for creating Telegram bots**
+| --- by `Hearot <https://t.me/hearot>`_
+
+- Source Code: https://github.com/hearot/pyrubrum
+
+-----
+
 .. _Feature Request: https://github.com/pyrogram/pyrogram/issues/new?labels=enhancement&template=feature_request.md
 
