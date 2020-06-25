@@ -24,7 +24,7 @@ from ...types.inline_mode import InlineQueryResult
 
 
 class AnswerInlineQuery(BaseClient):
-    def answer_inline_query(
+    async def answer_inline_query(
         self,
         inline_query_id: str,
         results: List[InlineQueryResult],
@@ -93,10 +93,15 @@ class AnswerInlineQuery(BaseClient):
                             "Title",
                             InputTextMessageContent("Message content"))])
         """
-        return self.send(
+        written_results = []  # Py 3.5 doesn't support await inside comprehensions
+
+        for r in results:
+            written_results.append(await r.write())
+
+        return await self.send(
             functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
-                results=[r.write() for r in results],
+                results=[await r.write() for r in results],
                 cache_time=cache_time,
                 gallery=is_gallery or None,
                 private=is_personal or None,
