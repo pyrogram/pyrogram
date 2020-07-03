@@ -24,6 +24,7 @@ import shutil
 import tempfile
 import threading
 import time
+from getpass import getpass
 from configparser import ConfigParser
 from hashlib import sha256, md5
 from importlib import import_module, reload
@@ -716,7 +717,7 @@ class Client(Methods, BaseClient):
                     print("Password hint: {}".format(self.get_password_hint()))
 
                     if not self.password:
-                        self.password = input("Enter password (empty to recover): ")
+                        self.password = getpass("Enter password (empty to recover): ")
 
                     try:
                         if not self.password:
