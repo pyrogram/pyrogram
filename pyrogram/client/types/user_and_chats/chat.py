@@ -252,7 +252,7 @@ class Chat(Object):
                 if full_chat.id == c.id:
                     chat = c
 
-                if isinstance(chat_full, types.ChannelFull):
+                if isinstance(full_chat, types.ChannelFull):
                     if full_chat.linked_chat_id == c.id:
                         linked_chat = c
 

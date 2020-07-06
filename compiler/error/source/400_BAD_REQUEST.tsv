@@ -12,8 +12,8 @@ PHONE_NUMBER_UNOCCUPIED	The phone number is not yet being used
 USERS_TOO_FEW	Not enough users (to create a chat, for example)
 USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
-FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 2999
-FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 3000
+FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 3999
+FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 4000
 FILE_PART_X_MISSING	Part {x} of the file is missing from storage
 MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
 PHOTO_INVALID_DIMENSIONS	The photo dimensions are invalid
