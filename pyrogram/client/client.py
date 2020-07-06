@@ -1772,8 +1772,8 @@ class Client(Methods, BaseClient):
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
 
-        if file_size > 1500 * 1024 * 1024:
-            raise ValueError("Telegram doesn't support uploading files bigger than 1500 MiB")
+        if file_size > 2000 * 1024 * 1024:
+            raise ValueError("Telegram doesn't support uploading files bigger than 2000 MiB")
 
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = True if file_size > 10 * 1024 * 1024 else False
