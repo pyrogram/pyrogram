@@ -188,8 +188,12 @@ class Dispatcher:
 
                             if isinstance(handler, handler_type):
                                 try:
-                                    if handler.check(parsed_update):
-                                        args = (parsed_update,)
+                                    if callable(handler.filters) and asyncio.iscoroutinefunction(handler.filters.__call__):
+                                        if (await handler.check(parsed_update)):
+                                            args = (parsed_update,)
+                                    else:
+                                        if handler.check(parsed_update):
+                                            args = (parsed_update,)
                                 except Exception as e:
                                     log.error(e, exc_info=True)
                                     continue
