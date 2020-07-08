@@ -26,7 +26,7 @@ class SetSlowMode(BaseClient):
     def set_slow_mode(
         self,
         chat_id: Union[int, str],
-        seconds: int,
+        seconds: Union[int, None]
     ) -> bool:
         """Set the slow mode interval for a chat.
 
@@ -34,9 +34,9 @@ class SetSlowMode(BaseClient):
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            seconds (``int`` | ``str``):
+            seconds (``int`` | ``None``):
                 Seconds in which members will be able to send only one message per this interval.
-                Valid values are: 0 (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h).
+                Valid values are: 0 or None (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h).
 
         Returns:
             ``bool``: True on success.
@@ -44,13 +44,17 @@ class SetSlowMode(BaseClient):
         Example:
             .. code-block:: python
 
+                # Set slow mode to 60 seconds
                 app.set_slow_mode("pyrogramchat", 60)
+
+                # Disable slow mode
+                app.set_slow_mode("pyrogramchat", None)
         """
 
         self.send(
             functions.channels.ToggleSlowMode(
                 channel=self.resolve_peer(chat_id),
-                seconds=seconds
+                seconds=0 if seconds is None else seconds
             )
         )
 
