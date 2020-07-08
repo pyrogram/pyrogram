@@ -20,4 +20,5 @@ from .base_client import BaseClient
 from .dispatcher import Dispatcher
 from .emoji import Emoji
 from .file_data import FileData
+from .link import Link
 from .syncer import Syncer
