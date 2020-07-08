@@ -15,7 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-import io
+
 from functools import partial
 from typing import List, Match, Union
 
@@ -2964,7 +2964,7 @@ class Message(Object, Update):
                 chat_id=message.chat.id,
                 message_id=message_id,
             )
-
+            
         Example:
             .. code-block:: python
 
@@ -2985,7 +2985,6 @@ class Message(Object, Update):
     def download(
         self,
         file_name: str = "",
-        out: io.IOBase = None,
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -3009,9 +3008,6 @@ class Message(Object, Update):
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
-
-            out (``io.IOBase``, *optional*):
-                A custom *file-like object* to be used when downloading file. Overrides file_name
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -3049,7 +3045,6 @@ class Message(Object, Update):
         return self._client.download_media(
             message=self,
             file_name=file_name,
-            out=out,
             block=block,
             progress=progress,
             progress_args=progress_args,
@@ -3079,7 +3074,7 @@ class Message(Object, Update):
         Parameters:
             option (``int``):
                 Index of the poll option you want to vote for (0 to 9).
-
+            
         Returns:
             :obj:`Poll`: On success, the poll with the chosen option is returned.
 

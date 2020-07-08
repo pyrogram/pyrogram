@@ -15,7 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-import io
+
 import os
 from typing import Union
 
@@ -29,7 +29,6 @@ class SendDocument(BaseClient):
     def send_document(
         self,
         chat_id: Union[int, str],
-        document: Union[str, io.IOBase],
         document: str,
         file_ref: str = None,
         thumb: str = None,
@@ -56,13 +55,11 @@ class SendDocument(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            document (``str`` | file-like object):
+            document (``str``):
                 File to send.
                 Pass a file_id as string to send a file that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a file from the Internet, or
                 pass a file path as string to upload a new file that exists on your local machine.
-                pass a readable file-like object with .name
-
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -146,35 +143,23 @@ class SendDocument(BaseClient):
         file = None
 
         try:
-            if isinstance(document, str):
-                if os.path.exists(document):
-                    thumb = None if thumb is None else self.save_file(thumb)
-                    file = self.save_file(document, progress=progress, progress_args=progress_args)
-                    media = types.InputMediaUploadedDocument(
-                        mime_type=self.guess_mime_type(document) or "application/zip",
-                        file=file,
-                        thumb=thumb,
-                        attributes=[
-                            types.DocumentAttributeFilename(file_name=file_name or os.path.basename(document))
-                        ]
-                    )
-                elif document.startswith("http"):
-                    media = types.InputMediaDocumentExternal(
-                        url=document
-                    )
-                else:
-                    media = utils.get_input_media_from_file_id(document, file_ref, 5)
-            else:
+            if os.path.exists(document):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(document, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(document.name) or "application/zip",
+                    mime_type=self.guess_mime_type(document) or "application/zip",
                     file=file,
                     thumb=thumb,
                     attributes=[
-                        types.DocumentAttributeFilename(file_name=document.name)
+                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(document))
                     ]
                 )
+            elif document.startswith("http"):
+                media = types.InputMediaDocumentExternal(
+                    url=document
+                )
+            else:
+                media = utils.get_input_media_from_file_id(document, file_ref, 5)
 
             while True:
                 try:

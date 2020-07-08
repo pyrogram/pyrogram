@@ -15,7 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-import io
+
 import os
 from typing import Union
 
@@ -29,7 +29,6 @@ class SendVideoNote(BaseClient):
     def send_video_note(
         self,
         chat_id: Union[int, str],
-        video_note: Union[str, io.IOBase],
         video_note: str,
         file_ref: str = None,
         duration: int = 0,
@@ -55,12 +54,11 @@ class SendVideoNote(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            video_note (``str``, file-like object):
+            video_note (``str``):
                 Video note to send.
                 Pass a file_id as string to send a video note that exists on the Telegram servers, or
                 pass a file path as string to upload a new video note that exists on your local machine.
                 Sending video notes by a URL is currently unsupported.
-                pass a readable file-like object with .name
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -130,30 +128,11 @@ class SendVideoNote(BaseClient):
         file = None
 
         try:
-            if isinstance(video_note, str):
-                if os.path.exists(video_note):
-                    thumb = None if thumb is None else self.save_file(thumb)
-                    file = self.save_file(video_note, progress=progress, progress_args=progress_args)
-                    media = types.InputMediaUploadedDocument(
-                        mime_type=self.guess_mime_type(video_note) or "video/mp4",
-                        file=file,
-                        thumb=thumb,
-                        attributes=[
-                            types.DocumentAttributeVideo(
-                                round_message=True,
-                                duration=duration,
-                                w=length,
-                                h=length
-                            )
-                        ]
-                    )
-                else:
-                    media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
-            elif hasattr(video_note, "read"):
+            if os.path.exists(video_note):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video_note, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video_note.name) or "video/mp4",
+                    mime_type=self.guess_mime_type(video_note) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -165,6 +144,8 @@ class SendVideoNote(BaseClient):
                         )
                     ]
                 )
+            else:
+                media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
 
             while True:
                 try:
