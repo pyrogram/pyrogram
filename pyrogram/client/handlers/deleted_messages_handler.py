@@ -46,5 +46,5 @@ class DeletedMessagesHandler(Handler):
     def __init__(self, callback: callable, filters=None):
         super().__init__(callback, filters)
 
-    def check(self, messages):
-        return super().check(messages[0])
+    async def check(self, messages):
+        return (await super().check(messages[0]))
