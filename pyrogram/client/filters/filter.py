@@ -42,6 +42,7 @@ class InvertFilter(Filter):
             x = await self.base(message)
         else:
             x = self.base(message)
+
         return not x
 
 
@@ -55,10 +56,12 @@ class AndFilter(Filter):
             x = await self.base(message)
         else:
             x = self.base(message)
+
         if asyncio.iscoroutinefunction(self.other.__call__):
             y = await self.other(message)
         else:
             y = self.other(message)
+
         return x and y
 
 
@@ -72,8 +75,10 @@ class OrFilter(Filter):
             x = await self.base(message)
         else:
             x = self.base(message)
+
         if asyncio.iscoroutinefunction(self.other.__call__):
             y = await self.other(message)
         else:
             y = self.other(message)
+
         return x or y
