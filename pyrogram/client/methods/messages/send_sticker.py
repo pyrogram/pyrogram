@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -113,7 +114,7 @@ class SendSticker(BaseClient):
         file = None
 
         try:
-            if os.path.exists(sticker):
+            if os.path.isfile(sticker):
                 file = self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(sticker) or "image/webp",
@@ -122,7 +123,7 @@ class SendSticker(BaseClient):
                         types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
                     ]
                 )
-            elif sticker.startswith("http"):
+            elif re.match("^https?://", sticker):
                 media = types.InputMediaDocumentExternal(
                     url=sticker
                 )

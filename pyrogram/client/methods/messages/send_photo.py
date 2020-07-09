@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -137,13 +138,13 @@ class SendPhoto(BaseClient):
         file = None
 
         try:
-            if os.path.exists(photo):
+            if os.path.isfile(photo):
                 file = self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedPhoto(
                     file=file,
                     ttl_seconds=ttl_seconds
                 )
-            elif photo.startswith("http"):
+            elif re.match("^https?://", photo):
                 media = types.InputMediaPhotoExternal(
                     url=photo,
                     ttl_seconds=ttl_seconds

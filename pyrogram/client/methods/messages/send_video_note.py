@@ -128,7 +128,7 @@ class SendVideoNote(BaseClient):
         file = None
 
         try:
-            if os.path.exists(video_note):
+            if os.path.isfile(video_note):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video_note, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(

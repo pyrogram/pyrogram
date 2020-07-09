@@ -18,13 +18,12 @@
 
 import logging
 import os
-import time
+import re
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient, utils
-from pyrogram.errors import FloodWait
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +76,7 @@ class SendMediaGroup(BaseClient):
 
         for i in media:
             if isinstance(i, pyrogram.InputMediaPhoto):
-                if os.path.exists(i.media):
+                if os.path.isfile(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
                             peer=self.resolve_peer(chat_id),
@@ -94,7 +93,7 @@ class SendMediaGroup(BaseClient):
                             file_reference=media.photo.file_reference
                         )
                     )
-                elif i.media.startswith("http"):
+                elif re.match("^https?://", i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
                             peer=self.resolve_peer(chat_id),
@@ -114,7 +113,7 @@ class SendMediaGroup(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(i.media, i.file_ref, 2)
             elif isinstance(i, pyrogram.InputMediaVideo):
-                if os.path.exists(i.media):
+                if os.path.isfile(i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
                             peer=self.resolve_peer(chat_id),
@@ -142,7 +141,7 @@ class SendMediaGroup(BaseClient):
                             file_reference=media.document.file_reference
                         )
                     )
-                elif i.media.startswith("http"):
+                elif re.match("^https?://", i.media):
                     media = self.send(
                         functions.messages.UploadMedia(
                             peer=self.resolve_peer(chat_id),

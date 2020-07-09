@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -160,7 +161,7 @@ class SendVideo(BaseClient):
         file = None
 
         try:
-            if os.path.exists(video):
+            if os.path.isfile(video):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
@@ -177,7 +178,7 @@ class SendVideo(BaseClient):
                         types.DocumentAttributeFilename(file_name=file_name or os.path.basename(video))
                     ]
                 )
-            elif video.startswith("http"):
+            elif re.match("^https?://", video):
                 media = types.InputMediaDocumentExternal(
                     url=video
                 )

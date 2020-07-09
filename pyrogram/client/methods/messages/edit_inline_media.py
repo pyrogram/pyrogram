@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+
 import pyrogram
 from pyrogram.api import functions, types
 from pyrogram.client.ext import BaseClient, utils
@@ -72,35 +74,35 @@ class EditInlineMedia(BaseClient):
         parse_mode = media.parse_mode
 
         if isinstance(media, InputMediaPhoto):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaPhotoExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )

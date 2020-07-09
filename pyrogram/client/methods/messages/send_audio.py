@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -163,7 +164,7 @@ class SendAudio(BaseClient):
         file = None
 
         try:
-            if os.path.exists(audio):
+            if os.path.isfile(audio):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
@@ -179,7 +180,7 @@ class SendAudio(BaseClient):
                         types.DocumentAttributeFilename(file_name=file_name or os.path.basename(audio))
                     ]
                 )
-            elif audio.startswith("http"):
+            elif re.match("^https?://", audio):
                 media = types.InputMediaDocumentExternal(
                     url=audio
                 )

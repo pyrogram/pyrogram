@@ -63,7 +63,7 @@ class SetChatPhoto(BaseClient):
         """
         peer = self.resolve_peer(chat_id)
 
-        if os.path.exists(photo):
+        if os.path.isfile(photo):
             photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
         else:
             photo = utils.get_input_media_from_file_id(photo, file_ref, 2)

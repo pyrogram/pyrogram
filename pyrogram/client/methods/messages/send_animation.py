@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -163,7 +164,7 @@ class SendAnimation(BaseClient):
         file = None
 
         try:
-            if os.path.exists(animation):
+            if os.path.isfile(animation):
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(animation, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
@@ -181,7 +182,7 @@ class SendAnimation(BaseClient):
                         types.DocumentAttributeAnimated()
                     ]
                 )
-            elif animation.startswith("http"):
+            elif re.match("^https?://", animation):
                 media = types.InputMediaDocumentExternal(
                     url=animation
                 )
