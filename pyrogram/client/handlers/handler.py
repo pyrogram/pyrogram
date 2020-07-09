@@ -31,7 +31,7 @@ class Handler:
                 return (await self.filters(update))
 
             else:
-                return (self.filters(update))
+                return self.filters(update)
 
         else:
-            return (True)
+            return True
