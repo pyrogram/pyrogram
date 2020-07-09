@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import logging
 import math
 import os
@@ -30,7 +31,7 @@ from importlib import import_module, reload
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
-from typing import Union, List
+from typing import Union, List, BinaryIO
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import TLObject
@@ -39,9 +40,9 @@ from pyrogram.client.handlers.handler import Handler
 from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.errors import (
-    PhoneMigrate, NetworkMigrate, SessionPasswordNeeded,
-    FloodWait, PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate, AuthBytesInvalid,
-    BadRequest)
+    PhoneMigrate, NetworkMigrate, SessionPasswordNeeded, PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate,
+    AuthBytesInvalid, BadRequest
+)
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
 from .methods import Methods
@@ -1713,7 +1714,7 @@ class Client(Methods, BaseClient):
 
     def save_file(
         self,
-        path: str,
+        path: Union[str, BinaryIO],
         file_id: int = None,
         file_part: int = 0,
         progress: callable = None,
@@ -1767,7 +1768,19 @@ class Client(Methods, BaseClient):
             RPCError: In case of a Telegram RPC error.
         """
         part_size = 512 * 1024
-        file_size = os.path.getsize(path)
+
+        if isinstance(path, str):
+            fp = open(path, "rb")
+        elif isinstance(path, io.IOBase):
+            fp = path
+        else:
+            raise ValueError("Invalid file. Expected a file path as string or a binary (not text) file pointer")
+
+        file_name = fp.name
+
+        fp.seek(0, os.SEEK_END)
+        file_size = fp.tell()
+        fp.seek(0)
 
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
@@ -1785,11 +1798,11 @@ class Client(Methods, BaseClient):
         session.start()
 
         try:
-            with open(path, "rb") as f:
-                f.seek(part_size * file_part)
+            with fp:
+                fp.seek(part_size * file_part)
 
                 while True:
-                    chunk = f.read(part_size)
+                    chunk = fp.read(part_size)
 
                     if not chunk:
                         if not is_big:
@@ -1835,14 +1848,14 @@ class Client(Methods, BaseClient):
                 return types.InputFileBig(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=file_name,
 
                 )
             else:
                 return types.InputFile(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=file_name,
                     md5_checksum=md5_sum
                 )
         finally:

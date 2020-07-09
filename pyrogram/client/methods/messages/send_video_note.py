@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,11 +29,11 @@ class SendVideoNote(BaseClient):
     def send_video_note(
         self,
         chat_id: Union[int, str],
-        video_note: str,
+        video_note: Union[str, BinaryIO],
         file_ref: str = None,
         duration: int = 0,
         length: int = 1,
-        thumb: str = None,
+        thumb: Union[str, BinaryIO] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -54,10 +54,11 @@ class SendVideoNote(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            video_note (``str``):
+            video_note (``str`` | ``BinaryIO``):
                 Video note to send.
-                Pass a file_id as string to send a video note that exists on the Telegram servers, or
-                pass a file path as string to upload a new video note that exists on your local machine.
+                Pass a file_id as string to send a video note that exists on the Telegram servers,
+                pass a file path as string to upload a new video note that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
                 Sending video notes by a URL is currently unsupported.
 
             file_ref (``str``, *optional*):
@@ -70,7 +71,7 @@ class SendVideoNote(BaseClient):
             length (``int``, *optional*):
                 Video width and height.
 
-            thumb (``str``, *optional*):
+            thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the video sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
@@ -128,11 +129,30 @@ class SendVideoNote(BaseClient):
         file = None
 
         try:
-            if os.path.isfile(video_note):
+            if isinstance(video_note, str):
+                if os.path.isfile(video_note):
+                    thumb = None if thumb is None else self.save_file(thumb)
+                    file = self.save_file(video_note, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(video_note) or "video/mp4",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeVideo(
+                                round_message=True,
+                                duration=duration,
+                                w=length,
+                                h=length
+                            )
+                        ]
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
+            else:
                 thumb = None if thumb is None else self.save_file(thumb)
                 file = self.save_file(video_note, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video_note) or "video/mp4",
+                    mime_type=self.guess_mime_type(video_note.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -144,8 +164,6 @@ class SendVideoNote(BaseClient):
                         )
                     ]
                 )
-            else:
-                media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
 
             while True:
                 try:
