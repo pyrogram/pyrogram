@@ -17,7 +17,8 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+import re
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,14 +30,14 @@ class SendVideo(BaseClient):
     async def send_video(
         self,
         chat_id: Union[int, str],
-        video: str,
+        video: Union[str, BinaryIO],
         file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
-        thumb: str = None,
+        thumb: Union[str, BinaryIO] = None,
         file_name: str = None,
         supports_streaming: bool = True,
         disable_notification: bool = None,
@@ -59,11 +60,12 @@ class SendVideo(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            video (``str``):
+            video (``str`` | ``BinaryIO``):
                 Video to send.
                 Pass a file_id as string to send a video that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a video from the Internet, or
-                pass a file path as string to upload a new video that exists on your local machine.
+                pass an HTTP URL as a string for Telegram to get a video from the Internet,
+                pass a file path as string to upload a new video that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -88,7 +90,7 @@ class SendVideo(BaseClient):
             height (``int``, *optional*):
                 Video height.
 
-            thumb (``str``, *optional*):
+            thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the video sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
@@ -160,11 +162,35 @@ class SendVideo(BaseClient):
         file = None
 
         try:
-            if os.path.exists(video):
+            if isinstance(video, str):
+                if os.path.isfile(video):
+                    thumb = None if thumb is None else await self.save_file(thumb)
+                    file = await self.save_file(video, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(video) or "video/mp4",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeVideo(
+                                supports_streaming=supports_streaming or None,
+                                duration=duration,
+                                w=width,
+                                h=height
+                            ),
+                            types.DocumentAttributeFilename(file_name=file_name or os.path.basename(video))
+                        ]
+                    )
+                elif re.match("^https?://", video):
+                    media = types.InputMediaDocumentExternal(
+                        url=video
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(video, file_ref, 4)
+            else:
                 thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video) or "video/mp4",
+                    mime_type=self.guess_mime_type(video.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -174,15 +200,9 @@ class SendVideo(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(video))
+                        types.DocumentAttributeFilename(file_name=video.name)
                     ]
                 )
-            elif video.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=video
-                )
-            else:
-                media = utils.get_input_media_from_file_id(video, file_ref, 4)
 
             while True:
                 try:

@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import io
 import logging
 import math
 import os
@@ -28,7 +29,7 @@ from hashlib import sha256, md5
 from importlib import import_module, reload
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
-from typing import Union, List
+from typing import Union, List, BinaryIO
 
 from pyrogram.api import functions, types
 from pyrogram.api.core import TLObject
@@ -38,8 +39,9 @@ from pyrogram.client.methods.password.utils import compute_check
 from pyrogram.crypto import AES
 from pyrogram.errors import (
     PhoneMigrate, NetworkMigrate, SessionPasswordNeeded,
-    PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate, AuthBytesInvalid,
-    BadRequest)
+    PeerIdInvalid, VolumeLocNotFound, UserMigrate, ChannelPrivate,
+    AuthBytesInvalid, BadRequest
+)
 from pyrogram.session import Auth, Session
 from .ext import utils, Syncer, BaseClient, Dispatcher
 from .ext.utils import ainput
@@ -1714,13 +1716,14 @@ class Client(Methods, BaseClient):
             except KeyError:
                 raise PeerIdInvalid
 
-    async def save_file(self,
-                        path: str,
-                        file_id: int = None,
-                        file_part: int = 0,
-                        progress: callable = None,
-                        progress_args: tuple = ()
-                        ):
+    async def save_file(
+        self,
+        path: Union[str, BinaryIO],
+        file_id: int = None,
+        file_part: int = 0,
+        progress: callable = None,
+        progress_args: tuple = ()
+    ):
         """Upload a file onto Telegram servers, without actually sending the message to anyone.
         Useful whenever an InputFile type is required.
 
@@ -1782,7 +1785,19 @@ class Client(Methods, BaseClient):
                     logging.error(e)
 
         part_size = 512 * 1024
-        file_size = os.path.getsize(path)
+
+        if isinstance(path, str):
+            fp = open(path, "rb")
+        elif isinstance(path, io.IOBase):
+            fp = path
+        else:
+            raise ValueError("Invalid file. Expected a file path as string or a binary (not text) file pointer")
+
+        file_name = fp.name
+
+        fp.seek(0, os.SEEK_END)
+        file_size = fp.tell()
+        fp.seek(0)
 
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
@@ -1805,11 +1820,11 @@ class Client(Methods, BaseClient):
             for session in pool:
                 await session.start()
 
-            with open(path, "rb") as f:
-                f.seek(part_size * file_part)
+            with fp:
+                fp.seek(part_size * file_part)
 
                 while True:
-                    chunk = f.read(part_size)
+                    chunk = fp.read(part_size)
 
                     if not chunk:
                         if not is_big:
@@ -1851,14 +1866,14 @@ class Client(Methods, BaseClient):
                 return types.InputFileBig(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=file_name,
 
                 )
             else:
                 return types.InputFile(
                     id=file_id,
                     parts=file_total_parts,
-                    name=os.path.basename(path),
+                    name=file_name,
                     md5_checksum=md5_sum
                 )
         finally:

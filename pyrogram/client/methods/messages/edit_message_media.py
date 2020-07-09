@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -78,7 +79,7 @@ class EditMessageMedia(BaseClient):
         parse_mode = media.parse_mode
 
         if isinstance(media, InputMediaPhoto):
-            if os.path.exists(media.media):
+            if os.path.isfile(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -95,14 +96,14 @@ class EditMessageMedia(BaseClient):
                         file_reference=media.photo.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaPhotoExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
-            if os.path.exists(media.media):
+            if os.path.isfile(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -132,14 +133,14 @@ class EditMessageMedia(BaseClient):
                         file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
-            if os.path.exists(media.media):
+            if os.path.isfile(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -168,14 +169,14 @@ class EditMessageMedia(BaseClient):
                         file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
-            if os.path.exists(media.media):
+            if os.path.isfile(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -206,14 +207,14 @@ class EditMessageMedia(BaseClient):
                         file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
-            if os.path.exists(media.media):
+            if os.path.isfile(media.media):
                 media = await self.send(
                     functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -237,7 +238,7 @@ class EditMessageMedia(BaseClient):
                         file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )

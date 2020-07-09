@@ -17,7 +17,8 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+import re
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,14 +30,14 @@ class SendAudio(BaseClient):
     async def send_audio(
         self,
         chat_id: Union[int, str],
-        audio: str,
+        audio: Union[str, BinaryIO],
         file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
         performer: str = None,
         title: str = None,
-        thumb: str = None,file_name: str = None,
+        thumb: Union[str, BinaryIO] = None,file_name: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -59,11 +60,12 @@ class SendAudio(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            audio (``str``):
+            audio (``str`` | ``BinaryIO``):
                 Audio file to send.
                 Pass a file_id as string to send an audio file that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get an audio file from the Internet, or
-                pass a file path as string to upload a new audio file that exists on your local machine.
+                pass an HTTP URL as a string for Telegram to get an audio file from the Internet,
+                pass a file path as string to upload a new audio file that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -88,7 +90,7 @@ class SendAudio(BaseClient):
             title (``str``, *optional*):
                 Track name.
 
-            thumb (``str``, *optional*):
+            thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the music file album cover.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
@@ -162,11 +164,34 @@ class SendAudio(BaseClient):
         file = None
 
         try:
-            if os.path.exists(audio):
+            if isinstance(audio, str):
+                if os.path.isfile(audio):
+                    thumb = None if thumb is None else await self.save_file(thumb)
+                    file = await self.save_file(audio, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(audio) or "audio/mpeg",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeAudio(
+                                duration=duration,
+                                performer=performer,
+                                title=title
+                            ),
+                            types.DocumentAttributeFilename(file_name=file_name or os.path.basename(audio))
+                        ]
+                    )
+                elif re.match("^https?://", audio):
+                    media = types.InputMediaDocumentExternal(
+                        url=audio
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(audio, file_ref, 9)
+            else:
                 thumb = None if thumb is None else await self.save_file(thumb)
                 file = await self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(audio) or "audio/mpeg",
+                    mime_type=self.guess_mime_type(audio.name) or "audio/mpeg",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -175,15 +200,9 @@ class SendAudio(BaseClient):
                             performer=performer,
                             title=title
                         ),
-                        types.DocumentAttributeFilename(file_name=file_name or os.path.basename(audio))
+                        types.DocumentAttributeFilename(file_name=audio.name)
                     ]
                 )
-            elif audio.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=audio
-                )
-            else:
-                media = utils.get_input_media_from_file_id(audio, file_ref, 9)
 
             while True:
                 try:

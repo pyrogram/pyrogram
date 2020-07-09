@@ -17,7 +17,8 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+import re
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -29,7 +30,7 @@ class SendPhoto(BaseClient):
     async def send_photo(
         self,
         chat_id: Union[int, str],
-        photo: str,
+        photo: Union[str, BinaryIO],
         file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -54,11 +55,12 @@ class SendPhoto(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            photo (``str``):
+            photo (``str`` | ``BinaryIO``):
                 Photo to send.
                 Pass a file_id as string to send a photo that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a photo from the Internet, or
-                pass a file path as string to upload a new photo that exists on your local machine.
+                pass an HTTP URL as a string for Telegram to get a photo from the Internet,
+                pass a file path as string to upload a new photo that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -137,19 +139,26 @@ class SendPhoto(BaseClient):
         file = None
 
         try:
-            if os.path.exists(photo):
+            if isinstance(photo, str):
+                if os.path.isfile(photo):
+                    file = await self.save_file(photo, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedPhoto(
+                        file=file,
+                        ttl_seconds=ttl_seconds
+                    )
+                elif re.match("^https?://", photo):
+                    media = types.InputMediaPhotoExternal(
+                        url=photo,
+                        ttl_seconds=ttl_seconds
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(photo, file_ref, 2)
+            else:
                 file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedPhoto(
                     file=file,
                     ttl_seconds=ttl_seconds
                 )
-            elif photo.startswith("http"):
-                media = types.InputMediaPhotoExternal(
-                    url=photo,
-                    ttl_seconds=ttl_seconds
-                )
-            else:
-                media = utils.get_input_media_from_file_id(photo, file_ref, 2)
 
             while True:
                 try:
