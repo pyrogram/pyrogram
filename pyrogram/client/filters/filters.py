@@ -214,7 +214,7 @@ class Filters:
 
     from_scheduled = create(lambda _, m: bool(m.from_scheduled), "FromScheduledFilter")
     """Filter new automatically sent messages that were previously scheduled."""
-    
+
     # Messages from linked channels are forwarded automatically by Telegram and have no sender (from_user is None).
     linked_channel = create(lambda _, m: bool(m.forward_from_chat and not m.from_user), "LinkedChannelFilter")
     """Filter messages that are automatically forwarded from the linked channel to the group chat."""
