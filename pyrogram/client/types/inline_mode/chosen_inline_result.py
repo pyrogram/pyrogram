@@ -33,7 +33,6 @@
 
 from base64 import b64encode
 from struct import pack
-from typing import Union
 
 import pyrogram
 from pyrogram.api import types
@@ -41,7 +40,6 @@ from pyrogram.client.types.object import Object
 from pyrogram.client.types.update import Update
 from pyrogram.client.types.user_and_chats import User
 from pyrogram.client.types.messages_and_media import Location
-from pyrogram.client.ext import utils
 
 
 class ChosenInlineResult(Object, Update):

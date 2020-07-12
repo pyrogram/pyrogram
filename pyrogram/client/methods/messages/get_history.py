@@ -17,13 +17,11 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions
 from pyrogram.client.ext import utils
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)

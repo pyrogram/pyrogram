@@ -16,14 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
-from typing import List
-
 import pyrogram
 from pyrogram.api import types
-from .thumbnail import Thumbnail
 from ..object import Object
-from ...ext.utils import encode_file_id, encode_file_ref
 
 
 class Dice(Object):

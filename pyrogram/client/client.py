@@ -1649,7 +1649,7 @@ class Client(Methods, BaseClient):
         try:
             return self.storage.get_peer_by_id(peer_id)
         except KeyError:
-            if type(peer_id) is str:
+            if isinstance(peer_id, str):
                 if peer_id in ("self", "me"):
                     return types.InputPeerSelf()
 

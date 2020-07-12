@@ -214,7 +214,7 @@ class Filters:
 
     from_scheduled = create(lambda _, m: bool(m.from_scheduled), "FromScheduledFilter")
     """Filter new automatically sent messages that were previously scheduled."""
-    
+
     # Messages from linked channels are forwarded automatically by Telegram and have no sender (from_user is None).
     linked_channel = create(lambda _, m: bool(m.forward_from_chat and not m.from_user), "LinkedChannelFilter")
     """Filter messages that are automatically forwarded from the linked channel to the group chat."""
@@ -277,11 +277,11 @@ class Filters:
 
             return False
 
-        commands = commands if type(commands) is list else [commands]
+        commands = commands if isinstance(commands, list) else [commands]
         commands = {c if case_sensitive else c.lower() for c in commands}
 
         prefixes = [] if prefixes is None else prefixes
-        prefixes = prefixes if type(prefixes) is list else [prefixes]
+        prefixes = prefixes if isinstance(prefixes, list) else [prefixes]
         prefixes = set(prefixes) if prefixes else {""}
 
         return create(
@@ -345,11 +345,11 @@ class Filters:
         """
 
         def __init__(self, users: int or str or list = None):
-            users = [] if users is None else users if type(users) is list else [users]
+            users = [] if users is None else users if isinstance(users, list) else [users]
 
             super().__init__(
                 "me" if u in ["me", "self"]
-                else u.lower().strip("@") if type(u) is str
+                else u.lower().strip("@") if isinstance(u, str)
                 else u for u in users
             )
 
@@ -376,11 +376,11 @@ class Filters:
         """
 
         def __init__(self, chats: int or str or list = None):
-            chats = [] if chats is None else chats if type(chats) is list else [chats]
+            chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
             super().__init__(
                 "me" if c in ["me", "self"]
-                else c.lower().strip("@") if type(c) is str
+                else c.lower().strip("@") if isinstance(c, str)
                 else c for c in chats
             )
 

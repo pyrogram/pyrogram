@@ -35,7 +35,7 @@ class GetCommonChats(BaseClient):
 
         Returns:
             List of :obj:`Chat`: On success, a list of the common chats is returned.
-            
+
         Raises:
             ValueError: If the user_id doesn't belong to a user.
 
@@ -58,5 +58,5 @@ class GetCommonChats(BaseClient):
             )
 
             return pyrogram.List([pyrogram.Chat._parse_chat(self, x) for x in r.chats])
-        
+
         raise ValueError('The user_id "{}" doesn\'t belong to a user'.format(user_id))
