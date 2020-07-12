@@ -26,7 +26,7 @@ NOTICE_PATH = "NOTICE"
 SECTION_RE = re.compile(r"---(\w+)---")
 LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
 COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);(?: // Docs: (.+))?$", re.MULTILINE)
-ARGS_RE = re.compile("[^{](\w+):([\w?!.<>#]+)")
+ARGS_RE = re.compile(r"[^{](\w+):([\w?!.<>#]+)")
 FLAGS_RE = re.compile(r"flags\.(\d+)\?")
 FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
 FLAGS_RE_3 = re.compile(r"flags:#")
