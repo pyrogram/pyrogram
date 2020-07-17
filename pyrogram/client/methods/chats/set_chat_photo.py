@@ -41,7 +41,7 @@ class SetChatPhoto(BaseClient):
             photo (``str``):
                 New chat photo. You can pass a :obj:`Photo` file_id or a file path to upload a new photo from your local
                 machine.
-                
+
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
                 To be used in combination with a file id in case a file reference is needed.

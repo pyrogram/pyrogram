@@ -22,7 +22,6 @@ from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient, utils
 
 log = logging.getLogger(__name__)

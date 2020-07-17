@@ -26,7 +26,7 @@ import shutil
 import tempfile
 from configparser import ConfigParser
 from hashlib import sha256, md5
-from importlib import import_module, reload
+from importlib import import_module
 from pathlib import Path
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from typing import Union, List, BinaryIO
@@ -1527,7 +1527,7 @@ class Client(Methods, BaseClient):
             if not include:
                 for path in sorted(Path(root.replace(".", "/")).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
-                    module = reload(import_module(module_path))
+                    module = import_module(module_path)
 
                     for name in vars(module).keys():
                         # noinspection PyBroadException
@@ -1549,7 +1549,7 @@ class Client(Methods, BaseClient):
                     warn_non_existent_functions = True
 
                     try:
-                        module = reload(import_module(module_path))
+                        module = import_module(module_path)
                     except ImportError:
                         log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
                             self.session_name, module_path))
@@ -1653,7 +1653,7 @@ class Client(Methods, BaseClient):
         try:
             return self.storage.get_peer_by_id(peer_id)
         except KeyError:
-            if type(peer_id) is str:
+            if isinstance(peer_id, str):
                 if peer_id in ("self", "me"):
                     return types.InputPeerSelf()
 

@@ -29,7 +29,7 @@ class UpdateChatUsername(BaseClient):
         username: Union[str, None]
     ) -> bool:
         """Update a channel or a supergroup username.
-        
+
         To update your own username (for users only, not bots) you can use :meth:`~Client.update_username`.
 
         Parameters:

@@ -28,13 +28,13 @@ class UpdateProfile(BaseClient):
         bio: str = None
     ) -> bool:
         """Update your profile details such as first name, last name and bio.
-        
+
         You can omit the parameters you don't want to change.
-        
+
         Parameters:
             first_name (``str``, *optional*):
                 The new first name.
-        
+
             last_name (``str``, *optional*):
                 The new last name.
                 Pass "" (empty string) to remove it.
@@ -42,19 +42,19 @@ class UpdateProfile(BaseClient):
             bio (``str``, *optional*):
                 The new bio, also known as "about". Max 70 characters.
                 Pass "" (empty string) to remove it.
-                
+
         Returns:
             ``bool``: True on success.
-        
+
         Example:
             .. code-block:: python
-                
+
                 # Update your first name only
                 app.update_profile(first_name="Pyrogram")
-                
+
                 # Update first name and bio
                 app.update_profile(first_name="Pyrogram", bio="https://docs.pyrogram.org/")
-                
+
                 # Remove the last name
                 app.update_profile(last_name="")
         """
