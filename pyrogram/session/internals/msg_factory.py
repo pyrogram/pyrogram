@@ -23,7 +23,7 @@ from pyrogram.api.core import Message, MsgContainer, TLObject
 from .msg_id import MsgId
 from .seq_no import SeqNo
 
-not_content_related = [Ping, HttpWait, MsgsAck, MsgContainer]
+not_content_related = (Ping, HttpWait, MsgsAck, MsgContainer)
 
 
 class MsgFactory:
@@ -34,6 +34,6 @@ class MsgFactory:
         return Message(
             body,
             MsgId(),
-            self.seq_no(type(body) not in not_content_related),
+            self.seq_no(not isinstance(body, not_content_related)),
             len(body)
         )

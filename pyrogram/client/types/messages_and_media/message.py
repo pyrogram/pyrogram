@@ -2964,7 +2964,7 @@ class Message(Object, Update):
                 chat_id=message.chat.id,
                 message_id=message_id,
             )
-            
+
         Example:
             .. code-block:: python
 
@@ -3074,7 +3074,7 @@ class Message(Object, Update):
         Parameters:
             option (``int``):
                 Index of the poll option you want to vote for (0 to 9).
-            
+
         Returns:
             :obj:`Poll`: On success, the poll with the chosen option is returned.
 
