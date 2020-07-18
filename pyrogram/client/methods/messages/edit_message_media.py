@@ -35,6 +35,7 @@ class EditMessageMedia(BaseClient):
         self,
         chat_id: Union[int, str],
         message_id: int,
+        file_name: str = None,
         media: InputMedia,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> "pyrogram.Message":
@@ -224,7 +225,7 @@ class EditMessageMedia(BaseClient):
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
-                                    file_name=media.file_name or os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )

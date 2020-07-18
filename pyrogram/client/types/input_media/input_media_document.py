@@ -54,7 +54,6 @@ class InputMediaDocument(InputMedia):
     def __init__(
         self,
         media: str,
-        file_name: str = None,
         file_ref: str = None,
         thumb: str = None,
         caption: str = "",
@@ -63,4 +62,3 @@ class InputMediaDocument(InputMedia):
         super().__init__(media, file_ref, caption, parse_mode)
 
         self.thumb = thumb
-        self.file_name = file_name
