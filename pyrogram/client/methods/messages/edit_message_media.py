@@ -224,7 +224,7 @@ class EditMessageMedia(BaseClient):
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=media.file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
