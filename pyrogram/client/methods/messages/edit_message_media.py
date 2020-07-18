@@ -35,9 +35,9 @@ class EditMessageMedia(BaseClient):
         self,
         chat_id: Union[int, str],
         message_id: int,
-        file_name: str = None,
         media: InputMedia,
-        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None,
+        file_name: str = None
     ) -> "pyrogram.Message":
         """Edit animation, audio, document, photo or video messages.
 
@@ -58,6 +58,9 @@ class EditMessageMedia(BaseClient):
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
+
+            file_name (``str``):
+                Custom file name
 
         Returns:
             :obj:`Message`: On success, the edited message is returned.
