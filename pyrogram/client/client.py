@@ -1166,6 +1166,54 @@ class Client(Methods, BaseClient):
 
         self._parse_mode = parse_mode
 
+    # TODO: redundant, remove in next major version
+    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+        """Set the parse mode to be used globally by the client.
+
+        When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
+        global value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and
+        combined together.
+
+        Parameters:
+            parse_mode (``str``):
+                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
+                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
+                completely.
+
+        Raises:
+            ValueError: In case the provided *parse_mode* is not a valid parse mode.
+
+        Example:
+            .. code-block:: python
+                :emphasize-lines: 10,14,18,22
+
+                from pyrogram import Client
+
+                app = Client("my_account")
+
+                with app:
+                    # Default combined mode: Markdown + HTML
+                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+
+                    # Force Markdown-only, HTML is disabled
+                    app.set_parse_mode("markdown")
+                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+
+                    # Force HTML-only, Markdown is disabled
+                    app.set_parse_mode("html")
+                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+
+                    # Disable the parser completely
+                    app.set_parse_mode(None)
+                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+
+                    # Bring back the default combined mode
+                    app.set_parse_mode()
+                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+        """
+
+        self.parse_mode = parse_mode
+
     def fetch_peers(self, peers: List[Union[types.User, types.Chat, types.Channel]]) -> bool:
         is_min = False
         parsed_peers = []
