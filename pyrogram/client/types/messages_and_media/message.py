@@ -328,7 +328,6 @@ class Message(Object, Update):
         views: int = None,
         via_bot: User = None,
         outgoing: bool = None,
-        link: str = None,
         matches: List[Match] = None,
         command: List[str] = None,
         reply_markup: Union[
@@ -394,7 +393,6 @@ class Message(Object, Update):
         self.views = views
         self.via_bot = via_bot
         self.outgoing = outgoing
-        self.link = link
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
@@ -676,11 +674,11 @@ class Message(Object, Update):
             return parsed_message
 
     @property
-    def link(self):
-        if self.chat.type in ["group", "supergroup", "channel"] and self.chat.username:
+    def link(self) -> str:
+        if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
             return "t.me/" + self.chat.username + "/" + str(self.message_id)
         else:
-            return "t.me/c/" + str(self.chat.id).replace("-100", "") + "/" + str(self.message_id)
+            return "t.me/c/" + str(utils.get_channel_id(self.chat.id)) + "/" + str(self.message_id)
 
 
     def reply_text(
