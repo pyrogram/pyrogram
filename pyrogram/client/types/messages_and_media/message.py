@@ -251,6 +251,9 @@ class Message(Object, Update):
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
+        link (``str``):
+            A link to the message, only for groups and channels.
+
         matches (List of regex Matches, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
@@ -325,6 +328,7 @@ class Message(Object, Update):
         views: int = None,
         via_bot: User = None,
         outgoing: bool = None,
+        link: str = None,
         matches: List[Match] = None,
         command: List[str] = None,
         reply_markup: Union[
@@ -390,6 +394,7 @@ class Message(Object, Update):
         self.views = views
         self.via_bot = via_bot
         self.outgoing = outgoing
+        self.link = link
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
@@ -669,6 +674,14 @@ class Message(Object, Update):
                     pass
 
             return parsed_message
+
+    @property
+    def link(self):
+        if self.chat.type in ["group", "supergroup", "channel"] and self.chat.username:
+            return "t.me/" + self.chat.username + "/" + str(self.message_id)
+        else:
+            return "t.me/c/" + str(self.chat.id).replace("-100", "") + "/" + str(self.message_id)
+
 
     def reply_text(
         self,
