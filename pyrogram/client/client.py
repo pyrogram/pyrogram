@@ -143,6 +143,11 @@ class Client(Methods, BaseClient):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
             This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
+        parse_mode (``str``, *optional*):
+            The parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
+            to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
+            completely.
+
         no_updates (``bool``, *optional*):
             Pass True to completely disable incoming updates for the current session.
             When updates are disabled your client can't receive any new message.
@@ -184,6 +189,7 @@ class Client(Methods, BaseClient):
         workdir: str = BaseClient.WORKDIR,
         config_file: str = BaseClient.CONFIG_FILE,
         plugins: dict = None,
+        parse_mode: str = BaseClient.PARSE_MODES[0],
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD
@@ -210,6 +216,7 @@ class Client(Methods, BaseClient):
         self.workdir = Path(workdir)
         self.config_file = Path(config_file)
         self.plugins = plugins
+        self.parse_mode = parse_mode
         self.no_updates = no_updates
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
@@ -1131,6 +1138,21 @@ class Client(Methods, BaseClient):
         """
         return self.storage.export_session_string()
 
+    @property
+    def parse_mode(self):
+        return self._parse_mode
+
+    @parse_mode.setter
+    def parse_mode(self, parse_mode: Union[str, None] = "combined"):
+        if parse_mode not in self.PARSE_MODES:
+            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
+                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
+                parse_mode
+            ))
+
+        self._parse_mode = parse_mode
+
+    # TODO: redundant, remove in next major version
     def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
         """Set the parse mode to be used globally by the client.
 
@@ -1175,12 +1197,6 @@ class Client(Methods, BaseClient):
                     app.set_parse_mode()
                     app.send_message("haskell", "5. **markdown** and <i>html</i>")
         """
-
-        if parse_mode not in self.PARSE_MODES:
-            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
-                parse_mode
-            ))
 
         self.parse_mode = parse_mode
 
