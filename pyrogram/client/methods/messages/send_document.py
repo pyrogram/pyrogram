@@ -152,6 +152,7 @@ class SendDocument(BaseClient):
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(document) or "application/zip",
                         file=file,
+                        force_file=True,
                         thumb=thumb,
                         attributes=[
                             types.DocumentAttributeFilename(file_name=file_name or os.path.basename(document))
