@@ -225,6 +225,7 @@ def pyrogram_api():
             get_profile_photos_count
             iter_profile_photos
             set_profile_photo
+            set_profile_video
             delete_profile_photos
             update_username
             update_profile
