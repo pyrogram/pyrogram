@@ -18,14 +18,17 @@
 
 from pyrogram.api import functions
 from ...ext import BaseClient
+from typing import Union, BinaryIO
 
 
 class SetProfilePhoto(BaseClient):
     def set_profile_photo(
         self,
-        photo: str
+        photo: Union[str, BinaryIO]
     ) -> bool:
         """Set a new profile photo.
+
+        If you want to set a profile video instead, use :meth:`~Client.set_profile_video`
 
         This method only works for Users.
         Bots profile photos must be set using BotFather.
@@ -33,7 +36,8 @@ class SetProfilePhoto(BaseClient):
         Parameters:
             photo (``str``):
                 Profile photo to set.
-                Pass a file path as string to upload a new photo that exists on your local machine.
+                Pass a file path as string to upload a new photo that exists on your local machine or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
         Returns:
             ``bool``: True on success.
