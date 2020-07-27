@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+from typing import Union, BinaryIO
 
 from pyrogram.api import functions, types
 from ...ext import BaseClient, utils
@@ -27,7 +27,7 @@ class SetChatPhoto(BaseClient):
     def set_chat_photo(
         self,
         chat_id: Union[int, str],
-        photo: str,
+        photo: Union[str, BinaryIO],
         file_ref: str = None
     ) -> bool:
         """Set a new profile photo for the chat.
@@ -39,12 +39,13 @@ class SetChatPhoto(BaseClient):
                 Unique identifier (int) or username (str) of the target chat.
 
             photo (``str``):
-                New chat photo. You can pass a :obj:`Photo` file_id or a file path to upload a new photo from your local
-                machine.
+                New chat photo. You can pass a :obj:`Photo` file_id (in pair with a valid file_ref), a file path to
+                upload a new photo from your local machine or a binary file-like object with its attribute ".name"
+                set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
+                To be used in combination with a file_id in case a file reference is needed.
 
         Returns:
             ``bool``: True on success.
@@ -63,11 +64,14 @@ class SetChatPhoto(BaseClient):
         """
         peer = self.resolve_peer(chat_id)
 
-        if os.path.isfile(photo):
-            photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
+        if isinstance(photo, str):
+            if os.path.isfile(photo):
+                photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
+            else:
+                photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
+                photo = types.InputChatPhoto(id=photo.id)
         else:
-            photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
-            photo = types.InputChatPhoto(id=photo.id)
+            photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
 
         if isinstance(peer, types.InputPeerChat):
             self.send(
