@@ -676,10 +676,9 @@ class Message(Object, Update):
     @property
     def link(self) -> str:
         if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
-            return "t.me/" + self.chat.username + "/" + str(self.message_id)
+            return "https://t.me/{}/{}".format(self.chat.username, self.message_id)
         else:
-            return "t.me/c/" + str(utils.get_channel_id(self.chat.id)) + "/" + str(self.message_id)
-
+            return "https://t.me/c/{}/{}".format(utils.get_channel_id(self.chat.id), self.message_id)
 
     def reply_text(
         self,
