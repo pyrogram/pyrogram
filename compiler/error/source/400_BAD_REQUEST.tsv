@@ -145,3 +145,5 @@ BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in cha
 INPUT_FILTER_INVALID	The filter is invalid for this query
 EMOTICON_EMPTY	The emoticon parameter is empty
 EMOTICON_INVALID	The emoticon parameter is invalid
+VIDEO_FILE_INVALID	The video file is invalid
+PRIVACY_TOO_LONG	Your privacy exception list has exceeded the maximum capacity
