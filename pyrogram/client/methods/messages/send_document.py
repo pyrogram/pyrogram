@@ -147,7 +147,7 @@ class SendDocument(BaseClient):
         try:
             if isinstance(document, str):
                 if os.path.isfile(document):
-                    thumb = None if thumb is None else self.save_file(thumb)
+                    thumb = self.save_file(thumb)
                     file = self.save_file(document, progress=progress, progress_args=progress_args)
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(document) or "application/zip",
@@ -165,7 +165,7 @@ class SendDocument(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(document, file_ref, 5)
             else:
-                thumb = None if thumb is None else self.save_file(thumb)
+                thumb = self.save_file(thumb)
                 file = self.save_file(document, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(document.name) or "application/zip",

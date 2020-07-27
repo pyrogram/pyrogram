@@ -167,7 +167,7 @@ class SendAudio(BaseClient):
         try:
             if isinstance(audio, str):
                 if os.path.isfile(audio):
-                    thumb = None if thumb is None else self.save_file(thumb)
+                    thumb = self.save_file(thumb)
                     file = self.save_file(audio, progress=progress, progress_args=progress_args)
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(audio) or "audio/mpeg",
@@ -189,7 +189,7 @@ class SendAudio(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(audio, file_ref, 9)
             else:
-                thumb = None if thumb is None else self.save_file(thumb)
+                thumb = self.save_file(thumb)
                 file = self.save_file(audio, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(audio.name) or "audio/mpeg",

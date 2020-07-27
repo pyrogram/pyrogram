@@ -109,7 +109,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -146,7 +146,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
@@ -182,7 +182,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
@@ -220,7 +220,7 @@ class EditMessageMedia(BaseClient):
                         peer=self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "application/zip",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
+                            thumb=self.save_file(media.thumb),
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(

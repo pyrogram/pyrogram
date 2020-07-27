@@ -164,7 +164,7 @@ class SendVideo(BaseClient):
         try:
             if isinstance(video, str):
                 if os.path.isfile(video):
-                    thumb = None if thumb is None else self.save_file(thumb)
+                    thumb = self.save_file(thumb)
                     file = self.save_file(video, progress=progress, progress_args=progress_args)
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(video) or "video/mp4",
@@ -187,7 +187,7 @@ class SendVideo(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(video, file_ref, 4)
             else:
-                thumb = None if thumb is None else self.save_file(thumb)
+                thumb = self.save_file(thumb)
                 file = self.save_file(video, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(video.name) or "video/mp4",

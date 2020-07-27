@@ -1783,6 +1783,9 @@ class Client(Methods, BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        if path is None:
+            return None
+
         part_size = 512 * 1024
 
         if isinstance(path, str):
