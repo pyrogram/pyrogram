@@ -36,7 +36,8 @@ class EditMessageMedia(BaseClient):
         chat_id: Union[int, str],
         message_id: int,
         media: InputMedia,
-        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None,
+        file_name: str = None
     ) -> "pyrogram.Message":
         """Edit animation, audio, document, photo or video messages.
 
@@ -57,6 +58,10 @@ class EditMessageMedia(BaseClient):
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
+
+            file_name (``str``, *optional*):
+                File name of the media to be sent. Not applicable to photos.
+                Defaults to file's path basename.
 
         Returns:
             :obj:`Message`: On success, the edited message is returned.
@@ -119,7 +124,7 @@ class EditMessageMedia(BaseClient):
                                     h=media.height
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
@@ -155,7 +160,7 @@ class EditMessageMedia(BaseClient):
                                     title=media.title
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
@@ -192,7 +197,7 @@ class EditMessageMedia(BaseClient):
                                     h=media.height
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 ),
                                 types.DocumentAttributeAnimated()
                             ]
@@ -224,7 +229,7 @@ class EditMessageMedia(BaseClient):
                             file=self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
