@@ -110,7 +110,7 @@ class SendSticker(BaseClient):
                 app.send_sticker("me", "sticker.webp")
 
                 # Send sticker using file_id
-                app.send_sticker("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+                app.send_sticker("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
         """
         file = None
 
