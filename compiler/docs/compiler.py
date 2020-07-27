@@ -190,6 +190,7 @@ def pyrogram_api():
             set_administrator_title
             export_chat_invite_link
             set_chat_photo
+            set_chat_video
             delete_chat_photo
             set_chat_title
             set_chat_description
