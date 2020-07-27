@@ -45,7 +45,6 @@ from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
-from .set_chat_video import SetChatVideo
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
@@ -87,7 +86,6 @@ class Chats(
     DeleteSupergroup,
     GetNearbyChats,
     SetAdministratorTitle,
-    SetSlowMode,
-    SetChatVideo
+    SetSlowMode
 ):
     pass

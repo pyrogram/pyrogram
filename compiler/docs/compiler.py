@@ -190,7 +190,6 @@ def pyrogram_api():
             set_administrator_title
             export_chat_invite_link
             set_chat_photo
-            set_chat_video
             delete_chat_photo
             set_chat_title
             set_chat_description
@@ -226,7 +225,6 @@ def pyrogram_api():
             get_profile_photos_count
             iter_profile_photos
             set_profile_photo
-            set_profile_video
             delete_profile_photos
             update_username
             update_profile

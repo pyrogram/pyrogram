@@ -27,10 +27,15 @@ class SetChatPhoto(BaseClient):
     def set_chat_photo(
         self,
         chat_id: Union[int, str],
-        photo: Union[str, BinaryIO],
+        *,
+        photo: Union[str, BinaryIO] = None,
+        video: Union[str, BinaryIO] = None,
         file_ref: str = None
     ) -> bool:
-        """Set a new profile photo for the chat.
+        """Set a new chat photo or video (H.264/MPEG-4 AVC video, max 5 seconds).
+
+        The ``photo`` and ``video`` arguments are mutually exclusive.
+        Pass either one as named argument (see examples below).
 
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
@@ -38,9 +43,14 @@ class SetChatPhoto(BaseClient):
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            photo (``str``):
+            photo (``str`` | ``BinaryIO``, *optional*):
                 New chat photo. You can pass a :obj:`Photo` file_id (in pair with a valid file_ref), a file path to
                 upload a new photo from your local machine or a binary file-like object with its attribute ".name"
+                set for in-memory uploads.
+
+            video (``str`` | ``BinaryIO``, *optional*):
+                New chat video. You can pass a :obj:`Video` file_id (in pair with a valid file_ref), a file path to
+                upload a new video from your local machine or a binary file-like object with its attribute ".name"
                 set for in-memory uploads.
 
             file_ref (``str``, *optional*):
@@ -57,21 +67,34 @@ class SetChatPhoto(BaseClient):
             .. code-block:: python
 
                 # Set chat photo using a local file
-                app.set_chat_photo(chat_id, "photo.jpg")
+                app.set_chat_photo(chat_id, photo="photo.jpg")
 
                 # Set chat photo using an exiting Photo file_id
-                app.set_chat_photo(chat_id, photo.file_id, photo.file_ref)
+                app.set_chat_photo(chat_id, photo=photo.file_id, file_ref=photo.file_ref)
+
+
+                # Set chat video using a local file
+                app.set_chat_photo(chat_id, video="video.mp4")
+
+                # Set chat photo using an exiting Video file_id
+                app.set_chat_photo(chat_id, video=video.file_id, file_ref=video.file_ref)
         """
         peer = self.resolve_peer(chat_id)
 
         if isinstance(photo, str):
             if os.path.isfile(photo):
-                photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
+                photo = types.InputChatUploadedPhoto(
+                    file=self.save_file(photo),
+                    video=self.save_file(video)
+                )
             else:
                 photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
                 photo = types.InputChatPhoto(id=photo.id)
         else:
-            photo = types.InputChatUploadedPhoto(file=self.save_file(photo))
+            photo = types.InputChatUploadedPhoto(
+                file=self.save_file(photo),
+                video=self.save_file(video)
+            )
 
         if isinstance(peer, types.InputPeerChat):
             self.send(
