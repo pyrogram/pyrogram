@@ -47,7 +47,7 @@ class SendDice(BaseClient):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             emoji (``str``, *optional*):
-                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯" or "🏀".
+                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯", "🏀" or "⚽️".
                 Defaults to "🎲".
 
             disable_notification (``bool``, *optional*):
