@@ -91,7 +91,7 @@ class SendCachedMedia(BaseClient):
         Example:
             .. code-block:: python
 
-                app.send_cached_media("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+                app.send_cached_media("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
         """
 
         r = await self.send(

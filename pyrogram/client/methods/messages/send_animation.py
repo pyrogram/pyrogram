@@ -167,7 +167,7 @@ class SendAnimation(BaseClient):
         try:
             if isinstance(animation, str):
                 if os.path.isfile(animation):
-                    thumb = None if thumb is None else await self.save_file(thumb)
+                    thumb = await self.save_file(thumb)
                     file = await self.save_file(animation, progress=progress, progress_args=progress_args)
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(animation) or "video/mp4",
@@ -191,7 +191,7 @@ class SendAnimation(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(animation, file_ref, 10)
             else:
-                thumb = None if thumb is None else await self.save_file(thumb)
+                thumb = await self.save_file(thumb)
                 file = await self.save_file(animation, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(animation.name) or "video/mp4",

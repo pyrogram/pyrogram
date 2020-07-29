@@ -1787,6 +1787,8 @@ class Client(Methods, BaseClient):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        if path is None:
+            return None
 
         async def worker(session):
             while True:

@@ -82,7 +82,7 @@ class Photo(Object):
     @staticmethod
     def _parse(client, photo: types.Photo, ttl_seconds: int = None) -> "Photo":
         if isinstance(photo, types.Photo):
-            big = photo.sizes[-1]
+            big = list(filter(lambda p: isinstance(p, types.PhotoSize), photo.sizes))[-1]
 
             return Photo(
                 file_id=encode_file_id(

@@ -42,6 +42,6 @@ class Users(
     GetProfilePhotosCount,
     IterProfilePhotos,
     UnblockUser,
-    UpdateProfile
+    UpdateProfile,
 ):
     pass

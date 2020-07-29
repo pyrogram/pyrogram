@@ -30,7 +30,7 @@ Test Mode in Official Apps
 You can also login yourself into test servers using official desktop apps, such as Webogram and TDesktop:
 
 - **Webogram**: Login here: https://web.telegram.org/?test=1
-- **TDesktop**: Open settings and type ``testmode``.
+- **TDesktop**: Hold ``Alt+Shift`` and right click on "Add account", then choose "Test server".
 
 Test Numbers
 ------------
