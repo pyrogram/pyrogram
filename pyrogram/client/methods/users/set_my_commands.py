@@ -46,7 +46,7 @@ class SetMyCommands(BaseClient):
                 functions.bots.SetBotCommands(
                     commands=[
                         types.BotCommand(command=command, description=description)
-                        for command, description in commands
+                        for command, description in commands.items()
                     ]
                 )
             )
