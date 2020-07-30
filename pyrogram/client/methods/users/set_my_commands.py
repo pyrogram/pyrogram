@@ -43,7 +43,7 @@ class SetMyCommands(BaseClient):
 
         return bool(
             self.send(
-                functions.account.SetBotCommands(
+                functions.bots.SetBotCommands(
                     commands=[
                         types.BotCommand(command=command, description=description)
                         for command, description in commands
