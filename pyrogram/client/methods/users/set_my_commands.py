@@ -16,8 +16,38 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Dict
+
 from pyrogram.api import functions
 from ...ext import BaseClient
 
 
 class SetMyCommands(BaseClient):
+    def set_my_commands(
+        self,
+        commands: Dict[str, str]
+    ) -> bool:
+        """Update your bot commands list ("/" icon in official Telegram clients).
+
+        Parameters:
+            commands (``dict``):
+                The new bot commands list, in "command": "description" format.
+
+        Returns:
+            ``bool``: True on success.
+
+        Example:
+            .. code-block:: python
+                app.set_my_commands({"start": "View Pyrogram docs"})
+        """
+
+        return bool(
+            self.send(
+                functions.account.SetBotCommands(
+                    commands=[
+                        types.BotCommand(command=command, description=description)
+                        for command, description in commands
+                    ]
+                )
+            )
+        )
