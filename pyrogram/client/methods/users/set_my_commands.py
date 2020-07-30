@@ -18,7 +18,7 @@
 
 from typing import Dict
 
-from pyrogram.api import functions
+from pyrogram.api import functions, types
 from ...ext import BaseClient
 
 
