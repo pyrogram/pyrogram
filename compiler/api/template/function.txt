@@ -2,25 +2,25 @@
 
 from io import BytesIO
 
-from pyrogram.api.core import *
+from pyrogram.api.core.primitives import *
+from pyrogram.api.core import TLObject
+from pyrogram.api import types
+from typing import List
 
 
-class {class_name}(TLObject):
-    """{docstring_args}
-    """
-
+class {combinator_name}(TLObject):
     __slots__ = [{slots}]
 
-    ID = {object_id}
+    ID = {combinator_id}
     QUALNAME = "{qualname}"
 
     def __init__(self{arguments}):
         {fields}
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "{class_name}":
+    def read(b: BytesIO, *args) -> "{combinator_name}":
         {read_types}
-        return {class_name}({return_arguments})
+        return {combinator_name}({return_arguments})
 
     def write(self) -> bytes:
         b = BytesIO()

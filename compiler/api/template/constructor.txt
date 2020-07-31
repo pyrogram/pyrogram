@@ -1,0 +1,20 @@
+class {combinator_name}(TLObject):
+    __slots__ = [{slots}]
+
+    ID = {combinator_id}
+    QUALNAME = "{qualname}"
+
+    def __init__(self{arguments}):
+        {fields}
+
+    @staticmethod
+    def read(b: BytesIO, *args) -> "{combinator_name}":
+        {read_types}
+        return {combinator_name}({return_arguments})
+
+    def write(self) -> bytes:
+        b = BytesIO()
+        b.write(Int(self.ID, False))
+
+        {write_types}
+        return b.getvalue()

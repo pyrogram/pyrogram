@@ -1,0 +1,14 @@
+{notice}
+
+from io import BytesIO
+
+from pyrogram.api.core.primitives import *
+from pyrogram.api.core import TLObject
+from pyrogram.api import types
+from typing import List, Union
+
+
+{constructors}
+
+
+{type_name} = Union[{union_types}]
