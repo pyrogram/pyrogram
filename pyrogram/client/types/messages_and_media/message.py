@@ -676,9 +676,9 @@ class Message(Object, Update):
     @property
     def link(self) -> str:
         if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
-            return "https://t.me/{}/{}".format(self.chat.username, self.message_id)
+            return f"https://t.me/{self.chat.username}/{self.message_id}"
         else:
-            return "https://t.me/c/{}/{}".format(utils.get_channel_id(self.chat.id), self.message_id)
+            return f"https://t.me/c/{utils.get_channel_id(self.chat.id)}/{self.message_id}"
 
     def reply_text(
         self,
@@ -2921,12 +2921,12 @@ class Message(Object, Update):
                     for button in row
                 ][x]
             except IndexError:
-                raise ValueError("The button at index {} doesn't exist".format(x))
+                raise ValueError(f"The button at index {x} doesn't exist")
         elif isinstance(x, int) and isinstance(y, int):
             try:
                 button = keyboard[y][x]
             except IndexError:
-                raise ValueError("The button at position ({}, {}) doesn't exist".format(x, y))
+                raise ValueError(f"The button at position ({x}, {y}) doesn't exist")
         elif isinstance(x, str) and y is None:
             label = x.encode("utf-16", "surrogatepass").decode("utf-16")
 
@@ -2938,7 +2938,7 @@ class Message(Object, Update):
                     if label == button.text
                 ][0]
             except IndexError:
-                raise ValueError("The button with label '{}' doesn't exists".format(x))
+                raise ValueError(f"The button with label '{x}' doesn't exists")
         else:
             raise ValueError("Invalid arguments")
 

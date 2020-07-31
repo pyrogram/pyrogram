@@ -80,8 +80,8 @@ class Session:
         is_cdn: bool = False
     ):
         if not Session.notice_displayed:
-            print("Pyrogram v{}, {}".format(__version__, __copyright__))
-            print("Licensed under the terms of the " + __license__, end="\n\n")
+            print(f"Pyrogram v{__version__}, {__copyright__}")
+            print(f"Licensed under the terms of the {__license__}", end="\n\n")
             Session.notice_displayed = True
 
         self.client = client
@@ -130,7 +130,7 @@ class Session:
                     self.net_worker_list.append(
                         Thread(
                             target=self.net_worker,
-                            name="NetWorker#{}".format(i + 1)
+                            name=f"NetWorker#{i + 1}"
                         )
                     )
 
@@ -172,9 +172,9 @@ class Session:
                 self.ping_thread = Thread(target=self.ping, name="PingThread")
                 self.ping_thread.start()
 
-                log.info("Session initialized: Layer {}".format(layer))
-                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
-                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+                log.info(f"Session initialized: Layer {layer}")
+                log.info(f"Device: {self.client.device_model} - {self.client.app_version}")
+                log.info(f"System: {self.client.system_version} ({self.client.lang_code.upper()})")
 
             except AuthKeyDuplicated as e:
                 self.stop()
@@ -269,7 +269,7 @@ class Session:
 
     def net_worker(self):
         name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        log.debug(f"{name} started")
 
         while True:
             packet = self.recv_queue.get()
@@ -286,7 +286,7 @@ class Session:
                     else [data]
                 )
 
-                log.debug("Received:\n{}".format(data))
+                log.debug(f"Received:\n{data}")
 
                 for msg in messages:
                     if msg.seq_no % 2 != 0:
@@ -319,7 +319,7 @@ class Session:
                         self.results[msg_id].event.set()
 
                 if len(self.pending_acks) >= self.ACKS_THRESHOLD:
-                    log.info("Send {} acks".format(len(self.pending_acks)))
+                    log.info(f"Send {len(self.pending_acks)} acks")
 
                     try:
                         self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
@@ -330,7 +330,7 @@ class Session:
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        log.debug(f"{name} stopped")
 
     def ping(self):
         log.debug("PingThread started")
@@ -389,7 +389,7 @@ class Session:
 
             if packet is None or len(packet) == 4:
                 if packet:
-                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+                    log.warning(f'Server sent "{Int.read(BytesIO(packet))}"')
 
                 if self.is_connected.is_set():
                     Thread(target=self.restart, name="RestartThread").start()
@@ -406,7 +406,7 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        log.debug("Sent:\n{}".format(message))
+        log.debug(f"Sent:\n{message}")
 
         payload = self.pack(message)
 
@@ -430,7 +430,7 @@ class Session:
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
                     result.error_code,
-                    "Error code {}".format(result.error_code)
+                    f"Error code {result.error_code}"
                 ))
             else:
                 return result
@@ -460,8 +460,7 @@ class Session:
                 if amount > sleep_threshold:
                     raise
 
-                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
-                    self.client.session_name, amount, query))
+                log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
 
                 time.sleep(amount)
             except (OSError, TimeoutError, InternalServerError) as e:
@@ -469,9 +468,7 @@ class Session:
                     raise e from None
 
                 (log.warning if retries < 2 else log.info)(
-                    '[{}] Retrying "{}" due to {}'.format(
-                        Session.MAX_RETRIES - retries + 1,
-                        query, e))
+                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {e}')
 
                 time.sleep(0.5)
 

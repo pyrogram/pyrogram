@@ -37,7 +37,7 @@ class Link(str):
         elif style in ["combined", "html", None]:
             fmt = Link.HTML
         else:
-            raise ValueError("{} is not a valid style/parse mode".format(style))
+            raise ValueError(f"{style} is not a valid style/parse mode")
 
         return fmt.format(url=url, text=html.escape(text))
 

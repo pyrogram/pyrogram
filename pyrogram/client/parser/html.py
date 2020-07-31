@@ -97,7 +97,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            log.warning("Unmatched closing tag </{}> at line {}:{}".format(tag, line, offset))
+            log.warning(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -122,9 +122,9 @@ class HTML:
             unclosed_tags = []
 
             for tag, entities in parser.tag_entities.items():
-                unclosed_tags.append("<{}> (x{})".format(tag, len(entities)))
+                unclosed_tags.append(f"<{tag}> (x{en(entities)})")
 
-            log.warning("Unclosed tags: {}".format(", ".join(unclosed_tags)))
+            log.warning(f"Unclosed tags: {', '.join(unclosed_tags)}")
 
         entities = []
 
@@ -156,18 +156,18 @@ class HTML:
             end = start + entity.length
 
             if entity_type in ("bold", "italic", "underline", "strike"):
-                start_tag = "<{}>".format(entity_type[0])
-                end_tag = "</{}>".format(entity_type[0])
+                start_tag = f"<{entity_type[0]}>"
+                end_tag = "f</{entity_type[0]}>"
             elif entity_type in ("code", "pre", "blockquote"):
-                start_tag = "<{}>".format(entity_type)
-                end_tag = "</{}>".format(entity_type)
+                start_tag = f"<{entity_type}>"
+                end_tag = f"</{entity_type}>"
             elif entity_type == "text_link":
                 url = entity.url
-                start_tag = '<a href="{}">'.format(url)
+                start_tag = f'<a href="{url}">'
                 end_tag = "</a>"
             elif entity_type == "text_mention":
                 user = entity.user
-                start_tag = '<a href="tg://user?id={}">'.format(user.id)
+                start_tag = f'<a href="tg://user?id={user.id}">'
                 end_tag = "</a>"
             else:
                 continue

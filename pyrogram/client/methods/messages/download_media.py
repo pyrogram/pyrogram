@@ -102,7 +102,7 @@ class DownloadMedia(BaseClient):
 
                 # Keep track of the progress while downloading
                 def progress(current, total):
-                    print("{:.1f}%".format(current * 100 / total))
+                    print(f"{current * 100 / total:.1f}%")
 
                 app.download_media(message, progress=progress)
         """
@@ -198,7 +198,7 @@ class DownloadMedia(BaseClient):
                     access_hash=access_hash
                 )
             else:
-                raise ValueError("Unknown media type: {}".format(file_id_str))
+                raise ValueError(f"Unknown media type: {file_id_str}")
         except (AssertionError, binascii.Error, struct.error):
             raise FileIdInvalid from None
 

@@ -46,7 +46,7 @@ def get_input_peer(peer_id: int, access_hash: int, peer_type: str):
             access_hash=access_hash
         )
 
-    raise ValueError("Invalid peer type: {}".format(peer_type))
+    raise ValueError(f"Invalid peer type: {peer_type}")
 
 
 class SQLiteStorage(Storage):
@@ -105,7 +105,7 @@ class SQLiteStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("ID not found: {}".format(peer_id))
+            raise KeyError(f"ID not found: {peer_id}")
 
         return get_input_peer(*r)
 
@@ -116,10 +116,10 @@ class SQLiteStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Username not found: {}".format(username))
+            raise KeyError(f"Username not found: {username}")
 
         if abs(time.time() - r[3]) > self.USERNAME_TTL:
-            raise KeyError("Username expired: {}".format(username))
+            raise KeyError(f"Username expired: {username}")
 
         return get_input_peer(*r[:3])
 
@@ -130,7 +130,7 @@ class SQLiteStorage(Storage):
         ).fetchone()
 
         if r is None:
-            raise KeyError("Phone number not found: {}".format(phone_number))
+            raise KeyError(f"Phone number not found: {phone_number}")
 
         return get_input_peer(*r)
 
@@ -138,7 +138,7 @@ class SQLiteStorage(Storage):
         attr = inspect.stack()[2].function
 
         return self.conn.execute(
-            "SELECT {} FROM sessions".format(attr)
+            f"SELECT {attr} FROM sessions"
         ).fetchone()[0]
 
     def _set(self, value: Any):
@@ -146,7 +146,7 @@ class SQLiteStorage(Storage):
 
         with self.lock, self.conn:
             self.conn.execute(
-                "UPDATE sessions SET {} = ?".format(attr),
+                f"UPDATE sessions SET {attr} = ?",
                 (value,)
             )
 

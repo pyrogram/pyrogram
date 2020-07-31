@@ -56,7 +56,7 @@ class TLObject:
         return "pyrogram.api.{}({})".format(
             self.QUALNAME,
             ", ".join(
-                "{}={}".format(attr, repr(getattr(self, attr)))
+                f"{attr}={repr(getattr(self, attr))}"
                 for attr in self.__slots__
                 if getattr(self, attr) is not None
             )

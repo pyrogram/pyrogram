@@ -21,9 +21,8 @@ from datetime import datetime
 from importlib import import_module
 from typing import Type
 
-from pyrogram.api.types import RpcError as RawRPCError
-
 from pyrogram.api.core import TLObject
+from pyrogram.api.types import RpcError as RawRPCError
 from .exceptions.all import exceptions
 
 
@@ -38,7 +37,7 @@ class RPCError(Exception):
             self.CODE,
             self.ID or self.NAME,
             self.MESSAGE.format(x=x),
-            '(caused by "{}")'.format(rpc_name) if rpc_name else ""
+            f'(caused by "{rpc_name}")' if rpc_name else ""
         ))
 
         try:
@@ -48,7 +47,7 @@ class RPCError(Exception):
 
         if is_unknown:
             with open("unknown_errors.txt", "a", encoding="utf-8") as f:
-                f.write("{}\t{}\t{}\n".format(datetime.now(), x, rpc_name))
+                f.write(f"{datetime.now()}\t{x}\t{rpc_name}\n")
 
     @staticmethod
     def raise_it(rpc_error: RawRPCError, rpc_type: Type[TLObject]):
@@ -58,7 +57,7 @@ class RPCError(Exception):
 
         if error_code not in exceptions:
             raise UnknownError(
-                x="[{} {}]".format(error_code, error_message),
+                x=f"[{error_code} {error_message}]",
                 rpc_name=rpc_name,
                 is_unknown=True
             )
@@ -69,7 +68,7 @@ class RPCError(Exception):
             raise getattr(
                 import_module("pyrogram.errors"),
                 exceptions[error_code]["_"]
-            )(x="[{} {}]".format(error_code, error_message),
+            )(x=f"[{error_code} {error_message}]",
               rpc_name=rpc_name,
               is_unknown=True)
 

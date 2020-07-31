@@ -117,7 +117,7 @@ class Dispatcher:
             self.workers_list.append(
                 Thread(
                     target=self.update_worker,
-                    name="UpdateWorker#{}".format(i + 1),
+                    name=f"UpdateWorker#{i + 1}",
                     args=(self.locks_list[-1],)
                 )
             )
@@ -155,7 +155,7 @@ class Dispatcher:
 
         try:
             if group not in self.groups:
-                raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
+                raise ValueError(f"Group {group} does not exist. Handler was not removed.")
 
             self.groups[group].remove(handler)
         finally:
@@ -164,7 +164,7 @@ class Dispatcher:
 
     def update_worker(self, lock):
         name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        log.debug(f"{name} started")
 
         while True:
             packet = self.updates_queue.get()
@@ -216,4 +216,4 @@ class Dispatcher:
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        log.debug(f"{name} stopped")

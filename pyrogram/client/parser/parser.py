@@ -57,7 +57,7 @@ class Parser:
             return self.html.parse(text)
 
         raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-            ", ".join('"{}"'.format(m) for m in pyrogram.Client.PARSE_MODES[:-1]),
+            ", ".join(f'"{m}"' for m in pyrogram.Client.PARSE_MODES[:-1]),
             mode
         ))
 

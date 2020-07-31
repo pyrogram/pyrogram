@@ -26,7 +26,7 @@ import pyrogram
 
 class Meta(type, metaclass=type("", (type,), {"__str__": lambda _: "~hi"})):
     def __str__(self):
-        return "<class 'pyrogram.{}'>".format(self.__name__)
+        return f"<class 'pyrogram.{self.__name__}'>"
 
 
 class Object(metaclass=Meta):
@@ -73,7 +73,7 @@ class Object(metaclass=Meta):
         return "pyrogram.{}({})".format(
             self.__class__.__name__,
             ", ".join(
-                "{}={}".format(attr, repr(getattr(self, attr)))
+                f"{attr}={repr(getattr(self, attr))}"
                 for attr in filter(lambda x: not x.startswith("_"), self.__dict__)
                 if getattr(self, attr) is not None
             )

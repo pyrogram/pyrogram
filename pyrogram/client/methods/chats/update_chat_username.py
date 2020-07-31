@@ -62,4 +62,4 @@ class UpdateChatUsername(BaseClient):
                 )
             )
         else:
-            raise ValueError("The chat_id \"{}\" belongs to a user or chat".format(chat_id))
+            raise ValueError(f'The chat_id "{chat_id}" belongs to a user or chat')

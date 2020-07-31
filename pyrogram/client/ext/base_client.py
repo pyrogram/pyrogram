@@ -33,17 +33,9 @@ class BaseClient:
     class StopTransmission(StopIteration):
         pass
 
-    APP_VERSION = "Pyrogram {}".format(__version__)
-
-    DEVICE_MODEL = "{} {}".format(
-        platform.python_implementation(),
-        platform.python_version()
-    )
-
-    SYSTEM_VERSION = "{} {}".format(
-        platform.system(),
-        platform.release()
-    )
+    APP_VERSION = f"Pyrogram {__version__}"
+    DEVICE_MODEL = f"{platform.python_implementation()} {platform.python_version()}"
+    SYSTEM_VERSION = f"{platform.system()} {platform.release()}"
 
     LANG_CODE = "en"
 
@@ -77,11 +69,11 @@ class BaseClient:
     mime_types_to_extensions = {}
     extensions_to_mime_types = {}
 
-    with open("{}/mime.types".format(os.path.dirname(__file__)), "r", encoding="UTF-8") as f:
+    with open(f"{os.path.dirname(__file__)}/mime.types", "r", encoding="UTF-8") as f:
         for match in re.finditer(r"^([^#\s]+)\s+(.+)$", f.read(), flags=re.M):
             mime_type, extensions = match.groups()
 
-            extensions = [".{}".format(ext) for ext in extensions.split(" ")]
+            extensions = [f".{ext}" for ext in extensions.split(" ")]
 
             for ext in extensions:
                 extensions_to_mime_types[ext] = mime_type

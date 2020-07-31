@@ -58,7 +58,7 @@ class TCP(socks.socksocket):
                 password=proxy.get("password", None)
             )
 
-            log.info("Using proxy {}:{}".format(hostname, port))
+            log.info(f"Using proxy {hostname}:{port}")
         else:
             super().__init__(
                 socket.AF_INET6 if ipv6

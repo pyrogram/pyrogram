@@ -98,7 +98,7 @@ def get_input_media_from_file_id(
     try:
         decoded = decode_file_id(file_id_str)
     except Exception:
-        raise ValueError("Failed to decode file_id: {}".format(file_id_str))
+        raise ValueError(f"Failed to decode file_id: {file_id_str}")
     else:
         media_type = decoded[0]
 
@@ -107,12 +107,10 @@ def get_input_media_from_file_id(
                 media_type_str = BaseClient.MEDIA_TYPE_ID.get(media_type, None)
                 expected_media_type_str = BaseClient.MEDIA_TYPE_ID.get(expected_media_type, None)
 
-                raise ValueError(
-                    'Expected: "{}", got "{}" file_id instead'.format(expected_media_type_str, media_type_str)
-                )
+                raise ValueError(f'Expected: "{expected_media_type_str}", got "{media_type_str}" file_id instead')
 
         if media_type in (0, 1, 14):
-            raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
+            raise ValueError(f"This file_id can only be used for download: {file_id_str}")
 
         if media_type == 2:
             unpacked = struct.unpack("<iiqqqiiii", decoded)
@@ -138,7 +136,7 @@ def get_input_media_from_file_id(
                 )
             )
 
-        raise ValueError("Unknown media type: {}".format(file_id_str))
+        raise ValueError(f"Unknown media type: {file_id_str}")
 
 
 def parse_messages(client, messages: types.messages.Messages, replies: int = 1) -> List["pyrogram.Message"]:
@@ -223,7 +221,7 @@ def get_peer_id(peer: Union[PeerUser, PeerChat, PeerChannel]) -> int:
     if isinstance(peer, PeerChannel):
         return MAX_CHANNEL_ID - peer.channel_id
 
-    raise ValueError("Peer type invalid: {}".format(peer))
+    raise ValueError(f"Peer type invalid: {peer}")
 
 
 def get_peer_type(peer_id: int) -> str:
@@ -236,7 +234,7 @@ def get_peer_type(peer_id: int) -> str:
     elif 0 < peer_id <= MAX_USER_ID:
         return "user"
 
-    raise ValueError("Peer id invalid: {}".format(peer_id))
+    raise ValueError(f"Peer id invalid: {peer_id}")
 
 
 def get_channel_id(peer_id: int) -> int:

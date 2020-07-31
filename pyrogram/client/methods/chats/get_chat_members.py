@@ -132,7 +132,7 @@ class GetChatMembers(BaseClient):
             elif filter == Filters.ADMINISTRATORS:
                 filter = types.ChannelParticipantsAdmins()
             else:
-                raise ValueError("Invalid filter \"{}\"".format(filter))
+                raise ValueError(f'Invalid filter "{filter}"')
 
             r = self.send(
                 functions.channels.GetParticipants(
@@ -149,4 +149,4 @@ class GetChatMembers(BaseClient):
 
             return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
         else:
-            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
+            raise ValueError(f'The chat_id "{chat_id}" belongs to a user')

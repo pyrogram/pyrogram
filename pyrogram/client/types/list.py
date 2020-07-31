@@ -27,6 +27,4 @@ class List(list):
         return Object.__str__(self)
 
     def __repr__(self):
-        return "pyrogram.client.types.list.List([{}])".format(
-            ",".join(Object.__repr__(i) for i in self)
-        )
+        return f"pyrogram.client.types.list.List([{','.join(Object.__repr__(i) for i in self)}])"

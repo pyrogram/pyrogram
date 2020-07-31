@@ -321,7 +321,7 @@ class Filters:
             elif isinstance(update, InlineQuery):
                 value = update.query
             else:
-                raise ValueError("Regex filter doesn't work with {}".format(type(update)))
+                raise ValueError(f"Regex filter doesn't work with {type(update)}")
 
             if value:
                 update.matches = list(flt.p.finditer(value)) or None

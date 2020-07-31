@@ -323,7 +323,7 @@ class Client(Methods, BaseClient):
                 self.updates_workers_list.append(
                     Thread(
                         target=self.updates_worker,
-                        name="UpdatesWorker#{}".format(i + 1)
+                        name=f"UpdatesWorker#{i + 1}"
                     )
                 )
 
@@ -333,7 +333,7 @@ class Client(Methods, BaseClient):
             self.download_workers_list.append(
                 Thread(
                     target=self.download_worker,
-                    name="DownloadWorker#{}".format(i + 1)
+                    name=f"DownloadWorker#{i + 1}"
                 )
             )
 
@@ -359,7 +359,7 @@ class Client(Methods, BaseClient):
 
         if self.takeout_id:
             self.send(functions.account.FinishTakeoutSession())
-            log.warning("Takeout session {} finished".format(self.takeout_id))
+            log.warning(f"Takeout session {self.takeout_id} finished")
 
         Syncer.remove(self)
         self.dispatcher.stop()
@@ -677,7 +677,7 @@ class Client(Methods, BaseClient):
                         if not value:
                             continue
 
-                        confirm = input("Is \"{}\" correct? (y/N): ".format(value)).lower()
+                        confirm = input(f'Is "{value}" correct? (y/N): ').lower()
 
                         if confirm == "y":
                             break
@@ -721,7 +721,7 @@ class Client(Methods, BaseClient):
                 print(e.MESSAGE)
 
                 while True:
-                    print("Password hint: {}".format(self.get_password_hint()))
+                    print(f"Password hint: {self.get_password_hint()}")
 
                     if not self.password:
                         self.password = input("Enter password (empty to recover): ")
@@ -732,7 +732,7 @@ class Client(Methods, BaseClient):
 
                             if confirm == "y":
                                 email_pattern = self.send_recovery_code()
-                                print("The recovery code has been sent to {}".format(email_pattern))
+                                print(f"The recovery code has been sent to {email_pattern}")
 
                                 while True:
                                     recovery_code = input("Enter recovery code: ")
@@ -833,7 +833,7 @@ class Client(Methods, BaseClient):
 
             if not self.storage.is_bot() and self.takeout:
                 self.takeout_id = self.send(functions.account.InitTakeoutSession()).id
-                log.warning("Takeout session {} initiated".format(self.takeout_id))
+                log.warning(f"Takeout session {self.takeout_id} initiated")
 
             self.send(functions.updates.GetState())
         except (Exception, KeyboardInterrupt):
@@ -1146,7 +1146,7 @@ class Client(Methods, BaseClient):
     def parse_mode(self, parse_mode: Union[str, None] = "combined"):
         if parse_mode not in self.PARSE_MODES:
             raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-                ", ".join('"{}"'.format(m) for m in self.PARSE_MODES[:-1]),
+                ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
                 parse_mode
             ))
 
@@ -1238,7 +1238,7 @@ class Client(Methods, BaseClient):
 
     def download_worker(self):
         name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        log.debug(f"{name} started")
 
         while True:
             packet = self.download_queue.get()
@@ -1289,11 +1289,11 @@ class Client(Methods, BaseClient):
             finally:
                 done.set()
 
-        log.debug("{} stopped".format(name))
+        log.debug(f"{name} stopped")
 
     def updates_worker(self):
         name = threading.current_thread().name
-        log.debug("{} started".format(name))
+        log.debug(f"{name} started")
 
         while True:
             updates = self.updates_queue.get()
@@ -1377,7 +1377,7 @@ class Client(Methods, BaseClient):
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        log.debug(f"{name} stopped")
 
     def send(self, data: TLObject, retries: int = Session.MAX_RETRIES, timeout: float = Session.WAIT_TIMEOUT):
         """Send raw Telegram queries.
@@ -1563,13 +1563,11 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[{}] [LOAD] Ignoring non-existent module "{}"'.format(
-                            self.session_name, module_path))
+                        log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}"')
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[{}] [LOAD] Ignoring namespace "{}"'.format(
-                            self.session_name, module_path))
+                        log.warning(f'[{self.session_name}] [LOAD] Ignoring namespace "{module_path}"')
                         continue
 
                     if handlers is None:
@@ -1601,13 +1599,11 @@ class Client(Methods, BaseClient):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning('[{}] [UNLOAD] Ignoring non-existent module "{}"'.format(
-                            self.session_name, module_path))
+                        log.warning(f'[{self.session_name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning('[{}] [UNLOAD] Ignoring namespace "{}"'.format(
-                            self.session_name, module_path))
+                        log.warning(f'[{self.session_name}] [UNLOAD] Ignoring namespace "{module_path}"')
                         continue
 
                     if handlers is None:
@@ -1635,8 +1631,7 @@ class Client(Methods, BaseClient):
                 log.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
                     self.session_name, count, "s" if count > 1 else "", root))
             else:
-                log.warning('[{}] No plugin loaded from "{}"'.format(
-                    self.session_name, root))
+                log.warning(f'[{self.session_name}] No plugin loaded from "{root}"')
 
     def resolve_peer(self, peer_id: Union[int, str]):
         """Get the InputPeer of a known peer id.
@@ -1846,7 +1841,7 @@ class Client(Methods, BaseClient):
                         if session.send(rpc):
                             break
                     else:
-                        raise AssertionError("Telegram didn't accept chunk #{} of {}".format(file_part, path))
+                        raise AssertionError(f"Telegram didn't accept chunk #{file_part} of {path}")
 
                     if is_missing_part:
                         return
@@ -2082,7 +2077,7 @@ class Client(Methods, BaseClient):
                             # https://core.telegram.org/cdn#verifying-files
                             for i, h in enumerate(hashes):
                                 cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
-                                assert h.hash == sha256(cdn_chunk).digest(), "Invalid CDN hash part {}".format(i)
+                                assert h.hash == sha256(cdn_chunk).digest(), f"Invalid CDN hash part {i}"
 
                             f.write(decrypted_chunk)
 

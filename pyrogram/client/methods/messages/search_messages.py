@@ -59,7 +59,7 @@ def get_chunk(
         filter = Filters.__dict__[filter.upper()]
     except KeyError:
         raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
-            filter, ", ".join('"{}"'.format(v) for v in POSSIBLE_VALUES))) from None
+            filter, ", ".join(f'"{v}"' for v in POSSIBLE_VALUES))) from None
 
     r = client.send(
         functions.messages.Search(

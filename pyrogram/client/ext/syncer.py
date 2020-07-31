@@ -81,7 +81,4 @@ class Syncer:
         except Exception as e:
             log.critical(e, exc_info=True)
         else:
-            log.info('Synced "{}" in {:.6} ms'.format(
-                client.storage.name,
-                (time.time() - start) * 1000
-            ))
+            log.info(f'Synced "{client.storage.name}" in {(time.time() - start) * 1000:.6} ms')

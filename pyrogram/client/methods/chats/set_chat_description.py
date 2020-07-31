@@ -59,6 +59,6 @@ class SetChatDescription(BaseClient):
                 )
             )
         else:
-            raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))
+            raise ValueError(f'The chat_id "{chat_id}" belongs to a user')
 
         return True

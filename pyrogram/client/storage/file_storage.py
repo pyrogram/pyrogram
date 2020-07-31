@@ -93,7 +93,7 @@ class FileStorage(SQLiteStorage):
 
                 path.rename(path.name + ".OLD")
 
-                log.warning('The old session file has been renamed to "{}.OLD"'.format(path.name))
+                log.warning(f'The old session file has been renamed to "{path.name}.OLD"')
 
                 self.migrate_from_json(session_json)
 
@@ -102,7 +102,7 @@ class FileStorage(SQLiteStorage):
                 return
 
         if Path(path.name + ".OLD").is_file():
-            log.warning('Old session file detected: "{}.OLD". You can remove this file now'.format(path.name))
+            log.warning(f'Old session file detected: "{path.name}.OLD". You can remove this file now')
 
         self.conn = sqlite3.connect(str(path), timeout=1, check_same_thread=False)
 

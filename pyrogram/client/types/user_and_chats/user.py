@@ -160,7 +160,7 @@ class User(Object, Update):
 
     @property
     def mention(self):
-        return Link("tg://user?id={}".format(self.id), self.first_name, self._client.parse_mode)
+        return Link(f"tg://user?id={self.id}", self.first_name, self._client.parse_mode)
 
     @staticmethod
     def _parse(client, user: types.User) -> "User" or None:

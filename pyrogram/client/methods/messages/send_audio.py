@@ -158,7 +158,7 @@ class SendAudio(BaseClient):
 
                 # Keep track of the progress while uploading
                 def progress(current, total):
-                    print("{:.1f}%".format(current * 100 / total))
+                    print(f"{current * 100 / total:.1f}%")
 
                 app.send_audio("me", "audio.mp3", progress=progress)
         """

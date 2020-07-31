@@ -155,7 +155,7 @@ class SendVideo(BaseClient):
 
                 # Keep track of the progress while uploading
                 def progress(current, total):
-                    print("{:.1f}%".format(current * 100 / total))
+                    print(f"{current * 100 / total:.1f}%")
 
                 app.send_video("me", "video.mp4", progress=progress)
         """

@@ -77,34 +77,34 @@ class Auth:
             self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
-                log.info("Start creating a new auth key on DC{}".format(self.dc_id))
+                log.info(f"Start creating a new auth key on DC{self.dc_id}")
 
                 self.connection.connect()
 
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
-                log.debug("Send req_pq: {}".format(nonce))
+                log.debug(f"Send req_pq: {nonce}")
                 res_pq = self.send(functions.ReqPqMulti(nonce=nonce))
-                log.debug("Got ResPq: {}".format(res_pq.server_nonce))
-                log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
+                log.debug(f"Got ResPq: {res_pq.server_nonce}")
+                log.debug(f"Server public key fingerprints: {res_pq.server_public_key_fingerprints}")
 
                 for i in res_pq.server_public_key_fingerprints:
                     if i in RSA.server_public_keys:
-                        log.debug("Using fingerprint: {}".format(i))
+                        log.debug(f"Using fingerprint: {i}")
                         public_key_fingerprint = i
                         break
                     else:
-                        log.debug("Fingerprint unknown: {}".format(i))
+                        log.debug(f"Fingerprint unknown: {i}")
                 else:
                     raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
-                log.debug("Start PQ factorization: {}".format(pq))
+                log.debug(f"Start PQ factorization: {pq}")
                 start = time.time()
                 g = Prime.decompose(pq)
                 p, q = sorted((g, pq // g))  # p < q
-                log.debug("Done PQ factorization ({}s): {} {}".format(round(time.time() - start, 3), p, q))
+                log.debug(f"Done PQ factorization ({round(time.time() - start, 3)}s): {p} {q}")
 
                 # Step 4
                 server_nonce = res_pq.server_nonce
@@ -166,7 +166,7 @@ class Auth:
                 dh_prime = int.from_bytes(server_dh_inner_data.dh_prime, "big")
                 delta_time = server_dh_inner_data.server_time - time.time()
 
-                log.debug("Delta time: {}".format(round(delta_time, 3)))
+                log.debug(f"Delta time: {round(delta_time, 3)}")
 
                 # Step 6
                 g = server_dh_inner_data.g
@@ -242,13 +242,9 @@ class Auth:
                 # Step 9
                 server_salt = AES.xor(new_nonce[:8], server_nonce[:8])
 
-                log.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
+                log.debug(f"Server salt: {int.from_bytes(server_salt, 'little')}")
 
-                log.info(
-                    "Done auth key exchange: {}".format(
-                        set_client_dh_params_answer.__class__.__name__
-                    )
-                )
+                log.info(f"Done auth key exchange: {set_client_dh_params_answer.__class__.__name__}")
             except Exception as e:
                 if retries_left:
                     retries_left -= 1

@@ -34,7 +34,7 @@ PRE_DELIM = "```"
 MARKDOWN_RE = re.compile(r"({d})|\[(.+?)\]\((.+?)\)".format(
     d="|".join(
         ["".join(i) for i in [
-            [r"\{}".format(j) for j in i]
+            [rf"\{j}" for j in i]
             for i in [
                 PRE_DELIM,
                 CODE_DELIM,
@@ -130,11 +130,11 @@ class Markdown:
             elif entity_type == "text_link":
                 url = entity.url
                 start_tag = "["
-                end_tag = "]({})".format(url)
+                end_tag = f"]({url})"
             elif entity_type == "text_mention":
                 user = entity.user
                 start_tag = "["
-                end_tag = "](tg://user?id={})".format(user.id)
+                end_tag = f"](tg://user?id={user.id})"
             else:
                 continue
 
