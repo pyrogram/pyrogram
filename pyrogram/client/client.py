@@ -1302,7 +1302,7 @@ class Client(Methods, BaseClient):
                 break
 
             try:
-                if isinstance(updates, (types.Update, types.UpdatesCombined)):
+                if isinstance(updates, (types.Updates, types.UpdatesCombined)):
                     is_min = self.fetch_peers(updates.users) or self.fetch_peers(updates.chats)
 
                     users = {u.id: u for u in updates.users}
