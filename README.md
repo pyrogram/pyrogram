@@ -28,7 +28,7 @@ app = Client("my_account")
 
 @app.on_message(Filters.private)
 def hello(client, message):
-    message.reply_text("Hello {}".format(message.from_user.first_name))
+    message.reply_text(f"Hello {message.from_user.first_name}")
 
 
 app.run()
@@ -56,7 +56,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 
 ### Requirements
 
-- Python 3.5.3 or higher.
+- Python 3.6.0 or higher.
 - A [Telegram API key](https://docs.pyrogram.org/intro/setup#api-keys).
 
 ### Installing
