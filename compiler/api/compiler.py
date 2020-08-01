@@ -79,8 +79,8 @@ def get_type_hint(type: str) -> str:
         else:  # bytes and object
             type = "bytes"
 
-    if type == "Object":
-        return "object"
+    if type in ["Object", "!X"]:
+        return "TLObject"
 
     if re.match("^vector", type, re.I):
         is_core = True
