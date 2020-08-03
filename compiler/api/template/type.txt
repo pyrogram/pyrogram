@@ -2,10 +2,10 @@
 
 from io import BytesIO
 
-from pyrogram.api.core.primitives import *
+from pyrogram.api.core.primitives import Int, Long, Int128, Int256, Bool, Bytes, String, Double, Vector
 from pyrogram.api.core import TLObject
 from pyrogram.api import types
-from typing import List, Union
+from typing import List, Union, Any
 
 
 {constructors}

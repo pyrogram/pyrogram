@@ -17,18 +17,19 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any
 
 from ..tl_object import TLObject
 
 
-class Int(TLObject):
+class Int(bytes, TLObject):
     SIZE = 4
 
     @classmethod
-    def read(cls, b: BytesIO, signed: bool = True) -> int:
+    def read(cls, b: BytesIO, signed: bool = True, *args: Any) -> int:
         return int.from_bytes(b.read(cls.SIZE), "little", signed=signed)
 
-    def __new__(cls, value: int, signed: bool = True) -> bytes:
+    def __new__(cls, value: int, signed: bool = True) -> bytes:  # type: ignore
         return value.to_bytes(cls.SIZE, "little", signed=signed)
 
 

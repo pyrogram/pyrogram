@@ -19,8 +19,12 @@
 import os
 import re
 import shutil
+from functools import partial
 from pathlib import Path
 from typing import NamedTuple, List, Tuple
+
+# from autoflake import fix_code
+# from black import format_str, FileMode
 
 HOME_PATH = Path("compiler/api")
 DESTINATION_PATH = Path("pyrogram/api")
@@ -36,6 +40,9 @@ FLAGS_RE_3 = re.compile(r"flags:#")
 INT_RE = re.compile(r"int(\d+)")
 
 CORE_TYPES = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool", "true"]
+
+# noinspection PyShadowingBuiltins
+open = partial(open, encoding="utf-8")
 
 
 class Combinator(NamedTuple):
@@ -89,13 +96,13 @@ def get_type_hint(type: str) -> str:
         type = f"List[{get_type_hint(sub_type)}]"
 
     if is_core:
-        return f'{type}{" = None" if is_flag else ""}'
+        return f"Union[None, {type}] = None" if is_flag else type
     else:
         ns, name = type.split(".") if "." in type else ("", type)
         name = f"T{name}"
-        type = ".".join([ns, name]).strip(".")
+        type = f'"types.' + ".".join([ns, name]).strip(".") + '"'
 
-        return f'"types.{type}"{" = None" if is_flag else ""}'
+        return f'{type}{" = None" if is_flag else ""}'
 
 
 def sort_args(args):
@@ -114,15 +121,30 @@ def sort_args(args):
     return args + flags
 
 
+def remove_whitespaces(source: str) -> str:
+    """Remove whitespaces from blank lines"""
+    lines = source.split("\n")
+
+    for i, _ in enumerate(lines):
+        if re.match(r"^\s+$", lines[i]):
+            lines[i] = ""
+
+    return "\n".join(lines)
+
+
 # noinspection PyShadowingBuiltins
-def start():
+def start(format: bool = False):
     shutil.rmtree(DESTINATION_PATH / "types", ignore_errors=True)
     shutil.rmtree(DESTINATION_PATH / "functions", ignore_errors=True)
 
-    with open("source/auth_key.tl") as f1, open("source/sys_msgs.tl") as f2, open("source/main_api.tl") as f3:
+    with open(HOME_PATH / "source/auth_key.tl") as f1, \
+        open(HOME_PATH / "source/sys_msgs.tl") as f2, \
+        open(HOME_PATH / "source/main_api.tl") as f3:
         schema = (f1.read() + f2.read() + f3.read()).splitlines()
 
-    with open("template/type.txt") as f1, open("template/constructor.txt") as f2, open("template/function.txt") as f3:
+    with open(HOME_PATH / "template/type.txt") as f1, \
+        open(HOME_PATH / "template/constructor.txt") as f2, \
+        open(HOME_PATH / "template/function.txt") as f3:
         type_tmpl = f1.read()
         constructor_tmpl = f2.read()
         function_tmpl = f3.read()
@@ -376,13 +398,17 @@ def start():
         os.makedirs(path, exist_ok=True)
 
         with open(path / f"{snake(type_name)}.py", "w") as f:
+            constructor = type_tmpl.format(
+                notice=notice,
+                type_name=f"T{camel(type_name)}",
+                constructors="\n\n\n".join([i[1] for i in constructors]),
+                union_types=", ".join([camel(i[0]) for i in constructors])
+            )
+
             f.write(
-                type_tmpl.format(
-                    notice=notice,
-                    type_name=f"T{camel(type_name)}",
-                    constructors="\n\n\n".join([i[1] for i in constructors]),
-                    union_types=", ".join([camel(i[0]) for i in constructors])
-                )
+                # format_str(fix_code(constructor, remove_all_unused_imports=True), mode=FileMode())
+                # if format else
+                remove_whitespaces(constructor)
             )
 
     for name, function in functions.items():
@@ -392,7 +418,11 @@ def start():
         os.makedirs(path, exist_ok=True)
 
         with open(path / f"{snake(name)}.py", "w") as f:
-            f.write(function)
+            f.write(
+                # format_str(fix_code(function, remove_all_unused_imports=True), mode=FileMode())
+                # if format else
+                remove_whitespaces(function)
+            )
 
     with open(DESTINATION_PATH / "all.py", "w", encoding="utf-8") as f:
         f.write(notice + "\n\n")
@@ -422,7 +452,11 @@ def start():
             if name == "_":
                 path = DESTINATION_PATH / section / "__init__.py"
                 with open(path, "a", encoding="utf-8") as f:
-                    f.write(f"from . import {', '.join([i for i in namespaces if i != '_'])}\n")
+                    code = f"from . import {', '.join([i for i in namespaces if i != '_'])}\n"
+                    f.write(
+                        # format_str(code, mode=FileMode()) if format else
+                        code
+                    )
             else:
                 path = DESTINATION_PATH / section / name / "__init__.py"
 
@@ -437,9 +471,16 @@ def start():
                             constructors_imports.append(camel(b))
 
                         imports = f"T{camel(name)}, {', '.join(constructors_imports)}"
-                        f.write(f"from .{snake(name)} import {imports}\n")
+                        code = f"from .{snake(name)} import {imports}\n"
+                        f.write(
+                            # format_str(code, mode=FileMode()) if format else
+                            code
+                        )
                     else:
-                        f.write(f"from .{snake(name)} import {camel(name)}\n")
+                        code = f"from .{snake(name)} import {camel(name)}\n"
+                        f.write(
+                            # format_str(code, mode=FileMode()) if format else
+                            code)
 
 
 if "__main__" == __name__:
@@ -447,4 +488,4 @@ if "__main__" == __name__:
     DESTINATION_PATH = Path("../../pyrogram/api")
     NOTICE_PATH = Path("../../NOTICE")
 
-    start()
+    start(format=False)

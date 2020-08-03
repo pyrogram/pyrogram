@@ -2,23 +2,23 @@
 
 from io import BytesIO
 
-from pyrogram.api.core.primitives import *
+from pyrogram.api.core.primitives import Int, Long, Int128, Int256, Bool, Bytes, String, Double, Vector
 from pyrogram.api.core import TLObject
 from pyrogram.api import types
-from typing import List
+from typing import List, Union, Any
 
 
-class {combinator_name}(TLObject):
-    __slots__ = [{slots}]
+class {combinator_name}(TLObject):  # type: ignore
+    __slots__: List[str] = [{slots}]
 
     ID = {combinator_id}
     QUALNAME = "{qualname}"
 
-    def __init__(self{arguments}):
+    def __init__(self{arguments}) -> None:
         {fields}
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "{combinator_name}":
+    def read(b: BytesIO, *args: Any) -> "{combinator_name}":
         {read_types}
         return {combinator_name}({return_arguments})
 

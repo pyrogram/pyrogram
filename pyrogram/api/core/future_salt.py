@@ -17,13 +17,14 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any
 
-from .primitives import Int, Long
+from .primitives.int import Int, Long
 from .tl_object import TLObject
 
 
 class FutureSalt(TLObject):
-    ID = 0x0949d9dc
+    ID = 0x0949D9DC
 
     __slots__ = ["valid_since", "valid_until", "salt"]
 
@@ -35,7 +36,7 @@ class FutureSalt(TLObject):
         self.salt = salt
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "FutureSalt":
+    def read(b: BytesIO, *args: Any) -> "FutureSalt":
         valid_since = Int.read(b)
         valid_until = Int.read(b)
         salt = Long.read(b)

@@ -19,34 +19,31 @@
 from collections import OrderedDict
 from io import BytesIO
 from json import dumps
+from typing import cast, List, Any, Union, Dict
 
 from ..all import objects
 
 
 class TLObject:
-    __slots__ = []
+    __slots__: List[str] = []
 
     QUALNAME = "Base"
 
-    @staticmethod
-    def read(b: BytesIO, *args):  # TODO: Rename b -> data
-        return objects[int.from_bytes(b.read(4), "little")].read(b, *args)
+    @classmethod
+    def read(cls, b: BytesIO, *args: Any) -> Any:
+        return cast(TLObject, objects[int.from_bytes(b.read(4), "little")]).read(b, *args)
 
-    def write(self, *args) -> bytes:
+    def write(self, *args: Any) -> bytes:
         pass
 
     @staticmethod
-    def default(obj: "TLObject"):
+    def default(obj: "TLObject") -> Union[str, Dict[str, str]]:
         if isinstance(obj, bytes):
             return repr(obj)
 
         return OrderedDict(
             [("_", obj.QUALNAME)]
-            + [
-                (attr, getattr(obj, attr))
-                for attr in obj.__slots__
-                if getattr(obj, attr) is not None
-            ]
+            + [(attr, getattr(obj, attr)) for attr in obj.__slots__ if getattr(obj, attr) is not None]
         )
 
     def __str__(self) -> str:
@@ -62,7 +59,7 @@ class TLObject:
             )
         )
 
-    def __eq__(self, other: "TLObject") -> bool:
+    def __eq__(self, other: Any) -> bool:
         for attr in self.__slots__:
             try:
                 if getattr(self, attr) != getattr(other, attr):
@@ -75,8 +72,11 @@ class TLObject:
     def __len__(self) -> int:
         return len(self.write())
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any) -> Any:
         return getattr(self, item)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Any, value: Any) -> Any:
         setattr(self, key, value)
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        pass

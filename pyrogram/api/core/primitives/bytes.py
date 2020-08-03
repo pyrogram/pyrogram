@@ -17,13 +17,14 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any
 
 from ..tl_object import TLObject
 
 
-class Bytes(TLObject):
-    @staticmethod
-    def read(b: BytesIO, *args) -> bytes:
+class Bytes(bytes, TLObject):
+    @classmethod
+    def read(cls, b: BytesIO, *args: Any) -> bytes:
         length = int.from_bytes(b.read(1), "little")
 
         if length <= 253:
@@ -36,7 +37,7 @@ class Bytes(TLObject):
 
         return x
 
-    def __new__(cls, value: bytes) -> bytes:
+    def __new__(cls, value: bytes) -> bytes:  # type: ignore
         length = len(value)
 
         if length <= 253:

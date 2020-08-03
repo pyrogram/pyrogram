@@ -17,13 +17,14 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any
 
-from .primitives import Int, Long
+from .primitives.int import Int, Long
 from .tl_object import TLObject
 
 
 class Message(TLObject):
-    ID = 0x5bb8e511  # hex(crc32(b"message msg_id:long seqno:int bytes:int body:Object = Message"))
+    ID = 0x5BB8E511  # hex(crc32(b"message msg_id:long seqno:int bytes:int body:Object = Message"))
 
     __slots__ = ["msg_id", "seq_no", "length", "body"]
 
@@ -36,7 +37,7 @@ class Message(TLObject):
         self.body = body
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "Message":
+    def read(b: BytesIO, *args: Any) -> "Message":
         msg_id = Long.read(b)
         seq_no = Int.read(b)
         length = Int.read(b)
@@ -44,7 +45,7 @@ class Message(TLObject):
 
         return Message(TLObject.read(BytesIO(body)), msg_id, seq_no, length)
 
-    def write(self) -> bytes:
+    def write(self, *args: Any) -> bytes:
         b = BytesIO()
 
         b.write(Long(self.msg_id))

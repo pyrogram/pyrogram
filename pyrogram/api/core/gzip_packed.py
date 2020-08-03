@@ -18,13 +18,15 @@
 
 from gzip import compress, decompress
 from io import BytesIO
+from typing import cast, Any
 
-from .primitives import Int, Bytes
+from .primitives.bytes import Bytes
+from .primitives.int import Int
 from .tl_object import TLObject
 
 
 class GzipPacked(TLObject):
-    ID = 0x3072cfa1
+    ID = 0x3072CFA1
 
     __slots__ = ["packed_data"]
 
@@ -34,17 +36,17 @@ class GzipPacked(TLObject):
         self.packed_data = packed_data
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "GzipPacked":
+    def read(b: BytesIO, *args: Any) -> "GzipPacked":
         # Return the Object itself instead of a GzipPacked wrapping it
-        return TLObject.read(
+        return cast(GzipPacked, TLObject.read(
             BytesIO(
                 decompress(
                     Bytes.read(b)
                 )
             )
-        )
+        ))
 
-    def write(self) -> bytes:
+    def write(self, *args: Any) -> bytes:
         b = BytesIO()
 
         b.write(Int(self.ID, False))

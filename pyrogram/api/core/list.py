@@ -16,11 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List as TList, Any
+
 from .tl_object import TLObject
 
 
-class List(list, TLObject):
-    __slots__ = []
-
-    def __repr__(self):
+class List(TList[Any], TLObject):
+    def __repr__(self) -> str:
         return f"pyrogram.api.core.List([{','.join(TLObject.__repr__(i) for i in self)}])"

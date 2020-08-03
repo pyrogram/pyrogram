@@ -17,26 +17,27 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any, List
 
-from . import FutureSalt
-from .primitives import Int, Long
+from .future_salt import FutureSalt
+from .primitives.int import Int, Long
 from .tl_object import TLObject
 
 
 class FutureSalts(TLObject):
-    ID = 0xae500895
+    ID = 0xAE500895
 
     __slots__ = ["req_msg_id", "now", "salts"]
 
     QUALNAME = "FutureSalts"
 
-    def __init__(self, req_msg_id: int, now: int, salts: list):
+    def __init__(self, req_msg_id: int, now: int, salts: List[FutureSalt]):
         self.req_msg_id = req_msg_id
         self.now = now
         self.salts = salts
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "FutureSalts":
+    def read(b: BytesIO, *args: Any) -> "FutureSalts":
         req_msg_id = Long.read(b)
         now = Int.read(b)
 

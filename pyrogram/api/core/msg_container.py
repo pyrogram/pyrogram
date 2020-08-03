@@ -17,28 +17,29 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import List, Any
 
 from .message import Message
-from .primitives import Int
+from .primitives.int import Int
 from .tl_object import TLObject
 
 
 class MsgContainer(TLObject):
-    ID = 0x73f1f8dc
+    ID = 0x73F1F8DC
 
     __slots__ = ["messages"]
 
     QUALNAME = "MsgContainer"
 
-    def __init__(self, messages: list):
+    def __init__(self, messages: List[Message]):
         self.messages = messages
 
     @staticmethod
-    def read(b: BytesIO, *args) -> "MsgContainer":
+    def read(b: BytesIO, *args: Any) -> "MsgContainer":
         count = Int.read(b)
         return MsgContainer([Message.read(b) for _ in range(count)])
 
-    def write(self) -> bytes:
+    def write(self, *args: Any) -> bytes:
         b = BytesIO()
 
         b.write(Int(self.ID, False))

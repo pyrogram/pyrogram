@@ -17,31 +17,32 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import Any
 
 from ..tl_object import TLObject
 
 
-class BoolFalse(TLObject):
-    ID = 0xbc799737
+class BoolFalse(bytes, TLObject):
+    ID = 0xBC799737
     value = False
 
     @classmethod
-    def read(cls, *args) -> bool:
+    def read(cls, *args: Any) -> bool:
         return cls.value
 
-    def __new__(cls) -> bytes:
+    def __new__(cls) -> bytes:  # type: ignore
         return cls.ID.to_bytes(4, "little")
 
 
 class BoolTrue(BoolFalse):
-    ID = 0x997275b5
+    ID = 0x997275B5
     value = True
 
 
-class Bool(TLObject):
+class Bool(bytes, TLObject):
     @classmethod
-    def read(cls, b: BytesIO) -> bool:
+    def read(cls, b: BytesIO, *args: Any) -> bool:
         return int.from_bytes(b.read(4), "little") == BoolTrue.ID
 
-    def __new__(cls, value: bool) -> BoolTrue or BoolFalse:
+    def __new__(cls, value: bool) -> bytes:  # type: ignore
         return BoolTrue() if value else BoolFalse()

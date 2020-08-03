@@ -17,14 +17,15 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from io import BytesIO
+from typing import cast
 
-from . import Bytes
+from .bytes import Bytes
 
 
 class String(Bytes):
-    @staticmethod
-    def read(b: BytesIO, *args) -> str:
-        return super(String, String).read(b).decode(errors="replace")
+    @classmethod
+    def read(cls, b: BytesIO, *args) -> str:  # type: ignore
+        return cast(bytes, super(String, String).read(b)).decode(errors="replace")
 
-    def __new__(cls, value: str) -> bytes:
+    def __new__(cls, value: str) -> bytes:  # type: ignore
         return super().__new__(cls, value.encode())
