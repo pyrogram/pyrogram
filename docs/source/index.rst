@@ -17,6 +17,7 @@ Welcome to Pyrogram
     start/invoking
     start/updates
     start/errors
+    start/examples/index
 
 .. toctree::
     :hidden:
