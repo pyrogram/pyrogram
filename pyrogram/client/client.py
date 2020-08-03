@@ -1636,7 +1636,7 @@ class Client(Methods, BaseClient):
                                     self.session_name, name, module_path))
 
             if count > 0:
-                log.warning('[{}] Successfully loaded {} plugin{} from "{}"'.format(
+                log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
                     self.session_name, count, "s" if count > 1 else "", root))
             else:
                 log.warning('[{}] No plugin loaded from "{}"'.format(
