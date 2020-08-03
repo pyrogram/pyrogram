@@ -29,7 +29,7 @@ Welcome to Pyrogram
     api/bound-methods/index
     api/handlers
     api/decorators
-    api/errors
+    api/errors/index
     api/filters
 
 .. toctree::

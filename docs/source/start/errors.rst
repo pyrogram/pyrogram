@@ -40,13 +40,13 @@ provides categories of errors, which are named after the common HTTP errors and 
 
     from pyrogram.errors import BadRequest, Forbidden, ...
 
--   `303 - SeeOther <../api/errors#seeother>`_
--   `400 - BadRequest <../api/errors#badrequest>`_
--   `401 - Unauthorized  <../api/errors#unauthorized>`_
--   `403 - Forbidden <../api/errors#forbidden>`_
--   `406 - NotAcceptable <../api/errors#notacceptable>`_
--   `420 - Flood <../api/errors#flood>`_
--   `500 - InternalServerError <../api/errors#internalservererror>`_
+-   `303 - SeeOther <../api/errors/see-other>`_
+-   `400 - BadRequest <../api/errors/bad-request>`_
+-   `401 - Unauthorized  <../api/errors/unauthorized>`_
+-   `403 - Forbidden <../api/errors/forbidden>`_
+-   `406 - NotAcceptable <../api/errors/not-acceptable>`_
+-   `420 - Flood <../api/errors/flood>`_
+-   `500 - InternalServerError <../api/errors/internal-server-error>`_
 
 Single Errors
 -------------
