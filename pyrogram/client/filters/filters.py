@@ -48,11 +48,11 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
             Any keyword argument you would like to pass. Useful when creating parameterized custom filters, such as
             :meth:`~Filters.command` or :meth:`~Filters.regex`.
     """
-    # TODO: unpack kwargs using **kwargs into the dict itself. For Python 3.5+ only
-    d = {"__call__": func}
-    d.update(kwargs)
-
-    return type(name or CUSTOM_FILTER_NAME, (Filter,), d)()
+    return type(
+        name or CUSTOM_FILTER_NAME,
+        (Filter,),
+        {"__call__": func, **kwargs}
+    )()
 
 
 class Filters:
