@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
 from io import BytesIO
 from json import dumps
 from typing import cast, List, Any, Union, Dict
@@ -41,10 +40,14 @@ class TLObject:
         if isinstance(obj, bytes):
             return repr(obj)
 
-        return OrderedDict(
-            [("_", obj.QUALNAME)]
-            + [(attr, getattr(obj, attr)) for attr in obj.__slots__ if getattr(obj, attr) is not None]
-        )
+        return {
+            "_": obj.QUALNAME,
+            **{
+                attr: getattr(obj, attr)
+                for attr in obj.__slots__
+                if getattr(obj, attr) is not None
+            }
+        }
 
     def __str__(self) -> str:
         return dumps(self, indent=4, default=TLObject.default, ensure_ascii=False)

@@ -17,7 +17,6 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import typing
-from collections import OrderedDict
 from datetime import datetime
 from json import dumps
 
@@ -53,18 +52,20 @@ class Object(metaclass=Meta):
         if isinstance(obj, typing.Match):
             return repr(obj)
 
-        return OrderedDict(
-            [("_", "pyrogram." + obj.__class__.__name__)]
-            + [
-                (attr, "*" * len(getattr(obj, attr)))
-                if attr == "phone_number"
-                else (attr, str(datetime.fromtimestamp(getattr(obj, attr))))
-                if attr.endswith("date")
-                else (attr, getattr(obj, attr))
+        return {
+            "_": f"pyrogram.{obj.__class__.__name__}",
+            **{
+                attr: (
+                    "*" * len(getattr(obj, attr))
+                    if attr == "phone_number" else
+                    str(datetime.fromtimestamp(getattr(obj, attr)))
+                    if attr.endswith("date") else
+                    getattr(obj, attr)
+                )
                 for attr in filter(lambda x: not x.startswith("_"), obj.__dict__)
                 if getattr(obj, attr) is not None
-            ]
-        )
+            }
+        }
 
     def __str__(self) -> str:
         return dumps(self, indent=4, default=Object.default, ensure_ascii=False)

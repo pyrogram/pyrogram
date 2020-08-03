@@ -19,7 +19,6 @@
 import html
 import logging
 import re
-from collections import OrderedDict
 from html.parser import HTMLParser
 from typing import Union
 
@@ -138,11 +137,10 @@ class HTML:
 
             entities.append(entity)
 
-        # TODO: OrderedDict to be removed in Python 3.6
-        return OrderedDict([
-            ("message", utils.remove_surrogates(parser.text)),
-            ("entities", sorted(entities, key=lambda e: e.offset))
-        ])
+        return {
+            "message": utils.remove_surrogates(parser.text),
+            "entities": sorted(entities, key=lambda e: e.offset)
+        }
 
     @staticmethod
     def unparse(text: str, entities: list):
