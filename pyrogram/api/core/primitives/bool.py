@@ -41,8 +41,8 @@ class BoolTrue(BoolFalse):
 
 class Bool(bytes, TLObject):
     @classmethod
-    def read(cls, b: BytesIO, *args: Any) -> bool:
-        return int.from_bytes(b.read(4), "little") == BoolTrue.ID
+    def read(cls, data: BytesIO, *args: Any) -> bool:
+        return int.from_bytes(data.read(4), "little") == BoolTrue.ID
 
     def __new__(cls, value: bool) -> bytes:  # type: ignore
         return BoolTrue() if value else BoolFalse()

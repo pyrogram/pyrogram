@@ -38,11 +38,11 @@ class Vector(bytes, TLObject):
             return Int.read(b)
 
     @classmethod
-    def read(cls, b: BytesIO, t: Any = None, *args: Any) -> List:
+    def read(cls, data: BytesIO, t: Any = None, *args: Any) -> List:
         return List(
-            t.read(b) if t
-            else Vector._read(b)
-            for _ in range(Int.read(b))
+            t.read(data) if t
+            else Vector._read(data)
+            for _ in range(Int.read(data))
         )
 
     def __new__(cls, value: list, t: Any = None) -> bytes:  # type: ignore

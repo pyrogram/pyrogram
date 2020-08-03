@@ -18,13 +18,13 @@ class {combinator_name}(TLObject):  # type: ignore
         {fields}
 
     @staticmethod
-    def read(b: BytesIO, *args: Any) -> "{combinator_name}":
+    def read(data: BytesIO, *args: Any) -> "{combinator_name}":
         {read_types}
         return {combinator_name}({return_arguments})
 
     def write(self) -> bytes:
-        b = BytesIO()
-        b.write(Int(self.ID, False))
+        data = BytesIO()
+        data.write(Int(self.ID, False))
 
         {write_types}
-        return b.getvalue()
+        return data.getvalue()
