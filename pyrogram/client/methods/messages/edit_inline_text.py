@@ -20,6 +20,8 @@ from typing import Union
 
 import pyrogram
 from pyrogram.api import functions
+from pyrogram.session import Auth, Session
+from pyrogram.errors import AuthBytesInvalid
 from pyrogram.client.ext import BaseClient, utils
 
 
@@ -71,11 +73,51 @@ class EditInlineText(BaseClient):
                     disable_web_page_preview=True)
         """
 
-        return await self.send(
-            functions.messages.EditInlineBotMessage(
-                id=utils.unpack_inline_message_id(inline_message_id),
-                no_webpage=disable_web_page_preview or None,
-                reply_markup=reply_markup.write() if reply_markup else None,
-                **await self.parser.parse(text, parse_mode)
+        unpacked = utils.unpack_inline_message_id(inline_message_id)
+
+        if unpacked.dc_id != self.storage.dc_id():
+            session = Session(self, unpacked.dc_id, await Auth(self, unpacked.dc_id).create(), is_media=True)
+
+            await session.start()
+
+            for _ in range(3):
+                exported_auth = await self.send(
+                    functions.auth.ExportAuthorization(
+                        dc_id=unpacked.dc_id
+                    )
+                )
+
+                try:
+                    await session.send(
+                        functions.auth.ImportAuthorization(
+                            id=exported_auth.id,
+                            bytes=exported_auth.bytes
+                        )
+                    )
+                except AuthBytesInvalid:
+                    continue
+                else:
+                    break
+            else:
+                await session.stop()
+                raise AuthBytesInvalid
+
+            await session.send(
+                functions.messages.EditInlineBotMessage(
+                    id=unpacked,
+                    no_webpage=disable_web_page_preview or None,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **await self.parser.parse(text, parse_mode)
+                )
             )
-        )
+
+            await session.stop()
+        else:
+            await self.send(
+                functions.messages.EditInlineBotMessage(
+                    id=unpacked,
+                    no_webpage=disable_web_page_preview or None,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **await self.parser.parse(text, parse_mode)
+                )
+            )

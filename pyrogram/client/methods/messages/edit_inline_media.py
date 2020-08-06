@@ -20,6 +20,8 @@ import re
 
 import pyrogram
 from pyrogram.api import functions, types
+from pyrogram.session import Auth, Session
+from pyrogram.errors import AuthBytesInvalid
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.client.types import (
     InputMediaPhoto, InputMediaVideo, InputMediaAudio,
@@ -109,11 +111,51 @@ class EditInlineMedia(BaseClient):
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        return await self.send(
-            functions.messages.EditInlineBotMessage(
-                id=utils.unpack_inline_message_id(inline_message_id),
-                media=media,
-                reply_markup=reply_markup.write() if reply_markup else None,
-                **await self.parser.parse(caption, parse_mode)
+        unpacked = utils.unpack_inline_message_id(inline_message_id)
+
+        if unpacked.dc_id != self.storage.dc_id():
+            session = Session(self, unpacked.dc_id, await Auth(self, unpacked.dc_id).create(), is_media=True)
+
+            await session.start()
+
+            for _ in range(3):
+                exported_auth = await self.send(
+                    functions.auth.ExportAuthorization(
+                        dc_id=unpacked.dc_id
+                    )
+                )
+
+                try:
+                    await session.send(
+                        functions.auth.ImportAuthorization(
+                            id=exported_auth.id,
+                            bytes=exported_auth.bytes
+                        )
+                    )
+                except AuthBytesInvalid:
+                    continue
+                else:
+                    break
+            else:
+                await session.stop()
+                raise AuthBytesInvalid
+
+            await session.send(
+                functions.messages.EditInlineBotMessage(
+                    id=unpacked,
+                    media=media,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **await self.parser.parse(caption, parse_mode)
+                )
             )
-        )
+
+            await session.stop()
+        else:
+            await self.send(
+                functions.messages.EditInlineBotMessage(
+                    id=unpacked,
+                    media=media,
+                    reply_markup=reply_markup.write() if reply_markup else None,
+                    **await self.parser.parse(caption, parse_mode)
+                )
+            )
