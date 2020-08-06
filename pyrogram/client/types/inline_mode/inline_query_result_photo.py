@@ -75,7 +75,7 @@ class InlineQueryResultPhoto(InlineQueryResult):
         id: str = None,
         title: str = None,
         description: str = None,
-        caption: str = None,
+        caption: str = '',
         parse_mode: Union[str, None] = object,
         reply_markup: InlineKeyboardMarkup = None,
         input_message_content: InputMessageContent = None
