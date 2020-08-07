@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -165,6 +166,9 @@ class SendAudio(BaseClient):
         file = None
 
         try:
+            if isinstance(audio, PurePath):
+                audio = str(audio)
+
             if isinstance(audio, str):
                 if os.path.isfile(audio):
                     thumb = self.save_file(thumb)
