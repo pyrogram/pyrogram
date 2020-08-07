@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from functools import partial
-from typing import List, Match, Union
+from typing import List, Match, Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import types
@@ -763,7 +763,7 @@ class Message(Object, Update):
 
     def reply_animation(
         self,
-        animation: str,
+        animation: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         caption: str = "",
@@ -905,7 +905,7 @@ class Message(Object, Update):
 
     def reply_audio(
         self,
-        audio: str,
+        audio: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         caption: str = "",
@@ -1260,7 +1260,7 @@ class Message(Object, Update):
 
     def reply_document(
         self,
-        document: str,
+        document: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         thumb: str = None,
@@ -1661,7 +1661,7 @@ class Message(Object, Update):
 
     def reply_photo(
         self,
-        photo: str,
+        photo: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         caption: str = "",
@@ -1862,7 +1862,7 @@ class Message(Object, Update):
 
     def reply_sticker(
         self,
-        sticker: str,
+        sticker: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         disable_notification: bool = None,
@@ -2065,7 +2065,7 @@ class Message(Object, Update):
 
     def reply_video(
         self,
-        video: str,
+        video: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         caption: str = "",
@@ -2212,7 +2212,7 @@ class Message(Object, Update):
 
     def reply_video_note(
         self,
-        video_note: str,
+        video_note: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         duration: int = 0,
@@ -2335,7 +2335,7 @@ class Message(Object, Update):
 
     def reply_voice(
         self,
-        voice: str,
+        voice: Union[str, BinaryIO],
         file_ref: str = None,
         quote: bool = None,
         caption: str = "",
