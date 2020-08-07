@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -115,6 +116,9 @@ class SendSticker(BaseClient):
         file = None
 
         try:
+            if isinstance(sticker, PurePath):
+                sticker = str(sticker)
+
             if isinstance(sticker, str):
                 if os.path.isfile(sticker):
                     file = self.save_file(sticker, progress=progress, progress_args=progress_args)
