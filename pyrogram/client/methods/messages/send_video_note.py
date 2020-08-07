@@ -18,6 +18,7 @@
 
 import os
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -129,6 +130,9 @@ class SendVideoNote(BaseClient):
         file = None
 
         try:
+            if isinstance(video_note, PurePath):
+                video_note = str(video_note)
+
             if isinstance(video_note, str):
                 if os.path.isfile(video_note):
                     thumb = self.save_file(thumb)
