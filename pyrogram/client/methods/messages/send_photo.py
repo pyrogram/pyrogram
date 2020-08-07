@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -139,6 +140,9 @@ class SendPhoto(BaseClient):
         file = None
 
         try:
+            if isinstance(photo, PurePath):
+                photo = str(photo)
+
             if isinstance(photo, str):
                 if os.path.isfile(photo):
                     file = self.save_file(photo, progress=progress, progress_args=progress_args)
