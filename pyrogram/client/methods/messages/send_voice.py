@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -134,6 +135,9 @@ class SendVoice(BaseClient):
         file = None
 
         try:
+            if isinstance(voice, PurePath):
+                voice = str(voice)
+
             if isinstance(voice, str):
                 if os.path.isfile(voice):
                     file = self.save_file(voice, progress=progress, progress_args=progress_args)
