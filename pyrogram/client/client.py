@@ -28,7 +28,7 @@ import time
 from configparser import ConfigParser
 from hashlib import sha256, md5
 from importlib import import_module
-from pathlib import Path
+from pathlib import Path, PurePath
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from threading import Thread
 from typing import Union, List, BinaryIO
@@ -1788,7 +1788,7 @@ class Client(Methods, BaseClient):
 
         part_size = 512 * 1024
 
-        if isinstance(path, str):
+        if isinstance(path, str) or isinstance(path, PurePath):
             fp = open(path, "rb")
         elif isinstance(path, io.IOBase):
             fp = path
