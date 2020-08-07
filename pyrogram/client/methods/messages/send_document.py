@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -145,6 +146,9 @@ class SendDocument(BaseClient):
         file = None
 
         try:
+            if isinstance(document, PurePath):
+                document = str(document)
+
             if isinstance(document, str):
                 if os.path.isfile(document):
                     thumb = self.save_file(thumb)
