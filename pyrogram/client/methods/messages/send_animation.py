@@ -19,6 +19,7 @@
 import os
 import re
 from typing import Union, BinaryIO
+from pathlib import PurePath
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -165,6 +166,9 @@ class SendAnimation(BaseClient):
         file = None
 
         try:
+            if isinstance(animation, PurePath):
+                animation = str(animation)
+
             if isinstance(animation, str):
                 if os.path.isfile(animation):
                     thumb = self.save_file(thumb)
