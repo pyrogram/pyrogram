@@ -77,7 +77,7 @@ class ChosenInlineResult(Object, Update):
         from_user: User,
         query: str,
         location: "pyrogram.Location" = None,
-        inline_message_id: str = None,
+        inline_message_id: str = None
     ):
         super().__init__(client)
 
