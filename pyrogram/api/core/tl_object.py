@@ -53,6 +53,8 @@ class TLObject:
         return dumps(self, indent=4, default=TLObject.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
+        if not hasattr(self, "QUALNAME"):
+            return repr(self)
         return "pyrogram.api.{}({})".format(
             self.QUALNAME,
             ", ".join(
