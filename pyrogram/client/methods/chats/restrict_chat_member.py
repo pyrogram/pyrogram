@@ -66,7 +66,7 @@ class RestrictChatMember(BaseClient):
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions())
 
                 # Chat member muted for 24h
-                app.restrict_chat_member(chat_id, user_id, ChatPermissions(), int(time.time() + 86400))
+                app.restrict_chat_member(chat_id, user_id, ChatPermissions(), int(time() + 86400))
 
                 # Chat member can only send text messages
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions(can_send_messages=True))
