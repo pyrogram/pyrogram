@@ -64,11 +64,12 @@ class GetNearbyChats(BaseClient):
         peers = r.updates[0].peers
 
         for peer in peers:
-            chat_id = utils.get_channel_id(peer.peer.channel_id)
+            if isinstance(peer.peer, types.PeerChannel):
+                chat_id = utils.get_channel_id(peer.peer.channel_id)
 
-            for chat in chats:
-                if chat.id == chat_id:
-                    chat.distance = peer.distance
-                    break
+                for chat in chats:
+                    if chat.id == chat_id:
+                        chat.distance = peer.distance
+                        break
 
         return chats
