@@ -27,7 +27,7 @@ import tempfile
 from configparser import ConfigParser
 from hashlib import sha256, md5
 from importlib import import_module
-from pathlib import Path
+from pathlib import Path, Pureapath
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from typing import Union, List, BinaryIO
 
@@ -1804,7 +1804,7 @@ class Client(Methods, BaseClient):
 
         part_size = 512 * 1024
 
-        if isinstance(path, str):
+        if isinstance(path, (str, PurePath)):
             fp = open(path, "rb")
         elif isinstance(path, io.IOBase):
             fp = path
