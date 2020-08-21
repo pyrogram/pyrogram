@@ -231,7 +231,7 @@ class User(Object, Update):
             client=client
         )
 
-    def archive(self):
+    async def archive(self):
         """Bound method *archive* of :obj:`User`.
 
         Use as a shortcut for:
@@ -252,9 +252,9 @@ class User(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.archive_chats(self.id)
+        return await self._client.archive_chats(self.id)
 
-    def unarchive(self):
+    async def unarchive(self):
         """Bound method *unarchive* of :obj:`User`.
 
         Use as a shortcut for:
@@ -275,7 +275,7 @@ class User(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unarchive_chats(self.id)
+        return await self._client.unarchive_chats(self.id)
 
     def block(self):
         """Bound method *block* of :obj:`User`.

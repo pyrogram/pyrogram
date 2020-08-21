@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendVenue(BaseClient):
-    def send_venue(
+    async def send_venue(
         self,
         chat_id: Union[int, str],
         latitude: float,
@@ -94,9 +94,9 @@ class SendVenue(BaseClient):
                     "me", 51.500729, -0.124583,
                     "Elizabeth Tower", "Westminster, London SW1A 0AA, UK")
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaVenue(
                     geo_point=types.InputGeoPoint(
                         lat=latitude,
@@ -119,7 +119,7 @@ class SendVenue(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

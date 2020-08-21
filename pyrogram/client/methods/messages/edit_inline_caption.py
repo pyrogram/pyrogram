@@ -23,7 +23,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditInlineCaption(BaseClient):
-    def edit_inline_caption(
+    async def edit_inline_caption(
         self,
         inline_message_id: str,
         caption: str,
@@ -58,7 +58,7 @@ class EditInlineCaption(BaseClient):
                 # Bots only
                 app.edit_inline_caption(inline_message_id, "new media caption")
         """
-        return self.edit_inline_text(
+        return await self.edit_inline_text(
             inline_message_id=inline_message_id,
             text=caption,
             parse_mode=parse_mode,

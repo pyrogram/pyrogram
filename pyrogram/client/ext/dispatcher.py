@@ -16,11 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import threading
 from collections import OrderedDict
-from queue import Queue
-from threading import Thread, Lock
 
 import pyrogram
 from pyrogram.api.types import (
@@ -69,105 +67,106 @@ class Dispatcher:
         self.client = client
         self.workers = workers
 
-        self.workers_list = []
+        self.update_worker_tasks = []
         self.locks_list = []
 
-        self.updates_queue = Queue()
+        self.updates_queue = asyncio.Queue()
         self.groups = OrderedDict()
 
+        async def message_parser(update, users, chats):
+            return await pyrogram.Message._parse(
+                self.client, update.message, users, chats,
+                isinstance(update, UpdateNewScheduledMessage)
+            ), MessageHandler
+
+        async def deleted_messages_parser(update, users, chats):
+            return utils.parse_deleted_messages(self.client, update), DeletedMessagesHandler
+
+        async def callback_query_parser(update, users, chats):
+            return await pyrogram.CallbackQuery._parse(self.client, update, users), CallbackQueryHandler
+
+        async def user_status_parser(update, users, chats):
+            return pyrogram.User._parse_user_status(self.client, update), UserStatusHandler
+
+        async def inline_query_parser(update, users, chats):
+            return pyrogram.InlineQuery._parse(self.client, update, users), InlineQueryHandler
+
+        async def poll_parser(update, users, chats):
+            return pyrogram.Poll._parse_update(self.client, update), PollHandler
+
+        async def chosen_inline_result_parser(update, users, chats):
+            return pyrogram.ChosenInlineResult._parse(self.client, update, users), ChosenInlineResultHandler
+
         self.update_parsers = {
-            Dispatcher.MESSAGE_UPDATES:
-                lambda upd, usr, cht: (
-                    pyrogram.Message._parse(
-                        self.client,
-                        upd.message,
-                        usr,
-                        cht,
-                        isinstance(upd, UpdateNewScheduledMessage)
-                    ),
-                    MessageHandler
-                ),
-
-            Dispatcher.DELETE_MESSAGES_UPDATES:
-                lambda upd, usr, cht: (utils.parse_deleted_messages(self.client, upd), DeletedMessagesHandler),
-
-            Dispatcher.CALLBACK_QUERY_UPDATES:
-                lambda upd, usr, cht: (pyrogram.CallbackQuery._parse(self.client, upd, usr), CallbackQueryHandler),
-
-            (UpdateUserStatus,):
-                lambda upd, usr, cht: (pyrogram.User._parse_user_status(self.client, upd), UserStatusHandler),
-
-            (UpdateBotInlineQuery,):
-                lambda upd, usr, cht: (pyrogram.InlineQuery._parse(self.client, upd, usr), InlineQueryHandler),
-
-            (UpdateMessagePoll,):
-                lambda upd, usr, cht: (pyrogram.Poll._parse_update(self.client, upd), PollHandler),
-
-            (UpdateBotInlineSend,):
-                lambda upd, usr, cht: (pyrogram.ChosenInlineResult._parse(self.client, upd, usr),
-                                       ChosenInlineResultHandler)
+            Dispatcher.MESSAGE_UPDATES: message_parser,
+            Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
+            Dispatcher.CALLBACK_QUERY_UPDATES: callback_query_parser,
+            (UpdateUserStatus,): user_status_parser,
+            (UpdateBotInlineQuery,): inline_query_parser,
+            (UpdateMessagePoll,): poll_parser,
+            (UpdateBotInlineSend,): chosen_inline_result_parser
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
-    def start(self):
+    async def start(self):
         for i in range(self.workers):
-            self.locks_list.append(Lock())
+            self.locks_list.append(asyncio.Lock())
 
-            self.workers_list.append(
-                Thread(
-                    target=self.update_worker,
-                    name="UpdateWorker#{}".format(i + 1),
-                    args=(self.locks_list[-1],)
-                )
+            self.update_worker_tasks.append(
+                asyncio.ensure_future(self.update_worker(self.locks_list[-1]))
             )
 
-            self.workers_list[-1].start()
+        logging.info("Started {} UpdateWorkerTasks".format(self.workers))
 
-    def stop(self):
-        for _ in range(self.workers):
-            self.updates_queue.put(None)
+    async def stop(self):
+        for i in range(self.workers):
+            self.updates_queue.put_nowait(None)
 
-        for worker in self.workers_list:
-            worker.join()
+        for i in self.update_worker_tasks:
+            await i
 
-        self.workers_list.clear()
-        self.locks_list.clear()
+        self.update_worker_tasks.clear()
         self.groups.clear()
 
+        logging.info("Stopped {} UpdateWorkerTasks".format(self.workers))
+
     def add_handler(self, handler, group: int):
-        for lock in self.locks_list:
-            lock.acquire()
-
-        try:
-            if group not in self.groups:
-                self.groups[group] = []
-                self.groups = OrderedDict(sorted(self.groups.items()))
-
-            self.groups[group].append(handler)
-        finally:
+        async def fn():
             for lock in self.locks_list:
-                lock.release()
+                await lock.acquire()
+
+            try:
+                if group not in self.groups:
+                    self.groups[group] = []
+                    self.groups = OrderedDict(sorted(self.groups.items()))
+
+                self.groups[group].append(handler)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
+
+        asyncio.ensure_future(fn())
 
     def remove_handler(self, handler, group: int):
-        for lock in self.locks_list:
-            lock.acquire()
-
-        try:
-            if group not in self.groups:
-                raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
-
-            self.groups[group].remove(handler)
-        finally:
+        async def fn():
             for lock in self.locks_list:
-                lock.release()
+                await lock.acquire()
 
-    def update_worker(self, lock):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
+            try:
+                if group not in self.groups:
+                    raise ValueError("Group {} does not exist. Handler was not removed.".format(group))
 
+                self.groups[group].remove(handler)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
+
+        asyncio.ensure_future(fn())
+
+    async def update_worker(self, lock):
         while True:
-            packet = self.updates_queue.get()
+            packet = await self.updates_queue.get()
 
             if packet is None:
                 break
@@ -177,12 +176,12 @@ class Dispatcher:
                 parser = self.update_parsers.get(type(update), None)
 
                 parsed_update, handler_type = (
-                    parser(update, users, chats)
+                    await parser(update, users, chats)
                     if parser is not None
                     else (None, type(None))
                 )
 
-                with lock:
+                async with lock:
                     for group in self.groups.values():
                         for handler in group:
                             args = None
@@ -202,7 +201,7 @@ class Dispatcher:
                                 continue
 
                             try:
-                                handler.callback(self.client, *args)
+                                await handler.callback(self.client, *args)
                             except pyrogram.StopPropagation:
                                 raise
                             except pyrogram.ContinuePropagation:
@@ -215,5 +214,3 @@ class Dispatcher:
                 pass
             except Exception as e:
                 log.error(e, exc_info=True)
-
-        log.debug("{} stopped".format(name))

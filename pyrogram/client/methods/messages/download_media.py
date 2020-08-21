@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import binascii
 import os
 import struct
@@ -32,7 +33,7 @@ DEFAULT_DOWNLOAD_DIR = "downloads/"
 
 
 class DownloadMedia(BaseClient):
-    def download_media(
+    async def download_media(
         self,
         message: Union["pyrogram.Message", str],
         file_ref: str = None,
@@ -202,7 +203,7 @@ class DownloadMedia(BaseClient):
         except (AssertionError, binascii.Error, struct.error):
             raise FileIdInvalid from None
 
-        done = Event()
+        done = asyncio.Event()
         path = [None]
 
         directory, file_name = os.path.split(file_name)
@@ -239,9 +240,9 @@ class DownloadMedia(BaseClient):
             )
 
         # Cast to string because Path objects aren't supported by Python 3.5
-        self.download_queue.put((data, str(directory), str(file_name), done, progress, progress_args, path))
+        self.download_queue.put_nowait((data, str(directory), str(file_name), done, progress, progress_args, path))
 
         if block:
-            done.wait()
+            await done.wait()
 
         return path[0]

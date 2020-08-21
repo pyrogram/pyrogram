@@ -88,7 +88,7 @@ class InlineQuery(Object, Update):
             client=client
         )
 
-    def answer(
+    async def answer(
         self,
         results: List[InlineQueryResult],
         cache_time: int = 300,
@@ -151,7 +151,7 @@ class InlineQuery(Object, Update):
                 where they wanted to use the bot's inline capabilities.
         """
 
-        return self._client.answer_inline_query(
+        return await self._client.answer_inline_query(
             inline_query_id=self.id,
             results=results,
             cache_time=cache_time,

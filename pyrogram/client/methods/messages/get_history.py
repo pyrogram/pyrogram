@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 from typing import Union, List
 
@@ -28,7 +29,7 @@ log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
-    def get_history(
+    async def get_history(
         self,
         chat_id: Union[int, str],
         limit: int = 100,
@@ -83,11 +84,11 @@ class GetHistory(BaseClient):
 
         offset_id = offset_id or (1 if reverse else 0)
 
-        messages = utils.parse_messages(
+        messages = await utils.parse_messages(
             self,
-            self.send(
+            await self.send(
                 functions.messages.GetHistory(
-                    peer=self.resolve_peer(chat_id),
+                    peer=await self.resolve_peer(chat_id),
                     offset_id=offset_id,
                     offset_date=offset_date,
                     add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),

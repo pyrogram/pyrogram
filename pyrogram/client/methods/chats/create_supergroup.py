@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 
 class CreateSupergroup(BaseClient):
-    def create_supergroup(
+    async def create_supergroup(
         self,
         title: str,
         description: str = ""
@@ -48,7 +48,7 @@ class CreateSupergroup(BaseClient):
 
                 app.create_supergroup("Supergroup Title", "Supergroup Description")
         """
-        r = self.send(
+        r = await self.send(
             functions.channels.CreateChannel(
                 title=title,
                 about=description,

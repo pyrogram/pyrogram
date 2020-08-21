@@ -43,7 +43,7 @@ POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswit
 
 
 class SendChatAction(BaseClient):
-    def send_chat_action(self, chat_id: Union[int, str], action: str) -> bool:
+    async def send_chat_action(self, chat_id: Union[int, str], action: str) -> bool:
         """Tell the other party that something is happening on your side.
 
         Parameters:
@@ -93,9 +93,9 @@ class SendChatAction(BaseClient):
         else:
             action = action()
 
-        return self.send(
+        return await self.send(
             functions.messages.SetTyping(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 action=action
             )
         )

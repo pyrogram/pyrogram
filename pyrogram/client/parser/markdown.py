@@ -56,7 +56,7 @@ class Markdown:
     def __init__(self, client: Union["pyrogram.BaseClient", None]):
         self.html = HTML(client)
 
-    def parse(self, text: str, strict: bool = False):
+    async def parse(self, text: str, strict: bool = False):
         if strict:
             text = html.escape(text)
 
@@ -102,7 +102,7 @@ class Markdown:
 
             text = utils.replace_once(text, delim, tag, start)
 
-        return self.html.parse(text)
+        return await self.html.parse(text)
 
     @staticmethod
     def unparse(text: str, entities: list):

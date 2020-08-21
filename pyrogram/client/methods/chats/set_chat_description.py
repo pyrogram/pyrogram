@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetChatDescription(BaseClient):
-    def set_chat_description(
+    async def set_chat_description(
         self,
         chat_id: Union[int, str],
         description: str
@@ -49,10 +49,10 @@ class SetChatDescription(BaseClient):
 
                 app.set_chat_description(chat_id, "New Description")
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, (types.InputPeerChannel, types.InputPeerChat)):
-            self.send(
+            await self.send(
                 functions.messages.EditChatAbout(
                     peer=peer,
                     about=description

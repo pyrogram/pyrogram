@@ -24,7 +24,7 @@ from ...ext import BaseClient, utils
 
 
 class SetChatPhoto(BaseClient):
-    def set_chat_photo(
+    async def set_chat_photo(
         self,
         chat_id: Union[int, str],
         *,
@@ -79,32 +79,32 @@ class SetChatPhoto(BaseClient):
                 # Set chat photo using an exiting Video file_id
                 app.set_chat_photo(chat_id, video=video.file_id, file_ref=video.file_ref)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(photo, str):
             if os.path.isfile(photo):
                 photo = types.InputChatUploadedPhoto(
-                    file=self.save_file(photo),
-                    video=self.save_file(video)
+                    file=await self.save_file(photo),
+                    video=await self.save_file(video)
                 )
             else:
                 photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
                 photo = types.InputChatPhoto(id=photo.id)
         else:
             photo = types.InputChatUploadedPhoto(
-                file=self.save_file(photo),
-                video=self.save_file(video)
+                file=await self.save_file(photo),
+                video=await self.save_file(video)
             )
 
         if isinstance(peer, types.InputPeerChat):
-            self.send(
+            await self.send(
                 functions.messages.EditChatPhoto(
                     chat_id=peer.chat_id,
                     photo=photo
                 )
             )
         elif isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditPhoto(
                     channel=peer,
                     photo=photo

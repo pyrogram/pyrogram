@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class GetGameHighScores(BaseClient):
-    def get_game_high_scores(
+    async def get_game_high_scores(
         self,
         user_id: Union[int, str],
         chat_id: Union[int, str],
@@ -59,11 +59,11 @@ class GetGameHighScores(BaseClient):
         """
         # TODO: inline_message_id
 
-        r = self.send(
+        r = await self.send(
             functions.messages.GetGameHighScores(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
-                user_id=self.resolve_peer(user_id)
+                user_id=await self.resolve_peer(user_id)
             )
         )
 

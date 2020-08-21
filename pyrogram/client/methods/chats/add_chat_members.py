@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class AddChatMembers(BaseClient):
-    def add_chat_members(
+    async def add_chat_members(
         self,
         chat_id: Union[int, str],
         user_ids: Union[Union[int, str], List[Union[int, str]]],
@@ -60,26 +60,26 @@ class AddChatMembers(BaseClient):
                 # Change forward_limit (for basic groups only)
                 app.add_chat_members(chat_id, user_id, forward_limit=25)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if not isinstance(user_ids, list):
             user_ids = [user_ids]
 
         if isinstance(peer, types.InputPeerChat):
             for user_id in user_ids:
-                self.send(
+                await self.send(
                     functions.messages.AddChatUser(
                         chat_id=peer.chat_id,
-                        user_id=self.resolve_peer(user_id),
+                        user_id=await self.resolve_peer(user_id),
                         fwd_limit=forward_limit
                     )
                 )
         else:
-            self.send(
+            await self.send(
                 functions.channels.InviteToChannel(
                     channel=peer,
                     users=[
-                        self.resolve_peer(user_id)
+                        await self.resolve_peer(user_id)
                         for user_id in user_ids
                     ]
                 )

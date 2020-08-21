@@ -23,7 +23,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditMessageCaption(BaseClient):
-    def edit_message_caption(
+    async def edit_message_caption(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -63,7 +63,7 @@ class EditMessageCaption(BaseClient):
 
                 app.edit_message_caption(chat_id, message_id, "new media caption")
         """
-        return self.edit_message_text(
+        return await self.edit_message_text(
             chat_id=chat_id,
             message_id=message_id,
             text=caption,

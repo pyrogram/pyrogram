@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(
+    async def change_cloud_password(
         self,
         current_password: str,
         new_password: str,
@@ -57,7 +57,7 @@ class ChangeCloudPassword(BaseClient):
                 # Change password and hint
                 app.change_cloud_password("current_password", "new_password", new_hint="hint")
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if not r.has_password:
             raise ValueError("There is no cloud password to change")
@@ -66,7 +66,7 @@ class ChangeCloudPassword(BaseClient):
         new_hash = btoi(compute_hash(r.new_algo, new_password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        self.send(
+        await self.send(
             functions.account.UpdatePasswordSettings(
                 password=compute_check(r, current_password),
                 new_settings=types.account.PasswordInputSettings(

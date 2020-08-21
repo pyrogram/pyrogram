@@ -67,5 +67,5 @@ class InlineQueryResult(Object):
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
 
-    def write(self):
+    async def write(self):
         pass

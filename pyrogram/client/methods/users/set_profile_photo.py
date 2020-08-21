@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetProfilePhoto(BaseClient):
-    def set_profile_photo(
+    async def set_profile_photo(
         self,
         *,
         photo: Union[str, BinaryIO] = None,
@@ -64,10 +64,10 @@ class SetProfilePhoto(BaseClient):
         """
 
         return bool(
-            self.send(
+            await self.send(
                 functions.photos.UploadProfilePhoto(
-                    file=self.save_file(photo),
-                    video=self.save_file(video)
+                    file=await self.save_file(photo),
+                    video=await self.save_file(video)
                 )
             )
         )

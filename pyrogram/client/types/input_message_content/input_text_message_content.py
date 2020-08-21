@@ -48,9 +48,9 @@ class InputTextMessageContent(InputMessageContent):
         self.parse_mode = parse_mode
         self.disable_web_page_preview = disable_web_page_preview
 
-    def write(self, reply_markup):
+    async def write(self, reply_markup):
         return types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
             reply_markup=reply_markup.write() if reply_markup else None,
-            **(Parser(None)).parse(self.message_text, self.parse_mode)
+            **await(Parser(None)).parse(self.message_text, self.parse_mode)
         )

@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendContact(BaseClient):
-    def send_contact(
+    async def send_contact(
         self,
         chat_id: Union[int, str],
         phone_number: str,
@@ -83,9 +83,9 @@ class SendContact(BaseClient):
 
                 app.send_contact("me", "+39 123 456 7890", "Dan")
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaContact(
                     phone_number=phone_number,
                     first_name=first_name,
@@ -103,7 +103,7 @@ class SendContact(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

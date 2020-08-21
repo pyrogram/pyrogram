@@ -16,7 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Generator
+from typing import Generator, Optional
+
+from async_generator import async_generator, yield_
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -24,11 +26,12 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class SearchGlobal(BaseClient):
-    def search_global(
+    @async_generator
+    async def search_global(
         self,
         query: str,
         limit: int = 0,
-    ) -> Generator["pyrogram.Message", None, None]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Search messages globally from all of your chats.
 
         .. note::
@@ -64,9 +67,9 @@ class SearchGlobal(BaseClient):
         offset_id = 0
 
         while True:
-            messages = utils.parse_messages(
+            messages = await utils.parse_messages(
                 self,
-                self.send(
+                await self.send(
                     functions.messages.SearchGlobal(
                         q=query,
                         offset_rate=offset_date,
@@ -84,11 +87,11 @@ class SearchGlobal(BaseClient):
             last = messages[-1]
 
             offset_date = last.date
-            offset_peer = self.resolve_peer(last.chat.id)
+            offset_peer = await self.resolve_peer(last.chat.id)
             offset_id = last.message_id
 
             for message in messages:
-                yield message
+                await yield_(message)
 
                 current += 1
 

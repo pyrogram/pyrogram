@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 from typing import List
 
@@ -27,7 +28,7 @@ log = logging.getLogger(__name__)
 
 
 class GetContacts(BaseClient):
-    def get_contacts(self) -> List["pyrogram.User"]:
+    async def get_contacts(self) -> List["pyrogram.User"]:
         """Get contacts from your Telegram address book.
 
         Returns:
@@ -39,5 +40,5 @@ class GetContacts(BaseClient):
                 contacts = app.get_contacts()
                 print(contacts)
         """
-        contacts = self.send(functions.contacts.GetContacts(hash=0))
+        contacts = await self.send(functions.contacts.GetContacts(hash=0))
         return pyrogram.List(pyrogram.User._parse(self, user) for user in contacts.users)

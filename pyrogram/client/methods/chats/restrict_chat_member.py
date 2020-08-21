@@ -24,7 +24,7 @@ from ...types.user_and_chats import Chat, ChatPermissions
 
 
 class RestrictChatMember(BaseClient):
-    def restrict_chat_member(
+    async def restrict_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
@@ -71,10 +71,10 @@ class RestrictChatMember(BaseClient):
                 # Chat member can only send text messages
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions(can_send_messages=True))
         """
-        r = self.send(
+        r = await self.send(
             functions.channels.EditBanned(
-                channel=self.resolve_peer(chat_id),
-                user_id=self.resolve_peer(user_id),
+                channel=await self.resolve_peer(chat_id),
+                user_id=await self.resolve_peer(user_id),
                 banned_rights=types.ChatBannedRights(
                     until_date=until_date,
                     send_messages=True if not permissions.can_send_messages else None,

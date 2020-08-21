@@ -36,7 +36,7 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(
+    async def get_chat_members(
         self,
         chat_id: Union[int, str],
         offset: int = 0,
@@ -103,10 +103,10 @@ class GetChatMembers(BaseClient):
                 # Get all bots
                 app.get_chat_members("pyrogramchat", filter="bots")
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetFullChat(
                     chat_id=peer.chat_id
                 )
@@ -134,7 +134,7 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            r = self.send(
+            r = await self.send(
                 functions.channels.GetParticipants(
                     channel=peer,
                     filter=filter,

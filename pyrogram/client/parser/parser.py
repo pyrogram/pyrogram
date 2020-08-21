@@ -30,7 +30,7 @@ class Parser:
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    def parse(self, text: str, mode: Union[str, None] = object):
+    async def parse(self, text: str, mode: Union[str, None] = object):
         text = str(text).strip()
 
         if mode == object:
@@ -48,13 +48,13 @@ class Parser:
         mode = mode.lower()
 
         if mode == "combined":
-            return self.markdown.parse(text)
+            return await self.markdown.parse(text)
 
         if mode in ["markdown", "md"]:
-            return self.markdown.parse(text, True)
+            return await self.markdown.parse(text, True)
 
         if mode == "html":
-            return self.html.parse(text)
+            return await self.html.parse(text)
 
         raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
             ", ".join('"{}"'.format(m) for m in pyrogram.Client.PARSE_MODES[:-1]),

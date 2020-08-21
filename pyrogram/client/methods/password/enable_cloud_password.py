@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    def enable_cloud_password(
+    async def enable_cloud_password(
         self,
         password: str,
         hint: str = "",
@@ -62,7 +62,7 @@ class EnableCloudPassword(BaseClient):
                 # Enable password with hint and email
                 app.enable_cloud_password("password", hint="hint", email="user@email.com")
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if r.has_password:
             raise ValueError("There is already a cloud password enabled")
@@ -71,7 +71,7 @@ class EnableCloudPassword(BaseClient):
         new_hash = btoi(compute_hash(r.new_algo, password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        self.send(
+        await self.send(
             functions.account.UpdatePasswordSettings(
                 password=types.InputCheckPasswordEmpty(),
                 new_settings=types.account.PasswordInputSettings(

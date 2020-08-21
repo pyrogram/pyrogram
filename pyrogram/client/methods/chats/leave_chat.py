@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class LeaveChat(BaseClient):
-    def leave_chat(
+    async def leave_chat(
         self,
         chat_id: Union[int, str],
         delete: bool = False
@@ -48,16 +48,16 @@ class LeaveChat(BaseClient):
                 # Leave basic chat and also delete the dialog
                 app.leave_chat(chat_id, delete=True)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            return self.send(
+            return await self.send(
                 functions.channels.LeaveChannel(
-                    channel=self.resolve_peer(chat_id)
+                    channel=await self.resolve_peer(chat_id)
                 )
             )
         elif isinstance(peer, types.InputPeerChat):
-            r = self.send(
+            r = await self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=peer.chat_id,
                     user_id=types.InputPeerSelf()
@@ -65,7 +65,7 @@ class LeaveChat(BaseClient):
             )
 
             if delete:
-                self.send(
+                await self.send(
                     functions.messages.DeleteHistory(
                         peer=peer,
                         max_id=0

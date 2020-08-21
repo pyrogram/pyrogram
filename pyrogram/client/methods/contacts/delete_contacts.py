@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class DeleteContacts(BaseClient):
-    def delete_contacts(
+    async def delete_contacts(
         self,
         ids: List[int]
     ):
@@ -47,14 +47,14 @@ class DeleteContacts(BaseClient):
 
         for i in ids:
             try:
-                input_user = self.resolve_peer(i)
+                input_user = await self.resolve_peer(i)
             except PeerIdInvalid:
                 continue
             else:
                 if isinstance(input_user, types.InputPeerUser):
                     contacts.append(input_user)
 
-        return self.send(
+        return await self.send(
             functions.contacts.DeleteContacts(
                 id=contacts
             )

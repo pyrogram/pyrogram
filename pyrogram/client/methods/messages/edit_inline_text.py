@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class EditInlineText(BaseClient):
-    def edit_inline_text(
+    async def edit_inline_text(
         self,
         inline_message_id: str,
         text: str,
@@ -71,11 +71,11 @@ class EditInlineText(BaseClient):
                     disable_web_page_preview=True)
         """
 
-        return self.send(
+        return await self.send(
             functions.messages.EditInlineBotMessage(
                 id=utils.unpack_inline_message_id(inline_message_id),
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(text, parse_mode)
+                **await self.parser.parse(text, parse_mode)
             )
         )

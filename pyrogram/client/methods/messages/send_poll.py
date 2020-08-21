@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendPoll(BaseClient):
-    def send_poll(
+    async def send_poll(
         self,
         chat_id: Union[int, str],
         question: str,
@@ -95,9 +95,9 @@ class SendPoll(BaseClient):
 
                 app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaPoll(
                     poll=types.Poll(
                         id=0,
@@ -123,7 +123,7 @@ class SendPoll(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

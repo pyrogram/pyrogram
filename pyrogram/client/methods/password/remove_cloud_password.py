@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 
 class RemoveCloudPassword(BaseClient):
-    def remove_cloud_password(
+    async def remove_cloud_password(
         self,
         password: str
     ) -> bool:
@@ -43,12 +43,12 @@ class RemoveCloudPassword(BaseClient):
 
                 app.remove_cloud_password("password")
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if not r.has_password:
             raise ValueError("There is no cloud password to remove")
 
-        self.send(
+        await self.send(
             functions.account.UpdatePasswordSettings(
                 password=compute_check(r, password),
                 new_settings=types.account.PasswordInputSettings(

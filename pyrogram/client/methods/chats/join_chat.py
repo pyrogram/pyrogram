@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    def join_chat(
+    async def join_chat(
         self,
         chat_id: Union[int, str]
     ):
@@ -53,7 +53,7 @@ class JoinChat(BaseClient):
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            chat = self.send(
+            chat = await self.send(
                 functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
@@ -63,9 +63,9 @@ class JoinChat(BaseClient):
             elif isinstance(chat.chats[0], types.Channel):
                 return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
         else:
-            chat = self.send(
+            chat = await self.send(
                 functions.channels.JoinChannel(
-                    channel=self.resolve_peer(chat_id)
+                    channel=await self.resolve_peer(chat_id)
                 )
             )
 

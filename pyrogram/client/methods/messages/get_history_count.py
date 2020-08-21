@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class GetHistoryCount(BaseClient):
-    def get_history_count(
+    async def get_history_count(
         self,
         chat_id: Union[int, str]
     ) -> int:
@@ -51,9 +51,9 @@ class GetHistoryCount(BaseClient):
                 app.get_history_count("pyrogramchat")
         """
 
-        r = self.send(
+        r = await self.send(
             functions.messages.GetHistory(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 offset_id=0,
                 offset_date=0,
                 add_offset=0,

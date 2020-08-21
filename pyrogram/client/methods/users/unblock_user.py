@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UnblockUser(BaseClient):
-    def unblock_user(
+    async def unblock_user(
         self,
         user_id: Union[int, str]
     ) -> bool:
@@ -44,9 +44,9 @@ class UnblockUser(BaseClient):
                 app.unblock_user(user_id)
         """
         return bool(
-            self.send(
+            await self.send(
                 functions.contacts.Unblock(
-                    id=self.resolve_peer(user_id)
+                    id=await self.resolve_peer(user_id)
                 )
             )
         )

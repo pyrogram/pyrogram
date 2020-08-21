@@ -21,7 +21,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class AnswerCallbackQuery(BaseClient):
-    def answer_callback_query(
+    async def answer_callback_query(
         self,
         callback_query_id: str,
         text: str = None,
@@ -68,7 +68,7 @@ class AnswerCallbackQuery(BaseClient):
                 # Answer with alert
                 app.answer_callback_query(query_id, text=text, show_alert=True)
         """
-        return self.send(
+        return await self.send(
             functions.messages.SetBotCallbackAnswer(
                 query_id=int(callback_query_id),
                 cache_time=cache_time,

@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from functools import lru_cache
 from struct import pack
 from typing import List
+
+from async_lru import alru_cache
 
 import pyrogram
 from pyrogram.api import types, functions
@@ -105,28 +106,28 @@ class Sticker(Object):
         # self.mask_position = mask_position
 
     @staticmethod
-    @lru_cache(maxsize=256)
-    def _get_sticker_set_name(send, input_sticker_set_id):
+    @alru_cache(maxsize=256)
+    async def _get_sticker_set_name(send, input_sticker_set_id):
         try:
-            return send(
+            return (await send(
                 functions.messages.GetStickerSet(
                     stickerset=types.InputStickerSetID(
                         id=input_sticker_set_id[0],
                         access_hash=input_sticker_set_id[1]
                     )
                 )
-            ).set.short_name
+            )).set.short_name
         except StickersetInvalid:
             return None
 
     @staticmethod
-    def _parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
-               sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
+    async def _parse(client, sticker: types.Document, image_size_attributes: types.DocumentAttributeImageSize,
+                     sticker_attributes: types.DocumentAttributeSticker, file_name: str) -> "Sticker":
         sticker_set = sticker_attributes.stickerset
 
         if isinstance(sticker_set, types.InputStickerSetID):
             input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
-            set_name = Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
+            set_name = await Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
         else:
             set_name = None
 

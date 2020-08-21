@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class AddContacts(BaseClient):
-    def add_contacts(
+    async def add_contacts(
         self,
         contacts: List["pyrogram.InputPhoneContact"]
     ):
@@ -47,7 +47,7 @@ class AddContacts(BaseClient):
                     InputPhoneContact("38987654321", "Bar"),
                     InputPhoneContact("01234567891", "Baz")])
         """
-        imported_contacts = self.send(
+        imported_contacts = await self.send(
             functions.contacts.ImportContacts(
                 contacts=contacts
             )

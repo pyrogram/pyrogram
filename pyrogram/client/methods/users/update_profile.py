@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class UpdateProfile(BaseClient):
-    def update_profile(
+    async def update_profile(
         self,
         first_name: str = None,
         last_name: str = None,
@@ -60,7 +60,7 @@ class UpdateProfile(BaseClient):
         """
 
         return bool(
-            self.send(
+            await self.send(
                 functions.account.UpdateProfile(
                     first_name=first_name,
                     last_name=last_name,

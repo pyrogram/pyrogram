@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class GetProfilePhotosCount(BaseClient):
-    def get_profile_photos_count(self, chat_id: Union[int, str]) -> int:
+    async def get_profile_photos_count(self, chat_id: Union[int, str]) -> int:
         """Get the total count of profile pictures for a user.
 
         Parameters:
@@ -42,10 +42,10 @@ class GetProfilePhotosCount(BaseClient):
                 print(count)
         """
 
-        peer_id = self.resolve_peer(chat_id)
+        peer_id = await self.resolve_peer(chat_id)
 
         if isinstance(peer_id, types.InputPeerChannel):
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetSearchCounters(
                     peer=peer_id,
                     filters=[types.InputMessagesFilterChatPhotos()],
@@ -54,7 +54,7 @@ class GetProfilePhotosCount(BaseClient):
 
             return r[0].count
         else:
-            r = self.send(
+            r = await self.send(
                 functions.photos.GetUserPhotos(
                     user_id=peer_id,
                     offset=0,

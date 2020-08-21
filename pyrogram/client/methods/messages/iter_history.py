@@ -16,14 +16,17 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Generator
+from typing import Union, Optional, Generator
 
 import pyrogram
+from async_generator import async_generator, yield_
+
 from ...ext import BaseClient
 
 
 class IterHistory(BaseClient):
-    def iter_history(
+    @async_generator
+    async def iter_history(
         self,
         chat_id: Union[int, str],
         limit: int = 0,
@@ -31,7 +34,7 @@ class IterHistory(BaseClient):
         offset_id: int = 0,
         offset_date: int = 0,
         reverse: bool = False
-    ) -> Generator["pyrogram.Message", None, None]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_history` in a loop, thus saving
@@ -76,7 +79,7 @@ class IterHistory(BaseClient):
         limit = min(100, total)
 
         while True:
-            messages = self.get_history(
+            messages = await self.get_history(
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
@@ -91,7 +94,7 @@ class IterHistory(BaseClient):
             offset_id = messages[-1].message_id + (1 if reverse else 0)
 
             for message in messages:
-                yield message
+                await yield_(message)
 
                 current += 1
 

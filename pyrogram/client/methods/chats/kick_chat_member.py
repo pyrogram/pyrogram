@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class KickChatMember(BaseClient):
-    def kick_chat_member(
+    async def kick_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
@@ -68,11 +68,11 @@ class KickChatMember(BaseClient):
                 # Kick chat member and automatically unban after 24h
                 app.kick_chat_member(chat_id, user_id, int(time.time() + 86400))
         """
-        chat_peer = self.resolve_peer(chat_id)
-        user_peer = self.resolve_peer(user_id)
+        chat_peer = await self.resolve_peer(chat_id)
+        user_peer = await self.resolve_peer(user_id)
 
         if isinstance(chat_peer, types.InputPeerChannel):
-            r = self.send(
+            r = await self.send(
                 functions.channels.EditBanned(
                     channel=chat_peer,
                     user_id=user_peer,
@@ -90,7 +90,7 @@ class KickChatMember(BaseClient):
                 )
             )
         else:
-            r = self.send(
+            r = await self.send(
                 functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer
@@ -99,7 +99,7 @@ class KickChatMember(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

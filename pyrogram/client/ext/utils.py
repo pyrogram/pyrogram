@@ -16,8 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import base64
 import struct
+import sys
+from concurrent.futures.thread import ThreadPoolExecutor
 from typing import List
 from typing import Union
 
@@ -78,6 +81,15 @@ def decode_file_ref(file_ref: str) -> bytes:
         return b""
 
     return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
+
+
+async def ainput(prompt: str = ""):
+    print(prompt, end="", flush=True)
+
+    with ThreadPoolExecutor(1) as executor:
+        return (await asyncio.get_event_loop().run_in_executor(
+            executor, sys.stdin.readline
+        )).rstrip()
 
 
 def get_offset_date(dialogs):
@@ -141,24 +153,24 @@ def get_input_media_from_file_id(
         raise ValueError("Unknown media type: {}".format(file_id_str))
 
 
-def parse_messages(client, messages: types.messages.Messages, replies: int = 1) -> List["pyrogram.Message"]:
+async def parse_messages(client, messages: types.messages.Messages, replies: int = 1) -> List["pyrogram.Message"]:
     users = {i.id: i for i in messages.users}
     chats = {i.id: i for i in messages.chats}
 
     if not messages.messages:
         return pyrogram.List()
 
-    parsed_messages = [
-        pyrogram.Message._parse(client, message, users, chats, replies=0)
-        for message in messages.messages
-    ]
+    parsed_messages = []
+
+    for message in messages.messages:
+        parsed_messages.append(await pyrogram.Message._parse(client, message, users, chats, replies=0))
 
     if replies:
         messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
         reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
 
         if reply_message_ids:
-            reply_messages = client.get_messages(
+            reply_messages = await client.get_messages(
                 parsed_messages[0].chat.id,
                 reply_to_message_ids=reply_message_ids,
                 replies=replies - 1

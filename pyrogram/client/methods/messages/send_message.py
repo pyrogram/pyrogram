@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
-    def send_message(
+    async def send_message(
         self,
         chat_id: Union[int, str],
         text: str,
@@ -116,11 +116,11 @@ class SendMessage(BaseClient):
                         ]))
         """
 
-        message, entities = self.parser.parse(text, parse_mode).values()
+        message, entities = (await self.parser.parse(text, parse_mode)).values()
 
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
@@ -133,7 +133,7 @@ class SendMessage(BaseClient):
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
-            peer = self.resolve_peer(chat_id)
+            peer = await self.resolve_peer(chat_id)
 
             peer_id = (
                 peer.user_id
@@ -160,7 +160,7 @@ class SendMessage(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

@@ -20,11 +20,12 @@ from typing import Union, Iterable, List
 
 import pyrogram
 from pyrogram.api import functions, types
+
 from ...ext import BaseClient
 
 
 class ForwardMessages(BaseClient):
-    def forward_messages(
+    async def forward_messages(
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
@@ -94,11 +95,11 @@ class ForwardMessages(BaseClient):
             forwarded_messages = []
 
             for chunk in [message_ids[i:i + 200] for i in range(0, len(message_ids), 200)]:
-                messages = self.get_messages(chat_id=from_chat_id, message_ids=chunk)
+                messages = await self.get_messages(chat_id=from_chat_id, message_ids=chunk)
 
                 for message in messages:
                     forwarded_messages.append(
-                        message.forward(
+                        await message.forward(
                             chat_id,
                             disable_notification=disable_notification,
                             as_copy=True,
@@ -109,10 +110,10 @@ class ForwardMessages(BaseClient):
 
             return pyrogram.List(forwarded_messages) if is_iterable else forwarded_messages[0]
         else:
-            r = self.send(
+            r = await self.send(
                 functions.messages.ForwardMessages(
-                    to_peer=self.resolve_peer(chat_id),
-                    from_peer=self.resolve_peer(from_chat_id),
+                    to_peer=await self.resolve_peer(chat_id),
+                    from_peer=await self.resolve_peer(from_chat_id),
                     id=message_ids,
                     silent=disable_notification or None,
                     random_id=[self.rnd_id() for _ in message_ids],
@@ -128,7 +129,7 @@ class ForwardMessages(BaseClient):
             for i in r.updates:
                 if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
                     forwarded_messages.append(
-                        pyrogram.Message._parse(
+                        await pyrogram.Message._parse(
                             self, i.message,
                             users, chats
                         )

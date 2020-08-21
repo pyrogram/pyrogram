@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditMessageText(BaseClient):
-    def edit_message_text(
+    async def edit_message_text(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -75,19 +75,19 @@ class EditMessageText(BaseClient):
                     disable_web_page_preview=True)
         """
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(text, parse_mode)
+                **await self.parser.parse(text, parse_mode)
             )
         )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class GetContactsCount(BaseClient):
-    def get_contacts_count(self) -> int:
+    async def get_contacts_count(self) -> int:
         """Get the total count of contacts from your Telegram address book.
 
         Returns:
@@ -34,4 +34,4 @@ class GetContactsCount(BaseClient):
                 print(count)
         """
 
-        return len(self.send(functions.contacts.GetContacts(hash=0)).contacts)
+        return len((await self.send(functions.contacts.GetContacts(hash=0))).contacts)

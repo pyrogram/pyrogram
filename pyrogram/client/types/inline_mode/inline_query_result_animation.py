@@ -91,7 +91,7 @@ class InlineQueryResultAnimation(InlineQueryResult):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    def write(self):
+    async def write(self):
         animation = types.InputWebDocument(
             url=self.animation_url,
             size=0,
@@ -121,7 +121,7 @@ class InlineQueryResultAnimation(InlineQueryResult):
                 if self.input_message_content
                 else types.InputBotInlineMessageMediaAuto(
                     reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **(Parser(None)).parse(self.caption, self.parse_mode)
+                    **await(Parser(None)).parse(self.caption, self.parse_mode)
                 )
             )
         )

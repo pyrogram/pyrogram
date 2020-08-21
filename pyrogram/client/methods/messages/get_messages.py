@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 from typing import Union, Iterable, List
 
@@ -30,7 +31,7 @@ log = logging.getLogger(__name__)
 
 
 class GetMessages(BaseClient):
-    def get_messages(
+    async def get_messages(
         self,
         chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]] = None,
@@ -96,7 +97,7 @@ class GetMessages(BaseClient):
         if ids is None:
             raise ValueError("No argument supplied. Either pass message_ids or reply_to_message_ids")
 
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         is_iterable = not isinstance(ids, int)
         ids = list(ids) if is_iterable else [ids]
@@ -110,8 +111,8 @@ class GetMessages(BaseClient):
         else:
             rpc = functions.messages.GetMessages(id=ids)
 
-        r = self.send(rpc)
+        r = await self.send(rpc)
 
-        messages = utils.parse_messages(self, r, replies=replies)
+        messages = await utils.parse_messages(self, r, replies=replies)
 
         return messages if is_iterable else messages[0]

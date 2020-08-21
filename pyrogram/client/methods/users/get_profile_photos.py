@@ -25,7 +25,7 @@ from ...ext import BaseClient
 
 
 class GetProfilePhotos(BaseClient):
-    def get_profile_photos(
+    async def get_profile_photos(
         self,
         chat_id: Union[int, str],
         offset: int = 0,
@@ -62,12 +62,12 @@ class GetProfilePhotos(BaseClient):
                 # Get 3 profile photos of a user, skip the first 5
                 app.get_profile_photos("haskell", limit=3, offset=5)
         """
-        peer_id = self.resolve_peer(chat_id)
+        peer_id = await self.resolve_peer(chat_id)
 
         if isinstance(peer_id, types.InputPeerChannel):
-            r = utils.parse_messages(
+            r = await utils.parse_messages(
                 self,
-                self.send(
+                await self.send(
                     functions.messages.Search(
                         peer=peer_id,
                         q="",
@@ -86,7 +86,7 @@ class GetProfilePhotos(BaseClient):
 
             return pyrogram.List([message.new_chat_photo for message in r][:limit])
         else:
-            r = self.send(
+            r = await self.send(
                 functions.photos.GetUserPhotos(
                     user_id=peer_id,
                     offset=offset,

@@ -398,8 +398,8 @@ class Message(Object, Update):
         self.reply_markup = reply_markup
 
     @staticmethod
-    def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict, chats: dict,
-               is_scheduled: bool = False, replies: int = 1):
+    async def _parse(client, message: types.Message or types.MessageService or types.MessageEmpty, users: dict,
+                     chats: dict, is_scheduled: bool = False, replies: int = 1):
         if isinstance(message, types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 
@@ -458,7 +458,7 @@ class Message(Object, Update):
 
             if isinstance(action, types.MessageActionPinMessage):
                 try:
-                    parsed_message.pinned_message = client.get_messages(
+                    parsed_message.pinned_message = await client.get_messages(
                         parsed_message.chat.id,
                         reply_to_message_ids=message.id,
                         replies=0
@@ -471,7 +471,7 @@ class Message(Object, Update):
 
                 if message.reply_to_msg_id and replies:
                     try:
-                        parsed_message.reply_to_message = client.get_messages(
+                        parsed_message.reply_to_message = await client.get_messages(
                             parsed_message.chat.id,
                             reply_to_message_ids=message.id,
                             replies=0
@@ -567,7 +567,7 @@ class Message(Object, Update):
                                 video = pyrogram.Video._parse(client, doc, video_attributes, file_name,
                                                               media.ttl_seconds)
                         elif types.DocumentAttributeSticker in attributes:
-                            sticker = pyrogram.Sticker._parse(
+                            sticker = await pyrogram.Sticker._parse(
                                 client, doc,
                                 attributes.get(types.DocumentAttributeImageSize, None),
                                 attributes[types.DocumentAttributeSticker],
@@ -663,7 +663,7 @@ class Message(Object, Update):
 
             if message.reply_to_msg_id and replies:
                 try:
-                    parsed_message.reply_to_message = client.get_messages(
+                    parsed_message.reply_to_message = await client.get_messages(
                         parsed_message.chat.id,
                         reply_to_message_ids=message.id,
                         replies=replies - 1
@@ -680,7 +680,7 @@ class Message(Object, Update):
         else:
             return "https://t.me/c/{}/{}".format(utils.get_channel_id(self.chat.id), self.message_id)
 
-    def reply_text(
+    async def reply_text(
         self,
         text: str,
         quote: bool = None,
@@ -749,7 +749,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_message(
+        return await self._client.send_message(
             chat_id=self.chat.id,
             text=text,
             parse_mode=parse_mode,
@@ -761,7 +761,7 @@ class Message(Object, Update):
 
     reply = reply_text
 
-    def reply_animation(
+    async def reply_animation(
         self,
         animation: Union[str, BinaryIO],
         file_ref: str = None,
@@ -886,7 +886,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_animation(
+        return await self._client.send_animation(
             chat_id=self.chat.id,
             animation=animation,
             file_ref=file_ref,
@@ -903,7 +903,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_audio(
+    async def reply_audio(
         self,
         audio: Union[str, BinaryIO],
         file_ref: str = None,
@@ -1028,7 +1028,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_audio(
+        return await self._client.send_audio(
             chat_id=self.chat.id,
             audio=audio,
             file_ref=file_ref,
@@ -1045,7 +1045,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_cached_media(
+    async def reply_cached_media(
         self,
         file_id: str,
         file_ref: str = None,
@@ -1124,7 +1124,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_cached_media(
+        return await self._client.send_cached_media(
             chat_id=self.chat.id,
             file_id=file_id,
             file_ref=file_ref,
@@ -1135,7 +1135,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_chat_action(self, action: str) -> bool:
+    async def reply_chat_action(self, action: str) -> bool:
         """Bound method *reply_chat_action* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -1168,12 +1168,12 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
             ValueError: In case the provided string is not a valid chat action.
         """
-        return self._client.send_chat_action(
+        return await self._client.send_chat_action(
             chat_id=self.chat.id,
             action=action
         )
 
-    def reply_contact(
+    async def reply_contact(
         self,
         phone_number: str,
         first_name: str,
@@ -1247,7 +1247,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_contact(
+        return await self._client.send_contact(
             chat_id=self.chat.id,
             phone_number=phone_number,
             first_name=first_name,
@@ -1258,7 +1258,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_document(
+    async def reply_document(
         self,
         document: Union[str, BinaryIO],
         file_ref: str = None,
@@ -1371,7 +1371,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_document(
+        return await self._client.send_document(
             chat_id=self.chat.id,
             document=document,
             file_ref=file_ref,
@@ -1385,7 +1385,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_game(
+    async def reply_game(
         self,
         game_short_name: str,
         quote: bool = None,
@@ -1446,7 +1446,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_game(
+        return await self._client.send_game(
             chat_id=self.chat.id,
             game_short_name=game_short_name,
             disable_notification=disable_notification,
@@ -1454,7 +1454,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_inline_bot_result(
+    async def reply_inline_bot_result(
         self,
         query_id: int,
         result_id: str,
@@ -1514,7 +1514,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_inline_bot_result(
+        return await self._client.send_inline_bot_result(
             chat_id=self.chat.id,
             query_id=query_id,
             result_id=result_id,
@@ -1523,7 +1523,7 @@ class Message(Object, Update):
             hide_via=hide_via
         )
 
-    def reply_location(
+    async def reply_location(
         self,
         latitude: float,
         longitude: float,
@@ -1589,7 +1589,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_location(
+        return await self._client.send_location(
             chat_id=self.chat.id,
             latitude=latitude,
             longitude=longitude,
@@ -1598,7 +1598,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_media_group(
+    async def reply_media_group(
         self,
         media: List[Union["pyrogram.InputMediaPhoto", "pyrogram.InputMediaVideo"]],
         quote: bool = None,
@@ -1652,14 +1652,14 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_media_group(
+        return await self._client.send_media_group(
             chat_id=self.chat.id,
             media=media,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id
         )
 
-    def reply_photo(
+    async def reply_photo(
         self,
         photo: Union[str, BinaryIO],
         file_ref: str = None,
@@ -1771,7 +1771,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_photo(
+        return await self._client.send_photo(
             chat_id=self.chat.id,
             photo=photo,
             file_ref=file_ref,
@@ -1785,7 +1785,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_poll(
+    async def reply_poll(
         self,
         question: str,
         options: List[str],
@@ -1851,7 +1851,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_poll(
+        return await self._client.send_poll(
             chat_id=self.chat.id,
             question=question,
             options=options,
@@ -1860,7 +1860,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_sticker(
+    async def reply_sticker(
         self,
         sticker: Union[str, BinaryIO],
         file_ref: str = None,
@@ -1954,7 +1954,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_sticker(
+        return await self._client.send_sticker(
             chat_id=self.chat.id,
             sticker=sticker,
             file_ref=file_ref,
@@ -1965,7 +1965,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_venue(
+    async def reply_venue(
         self,
         latitude: float,
         longitude: float,
@@ -2050,7 +2050,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_venue(
+        return await self._client.send_venue(
             chat_id=self.chat.id,
             latitude=latitude,
             longitude=longitude,
@@ -2063,7 +2063,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def reply_video(
+    async def reply_video(
         self,
         video: Union[str, BinaryIO],
         file_ref: str = None,
@@ -2192,7 +2192,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_video(
+        return await self._client.send_video(
             chat_id=self.chat.id,
             video=video,
             file_ref=file_ref,
@@ -2210,7 +2210,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_video_note(
+    async def reply_video_note(
         self,
         video_note: Union[str, BinaryIO],
         file_ref: str = None,
@@ -2319,7 +2319,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_video_note(
+        return await self._client.send_video_note(
             chat_id=self.chat.id,
             video_note=video_note,
             file_ref=file_ref,
@@ -2333,7 +2333,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def reply_voice(
+    async def reply_voice(
         self,
         voice: Union[str, BinaryIO],
         file_ref: str = None,
@@ -2443,7 +2443,7 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.message_id
 
-        return self._client.send_voice(
+        return await self._client.send_voice(
             chat_id=self.chat.id,
             voice=voice,
             file_ref=file_ref,
@@ -2457,7 +2457,7 @@ class Message(Object, Update):
             progress_args=progress_args
         )
 
-    def edit_text(
+    async def edit_text(
         self,
         text: str,
         parse_mode: Union[str, None] = object,
@@ -2504,7 +2504,7 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.edit_message_text(
+        return await self._client.edit_message_text(
             chat_id=self.chat.id,
             message_id=self.message_id,
             text=text,
@@ -2515,7 +2515,7 @@ class Message(Object, Update):
 
     edit = edit_text
 
-    def edit_caption(
+    async def edit_caption(
         self,
         caption: str,
         parse_mode: Union[str, None] = object,
@@ -2558,7 +2558,7 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.edit_message_caption(
+        return await self._client.edit_message_caption(
             chat_id=self.chat.id,
             message_id=self.message_id,
             caption=caption,
@@ -2566,7 +2566,7 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
+    async def edit_media(self, media: InputMedia, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
         """Bound method *edit_media* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -2597,14 +2597,14 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.edit_message_media(
+        return await self._client.edit_message_media(
             chat_id=self.chat.id,
             message_id=self.message_id,
             media=media,
             reply_markup=reply_markup
         )
 
-    def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
+    async def edit_reply_markup(self, reply_markup: "pyrogram.InlineKeyboardMarkup" = None) -> "Message":
         """Bound method *edit_reply_markup* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -2633,13 +2633,13 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.edit_message_reply_markup(
+        return await self._client.edit_message_reply_markup(
             chat_id=self.chat.id,
             message_id=self.message_id,
             reply_markup=reply_markup
         )
 
-    def forward(
+    async def forward(
         self,
         chat_id: int or str,
         disable_notification: bool = None,
@@ -2700,7 +2700,7 @@ class Message(Object, Update):
                 raise ValueError("Users cannot send messages with Game media type")
 
             if self.text:
-                return self._client.send_message(
+                return await self._client.send_message(
                     chat_id,
                     text=self.text.html,
                     parse_mode="html",
@@ -2743,7 +2743,7 @@ class Message(Object, Update):
                     file_id = self.video_note.file_id
                     file_ref = self.video_note.file_ref
                 elif self.contact:
-                    return self._client.send_contact(
+                    return await self._client.send_contact(
                         chat_id,
                         phone_number=self.contact.phone_number,
                         first_name=self.contact.first_name,
@@ -2753,7 +2753,7 @@ class Message(Object, Update):
                         schedule_date=schedule_date
                     )
                 elif self.location:
-                    return self._client.send_location(
+                    return await self._client.send_location(
                         chat_id,
                         latitude=self.location.latitude,
                         longitude=self.location.longitude,
@@ -2761,7 +2761,7 @@ class Message(Object, Update):
                         schedule_date=schedule_date
                     )
                 elif self.venue:
-                    return self._client.send_venue(
+                    return await self._client.send_venue(
                         chat_id,
                         latitude=self.venue.location.latitude,
                         longitude=self.venue.location.longitude,
@@ -2773,7 +2773,7 @@ class Message(Object, Update):
                         schedule_date=schedule_date
                     )
                 elif self.poll:
-                    return self._client.send_poll(
+                    return await self._client.send_poll(
                         chat_id,
                         question=self.poll.question,
                         options=[opt.text for opt in self.poll.options],
@@ -2781,7 +2781,7 @@ class Message(Object, Update):
                         schedule_date=schedule_date
                     )
                 elif self.game:
-                    return self._client.send_game(
+                    return await self._client.send_game(
                         chat_id,
                         game_short_name=self.game.short_name,
                         disable_notification=disable_notification
@@ -2790,13 +2790,13 @@ class Message(Object, Update):
                     raise ValueError("Unknown media type")
 
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
-                    return send_media(file_id=file_id, file_ref=file_ref)
+                    return await send_media(file_id=file_id, file_ref=file_ref)
                 else:
-                    return send_media(file_id=file_id, file_ref=file_ref, caption=caption, parse_mode="html")
+                    return await send_media(file_id=file_id, file_ref=file_ref, caption=caption, parse_mode="html")
             else:
                 raise ValueError("Can't copy this message")
         else:
-            return self._client.forward_messages(
+            return await self._client.forward_messages(
                 chat_id=chat_id,
                 from_chat_id=self.chat.id,
                 message_ids=self.message_id,
@@ -2804,7 +2804,7 @@ class Message(Object, Update):
                 schedule_date=schedule_date
             )
 
-    def delete(self, revoke: bool = True):
+    async def delete(self, revoke: bool = True):
         """Bound method *delete* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -2834,13 +2834,13 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.delete_messages(
+        return await self._client.delete_messages(
             chat_id=self.chat.id,
             message_ids=self.message_id,
             revoke=revoke
         )
 
-    def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
+    async def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:
@@ -2944,7 +2944,7 @@ class Message(Object, Update):
 
         if is_inline:
             if button.callback_data:
-                return self._client.request_callback_answer(
+                return await self._client.request_callback_answer(
                     chat_id=self.chat.id,
                     message_id=self.message_id,
                     callback_data=button.callback_data,
@@ -2959,9 +2959,9 @@ class Message(Object, Update):
             else:
                 raise ValueError("This button is not supported yet")
         else:
-            self.reply(button, quote=quote)
+            await self.reply(button, quote=quote)
 
-    def retract_vote(
+    async def retract_vote(
         self,
     ) -> "pyrogram.Poll":
         """Bound method *retract_vote* of :obj:`Message`.
@@ -2987,12 +2987,12 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.retract_vote(
+        return await self._client.retract_vote(
             chat_id=self.chat.id,
             message_id=self.message_id
         )
 
-    def download(
+    async def download(
         self,
         file_name: str = "",
         block: bool = True,
@@ -3052,7 +3052,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
             ``ValueError``: If the message doesn't contain any downloadable media
         """
-        return self._client.download_media(
+        return await self._client.download_media(
             message=self,
             file_name=file_name,
             block=block,
@@ -3060,7 +3060,7 @@ class Message(Object, Update):
             progress_args=progress_args,
         )
 
-    def vote(
+    async def vote(
         self,
         option: int,
     ) -> "pyrogram.Poll":
@@ -3092,13 +3092,13 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.vote_poll(
+        return await self._client.vote_poll(
             chat_id=self.chat.id,
             message_id=self.message_id,
             option=option
         )
 
-    def pin(self, disable_notification: bool = None) -> "Message":
+    async def pin(self, disable_notification: bool = None) -> "Message":
         """Bound method *pin* of :obj:`Message`.
 
         Use as a shortcut for:
@@ -3126,7 +3126,7 @@ class Message(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self._client.pin_chat_message(
+        return await self._client.pin_chat_message(
             chat_id=self.chat.id,
             message_id=self.message_id,
             disable_notification=disable_notification

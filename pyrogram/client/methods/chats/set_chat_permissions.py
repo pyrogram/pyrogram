@@ -24,7 +24,7 @@ from ...types.user_and_chats import Chat, ChatPermissions
 
 
 class SetChatPermissions(BaseClient):
-    def set_chat_permissions(
+    async def set_chat_permissions(
         self,
         chat_id: Union[int, str],
         permissions: ChatPermissions,
@@ -63,9 +63,9 @@ class SetChatPermissions(BaseClient):
                     )
                 )
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.EditChatDefaultBannedRights(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 banned_rights=types.ChatBannedRights(
                     until_date=0,
                     send_messages=True if not permissions.can_send_messages else None,

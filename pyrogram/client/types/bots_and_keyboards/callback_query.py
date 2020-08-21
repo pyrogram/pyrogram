@@ -89,12 +89,12 @@ class CallbackQuery(Object, Update):
         self.matches = matches
 
     @staticmethod
-    def _parse(client, callback_query, users) -> "CallbackQuery":
+    async def _parse(client, callback_query, users) -> "CallbackQuery":
         message = None
         inline_message_id = None
 
         if isinstance(callback_query, types.UpdateBotCallbackQuery):
-            message = client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
+            message = await client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
         elif isinstance(callback_query, types.UpdateInlineBotCallbackQuery):
             inline_message_id = b64encode(
                 pack(
@@ -124,7 +124,7 @@ class CallbackQuery(Object, Update):
             client=client
         )
 
-    def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
+    async def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
         """Bound method *answer* of :obj:`CallbackQuery`.
 
         Use this method as a shortcut for:
@@ -160,7 +160,7 @@ class CallbackQuery(Object, Update):
                 The maximum amount of time in seconds that the result of the callback query may be cached client-side.
                 Telegram apps will support caching starting in version 3.14. Defaults to 0.
         """
-        return self._client.answer_callback_query(
+        return await self._client.answer_callback_query(
             callback_query_id=self.id,
             text=text,
             show_alert=show_alert,
@@ -168,7 +168,7 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit_message_text(
+    async def edit_message_text(
         self,
         text: str,
         parse_mode: Union[str, None] = object,
@@ -204,7 +204,7 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_text(
+            return await self._client.edit_message_text(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 text=text,
@@ -213,7 +213,7 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_text(
+            return await self._client.edit_inline_text(
                 inline_message_id=self.inline_message_id,
                 text=text,
                 parse_mode=parse_mode,
@@ -221,7 +221,7 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
 
-    def edit_message_caption(
+    async def edit_message_caption(
         self,
         caption: str,
         parse_mode: Union[str, None] = object,
@@ -252,9 +252,9 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self.edit_message_text(caption, parse_mode, reply_markup)
+        return await self.edit_message_text(caption, parse_mode, reply_markup)
 
-    def edit_message_media(
+    async def edit_message_media(
         self,
         media: "pyrogram.InputMedia",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
@@ -278,20 +278,20 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_media(
+            return await self._client.edit_message_media(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 media=media,
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_media(
+            return await self._client.edit_inline_media(
                 inline_message_id=self.inline_message_id,
                 media=media,
                 reply_markup=reply_markup
             )
 
-    def edit_message_reply_markup(
+    async def edit_message_reply_markup(
         self,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
@@ -311,13 +311,13 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_reply_markup(
+            return await self._client.edit_message_reply_markup(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_reply_markup(
+            return await self._client.edit_inline_reply_markup(
                 inline_message_id=self.inline_message_id,
                 reply_markup=reply_markup
             )

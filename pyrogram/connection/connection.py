@@ -16,9 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import threading
-import time
 
 from .transport import *
 from ..session.internals import DataCenter
@@ -45,20 +44,19 @@ class Connection:
         self.address = DataCenter(dc_id, test_mode, ipv6)
         self.mode = self.MODES.get(mode, TCPAbridged)
 
-        self.lock = threading.Lock()
-        self.connection = None
+        self.protocol = None  # type: TCP
 
-    def connect(self):
+    async def connect(self):
         for i in range(Connection.MAX_RETRIES):
-            self.connection = self.mode(self.ipv6, self.proxy)
+            self.protocol = self.mode(self.ipv6, self.proxy)
 
             try:
                 log.info("Connecting...")
-                self.connection.connect(self.address)
+                await self.protocol.connect(self.address)
             except OSError as e:
                 log.warning(e)  # TODO: Remove
-                self.connection.close()
-                time.sleep(1)
+                self.protocol.close()
+                await asyncio.sleep(1)
             else:
                 log.info("Connected! {} DC{} - IPv{} - {}".format(
                     "Test" if self.test_mode else "Production",
@@ -72,12 +70,14 @@ class Connection:
             raise TimeoutError
 
     def close(self):
-        self.connection.close()
+        self.protocol.close()
         log.info("Disconnected")
 
-    def send(self, data: bytes):
-        with self.lock:
-            self.connection.sendall(data)
+    async def send(self, data: bytes):
+        try:
+            await self.protocol.send(data)
+        except Exception:
+            raise OSError
 
-    def recv(self) -> bytes or None:
-        return self.connection.recvall()
+    async def recv(self) -> bytes or None:
+        return await self.protocol.recv()

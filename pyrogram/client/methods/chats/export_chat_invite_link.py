@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class ExportChatInviteLink(BaseClient):
-    def export_chat_invite_link(
+    async def export_chat_invite_link(
         self,
         chat_id: Union[int, str]
     ) -> str:
@@ -55,13 +55,13 @@ class ExportChatInviteLink(BaseClient):
                 link = app.export_chat_invite_link(chat_id)
                 print(link)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, (types.InputPeerChat, types.InputPeerChannel)):
-            return self.send(
+            return (await self.send(
                 functions.messages.ExportChatInvite(
                     peer=peer
                 )
-            ).link
+            )).link
         else:
             raise ValueError('The chat_id "{}" belongs to a user'.format(chat_id))

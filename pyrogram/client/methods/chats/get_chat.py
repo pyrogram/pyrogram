@@ -24,7 +24,7 @@ from ...ext import BaseClient, utils
 
 
 class GetChat(BaseClient):
-    def get_chat(
+    async def get_chat(
         self,
         chat_id: Union[int, str]
     ) -> Union["pyrogram.Chat", "pyrogram.ChatPreview"]:
@@ -55,7 +55,7 @@ class GetChat(BaseClient):
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            r = self.send(
+            r = await self.send(
                 functions.messages.CheckChatInvite(
                     hash=match.group(1)
                 )
@@ -72,13 +72,13 @@ class GetChat(BaseClient):
             if isinstance(r.chat, types.Channel):
                 chat_id = utils.get_channel_id(r.chat.id)
 
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChannel):
-            r = self.send(functions.channels.GetFullChannel(channel=peer))
+            r = await self.send(functions.channels.GetFullChannel(channel=peer))
         elif isinstance(peer, (types.InputPeerUser, types.InputPeerSelf)):
-            r = self.send(functions.users.GetFullUser(id=peer))
+            r = await self.send(functions.users.GetFullUser(id=peer))
         else:
-            r = self.send(functions.messages.GetFullChat(chat_id=peer.chat_id))
+            r = await self.send(functions.messages.GetFullChat(chat_id=peer.chat_id))
 
-        return pyrogram.Chat._parse_full(self, r)
+        return await pyrogram.Chat._parse_full(self, r)

@@ -22,7 +22,7 @@ from pyrogram.client.ext import BaseClient, utils
 
 
 class EditInlineReplyMarkup(BaseClient):
-    def edit_inline_reply_markup(
+    async def edit_inline_reply_markup(
         self,
         inline_message_id: str,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
@@ -50,7 +50,7 @@ class EditInlineReplyMarkup(BaseClient):
                     InlineKeyboardMarkup([[
                         InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
-        return self.send(
+        return await self.send(
             functions.messages.EditInlineBotMessage(
                 id=utils.unpack_inline_message_id(inline_message_id),
                 reply_markup=reply_markup.write() if reply_markup else None,

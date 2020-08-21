@@ -31,7 +31,7 @@ from pyrogram.client.types.input_media import InputMedia
 
 
 class EditMessageMedia(BaseClient):
-    def edit_message_media(
+    async def edit_message_media(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -85,11 +85,11 @@ class EditMessageMedia(BaseClient):
 
         if isinstance(media, InputMediaPhoto):
             if os.path.isfile(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedPhoto(
-                            file=self.save_file(media.media)
+                            file=await self.save_file(media.media)
                         )
                     )
                 )
@@ -109,13 +109,13 @@ class EditMessageMedia(BaseClient):
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
             if os.path.isfile(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=media.supports_streaming or None,
@@ -146,13 +146,13 @@ class EditMessageMedia(BaseClient):
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
             if os.path.isfile(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
-                            thumb=self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
                                     duration=media.duration,
@@ -182,13 +182,13 @@ class EditMessageMedia(BaseClient):
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
             if os.path.isfile(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
                             thumb=self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=True,
@@ -220,13 +220,13 @@ class EditMessageMedia(BaseClient):
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
             if os.path.isfile(media.media):
-                media = self.send(
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "application/zip",
-                            thumb=self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
                                     file_name=file_name or os.path.basename(media.media)
@@ -250,19 +250,19 @@ class EditMessageMedia(BaseClient):
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(caption, parse_mode)
+                **await self.parser.parse(caption, parse_mode)
             )
         )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

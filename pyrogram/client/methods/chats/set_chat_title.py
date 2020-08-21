@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetChatTitle(BaseClient):
-    def set_chat_title(
+    async def set_chat_title(
         self,
         chat_id: Union[int, str],
         title: str
@@ -54,17 +54,17 @@ class SetChatTitle(BaseClient):
 
                 app.set_chat_title(chat_id, "New Title")
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            self.send(
+            await self.send(
                 functions.messages.EditChatTitle(
                     chat_id=peer.chat_id,
                     title=title
                 )
             )
         elif isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditTitle(
                     channel=peer,
                     title=title

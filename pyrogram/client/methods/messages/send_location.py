@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendLocation(BaseClient):
-    def send_location(
+    async def send_location(
         self,
         chat_id: Union[int, str],
         latitude: float,
@@ -75,9 +75,9 @@ class SendLocation(BaseClient):
 
                 app.send_location("me", 51.500729, -0.124583)
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaGeoPoint(
                     geo_point=types.InputGeoPoint(
                         lat=latitude,
@@ -95,7 +95,7 @@ class SendLocation(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

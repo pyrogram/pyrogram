@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetAdministratorTitle(BaseClient):
-    def set_administrator_title(
+    async def set_administrator_title(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
@@ -54,15 +54,15 @@ class SetAdministratorTitle(BaseClient):
 
                 app.set_administrator_title(chat_id, user_id, "ฅ^•ﻌ•^ฅ")
         """
-        chat_id = self.resolve_peer(chat_id)
-        user_id = self.resolve_peer(user_id)
+        chat_id = await self.resolve_peer(chat_id)
+        user_id = await self.resolve_peer(user_id)
 
-        r = self.send(
+        r = (await self.send(
             functions.channels.GetParticipant(
                 channel=chat_id,
                 user_id=user_id
             )
-        ).participant
+        )).participant
 
         if isinstance(r, types.ChannelParticipantCreator):
             admin_rights = types.ChatAdminRights(
@@ -104,7 +104,7 @@ class SetAdministratorTitle(BaseClient):
         if not admin_rights.add_admins:
             admin_rights.add_admins = None
 
-        self.send(
+        await self.send(
             functions.channels.EditAdmin(
                 channel=chat_id,
                 user_id=user_id,

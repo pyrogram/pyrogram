@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class ArchiveChats(BaseClient):
-    def archive_chats(
+    async def archive_chats(
         self,
         chat_ids: Union[int, str, List[Union[int, str]]],
     ) -> bool:
@@ -50,14 +50,19 @@ class ArchiveChats(BaseClient):
         if not isinstance(chat_ids, list):
             chat_ids = [chat_ids]
 
-        self.send(
+        folder_peers = []
+
+        for chat in chat_ids:
+            folder_peers.append(
+                types.InputFolderPeer(
+                    peer=await self.resolve_peer(chat),
+                    folder_id=1
+                )
+            )
+
+        await self.send(
             functions.folders.EditPeerFolders(
-                folder_peers=[
-                    types.InputFolderPeer(
-                        peer=self.resolve_peer(chat),
-                        folder_id=1
-                    ) for chat in chat_ids
-                ]
+                folder_peers=folder_peers
             )
         )
 

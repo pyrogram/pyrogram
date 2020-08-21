@@ -23,7 +23,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendInlineBotResult(BaseClient):
-    def send_inline_bot_result(
+    async def send_inline_bot_result(
         self,
         chat_id: Union[int, str],
         query_id: int,
@@ -65,9 +65,9 @@ class SendInlineBotResult(BaseClient):
 
                 app.send_inline_bot_result(chat_id, query_id, result_id)
         """
-        return self.send(
+        return await self.send(
             functions.messages.SendInlineBotResult(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 query_id=query_id,
                 id=result_id,
                 random_id=self.rnd_id(),

@@ -24,7 +24,7 @@ from ...ext import BaseClient, utils
 
 
 class GetNearbyChats(BaseClient):
-    def get_nearby_chats(
+    async def get_nearby_chats(
         self,
         latitude: float,
         longitude: float
@@ -48,7 +48,7 @@ class GetNearbyChats(BaseClient):
                 print(chats)
         """
 
-        r = self.send(
+        r = await self.send(
             functions.contacts.GetLocated(
                 geo_point=types.InputGeoPoint(
                     lat=latitude,

@@ -29,7 +29,7 @@ from pyrogram.client.types.input_media import InputMedia
 
 
 class EditInlineMedia(BaseClient):
-    def edit_inline_media(
+    async def edit_inline_media(
         self,
         inline_message_id: str,
         media: InputMedia,
@@ -109,11 +109,11 @@ class EditInlineMedia(BaseClient):
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        return self.send(
+        return await self.send(
             functions.messages.EditInlineBotMessage(
                 id=utils.unpack_inline_message_id(inline_message_id),
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(caption, parse_mode)
+                **await self.parser.parse(caption, parse_mode)
             )
         )

@@ -91,7 +91,7 @@ class InlineQueryResultPhoto(InlineQueryResult):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    def write(self):
+    async def write(self):
         photo = types.InputWebDocument(
             url=self.photo_url,
             size=0,
@@ -117,11 +117,11 @@ class InlineQueryResultPhoto(InlineQueryResult):
             thumb=thumb,
             content=photo,
             send_message=(
-                self.input_message_content.write(self.reply_markup)
+                await self.input_message_content.write(self.reply_markup)
                 if self.input_message_content
                 else types.InputBotInlineMessageMediaAuto(
                     reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **(Parser(None)).parse(self.caption, self.parse_mode)
+                    **await(Parser(None)).parse(self.caption, self.parse_mode)
                 )
             )
         )

@@ -110,7 +110,7 @@ class HTML:
     def __init__(self, client: Union["pyrogram.BaseClient", None]):
         self.client = client
 
-    def parse(self, text: str):
+    async def parse(self, text: str):
         # Strip whitespace characters from the end of the message, but preserve closing tags
         text = re.sub(r"\s*(</[\w\W]*>)\s*$", r"\1", text)
 
@@ -132,7 +132,7 @@ class HTML:
             if isinstance(entity, types.InputMessageEntityMentionName):
                 try:
                     if self.client is not None:
-                        entity.user_id = self.client.resolve_peer(entity.user_id)
+                        entity.user_id = await self.client.resolve_peer(entity.user_id)
                 except PeerIdInvalid:
                     continue
 

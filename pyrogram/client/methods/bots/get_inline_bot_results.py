@@ -24,7 +24,7 @@ from pyrogram.errors import UnknownError
 
 
 class GetInlineBotResults(BaseClient):
-    def get_inline_bot_results(
+    async def get_inline_bot_results(
         self,
         bot: Union[int, str],
         query: str = "",
@@ -70,9 +70,9 @@ class GetInlineBotResults(BaseClient):
         # TODO: Don't return the raw type
 
         try:
-            return self.send(
+            return await self.send(
                 functions.messages.GetInlineBotResults(
-                    bot=self.resolve_peer(bot),
+                    bot=await self.resolve_peer(bot),
                     peer=types.InputPeerSelf(),
                     query=query,
                     offset=offset,

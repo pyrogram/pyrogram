@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class DeleteChatPhoto(BaseClient):
-    def delete_chat_photo(
+    async def delete_chat_photo(
         self,
         chat_id: Union[int, str]
     ) -> bool:
@@ -46,17 +46,17 @@ class DeleteChatPhoto(BaseClient):
 
                 app.delete_chat_photo(chat_id)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            self.send(
+            await self.send(
                 functions.messages.EditChatPhoto(
                     chat_id=peer.chat_id,
                     photo=types.InputChatPhotoEmpty()
                 )
             )
         elif isinstance(peer, types.InputPeerChannel):
-            self.send(
+            await self.send(
                 functions.channels.EditPhoto(
                     channel=peer,
                     photo=types.InputChatPhotoEmpty()

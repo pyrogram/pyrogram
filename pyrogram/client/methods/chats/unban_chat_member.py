@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UnbanChatMember(BaseClient):
-    def unban_chat_member(
+    async def unban_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str]
@@ -49,10 +49,10 @@ class UnbanChatMember(BaseClient):
                 # Unban chat member right now
                 app.unban_chat_member(chat_id, user_id)
         """
-        self.send(
+        await self.send(
             functions.channels.EditBanned(
-                channel=self.resolve_peer(chat_id),
-                user_id=self.resolve_peer(user_id),
+                channel=await self.resolve_peer(chat_id),
+                user_id=await self.resolve_peer(user_id),
                 banned_rights=types.ChatBannedRights(
                     until_date=0
                 )

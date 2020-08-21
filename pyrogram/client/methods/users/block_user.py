@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class BlockUser(BaseClient):
-    def block_user(
+    async def block_user(
         self,
         user_id: Union[int, str]
     ) -> bool:
@@ -44,9 +44,9 @@ class BlockUser(BaseClient):
                 app.block_user(user_id)
         """
         return bool(
-            self.send(
+            await self.send(
                 functions.contacts.Block(
-                    id=self.resolve_peer(user_id)
+                    id=await self.resolve_peer(user_id)
                 )
             )
         )

@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class PinChatMessage(BaseClient):
-    def pin_chat_message(
+    async def pin_chat_message(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -56,9 +56,9 @@ class PinChatMessage(BaseClient):
                 # Pin without notification
                 app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
-        self.send(
+        await self.send(
             functions.messages.UpdatePinnedMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 silent=disable_notification or None
             )

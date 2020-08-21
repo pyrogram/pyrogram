@@ -17,10 +17,12 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from string import ascii_lowercase
-from typing import Union, Generator
+from typing import Union, Generator, Optional
 
 import pyrogram
+from async_generator import async_generator, yield_
 from pyrogram.api import types
+
 from ...ext import BaseClient
 
 
@@ -38,13 +40,14 @@ QUERYABLE_FILTERS = (Filters.ALL, Filters.KICKED, Filters.RESTRICTED)
 
 
 class IterChatMembers(BaseClient):
-    def iter_chat_members(
+    @async_generator
+    async def iter_chat_members(
         self,
         chat_id: Union[int, str],
         limit: int = 0,
         query: str = "",
         filter: str = Filters.ALL
-    ) -> Generator["pyrogram.ChatMember", None, None]:
+    ) -> Optional[Generator["pyrogram.ChatMember", None, None]]:
         """Iterate through the members of a chat sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_chat_members` in a loop, thus saving you
@@ -97,7 +100,7 @@ class IterChatMembers(BaseClient):
         queries = [query] if query else QUERIES
         total = limit or (1 << 31) - 1
         limit = min(200, total)
-        resolved_chat_id = self.resolve_peer(chat_id)
+        resolved_chat_id = await self.resolve_peer(chat_id)
 
         if filter not in QUERYABLE_FILTERS:
             queries = [""]
@@ -106,7 +109,7 @@ class IterChatMembers(BaseClient):
             offset = 0
 
             while True:
-                chat_members = self.get_chat_members(
+                chat_members = await self.get_chat_members(
                     chat_id=chat_id,
                     offset=offset,
                     limit=limit,
@@ -128,7 +131,7 @@ class IterChatMembers(BaseClient):
                     if user_id in yielded:
                         continue
 
-                    yield chat_member
+                    await yield_(chat_member)
 
                     yielded.add(chat_member.user.id)
 

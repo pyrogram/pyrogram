@@ -21,7 +21,7 @@ from ...ext import BaseClient
 
 
 class GetDialogsCount(BaseClient):
-    def get_dialogs_count(self, pinned_only: bool = False) -> int:
+    async def get_dialogs_count(self, pinned_only: bool = False) -> int:
         """Get the total count of your dialogs.
 
         pinned_only (``bool``, *optional*):
@@ -39,9 +39,9 @@ class GetDialogsCount(BaseClient):
         """
 
         if pinned_only:
-            return len(self.send(functions.messages.GetPinnedDialogs(folder_id=0)).dialogs)
+            return len((await self.send(functions.messages.GetPinnedDialogs(folder_id=0))).dialogs)
         else:
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetDialogs(
                     offset_date=0,
                     offset_id=0,

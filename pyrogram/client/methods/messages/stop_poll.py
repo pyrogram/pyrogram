@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class StopPoll(BaseClient):
-    def stop_poll(
+    async def stop_poll(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -54,11 +54,11 @@ class StopPoll(BaseClient):
 
                 app.stop_poll(chat_id, message_id)
         """
-        poll = self.get_messages(chat_id, message_id).poll
+        poll = (await self.get_messages(chat_id, message_id)).poll
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 media=types.InputMediaPoll(
                     poll=types.Poll(

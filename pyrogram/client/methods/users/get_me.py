@@ -22,7 +22,7 @@ from ...ext import BaseClient
 
 
 class GetMe(BaseClient):
-    def get_me(self) -> "pyrogram.User":
+    async def get_me(self) -> "pyrogram.User":
         """Get your own user identity.
 
         Returns:
@@ -36,9 +36,9 @@ class GetMe(BaseClient):
         """
         return pyrogram.User._parse(
             self,
-            self.send(
+            (await self.send(
                 functions.users.GetFullUser(
                     id=types.InputPeerSelf()
                 )
-            ).user
+            )).user
         )

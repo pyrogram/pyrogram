@@ -35,8 +35,8 @@ class TCPIntermediateO(TCP):
         self.encrypt = None
         self.decrypt = None
 
-    def connect(self, address: tuple):
-        super().connect(address)
+    async def connect(self, address: tuple):
+        await super().connect(address)
 
         while True:
             nonce = bytearray(os.urandom(64))
@@ -52,25 +52,25 @@ class TCPIntermediateO(TCP):
 
         nonce[56:64] = AES.ctr256_encrypt(nonce, *self.encrypt)[56:64]
 
-        super().sendall(nonce)
+        await super().send(nonce)
 
-    def sendall(self, data: bytes, *args):
-        super().sendall(
+    async def send(self, data: bytes, *args):
+        await super().send(
             AES.ctr256_encrypt(
                 pack("<i", len(data)) + data,
                 *self.encrypt
             )
         )
 
-    def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(4)
+    async def recv(self, length: int = 0) -> bytes or None:
+        length = await super().recv(4)
 
         if length is None:
             return None
 
         length = AES.ctr256_decrypt(length, *self.decrypt)
 
-        data = super().recvall(unpack("<i", length)[0])
+        data = await super().recv(unpack("<i", length)[0])
 
         if data is None:
             return None

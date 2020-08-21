@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class DeleteProfilePhotos(BaseClient):
-    def delete_profile_photos(
+    async def delete_profile_photos(
         self,
         photo_ids: Union[str, List[str]]
     ) -> bool:
@@ -53,7 +53,7 @@ class DeleteProfilePhotos(BaseClient):
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = [utils.get_input_media_from_file_id(i).id for i in photo_ids]
 
-        return bool(self.send(
+        return bool(await self.send(
             functions.photos.DeletePhotos(
                 id=input_photos
             )

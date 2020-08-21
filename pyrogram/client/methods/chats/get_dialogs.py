@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 
 class GetDialogs(BaseClient):
-    def get_dialogs(
+    async def get_dialogs(
         self,
         offset_date: int = 0,
         limit: int = 100,
@@ -65,9 +65,9 @@ class GetDialogs(BaseClient):
         """
 
         if pinned_only:
-            r = self.send(functions.messages.GetPinnedDialogs(folder_id=0))
+            r = await self.send(functions.messages.GetPinnedDialogs(folder_id=0))
         else:
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetDialogs(
                     offset_date=offset_date,
                     offset_id=0,
@@ -94,7 +94,7 @@ class GetDialogs(BaseClient):
             else:
                 chat_id = utils.get_peer_id(to_id)
 
-            messages[chat_id] = pyrogram.Message._parse(self, message, users, chats)
+            messages[chat_id] = await pyrogram.Message._parse(self, message, users, chats)
 
         parsed_dialogs = []
 

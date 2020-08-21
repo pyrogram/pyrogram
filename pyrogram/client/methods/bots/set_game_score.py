@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class SetGameScore(BaseClient):
-    def set_game_score(
+    async def set_game_score(
         self,
         user_id: Union[int, str],
         score: int,
@@ -75,12 +75,12 @@ class SetGameScore(BaseClient):
                 # Force set new score
                 app.set_game_score(user_id, 25, force=True)
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SetGameScore(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 score=score,
                 id=message_id,
-                user_id=self.resolve_peer(user_id),
+                user_id=await self.resolve_peer(user_id),
                 force=force or None,
                 edit_message=not disable_edit_message or None
             )
@@ -88,7 +88,7 @@ class SetGameScore(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

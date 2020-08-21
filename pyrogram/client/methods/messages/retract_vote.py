@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class RetractVote(BaseClient):
-    def retract_vote(
+    async def retract_vote(
         self,
         chat_id: Union[int, str],
         message_id: int
@@ -48,9 +48,9 @@ class RetractVote(BaseClient):
 
                 app.retract_vote(chat_id, message_id)
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendVote(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
                 options=[]
             )

@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class VotePoll(BaseClient):
-    def vote_poll(
+    async def vote_poll(
         self,
         chat_id: Union[int, str],
         message_id: id,
@@ -53,12 +53,12 @@ class VotePoll(BaseClient):
                 app.vote_poll(chat_id, message_id, 6)
         """
 
-        poll = self.get_messages(chat_id, message_id).poll
+        poll = (await self.get_messages(chat_id, message_id)).poll
         options = [options] if not isinstance(options, list) else options
 
-        r = self.send(
+        r = await self.send(
             functions.messages.SendVote(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
                 options=[poll.options[option].data for option in options]
             )

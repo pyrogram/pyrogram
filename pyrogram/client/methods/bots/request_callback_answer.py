@@ -23,7 +23,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class RequestCallbackAnswer(BaseClient):
-    def request_callback_answer(
+    async def request_callback_answer(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -64,9 +64,9 @@ class RequestCallbackAnswer(BaseClient):
         # Telegram only wants bytes, but we are allowed to pass strings too.
         data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
 
-        return self.send(
+        return await self.send(
             functions.messages.GetBotCallbackAnswer(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
                 data=data
             ),

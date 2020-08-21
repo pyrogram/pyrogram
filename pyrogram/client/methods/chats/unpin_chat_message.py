@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class UnpinChatMessage(BaseClient):
-    def unpin_chat_message(
+    async def unpin_chat_message(
         self,
         chat_id: Union[int, str]
     ) -> bool:
@@ -43,9 +43,9 @@ class UnpinChatMessage(BaseClient):
 
                 app.unpin_chat_message(chat_id)
         """
-        self.send(
+        await self.send(
             functions.messages.UpdatePinnedMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=0
             )
         )

@@ -27,7 +27,7 @@ from pyrogram.errors import FilePartMissing
 
 
 class SendSticker(BaseClient):
-    def send_sticker(
+    async def send_sticker(
         self,
         chat_id: Union[int, str],
         sticker: Union[str, BinaryIO],
@@ -117,7 +117,7 @@ class SendSticker(BaseClient):
         try:
             if isinstance(sticker, str):
                 if os.path.isfile(sticker):
-                    file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+                    file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
                     media = types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(sticker) or "image/webp",
                         file=file,
@@ -132,7 +132,7 @@ class SendSticker(BaseClient):
                 else:
                     media = utils.get_input_media_from_file_id(sticker, file_ref, 8)
             else:
-                file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+                file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(sticker.name) or "image/webp",
                     file=file,
@@ -143,9 +143,9 @@ class SendSticker(BaseClient):
 
             while True:
                 try:
-                    r = self.send(
+                    r = await self.send(
                         functions.messages.SendMedia(
-                            peer=self.resolve_peer(chat_id),
+                            peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
@@ -156,14 +156,14 @@ class SendSticker(BaseClient):
                         )
                     )
                 except FilePartMissing as e:
-                    self.save_file(sticker, file_id=file.id, file_part=e.x)
+                    await self.save_file(sticker, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
                         if isinstance(
                             i,
                             (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
                         ):
-                            return pyrogram.Message._parse(
+                            return await pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats},

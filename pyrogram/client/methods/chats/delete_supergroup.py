@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class DeleteSupergroup(BaseClient):
-    def delete_supergroup(self, chat_id: Union[int, str]) -> bool:
+    async def delete_supergroup(self, chat_id: Union[int, str]) -> bool:
         """Delete a supergroup.
 
         Parameters:
@@ -38,9 +38,9 @@ class DeleteSupergroup(BaseClient):
 
                 app.delete_supergroup(supergroup_id)
         """
-        self.send(
+        await self.send(
             functions.channels.DeleteChannel(
-                channel=self.resolve_peer(chat_id)
+                channel=await self.resolve_peer(chat_id)
             )
         )
 

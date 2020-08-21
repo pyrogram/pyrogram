@@ -233,13 +233,13 @@ class Chat(Object):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
+    async def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
 
             if chat_full.pinned_msg_id:
-                parsed_chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
                     message_ids=chat_full.pinned_msg_id
                 )
@@ -273,7 +273,7 @@ class Chat(Object):
                     parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
 
             if full_chat.pinned_msg_id:
-                parsed_chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
                     message_ids=full_chat.pinned_msg_id
                 )
@@ -292,7 +292,7 @@ class Chat(Object):
         else:
             return Chat._parse_channel_chat(client, chat)
 
-    def archive(self):
+    async def archive(self):
         """Bound method *archive* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -313,9 +313,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.archive_chats(self.id)
+        return await self._client.archive_chats(self.id)
 
-    def unarchive(self):
+    async def unarchive(self):
         """Bound method *unarchive* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -336,10 +336,10 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unarchive_chats(self.id)
+        return await self._client.unarchive_chats(self.id)
 
     # TODO: Remove notes about "All Members Are Admins" for basic groups, the attribute doesn't exist anymore
-    def set_title(self, title: str) -> bool:
+    async def set_title(self, title: str) -> bool:
         """Bound method *set_title* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -372,12 +372,12 @@ class Chat(Object):
             ValueError: In case a chat_id belongs to user.
         """
 
-        return self._client.set_chat_title(
+        return await self._client.set_chat_title(
             chat_id=self.id,
             title=title
         )
 
-    def set_description(self, description: str) -> bool:
+    async def set_description(self, description: str) -> bool:
         """Bound method *set_description* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -406,12 +406,12 @@ class Chat(Object):
             ValueError: If a chat_id doesn't belong to a supergroup or a channel.
         """
 
-        return self._client.set_chat_description(
+        return await self._client.set_chat_description(
             chat_id=self.id,
             description=description
         )
 
-    def set_photo(self, photo: str) -> bool:
+    async def set_photo(self, photo: str) -> bool:
         """Bound method *set_photo* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -440,12 +440,12 @@ class Chat(Object):
             ValueError: if a chat_id belongs to user.
         """
 
-        return self._client.set_chat_photo(
+        return await self._client.set_chat_photo(
             chat_id=self.id,
             photo=photo
         )
 
-    def kick_member(
+    async def kick_member(
         self,
         user_id: Union[int, str],
         until_date: int = 0
@@ -489,13 +489,13 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.kick_chat_member(
+        return await self._client.kick_chat_member(
             chat_id=self.id,
             user_id=user_id,
             until_date=until_date
         )
 
-    def unban_member(
+    async def unban_member(
         self,
         user_id: Union[int, str]
     ) -> bool:
@@ -527,12 +527,12 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unban_chat_member(
+        return await self._client.unban_chat_member(
             chat_id=self.id,
             user_id=user_id,
         )
 
-    def restrict_member(
+    async def restrict_member(
         self,
         user_id: Union[int, str],
         permissions: ChatPermissions,
@@ -575,14 +575,14 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.restrict_chat_member(
+        return await self._client.restrict_chat_member(
             chat_id=self.id,
             user_id=user_id,
             permissions=permissions,
             until_date=until_date,
         )
 
-    def promote_member(
+    async def promote_member(
         self,
         user_id: Union[int, str],
         can_change_info: bool = True,
@@ -649,7 +649,7 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.promote_chat_member(
+        return await self._client.promote_chat_member(
             chat_id=self.id,
             user_id=user_id,
             can_change_info=can_change_info,
@@ -662,7 +662,7 @@ class Chat(Object):
             can_promote_members=can_promote_members
         )
 
-    def join(self):
+    async def join(self):
         """Bound method *join* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -686,9 +686,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.join_chat(self.username or self.id)
+        return await self._client.join_chat(self.username or self.id)
 
-    def leave(self):
+    async def leave(self):
         """Bound method *leave* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -706,9 +706,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.leave_chat(self.id)
+        return await self._client.leave_chat(self.id)
 
-    def export_invite_link(self):
+    async def export_invite_link(self):
         """Bound method *export_invite_link* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -729,9 +729,9 @@ class Chat(Object):
             ValueError: In case the chat_id belongs to a user.
         """
 
-        return self._client.export_chat_invite_link(self.id)
+        return await self._client.export_chat_invite_link(self.id)
 
-    def get_member(
+    async def get_member(
         self,
         user_id: Union[int, str],
     ) -> "pyrogram.ChatMember":
@@ -755,12 +755,12 @@ class Chat(Object):
             :obj:`ChatMember`: On success, a chat member is returned.
         """
 
-        return self._client.get_chat_member(
+        return await self._client.get_chat_member(
             self.id,
             user_id=user_id
         )
 
-    def get_members(
+    async def get_members(
         self,
         offset: int = 0,
         limit: int = 200,
@@ -785,7 +785,7 @@ class Chat(Object):
             List of :obj:`ChatMember`: On success, a list of chat members is returned.
         """
 
-        return self._client.get_chat_members(
+        return await self._client.get_chat_members(
             self.id,
             offset=offset,
             limit=limit,
@@ -825,7 +825,7 @@ class Chat(Object):
             filter=filter
         )
 
-    def add_members(
+    async def add_members(
         self,
         user_ids: Union[Union[int, str], List[Union[int, str]]],
         forward_limit: int = 100
@@ -847,7 +847,7 @@ class Chat(Object):
             ``bool``: On success, True is returned.
         """
 
-        return self._client.add_chat_members(
+        return await self._client.add_chat_members(
             self.id,
             user_ids=user_ids,
             forward_limit=forward_limit

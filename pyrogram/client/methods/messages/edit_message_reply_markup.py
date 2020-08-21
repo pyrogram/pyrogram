@@ -24,7 +24,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class EditMessageReplyMarkup(BaseClient):
-    def edit_message_reply_markup(
+    async def edit_message_reply_markup(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -58,9 +58,9 @@ class EditMessageReplyMarkup(BaseClient):
                     InlineKeyboardMarkup([[
                         InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 reply_markup=reply_markup.write() if reply_markup else None,
             )
@@ -68,7 +68,7 @@ class EditMessageReplyMarkup(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

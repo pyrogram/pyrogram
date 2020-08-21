@@ -16,11 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List, Generator
+from typing import Union, List, Generator, Optional
 
 import pyrogram
 from pyrogram.client.ext import BaseClient, utils
 from pyrogram.api import functions, types
+from async_generator import async_generator, yield_
 
 
 class Filters:
@@ -46,7 +47,7 @@ POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswit
 
 
 # noinspection PyShadowingBuiltins
-def get_chunk(
+async def get_chunk(
     client: BaseClient,
     chat_id: Union[int, str],
     query: str = "",
@@ -61,9 +62,9 @@ def get_chunk(
         raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
             filter, ", ".join('"{}"'.format(v) for v in POSSIBLE_VALUES))) from None
 
-    r = client.send(
+    r = await client.send(
         functions.messages.Search(
-            peer=client.resolve_peer(chat_id),
+            peer=await client.resolve_peer(chat_id),
             q=query,
             filter=filter,
             min_date=0,
@@ -74,7 +75,7 @@ def get_chunk(
             min_id=0,
             max_id=0,
             from_id=(
-                client.resolve_peer(from_user)
+                await client.resolve_peer(from_user)
                 if from_user
                 else None
             ),
@@ -82,12 +83,13 @@ def get_chunk(
         )
     )
 
-    return utils.parse_messages(client, r)
+    return await utils.parse_messages(client, r)
 
 
 class SearchMessages(BaseClient):
     # noinspection PyShadowingBuiltins
-    def search_messages(
+    @async_generator
+    async def search_messages(
         self,
         chat_id: Union[int, str],
         query: str = "",
@@ -95,7 +97,7 @@ class SearchMessages(BaseClient):
         filter: str = "empty",
         limit: int = 0,
         from_user: Union[int, str] = None
-    ) -> Generator["pyrogram.Message", None, None]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Search for text and media messages inside a specific chat.
 
         Parameters:
@@ -160,7 +162,7 @@ class SearchMessages(BaseClient):
         limit = min(100, total)
 
         while True:
-            messages = get_chunk(
+            messages = await get_chunk(
                 client=self,
                 chat_id=chat_id,
                 query=query,
@@ -176,7 +178,7 @@ class SearchMessages(BaseClient):
             offset += 100
 
             for message in messages:
-                yield message
+                await yield_(message)
 
                 current += 1
 
