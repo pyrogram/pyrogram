@@ -16,6 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+
+
 class Filter:
     def __call__(self, message):
         raise NotImplementedError
@@ -34,8 +37,13 @@ class InvertFilter(Filter):
     def __init__(self, base):
         self.base = base
 
-    def __call__(self, message):
-        return not self.base(message)
+    async def __call__(self, message):
+        if asyncio.iscoroutinefunction(self.base.__call__):
+            x = await self.base(message)
+        else:
+            x = self.base(message)
+
+        return not x
 
 
 class AndFilter(Filter):
@@ -43,8 +51,18 @@ class AndFilter(Filter):
         self.base = base
         self.other = other
 
-    def __call__(self, message):
-        return self.base(message) and self.other(message)
+    async def __call__(self, message):
+        if asyncio.iscoroutinefunction(self.base.__call__):
+            x = await self.base(message)
+        else:
+            x = self.base(message)
+
+        if asyncio.iscoroutinefunction(self.other.__call__):
+            y = await self.other(message)
+        else:
+            y = self.other(message)
+
+        return x and y
 
 
 class OrFilter(Filter):
@@ -52,5 +70,15 @@ class OrFilter(Filter):
         self.base = base
         self.other = other
 
-    def __call__(self, message):
-        return self.base(message) or self.other(message)
+    async def __call__(self, message):
+        if asyncio.iscoroutinefunction(self.base.__call__):
+            x = await self.base(message)
+        else:
+            x = self.base(message)
+
+        if asyncio.iscoroutinefunction(self.other.__call__):
+            y = await self.other(message)
+        else:
+            y = self.other(message)
+
+        return x or y
