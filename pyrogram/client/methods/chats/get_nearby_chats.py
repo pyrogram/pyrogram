@@ -64,7 +64,7 @@ class GetNearbyChats(BaseClient):
         peers = r.updates[0].peers
 
         for peer in peers:
-            if type(peer.peer) is types.PeerChannel:
+            if isinstance(peer.peer, types.PeerChannel):
                 chat_id = utils.get_channel_id(peer.peer.channel_id)
 
                 for chat in chats:
