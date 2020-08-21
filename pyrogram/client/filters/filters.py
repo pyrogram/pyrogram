@@ -309,8 +309,8 @@ class Filters:
         stored in the ``matches`` field of the update object itself.
 
         Parameters:
-            pattern (``str``):
-                The regex pattern as string.
+            pattern (``str`` | ``Pattern``):
+                The regex pattern as string or as pre-compiled pattern.
 
             flags (``int``, *optional*):
                 Regex flags.
