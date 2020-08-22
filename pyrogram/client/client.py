@@ -27,7 +27,7 @@ import tempfile
 from configparser import ConfigParser
 from hashlib import sha256, md5
 from importlib import import_module
-from pathlib import Path, Pureapath
+from pathlib import Path, PurePath
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 from typing import Union, List, BinaryIO
 
