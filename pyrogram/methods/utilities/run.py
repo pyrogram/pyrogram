@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import inspect
 
 from pyrogram.methods.utilities.idle import idle
 from pyrogram.scaffold import Scaffold
@@ -52,6 +53,11 @@ class Run(Scaffold):
         if coroutine is not None:
             run(coroutine)
         else:
-            self.start()
-            run(idle())
-            self.stop()
+            if inspect.iscoroutinefunction(self.start):
+                run(self.start())
+                run(idle())
+                run(self.stop())
+            else:
+                self.start()
+                run(idle())
+                self.stop()
