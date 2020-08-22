@@ -39,7 +39,10 @@ with open("README.md", encoding="utf-8") as f:
 
 class Clean(Command):
     DIST = ["./build", "./dist", "./Pyrogram.egg-info"]
-    API = ["pyrogram/errors/exceptions", "pyrogram/raw/functions", "pyrogram/raw/types", "pyrogram/raw/all.py"]
+    API = [
+        "pyrogram/errors/exceptions", "pyrogram/raw/functions", "pyrogram/raw/types", "pyrogram/raw/base",
+        "pyrogram/raw/all.py"
+    ]
     DOCS = [
         "docs/source/telegram", "docs/build", "docs/source/api/methods", "docs/source/api/types",
         "docs/source/api/bound-methods"

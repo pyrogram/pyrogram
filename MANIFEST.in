@@ -7,4 +7,5 @@ recursive-include pyrogram mime.types schema.sql
 prune pyrogram/errors/exceptions
 prune pyrogram/raw/functions
 prune pyrogram/raw/types
+prune pyrogram/raw/base
 exclude pyrogram/raw/all.py
