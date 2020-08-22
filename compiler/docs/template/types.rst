@@ -1,12 +1,12 @@
 Available Types
 ===============
 
-This page is about Pyrogram types. All types listed here are accessible through the main package directly.
+This page is about Pyrogram types. All types listed here are accessible through ``types`` package.
 
 .. code-block:: python
     :emphasize-lines: 1
 
-    from pyrogram import User, Message, ...
+    from pyrogram.types import User, Message, ...
 
 .. note::
 

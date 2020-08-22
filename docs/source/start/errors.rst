@@ -1,7 +1,7 @@
 Error Handling
 ==============
 
-Errors are inevitable when working with the API, and they must be correctly handled with ``try..except`` blocks in order
+Errors are inevitable when working with the API, and they can be correctly handled with ``try...except`` blocks in order
 to control the behaviour of your application. Pyrogram errors all live inside the ``errors`` package:
 
 .. code-block:: python

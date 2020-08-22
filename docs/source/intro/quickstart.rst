@@ -1,8 +1,8 @@
 Quick Start
 ===========
 
-The next few steps serve as a quick start for all new Pyrogrammers that want to see Pyrogram in action as fast as
-possible. Let's go!
+The next few steps serve as a quick start for all new :term:`Pyrogrammers <Pyrogrammer>` that want to see Pyrogram in
+action as fast as possible. Let's go!
 
 Get Pyrogram Real Fast
 ----------------------

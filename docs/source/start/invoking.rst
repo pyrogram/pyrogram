@@ -14,8 +14,7 @@ account; we are now aiming towards the core of the library. It's time to start p
 Basic Usage
 -----------
 
-Making API method calls with Pyrogram is very simple. Here's a basic example we are going to examine step by step and
-then expand to explain what happens underneath:
+Making API method calls with Pyrogram is very simple. Here's a basic example we are going to examine step by step:
 
 .. code-block:: python
 
@@ -56,9 +55,9 @@ Basic step-by-step
 Context Manager
 ---------------
 
-The ``with`` statement starts a context manager, which is used as a shortcut to automatically call
-:meth:`~pyrogram.Client.start` and :meth:`~pyrogram.Client.stop`, which are methods required for Pyrogram to work
-properly. The context manager does also gracefully stop the client, even in case of unhandled exceptions in your code.
+The ``with`` statement starts a context manager used as a shortcut to automatically call :meth:`~pyrogram.Client.start`
+and :meth:`~pyrogram.Client.stop`, which are methods required for Pyrogram to work properly. The context manager does
+also gracefully stop the client, even in case of unhandled exceptions in your code.
 
 This is how Pyrogram looks without the context manager:
 
@@ -111,8 +110,8 @@ Asynchronous step-by-step
             async with app:
                 await app.send_message("me", "Hi!")
 
-#.  Finally, we tell Python to schedule our ``main()`` async function, which in turn will execute Pyrogram's code. Using
-    :meth:`~pyrogram.Client.run` this way is a friendly alternative for the much more verbose
+#.  Finally, we tell Python to schedule our ``main()`` async function, which in turn will execute Pyrogram's methods.
+    Using :meth:`~pyrogram.Client.run` this way is a friendly alternative for the much more verbose
     ``asyncio.get_event_loop().run_until_complete(main())``:
 
     .. code-block:: python

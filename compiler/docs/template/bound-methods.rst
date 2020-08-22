@@ -15,7 +15,7 @@ some of the required arguments.
 
     @app.on_message()
     def hello(client, message)
-        message.reply("hi")
+        message.reply_text("hi")
 
 
     app.run()

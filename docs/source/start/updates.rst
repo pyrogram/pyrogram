@@ -26,8 +26,8 @@ Registering a Handler
 ---------------------
 
 To explain how handlers work let's examine the one which will be in charge for handling :class:`~pyrogram.types.Message`
-updates coming from all around your chats. Every other handler shares the same setup logic; you should not have
-troubles settings them up once you learn from this section.
+updates coming from all around your chats. Every other kind of handler shares the same setup logic and you should not
+have troubles settings them up once you learn from this section.
 
 Using Decorators
 ^^^^^^^^^^^^^^^^
@@ -98,3 +98,9 @@ The same about asynchronous handlers applies for :meth:`~pyrogram.Client.add_han
 
     async def my_function(client, message):
         await message.forward("me")
+
+.. note::
+
+    From now on, you'll see examples using synchronous code (i.e.: without ``async`` and ``await``, unless when actually
+    relevant). This is done to keep snippets concise and more readable. Once you get the idea behind a feature, you can
+    easily turn examples asynchronous later on.

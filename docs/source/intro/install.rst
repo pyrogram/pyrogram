@@ -40,12 +40,12 @@ Pyrogram is always evolving, although new releases on PyPI are published only wh
 doesn't mean you can't try new features right now!
 
 In case you'd like to try out the latest Pyrogram features, the `GitHub repo`_ is always kept updated with new changes;
-you can install the development version straight from the ``develop`` branch using this command (note "develop.zip" in
+you can install the development version straight from the ``master`` branch using this command (note "master.zip" in
 the link):
 
 .. code-block:: text
 
-    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip
+    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/master.zip
 
 Verifying
 ---------
