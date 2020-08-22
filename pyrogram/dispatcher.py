@@ -115,7 +115,7 @@ class Dispatcher:
                 self.locks_list.append(asyncio.Lock())
 
                 self.handler_worker_tasks.append(
-                    asyncio.ensure_future(self.handler_worker(self.locks_list[-1]))
+                    self.loop.create_task(self.handler_worker(self.locks_list[-1]))
                 )
 
             logging.info(f"Started {self.client.workers} HandlerTasks")
@@ -148,7 +148,7 @@ class Dispatcher:
                 for lock in self.locks_list:
                     lock.release()
 
-        asyncio.ensure_future(fn())
+        self.loop.create_task(fn())
 
     def remove_handler(self, handler, group: int):
         async def fn():
@@ -164,7 +164,7 @@ class Dispatcher:
                 for lock in self.locks_list:
                     lock.release()
 
-        asyncio.ensure_future(fn())
+        self.loop.create_task(fn())
 
     async def handler_worker(self, lock):
         while True:

@@ -60,6 +60,6 @@ class Stop(Scaffold):
         if block:
             await do_it()
         else:
-            asyncio.ensure_future(do_it())
+            self.loop.create_task(do_it())
 
         return self
