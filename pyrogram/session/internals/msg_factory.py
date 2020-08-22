@@ -26,14 +26,13 @@ not_content_related = (Ping, HttpWait, MsgsAck, MsgContainer)
 
 
 class MsgFactory:
-    def __init__(self, server_time: float = 0):
+    def __init__(self):
         self.seq_no = SeqNo()
-        self.server_time = server_time
 
     def __call__(self, body: TLObject) -> Message:
         return Message(
             body,
-            MsgId(self.server_time),
+            MsgId(),
             self.seq_no(not isinstance(body, not_content_related)),
             len(body)
         )

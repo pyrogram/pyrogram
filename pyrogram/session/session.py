@@ -23,6 +23,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
+import os
 
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
@@ -96,7 +97,7 @@ class Session:
 
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
-        self.session_id = Long(MsgId(time.time()))
+        self.session_id = os.urandom(8)
         self.msg_factory = MsgFactory()
 
         self.current_salt = None
@@ -247,9 +248,7 @@ class Session:
 
         for msg in messages:
             if msg.seq_no == 0:
-                server_time = msg.msg_id / (2 ** 32)
-                self.msg_factory.server_time = server_time
-                log.info(f"Time synced: {datetime.utcfromtimestamp(server_time)} UTC")
+                MsgId.set_server_time(msg.msg_id / (2 ** 32))
 
             if msg.seq_no % 2 != 0:
                 if msg.msg_id in self.pending_acks:
