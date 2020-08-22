@@ -36,7 +36,7 @@ app.run()
 
 **Pyrogram** is a modern, elegant and easy-to-use [Telegram](https://telegram.org/) framework written from the ground up
 in Python and C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via
-the [MTProto API](https://core.telegram.org/api#telegram-api).
+the [MTProto API](https://docs.pyrogram.org/topics/mtproto-vs-botapi).
 
 ### Features
 
@@ -44,7 +44,7 @@ the [MTProto API](https://core.telegram.org/api#telegram-api).
 - **Elegant**: Low-level details are abstracted and re-presented in a much nicer and easier way.
 - **Fast**: Crypto parts are boosted up by [TgCrypto](https://github.com/pyrogram/tgcrypto), a high-performance library
   written in pure C.
-- **Asynchronous**: Allows both synchronous and asynchronous usages to fit all usage needs.
+- **Asynchronous**: Allows both synchronous and asynchronous models to fit all usage needs.
 - **Documented**: API methods, types and public interfaces are all [well documented](https://docs.pyrogram.org).
 - **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
 - **Updated**, to make use of the latest Telegram API version and features.
