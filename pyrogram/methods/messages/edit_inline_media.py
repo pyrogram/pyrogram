@@ -22,6 +22,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.scaffold import Scaffold
+from .inline_session import get_session
 
 
 class EditInlineMedia(Scaffold):
@@ -105,9 +106,14 @@ class EditInlineMedia(Scaffold):
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        return await self.send(
+        unpacked = utils.unpack_inline_message_id(inline_message_id)
+        dc_id = unpacked.dc_id
+
+        session = get_session(self, dc_id)
+
+        return await session.send(
             raw.functions.messages.EditInlineBotMessage(
-                id=utils.unpack_inline_message_id(inline_message_id),
+                id=unpacked,
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 **await self.parser.parse(caption, parse_mode)

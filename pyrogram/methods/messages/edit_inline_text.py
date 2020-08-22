@@ -22,6 +22,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.scaffold import Scaffold
+from .inline_session import get_session
 
 
 class EditInlineText(Scaffold):
@@ -72,9 +73,14 @@ class EditInlineText(Scaffold):
                     disable_web_page_preview=True)
         """
 
-        return await self.send(
+        unpacked = utils.unpack_inline_message_id(inline_message_id)
+        dc_id = unpacked.dc_id
+
+        session = get_session(self, dc_id)
+
+        return await session.send(
             raw.functions.messages.EditInlineBotMessage(
-                id=utils.unpack_inline_message_id(inline_message_id),
+                id=unpacked,
                 no_webpage=disable_web_page_preview or None,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 **await self.parser.parse(text, parse_mode)
