@@ -22,6 +22,7 @@ That's how a session looks like on the Android app, showing the three main piece
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

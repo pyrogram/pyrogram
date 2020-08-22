@@ -19,7 +19,7 @@ This page is about Pyrogram types. All types listed here are accessible through 
 
 -----
 
-.. currentmodule:: pyrogram
+.. currentmodule:: pyrogram.types
 
 Users & Chats
 -------------

@@ -19,8 +19,8 @@
 import logging
 import os
 
+from pyrogram.crypto import aes
 from .tcp import TCP
-from ....crypto.aes import AES
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class TCPAbridgedO(TCP):
         self.encrypt = (nonce[8:40], nonce[40:56], bytearray(1))
         self.decrypt = (temp[0:32], temp[32:48], bytearray(1))
 
-        nonce[56:64] = AES.ctr256_encrypt(nonce, *self.encrypt)[56:64]
+        nonce[56:64] = aes.ctr256_encrypt(nonce, *self.encrypt)[56:64]
 
         await super().send(nonce)
 
@@ -57,7 +57,7 @@ class TCPAbridgedO(TCP):
         length = len(data) // 4
 
         await super().send(
-            AES.ctr256_encrypt(
+            aes.ctr256_encrypt(
                 (bytes([length])
                  if length <= 126
                  else b"\x7f" + length.to_bytes(3, "little"))
@@ -72,7 +72,7 @@ class TCPAbridgedO(TCP):
         if length is None:
             return None
 
-        length = AES.ctr256_decrypt(length, *self.decrypt)
+        length = aes.ctr256_decrypt(length, *self.decrypt)
 
         if length == b"\x7f":
             length = await super().recv(3)
@@ -80,11 +80,11 @@ class TCPAbridgedO(TCP):
             if length is None:
                 return None
 
-            length = AES.ctr256_decrypt(length, *self.decrypt)
+            length = aes.ctr256_decrypt(length, *self.decrypt)
 
         data = await super().recv(int.from_bytes(length, "little") * 4)
 
         if data is None:
             return None
 
-        return AES.ctr256_decrypt(data, *self.decrypt)
+        return aes.ctr256_decrypt(data, *self.decrypt)

@@ -10,6 +10,7 @@ general. Some words may as well link to dedicated articles in case the topic is 
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

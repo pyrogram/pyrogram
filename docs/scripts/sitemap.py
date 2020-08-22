@@ -46,7 +46,7 @@ with open("sitemap.xml", "w") as f:
     def search(path):
         try:
             for j in os.listdir(path):
-                search("{}/{}".format(path, j))
+                search(f"{path}/{j}")
         except NotADirectoryError:
             if not path.endswith(".rst"):
                 return
@@ -58,7 +58,7 @@ with open("sitemap.xml", "w") as f:
             else:
                 folder = path[0]
 
-            path = "{}{}".format(canonical, "/".join(path))[:-len(".rst")]
+            path = f"{canonical}{'/'.join(path)}"[:-len(".rst")]
 
             if path.endswith("index"):
                 path = path[:-len("index")]
@@ -71,11 +71,11 @@ with open("sitemap.xml", "w") as f:
     urls.sort(key=lambda x: x[3], reverse=True)
 
     for i in urls:
-        f.write("    <url>\n")
-        f.write("        <loc>{}</loc>\n".format(i[0]))
-        f.write("        <lastmod>{}</lastmod>\n".format(i[1]))
-        f.write("        <changefreq>{}</changefreq>\n".format(i[2]))
-        f.write("        <priority>{}</priority>\n".format(i[3]))
-        f.write("    </url>\n\n")
+        f.write(f"    <url>\n")
+        f.write(f"        <loc>{i[0]}</loc>\n")
+        f.write(f"        <lastmod>{i[1]}</lastmod>\n")
+        f.write(f"        <changefreq>{i[2]}</changefreq>\n")
+        f.write(f"        <priority>{i[3]}</priority>\n")
+        f.write(f"    </url>\n\n")
 
     f.write("</urlset>")

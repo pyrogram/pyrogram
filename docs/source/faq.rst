@@ -12,6 +12,7 @@ This FAQ page provides answers to common questions about Pyrogram and, to some e
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

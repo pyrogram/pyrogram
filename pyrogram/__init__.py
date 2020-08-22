@@ -16,10 +16,23 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = "0.18.0-async"
+__version__ = "1.0.0b1"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __copyright__ = "Copyright (C) 2017-2020 Dan <https://github.com/delivrance>"
 
-from .client import *
-from .client.handlers import *
-from .client.types import *
+
+class StopTransmission(StopAsyncIteration):
+    pass
+
+
+class StopPropagation(StopAsyncIteration):
+    pass
+
+
+class ContinuePropagation(StopAsyncIteration):
+    pass
+
+
+from . import types, filters, handlers, emoji
+from .client import Client
+from .sync import idle

@@ -7,7 +7,8 @@ For a much more convenient way of registering callback functions have a look at 
 .. code-block:: python
     :emphasize-lines: 1, 10
 
-    from pyrogram import Client, MessageHandler
+    from pyrogram import Client
+    from pyrogram.handlers import MessageHandler
 
     app = Client("my_account")
 
@@ -22,11 +23,12 @@ For a much more convenient way of registering callback functions have a look at 
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
 
-.. currentmodule:: pyrogram
+.. currentmodule:: pyrogram.handlers
 
 Index
 -----

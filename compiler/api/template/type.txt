@@ -1,0 +1,17 @@
+{notice}
+
+{warning}
+
+from typing import Union
+from pyrogram import raw
+from pyrogram.raw.core import TLObject
+
+{name} = Union[{types}]
+
+
+# noinspection PyRedeclaration
+class {name}(TLObject):  # type: ignore
+    """{docstring}
+    """
+
+    QUALNAME = "pyrogram.raw.base.{qualname}"

@@ -26,7 +26,7 @@ some of the required arguments.
 
 -----
 
-.. currentmodule:: pyrogram
+.. currentmodule:: pyrogram.types
 
 Message
 -------

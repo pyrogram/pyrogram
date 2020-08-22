@@ -10,6 +10,7 @@ to control the behaviour of your application. Pyrogram errors all live inside th
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -17,9 +18,8 @@ to control the behaviour of your application. Pyrogram errors all live inside th
 RPCError
 --------
 
-The father of all errors is named ``RPCError``. This error exists in form of a Python exception which is directly
-subclass-ed from Python's main ``Exception`` and is able to catch all Telegram API related errors. This error is raised
-every time a method call against Telegram's API was unsuccessful.
+The father of all errors is named ``RPCError`` and is able to catch all Telegram API related errors.
+This error is raised every time a method call against Telegram's API was unsuccessful.
 
 .. code-block:: python
 
@@ -34,19 +34,19 @@ Error Categories
 ----------------
 
 The ``RPCError`` packs together all the possible errors Telegram could raise, but to make things tidier, Pyrogram
-provides categories of errors, which are named after the common HTTP errors and are subclass-ed from the RPCError:
+provides categories of errors, which are named after the common HTTP errors and are subclass-ed from the ``RPCError``:
 
 .. code-block:: python
 
     from pyrogram.errors import BadRequest, Forbidden, ...
 
--   `303 - SeeOther <../api/errors#seeother>`_
--   `400 - BadRequest <../api/errors#badrequest>`_
--   `401 - Unauthorized  <../api/errors#unauthorized>`_
--   `403 - Forbidden <../api/errors#forbidden>`_
--   `406 - NotAcceptable <../api/errors#notacceptable>`_
--   `420 - Flood <../api/errors#flood>`_
--   `500 - InternalServerError <../api/errors#internalservererror>`_
+-   :doc:`303 - SeeOther <../api/errors/see-other>`
+-   :doc:`400 - BadRequest <../api/errors/bad-request>`
+-   :doc:`401 - Unauthorized <../api/errors/unauthorized>`
+-   :doc:`403 - Forbidden <../api/errors/forbidden>`
+-   :doc:`406 - NotAcceptable <../api/errors/not-acceptable>`
+-   :doc:`420 - Flood <../api/errors/flood>`
+-   :doc:`500 - InternalServerError <../api/errors/internal-server-error>`
 
 Single Errors
 -------------
@@ -59,7 +59,7 @@ issue. For example:
     from pyrogram.errors import FloodWait
 
 These errors subclass directly from the category of errors they belong to, which in turn subclass from the father
-RPCError, thus building a class of error hierarchy such as this:
+``RPCError``, thus building a class of error hierarchy such as this:
 
 - RPCError
     - BadRequest

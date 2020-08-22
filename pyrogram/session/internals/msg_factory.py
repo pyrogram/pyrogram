@@ -16,10 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.api.functions import Ping
-from pyrogram.api.types import MsgsAck, HttpWait
-
-from pyrogram.api.core import Message, MsgContainer, TLObject
+from pyrogram.raw.core import Message, MsgContainer, TLObject
+from pyrogram.raw.functions import Ping
+from pyrogram.raw.types import MsgsAck, HttpWait
 from .msg_id import MsgId
 from .seq_no import SeqNo
 
@@ -27,13 +26,14 @@ not_content_related = (Ping, HttpWait, MsgsAck, MsgContainer)
 
 
 class MsgFactory:
-    def __init__(self):
+    def __init__(self, server_time: float = 0):
         self.seq_no = SeqNo()
+        self.server_time = server_time
 
     def __call__(self, body: TLObject) -> Message:
         return Message(
             body,
-            MsgId(),
+            MsgId(self.server_time),
             self.seq_no(not isinstance(body, not_content_related)),
             len(body)
         )

@@ -6,6 +6,7 @@ project with the library. Let's see how it's done.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

@@ -8,6 +8,7 @@ actually is the MTProto and the Bot API.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

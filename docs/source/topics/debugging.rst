@@ -6,6 +6,7 @@ to actually worry about -- that's normal -- and luckily for you, Pyrogram provid
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

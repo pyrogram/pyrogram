@@ -16,20 +16,18 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from threading import Lock
-from time import time
+from time import monotonic
 
 
 class MsgId:
+    reference_clock = monotonic()
     last_time = 0
-    offset = 0
-    lock = Lock()
+    msg_id_offset = 0
 
-    def __new__(cls) -> int:
-        with cls.lock:
-            now = time()
-            cls.offset = cls.offset + 4 if now == cls.last_time else 0
-            msg_id = int(now * 2 ** 32) + cls.offset
-            cls.last_time = now
+    def __new__(cls, server_time: float = 0) -> int:
+        now = monotonic() - cls.reference_clock + server_time
+        cls.msg_id_offset = cls.msg_id_offset + 4 if now == cls.last_time else 0
+        msg_id = int(now * 2 ** 32) + cls.msg_id_offset
+        cls.last_time = now
 
-            return msg_id
+        return msg_id

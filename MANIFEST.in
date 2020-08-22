@@ -5,6 +5,6 @@ recursive-include pyrogram mime.types schema.sql
 
 ## Exclude
 prune pyrogram/errors/exceptions
-prune pyrogram/api/functions
-prune pyrogram/api/types
-exclude pyrogram/api/all.py
+prune pyrogram/raw/functions
+prune pyrogram/raw/types
+exclude pyrogram/raw/all.py

@@ -6,9 +6,10 @@ unknown_errors.txt
 
 # Pyrogram generated code
 pyrogram/errors/exceptions/
-pyrogram/api/functions/
-pyrogram/api/types/
-pyrogram/api/all.py
+pyrogram/raw/functions/
+pyrogram/raw/types/
+pyrogram/raw/base/
+pyrogram/raw/all.py
 
 # PyCharm stuff
 .idea/

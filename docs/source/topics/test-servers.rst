@@ -20,6 +20,7 @@ Telegram's test servers without hassle. All you need to do is start a new sessio
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

@@ -6,6 +6,7 @@ Here we'll show some advanced usages when working with :doc:`update handlers <..
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -25,21 +26,21 @@ For example, take these two handlers:
 .. code-block:: python
     :emphasize-lines: 1, 6
 
-    @app.on_message(Filters.text | Filters.sticker)
+    @app.on_message(filters.text | filters.sticker)
     def text_or_sticker(client, message):
         print("Text or Sticker")
 
 
-    @app.on_message(Filters.text)
+    @app.on_message(filters.text)
     def just_text(client, message):
         print("Just Text")
 
 Here, ``just_text`` is never executed because ``text_or_sticker``, which has been registered first, already handles
-texts (``Filters.text`` is shared and conflicting). To enable it, register the handler using a different group:
+texts (``filters.text`` is shared and conflicting). To enable it, register the handler using a different group:
 
 .. code-block:: python
 
-    @app.on_message(Filters.text, group=1)
+    @app.on_message(filters.text, group=1)
     def just_text(client, message):
         print("Just Text")
 
@@ -47,7 +48,7 @@ Or, if you want ``just_text`` to be executed *before* ``text_or_sticker`` (note 
 
 .. code-block:: python
 
-    @app.on_message(Filters.text, group=-1)
+    @app.on_message(filters.text, group=-1)
     def just_text(client, message):
         print("Just Text")
 
@@ -55,7 +56,7 @@ With :meth:`~pyrogram.Client.add_handler` (without decorators) the same can be a
 
 .. code-block:: python
 
-    app.add_handler(MessageHandler(just_text, Filters.text), -1)
+    app.add_handler(MessageHandler(just_text, filters.text), -1)
 
 Update propagation
 ------------------
@@ -67,17 +68,17 @@ continue to propagate the same update to the next groups until all the handlers 
 
 .. code-block:: python
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(0)
 
 
-    @app.on_message(Filters.private, group=1)
+    @app.on_message(filters.private, group=1)
     def _(client, message):
         raise Exception("Unhandled exception!")  # Simulate an unhandled exception
 
 
-    @app.on_message(Filters.private, group=2)
+    @app.on_message(filters.private, group=2)
     def _(client, message):
         print(2)
 
@@ -109,18 +110,18 @@ Example with ``stop_propagation()``:
 
 .. code-block:: python
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(0)
 
 
-    @app.on_message(Filters.private, group=1)
+    @app.on_message(filters.private, group=1)
     def _(client, message):
         print(1)
         message.stop_propagation()
 
 
-    @app.on_message(Filters.private, group=2)
+    @app.on_message(filters.private, group=2)
     def _(client, message):
         print(2)
 
@@ -130,18 +131,18 @@ Example with ``raise StopPropagation``:
 
     from pyrogram import StopPropagation
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(0)
 
 
-    @app.on_message(Filters.private, group=1)
+    @app.on_message(filters.private, group=1)
     def _(client, message):
         print(1)
         raise StopPropagation
 
 
-    @app.on_message(Filters.private, group=2)
+    @app.on_message(filters.private, group=2)
     def _(client, message):
         print(2)
 
@@ -177,19 +178,19 @@ Example with ``continue_propagation()``:
 
 .. code-block:: python
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(0)
         message.continue_propagation()
 
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(1)
         message.continue_propagation()
 
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(2)
 
@@ -199,19 +200,19 @@ Example with ``raise ContinuePropagation``:
 
     from pyrogram import ContinuePropagation
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(0)
         raise ContinuePropagation
 
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(1)
         raise ContinuePropagation
 
 
-    @app.on_message(Filters.private)
+    @app.on_message(filters.private)
     def _(client, message):
         print(2)
 

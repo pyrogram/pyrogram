@@ -1,7 +1,8 @@
 Available Methods
 =================
 
-This page is about Pyrogram methods. All the methods listed here are bound to a :class:`~pyrogram.Client` instance.
+This page is about Pyrogram methods. All the methods listed here are bound to a :class:`~pyrogram.Client` instance,
+except for :meth:`~pyrogram.idle()`, which is a special function that can be found in the main package directly.
 
 .. code-block:: python
     :emphasize-lines: 6
@@ -33,6 +34,20 @@ Utilities
     :hidden:
 
     {utilities}
+
+.. currentmodule:: pyrogram
+
+.. autosummary::
+    :nosignatures:
+
+    idle
+
+.. toctree::
+    :hidden:
+
+    idle
+
+.. currentmodule:: pyrogram.Client
 
 Messages
 --------

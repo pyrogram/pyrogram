@@ -25,11 +25,13 @@ HOME = "compiler/docs"
 DESTINATION = "docs/source/telegram"
 PYROGRAM_API_DEST = "docs/source/api"
 
-FUNCTIONS_PATH = "pyrogram/api/functions"
-TYPES_PATH = "pyrogram/api/types"
+FUNCTIONS_PATH = "pyrogram/raw/functions"
+TYPES_PATH = "pyrogram/raw/types"
+BASE_PATH = "pyrogram/raw/base"
 
 FUNCTIONS_BASE = "functions"
 TYPES_BASE = "types"
+BASE_BASE = "base"
 
 
 def snek(s: str):
@@ -70,7 +72,7 @@ def generate(source_path, base):
                         page_template.format(
                             title=name,
                             title_markup="=" * len(name),
-                            full_class_path="pyrogram.api.{}".format(
+                            full_class_path="pyrogram.raw.{}".format(
                                 ".".join(full_path.split("/")[:-1]) + "." + name
                             )
                         )
@@ -92,14 +94,14 @@ def generate(source_path, base):
 
         if k != base:
             inner_path = base + "/" + k + "/index" + ".rst"
-            module = "pyrogram.api.{}.{}".format(base, k)
+            module = "pyrogram.raw.{}.{}".format(base, k)
         else:
             for i in sorted(list(all_entities), reverse=True):
                 if i != base:
                     entities.insert(0, "{0}/index".format(i))
 
             inner_path = base + "/index" + ".rst"
-            module = "pyrogram.api.{}".format(base)
+            module = "pyrogram.raw.{}".format(base)
 
         with open(DESTINATION + "/" + inner_path, "w", encoding="utf-8") as f:
             if k == base:
@@ -128,7 +130,6 @@ def pyrogram_api():
         utilities="""
         Utilities
             start
-            idle
             stop
             run
             restart
@@ -264,6 +265,7 @@ def pyrogram_api():
             send_code
             resend_code
             sign_in
+            sign_in_bot
             sign_up
             get_password_hint
             check_password
@@ -301,6 +303,15 @@ def pyrogram_api():
 
                     f2.write(title + "\n" + "=" * len(title) + "\n\n")
                     f2.write(".. automethod:: pyrogram.Client.{}()".format(method))
+
+            functions = ["idle"]
+
+            for func in functions:
+                with open(root + "/{}.rst".format(func), "w") as f2:
+                    title = "{}()".format(func)
+
+                    f2.write(title + "\n" + "=" * len(title) + "\n\n")
+                    f2.write(".. autofunction:: pyrogram.{}()".format(func))
 
         f.write(template.format(**fmt_keys))
 
@@ -405,7 +416,7 @@ def pyrogram_api():
                     title = "{}".format(type)
 
                     f2.write(title + "\n" + "=" * len(title) + "\n\n")
-                    f2.write(".. autoclass:: pyrogram.{}()".format(type))
+                    f2.write(".. autoclass:: pyrogram.types.{}()".format(type))
 
         f.write(template.format(**fmt_keys))
 
@@ -506,7 +517,7 @@ def pyrogram_api():
                     title = "{}()".format(bm)
 
                     f2.write(title + "\n" + "=" * len(title) + "\n\n")
-                    f2.write(".. automethod:: pyrogram.{}()".format(bm))
+                    f2.write(".. automethod:: pyrogram.types.{}()".format(bm))
 
         f.write(template.format(**fmt_keys))
 
@@ -525,12 +536,14 @@ def start():
 
     generate(TYPES_PATH, TYPES_BASE)
     generate(FUNCTIONS_PATH, FUNCTIONS_BASE)
+    generate(BASE_PATH, BASE_BASE)
     pyrogram_api()
 
 
 if "__main__" == __name__:
-    FUNCTIONS_PATH = "../../pyrogram/api/functions"
-    TYPES_PATH = "../../pyrogram/api/types"
+    FUNCTIONS_PATH = "../../pyrogram/raw/functions"
+    TYPES_PATH = "../../pyrogram/raw/types"
+    BASE_PATH = "../../pyrogram/raw/base"
     HOME = "."
     DESTINATION = "../../docs/source/telegram"
     PYROGRAM_API_DEST = "../../docs/source/api"

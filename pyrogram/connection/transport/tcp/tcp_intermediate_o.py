@@ -20,8 +20,8 @@ import logging
 import os
 from struct import pack, unpack
 
+from pyrogram.crypto import aes
 from .tcp import TCP
-from ....crypto.aes import AES
 
 log = logging.getLogger(__name__)
 
@@ -50,13 +50,13 @@ class TCPIntermediateO(TCP):
         self.encrypt = (nonce[8:40], nonce[40:56], bytearray(1))
         self.decrypt = (temp[0:32], temp[32:48], bytearray(1))
 
-        nonce[56:64] = AES.ctr256_encrypt(nonce, *self.encrypt)[56:64]
+        nonce[56:64] = aes.ctr256_encrypt(nonce, *self.encrypt)[56:64]
 
         await super().send(nonce)
 
     async def send(self, data: bytes, *args):
         await super().send(
-            AES.ctr256_encrypt(
+            aes.ctr256_encrypt(
                 pack("<i", len(data)) + data,
                 *self.encrypt
             )
@@ -68,11 +68,11 @@ class TCPIntermediateO(TCP):
         if length is None:
             return None
 
-        length = AES.ctr256_decrypt(length, *self.decrypt)
+        length = aes.ctr256_decrypt(length, *self.decrypt)
 
         data = await super().recv(unpack("<i", length)[0])
 
         if data is None:
             return None
 
-        return AES.ctr256_decrypt(data, *self.decrypt)
+        return aes.ctr256_decrypt(data, *self.decrypt)

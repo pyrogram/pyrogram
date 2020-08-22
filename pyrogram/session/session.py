@@ -18,18 +18,20 @@
 
 import asyncio
 import logging
+import time
+from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
 
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
-from pyrogram.api import functions, types
-from pyrogram.api.all import layer
-from pyrogram.api.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
+from pyrogram import raw
 from pyrogram.connection import Connection
-from pyrogram.crypto import MTProto
+from pyrogram.crypto import mtproto
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait
+from pyrogram.raw.all import layer
+from pyrogram.raw.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -43,13 +45,13 @@ class Result:
 
 class Session:
     INITIAL_SALT = 0x616e67656c696361
-    NET_WORKERS = 1
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 60
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
+    EXECUTOR_SIZE_THRESHOLD = 512
 
     notice_displayed = False
 
@@ -67,22 +69,26 @@ class Session:
         64: "[64] invalid container"
     }
 
+    executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
+
     def __init__(
         self,
-        client: pyrogram,
+        client: "pyrogram.Client",
         dc_id: int,
         auth_key: bytes,
+        test_mode: bool,
         is_media: bool = False,
         is_cdn: bool = False
     ):
         if not Session.notice_displayed:
-            print("Pyrogram v{}, {}".format(__version__, __copyright__))
-            print("Licensed under the terms of the " + __license__, end="\n\n")
+            print(f"Pyrogram v{__version__}, {__copyright__}")
+            print(f"Licensed under the terms of the {__license__}", end="\n\n")
             Session.notice_displayed = True
 
         self.client = client
         self.dc_id = dc_id
         self.auth_key = auth_key
+        self.test_mode = test_mode
         self.is_media = is_media
         self.is_cdn = is_cdn
 
@@ -90,14 +96,13 @@ class Session:
 
         self.auth_key_id = sha1(auth_key).digest()[-8:]
 
-        self.session_id = Long(MsgId())
+        self.session_id = Long(MsgId(time.time()))
         self.msg_factory = MsgFactory()
 
         self.current_salt = None
 
         self.pending_acks = set()
 
-        self.recv_queue = asyncio.Queue()
         self.results = {}
 
         self.ping_task = None
@@ -106,16 +111,17 @@ class Session:
         self.next_salt_task = None
         self.next_salt_task_event = asyncio.Event()
 
-        self.net_worker_task = None
-        self.recv_task = None
+        self.network_task = None
 
         self.is_connected = asyncio.Event()
+
+        self.loop = asyncio.get_event_loop()
 
     async def start(self):
         while True:
             self.connection = Connection(
                 self.dc_id,
-                self.client.storage.test_mode(),
+                self.test_mode,
                 self.client.ipv6,
                 self.client.proxy
             )
@@ -123,27 +129,27 @@ class Session:
             try:
                 await self.connection.connect()
 
-                self.net_worker_task = asyncio.ensure_future(self.net_worker())
-                self.recv_task = asyncio.ensure_future(self.recv())
+                self.network_task = self.loop.create_task(self.network_worker())
 
                 self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
                 self.current_salt = FutureSalt(
                     0, 0,
                     (await self._send(
-                        functions.Ping(ping_id=0),
+                        raw.functions.Ping(ping_id=0),
                         timeout=self.START_TIMEOUT
                     )).new_server_salt
                 )
-                self.current_salt = \
-                    (await self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT)).salts[0]
+                self.current_salt = (await self._send(
+                    raw.functions.GetFutureSalts(num=1),
+                    timeout=self.START_TIMEOUT)).salts[0]
 
-                self.next_salt_task = asyncio.ensure_future(self.next_salt())
+                self.next_salt_task = self.loop.create_task(self.next_salt_worker())
 
                 if not self.is_cdn:
                     await self._send(
-                        functions.InvokeWithLayer(
+                        raw.functions.InvokeWithLayer(
                             layer=layer,
-                            query=functions.InitConnection(
+                            query=raw.functions.InitConnection(
                                 api_id=self.client.api_id,
                                 app_version=self.client.app_version,
                                 device_model=self.client.device_model,
@@ -151,17 +157,17 @@ class Session:
                                 system_lang_code=self.client.lang_code,
                                 lang_code=self.client.lang_code,
                                 lang_pack="",
-                                query=functions.help.GetConfig(),
+                                query=raw.functions.help.GetConfig(),
                             )
                         ),
                         timeout=self.START_TIMEOUT
                     )
 
-                self.ping_task = asyncio.ensure_future(self.ping())
+                self.ping_task = self.loop.create_task(self.ping_worker())
 
-                log.info("Session initialized: Layer {}".format(layer))
-                log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
-                log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
+                log.info(f"Session initialized: Layer {layer}")
+                log.info(f"Device: {self.client.device_model} - {self.client.app_version}")
+                log.info(f"System: {self.client.system_version} ({self.client.lang_code.upper()})")
 
             except AuthKeyDuplicated as e:
                 await self.stop()
@@ -195,11 +201,8 @@ class Session:
 
         self.connection.close()
 
-        if self.recv_task:
-            await self.recv_task
-
-        if self.net_worker_task:
-            await self.net_worker_task
+        if self.network_task:
+            await self.network_task
 
         for i in self.results.values():
             i.event.set()
@@ -216,76 +219,78 @@ class Session:
         await self.stop()
         await self.start()
 
-    async def net_worker(self):
-        logging.info("NetWorkerTask started")
+    async def handle_packet(self, packet):
+        if len(packet) <= self.EXECUTOR_SIZE_THRESHOLD:
+            data = mtproto.unpack(
+                BytesIO(packet),
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id
+            )
+        else:
+            data = await self.loop.run_in_executor(
+                self.executor,
+                mtproto.unpack,
+                BytesIO(packet),
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id
+            )
 
-        while True:
-            packet = await self.recv_queue.get()
+        messages = (
+            data.body.messages
+            if isinstance(data.body, MsgContainer)
+            else [data]
+        )
 
-            if packet is None:
-                break
+        log.debug(f"Received:\n{data}")
+
+        for msg in messages:
+            if msg.seq_no == 0:
+                server_time = msg.msg_id / (2 ** 32)
+                self.msg_factory.server_time = server_time
+                log.info(f"Time synced: {datetime.utcfromtimestamp(server_time)} UTC")
+
+            if msg.seq_no % 2 != 0:
+                if msg.msg_id in self.pending_acks:
+                    continue
+                else:
+                    self.pending_acks.add(msg.msg_id)
+
+            if isinstance(msg.body, (raw.types.MsgDetailedInfo, raw.types.MsgNewDetailedInfo)):
+                self.pending_acks.add(msg.body.answer_msg_id)
+                continue
+
+            if isinstance(msg.body, raw.types.NewSessionCreated):
+                continue
+
+            msg_id = None
+
+            if isinstance(msg.body, (raw.types.BadMsgNotification, raw.types.BadServerSalt)):
+                msg_id = msg.body.bad_msg_id
+            elif isinstance(msg.body, (FutureSalts, raw.types.RpcResult)):
+                msg_id = msg.body.req_msg_id
+            elif isinstance(msg.body, raw.types.Pong):
+                msg_id = msg.body.msg_id
+            else:
+                if self.client is not None:
+                    self.loop.create_task(self.client.handle_updates(msg.body))
+
+            if msg_id in self.results:
+                self.results[msg_id].value = getattr(msg.body, "result", msg.body)
+                self.results[msg_id].event.set()
+
+        if len(self.pending_acks) >= self.ACKS_THRESHOLD:
+            log.debug(f"Send {len(self.pending_acks)} acks")
 
             try:
-                data = MTProto.unpack(
-                    BytesIO(packet),
-                    self.session_id,
-                    self.auth_key,
-                    self.auth_key_id
-                )
+                await self._send(raw.types.MsgsAck(msg_ids=list(self.pending_acks)), False)
+            except (OSError, TimeoutError):
+                pass
+            else:
+                self.pending_acks.clear()
 
-                messages = (
-                    data.body.messages
-                    if isinstance(data.body, MsgContainer)
-                    else [data]
-                )
-
-                log.debug("Received:\n{}".format(data))
-
-                for msg in messages:
-                    if msg.seq_no % 2 != 0:
-                        if msg.msg_id in self.pending_acks:
-                            continue
-                        else:
-                            self.pending_acks.add(msg.msg_id)
-
-                    if isinstance(msg.body, (types.MsgDetailedInfo, types.MsgNewDetailedInfo)):
-                        self.pending_acks.add(msg.body.answer_msg_id)
-                        continue
-
-                    if isinstance(msg.body, types.NewSessionCreated):
-                        continue
-
-                    msg_id = None
-
-                    if isinstance(msg.body, (types.BadMsgNotification, types.BadServerSalt)):
-                        msg_id = msg.body.bad_msg_id
-                    elif isinstance(msg.body, (FutureSalts, types.RpcResult)):
-                        msg_id = msg.body.req_msg_id
-                    elif isinstance(msg.body, types.Pong):
-                        msg_id = msg.body.msg_id
-                    else:
-                        if self.client is not None:
-                            self.client.updates_queue.put_nowait(msg.body)
-
-                    if msg_id in self.results:
-                        self.results[msg_id].value = getattr(msg.body, "result", msg.body)
-                        self.results[msg_id].event.set()
-
-                if len(self.pending_acks) >= self.ACKS_THRESHOLD:
-                    log.info("Send {} acks".format(len(self.pending_acks)))
-
-                    try:
-                        await self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
-                    except (OSError, TimeoutError):
-                        pass
-                    else:
-                        self.pending_acks.clear()
-            except Exception as e:
-                log.error(e, exc_info=True)
-
-        log.info("NetWorkerTask stopped")
-
-    async def ping(self):
+    async def ping_worker(self):
         log.info("PingTask started")
 
         while True:
@@ -298,7 +303,7 @@ class Session:
 
             try:
                 await self._send(
-                    functions.PingDelayDisconnect(
+                    raw.functions.PingDelayDisconnect(
                         ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                     ), False
                 )
@@ -307,7 +312,7 @@ class Session:
 
         log.info("PingTask stopped")
 
-    async def next_salt(self):
+    async def next_salt_worker(self):
         log.info("NextSaltTask started")
 
         while True:
@@ -331,33 +336,31 @@ class Session:
                 break
 
             try:
-                self.current_salt = (await self._send(functions.GetFutureSalts(num=1))).salts[0]
+                self.current_salt = (await self._send(raw.functions.GetFutureSalts(num=1))).salts[0]
             except (OSError, TimeoutError, RPCError):
                 self.connection.close()
                 break
 
         log.info("NextSaltTask stopped")
 
-    async def recv(self):
-        log.info("RecvTask started")
+    async def network_worker(self):
+        log.info("NetworkTask started")
 
         while True:
             packet = await self.connection.recv()
 
             if packet is None or len(packet) == 4:
-                self.recv_queue.put_nowait(None)
-
                 if packet:
-                    log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
+                    log.warning(f'Server sent "{Int.read(BytesIO(packet))}"')
 
                 if self.is_connected.is_set():
-                    asyncio.ensure_future(self.restart())
+                    self.loop.create_task(self.restart())
 
                 break
 
-            self.recv_queue.put_nowait(packet)
+            self.loop.create_task(self.handle_packet(packet))
 
-        log.info("RecvTask stopped")
+        log.info("NetworkTask stopped")
 
     async def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
@@ -366,15 +369,26 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        log.debug("Sent:\n{}".format(message))
+        log.debug(f"Sent:\n{message}")
 
-        payload = MTProto.pack(
-            message,
-            self.current_salt.salt,
-            self.session_id,
-            self.auth_key,
-            self.auth_key_id
-        )
+        if len(message) <= self.EXECUTOR_SIZE_THRESHOLD:
+            payload = mtproto.pack(
+                message,
+                self.current_salt.salt,
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id
+            )
+        else:
+            payload = await self.loop.run_in_executor(
+                self.executor,
+                mtproto.pack,
+                message,
+                self.current_salt.salt,
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id
+            )
 
         try:
             await self.connection.send(payload)
@@ -392,15 +406,15 @@ class Session:
 
             if result is None:
                 raise TimeoutError
-            elif isinstance(result, types.RpcError):
-                if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+            elif isinstance(result, raw.types.RpcError):
+                if isinstance(data, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
                     data = data.query
 
                 RPCError.raise_it(result, type(data))
-            elif isinstance(result, types.BadMsgNotification):
+            elif isinstance(result, raw.types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
                     result.error_code,
-                    "Error code {}".format(result.error_code)
+                    f"Error code {result.error_code}"
                 ))
             else:
                 return result
@@ -417,7 +431,7 @@ class Session:
         except asyncio.TimeoutError:
             pass
 
-        if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+        if isinstance(data, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
             query = data.query
         else:
             query = data
@@ -433,8 +447,7 @@ class Session:
                 if amount > sleep_threshold:
                     raise
 
-                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
-                    self.client.session_name, amount, query))
+                log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
 
                 await asyncio.sleep(amount)
             except (OSError, TimeoutError, InternalServerError) as e:
@@ -442,9 +455,7 @@ class Session:
                     raise e from None
 
                 (log.warning if retries < 2 else log.info)(
-                    '[{}] Retrying "{}" due to {}'.format(
-                        Session.MAX_RETRIES - retries + 1,
-                        query, e))
+                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {e}')
 
                 await asyncio.sleep(0.5)
 

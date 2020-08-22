@@ -10,6 +10,7 @@ visit and learn from each library documentation.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -69,8 +70,7 @@ Using ``apscheduler``
     scheduler.start()
     app.run()
 
-``apscheduler`` does also support async code, here's an example with
-`Pyrogram Asyncio <https://docs.pyrogram.org/intro/install.html#asynchronous>`_:
+``apscheduler`` does also support async code, here's an example:
 
 .. code-block:: python
 
