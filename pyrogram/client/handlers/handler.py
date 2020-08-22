@@ -16,14 +16,22 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+
+
 class Handler:
     def __init__(self, callback: callable, filters=None):
         self.callback = callback
         self.filters = filters
 
-    def check(self, update):
-        return (
-            self.filters(update)
-            if callable(self.filters)
-            else True
-        )
+    async def check(self, update):
+
+        if callable(self.filters):
+            if asyncio.iscoroutinefunction(self.filters.__call__):
+                return (await self.filters(update))
+
+            else:
+                return self.filters(update)
+
+        else:
+            return True
