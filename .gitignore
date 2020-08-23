@@ -10,6 +10,10 @@ pyrogram/raw/functions/
 pyrogram/raw/types/
 pyrogram/raw/base/
 pyrogram/raw/all.py
+docs/source/telegram
+docs/source/api/methods/
+docs/source/api/bound-methods/
+docs/source/api/types/
 
 # PyCharm stuff
 .idea/
