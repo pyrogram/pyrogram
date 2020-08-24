@@ -43,7 +43,7 @@ class InvertFilter(Filter):
         self.base = base
 
     async def __call__(self, client: "pyrogram.Client", update: Update):
-        if inspect.iscoroutinefunction(self.base.__call__):
+        if self.base.iscoroutinefunction:
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
@@ -61,7 +61,7 @@ class AndFilter(Filter):
         self.other = other
 
     async def __call__(self, client: "pyrogram.Client", update: Update):
-        if inspect.iscoroutinefunction(self.base.__call__):
+        if self.base.iscoroutinefunction:
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
@@ -74,7 +74,7 @@ class AndFilter(Filter):
         if not x:
             return False
 
-        if inspect.iscoroutinefunction(self.other.__call__):
+        if self.other.iscoroutinefunction:
             y = await self.other(client, update)
         else:
             y = await client.loop.run_in_executor(
@@ -92,7 +92,7 @@ class OrFilter(Filter):
         self.other = other
 
     async def __call__(self, client: "pyrogram.Client", update: Update):
-        if inspect.iscoroutinefunction(self.base.__call__):
+        if self.base.iscoroutinefunction:
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
@@ -105,7 +105,7 @@ class OrFilter(Filter):
         if x:
             return True
 
-        if inspect.iscoroutinefunction(self.other.__call__):
+        if self.other.iscoroutinefunction:
             y = await self.other(client, update)
         else:
             y = await client.loop.run_in_executor(
@@ -146,7 +146,7 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     return type(
         name or func.__name__ or CUSTOM_FILTER_NAME,
         (Filter,),
-        {"__call__": func, **kwargs}
+        {"__call__": func, "iscoroutinefunction": inspect.iscoroutinefunction(func), **kwargs}
     )()
 
 
