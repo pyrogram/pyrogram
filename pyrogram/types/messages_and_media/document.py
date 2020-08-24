@@ -28,26 +28,21 @@ from ..object import Object
 
 class Document(Object):
     """A generic file (as opposed to photos, voice messages, audio files, ...).
-
     Parameters:
         file_id (``str``):
             Unique file identifier.
-
         file_ref (``str``):
             Up to date file reference.
-
+        access_hash (``int``, *optional*):
+            Check sum, dependant on document ID
         file_name (``str``, *optional*):
             Original filename as defined by sender.
-
         mime_type (``str``, *optional*):
             MIME type of the file as defined by sender.
-
         file_size (``int``, *optional*):
             File size.
-
         date (``int``, *optional*):
             Date the document was sent in Unix time.
-
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Document thumbnails as defined by sender.
     """
@@ -58,6 +53,7 @@ class Document(Object):
         client: "pyrogram.Client" = None,
         file_id: str,
         file_ref: str,
+        access_hash: int = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -68,6 +64,7 @@ class Document(Object):
 
         self.file_id = file_id
         self.file_ref = file_ref
+        self.access_hash = access_hash
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -87,6 +84,7 @@ class Document(Object):
                 )
             ),
             file_ref=encode_file_ref(document.file_reference),
+            access_hash=document.access_hash,
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,
