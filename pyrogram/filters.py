@@ -216,6 +216,17 @@ text = create(text_filter)
 
 # endregion
 
+# region text_entities_filter
+async def text_entities_filter(_, __, m: Message):
+    return bool(m.text and m.entities)
+
+
+texten = create(text_entities_filter)
+"""Filter text messages that contain entities."""
+
+
+#endregion
+
 # region reply_filter
 async def reply_filter(_, __, m: Message):
     return bool(m.reply_to_message)
@@ -245,6 +256,17 @@ async def caption_filter(_, __, m: Message):
 
 caption = create(caption_filter)
 """Filter media messages that contain captions."""
+
+
+# endregion
+
+# region caption_entities_filter
+async def caption_entities_filter(_, __, m: Message):
+    return bool(m.caption and m.caption_entities)
+
+
+captionen = create(caption_entities_filter)
+"""Filter media messages with captions that contain entities."""
 
 
 # endregion
