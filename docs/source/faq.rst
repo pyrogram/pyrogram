@@ -47,8 +47,9 @@ Why Pyrogram?
 - **Easy**: You can install Pyrogram with pip and start building your applications right away.
 - **Elegant**: Low-level details are abstracted and re-presented in a much nicer and easier way.
 - **Fast**: Crypto parts are boosted up by TgCrypto_, a high-performance library written in pure C.
-- **Documented**: Pyrogram API methods, types and public interfaces are well documented.
-- **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
+- **Asynchronous**: Allows both synchronous and asynchronous models to fit all usage needs.
+- **Documented**: API methods, types and public interfaces are all well documented.
+- **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
 - **Updated**, to make use of the latest Telegram API version and features.
 - **Bot API-like**: Similar to the Bot API in its simplicity, but much more powerful and detailed.
 - **Pluggable**: The :doc:`Smart Plugin <topics/smart-plugins>` system allows to write components with minimal
