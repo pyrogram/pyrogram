@@ -342,6 +342,17 @@ sqlite3.OperationalError: unable to open database file
 
 Stackoverflow to the rescue: https://stackoverflow.com/questions/4636970
 
+FileNotFoundError when using PyInstaller
+----------------------------------------
+
+Pyrogram uses two files that are not Python files, which are not included automatically in the PyInstaller bundle:
+
+- ``pyrogram/mime.types``
+- ``pyrogram/storage/schema.sql``
+
+To fix the issue, you have to locate your local Pyrogram installation and pass those files to PyInstaller. More info in
+their docs https://pyinstaller.readthedocs.io/en/stable/spec-files.html#adding-files-to-the-bundle.
+
 My verification code expires immediately!
 -----------------------------------------
 
