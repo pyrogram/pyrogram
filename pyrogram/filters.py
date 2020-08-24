@@ -825,6 +825,8 @@ class user(Filter, set):
     """
 
     def __init__(self, users: int or str or list = None):
+        self.iscoroutinefunction = True
+
         users = [] if users is None else users if isinstance(users, list) else [users]
 
         super().__init__(
@@ -857,6 +859,8 @@ class chat(Filter, set):
     """
 
     def __init__(self, chats: int or str or list = None):
+        self.iscoroutinefunction = True
+
         chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
         super().__init__(
