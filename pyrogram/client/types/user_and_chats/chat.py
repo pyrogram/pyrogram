@@ -852,3 +852,92 @@ class Chat(Object):
             user_ids=user_ids,
             forward_limit=forward_limit
         )
+
+    def enable_notifications(
+        self,
+        show_previews: bool = None,
+        mute_until: int = None,
+        sound: str = None
+    ) -> bool:
+        """Bound method *enable_notifications* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(
+                chat_id=chat_id,
+                silent=False
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.enable_notifications()
+
+        Parameters:
+            show_previews (``bool``, *optional*):
+                If the text of the message shall be displayed in notification.
+
+            mute_until (``int``, *optional*):
+                Unix date until which all notifications shall be switched off.
+                Default to forever.
+
+            sound (``str``, *optional*):
+                Still have to figure out what the hell is this.
+
+        Returns:
+            ``bool``: True on success, False otherwise.
+        """
+
+        return self._client.update_chat_notifications(
+            self.chat.id,
+            show_previews=show_previews or None,
+            silent=False,
+            mute_until=mute_until or None,
+            sound=sound or None
+        )
+    def disable_notifications(
+        self,
+        show_previews: bool = None,
+        mute_until: int = None,
+        sound: str = None
+    ) -> bool:
+        """Bound method *disable_notifications* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(
+                chat_id=chat_id,
+                silent=True
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.disable_notifications()
+
+        Parameters:
+            show_previews (``bool``, *optional*):
+                If the text of the message shall be displayed in notification.
+
+            mute_until (``int``, *optional*):
+                Unix date until which all notifications shall be switched off.
+                Default to forever.
+
+            sound (``str``, *optional*):
+                Still have to figure out what the hell is this.
+
+        Returns:
+            ``bool``: True on success, False otherwise.
+        """
+
+        return self._client.update_chat_notifications(
+            self.chat.id,
+            show_previews=show_previews or None,
+            silent=True,
+            mute_until=mute_until or None,
+            sound=sound or None
+        )
