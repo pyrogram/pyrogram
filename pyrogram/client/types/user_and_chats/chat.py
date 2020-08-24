@@ -897,6 +897,7 @@ class Chat(Object):
             mute_until=mute_until or None,
             sound=sound or None
         )
+
     def disable_notifications(
         self,
         show_previews: bool = None,
