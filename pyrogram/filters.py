@@ -781,8 +781,8 @@ def regex(pattern: Union[str, Pattern], flags: int = 0):
     stored in the ``matches`` field of the update object itself.
 
     Parameters:
-            pattern (``str`` | ``Pattern``):
-                The regex pattern as string or as pre-compiled pattern.
+        pattern (``str`` | ``Pattern``):
+            The regex pattern as string or as pre-compiled pattern.
 
         flags (``int``, *optional*):
             Regex flags.
