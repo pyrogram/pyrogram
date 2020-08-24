@@ -54,7 +54,7 @@ from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
 from .stop_poll import StopPoll
 from .vote_poll import VotePoll
-
+from .update_chat_notifications import UpdateChatNotifications
 
 class Messages(
     DeleteMessages,
@@ -94,6 +94,7 @@ class Messages(
     EditInlineReplyMarkup,
     SendDice,
     SearchMessages,
-    SearchGlobal
+    SearchGlobal,
+    UpdateChatNotifications
 ):
     pass
