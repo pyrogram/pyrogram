@@ -203,7 +203,7 @@ class Dispatcher:
                                 continue
 
                             try:
-                                if asyncio.iscoroutinefunction(handler.callback):
+                                if handler.callback.iscoroutinefunction:
                                     await handler.callback(self.client, *args)
                                 else:
                                     await self.loop.run_in_executor(

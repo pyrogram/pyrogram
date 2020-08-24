@@ -27,11 +27,12 @@ from pyrogram.types import Update
 class Handler:
     def __init__(self, callback: Callable, filters: Filter = None):
         self.callback = callback
+        self.callback.iscoroutinefunction = inspect.iscoroutinefunction(callback)
         self.filters = filters
 
     async def check(self, client: "pyrogram.Client", update: Update):
         if self.filters:
-            if inspect.iscoroutinefunction(self.filters.__call__):
+            if self.filters.iscoroutinefunction:
                 return await self.filters(client, update)
             else:
                 return await client.loop.run_in_executor(
