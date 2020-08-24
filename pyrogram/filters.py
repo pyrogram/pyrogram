@@ -70,6 +70,10 @@ class AndFilter(Filter):
                 client, update
             )
 
+        # short circuit
+        if not x:
+            return False
+
         if inspect.iscoroutinefunction(self.other.__call__):
             y = await self.other(client, update)
         else:
@@ -96,6 +100,10 @@ class OrFilter(Filter):
                 self.base,
                 client, update
             )
+
+        # short circuit
+        if x:
+            return True
 
         if inspect.iscoroutinefunction(self.other.__call__):
             y = await self.other(client, update)
