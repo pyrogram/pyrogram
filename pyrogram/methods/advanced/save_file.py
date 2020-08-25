@@ -18,6 +18,7 @@
 
 import asyncio
 import functools
+import inspect
 import io
 import logging
 import math
@@ -182,7 +183,7 @@ class SaveFile(Scaffold):
                     file_part += 1
 
                     if progress:
-                        if asyncio.iscoroutinefunction(progress):
+                        if inspect.iscoroutinefunction(progress):
                             await progress(min(file_part * part_size, file_size), file_size, *progress_args)
                         else:
                             func = functools.partial(

@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import inspect
 import logging
 from collections import OrderedDict
 
@@ -203,7 +204,7 @@ class Dispatcher:
                                 continue
 
                             try:
-                                if asyncio.iscoroutinefunction(handler.callback):
+                                if inspect.iscoroutinefunction(handler.callback):
                                     await handler.callback(self.client, *args)
                                 else:
                                     await self.loop.run_in_executor(

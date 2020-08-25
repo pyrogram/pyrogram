@@ -18,6 +18,7 @@
 
 import asyncio
 import functools
+import inspect
 import logging
 import os
 import re
@@ -1025,7 +1026,7 @@ class Client(Methods, Scaffold):
                             offset += limit
 
                             if progress:
-                                if asyncio.iscoroutinefunction(progress):
+                                if inspect.iscoroutinefunction(progress):
                                     await progress(
                                         min(offset, file_size) if file_size != 0 else offset,
                                         file_size,
