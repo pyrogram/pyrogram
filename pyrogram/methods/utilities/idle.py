@@ -18,12 +18,11 @@
 
 import asyncio
 import logging
-import signal
+from signal import signal, SIGINT, SIGTERM, SIGABRT
 
 log = logging.getLogger(__name__)
 
-loop = asyncio.get_event_loop()
-event = asyncio.Event()
+is_idling = False
 
 
 async def idle():
@@ -64,15 +63,18 @@ async def idle():
             app2.stop()
             app3.stop()
     """
+    global is_idling
 
-    def handler():
-        log.info("Stop signal received")
-        event.set()
+    def signal_handler(_, __):
+        global is_idling
 
-    asyncio.get_event_loop().add_signal_handler(signal.SIGINT, handler)
+        logging.info("Stop signal received ({}). Exiting...".format(_))
+        is_idling = False
 
-    log.info("Idle started")
-    await event.wait()
+    for s in (SIGINT, SIGTERM, SIGABRT):
+        signal(s, signal_handler)
 
-    log.info("Idle stopped")
-    event.clear()
+    is_idling = True
+
+    while is_idling:
+        await asyncio.sleep(1)
