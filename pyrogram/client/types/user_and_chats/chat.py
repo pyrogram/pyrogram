@@ -856,8 +856,7 @@ class Chat(Object):
     def enable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: int = None,
-        sound: str = None
+        mute_until: int = None
     ) -> bool:
         """Bound method *enable_notifications* of :obj:`Chat`.
 
@@ -883,9 +882,6 @@ class Chat(Object):
                 Unix date until which all notifications shall be switched off.
                 Default to forever.
 
-            sound (``str``, *optional*):
-                Still have to figure out what the hell is this.
-
         Returns:
             ``bool``: True on success, False otherwise.
         """
@@ -894,15 +890,13 @@ class Chat(Object):
             self.chat.id,
             show_previews=show_previews or None,
             silent=False,
-            mute_until=mute_until or None,
-            sound=sound or None
+            mute_until=mute_until or None
         )
 
     def disable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: int = None,
-        sound: str = None
+        mute_until: int = None
     ) -> bool:
         """Bound method *disable_notifications* of :obj:`Chat`.
 
@@ -928,9 +922,6 @@ class Chat(Object):
                 Unix date until which all notifications shall be switched off.
                 Default to forever.
 
-            sound (``str``, *optional*):
-                Still have to figure out what the hell is this.
-
         Returns:
             ``bool``: True on success, False otherwise.
         """
@@ -939,6 +930,5 @@ class Chat(Object):
             self.chat.id,
             show_previews=show_previews or None,
             silent=True,
-            mute_until=mute_until or None,
-            sound=sound or None
+            mute_until=mute_until or None
         )

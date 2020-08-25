@@ -11,8 +11,7 @@ class UpdateChatNotifications(BaseClient):
         chat_id: Union[int, str],
         show_previews: bool = None,
         silent: bool = None,
-        mute_until: int = None,
-        sound: str = None
+        mute_until: int = None
     ) -> bool:
         """Update chat notifications.
 
@@ -29,9 +28,6 @@ class UpdateChatNotifications(BaseClient):
             mute_until (``int``, *optional*):
                 Unix date until which all notifications shall be switched off.
                 Default to forever.
-
-            sound (``str``, *optional*):
-                Still have to figure out what the hell is this.
 
         Returns:
             ``bool``: True on success, False otherwise.
@@ -63,8 +59,7 @@ class UpdateChatNotifications(BaseClient):
                 settings=InputPeerNotifySettings(
                     show_previews=show_previews or None,
                     silent=silent or None,
-                    mute_until=mute_until or None,
-                    sound=sound or None
+                    mute_until=mute_until or None
                 )
             )
         )
