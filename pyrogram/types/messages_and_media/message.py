@@ -257,6 +257,9 @@ class Message(Object, Update):
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
             instructions to remove reply keyboard or to force a reply from the user.
+
+        link (``str``, *property*):
+            Generate a link to this message, only for groups and channels.
     """
 
     # TODO: Add game missing field. Also invoice, successful_payment, connected_website
@@ -672,7 +675,6 @@ class Message(Object, Update):
 
     @property
     def link(self) -> str:
-        """Generate a link to this message, only for groups and channels."""
         if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
             return f"https://t.me/{self.chat.username}/{self.message_id}"
         else:
@@ -868,8 +870,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -1011,8 +1013,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -1355,8 +1357,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -1756,8 +1758,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -1940,8 +1942,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -2179,8 +2181,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -2307,8 +2309,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -2432,8 +2434,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the sent :obj:`~pyrogram.types.Message` is returned.
@@ -3052,8 +3054,8 @@ class Message(Object, Update):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             On success, the absolute path of the downloaded file as string is returned, None otherwise.

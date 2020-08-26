@@ -417,7 +417,6 @@ def pyrogram_api():
 
                     f2.write(title + "\n" + "=" * len(title) + "\n\n")
                     f2.write(".. autoclass:: pyrogram.types.{}()\n".format(type))
-                    f2.write("    :members:\n")
 
         f.write(template.format(**fmt_keys))
 
