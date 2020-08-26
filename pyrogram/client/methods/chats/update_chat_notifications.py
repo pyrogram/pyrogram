@@ -13,7 +13,7 @@ class UpdateChatNotifications(BaseClient):
         silent: bool = None,
         mute_until: int = None
     ) -> bool:
-        """Update chat notifications.
+        """Update the notification settings for the selected chat
 
         Parameters:
             chat_id (``int`` | ``str``):
