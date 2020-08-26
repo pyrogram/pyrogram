@@ -50,6 +50,7 @@ from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .update_chat_notifications import UpdateChatNotifications
 
 
 class Chats(
@@ -86,6 +87,7 @@ class Chats(
     DeleteSupergroup,
     GetNearbyChats,
     SetAdministratorTitle,
-    SetSlowMode
+    SetSlowMode,
+    UpdateChatNotifications
 ):
     pass
