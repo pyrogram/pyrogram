@@ -116,8 +116,8 @@ class SendPhoto(Scaffold):
                 The total size of the file.
 
             *args (``tuple``, *optional*):
-                Extra custom arguments as defined in the *progress_args* parameter.
-                You can either keep *\*args* or add every single extra argument in your function signature.
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
             :obj:`~pyrogram.types.Message` | ``None``: On success, the sent photo message is returned, otherwise, in
