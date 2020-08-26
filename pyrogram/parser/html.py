@@ -155,7 +155,7 @@ class HTML:
 
             if entity_type in ("bold", "italic", "underline", "strike"):
                 start_tag = f"<{entity_type[0]}>"
-                end_tag = "f</{entity_type[0]}>"
+                end_tag = f"</{entity_type[0]}>"
             elif entity_type in ("code", "pre", "blockquote"):
                 start_tag = f"<{entity_type}>"
                 end_tag = f"</{entity_type}>"
