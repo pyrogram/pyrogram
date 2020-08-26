@@ -6,7 +6,7 @@ from pyrogram.api.types import InputNotifyPeer, InputPeerNotifySettings
 
 
 class UpdateChatNotifications(BaseClient):
-    def update_chat_notifications(
+    async def update_chat_notifications(
         self,
         chat_id: Union[int, str],
         show_previews: bool = None,
@@ -51,9 +51,9 @@ class UpdateChatNotifications(BaseClient):
                 app.update_chat_notifications(chat_id, silent=False)
         """
 
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
-        r = self.send(
+        r = await self.send(
             UpdateNotifySettings(
                 peer=InputNotifyPeer(peer=peer),
                 settings=InputPeerNotifySettings(

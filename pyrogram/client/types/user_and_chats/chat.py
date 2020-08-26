@@ -853,7 +853,7 @@ class Chat(Object):
             forward_limit=forward_limit
         )
 
-    def enable_notifications(
+    async def enable_notifications(
         self,
         show_previews: bool = None,
         mute_until: int = None
@@ -886,14 +886,14 @@ class Chat(Object):
             ``bool``: True on success, False otherwise.
         """
 
-        return self._client.update_chat_notifications(
+        return await self._client.update_chat_notifications(
             self.chat.id,
             show_previews=show_previews or None,
             silent=False,
             mute_until=mute_until or None
         )
 
-    def disable_notifications(
+    async def disable_notifications(
         self,
         show_previews: bool = None,
         mute_until: int = None
@@ -926,7 +926,7 @@ class Chat(Object):
             ``bool``: True on success, False otherwise.
         """
 
-        return self._client.update_chat_notifications(
+        return await self._client.update_chat_notifications(
             self.chat.id,
             show_previews=show_previews or None,
             silent=True,
