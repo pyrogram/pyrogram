@@ -80,7 +80,8 @@ async def get_chunk(
                 else None
             ),
             hash=0
-        )
+        ),
+        sleep_threshold=60
     )
 
     return await utils.parse_messages(client, r)

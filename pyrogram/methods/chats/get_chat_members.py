@@ -141,7 +141,8 @@ class GetChatMembers(Scaffold):
                     offset=offset,
                     limit=limit,
                     hash=0
-                )
+                ),
+                sleep_threshold=60
             )
 
             members = r.participants

@@ -66,7 +66,10 @@ class GetDialogs(Scaffold):
         """
 
         if pinned_only:
-            r = await self.send(raw.functions.messages.GetPinnedDialogs(folder_id=0))
+            r = await self.send(
+                raw.functions.messages.GetPinnedDialogs(folder_id=0),
+                sleep_threshold=60
+            )
         else:
             r = await self.send(
                 raw.functions.messages.GetDialogs(
@@ -76,7 +79,8 @@ class GetDialogs(Scaffold):
                     limit=limit,
                     hash=0,
                     exclude_pinned=True
-                )
+                ),
+                sleep_threshold=60
             )
 
         users = {i.id: i for i in r.users}

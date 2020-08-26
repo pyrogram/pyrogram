@@ -111,7 +111,7 @@ class GetMessages(Scaffold):
         else:
             rpc = raw.functions.messages.GetMessages(id=ids)
 
-        r = await self.send(rpc)
+        r = await self.send(rpc, sleep_threshold=-1)
 
         messages = await utils.parse_messages(self, r, replies=replies)
 

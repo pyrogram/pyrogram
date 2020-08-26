@@ -165,7 +165,7 @@ class Client(Methods, Scaffold):
             Set a sleep threshold for flood wait exceptions happening globally in this client instance, below which any
             request that raises a flood wait will be automatically invoked again after sleeping for the required amount
             of time. Flood wait exceptions requiring higher waiting times will be raised.
-            Defaults to 60 (seconds).
+            Defaults to 10 seconds.
 
         hide_password (``bool``, *optional*):
             Pass True to hide the password when typing it during the login.

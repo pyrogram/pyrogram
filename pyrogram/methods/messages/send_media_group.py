@@ -176,7 +176,8 @@ class SendMediaGroup(Scaffold):
                 multi_media=multi_media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id
-            )
+            ),
+            sleep_threshold=60
         )
 
         return await utils.parse_messages(

@@ -18,12 +18,11 @@
 
 import asyncio
 import logging
-import time
+import os
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
-import os
 
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
@@ -32,7 +31,7 @@ from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait
 from pyrogram.raw.all import layer
-from pyrogram.raw.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
+from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ class Session:
     INITIAL_SALT = 0x616e67656c696361
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
-    SLEEP_THRESHOLD = 60
+    SLEEP_THRESHOLD = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
@@ -443,7 +442,7 @@ class Session:
             except FloodWait as e:
                 amount = e.x
 
-                if amount > sleep_threshold:
+                if amount > sleep_threshold > 0:
                     raise
 
                 log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')

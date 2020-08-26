@@ -74,7 +74,8 @@ class SearchGlobal(Scaffold):
                         offset_peer=offset_peer,
                         offset_id=offset_id,
                         limit=limit
-                    )
+                    ),
+                    sleep_threshold=60
                 ),
                 replies=0
             )

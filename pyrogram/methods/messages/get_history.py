@@ -20,7 +20,7 @@ import logging
 from typing import Union, List
 
 from pyrogram import raw
-# from pyrogram import types
+from pyrogram import types
 from pyrogram import utils
 from pyrogram.scaffold import Scaffold
 
@@ -95,7 +95,8 @@ class GetHistory(Scaffold):
                     max_id=0,
                     min_id=0,
                     hash=0
-                )
+                ),
+                sleep_threshold=60
             )
         )
 
