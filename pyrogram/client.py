@@ -166,6 +166,11 @@ class Client(Methods, Scaffold):
             request that raises a flood wait will be automatically invoked again after sleeping for the required amount
             of time. Flood wait exceptions requiring higher waiting times will be raised.
             Defaults to 60 (seconds).
+
+        hide_password (``bool``, *optional*):
+            Pass True to hide the password when typing it during the login.
+            Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
+            terminal environments.
     """
 
     def __init__(
@@ -192,7 +197,8 @@ class Client(Methods, Scaffold):
         parse_mode: str = Scaffold.PARSE_MODES[0],
         no_updates: bool = None,
         takeout: bool = None,
-        sleep_threshold: int = Session.SLEEP_THRESHOLD
+        sleep_threshold: int = Session.SLEEP_THRESHOLD,
+        hide_password: bool = False
     ):
         super().__init__()
 
@@ -220,6 +226,7 @@ class Client(Methods, Scaffold):
         self.no_updates = no_updates
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
+        self.hide_password = hide_password
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
@@ -328,7 +335,7 @@ class Client(Methods, Scaffold):
                     print("Password hint: {}".format(await self.get_password_hint()))
 
                     if not self.password:
-                        self.password = await ainput("Enter password (empty to recover): ", hide=True)
+                        self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
 
                     try:
                         if not self.password:
