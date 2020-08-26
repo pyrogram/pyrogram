@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Union, List, Generator, Optional
+from datetime import datetime, timedelta
 
 import pyrogram
 from pyrogram.api import types
@@ -856,7 +857,7 @@ class Chat(Object):
     async def enable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: int = None
+        mute_until: Union[int, datetime, timedelta] = None
     ) -> bool:
         """Bound method *enable_notifications* of :obj:`Chat`.
 
@@ -896,7 +897,7 @@ class Chat(Object):
     async def disable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: int = None
+        mute_until: Union[int, datetime, timedelta] = None
     ) -> bool:
         """Bound method *disable_notifications* of :obj:`Chat`.
 

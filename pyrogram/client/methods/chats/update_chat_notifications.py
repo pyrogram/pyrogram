@@ -1,4 +1,5 @@
 from typing import Union
+from datetime import datetime, timedelta
 
 from pyrogram.client.ext import BaseClient
 from pyrogram.api.functions.account import UpdateNotifySettings
@@ -11,7 +12,7 @@ class UpdateChatNotifications(BaseClient):
         chat_id: Union[int, str],
         show_previews: bool = None,
         silent: bool = None,
-        mute_until: int = None
+        mute_until: Union[int, datetime, timedelta] = None
     ) -> bool:
         """Update the notification settings for the selected chat
 
@@ -25,8 +26,8 @@ class UpdateChatNotifications(BaseClient):
             silent (``bool``, *optional*):
                 If the chat shall be muted.
 
-            mute_until (``int``, *optional*):
-                Unix date until which all notifications shall be switched off.
+            mute_until (``int`` | ``datetime.datetime`` | ``datetime.timdelta``, *optional*):
+                Unix timestamp, datetime or timedelta object that sets up when notifications shall be switched off.
                 Default to forever.
 
         Returns:
@@ -39,17 +40,24 @@ class UpdateChatNotifications(BaseClient):
                 app.update_chat_notifications(chat_id, silent=True)
 
                 # Mute a chat for 10 minutes
-                import time
+                from datetime import timedelta
 
                 app.update_chat_notifications(
                     chat_id,
                     silent=True
-                    mute_until=time.time() + 600
+                    mute_until=timedelta(minutes=10)
                 )
 
                 # Unmute a chat
                 app.update_chat_notifications(chat_id, silent=False)
         """
+
+        if isinstance(mute_until, datetime):
+            mute_until = mute_until.timestamp()
+
+        if isinstance(mute_until, timedelta):
+            now = datetime.now()
+            mute_until = now.timestamp() + mute_until.total_seconds()
 
         peer = await self.resolve_peer(chat_id)
 
