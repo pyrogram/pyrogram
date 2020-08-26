@@ -109,7 +109,7 @@ class EditInlineMedia(Scaffold):
         unpacked = utils.unpack_inline_message_id(inline_message_id)
         dc_id = unpacked.dc_id
 
-        session = get_session(self, dc_id)
+        session = await get_session(self, dc_id)
 
         return await session.send(
             raw.functions.messages.EditInlineBotMessage(
