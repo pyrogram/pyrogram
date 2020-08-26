@@ -245,9 +245,6 @@ class Message(Object, Update):
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
-        link (``str``):
-            A link to the message, only for groups and channels.
-
         matches (List of regex Matches, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
@@ -675,6 +672,7 @@ class Message(Object, Update):
 
     @property
     def link(self) -> str:
+        """Generate a link to this message, only for groups and channels."""
         if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
             return f"https://t.me/{self.chat.username}/{self.message_id}"
         else:

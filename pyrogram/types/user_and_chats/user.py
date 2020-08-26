@@ -192,6 +192,11 @@ class User(Object, Update):
 
     @property
     def mention(self):
+        """Generate a text mention for this user.
+
+        You can use ``user.mention()`` to mention the user using their first name (styled using html), or
+        ``user.mention("another name")`` for a custom name. To choose a different style
+        ("html" or "md"/"markdown") use ``user.mention(style="md")``."""
         return Link(f"tg://user?id={self.id}", self.first_name, self._client.parse_mode)
 
     @staticmethod
