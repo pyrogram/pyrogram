@@ -70,6 +70,12 @@ class Chat(Object):
             Bio, for private chats and bots or description for groups, supergroups and channels.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
 
+        dc_id (``int``, *optional*):
+            The chat assigned DC (data center). Available only in case the chat has a photo.
+            Note that this information is approximate; it is based on where Telegram stores the current chat photo.
+            It is accurate only in case the owner has set the chat photo, otherwise the dc_id will be the one assigned
+            to the administrator who set the current chat photo.
+
         invite_link (``str``, *optional*):
             Chat invite link, for groups, supergroups and channels.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
@@ -121,6 +127,7 @@ class Chat(Object):
         last_name: str = None,
         photo: "types.ChatPhoto" = None,
         description: str = None,
+        dc_id: int = None,
         invite_link: str = None,
         pinned_message=None,
         sticker_set_name: str = None,
@@ -146,6 +153,7 @@ class Chat(Object):
         self.last_name = last_name
         self.photo = photo
         self.description = description
+        self.dc_id = dc_id
         self.invite_link = invite_link
         self.pinned_message = pinned_message
         self.sticker_set_name = sticker_set_name
@@ -172,6 +180,7 @@ class Chat(Object):
             last_name=user.last_name,
             photo=types.ChatPhoto._parse(client, user.photo, peer_id, user.access_hash),
             restrictions=types.List([types.Restriction._parse(r) for r in user.restriction_reason]) or None,
+            dc_id=getattr(user.photo, "dc_id", None),
             client=client
         )
 
@@ -187,6 +196,7 @@ class Chat(Object):
             photo=types.ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
+            dc_id=getattr(chat.photo, "dc_id", None),
             client=client
         )
 
@@ -208,6 +218,7 @@ class Chat(Object):
             restrictions=types.List([types.Restriction._parse(r) for r in restriction_reason]) or None,
             permissions=types.ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),
+            dc_id=getattr(channel.photo, "dc_id", None),
             client=client
         )
 
