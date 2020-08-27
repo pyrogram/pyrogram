@@ -442,7 +442,7 @@ class Session:
             except FloodWait as e:
                 amount = e.x
 
-                if amount > sleep_threshold > 0:
+                if amount > sleep_threshold >= 0:
                     raise
 
                 log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
