@@ -62,5 +62,6 @@ class EditInlineReplyMarkup(Scaffold):
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
                 reply_markup=reply_markup.write() if reply_markup else None,
-            )
+            ),
+            sleep_threshold=self.sleep_threshold
         )
