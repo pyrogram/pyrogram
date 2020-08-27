@@ -10,7 +10,7 @@ from pyrogram.raw.core import TLObject
 
 
 # noinspection PyRedeclaration
-class {name}(TLObject):  # type: ignore
+class {name}:  # type: ignore
     """{docstring}
     """
 
