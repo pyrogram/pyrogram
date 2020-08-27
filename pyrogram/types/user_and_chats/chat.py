@@ -861,3 +861,84 @@ class Chat(Object):
             user_ids=user_ids,
             forward_limit=forward_limit
         )
+
+    async def enable_notifications(
+        self,
+        show_previews: bool = None,
+        mute_until: Union[int, datetime, timedelta] = None
+    ) -> bool:
+        """Bound method *enable_notifications* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(
+                chat_id=chat_id,
+                silent=False
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.enable_notifications()
+
+        Parameters:
+            show_previews (``bool``, *optional*):
+                If the text of the message shall be displayed in notification.
+
+            mute_until (``int``, *optional*):
+                Unix date until which all notifications shall be switched off.
+                Default to forever.
+
+        Returns:
+            ``bool``: True on success, False otherwise.
+        """
+
+        return await self._client.update_chat_notifications(
+            self.chat.id,
+            show_previews=show_previews or None,
+            silent=False,
+            mute_until=mute_until or None
+        )
+
+
+    async def disable_notifications(
+        self,
+        show_previews: bool = None,
+        mute_until: Union[int, datetime, timedelta] = None
+    ) -> bool:
+        """Bound method *disable_notifications* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(
+                chat_id=chat_id,
+                silent=True
+            )
+
+        Example:
+            .. code-block:: python
+
+                chat.disable_notifications()
+
+        Parameters:
+            show_previews (``bool``, *optional*):
+                If the text of the message shall be displayed in notification.
+
+            mute_until (``int``, *optional*):
+                Unix date until which all notifications shall be switched off.
+                Default to forever.
+
+        Returns:
+            ``bool``: True on success, False otherwise.
+        """
+
+        return await self._client.update_chat_notifications(
+            self.chat.id,
+            show_previews=show_previews or None,
+            silent=True,
+            mute_until=mute_until or None
+        )
