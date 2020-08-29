@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 
 class MsgId:
-    reference_clock = perf_counter()
+    reference_clock = 0
     last_time = 0
     msg_id_offset = 0
     server_time = 0
@@ -40,5 +40,6 @@ class MsgId:
     @classmethod
     def set_server_time(cls, server_time: int):
         if not cls.server_time:
+            cls.reference_clock = perf_counter()
             cls.server_time = server_time
             log.info(f"Time synced: {datetime.utcfromtimestamp(server_time)} UTC")
