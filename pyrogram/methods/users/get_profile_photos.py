@@ -100,7 +100,10 @@ class GetProfilePhotos(Scaffold):
                 else:
                     photos = extra
             else:
-                photos = [current]
+                if current:
+                    photos = [current]
+                else:
+                    photos = []
 
             return types.List(photos[offset:limit])
         else:
