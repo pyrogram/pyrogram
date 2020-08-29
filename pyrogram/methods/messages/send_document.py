@@ -38,6 +38,7 @@ class SendDocument(Scaffold):
         caption: str = "",
         parse_mode: Union[str, None] = object,
         file_name: str = None,
+        force_document: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -88,6 +89,11 @@ class SendDocument(Scaffold):
             file_name (``str``, *optional*):
                 File name of the document sent.
                 Defaults to file's path basename.
+
+            force_document (``bool``, *optional*):
+                Pass True to force sending files as document. Useful for video files that need to be sent as
+                document messages instead of video messages.
+                Defaults to False.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -157,7 +163,7 @@ class SendDocument(Scaffold):
                     media = raw.types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(document) or "application/zip",
                         file=file,
-                        force_file=True,
+                        force_file=force_document or None,
                         thumb=thumb,
                         attributes=[
                             raw.types.DocumentAttributeFilename(file_name=file_name or os.path.basename(document))
