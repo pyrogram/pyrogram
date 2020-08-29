@@ -65,6 +65,14 @@ class GetProfilePhotos(Scaffold):
         peer_id = await self.resolve_peer(chat_id)
 
         if isinstance(peer_id, raw.types.InputPeerChannel):
+            r = await self.send(
+                raw.functions.channels.GetFullChannel(
+                    channel=peer_id
+                )
+            )
+
+            current = types.Photo._parse(self, r.full_chat.chat_photo) or []
+
             r = await utils.parse_messages(
                 self,
                 await self.send(
@@ -75,7 +83,7 @@ class GetProfilePhotos(Scaffold):
                         min_date=0,
                         max_date=0,
                         offset_id=0,
-                        add_offset=offset,
+                        add_offset=0,
                         limit=limit,
                         max_id=0,
                         min_id=0,
@@ -84,7 +92,17 @@ class GetProfilePhotos(Scaffold):
                 )
             )
 
-            return types.List([message.new_chat_photo for message in r][:limit])
+            extra = [message.new_chat_photo for message in r]
+
+            if extra:
+                if current:
+                    photos = ([current] + extra) if current.file_id != extra[0].file_id else extra
+                else:
+                    photos = extra
+            else:
+                photos = [current]
+
+            return types.List(photos[offset:limit])
         else:
             r = await self.send(
                 raw.functions.photos.GetUserPhotos(
