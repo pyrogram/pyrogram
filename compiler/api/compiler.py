@@ -336,7 +336,8 @@ def start(format: bool = False):
                     docstring=docstring,
                     name=type,
                     qualname=qualtype,
-                    types=", ".join([f"raw.types.{c}" for c in constructors])
+                    types=", ".join([f"raw.types.{c}" for c in constructors]),
+                    doc_name=snake(type).replace("_", "-")
                 )
             )
 
