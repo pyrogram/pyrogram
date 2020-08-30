@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from functools import partial
 from typing import List, Match, Union, BinaryIO
 
@@ -27,6 +28,8 @@ from pyrogram.errors import MessageIdsEmpty
 from pyrogram.parser import utils as parser_utils, Parser
 from ..object import Object
 from ..update import Update
+
+log = logging.getLogger(__name__)
 
 
 class Str(str):
@@ -2706,12 +2709,12 @@ class Message(Object, Update):
         """
         if as_copy:
             if self.service:
-                raise ValueError("Unable to copy service messages")
-
-            if self.game and not await self._client.storage.is_bot():
-                raise ValueError("Users cannot send messages with Game media type")
-
-            if self.text:
+                log.warning(f"Service messages cannot be copied. "
+                            f"chat_id: {self.chat.id}, message_id: {self.message_id}")
+            elif self.game and not await self._client.storage.is_bot():
+                log.warning(f"Users cannot send messages with Game media type. "
+                            f"chat_id: {self.chat.id}, message_id: {self.message_id}")
+            elif self.text:
                 return await self._client.send_message(
                     chat_id,
                     text=self.text.html,
