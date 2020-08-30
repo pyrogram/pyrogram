@@ -930,7 +930,8 @@ class Client(Methods, Scaffold):
                     location=location,
                     offset=offset,
                     limit=limit
-                )
+                ),
+                sleep_threshold=30
             )
 
             if isinstance(r, raw.types.upload.File):
@@ -961,7 +962,8 @@ class Client(Methods, Scaffold):
                                 location=location,
                                 offset=offset,
                                 limit=limit
-                            )
+                            ),
+                            sleep_threshold=30
                         )
 
             elif isinstance(r, raw.types.upload.FileCdnRedirect):
