@@ -53,7 +53,7 @@ class TLObject:
         return dumps(self, indent=4, default=TLObject.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
-        return "pyrogram.api.{}({})".format(
+        return "pyrogram.raw.{}({})".format(
             self.QUALNAME,
             ", ".join(
                 f"{attr}={repr(getattr(self, attr))}"
