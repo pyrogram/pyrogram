@@ -2687,9 +2687,9 @@ class Message(Object, Update):
         """
         if as_copy:
             if self.service:
-                log.warning("Unable to copy service messages, message_id: {} from chat.id: {}".format(self.message_id, self.chat.id))
+                log.warning(f"Service messages cannot be copied. chat_id: {self.chat.id}, message_id: {self.message_id}")
             elif self.game and not self._client.is_bot:
-                log.warning("Users cannot send messages with Game media type, message_id: {} from chat.id: {}".format(self.message_id, self.chat.id))
+                log.warning(f"Users cannot send messages with Game media type. chat_id: {self.chat.id}, message_id: {self.message_id}")
             elif self.text:
                 return self._client.send_message(
                     chat_id,
