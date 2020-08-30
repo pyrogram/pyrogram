@@ -865,7 +865,7 @@ class Chat(Object):
     async def enable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: Union[int, datetime, timedelta] = None
+        mute_until: int = None
     ) -> bool:
         """Bound method *enable_notifications* of :obj:`~pyrogram.types.Chat`.
 
@@ -888,7 +888,7 @@ class Chat(Object):
                 If the text of the message shall be displayed in notification.
 
             mute_until (``int``, *optional*):
-                Unix date until which all notifications shall be switched off.
+                When notifications shall be switched off. Unix time.
                 Default to forever.
 
         Returns:
@@ -906,7 +906,7 @@ class Chat(Object):
     async def disable_notifications(
         self,
         show_previews: bool = None,
-        mute_until: Union[int, datetime, timedelta] = None
+        mute_until: int = None
     ) -> bool:
         """Bound method *disable_notifications* of :obj:`~pyrogram.types.Chat`.
 
@@ -929,7 +929,7 @@ class Chat(Object):
                 If the text of the message shall be displayed in notification.
 
             mute_until (``int``, *optional*):
-                Unix date until which all notifications shall be switched off.
+                When notifications shall be switched off. Unix time.
                 Default to forever.
 
         Returns:
