@@ -33,6 +33,11 @@ class ContinuePropagation(StopAsyncIteration):
     pass
 
 
+import asyncio
+
 from . import raw, types, filters, handlers, emoji
 from .client import Client
 from .sync import idle
+
+# Save the main thread loop for future references
+main_event_loop = asyncio.get_event_loop()
