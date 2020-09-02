@@ -28,7 +28,7 @@ from pyrogram.methods.utilities import idle as idle_module
 
 def async_to_sync(obj, name):
     function = getattr(obj, name)
-    loop = asyncio.get_event_loop()
+    main_loop = asyncio.get_event_loop()
 
     async def consume_generator(coroutine):
         return [i async for i in coroutine]
@@ -36,6 +36,11 @@ def async_to_sync(obj, name):
     @functools.wraps(function)
     def async_to_sync_wrap(*args, **kwargs):
         coroutine = function(*args, **kwargs)
+
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = main_loop
 
         if loop.is_running():
             if threading.current_thread() is threading.main_thread():
