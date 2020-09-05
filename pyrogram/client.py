@@ -949,13 +949,19 @@ class Client(Methods, Scaffold):
                         offset += limit
 
                         if progress:
-                            await progress(
+                            func = functools.partial(
+                                progress,
                                 min(offset, file_size)
                                 if file_size != 0
                                 else offset,
                                 file_size,
                                 *progress_args
                             )
+
+                            if inspect.iscoroutinefunction(progress):
+                                await func()
+                            else:
+                                await self.loop.run_in_executor(self.executor, func)
 
                         r = await session.send(
                             raw.functions.upload.GetFile(
@@ -1035,20 +1041,16 @@ class Client(Methods, Scaffold):
                             offset += limit
 
                             if progress:
-                                if inspect.iscoroutinefunction(progress):
-                                    await progress(
-                                        min(offset, file_size) if file_size != 0 else offset,
-                                        file_size,
-                                        *progress_args
-                                    )
-                                else:
-                                    func = functools.partial(
-                                        progress,
-                                        min(offset, file_size) if file_size != 0 else offset,
-                                        file_size,
-                                        *progress_args
-                                    )
+                                func = functools.partial(
+                                    progress,
+                                    min(offset, file_size) if file_size != 0 else offset,
+                                    file_size,
+                                    *progress_args
+                                )
 
+                                if inspect.iscoroutinefunction(progress):
+                                    await func()
+                                else:
                                     await self.loop.run_in_executor(self.executor, func)
 
                             if len(chunk) < limit:
