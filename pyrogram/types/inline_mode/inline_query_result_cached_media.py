@@ -25,9 +25,9 @@ from pyrogram.parser import Parser
 from .inline_query_result import InlineQueryResult
 
 
-class InlineQueryResultCachedMedia(InlineQueryResult):
+class InlineQueryResultCachedDocument(InlineQueryResult):
     
-    # TODO: Need to add documentation
+    # TODO: Need to add documentation (supports all cached media except photo)
     
     def __init__(
         self,
