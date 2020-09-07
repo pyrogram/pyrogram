@@ -19,28 +19,54 @@
 from typing import Union
 
 from pyrogram import raw
+from pyrogram import utils
 from pyrogram import types
 from pyrogram.parser import Parser
 from .inline_query_result import InlineQueryResult
 
 
-class InlineQueryResultDocument():
+class InlineQueryResultDocument(InlineQueryResult):
+    
+    # TODO: Need to add documentation
+    
+    def __init__(
+        self,
+        title: str,
+        file_id: str,
+        file_ref: str = None,
+        id: str = None,
+        description: str = None,
+        caption: str = "",
+        parse_mode: Union[str, None] = object,
+        reply_markup: "types.InlineKeyboardMarkup" = None,
+        input_message_content: "types.InputMessageContent" = None
+    ):
+        super().__init__("file", id, input_message_content, reply_markup)
 
-    def __init__(self, file):
-        self.raw = raw.types.InputBotInlineResultDocument(
-            id=file.file_id,
-            type='file',
-            title=file.file_name,
-            description='test',
-            document=file.file_id,
+        self.file_id = file_id
+        self.file_ref = file_ref
+        self.title = title
+        self.description = description
+        self.caption = caption
+        self.parse_mode = parse_mode
+        self.reply_markup = reply_markup
+        self.input_message_content = input_message_content
+
+    async def write(self):
+        document = utils.get_input_file_from_file_id(self.file_id, self.file_ref)
+        
+        return raw.types.InputBotInlineResultDocument(
+            id=self.id,
+            type=self.type,
+            title=self.title,
+            description=self.description,
+            document=document,
             send_message=(
-                raw.types.InputBotInlineMessageMediaAuto(
-                    message='',
-                    entities=None,
-                    reply_markup=None
+                await self.input_message_content.write(self.reply_markup)
+                if self.input_message_content
+                else raw.types.InputBotInlineMessageMediaAuto(
+                    reply_markup=self.reply_markup.write() if self.reply_markup else None,
+                    **await(Parser(None)).parse(self.caption, self.parse_mode)
                 )
             )
         )
-        
-    async def write(self):
-        return self.raw

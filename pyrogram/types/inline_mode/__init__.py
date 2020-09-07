@@ -25,5 +25,5 @@ from .inline_query_result_photo import InlineQueryResultPhoto
 
 __all__ = [
     "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle", "InlineQueryResultPhoto",
-    "InlineQueryResultAnimation", "ChosenInlineResult"
+    "InlineQueryResultAnimation", "InlineQueryResultDocument", "ChosenInlineResult",
 ]
