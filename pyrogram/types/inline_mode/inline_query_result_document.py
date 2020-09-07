@@ -25,7 +25,7 @@ from pyrogram.parser import Parser
 from .inline_query_result import InlineQueryResult
 
 
-class InlineQueryResultDocument(InlineQueryResult):
+class InlineQueryResultCachedMedia(InlineQueryResult):
     
     # TODO: Need to add documentation
     
