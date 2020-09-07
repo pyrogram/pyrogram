@@ -23,6 +23,7 @@ import re
 import sys
 from pathlib import Path
 
+import pyrogram
 from pyrogram import __version__
 from pyrogram.parser import Parser
 from pyrogram.session.internals import MsgId
@@ -73,6 +74,13 @@ class Scaffold:
             mime_types_to_extensions[mime_type] = " ".join(extensions)
 
     def __init__(self):
+        try:
+            asyncio.get_event_loop()
+        except RuntimeError:
+            # This happens when creating Client instances inside different threads that don't have an event loop.
+            # Set the main event loop in this thread.
+            asyncio.set_event_loop(pyrogram.main_event_loop)
+
         self.session_name = None
         self.api_id = None
         self.api_hash = None

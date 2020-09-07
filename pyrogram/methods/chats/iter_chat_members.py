@@ -43,7 +43,7 @@ class IterChatMembers(Scaffold):
         chat_id: Union[int, str],
         limit: int = 0,
         query: str = "",
-        filter: str = Filters.ALL
+        filter: str = Filters.RECENT
     ) -> Optional[AsyncGenerator["types.ChatMember", None]]:
         """Iterate through the members of a chat sequentially.
 
@@ -72,7 +72,7 @@ class IterChatMembers(Scaffold):
                 *"bots"* - bots only,
                 *"recent"* - recent members only,
                 *"administrators"* - chat administrators only.
-                Defaults to *"all"*.
+                Defaults to *"recent"*.
 
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatMember` objects.

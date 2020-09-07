@@ -53,6 +53,13 @@ Contents are organized into sections composed of self-contained topics which can
 following them in order using the :guilabel:`Next` button at the end of each page. Here below you can, instead, find a
 list of the most relevant pages for a quick access.
 
+.. admonition :: Cloud Credits
+    :class: attention
+
+    If you need a cloud server to host your applications, we recommend using **Hetzner Cloud**. Sign up with
+    `this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram as
+    well.
+
 First Steps
 ^^^^^^^^^^^
 

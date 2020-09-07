@@ -74,7 +74,12 @@ class Send(Scaffold):
         if self.takeout_id:
             data = raw.functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
 
-        r = await self.session.send(data, retries, timeout, sleep_threshold or self.sleep_threshold)
+        r = await self.session.send(
+            data, retries, timeout,
+            (sleep_threshold
+             if sleep_threshold is not None
+             else self.sleep_threshold)
+        )
 
         await self.fetch_peers(getattr(r, "users", []))
         await self.fetch_peers(getattr(r, "chats", []))

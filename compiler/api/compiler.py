@@ -336,7 +336,8 @@ def start(format: bool = False):
                     docstring=docstring,
                     name=type,
                     qualname=qualtype,
-                    types=", ".join([f"raw.types.{c}" for c in constructors])
+                    types=", ".join([f"raw.types.{c}" for c in constructors]),
+                    doc_name=snake(type).replace("_", "-")
                 )
             )
 
@@ -488,7 +489,7 @@ def start(format: bool = False):
             docstring=docstring,
             slots=slots,
             id=c.id,
-            qualname=f"pyrogram.raw.{c.section}.{c.qualname}",
+            qualname=f"{c.section}.{c.qualname}",
             arguments=arguments,
             fields=fields,
             read_types=read_types,

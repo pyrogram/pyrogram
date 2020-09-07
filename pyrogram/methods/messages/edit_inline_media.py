@@ -117,5 +117,6 @@ class EditInlineMedia(Scaffold):
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
                 **await self.parser.parse(caption, parse_mode)
-            )
+            ),
+            sleep_threshold=self.sleep_threshold
         )

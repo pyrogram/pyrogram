@@ -42,7 +42,7 @@ class GetChatMembers(Scaffold):
         offset: int = 0,
         limit: int = 200,
         query: str = "",
-        filter: str = Filters.ALL
+        filter: str = Filters.RECENT
     ) -> List["types.ChatMember"]:
         """Get a chunk of the members list of a chat.
 
@@ -78,7 +78,7 @@ class GetChatMembers(Scaffold):
                 *"recent"* - recent members only,
                 *"administrators"* - chat administrators only.
                 Only applicable to supergroups and channels.
-                Defaults to *"all"*.
+                Defaults to *"recent"*.
 
         .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
             on channels.
