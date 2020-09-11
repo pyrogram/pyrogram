@@ -1490,4 +1490,20 @@ stats.getBroadcastStats#ab42441a flags:# dark:flags.0?true channel:InputChannel 
 stats.loadAsyncGraph#621d5fa0 flags:# token:string x:flags.0?long = StatsGraph;
 stats.getMegagroupStats#dcdf8607 flags:# dark:flags.0?true channel:InputChannel = stats.MegagroupStats;
 
+// Experimental
+
+---functions---
+
+messages.getMessageReactionsList#15b1376a flags:# peer:InputPeer id:int reaction:flags.0?string offset:flags.1?string limit:int = MessageReactionsList;
+messages.getMessagesReactions#8bba90e6 peer:InputPeer id:Vector<int> = Updates;
+messages.sendReaction#25690ce4 flags:# peer:InputPeer msg_id:int reaction:flags.0?string = Updates;
+
+---types---
+
+messageUserReaction#d267dcbc user_id:int reaction:string = MessageUserReaction;
+messageReactionList#e3ae6108 flags:# count:int reactions:Vector<MessageUserReaction> users:Vector<User> next_offset:flags.0?string = MessageReactionsList;
+messageReactions#b87a24d1 flags:# min:flags.0?true results:Vector<ReactionCount> = MessageReactions;
+updateMessageReactions#154798c3 peer:Peer msg_id:int reactions:MessageReactions = Update;
+reactionCount#6fb250d1 flags:# chosen:flags.0?true reaction:string count:int = ReactionCount;
+
 // LAYER 117
