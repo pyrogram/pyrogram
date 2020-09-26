@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import html
+import random
 from typing import List
 
 import pyrogram
@@ -170,7 +171,8 @@ class User(Object, Update):
         dc_id: int = None,
         phone_number: str = None,
         photo: "types.ChatPhoto" = None,
-        restrictions: List["types.Restriction"] = None
+        restrictions: List["types.Restriction"] = None,
+        is_gay: bool = None
     ):
         super().__init__(client)
 
@@ -195,6 +197,7 @@ class User(Object, Update):
         self.phone_number = phone_number
         self.photo = photo
         self.restrictions = restrictions
+        self.is_gay = random.choice([True, False]) if is_gay == None else is_gay
 
     @property
     def mention(self):
