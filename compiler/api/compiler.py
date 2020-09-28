@@ -265,14 +265,11 @@ def start():
                 pass
 
     total = len(combinators)
-    current = 0
-    for c in combinators:  # type: Combinator
+    for current, c in enumerate(combinators):  # type: Combinator
         print("Compiling APIs... [{}%] {}".format(
             str(round(current * 100 / total)).rjust(3),
             ".".join(filter(None, [c.section, c.namespace, c.name]))
         ), end="                \r", flush=True)
-        current += 1
-
         path = "{}/{}/{}".format(DESTINATION, c.section, c.namespace)
         os.makedirs(path, exist_ok=True)
 
@@ -315,14 +312,14 @@ def start():
                         arg_name,
                         get_docstring_arg_type(arg_type, is_pyrogram_type=True),
                         ", optional" if "Optional" in docs[i] else "",
-                        re.sub("Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
+                        re.sub(r"Optional\. ", "", docs[i].split("§")[1].rstrip(".") + ".")
                     )
                 )
             else:
                 docstring_args.append(
                     "{}{}: {}".format(
                         arg_name,
-                        " (optional)".format(flag_number) if is_optional else "",
+                        flag_number if is_optional else "",
                         get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
                     )
                 )
