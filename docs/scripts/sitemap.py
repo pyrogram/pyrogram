@@ -53,11 +53,7 @@ with open("sitemap.xml", "w") as f:
 
             path = path.split("/")[1:]
 
-            if path[0].endswith(".rst"):
-                folder = "."
-            else:
-                folder = path[0]
-
+            folder = "." if path[0].endswith(".rst") else path[0]
             path = "{}{}".format(canonical, "/".join(path))[:-len(".rst")]
 
             if path.endswith("index"):
