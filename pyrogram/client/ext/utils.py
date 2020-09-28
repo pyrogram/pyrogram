@@ -114,14 +114,16 @@ def get_input_media_from_file_id(
     else:
         media_type = decoded[0]
 
-        if expected_media_type is not None:
-            if media_type != expected_media_type:
-                media_type_str = BaseClient.MEDIA_TYPE_ID.get(media_type, None)
-                expected_media_type_str = BaseClient.MEDIA_TYPE_ID.get(expected_media_type, None)
+        if (
+            expected_media_type is not None
+            and media_type != expected_media_type
+        ):
+            media_type_str = BaseClient.MEDIA_TYPE_ID.get(media_type, None)
+            expected_media_type_str = BaseClient.MEDIA_TYPE_ID.get(expected_media_type, None)
 
-                raise ValueError(
-                    'Expected: "{}", got "{}" file_id instead'.format(expected_media_type_str, media_type_str)
-                )
+            raise ValueError(
+                'Expected: "{}", got "{}" file_id instead'.format(expected_media_type_str, media_type_str)
+            )
 
         if media_type in (0, 1, 14):
             raise ValueError("This file_id can only be used for download: {}".format(file_id_str))
@@ -190,11 +192,7 @@ def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
     messages = update.messages
     channel_id = getattr(update, "channel_id", None)
 
-    parsed_messages = []
-
-    for message in messages:
-        parsed_messages.append(
-            pyrogram.Message(
+    parsed_messages = [pyrogram.Message(
                 message_id=message,
                 chat=pyrogram.Chat(
                     id=get_channel_id(channel_id),
@@ -202,8 +200,7 @@ def parse_deleted_messages(client, update) -> List["pyrogram.Message"]:
                     client=client
                 ) if channel_id is not None else None,
                 client=client
-            )
-        )
+            ) for message in messages]
 
     return pyrogram.List(parsed_messages)
 

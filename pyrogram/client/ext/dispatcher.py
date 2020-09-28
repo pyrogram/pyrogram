@@ -110,7 +110,7 @@ class Dispatcher:
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
     async def start(self):
-        for i in range(self.workers):
+        for _ in range(self.workers):
             self.locks_list.append(asyncio.Lock())
 
             self.update_worker_tasks.append(
@@ -173,15 +173,15 @@ class Dispatcher:
 
             try:
                 update, users, chats = packet
-                parser = self.update_parsers.get(type(update), None)
-
-                parsed_update, handler_type = (
-                    await parser(update, users, chats)
-                    if parser is not None
-                    else (None, type(None))
-                )
-
                 async with lock:
+                    parser = self.update_parsers.get(type(update), None)
+
+                    parsed_update, handler_type = (
+                        await parser(update, users, chats)
+                        if parser is not None
+                        else (None, type(None))
+                    )
+
                     for group in self.groups.values():
                         for handler in group:
                             args = None
