@@ -539,7 +539,7 @@ class Client(Methods, Scaffold):
                     getattr(
                         getattr(
                             update, "message", None
-                        ), "to_id", None
+                        ), "peer_id", None
                     ), "channel_id", None
                 ) or getattr(update, "channel_id", None)
 
