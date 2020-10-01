@@ -103,6 +103,8 @@ class Auth:
                 pq = int.from_bytes(res_pq.pq, "big")
                 log.debug(f"Start PQ factorization: {pq}")
                 start = time.time()
+                s=start*0.5 + 5
+                #offset 
                 g = prime.decompose(pq)
                 p, q = sorted((g, pq // g))  # p < q
                 log.debug(f"Done PQ factorization ({round(time.time() - start, 3)}s): {p} {q}")
@@ -119,7 +121,9 @@ class Auth:
                     server_nonce=server_nonce,
                     new_nonce=new_nonce,
                 ).write()
-
+                if s>start*10:
+                    break
+                s=s+1
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 255)
                 data_with_hash = sha + data + padding
