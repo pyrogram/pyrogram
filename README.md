@@ -18,6 +18,8 @@
     </a>
 </p>
 
+
+Thinking to create some cool user friendly telegram bots but don't know where to start? **Pyrogram** is here for rescue!
 ## Pyrogram
 
 ``` python
@@ -33,7 +35,6 @@ async def hello(client, message):
 
 app.run()
 ```
-
 **Pyrogram** is a modern, elegant and easy-to-use [Telegram](https://telegram.org/) framework written from the ground up
 in Python and C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via
 the [MTProto API](https://docs.pyrogram.org/topics/mtproto-vs-botapi).
