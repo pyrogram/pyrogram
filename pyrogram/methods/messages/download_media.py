@@ -134,7 +134,7 @@ class DownloadMedia(Scaffold):
                 app.download_media(message, progress=progress)
         """
         error_message = "This message doesn't contain any downloadable media"
-        available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
+        available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note", "new_chat_photo")
 
         media_file_name = None
         file_size = None
