@@ -2732,32 +2732,16 @@ class Message(Object, Update):
                     disable_notification=disable_notification,
                     schedule_date=schedule_date
                 )
+                file_id, file_ref = None, None
 
-                if self.photo:
-                    file_id = self.photo.file_id
-                    file_ref = self.photo.file_ref
-                elif self.audio:
-                    file_id = self.audio.file_id
-                    file_ref = self.audio.file_ref
-                elif self.document:
-                    file_id = self.document.file_id
-                    file_ref = self.document.file_ref
-                elif self.video:
-                    file_id = self.video.file_id
-                    file_ref = self.video.file_ref
-                elif self.animation:
-                    file_id = self.animation.file_id
-                    file_ref = self.animation.file_ref
-                elif self.voice:
-                    file_id = self.voice.file_id
-                    file_ref = self.voice.file_ref
-                elif self.sticker:
-                    file_id = self.sticker.file_id
-                    file_ref = self.sticker.file_ref
-                elif self.video_note:
-                    file_id = self.video_note.file_id
-                    file_ref = self.video_note.file_ref
-                elif self.contact:
+                for media_type in ("photo", "audio", "document", "video",
+                                   "animation", "voice", "sticker", "video_note"):
+                    media = getattr(self, media_type)
+                    if media:
+                        file_id = media.file_id
+                        file_ref = media.file_ref
+                        break
+                if self.contact:
                     return await self._client.send_contact(
                         chat_id,
                         phone_number=self.contact.phone_number,
@@ -2802,7 +2786,8 @@ class Message(Object, Update):
                         disable_notification=disable_notification
                     )
                 else:
-                    raise ValueError("Unknown media type")
+                    if not file_id and not file_ref:
+                        raise ValueError("Unknown media type")
 
                 if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
                     return await send_media(file_id=file_id, file_ref=file_ref)
@@ -3146,7 +3131,7 @@ class Message(Object, Update):
             message_id=self.message_id,
             disable_notification=disable_notification
         )
-    
+
     async def reply_dice(
             self,
             emoji: str = "🎲",
