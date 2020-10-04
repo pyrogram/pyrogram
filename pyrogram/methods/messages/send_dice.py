@@ -47,8 +47,9 @@ class SendDice(Scaffold):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             emoji (``str``, *optional*):
-                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯", "🏀" or "⚽️".
-                Defaults to "🎲".
+                Emoji on which the dice throw animation is based.
+                Currently, must be one of :obj:`~pyrogram.emoji.SOCCER_BALL`,  :obj:`~pyrogram.emoji.BASKETBALL`, :obj:`~pyrogram.emoji.DIRECT_HIT` or :obj:`~pyrogram.emoji.GAME_DIE`.
+                Defaults to :obj:`~pyrogram.emoji.GAME_DIE`.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -74,10 +75,10 @@ class SendDice(Scaffold):
                 app.send_dice("pyrogramlounge")
 
                 # Send a dart
-                app.send_dice("pyrogramlounge", "🎯")
+                app.send_dice("pyrogramlounge", pyrogram.emoji.DIRECT_HIT)
 
                 # Send a basketball
-                app.send_dice("pyrogramlounge", "🏀")
+                app.send_dice("pyrogramlounge", pyrogram.emoji.BASKETBALL)
         """
 
         r = await self.send(
