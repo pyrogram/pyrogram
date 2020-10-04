@@ -3146,3 +3146,65 @@ class Message(Object, Update):
             message_id=self.message_id,
             disable_notification=disable_notification
         )
+    
+    async def reply_dice(
+            self,
+            emoji: str = "🎲",
+            disable_notification: bool = None,
+            reply_to_message_id: int = None,
+            schedule_date: int = None,
+            reply_markup: Union[
+                "types.InlineKeyboardMarkup",
+                "types.ReplyKeyboardMarkup",
+                "types.ReplyKeyboardRemove",
+                "types.ForceReply"
+            ] = None
+            ) -> Union["types.Message", None]:
+        """Bound method *reply_dice* of :obj:`Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_dice(
+                chat_id=message.chat.id,
+                emoji=pyrogram.emoji.BASKETBALL,
+                reply_to_message_id=message.message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.reply_dice(pyrogram.emoji.BASKETBALL)
+
+
+        Parameters:
+            emoji (``str``, *optional*):
+                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯", "🏀" or "⚽️".
+                Defaults to "🎲".
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
+
+            reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+        Returns:
+            On success, the sent dice message is returned.
+        """
+        return await self._client.send_dice(
+            chat_id=self.chat.id,
+            emoji=emoji,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
+            reply_markup=reply_markup
+        )
