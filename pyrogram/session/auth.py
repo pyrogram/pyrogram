@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 import time
 from hashlib import sha1
@@ -23,10 +24,10 @@ from io import BytesIO
 from os import urandom
 
 import pyrogram
-from pyrogram.api import functions, types
-from pyrogram.api.core import TLObject, Long, Int
+from pyrogram import raw
 from pyrogram.connection import Connection
-from pyrogram.crypto import AES, RSA, Prime
+from pyrogram.crypto import aes, rsa, prime
+from pyrogram.raw.core import TLObject, Long, Int
 from .internals import MsgId
 
 log = logging.getLogger(__name__)
@@ -35,9 +36,9 @@ log = logging.getLogger(__name__)
 class Auth:
     MAX_RETRIES = 5
 
-    def __init__(self, client: "pyrogram.Client", dc_id: int):
+    def __init__(self, client: "pyrogram.Client", dc_id: int, test_mode: bool):
         self.dc_id = dc_id
-        self.test_mode = client.storage.test_mode()
+        self.test_mode = test_mode
         self.ipv6 = client.ipv6
         self.proxy = client.proxy
 
@@ -57,14 +58,14 @@ class Auth:
         b.seek(20)  # Skip auth_key_id (8), message_id (8) and message_length (4)
         return TLObject.read(b)
 
-    def send(self, data: TLObject):
+    async def send(self, data: TLObject):
         data = self.pack(data)
-        self.connection.send(data)
-        response = BytesIO(self.connection.recv())
+        await self.connection.send(data)
+        response = BytesIO(await self.connection.recv())
 
         return self.unpack(response)
 
-    def create(self):
+    async def create(self):
         """
         https://core.telegram.org/mtproto/auth_key
         https://core.telegram.org/mtproto/samples-auth_key
@@ -77,40 +78,40 @@ class Auth:
             self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
-                log.info("Start creating a new auth key on DC{}".format(self.dc_id))
+                log.info(f"Start creating a new auth key on DC{self.dc_id}")
 
-                self.connection.connect()
+                await self.connection.connect()
 
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
-                log.debug("Send req_pq: {}".format(nonce))
-                res_pq = self.send(functions.ReqPqMulti(nonce=nonce))
-                log.debug("Got ResPq: {}".format(res_pq.server_nonce))
-                log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
+                log.debug(f"Send req_pq: {nonce}")
+                res_pq = await self.send(raw.functions.ReqPqMulti(nonce=nonce))
+                log.debug(f"Got ResPq: {res_pq.server_nonce}")
+                log.debug(f"Server public key fingerprints: {res_pq.server_public_key_fingerprints}")
 
                 for i in res_pq.server_public_key_fingerprints:
-                    if i in RSA.server_public_keys:
-                        log.debug("Using fingerprint: {}".format(i))
+                    if i in rsa.server_public_keys:
+                        log.debug(f"Using fingerprint: {i}")
                         public_key_fingerprint = i
                         break
                     else:
-                        log.debug("Fingerprint unknown: {}".format(i))
+                        log.debug(f"Fingerprint unknown: {i}")
                 else:
                     raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
-                log.debug("Start PQ factorization: {}".format(pq))
+                log.debug(f"Start PQ factorization: {pq}")
                 start = time.time()
-                g = Prime.decompose(pq)
+                g = prime.decompose(pq)
                 p, q = sorted((g, pq // g))  # p < q
-                log.debug("Done PQ factorization ({}s): {} {}".format(round(time.time() - start, 3), p, q))
+                log.debug(f"Done PQ factorization ({round(time.time() - start, 3)}s): {p} {q}")
 
                 # Step 4
                 server_nonce = res_pq.server_nonce
                 new_nonce = int.from_bytes(urandom(32), "little", signed=True)
 
-                data = types.PQInnerData(
+                data = raw.types.PQInnerData(
                     pq=res_pq.pq,
                     p=p.to_bytes(4, "big"),
                     q=q.to_bytes(4, "big"),
@@ -122,14 +123,14 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 255)
                 data_with_hash = sha + data + padding
-                encrypted_data = RSA.encrypt(data_with_hash, public_key_fingerprint)
+                encrypted_data = rsa.encrypt(data_with_hash, public_key_fingerprint)
 
                 log.debug("Done encrypt data with RSA")
 
                 # Step 5. TODO: Handle "server_DH_params_fail". Code assumes response is ok
                 log.debug("Send req_DH_params")
-                server_dh_params = self.send(
-                    functions.ReqDHParams(
+                server_dh_params = await self.send(
+                    raw.functions.ReqDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,
                         p=p.to_bytes(4, "big"),
@@ -156,7 +157,7 @@ class Auth:
 
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
 
-                answer_with_hash = AES.ige256_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
+                answer_with_hash = aes.ige256_decrypt(encrypted_answer, tmp_aes_key, tmp_aes_iv)
                 answer = answer_with_hash[20:]
 
                 server_dh_inner_data = TLObject.read(BytesIO(answer))
@@ -166,7 +167,7 @@ class Auth:
                 dh_prime = int.from_bytes(server_dh_inner_data.dh_prime, "big")
                 delta_time = server_dh_inner_data.server_time - time.time()
 
-                log.debug("Delta time: {}".format(round(delta_time, 3)))
+                log.debug(f"Delta time: {round(delta_time, 3)}")
 
                 # Step 6
                 g = server_dh_inner_data.g
@@ -175,7 +176,7 @@ class Auth:
 
                 retry_id = 0
 
-                data = types.ClientDHInnerData(
+                data = raw.types.ClientDHInnerData(
                     nonce=nonce,
                     server_nonce=server_nonce,
                     retry_id=retry_id,
@@ -185,11 +186,11 @@ class Auth:
                 sha = sha1(data).digest()
                 padding = urandom(- (len(data) + len(sha)) % 16)
                 data_with_hash = sha + data + padding
-                encrypted_data = AES.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
+                encrypted_data = aes.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
-                set_client_dh_params_answer = self.send(
-                    functions.SetClientDHParams(
+                set_client_dh_params_answer = await self.send(
+                    raw.functions.SetClientDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,
                         encrypted_data=encrypted_data
@@ -209,7 +210,7 @@ class Auth:
                 # Security checks
                 #######################
 
-                assert dh_prime == Prime.CURRENT_DH_PRIME
+                assert dh_prime == prime.CURRENT_DH_PRIME
                 log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
@@ -240,22 +241,18 @@ class Auth:
                 log.debug("Nonce fields check: OK")
 
                 # Step 9
-                server_salt = AES.xor(new_nonce[:8], server_nonce[:8])
+                server_salt = aes.xor(new_nonce[:8], server_nonce[:8])
 
-                log.debug("Server salt: {}".format(int.from_bytes(server_salt, "little")))
+                log.debug(f"Server salt: {int.from_bytes(server_salt, 'little')}")
 
-                log.info(
-                    "Done auth key exchange: {}".format(
-                        set_client_dh_params_answer.__class__.__name__
-                    )
-                )
+                log.info(f"Done auth key exchange: {set_client_dh_params_answer.__class__.__name__}")
             except Exception as e:
                 if retries_left:
                     retries_left -= 1
                 else:
                     raise e
 
-                time.sleep(1)
+                await asyncio.sleep(1)
                 continue
             else:
                 return auth_key

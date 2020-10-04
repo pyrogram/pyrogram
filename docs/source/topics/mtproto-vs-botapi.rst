@@ -8,6 +8,7 @@ actually is the MTProto and the Bot API.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -55,7 +56,7 @@ HTTP Bot API. Using Pyrogram you can:
 .. hlist::
     :columns: 1
 
-    - :guilabel:`+` **Upload & download any file, up to 1500 MB each (~1.5 GB)**
+    - :guilabel:`+` **Upload & download any file, up to 2000 MiB each (~2 GB)**
     - :guilabel:`--` The Bot API allows uploads and downloads of files only up to 50 MB / 20 MB in size (respectively).
 
 .. hlist::

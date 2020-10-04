@@ -7,6 +7,7 @@ humans and another more compact for machines that is able to recover the origina
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

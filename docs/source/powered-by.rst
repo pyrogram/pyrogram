@@ -11,6 +11,7 @@ This is a collection of remarkable projects made with Pyrogram.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

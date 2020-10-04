@@ -39,7 +39,10 @@ with open("README.md", encoding="utf-8") as f:
 
 class Clean(Command):
     DIST = ["./build", "./dist", "./Pyrogram.egg-info"]
-    API = ["pyrogram/errors/exceptions", "pyrogram/api/functions", "pyrogram/api/types", "pyrogram/api/all.py"]
+    API = [
+        "pyrogram/errors/exceptions", "pyrogram/raw/functions", "pyrogram/raw/types", "pyrogram/raw/base",
+        "pyrogram/raw/all.py"
+    ]
     DOCS = [
         "docs/source/telegram", "docs/build", "docs/source/api/methods", "docs/source/api/types",
         "docs/source/api/bound-methods"
@@ -139,17 +142,17 @@ setup(
     author_email="dan@pyrogram.org",
     license="LGPLv3+",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
@@ -167,11 +170,11 @@ setup(
         "Source": "https://github.com/pyrogram/pyrogram",
         "Documentation": "https://docs.pyrogram.org",
     },
-    python_requires="~=3.5",
+    python_requires="~=3.6",
     packages=find_packages(exclude=["compiler*"]),
     package_data={
-        "pyrogram.client.ext": ["mime.types"],
-        "pyrogram.client.storage": ["schema.sql"]
+        "pyrogram": ["mime.types"],
+        "pyrogram.storage": ["schema.sql"]
     },
     zip_safe=False,
     install_requires=requires,

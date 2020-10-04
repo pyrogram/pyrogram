@@ -1,18 +1,19 @@
 Install Guide
 =============
 
-Being a Python library, **Pyrogram** requires Python to be installed in your system.
+Being a modern Python library, **Pyrogram** requires Python 3.6+ to be installed in your system.
 We recommend using the latest versions of both Python 3 and pip.
 
-- Get **Python 3** from https://www.python.org/downloads/ (or with your package manager)
+- Get **Python 3** from https://www.python.org/downloads/ (or with your package manager).
 - Get **pip** by following the instructions at https://pip.pypa.io/en/latest/installing/.
 
 .. important::
 
-    Pyrogram supports **Python 3** only, starting from version 3.5.3. **PyPy** is supported too.
+    Pyrogram supports **Python 3** only, starting from version 3.6. **PyPy** is supported too.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -39,49 +40,12 @@ Pyrogram is always evolving, although new releases on PyPI are published only wh
 doesn't mean you can't try new features right now!
 
 In case you'd like to try out the latest Pyrogram features, the `GitHub repo`_ is always kept updated with new changes;
-you can install the development version straight from the ``develop`` branch using this command (note "develop.zip" in
+you can install the development version straight from the ``master`` branch using this command (note "master.zip" in
 the link):
 
 .. code-block:: text
 
-    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/develop.zip
-
-Asynchronous
-------------
-
-Pyrogram heavily depends on IO-bound network code (it's a cloud-based messaging framework after all), and here's
-where asyncio shines the most by providing extra performance and efficiency while running on a single OS-level thread
-only.
-
-**A fully asynchronous variant of Pyrogram is therefore available** (Python 3.5.3 or higher is required).
-Use this command to install (note "asyncio.zip" in the link):
-
-.. code-block:: text
-
-    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/asyncio.zip
-
-
-Pyrogram's API remains the same and features are kept up to date from the non-async, default develop branch, but you
-are obviously required Python asyncio knowledge in order to take full advantage of it.
-
-
-.. tip::
-
-    The idea to turn Pyrogram fully asynchronous is still under consideration, but is wise to expect that in future this
-    would be the one and only way to work with Pyrogram.
-
-    You can start using Pyrogram Async variant right now as an excuse to learn more about asynchronous programming and
-    do experiments with it!
-
-.. raw:: html
-
-    <script async
-        src="https://telegram.org/js/telegram-widget.js?4"
-        data-telegram-post="Pyrogram/4"
-        data-width="100%">
-    </script>
-
-.. centered:: Subscribe to `@Pyrogram <https://t.me/Pyrogram>`_ for news and announcements
+    $ pip3 install -U https://github.com/pyrogram/pyrogram/archive/master.zip
 
 Verifying
 ---------

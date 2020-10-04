@@ -11,6 +11,13 @@ found it to be useful, give Pyrogram a `Star on GitHub`_. Your appreciation mean
 
 -----
 
+Cloud Credits
+-------------
+
+If you need a cloud server to host your applications, try **Hetzner Cloud**. You can sign up with
+`this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram and
+my `other projects`_.
+
 Donate
 ------
 
@@ -25,5 +32,6 @@ PayPal button below. Thank you!
 --- `Dan`_
 
 .. _Star on GitHub: https://github.com/pyrogram/pyrogram
+.. _other projects: https://github.com/delivrance
 .. _other works: https://github.com/delivrance
 .. _Dan: https://t.me/haskell

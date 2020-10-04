@@ -10,6 +10,7 @@ Telegram API with its functions and types.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -18,7 +19,7 @@ Telegram Raw API
 ----------------
 
 If you can't find a high-level method for your needs or if you want complete, low-level access to the whole
-Telegram API, you have to use the raw :mod:`~pyrogram.api.functions` and :mod:`~pyrogram.api.types`.
+Telegram API, you have to use the raw :mod:`~pyrogram.raw.functions` and :mod:`~pyrogram.raw.types`.
 
 As already hinted, raw functions and types can be really confusing, mainly because people don't realize soon enough they
 accept *only* the right types and that all required parameters must be filled in. This section will therefore explain
@@ -41,7 +42,7 @@ Unlike the :doc:`methods <../api/methods/index>` found in Pyrogram's API, which 
 functions to be invoked from the raw Telegram API have a different way of usage and are more complex.
 
 First of all, both :doc:`raw functions <../telegram/functions/index>` and :doc:`raw types <../telegram/types/index>`
-live in their respective packages (and sub-packages): ``pyrogram.api.functions``, ``pyrogram.api.types``. They all exist
+live in their respective packages (and sub-packages): ``pyrogram.raw.functions``, ``pyrogram.raw.types``. They all exist
 as Python classes, meaning you need to create an instance of each every time you need them and fill them in with the
 correct values using named arguments.
 
@@ -55,7 +56,7 @@ Here's some examples:
     .. code-block:: python
 
         from pyrogram import Client
-        from pyrogram.api import functions
+        from pyrogram.raw import functions
 
         with Client("my_account") as app:
             app.send(
@@ -70,7 +71,7 @@ Here's some examples:
     .. code-block:: python
 
         from pyrogram import Client
-        from pyrogram.api import functions, types
+        from pyrogram.raw import functions, types
 
         with Client("my_account") as app:
             app.send(
@@ -85,7 +86,7 @@ Here's some examples:
     .. code-block:: python
 
         from pyrogram import Client
-        from pyrogram.api import functions, types
+        from pyrogram.raw import functions, types
 
         with Client("my_account") as app:
             app.send(
@@ -109,9 +110,9 @@ sending messages with IDs only thanks to cached access hashes.
 There are three different InputPeer types, one for each kind of Telegram entity.
 Whenever an InputPeer is needed you must pass one of these:
 
-- :class:`~pyrogram.api.types.InputPeerUser` - Users
-- :class:`~pyrogram.api.types.InputPeerChat` -  Basic Chats
-- :class:`~pyrogram.api.types.InputPeerChannel` - Either Channels or Supergroups
+- :class:`~pyrogram.raw.types.InputPeerUser` - Users
+- :class:`~pyrogram.raw.types.InputPeerChat` -  Basic Chats
+- :class:`~pyrogram.raw.types.InputPeerChannel` - Either Channels or Supergroups
 
 But you don't necessarily have to manually instantiate each object because, luckily for you, Pyrogram already provides
 :meth:`~pyrogram.Client.resolve_peer` as a convenience utility method that returns the correct InputPeer

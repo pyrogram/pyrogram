@@ -6,6 +6,7 @@ This page explains how this file is structured, how to use it and why.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

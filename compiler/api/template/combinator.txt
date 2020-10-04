@@ -1,0 +1,35 @@
+{notice}
+
+from io import BytesIO
+
+from pyrogram.raw.core.primitives import Int, Long, Int128, Int256, Bool, Bytes, String, Double, Vector
+from pyrogram.raw.core import TLObject
+from pyrogram import raw
+from typing import List, Union, Any
+
+{warning}
+
+
+class {name}(TLObject):  # type: ignore
+    """{docstring}
+    """
+
+    __slots__: List[str] = [{slots}]
+
+    ID = {id}
+    QUALNAME = "{qualname}"
+
+    def __init__(self{arguments}) -> None:
+        {fields}
+
+    @staticmethod
+    def read(data: BytesIO, *args: Any) -> "{name}":
+        {read_types}
+        return {name}({return_arguments})
+
+    def write(self) -> bytes:
+        data = BytesIO()
+        data.write(Int(self.ID, False))
+
+        {write_types}
+        return data.getvalue()

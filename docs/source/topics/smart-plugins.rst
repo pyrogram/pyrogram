@@ -11,6 +11,7 @@ different Pyrogram applications with **minimal boilerplate code**.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -51,7 +52,8 @@ after importing your modules, like this:
 
     .. code-block:: python
 
-        from pyrogram import Client, MessageHandler, Filters
+        from pyrogram import Client, filters
+        from pyrogram.handlers import MessageHandler
 
         from handlers import echo, echo_reversed
 
@@ -60,19 +62,19 @@ after importing your modules, like this:
         app.add_handler(
             MessageHandler(
                 echo,
-                Filters.text & Filters.private))
+                filters.text & filters.private))
 
         app.add_handler(
             MessageHandler(
                 echo_reversed,
-                Filters.text & Filters.private),
+                filters.text & filters.private),
             group=1)
 
         app.run()
 
 This is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
 manually ``import``, manually :meth:`~pyrogram.Client.add_handler` and manually instantiate each
-:class:`~pyrogram.MessageHandler` object because **you can't use those cool decorators** for your
+:class:`~pyrogram.handlers.MessageHandler` object because **you can't use those cool decorators** for your
 functions. So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
 
 Using Smart Plugins
@@ -102,15 +104,15 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
     .. code-block:: python
         :emphasize-lines: 4, 9
 
-        from pyrogram import Client, Filters
+        from pyrogram import Client, filters
 
 
-        @Client.on_message(Filters.text & Filters.private)
+        @Client.on_message(filters.text & filters.private)
         def echo(client, message):
             message.reply(message.text)
 
 
-        @Client.on_message(Filters.text & Filters.private, group=1)
+        @Client.on_message(filters.text & filters.private, group=1)
         def echo_reversed(client, message):
             message.reply(message.text[::-1])
 
@@ -306,7 +308,7 @@ updates) will be modified in such a way that a special ``handler`` attribute poi
     .. code-block:: python
         :emphasize-lines: 5, 6
 
-        @Client.on_message(Filters.text & Filters.private)
+        @Client.on_message(filters.text & filters.private)
         def echo(client, message):
             message.reply(message.text)
 

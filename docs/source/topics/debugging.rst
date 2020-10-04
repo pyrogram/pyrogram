@@ -6,6 +6,7 @@ to actually worry about -- that's normal -- and luckily for you, Pyrogram provid
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -30,7 +31,7 @@ Consider the following code:
     print(dan)  # User
 
 This will show a JSON representation of the object returned by :meth:`~pyrogram.Client.get_users`, which is a
-:class:`~pyrogram.User` instance, in this case. The output on your terminal will be something similar to this:
+:class:`~pyrogram.types.User` instance, in this case. The output on your terminal will be something similar to this:
 
 .. code-block:: json
 
@@ -115,14 +116,14 @@ error. The correct way to get the object type is by using the built-in function 
 
 .. code-block:: text
 
-    <class 'pyrogram.UserStatus'>
+    <class 'pyrogram.types.UserStatus'>
 
 And to check if an object is an instance of a given class, you use the built-in function ``isinstance()``:
 
 .. code-block:: python
     :name: this-py
 
-    from pyrogram import UserStatus
+    from pyrogram.types import UserStatus
 
     dan_status = dan.status
     print(isinstance(dan_status, UserStatus))

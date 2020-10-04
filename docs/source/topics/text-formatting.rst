@@ -19,6 +19,7 @@ variety of decorations that can also be nested in order to combine multiple styl
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

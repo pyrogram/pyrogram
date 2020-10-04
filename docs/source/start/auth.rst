@@ -6,6 +6,7 @@ API calls. This section provides all the information you need in order to author
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -41,7 +42,7 @@ keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
 .. important::
 
-    Your ``*.session`` files are personal and must be kept secret.
+    Your ``*.session`` file is personal and must be kept secret.
 
 .. note::
 

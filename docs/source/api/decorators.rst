@@ -26,6 +26,7 @@ functions.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

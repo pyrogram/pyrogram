@@ -7,6 +7,7 @@ decide to manually terminate it) and is used to authorize a client to execute AP
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----

@@ -28,7 +28,7 @@ PASSWORD_HASH_INVALID	Two-step verification password is invalid
 USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
 USERNAME_INVALID	The username is invalid
 MESSAGE_ID_INVALID	The message id is invalid
-MESSAGE_NOT_MODIFIED	The message was not modified
+MESSAGE_NOT_MODIFIED	The message was not modified because you tried to edit it using the same content
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
 MESSAGE_TOO_LONG	The message text is over 4096 characters
 ACCESS_TOKEN_EXPIRED	The bot token is invalid

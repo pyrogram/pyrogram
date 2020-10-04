@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    =
+SPHINXOPTS    = -j $(shell nproc --all)
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = Pyrogram
 SOURCEDIR     = source
@@ -18,3 +18,6 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+lhtml: # live html
+	sphinx-autobuild -H $(shell ipconfig getifaddr en3) -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)

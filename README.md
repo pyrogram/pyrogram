@@ -21,25 +21,22 @@
 ## Pyrogram
 
 ``` python
-from pyrogram import Client, Filters
+from pyrogram import Client, filters
 
 app = Client("my_account")
 
 
-@app.on_message(Filters.private)
-def hello(client, message):
-    message.reply_text("Hello {}".format(message.from_user.first_name))
+@app.on_message(filters.private)
+async def hello(client, message):
+    await message.reply_text(f"Hello {message.from_user.mention}")
 
 
 app.run()
 ```
 
-**Pyrogram** is an elegant, easy-to-use [Telegram](https://telegram.org/) client library and framework written from the
-ground up in Python and C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the [MTProto API](https://core.telegram.org/api#telegram-api).
-
-> [Pyrogram in fully-asynchronous mode is also available »](https://github.com/pyrogram/pyrogram/issues/181)
->
-> [Working PoC of Telegram voice calls using Pyrogram »](https://github.com/bakatrouble/pytgvoip)
+**Pyrogram** is a modern, elegant and easy-to-use [Telegram](https://telegram.org/) framework written from the ground up
+in Python and C. It enables you to easily create custom apps for both user and bot identities (bot API alternative) via
+the [MTProto API](https://docs.pyrogram.org/topics/mtproto-vs-botapi).
 
 ### Features
 
@@ -47,8 +44,9 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 - **Elegant**: Low-level details are abstracted and re-presented in a much nicer and easier way.
 - **Fast**: Crypto parts are boosted up by [TgCrypto](https://github.com/pyrogram/tgcrypto), a high-performance library
   written in pure C.
-- **Documented**: Pyrogram API methods, types and public interfaces are well documented.
-- **Type-hinted**: Exposed Pyrogram types and method parameters are all type-hinted.
+- **Asynchronous**: Allows both synchronous and asynchronous models to fit all usage needs.
+- **Documented**: API methods, types and public interfaces are all [well documented](https://docs.pyrogram.org).
+- **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
 - **Updated**, to make use of the latest Telegram API version and features.
 - **Bot API-like**: Similar to the Bot API in its simplicity, but much more powerful and detailed.
 - **Pluggable**: The Smart Plugin system allows to write components with minimal boilerplate code.
@@ -56,7 +54,7 @@ ground up in Python and C. It enables you to easily create custom apps for both 
 
 ### Requirements
 
-- Python 3.5.3 or higher.
+- Python 3.6 or higher.
 - A [Telegram API key](https://docs.pyrogram.org/intro/setup#api-keys).
 
 ### Installing
@@ -67,17 +65,9 @@ pip3 install pyrogram
 
 ### Resources
 
-- The Docs contain lots of resources to help you getting started with Pyrogram: https://docs.pyrogram.org.
-- Reading [Examples in this repository](https://github.com/pyrogram/pyrogram/tree/master/examples) is also a good way
-  for learning how Pyrogram works.
-- Seeking extra help? Don't be shy, come join and ask our [Community](https://t.me/PyrogramChat)!
-- For other requests you can send an [Email](mailto:dan@pyrogram.org) or a [Message](https://t.me/haskell).
-
-### Contributing
-
-Pyrogram is brand new, and **you are welcome to try it and help make it even better** by either submitting pull
-requests or reporting issues/bugs as well as suggesting best practices, ideas, enhancements on both code
-and documentation. Any help is appreciated!
+- The docs contain lots of resources to help you get started with Pyrogram: https://docs.pyrogram.org.
+- Seeking extra help? Come join and ask our community: https://t.me/pyrogram.
+- For other kind of inquiries, you can send a [message](https://t.me/haskell) or an [e-mail](mailto:dan@pyrogram.org).
 
 ### Copyright & License
 

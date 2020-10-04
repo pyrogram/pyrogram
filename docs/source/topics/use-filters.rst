@@ -1,14 +1,15 @@
 Using Filters
 =============
 
-So far we've seen :doc:`how to register a callback function <../start/updates>` that executes every time a specific update
-comes from the server, but there's much more than that to come.
+So far we've seen :doc:`how to register a callback function <../start/updates>` that executes every time an update comes
+from the server, but there's much more than that to come.
 
-Here we'll discuss about :class:`~pyrogram.Filters`. Filters enable a fine-grain control over what kind of
+Here we'll discuss about :obj:`~pyrogram.filters`. Filters enable a fine-grain control over what kind of
 updates are allowed or not to be passed in your callback functions, based on their inner details.
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
@@ -24,10 +25,10 @@ Let's start right away with a simple example:
     .. code-block:: python
         :emphasize-lines: 4
 
-        from pyrogram import Filters
+        from pyrogram import filters
 
 
-        @app.on_message(Filters.audio)
+        @app.on_message(filters.audio)
         def my_handler(client, message):
             print(message)
 
@@ -35,16 +36,17 @@ Let's start right away with a simple example:
     callback function itself:
 
     .. code-block:: python
-        :emphasize-lines: 8
+        :emphasize-lines: 9
 
-        from pyrogram import Filters, MessageHandler
+        from pyrogram import filters
+        from pyrogram.handlers import MessageHandler
 
 
         def my_handler(client, message):
             print(message)
 
 
-        app.add_handler(MessageHandler(my_handler, Filters.audio))
+        app.add_handler(MessageHandler(my_handler, filters.audio))
 
 Combining Filters
 -----------------
@@ -61,7 +63,7 @@ Here are some examples:
 
     .. code-block:: python
 
-        @app.on_message(Filters.text & ~Filters.edited)
+        @app.on_message(filters.text & ~filters.edited)
         def my_handler(client, message):
             print(message)
 
@@ -69,21 +71,21 @@ Here are some examples:
 
     .. code-block:: python
 
-        @app.on_message(Filters.sticker & (Filters.channel | Filters.private))
+        @app.on_message(filters.sticker & (filters.channel | filters.private))
         def my_handler(client, message):
             print(message)
 
 Advanced Filters
 ----------------
 
-Some filters, like :meth:`~pyrogram.Filters.command` or :meth:`~pyrogram.Filters.regex`
+Some filters, like :meth:`~pyrogram.filters.command` or :meth:`~pyrogram.filters.regex`
 can also accept arguments:
 
 -   Message is either a */start* or */help* **command**.
 
     .. code-block:: python
 
-        @app.on_message(Filters.command(["start", "help"]))
+        @app.on_message(filters.command(["start", "help"]))
         def my_handler(client, message):
             print(message)
 
@@ -91,7 +93,7 @@ can also accept arguments:
 
     .. code-block:: python
 
-        @app.on_message(Filters.regex("pyrogram"))
+        @app.on_message(filters.regex("pyrogram"))
         def my_handler(client, message):
             print(message)
 
@@ -99,16 +101,16 @@ More handlers using different filters can also live together.
 
 .. code-block:: python
 
-    @app.on_message(Filters.command("start"))
+    @app.on_message(filters.command("start"))
     def start_command(client, message):
         print("This is the /start command")
 
 
-    @app.on_message(Filters.command("help"))
+    @app.on_message(filters.command("help"))
     def help_command(client, message):
         print("This is the /help command")
 
 
-    @app.on_message(Filters.chat("PyrogramChat"))
+    @app.on_message(filters.chat("PyrogramChat"))
     def from_pyrogramchat(client, message):
         print("New message in @PyrogramChat")

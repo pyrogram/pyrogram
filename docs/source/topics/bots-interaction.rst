@@ -5,6 +5,7 @@ Users can interact with other bots via plain text messages as well as inline que
 
 .. contents:: Contents
     :backlinks: none
+    :depth: 1
     :local:
 
 -----
