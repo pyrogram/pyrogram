@@ -21,12 +21,21 @@ from pyrogram.scaffold import Scaffold
 
 
 class GetDialogsCount(Scaffold):
-    async def get_dialogs_count(self, pinned_only: bool = False) -> int:
+    async def get_dialogs_count(
+        self,
+        pinned_only: bool = False,
+        archived_only: bool = False
+    ) -> int:
         """Get the total count of your dialogs.
 
-        pinned_only (``bool``, *optional*):
-            Pass True if you want to count only pinned dialogs.
-            Defaults to False.
+        Parameters:
+            pinned_only (``bool``, *optional*):
+                Pass True if you want to count only pinned dialogs.
+                Defaults to False.
+
+            archived_only (``bool``, *optional*):
+                Pass True if you want to count only archived dialogs.
+                Defaults to False.
 
         Returns:
             ``int``: On success, the dialogs count is returned.
@@ -39,7 +48,7 @@ class GetDialogsCount(Scaffold):
         """
 
         if pinned_only:
-            return len((await self.send(raw.functions.messages.GetPinnedDialogs(folder_id=0))).dialogs)
+            return len((await self.send(raw.functions.messages.GetPinnedDialogs(folder_id=archived_only))).dialogs)
         else:
             r = await self.send(
                 raw.functions.messages.GetDialogs(
@@ -47,7 +56,8 @@ class GetDialogsCount(Scaffold):
                     offset_id=0,
                     offset_peer=raw.types.InputPeerEmpty(),
                     limit=1,
-                    hash=0
+                    hash=0,
+                    folder_id=archived_only
                 )
             )
 

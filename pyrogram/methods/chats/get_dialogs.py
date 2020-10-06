@@ -32,7 +32,8 @@ class GetDialogs(Scaffold):
         self,
         offset_date: int = 0,
         limit: int = 100,
-        pinned_only: bool = False
+        pinned_only: bool = False,
+        archived_only: bool = False
     ) -> List["types.Dialog"]:
         """Get a chunk of the user's dialogs.
 
@@ -52,6 +53,10 @@ class GetDialogs(Scaffold):
                 Pass True if you want to get only pinned dialogs.
                 Defaults to False.
 
+            archived_only (``bool``, *optional*):
+                Pass True if you want to get only archived dialogs.
+                Defaults to False.
+
         Returns:
             List of :obj:`~pyrogram.types.Dialog`: On success, a list of dialogs is returned.
 
@@ -63,11 +68,14 @@ class GetDialogs(Scaffold):
 
                 # Get pinned dialogs
                 app.get_dialogs(pinned_only=True)
+
+                # Get archived dialogs
+                app.get_dialogs(archived_only=True)
         """
 
         if pinned_only:
             r = await self.send(
-                raw.functions.messages.GetPinnedDialogs(folder_id=0),
+                raw.functions.messages.GetPinnedDialogs(folder_id=archived_only),
                 sleep_threshold=60
             )
         else:
@@ -78,7 +86,8 @@ class GetDialogs(Scaffold):
                     offset_peer=raw.types.InputPeerEmpty(),
                     limit=limit,
                     hash=0,
-                    exclude_pinned=True
+                    exclude_pinned=True,
+                    folder_id=archived_only
                 ),
                 sleep_threshold=60
             )

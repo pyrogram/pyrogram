@@ -26,7 +26,8 @@ class IterDialogs(Scaffold):
     async def iter_dialogs(
         self,
         limit: int = 0,
-        offset_date: int = 0
+        offset_date: int = 0,
+        archived_only: bool = False
     ) -> Optional[AsyncGenerator["types.Dialog", None]]:
         """Iterate through a user's dialogs sequentially.
 
@@ -43,6 +44,10 @@ class IterDialogs(Scaffold):
                 The offset date in Unix time taken from the top message of a :obj:`~pyrogram.types.Dialog`.
                 Defaults to 0 (most recent dialog).
 
+            archived_only (``bool``, *optional*):
+                Pass True if you want to get only archived dialogs.
+                Defaults to False.
+
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.Dialog` objects.
 
@@ -58,7 +63,7 @@ class IterDialogs(Scaffold):
         limit = min(100, total)
 
         pinned_dialogs = await self.get_dialogs(
-            pinned_only=True
+            pinned_only=True, archived_only=archived_only
         )
 
         for dialog in pinned_dialogs:
@@ -72,7 +77,8 @@ class IterDialogs(Scaffold):
         while True:
             dialogs = await self.get_dialogs(
                 offset_date=offset_date,
-                limit=limit
+                limit=limit,
+                archived_only=archived_only
             )
 
             if not dialogs:
