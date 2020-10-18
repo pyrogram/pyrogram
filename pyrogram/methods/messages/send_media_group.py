@@ -62,7 +62,7 @@ class SendMediaGroup(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InputMediaPhoto, InputMediaVideo
+                from pyrogram.types import InputMediaPhoto, InputMediaVideo
 
                 app.send_media_group(
                     "me",
