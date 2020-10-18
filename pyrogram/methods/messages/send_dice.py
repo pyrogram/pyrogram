@@ -48,9 +48,8 @@ class SendDice(Scaffold):
 
             emoji (``str``, *optional*):
                 Emoji on which the dice throw animation is based.
-                Currently, must be one of :obj:`~pyrogram.emoji.SOCCER_BALL`,  :obj:`~pyrogram.emoji.BASKETBALL`, :obj:`~pyrogram.emoji.DIRECT_HIT` or :obj:`~pyrogram.emoji.GAME_DIE`.
-                Defaults to :obj:`~pyrogram.emoji.GAME_DIE`.
-
+                Currently, must be one of "🎲",  "🎯", "🏀" or "⚽️".	                Emoji on which the dice throw animation is based.
+                Defaults to "🎲".
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
