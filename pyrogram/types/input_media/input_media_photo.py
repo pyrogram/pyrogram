@@ -29,7 +29,8 @@ class InputMediaPhoto(InputMedia):
         media (``str``):
             Photo to send.
             Pass a file_id as string to send a photo that exists on the Telegram servers or
-            pass a file path as string to upload a new photo that exists on your local machine.
+            pass a file path as string to upload a new photo that exists on your local machine or
+            pass a binary file-like object with its attribute “.name” set for in-memory uploads.
             Sending photo by a URL is currently unsupported.
 
         file_ref (``str``, *optional*):
