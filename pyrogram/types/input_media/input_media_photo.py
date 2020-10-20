@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, BinaryIO
 
 from .input_media import InputMedia
 
@@ -26,7 +26,7 @@ class InputMediaPhoto(InputMedia):
     It is intended to be used with :obj:`~pyrogram.Client.send_media_group`.
 
     Parameters:
-        media (``str``):
+        media (``str`` | ``BinaryIO``):
             Photo to send.
             Pass a file_id as string to send a photo that exists on the Telegram servers or
             pass a file path as string to upload a new photo that exists on your local machine or
@@ -50,7 +50,7 @@ class InputMediaPhoto(InputMedia):
 
     def __init__(
         self,
-        media: str,
+        media: Union[str, BinaryIO],
         file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object
