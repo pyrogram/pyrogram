@@ -21,7 +21,14 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
-from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.types import (
+    Message,
+    CallbackQuery,
+    InlineQuery,
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    Update
+)
 
 
 class Filter:

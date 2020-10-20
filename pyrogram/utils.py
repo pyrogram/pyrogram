@@ -118,10 +118,14 @@ def get_input_media_from_file_id(
                 media_type_str = Scaffold.MEDIA_TYPE_ID.get(media_type, None)
                 expected_media_type_str = Scaffold.MEDIA_TYPE_ID.get(expected_media_type, None)
 
-                raise ValueError(f'Expected: "{expected_media_type_str}", got "{media_type_str}" file_id instead')
+                raise ValueError(
+                    f'Expected: "{expected_media_type_str}", got "{media_type_str}" file_id instead'
+                )
 
         if media_type in (0, 1, 14):
-            raise ValueError(f"This file_id can only be used for download: {file_id_str}")
+            raise ValueError(
+                f"This file_id can only be used for download: {file_id_str}"
+            )
 
         if media_type == 2:
             unpacked = struct.unpack("<iiqqqiiii", decoded)

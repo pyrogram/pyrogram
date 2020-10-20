@@ -108,7 +108,9 @@ class Dispatcher:
             (UpdateBotInlineSend,): chosen_inline_result_parser
         }
 
-        self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
+        self.update_parsers = {
+            key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple
+        }
 
     async def start(self):
         if not self.client.no_updates:
@@ -158,7 +160,9 @@ class Dispatcher:
 
             try:
                 if group not in self.groups:
-                    raise ValueError(f"Group {group} does not exist. Handler was not removed.")
+                    raise ValueError(
+                        f"Group {group} does not exist. Handler was not removed."
+                    )
 
                 self.groups[group].remove(handler)
             finally:

@@ -324,7 +324,9 @@ class Client(Methods, Scaffold):
                 self.phone_code = await ainput("Enter confirmation code: ")
 
             try:
-                signed_in = await self.sign_in(self.phone_number, sent_code.phone_code_hash, self.phone_code)
+                signed_in = await self.sign_in(
+                    self.phone_number, sent_code.phone_code_hash, self.phone_code
+                )
             except BadRequest as e:
                 print(e.MESSAGE)
                 self.phone_code = None
@@ -332,10 +334,17 @@ class Client(Methods, Scaffold):
                 print(e.MESSAGE)
 
                 while True:
-                    print("Password hint: {}".format(await self.get_password_hint()))
+                    print(
+                        "Password hint: {}".format(
+                            await self.get_password_hint()
+                        )
+                    )
 
                     if not self.password:
-                        self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
+                        self.password = await ainput(
+                            "Enter password (empty to recover): ", 
+                            hide=self.hide_password
+                        )
 
                     try:
                         if not self.password:
@@ -343,13 +352,19 @@ class Client(Methods, Scaffold):
 
                             if confirm == "y":
                                 email_pattern = await self.send_recovery_code()
-                                print(f"The recovery code has been sent to {email_pattern}")
+                                print(
+                                    f"The recovery code has been sent to {email_pattern}"
+                                )
 
                                 while True:
-                                    recovery_code = await ainput("Enter recovery code: ")
+                                    recovery_code = await ainput(
+                                        "Enter recovery code: "
+                                    )
 
                                     try:
-                                        return await self.recover_password(recovery_code)
+                                        return await self.recover_password(
+                                            recovery_code
+                                        )
                                     except BadRequest as e:
                                         print(e.MESSAGE)
                                     except Exception as e:
@@ -408,15 +423,17 @@ class Client(Methods, Scaffold):
     def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
         """Set the parse mode to be used globally by the client.
 
-        When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
-        global value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and
-        combined together.
+        When setting the parse mode with this method, all other methods having
+        a *parse_mode* parameter will follow the global value by default.
+        The default value *"combined"* enables  both Markdown and HTML styles 
+        to be used and combined together.
 
         Parameters:
             parse_mode (``str``):
-                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
-                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
-                completely.
+                The new parse mode, can be any of: *"combined"*, for the default
+                combined mode. *"markdown"* or *"md"* to force Markdown-only
+                styles.  *"html"* to force HTML-only styles. *None* to disable
+                the parser completely.
 
         Raises:
             ValueError: In case the provided *parse_mode* is not a valid parse mode.
@@ -556,7 +573,8 @@ class Client(Methods, Scaffold):
                         try:
                             diff = await self.send(
                                 raw.functions.updates.GetChannelDifference(
-                                    channel=await self.resolve_peer(utils.get_channel_id(channel_id)),
+                                    channel=await self.resolve_peer(
+                                        utils.get_channel_id(channel_id)),
                                     filter=raw.types.ChannelMessagesFilter(
                                         ranges=[raw.types.MessageRange(
                                             min_id=update.message.id,
@@ -617,7 +635,9 @@ class Client(Methods, Scaffold):
                 self.api_id = parser.getint("pyrogram", "api_id")
                 self.api_hash = parser.get("pyrogram", "api_hash")
             else:
-                raise AttributeError("No API Key found. More info: https://docs.pyrogram.org/intro/setup")
+                raise AttributeError(
+                    "No API Key found. More info: https://docs.pyrogram.org/intro/setup"
+                )
 
         for option in ["app_version", "device_model", "system_version", "lang_code"]:
             if getattr(self, option):
@@ -732,7 +752,10 @@ class Client(Methods, Scaffold):
                                 self.add_handler(handler, group)
 
                                 log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                    self.session_name,
+                                    type(handler).__name__,
+                                    name, group, module_path)
+                                )
 
                                 count += 1
                         except Exception:
@@ -745,11 +768,15 @@ class Client(Methods, Scaffold):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning(
+                            f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}"'
+                        )
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning(f'[{self.session_name}] [LOAD] Ignoring namespace "{module_path}"')
+                        log.warning(
+                            f'[{self.session_name}] [LOAD] Ignoring namespace "{module_path}"'
+                        )
                         continue
 
                     if handlers is None:
@@ -781,7 +808,9 @@ class Client(Methods, Scaffold):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.session_name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning(
+                            f'[{self.session_name}] [UNLOAD] Ignoring non-existent module "{module_path}"'
+                        )
                         continue
 
                     if "__path__" in dir(module):
@@ -839,8 +868,10 @@ class Client(Methods, Scaffold):
             if session is None:
                 if dc_id != await self.storage.dc_id():
                     session = Session(
-                        self, dc_id, await Auth(self, dc_id, await self.storage.test_mode()).create(),
-                        await self.storage.test_mode(), is_media=True
+                        self, dc_id,
+                        await Auth(self, dc_id, await self.storage.test_mode()).create(),
+                        await self.storage.test_mode(), 
+                        is_media=True
                     )
                     await session.start()
 
@@ -978,8 +1009,11 @@ class Client(Methods, Scaffold):
 
                     if cdn_session is None:
                         cdn_session = Session(
-                            self, r.dc_id, await Auth(self, r.dc_id, await self.storage.test_mode()).create(),
-                            await self.storage.test_mode(), is_media=True, is_cdn=True
+                            self, r.dc_id,
+                            await Auth(self, r.dc_id, await self.storage.test_mode()).create(),
+                            await self.storage.test_mode(),
+                            is_media=True,
+                            is_cdn=True
                         )
 
                         await cdn_session.start()
