@@ -211,11 +211,31 @@ class ChatMember(Object):
                 client=client
             )
 
-        if isinstance(member, (raw.types.ChannelParticipantCreator, raw.types.ChatParticipantCreator)):
+        if isinstance(member, raw.types.ChatParticipantCreator):
             return ChatMember(
                 user=user,
                 status="creator",
                 title=getattr(member, "rank", None),
+                client=client
+            )
+        
+        if isinstance(member, raw.types.ChannelParticipantCreator):
+            permissions = member.admin_rights
+            return ChatMember(
+                user=user,
+                status="creator",
+                title=getattr(member, "rank", None),
+                joined_date=member.date,
+                invited_by=invited_by,
+                can_be_edited=member.can_edit,
+                can_change_info=permissions.change_info,
+                can_post_messages=permissions.post_messages,
+                can_edit_messages=permissions.edit_messages,
+                can_delete_messages=permissions.delete_messages,
+                can_restrict_members=permissions.ban_users,
+                can_invite_users=permissions.invite_users,
+                can_pin_messages=permissions.pin_messages,
+                can_promote_members=permissions.add_admins,
                 client=client
             )
 
