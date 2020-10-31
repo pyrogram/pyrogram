@@ -24,6 +24,7 @@ from .create_supergroup import CreateSupergroup
 from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
 from .delete_supergroup import DeleteSupergroup
+from .delete_user_history import DeleteUserHistory
 from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
 from .get_chat_member import GetChatMember
@@ -86,6 +87,7 @@ class Chats(
     DeleteSupergroup,
     GetNearbyChats,
     SetAdministratorTitle,
-    SetSlowMode
+    SetSlowMode,
+    DeleteUserHistory
 ):
     pass
