@@ -95,3 +95,8 @@ class Object(metaclass=Meta):
 
     def __setitem__(self, key, value):
         setattr(self, key, value)
+
+    def __getstate__(self):
+        new_dict = self.__dict__.copy()
+        new_dict.pop("_client", None)
+        return new_dict
