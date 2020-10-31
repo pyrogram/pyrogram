@@ -60,7 +60,7 @@ class RestrictChatMember(Scaffold):
 
                 from time import time
 
-                from pyrogram import ChatPermissions
+                from pyrogram.types import ChatPermissions
 
                 # Completely restrict chat member (mute) forever
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions())

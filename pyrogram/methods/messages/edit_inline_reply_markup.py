@@ -44,7 +44,7 @@ class EditInlineReplyMarkup(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+                from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
                 # Bots only
                 app.edit_inline_reply_markup(
