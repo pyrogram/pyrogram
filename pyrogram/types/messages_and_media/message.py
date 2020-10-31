@@ -3117,7 +3117,7 @@ class Message(Object, Update):
             options=option
         )
 
-    async def pin(self, disable_notification: bool = None) -> bool:
+    async def pin(self, disable_notification: bool = False, both_sides: bool = False) -> bool:
         """Bound method *pin* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for:
@@ -3139,6 +3139,10 @@ class Message(Object, Update):
                 Pass True, if it is not necessary to send a notification to all chat members about the new pinned
                 message. Notifications are always disabled in channels.
 
+            both_sides (``bool``, *optional*):
+                Pass True to pin the message for both sides (you and recipient).
+                Applicable to private chats only. Defaults to False.
+
         Returns:
             True on success.
 
@@ -3148,5 +3152,34 @@ class Message(Object, Update):
         return await self._client.pin_chat_message(
             chat_id=self.chat.id,
             message_id=self.message_id,
-            disable_notification=disable_notification
+            disable_notification=disable_notification,
+            both_sides=both_sides
+        )
+
+    async def unpin(self) -> bool:
+        """Bound method *unpin* of :obj:`~pyrogram.types.Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unpin_chat_message(
+                chat_id=message.chat.id,
+                message_id=message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.unpin()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return await self._client.pin_chat_message(
+            chat_id=self.chat.id,
+            message_id=self.message_id
         )
