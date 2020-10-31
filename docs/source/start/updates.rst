@@ -72,7 +72,7 @@ Using add_handler()
 ^^^^^^^^^^^^^^^^^^^
 
 The :meth:`~pyrogram.Client.add_handler` method takes any handler instance that wraps around your defined callback
-function and registers it in your Client. It us useful in case you want to programmatically add handlers (or in case,
+function and registers it in your Client. It is useful in case you want to programmatically add handlers (or in case,
 for some reason, you don't like to use decorators).
 
 .. code-block:: python
