@@ -67,7 +67,7 @@ class GetChat(Scaffold):
 
             await self.fetch_peers([r.chat])
 
-            if isinstance(r.chat, types.Chat):
+            if isinstance(r.chat, raw.types.Chat):
                 chat_id = -r.chat.id
 
             if isinstance(r.chat, raw.types.Channel):
