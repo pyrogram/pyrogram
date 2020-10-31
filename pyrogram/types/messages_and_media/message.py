@@ -1801,8 +1801,13 @@ class Message(Object, Update):
         question: str,
         options: List[str],
         quote: bool = None,
+        is_anonymous: bool = True,
+        allows_multiple_answers: bool = None,
+        type: str = "regular",
+        correct_option_id: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1838,6 +1843,22 @@ class Message(Object, Update):
                 If ``True``, the message will be sent as a reply to this message.
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
+            
+            is_anonymous (``bool``, *optional*):
+                True, if the poll needs to be anonymous.
+                Defaults to True.
+
+            type (``str``, *optional*):
+                Poll type, "quiz" or "regular".
+                Defaults to "regular"
+
+            allows_multiple_answers (``bool``, *optional*):
+                True, if the poll allows multiple answers, ignored for polls in quiz mode.
+                Defaults to False
+            
+            correct_option_id (``int``, *optional*):
+                0-based identifier of the correct answer option (the index of the correct option)
+                Required for polls in quiz mode.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -1845,6 +1866,9 @@ class Message(Object, Update):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+            
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -1866,8 +1890,13 @@ class Message(Object, Update):
             chat_id=self.chat.id,
             question=question,
             options=options,
+            is_anonymous=is_anonymous,
+            allows_multiple_answers=allows_multiple_answers,
+            type=type,
+            correct_option_id=correct_option_id,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
