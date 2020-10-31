@@ -422,7 +422,7 @@ class Message(Object, Update):
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
             elif isinstance(action, raw.types.MessageActionChatJoinedByLink):
-                new_chat_members = [types.User._parse(client, users[message.from_id])]
+                new_chat_members = [types.User._parse(client, users[utils.get_raw_peer_id(message.from_id)])]
             elif isinstance(action, raw.types.MessageActionChatDeleteUser):
                 left_chat_member = types.User._parse(client, users[action.user_id])
             elif isinstance(action, raw.types.MessageActionChatEditTitle):
@@ -444,7 +444,7 @@ class Message(Object, Update):
                 message_id=message.id,
                 date=message.date,
                 chat=types.Chat._parse(client, message, users, chats),
-                from_user=types.User._parse(client, users.get(message.from_id, None)),
+                from_user=types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None)),
                 service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
@@ -472,7 +472,7 @@ class Message(Object, Update):
             if isinstance(action, raw.types.MessageActionGameScore):
                 parsed_message.game_high_score = types.GameHighScore._parse_action(client, message, users)
 
-                if message.reply_to_msg_id and replies:
+                if message.reply_to and replies:
                     try:
                         parsed_message.reply_to_message = await client.get_messages(
                             parsed_message.chat.id,
@@ -501,13 +501,17 @@ class Message(Object, Update):
                 forward_date = forward_header.date
 
                 if forward_header.from_id:
-                    forward_from = types.User._parse(client, users[forward_header.from_id])
+                    raw_peer_id = utils.get_raw_peer_id(forward_header.from_id)
+                    peer_id = utils.get_peer_id(forward_header.from_id)
+
+                    if peer_id > 0:
+                        forward_from = types.User._parse(client, users[raw_peer_id])
+                    else:
+                        forward_from_chat = types.Chat._parse_channel_chat(client, chats[raw_peer_id])
+                        forward_from_message_id = forward_header.channel_post
+                        forward_signature = forward_header.post_author
                 elif forward_header.from_name:
                     forward_sender_name = forward_header.from_name
-                else:
-                    forward_from_chat = types.Chat._parse_channel_chat(client, chats[forward_header.channel_id])
-                    forward_from_message_id = forward_header.channel_post
-                    forward_signature = forward_header.post_author
 
             photo = None
             location = None
@@ -608,7 +612,7 @@ class Message(Object, Update):
                 message_id=message.id,
                 date=message.date,
                 chat=types.Chat._parse(client, message, users, chats),
-                from_user=types.User._parse(client, users.get(message.from_id, None)),
+                from_user=types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None)),
                 text=(
                     Str(message.message).init(entities) or None
                     if media is None or web_page is not None
@@ -664,7 +668,7 @@ class Message(Object, Update):
                 client=client
             )
 
-            if message.reply_to_msg_id and replies:
+            if message.reply_to and replies:
                 try:
                     parsed_message.reply_to_message = await client.get_messages(
                         parsed_message.chat.id,
@@ -3113,7 +3117,7 @@ class Message(Object, Update):
             options=option
         )
 
-    async def pin(self, disable_notification: bool = None) -> bool:
+    async def pin(self, disable_notification: bool = False, both_sides: bool = False) -> bool:
         """Bound method *pin* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for:
@@ -3135,6 +3139,10 @@ class Message(Object, Update):
                 Pass True, if it is not necessary to send a notification to all chat members about the new pinned
                 message. Notifications are always disabled in channels.
 
+            both_sides (``bool``, *optional*):
+                Pass True to pin the message for both sides (you and recipient).
+                Applicable to private chats only. Defaults to False.
+
         Returns:
             True on success.
 
@@ -3144,5 +3152,34 @@ class Message(Object, Update):
         return await self._client.pin_chat_message(
             chat_id=self.chat.id,
             message_id=self.message_id,
-            disable_notification=disable_notification
+            disable_notification=disable_notification,
+            both_sides=both_sides
+        )
+
+    async def unpin(self) -> bool:
+        """Bound method *unpin* of :obj:`~pyrogram.types.Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unpin_chat_message(
+                chat_id=message.chat.id,
+                message_id=message_id
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.unpin()
+
+        Returns:
+            True on success.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return await self._client.pin_chat_message(
+            chat_id=self.chat.id,
+            message_id=self.message_id
         )

@@ -27,7 +27,8 @@ class PinChatMessage(Scaffold):
         self,
         chat_id: Union[int, str],
         message_id: int,
-        disable_notification: bool = None
+        disable_notification: bool = False,
+        both_sides: bool = False,
     ) -> bool:
         """Pin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin right in
@@ -40,9 +41,13 @@ class PinChatMessage(Scaffold):
             message_id (``int``):
                 Identifier of a message to pin.
 
-            disable_notification (``bool``):
+            disable_notification (``bool``, *optional*):
                 Pass True, if it is not necessary to send a notification to all chat members about the new pinned
                 message. Notifications are always disabled in channels.
+
+            both_sides (``bool``, *optional*):
+                Pass True to pin the message for both sides (you and recipient).
+                Applicable to private chats only. Defaults to False.
 
         Returns:
             ``bool``: True on success.
@@ -60,7 +65,8 @@ class PinChatMessage(Scaffold):
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
-                silent=disable_notification or None
+                silent=disable_notification or None,
+                pm_oneside=not both_sides or None
             )
         )
 

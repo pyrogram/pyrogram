@@ -231,7 +231,22 @@ MIN_CHAT_ID = -2147483647
 MAX_USER_ID = 2147483647
 
 
+def get_raw_peer_id(peer: raw.base.Peer) -> Union[int, None]:
+    """Get the raw peer id from a Peer object"""
+    if isinstance(peer, raw.types.PeerUser):
+        return peer.user_id
+
+    if isinstance(peer, raw.types.PeerChat):
+        return peer.chat_id
+
+    if isinstance(peer, raw.types.PeerChannel):
+        return peer.channel_id
+
+    return None
+
+
 def get_peer_id(peer: raw.base.Peer) -> int:
+    """Get the non-raw peer id from a Peer object"""
     if isinstance(peer, raw.types.PeerUser):
         return peer.user_id
 
