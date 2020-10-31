@@ -47,7 +47,7 @@ class SetChatPermissions(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import ChatPermissions
+                from pyrogram.types import ChatPermissions
 
                 # Completely restrict chat
                 app.set_chat_permissions(chat_id, ChatPermissions())

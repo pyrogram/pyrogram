@@ -84,7 +84,7 @@ class AnswerInlineQuery(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InlineQueryResultArticle, InputTextMessageContent
+                from pyrogram.types import InlineQueryResultArticle, InputTextMessageContent
 
                 app.answer_inline_query(
                     inline_query_id,

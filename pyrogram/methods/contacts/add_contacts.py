@@ -40,7 +40,7 @@ class AddContacts(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InputPhoneContact
+                from pyrogram.types import InputPhoneContact
 
                 app.add_contacts([
                     InputPhoneContact("39123456789", "Foo"),

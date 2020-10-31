@@ -39,7 +39,8 @@ class RemoveHandler(Scaffold):
             .. code-block:: python
                 :emphasize-lines: 11
 
-                from pyrogram import Client, MessageHandler
+                from pyrogram import Client
+                from pyrogram.handlers import MessageHandler
 
                 def dump(client, message):
                     print(message)

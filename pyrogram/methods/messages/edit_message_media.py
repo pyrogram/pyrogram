@@ -65,7 +65,7 @@ class EditMessageMedia(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InputMediaPhoto, InputMediaVideo, InputMediaAudio
+                from pyrogram.types import InputMediaPhoto, InputMediaVideo, InputMediaAudio
 
                 # Replace the current media with a local photo
                 app.edit_message_media(chat_id, message_id, InputMediaPhoto("new_photo.jpg"))

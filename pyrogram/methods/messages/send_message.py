@@ -98,7 +98,7 @@ class SendMessage(Scaffold):
                 # For bots only, send messages with keyboards attached
                 ##
 
-                from pyrogram import (
+                from pyrogram.types import (
                     ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton)
 
                 # Send a normal keyboard

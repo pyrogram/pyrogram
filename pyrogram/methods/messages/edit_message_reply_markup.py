@@ -50,7 +50,7 @@ class EditMessageReplyMarkup(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+                from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
                 # Bots only
                 app.edit_message_reply_markup(
