@@ -25,7 +25,7 @@ class UpdateChatNotifications(Scaffold):
             silent (``bool``, *optional*):
                 If the chat shall be muted.
 
-            mute_until (``int`` | ``datetime.datetime`` | ``datetime.timdelta``, *optional*):
+            mute_until (``int``, *optional*):
                 When notifications shall be switched off. Unix time.
                 Default to forever.
 
@@ -39,12 +39,12 @@ class UpdateChatNotifications(Scaffold):
                 app.update_chat_notifications(chat_id, silent=True)
 
                 # Mute a chat for 10 minutes
-                from datetime import timedelta
+                from time import time
 
                 app.update_chat_notifications(
                     chat_id,
-                    silent=True
-                    mute_until=timedelta(minutes=10)
+                    silent=True,
+                    mute_until=time() + 600
                 )
 
                 # Unmute a chat
