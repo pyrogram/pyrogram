@@ -88,11 +88,7 @@ class SendChatAction(Scaffold):
             raise ValueError("Invalid chat action '{}'. Possible values are: {}".format(
                 action, json.dumps(POSSIBLE_VALUES, indent=4))) from None
 
-        if "Upload" in action.__name__:
-            action = action(progress=0)
-        else:
-            action = action()
-
+        action = action(progress=0) if "Upload" in action.__name__ else action()
         return await self.send(
             raw.functions.messages.SetTyping(
                 peer=await self.resolve_peer(chat_id),

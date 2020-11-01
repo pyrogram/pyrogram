@@ -141,27 +141,23 @@ class SendPhoto(Scaffold):
         file = None
 
         try:
-            if isinstance(photo, str):
-                if os.path.isfile(photo):
-                    file = await self.save_file(photo, progress=progress, progress_args=progress_args)
-                    media = raw.types.InputMediaUploadedPhoto(
-                        file=file,
-                        ttl_seconds=ttl_seconds
-                    )
-                elif re.match("^https?://", photo):
-                    media = raw.types.InputMediaPhotoExternal(
-                        url=photo,
-                        ttl_seconds=ttl_seconds
-                    )
-                else:
-                    media = utils.get_input_media_from_file_id(photo, file_ref, 2)
-            else:
+            if (
+                isinstance(photo, str)
+                and os.path.isfile(photo)
+                or not isinstance(photo, str)
+            ):
                 file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedPhoto(
                     file=file,
                     ttl_seconds=ttl_seconds
                 )
-
+            elif not os.path.isfile(photo) and re.match("^https?://", photo):
+                media = raw.types.InputMediaPhotoExternal(
+                    url=photo,
+                    ttl_seconds=ttl_seconds
+                )
+            else:
+                media = utils.get_input_media_from_file_id(photo, file_ref, 2)
             while True:
                 try:
                     r = await self.send(
