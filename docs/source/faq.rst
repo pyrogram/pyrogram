@@ -36,7 +36,7 @@ the word *fire*, which also inspired the project logo.
 How old is Pyrogram?
 --------------------
 
-Pyrogram was first released on December 12, 2017. The actual work on the framework began roughly three months prior the
+Pyrogram was first released on December 12, 2017. The actual work on the framework began roughly three months prior to the
 initial public release on `GitHub`_.
 
 .. _GitHub: https://github.com/pyrogram/pyrogram
