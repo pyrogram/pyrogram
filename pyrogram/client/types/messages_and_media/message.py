@@ -2644,6 +2644,7 @@ class Message(Object, Update):
         chat_id: int or str,
         disable_notification: bool = None,
         as_copy: bool = False,
+        custom_caption: str = None,
         remove_caption: bool = False,
         schedule_date: int = None
     ) -> "Message":
@@ -2709,7 +2710,7 @@ class Message(Object, Update):
                     schedule_date=schedule_date
                 )
             elif self.media:
-                caption = self.caption.html if self.caption and not remove_caption else ""
+                caption = custom_caption or (self.caption.html if self.caption and not remove_caption else "")
 
                 send_media = partial(
                     self._client.send_cached_media,
