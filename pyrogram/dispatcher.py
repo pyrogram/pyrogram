@@ -20,14 +20,42 @@ import asyncio
 import inspect
 import logging
 from collections import OrderedDict
+from functools import partial, update_wrapper
+from typing import Any, Iterable, Iterator, List, Tuple
+
+from pyrogram.raw.types import (
+    UpdateBotCallbackQuery,
+    UpdateBotInlineQuery,
+    UpdateBotInlineSend,
+    UpdateDeleteChannelMessages,
+    UpdateDeleteMessages,
+    UpdateEditChannelMessage,
+    UpdateEditMessage,
+    UpdateInlineBotCallbackQuery,
+    UpdateMessagePoll,
+    UpdateNewChannelMessage,
+    UpdateNewMessage,
+    UpdateNewScheduledMessage,
+    UpdateUserStatus,
+)
 
 import pyrogram
 from pyrogram import utils
 from pyrogram.handlers import (
+    CallbackQueryHandler,
+    ChosenInlineResultHandler,
+    DeletedMessagesHandler,
+    InlineQueryHandler,
+    MessageHandler,
+    PollHandler,
+    RawUpdateHandler,
+    UserStatusHandler,
     CallbackQueryHandler, MessageHandler, EditedMessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler,
     ChosenInlineResultHandler, ChatMemberUpdatedHandler, ChatJoinRequestHandler
 )
+from pyrogram.handlers.handler import Handler
+from pyrogram.middleware import Middleware
 from pyrogram.raw.types import (
     UpdateNewMessage, UpdateNewChannelMessage, UpdateNewScheduledMessage,
     UpdateEditMessage, UpdateEditChannelMessage,
@@ -52,6 +80,9 @@ class Dispatcher:
     POLL_UPDATES = (UpdateMessagePoll,)
     CHOSEN_INLINE_RESULT_UPDATES = (UpdateBotInlineSend,)
     CHAT_JOIN_REQUEST_UPDATES = (UpdateBotChatInviteRequester,)
+
+    middlewares: List[Middleware] = []
+    _middlewares_handlers: Iterable[Middleware]
 
     def __init__(self, client: "pyrogram.Client"):
         self.client = client
@@ -143,6 +174,8 @@ class Dispatcher:
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
 
     async def start(self):
+        self._middlewares_handlers = tuple(self._prepare_middlewares())
+
         if not self.client.no_updates:
             for i in range(self.client.workers):
                 self.locks_list.append(asyncio.Lock())
@@ -165,6 +198,12 @@ class Dispatcher:
             self.groups.clear()
 
             log.info("Stopped %s HandlerTasks", self.client.workers)
+
+    def add_middleware(self, middleware: Middleware):
+        self.middlewares.append(middleware)
+
+    def _prepare_middlewares(self) -> Iterator[Middleware]:
+        yield from reversed(self.middlewares)
 
     def add_handler(self, handler, group: int):
         async def fn():
@@ -199,6 +238,59 @@ class Dispatcher:
 
         self.loop.create_task(fn())
 
+    async def handle_update(
+            self,
+            raw_update,
+            parsed_update,
+            handler_type,
+            *raw_update_args
+    ):
+        filtered_handlers: List[Tuple[Handler, Iterable[Any]]] = []
+
+        for group in self.groups.values():
+            for handler in group:
+                handler_args = None
+
+                if isinstance(handler, handler_type):
+                    try:
+                        if await handler.check(self.client, parsed_update):
+                            handler_args = (parsed_update,)
+                    except Exception as e:
+                        log.error(e, exc_info=True)
+                        continue
+
+                elif isinstance(handler, RawUpdateHandler):
+                    handler_args = (raw_update, *raw_update_args)
+
+                if handler_args is None:
+                    continue
+
+                filtered_handlers.append((handler, handler_args,))
+
+        for (handler, handler_args,) in filtered_handlers:
+            handler_callback = partial(handler.callback, self.client, *handler_args)
+
+            if bool(self._middlewares_handlers):
+                for m in self._middlewares_handlers:
+                    handler_callback = update_wrapper(
+                        partial(m, self.client, *handler_args, handler_callback),
+                        handler_callback
+                    )
+
+            try:
+                if inspect.iscoroutinefunction(handler_callback):
+                    await handler_callback()
+                else:
+                    await self.loop.run_in_executor(self.client.executor, handler_callback)
+            except pyrogram.StopPropagation:
+                raise
+            except pyrogram.ContinuePropagation:
+                continue
+            except Exception as e:
+                log.error(e, exc_info=True)
+
+            break
+
     async def handler_worker(self, lock):
         while True:
             packet = await self.updates_queue.get()
@@ -217,42 +309,7 @@ class Dispatcher:
                 )
 
                 async with lock:
-                    for group in self.groups.values():
-                        for handler in group:
-                            args = None
-
-                            if isinstance(handler, handler_type):
-                                try:
-                                    if await handler.check(self.client, parsed_update):
-                                        args = (parsed_update,)
-                                except Exception as e:
-                                    log.exception(e)
-                                    continue
-
-                            elif isinstance(handler, RawUpdateHandler):
-                                args = (update, users, chats)
-
-                            if args is None:
-                                continue
-
-                            try:
-                                if inspect.iscoroutinefunction(handler.callback):
-                                    await handler.callback(self.client, *args)
-                                else:
-                                    await self.loop.run_in_executor(
-                                        self.client.executor,
-                                        handler.callback,
-                                        self.client,
-                                        *args
-                                    )
-                            except pyrogram.StopPropagation:
-                                raise
-                            except pyrogram.ContinuePropagation:
-                                continue
-                            except Exception as e:
-                                log.exception(e)
-
-                            break
+                    await self.handle_update(update, parsed_update, handler_type, users, chats)
             except pyrogram.StopPropagation:
                 pass
             except Exception as e:

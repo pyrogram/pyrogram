@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,26 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .add_handler import AddHandler
-from .add_middleware import AddMiddleware
-from .export_session_string import ExportSessionString
-from .remove_handler import RemoveHandler
-from .restart import Restart
-from .run import Run
-from .start import Start
-from .stop import Stop
-from .stop_transmission import StopTransmission
+from pyrogram.middleware import Middleware
+from pyrogram.scaffold import Scaffold
 
 
-class Utilities(
-    AddHandler,
-    AddMiddleware,
-    ExportSessionString,
-    RemoveHandler,
-    Restart,
-    Run,
-    Start,
-    Stop,
-    StopTransmission
-):
-    pass
+class AddMiddleware(Scaffold):
+    def add_middleware(self, middleware: "Middleware"):
+        self.dispatcher.add_middleware(middleware)
+        return middleware
