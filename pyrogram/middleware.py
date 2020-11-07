@@ -4,5 +4,7 @@ from pyrogram import Client
 from pyrogram.types import Update
 
 UpdateType = TypeVar('UpdateType', bound=Update)
-CallNextMiddlewareCallback = Callable[[Client, UpdateType], Coroutine[Any]]
-Middleware = Callable[[Client, UpdateType, CallNextMiddlewareCallback], Coroutine[Any]]
+ClientType = TypeVar('ClientType', bound=Client)
+
+CallNextMiddlewareCallback = Callable[[ClientType, UpdateType], Coroutine[Any]]
+Middleware = Callable[[ClientType, UpdateType, CallNextMiddlewareCallback], Coroutine[Any]]
