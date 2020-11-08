@@ -141,6 +141,8 @@ def pyrogram_api():
             restart
             add_handler
             remove_handler
+            add_middleware
+            remove_middleware
             stop_transmission
             export_session_string
             set_parse_mode
