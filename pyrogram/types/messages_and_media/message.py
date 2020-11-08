@@ -124,7 +124,8 @@ class Message(Object, Update):
             The unique identifier of a media message group this message belongs to.
 
         author_signature (``str``, *optional*):
-            Signature of the post author for messages in channels.
+            Signature of the post author for messages in channels, or the custom title of an anonymous group
+            administrator.
 
         text (``str``, *optional*):
             For text messages, the actual UTF-8 text of the message, 0-4096 characters.
