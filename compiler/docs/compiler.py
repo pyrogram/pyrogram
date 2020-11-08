@@ -197,6 +197,7 @@ def pyrogram_api():
             set_chat_permissions
             pin_chat_message
             unpin_chat_message
+            unpin_all_chat_messages
             get_chat
             get_chat_member
             get_chat_members

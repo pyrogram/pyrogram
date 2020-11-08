@@ -49,6 +49,7 @@ from .set_chat_title import SetChatTitle
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
+from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
 
@@ -88,6 +89,7 @@ class Chats(
     GetNearbyChats,
     SetAdministratorTitle,
     SetSlowMode,
-    DeleteUserHistory
+    DeleteUserHistory,
+    UnpinAllChatMessages
 ):
     pass

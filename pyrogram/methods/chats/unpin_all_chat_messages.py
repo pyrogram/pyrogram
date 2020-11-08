@@ -22,23 +22,18 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class UnpinChatMessage(Scaffold):
-    async def unpin_chat_message(
+class UnpinAllChatMessages(Scaffold):
+    async def unpin_all_chat_messages(
         self,
         chat_id: Union[int, str],
-        message_id: int = 0
     ) -> bool:
-        """Unpin a message in a group, channel or your own chat.
-        You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin
-        right in the supergroup or "can_edit_messages" admin right in the channel.
+        """Use this method to clear the list of pinned messages in a chat.
+        If the chat is not a private chat, the bot must be an administrator in the chat for this to work and must have
+        the 'can_pin_messages' admin right in a supergroup or 'can_edit_messages' admin right in a channel.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-
-            message_id (``int``, *optional*):
-                Identifier of a message to unpin.
-                If not specified, the most recent pinned message (by sending date) will be unpinned.
 
         Returns:
             ``bool``: True on success.
@@ -46,13 +41,12 @@ class UnpinChatMessage(Scaffold):
         Example:
             .. code-block:: python
 
-                app.unpin_chat_message(chat_id, message_id)
+                # Unpin all chat messages
+                app.unpin_all_chat_messages(chat_id)
         """
         await self.send(
-            raw.functions.messages.UpdatePinnedMessage(
-                peer=await self.resolve_peer(chat_id),
-                id=message_id,
-                unpin=True
+            raw.functions.messages.UnpinAllMessages(
+                peer=await self.resolve_peer(chat_id)
             )
         )
 
