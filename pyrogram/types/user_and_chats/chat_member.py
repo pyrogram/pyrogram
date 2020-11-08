@@ -58,6 +58,10 @@ class ChatMember(Object):
         is_member (``bool``, *optional*):
             Restricted only. True, if the user is a member of the chat at the moment of the request.
 
+        is_anonymous (``bool``, *optional*):
+            True, if the user's presence in the chat is hidden.
+            Owner and administrators only.
+
         can_be_edited (``bool``, *optional*):
             Administrators only.
             True, if you are allowed to edit administrator privileges of the user.
@@ -138,6 +142,7 @@ class ChatMember(Object):
         promoted_by: "types.User" = None,
         restricted_by: "types.User" = None,
         is_member: bool = None,
+        is_anonymous: bool = None,
 
         # Admin permissions
         can_be_edited: bool = None,
@@ -171,6 +176,7 @@ class ChatMember(Object):
         self.promoted_by = promoted_by
         self.restricted_by = restricted_by
         self.is_member = is_member
+        self.is_anonymous = is_anonymous
 
         self.can_be_edited = can_be_edited
         self.can_post_messages = can_post_messages
@@ -243,6 +249,7 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 
@@ -265,6 +272,7 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 
