@@ -62,14 +62,20 @@ class Message(Object, Update):
         message_id (``int``):
             Unique message identifier inside this chat.
 
+        from_user (:obj:`~pyrogram.types.User`, *optional*):
+            Sender, empty for messages sent to channels.
+
+        sender_chat (:obj:`~pyrogram.types.Chat`, *optional*):
+            Sender of the message, sent on behalf of a chat.
+            The channel itself for channel messages.
+            The supergroup itself for messages from anonymous group administrators.
+            The linked channel for messages automatically forwarded to the discussion group.
+
         date (``int``, *optional*):
             Date the message was sent in Unix time.
 
         chat (:obj:`~pyrogram.types.Chat`, *optional*):
             Conversation the message belongs to.
-
-        from_user (:obj:`~pyrogram.types.User`, *optional*):
-            Sender, empty for messages sent to channels.
 
         forward_from (:obj:`~pyrogram.types.User`, *optional*):
             For forwarded messages, sender of the original message.
@@ -272,9 +278,10 @@ class Message(Object, Update):
         *,
         client: "pyrogram.Client" = None,
         message_id: int,
+        from_user: "types.User" = None,
+        sender_chat: "types.Chat" = None,
         date: int = None,
         chat: "types.Chat" = None,
-        from_user: "types.User" = None,
         forward_from: "types.User" = None,
         forward_sender_name: str = None,
         forward_from_chat: "types.Chat" = None,
@@ -337,9 +344,10 @@ class Message(Object, Update):
         super().__init__(client)
 
         self.message_id = message_id
+        self.from_user = from_user
+        self.sender_chat = sender_chat
         self.date = date
         self.chat = chat
-        self.from_user = from_user
         self.forward_from = forward_from
         self.forward_sender_name = forward_sender_name
         self.forward_from_chat = forward_from_chat
@@ -440,11 +448,15 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
 
+            from_user = types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None))
+            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
                 chat=types.Chat._parse(client, message, users, chats),
-                from_user=types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None)),
+                from_user=from_user,
+                sender_chat=sender_chat,
                 service=True,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
@@ -608,11 +620,15 @@ class Message(Object, Update):
                 else:
                     reply_markup = None
 
+            from_user = types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None))
+            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
                 chat=types.Chat._parse(client, message, users, chats),
-                from_user=types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None)),
+                from_user=from_user,
+                sender_chat=sender_chat,
                 text=(
                     Str(message.message).init(entities) or None
                     if media is None or web_page is not None
