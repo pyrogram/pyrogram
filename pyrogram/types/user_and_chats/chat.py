@@ -66,8 +66,12 @@ class Chat(Object):
         photo (:obj:`~pyrogram.types.ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
+        bio (``str``, *optional*):
+            Bio of the other party in a private chat.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
+
         description (``str``, *optional*):
-            Bio, for private chats and bots or description for groups, supergroups and channels.
+            Description, for groups, supergroups and channel chats.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
 
         dc_id (``int``, *optional*):
@@ -126,6 +130,7 @@ class Chat(Object):
         first_name: str = None,
         last_name: str = None,
         photo: "types.ChatPhoto" = None,
+        bio: str = None,
         description: str = None,
         dc_id: int = None,
         invite_link: str = None,
@@ -152,6 +157,7 @@ class Chat(Object):
         self.first_name = first_name
         self.last_name = last_name
         self.photo = photo
+        self.bio = bio
         self.description = description
         self.dc_id = dc_id
         self.invite_link = invite_link
@@ -245,7 +251,7 @@ class Chat(Object):
     async def _parse_full(client, chat_full: raw.types.messages.ChatFull or raw.types.UserFull) -> "Chat":
         if isinstance(chat_full, raw.types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
-            parsed_chat.description = chat_full.about
+            parsed_chat.bio = chat_full.about
 
             if chat_full.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
