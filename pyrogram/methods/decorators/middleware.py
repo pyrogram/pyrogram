@@ -16,22 +16,16 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.middleware import Middleware
+from typing import Callable
+
 from pyrogram.scaffold import Scaffold
 
 
-class AddMiddleware(Scaffold):
-    def add_middleware(self, middleware: "Middleware"):
-        """Register a middleware.
+class Middleware(Scaffold):
+    def middleware(self, func: Callable) -> Callable:
+        """Decorator for add middleware.
 
-        You can register multiple middlewares, they would be called in order you've added them.
-        It is useful for assigning some context variables, like I18n locale or some info about user from your database and so on
-
-        !Note that "call_next" argument must be always called "call_next" and will be passed to your middleware as kwarg
-
-        Parameters:
-            middleware (``Middleware``):
-                The handler to be registered.
+        This does the same thing as :meth:`~pyrogram.Client.add_middleware`
 
         Returns:
             ``Middleware``: A callable middleware.
@@ -42,16 +36,16 @@ class AddMiddleware(Scaffold):
 
                 from pyrogram import Client
 
+                app = Client("my_account")
+
+                @app.middleware
                 async def my_middleware(client, update, call_next):
                     print("Before all handlers")
                     await call_next(client, update)
                     print("After all handlers")
 
-                app = Client("my_account")
-
-                app.add_middleware(my_middleware)
-
                 app.run()
+
         """
-        self.dispatcher.add_middleware(middleware)
-        return middleware
+        self.add_middleware(func)
+        return func

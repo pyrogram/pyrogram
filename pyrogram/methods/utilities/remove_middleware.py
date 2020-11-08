@@ -20,25 +20,17 @@ from pyrogram.middleware import Middleware
 from pyrogram.scaffold import Scaffold
 
 
-class AddMiddleware(Scaffold):
-    def add_middleware(self, middleware: "Middleware"):
-        """Register a middleware.
-
-        You can register multiple middlewares, they would be called in order you've added them.
-        It is useful for assigning some context variables, like I18n locale or some info about user from your database and so on
-
-        !Note that "call_next" argument must be always called "call_next" and will be passed to your middleware as kwarg
+class RemoveMiddleware(Scaffold):
+    def remove_middleware(self, middleware: "Middleware"):
+        """Remove a previously-registered middleware.
 
         Parameters:
             middleware (``Middleware``):
-                The handler to be registered.
-
-        Returns:
-            ``Middleware``: A callable middleware.
+                The middleware to be removed.
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 9
+                :emphasize-lines: 10
 
                 from pyrogram import Client
 
@@ -51,7 +43,8 @@ class AddMiddleware(Scaffold):
 
                 app.add_middleware(my_middleware)
 
+                app.remove_middleware(middleware)
+
                 app.run()
         """
-        self.dispatcher.add_middleware(middleware)
-        return middleware
+        self.dispatcher.remove_middleware(middleware)
