@@ -47,8 +47,7 @@ class InvertFilter(Filter):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
-            x = await client.loop.run_in_executor(
-                client.executor,
+            x = await client.run_in_executor(
                 self.base,
                 client, update
             )
@@ -65,8 +64,7 @@ class AndFilter(Filter):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
-            x = await client.loop.run_in_executor(
-                client.executor,
+            x = await client.run_in_executor(
                 self.base,
                 client, update
             )
@@ -78,8 +76,7 @@ class AndFilter(Filter):
         if inspect.iscoroutinefunction(self.other.__call__):
             y = await self.other(client, update)
         else:
-            y = await client.loop.run_in_executor(
-                client.executor,
+            y = await client.run_in_executor(
                 self.other,
                 client, update
             )
@@ -96,8 +93,7 @@ class OrFilter(Filter):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
-            x = await client.loop.run_in_executor(
-                client.executor,
+            x = await client.run_in_executor(
                 self.base,
                 client, update
             )
@@ -109,8 +105,7 @@ class OrFilter(Filter):
         if inspect.iscoroutinefunction(self.other.__call__):
             y = await self.other(client, update)
         else:
-            y = await client.loop.run_in_executor(
-                client.executor,
+            y = await client.run_in_executor(
                 self.other,
                 client, update
             )

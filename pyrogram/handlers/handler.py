@@ -34,13 +34,7 @@ class Handler:
             if inspect.iscoroutinefunction(self.callback):
                 return await self.callback(client, *args, **kwargs)
             else:
-                return await client.loop.run_in_executor(
-                    client.executor,
-                    self.callback,
-                    client,
-                    *args,
-                    **kwargs
-                )
+                return await client.run_in_executor(self.callback, client, *args)
 
         return None
 
@@ -49,10 +43,6 @@ class Handler:
             if inspect.iscoroutinefunction(self.filters.__call__):
                 return await self.filters(client, update)
             else:
-                return await client.loop.run_in_executor(
-                    client.executor,
-                    self.filters,
-                    client, update
-                )
+                return await client.run_in_executor(self.filters, client, update)
 
         return True
