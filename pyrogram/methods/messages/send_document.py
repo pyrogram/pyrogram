@@ -152,9 +152,6 @@ class SendDocument(Scaffold):
         """
         file = None
 
-        # if isinstance(document, PurePath):
-        #     document = str(document)
-
         try:
             if isinstance(document, str):
                 if os.path.isfile(document):

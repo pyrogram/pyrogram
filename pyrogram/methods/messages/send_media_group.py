@@ -34,7 +34,12 @@ class SendMediaGroup(Scaffold):
     async def send_media_group(
         self,
         chat_id: Union[int, str],
-        media: List[Union["types.InputMediaPhoto", "types.InputMediaVideo", "types.InputMediaAudio"]],
+        media: List[Union[
+            "types.InputMediaPhoto",
+            "types.InputMediaVideo",
+            "types.InputMediaAudio",
+            "types.InputMediaDocument"
+        ]],
         disable_notification: bool = None,
         reply_to_message_id: int = None
     ) -> List["types.Message"]:
@@ -46,7 +51,7 @@ class SendMediaGroup(Scaffold):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (List of :obj:`~pyrogram.types.InputMediaPhoto` and :obj:`~pyrogram.types.InputMediaVideo`):
+            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio` and :obj:`~pyrogram.types.InputMediaDocument`):
                 A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
@@ -207,7 +212,49 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 4)
+                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 9)
+            elif isinstance(i, types.InputMediaDocument):
+                if os.path.isfile(i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaUploadedDocument(
+                                mime_type=self.guess_mime_type(i.media) or "application/zip",
+                                file=await self.save_file(i.media),
+                                thumb=await self.save_file(i.thumb),
+                                attributes=[
+                                    raw.types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                ]
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                elif re.match("^https?://", i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaDocumentExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 5)
 
             multi_media.append(
                 raw.types.InputSingleMedia(
