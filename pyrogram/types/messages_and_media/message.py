@@ -449,7 +449,8 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
 
-            from_user = types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None))
+            user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
+            from_user = types.User._parse(client, users.get(user, None))
             sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
 
             parsed_message = Message(
@@ -621,7 +622,8 @@ class Message(Object, Update):
                 else:
                     reply_markup = None
 
-            from_user = types.User._parse(client, users.get(utils.get_raw_peer_id(message.from_id), None))
+            user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
+            from_user = types.User._parse(client, users.get(user, None))
             sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
 
             parsed_message = Message(
