@@ -7,4 +7,4 @@ SESSION_REVOKED	The authorization has been invalidated, because of the user term
 SESSION_EXPIRED	The authorization has expired
 ACTIVE_USER_REQUIRED	The method is only available to already activated users
 AUTH_KEY_PERM_EMPTY	The method is unavailable for temporary authorization key, not bound to permanent
-SESSION_PASSWORD_NEEDED	Two-step verification password required
+SESSION_PASSWORD_NEEDED	The two-step verification is enabled and a password is required

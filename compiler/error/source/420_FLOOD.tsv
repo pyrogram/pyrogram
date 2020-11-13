@@ -2,3 +2,4 @@ id	message
 FLOOD_WAIT_X	A wait of {x} seconds is required
 TAKEOUT_INIT_DELAY_X	You have to confirm the data export request using one of your mobile devices or wait {x} seconds
 SLOWMODE_WAIT_X	A wait of {x} seconds is required to send messages in this chat.
+FLOOD_TEST_PHONE_WAIT_X	A wait of {x} seconds is required in the test servers
