@@ -77,6 +77,26 @@ class SendInvoice(Scaffold):
 
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the sent inline result message is returned.
+
+        Example:
+            .. code-block:: python
+                app.send_invoice(
+                    chat_id=chat_id,
+                    title="Magic Pen",
+                    description="WOW! This pen is magic...",
+                    invoice=Invoice(
+                        currency="EUR",
+                        prices=[
+                            LabeledPrice(label="The pen", amount=1000),
+                            LabeledPrice(label="Shipping", amount=500)
+                        ],
+                        shipping_address_requested=True
+                    ),
+                    payload="magicpen",
+                    provider=provider_token,
+                    provider_data=provider_data,
+                    start_param="buypen"
+                )
         """
         width = None
         height = None
