@@ -88,7 +88,7 @@ class MediaInvoice(Object):
             return MediaInvoice(
                 title=media_invoice.title,
                 description=media_invoice.description,
-                photo=types.WebDocument._parse(client, media_invoice.photo),
+                photo=types.WebDocument._parse(client, media_invoice.photo) if media_invoice.photo else None,
                 test=media_invoice.test,
                 currency=media_invoice.currency,
                 total_amount=media_invoice.total_amount,
