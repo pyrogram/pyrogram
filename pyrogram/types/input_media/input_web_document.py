@@ -24,7 +24,7 @@ from ..object import Object
 
 
 class InputWebDocument(Object):
-    """The web document to be sent
+    """The web document to be sent.
 
     Parameters:
         url (``str``):

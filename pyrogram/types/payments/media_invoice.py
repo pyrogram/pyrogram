@@ -25,7 +25,7 @@ from ..object import Object
 
 
 class MediaInvoice(Object):
-    """Generated invoice of a bot payment
+    """Generated invoice of a bot payment.
 
     Parameters:
         title (``str``):
