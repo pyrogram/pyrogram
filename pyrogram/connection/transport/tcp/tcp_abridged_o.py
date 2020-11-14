@@ -19,7 +19,10 @@
 import logging
 import os
 
+from typing import Union
+
 from pyrogram import utils
+
 from pyrogram.crypto import aes
 from .tcp import TCP
 
@@ -61,7 +64,7 @@ class TCPAbridgedO(TCP):
 
         await super().send(payload)
 
-    async def recv(self, length: int = 0) -> bytes or None:
+    async def recv(self, length: int = 0) -> Union[bytes, None]:
         length = await super().recv(1)
 
         if length is None:

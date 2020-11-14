@@ -2711,7 +2711,7 @@ class Message(Object, Update):
 
     async def forward(
         self,
-        chat_id: int or str,
+        chat_id: Union[int, str],
         disable_notification: bool = None,
         schedule_date: int = None
     ) -> Union["types.Message", List["types.Message"]]:
@@ -2975,7 +2975,7 @@ class Message(Object, Update):
             revoke=revoke
         )
 
-    async def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
+    async def click(self, x: Union[int, str] = 0, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:

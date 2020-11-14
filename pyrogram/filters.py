@@ -699,7 +699,7 @@ linked_channel = create(linked_channel_filter)
 # endregion
 
 
-def command(commands: str or List[str], prefixes: str or List[str] = "/", case_sensitive: bool = False):
+def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
     Parameters:
@@ -824,7 +824,7 @@ class user(Filter, set):
             Defaults to None (no users).
     """
 
-    def __init__(self, users: int or str or list = None):
+    def __init__(self, users: Union[int, str, list] = None):
         users = [] if users is None else users if isinstance(users, list) else [users]
 
         super().__init__(
@@ -856,7 +856,7 @@ class chat(Filter, set):
             Defaults to None (no chats).
     """
 
-    def __init__(self, chats: int or str or list = None):
+    def __init__(self, chats: Union[int, str, list] = None):
         chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
         super().__init__(

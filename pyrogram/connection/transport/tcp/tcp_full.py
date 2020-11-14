@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Union
 from binascii import crc32
 from struct import pack, unpack
 
@@ -42,7 +43,7 @@ class TCPFull(TCP):
 
         await super().send(data)
 
-    async def recv(self, length: int = 0) -> bytes or None:
+    async def recv(self, length: int = 0) -> Union[bytes, None]:
         length = await super().recv(4)
 
         if length is None:
