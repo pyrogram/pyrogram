@@ -100,6 +100,11 @@ class DownloadMedia(Scaffold):
                 You can pass anything you need to be available in the progress callback scope; for example, a Message
                 object or a Client instance in order to edit the message with the updated progress status.
 
+            guess_extension (``bool``, *optional*):
+                Guess the correct file extension and appends it to file name.
+                This is done automatically if file_name is missing or points to a directory, but when specifying a 
+                file name no extension will be added to it if this is set to False.
+
         Other Parameters:
             current (``int``):
                 The amount of bytes transmitted so far.
