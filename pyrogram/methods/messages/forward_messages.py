@@ -31,6 +31,7 @@ class ForwardMessages(Scaffold):
         message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
         as_copy: bool = False,
+        reply_to_message_id: int = None,
         remove_caption: bool = False,
         schedule_date: int = None
     ) -> List["types.Message"]:
@@ -59,6 +60,10 @@ class ForwardMessages(Scaffold):
                 Pass True to forward messages without the forward header (i.e.: send a copy of the message content so
                 that it appears as originally sent by you).
                 Defaults to False.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+                Has no effect if *as_copy* is not enabled.
 
             remove_caption (``bool``, *optional*):
                 If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
@@ -102,6 +107,7 @@ class ForwardMessages(Scaffold):
                             chat_id,
                             disable_notification=disable_notification,
                             as_copy=True,
+                            reply_to_message_id=reply_to_message_id,
                             remove_caption=remove_caption,
                             schedule_date=schedule_date
                         )

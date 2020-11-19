@@ -2657,6 +2657,7 @@ class Message(Object, Update):
         chat_id: int or str,
         disable_notification: bool = None,
         as_copy: bool = False,
+        reply_to_message_id: int = None,
         remove_caption: bool = False,
         schedule_date: int = None
     ) -> Union["types.Message", List["types.Message"]]:
@@ -2691,6 +2692,10 @@ class Message(Object, Update):
                 Pass True to forward messages without the forward header (i.e.: send a copy of the message content).
                 Defaults to False.
 
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+                Has no effect if *as_copy* is not enabled.
+
             remove_caption (``bool``, *optional*):
                 If set to True and *as_copy* is enabled as well, media captions are not preserved when copying the
                 message. Has no effect if *as_copy* is not enabled.
@@ -2719,6 +2724,7 @@ class Message(Object, Update):
                     parse_mode="html",
                     disable_web_page_preview=not self.web_page,
                     disable_notification=disable_notification,
+                    reply_to_message_id=reply_to_message_id,
                     schedule_date=schedule_date
                 )
             elif self.media:
@@ -2728,6 +2734,7 @@ class Message(Object, Update):
                     self._client.send_cached_media,
                     chat_id=chat_id,
                     disable_notification=disable_notification,
+                    reply_to_message_id=reply_to_message_id,
                     schedule_date=schedule_date
                 )
 
@@ -2755,6 +2762,7 @@ class Message(Object, Update):
                         last_name=self.contact.last_name,
                         vcard=self.contact.vcard,
                         disable_notification=disable_notification,
+                        reply_to_message_id=reply_to_message_id,
                         schedule_date=schedule_date
                     )
                 elif self.location:
@@ -2763,6 +2771,7 @@ class Message(Object, Update):
                         latitude=self.location.latitude,
                         longitude=self.location.longitude,
                         disable_notification=disable_notification,
+                        reply_to_message_id=reply_to_message_id,
                         schedule_date=schedule_date
                     )
                 elif self.venue:
@@ -2775,6 +2784,7 @@ class Message(Object, Update):
                         foursquare_id=self.venue.foursquare_id,
                         foursquare_type=self.venue.foursquare_type,
                         disable_notification=disable_notification,
+                        reply_to_message_id=reply_to_message_id,
                         schedule_date=schedule_date
                     )
                 elif self.poll:
@@ -2783,13 +2793,15 @@ class Message(Object, Update):
                         question=self.poll.question,
                         options=[opt.text for opt in self.poll.options],
                         disable_notification=disable_notification,
+                        reply_to_message_id=reply_to_message_id,
                         schedule_date=schedule_date
                     )
                 elif self.game:
                     return await self._client.send_game(
                         chat_id,
                         game_short_name=self.game.short_name,
-                        disable_notification=disable_notification
+                        disable_notification=disable_notification,
+                        reply_to_message_id=reply_to_message_id
                     )
                 else:
                     raise ValueError("Unknown media type")
