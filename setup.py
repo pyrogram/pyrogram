@@ -25,7 +25,7 @@ from setuptools import setup, find_packages, Command
 
 from compiler.api import compiler as api_compiler
 from compiler.docs import compiler as docs_compiler
-from compiler.error import compiler as error_compiler
+from compiler.errors import compiler as error_compiler
 
 with open("requirements.txt", encoding="utf-8") as r:
     requires = [i.strip() for i in r]

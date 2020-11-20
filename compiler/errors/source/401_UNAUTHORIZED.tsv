@@ -1,0 +1,10 @@
+id	message
+ACTIVE_USER_REQUIRED	The method is only available to already activated users
+AUTH_KEY_INVALID	The key is invalid
+AUTH_KEY_PERM_EMPTY	The method is unavailable for temporary authorization key, not bound to permanent
+AUTH_KEY_UNREGISTERED	The key is not registered in the system
+SESSION_EXPIRED	The authorization has expired
+SESSION_PASSWORD_NEEDED	The two-step verification is enabled and a password is required
+SESSION_REVOKED	The authorization has been invalidated, because of the user terminating all sessions
+USER_DEACTIVATED	The user has been deleted/deactivated
+USER_DEACTIVATED_BAN	The user has been deleted/deactivated
