@@ -21,7 +21,7 @@ import os
 import re
 import shutil
 
-HOME = "compiler/error"
+HOME = "compiler/errors"
 DEST = "pyrogram/errors/exceptions"
 NOTICE_PATH = "NOTICE"
 

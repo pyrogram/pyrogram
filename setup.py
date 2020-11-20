@@ -25,7 +25,7 @@ from setuptools import setup, find_packages, Command
 
 from compiler.api import compiler as api_compiler
 from compiler.docs import compiler as docs_compiler
-from compiler.errors import compiler as error_compiler
+from compiler.errors import compiler as errors_compiler
 
 with open("requirements.txt", encoding="utf-8") as r:
     requires = [i.strip() for i in r]
@@ -119,7 +119,7 @@ class Generate(Command):
 
     def run(self):
         if self.api:
-            error_compiler.start()
+            errors_compiler.start()
             api_compiler.start()
 
         if self.docs:
@@ -128,7 +128,7 @@ class Generate(Command):
 
 if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     api_compiler.start()
-    error_compiler.start()
+    errors_compiler.start()
 
 setup(
     name="Pyrogram",
