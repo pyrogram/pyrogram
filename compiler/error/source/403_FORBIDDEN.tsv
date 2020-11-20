@@ -1,7 +1,0 @@
-id	message
-CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
-RIGHT_FORBIDDEN	One or more admin rights can't be applied to this kind of chat (channel/supergroup)
-CHAT_ADMIN_INVITE_REQUIRED	You don't have rights to invite other users
-MESSAGE_DELETE_FORBIDDEN	You don't have rights to delete messages in this chat
-CHAT_SEND_MEDIA_FORBIDDEN	You can't send media messages in this chat
-MESSAGE_AUTHOR_REQUIRED	You are not the author of this message

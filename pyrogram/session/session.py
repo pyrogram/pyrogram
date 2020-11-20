@@ -243,7 +243,10 @@ class Session:
             else [data]
         )
 
-        log.debug(f"Received:\n{data}")
+        # Call log.debug twice because calling it once by appending "data" to the previous string (i.e. f"Kind: {data}")
+        # will cause "data" to be evaluated as string every time instead of only when debug is actually enabled.
+        log.debug("Received:")
+        log.debug(data)
 
         for msg in messages:
             if msg.seq_no == 0:
@@ -367,7 +370,10 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        log.debug(f"Sent:\n{message}")
+        # Call log.debug twice because calling it once by appending "data" to the previous string (i.e. f"Kind: {data}")
+        # will cause "data" to be evaluated as string every time instead of only when debug is actually enabled.
+        log.debug(f"Sent:")
+        log.debug(message)
 
         if len(message) <= self.EXECUTOR_SIZE_THRESHOLD:
             payload = mtproto.pack(
