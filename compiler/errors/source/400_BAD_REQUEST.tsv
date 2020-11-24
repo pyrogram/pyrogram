@@ -162,7 +162,7 @@ OFFSET_INVALID	The offset parameter is invalid
 OFFSET_PEER_ID_INVALID	The provided offset peer is invalid
 OPTIONS_TOO_MUCH	The poll options are too many
 OPTION_INVALID	The option specified is invalid and does not exist in the target poll
-PACK_SHORT_NAME_INVALID	Invalid sticker pack name. It must begin with a letter, can't contain consecutive underscores and must end in "_by_<bot username>".
+PACK_SHORT_NAME_INVALID	Invalid sticker pack name. It must begin with a letter, can't contain consecutive underscores and must end in 'by_<bot username>'.
 PACK_SHORT_NAME_OCCUPIED	A sticker pack with this name already exists
 PARTICIPANTS_TOO_FEW	The chat doesn't have enough participants
 PARTICIPANT_VERSION_OUTDATED	The other participant is using an outdated Telegram app version
