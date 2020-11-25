@@ -65,7 +65,8 @@ class DownloadMedia(Scaffold):
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
-        progress_args: tuple = ()
+        progress_args: tuple = (),
+        guess_extension: bool = True
     ) -> Union[str, None]:
         """Download the media from a message.
 
@@ -98,6 +99,11 @@ class DownloadMedia(Scaffold):
                 Extra custom arguments for the progress callback function.
                 You can pass anything you need to be available in the progress callback scope; for example, a Message
                 object or a Client instance in order to edit the message with the updated progress status.
+
+            guess_extension (``bool``, *optional*):
+                Guess the correct file extension and appends it to file name.
+                This is done automatically if file_name is missing or points to a directory, but when specifying a 
+                file name no extension will be added to it if this is set to False.
 
         Other Parameters:
             current (``int``):
@@ -237,30 +243,32 @@ class DownloadMedia(Scaffold):
 
         media_type_str = self.MEDIA_TYPE_ID[data.media_type]
 
+        guessed_extension = self.guess_extension(data.mime_type)
+
+        if data.media_type in (0, 1, 2, 14):
+            extension = ".jpg"
+        elif data.media_type == 3:
+            extension = guessed_extension or ".ogg"
+        elif data.media_type in (4, 10, 13):
+            extension = guessed_extension or ".mp4"
+        elif data.media_type == 5:
+            extension = guessed_extension or ".zip"
+        elif data.media_type == 8:
+            extension = guessed_extension or ".webp"
+        elif data.media_type == 9:
+            extension = guessed_extension or ".mp3"
+        else:
+            extension = ".unknown"
+
         if not file_name:
-            guessed_extension = self.guess_extension(data.mime_type)
-
-            if data.media_type in (0, 1, 2, 14):
-                extension = ".jpg"
-            elif data.media_type == 3:
-                extension = guessed_extension or ".ogg"
-            elif data.media_type in (4, 10, 13):
-                extension = guessed_extension or ".mp4"
-            elif data.media_type == 5:
-                extension = guessed_extension or ".zip"
-            elif data.media_type == 8:
-                extension = guessed_extension or ".webp"
-            elif data.media_type == 9:
-                extension = guessed_extension or ".mp3"
-            else:
-                extension = ".unknown"
-
             file_name = "{}_{}_{}{}".format(
                 media_type_str,
                 datetime.fromtimestamp(data.date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
                 self.rnd_id(),
                 extension
             )
+        elif guess_extension:
+            file_name = file_name + extension
 
         downloader = self.handle_download((data, directory, file_name, progress, progress_args))
 
