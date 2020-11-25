@@ -29,6 +29,7 @@ from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
 from .get_history import GetHistory
 from .get_history_count import GetHistoryCount
+from .get_media_group import GetMediaGroup
 from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .read_history import ReadHistory
@@ -64,6 +65,7 @@ class Messages(
     EditMessageText,
     ForwardMessages,
     GetHistory,
+    GetMediaGroup,
     GetMessages,
     SendAudio,
     SendChatAction,
