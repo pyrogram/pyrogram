@@ -27,26 +27,26 @@ import pyrogram
 
 
 class UpdateBucket(object):
-    __bucket: Dict[str, Any] = {}
+    _bucket: Dict[str, Any] = {}
 
     def __setattr__(self, key: str, value: Any):
-        if key in ['__bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
+        if key in ['_bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
             raise ValueError(f'You are unable to change {key} attribute')
 
         self.__bucket[key.lower()] = value
         return value
 
     def __getattribute__(self, name):
-        if name in ['__bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
+        if name in ['_bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
             return object.__getattribute__(self, name)
 
-        _bucket = object.__getattribute__(self, '__bucket')
-        _item = _bucket.get(name)
+        bucket = object.__getattribute__(self, '_bucket')
+        item = bucket.get(name)
 
-        if not bool(_item):
+        if not bool(item):
             raise AttributeError
 
-        return _item
+        return item
 
     def clear(self):
         self.__bucket.clear()
