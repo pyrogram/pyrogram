@@ -26,7 +26,7 @@ from typing import Any, Dict
 import pyrogram
 
 
-class UpdateBucket(object):
+class UpdateBucket:
     __bucket: Dict[str, Any] = {}
 
     def __setattr__(self, key: str, value: Any):
@@ -37,10 +37,10 @@ class UpdateBucket(object):
         return value
 
     def __getattribute__(self, item):
-        if item in ['clear', 'set', 'update', 'json', 'parse_json']:
-            return super(UpdateBucket, self).__getattribute__(item)
+        if (item.lower() in self.__bucket.keys()) and item not in ['clear', 'set', 'update', 'json', 'parse_json']:
+            return self.__bucket.get(item.lower())
 
-        return self.__bucket.get(item.lower(), None)
+        return super(UpdateBucket, self).__getattribute__(item)
 
     def clear(self):
         self.__bucket = {}
