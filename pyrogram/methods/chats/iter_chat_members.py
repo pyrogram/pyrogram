@@ -57,11 +57,11 @@ class IterChatMembers(Scaffold):
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
-                By default, no limit is applied and all members are returned.
+                By default, no limit is applied and all members are returned [1]_.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Defaults to "" (empty string).
+                Defaults to "" (empty string) [2]_.
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
@@ -73,6 +73,11 @@ class IterChatMembers(Scaffold):
                 *"recent"* - recent members only,
                 *"administrators"* - chat administrators only.
                 Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatMember` objects.
