@@ -64,10 +64,7 @@ class UpdateBucket(object):
 
 
 class Update:
-    bucket: UpdateBucket
-
-    def __init__(self):
-        self.bucket = UpdateBucket()
+    bucket: UpdateBucket = UpdateBucket()
 
     def stop_propagation(self):
         raise pyrogram.StopPropagation
