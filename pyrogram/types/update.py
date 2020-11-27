@@ -30,17 +30,31 @@ class UpdateBucket(object):
     __bucket: Dict[str, Any] = {}
 
     def __setattr__(self, key: str, value: Any):
-        if key in ['json', 'parse_json']:
+        if key in ['clear', 'set', 'update', 'json', 'parse_json']:
             raise ValueError(f'You are unable to change {key} attribute')
 
         self.__bucket[key.lower()] = value
         return value
 
     def __getattribute__(self, item: str):
-        if item in ['json', 'parse_json']:
+        if item in ['clear', 'set', 'update', 'json', 'parse_json']:
             raise AttributeError
 
         return self.__bucket.get(item.lower(), None)
+
+    def clear(self):
+        self.__bucket = {}
+
+    def set(self, data: Dict[str, Any] = None, **kwargs):
+        self.clear()
+        self.update(data, **kwargs)
+
+    def update(self, data: Dict[str, Any] = None, **kwargs):
+        if data is not None:
+            self.__bucket.update(data)
+
+        self.__bucket.update(kwargs)
+        return self.__bucket
 
     def json(self, **kwargs) -> str:
         return python_json.dumps(self.__bucket, **kwargs)
@@ -58,5 +72,6 @@ class Update:
     def stop_propagation(self):
         raise pyrogram.StopPropagation
 
-    def continue_propagation(self):
+    def continue_propagation(self, data: Dict[str, Any] = None, **kwargs):
+        self.bucket.update(data, **kwargs)
         raise pyrogram.ContinuePropagation
