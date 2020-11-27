@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import List
 
 from async_lru import alru_cache
@@ -25,7 +24,7 @@ import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.errors import StickersetInvalid
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
 
 
@@ -34,10 +33,11 @@ class Sticker(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         width (``int``):
             Sticker width.
@@ -77,7 +77,7 @@ class Sticker(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         width: int,
         height: int,
         is_animated: bool,
@@ -92,7 +92,7 @@ class Sticker(Object):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -137,16 +137,17 @@ class Sticker(Object):
             set_name = None
 
         return Sticker(
-            file_id=encode_file_id(
-                pack(
-                    "<iiqq",
-                    8,
-                    sticker.dc_id,
-                    sticker.id,
-                    sticker.access_hash
-                )
-            ),
-            file_ref=encode_file_ref(sticker.file_reference),
+            file_id=FileId(
+                file_type=FileType.STICKER,
+                dc_id=sticker.dc_id,
+                media_id=sticker.id,
+                access_hash=sticker.access_hash,
+                file_reference=sticker.file_reference
+            ).encode(),
+            file_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=sticker.id
+            ).encode(),
             width=image_size_attributes.w if image_size_attributes else 512,
             height=image_size_attributes.h if image_size_attributes else 512,
             is_animated=sticker.mime_type == "application/x-tgsticker",

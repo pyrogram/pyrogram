@@ -24,6 +24,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -32,7 +33,6 @@ class SendVideoNote(Scaffold):
         self,
         chat_id: Union[int, str],
         video_note: Union[str, BinaryIO],
-        file_ref: str = None,
         duration: int = 0,
         length: int = 1,
         thumb: Union[str, BinaryIO] = None,
@@ -62,10 +62,6 @@ class SendVideoNote(Scaffold):
                 pass a file path as string to upload a new video note that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
                 Sending video notes by a URL is currently unsupported.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -150,7 +146,7 @@ class SendVideoNote(Scaffold):
                         ]
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(video_note, file_ref, 13)
+                    media = utils.get_input_media_from_file_id(video_note, FileType.VIDEO_NOTE)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(video_note, progress=progress, progress_args=progress_args)

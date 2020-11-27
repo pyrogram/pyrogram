@@ -24,6 +24,7 @@ from typing import Union, List
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
@@ -117,7 +118,7 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 2)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
             elif isinstance(i, types.InputMediaVideo):
                 if os.path.isfile(i.media):
                     media = await self.send(
@@ -165,7 +166,7 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 4)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.VIDEO)
             elif isinstance(i, types.InputMediaAudio):
                 if os.path.isfile(i.media):
                     media = await self.send(
@@ -212,7 +213,7 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 9)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.AUDIO)
             elif isinstance(i, types.InputMediaDocument):
                 if os.path.isfile(i.media):
                     media = await self.send(
@@ -254,7 +255,7 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 5)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.DOCUMENT)
 
             multi_media.append(
                 raw.types.InputSingleMedia(

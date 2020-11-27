@@ -16,13 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import List
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
 
 
@@ -31,10 +30,11 @@ class Animation(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         width (``int``):
             Animation width as defined by sender.
@@ -66,7 +66,7 @@ class Animation(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         width: int,
         height: int,
         duration: int,
@@ -79,7 +79,7 @@ class Animation(Object):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
@@ -97,16 +97,17 @@ class Animation(Object):
         file_name: str
     ) -> "Animation":
         return Animation(
-            file_id=encode_file_id(
-                pack(
-                    "<iiqq",
-                    10,
-                    animation.dc_id,
-                    animation.id,
-                    animation.access_hash
-                )
-            ),
-            file_ref=encode_file_ref(animation.file_reference),
+            file_id=FileId(
+                file_type=FileType.ANIMATION,
+                dc_id=animation.dc_id,
+                media_id=animation.id,
+                access_hash=animation.access_hash,
+                file_reference=animation.file_reference
+            ).encode(),
+            file_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=animation.id
+            ).encode(),
             width=getattr(video_attributes, "w", 0),
             height=getattr(video_attributes, "h", 0),
             duration=getattr(video_attributes, "duration", 0),

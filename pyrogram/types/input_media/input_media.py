@@ -31,10 +31,9 @@ class InputMedia(Object):
     - :obj:`~pyrogram.types.InputMediaVideo`
     """
 
-    def __init__(self, media: str, file_ref: str, caption: str, parse_mode: str):
+    def __init__(self, media: str, caption: str, parse_mode: str):
         super().__init__()
 
         self.media = media
-        self.file_ref = file_ref
         self.caption = caption
         self.parse_mode = parse_mode

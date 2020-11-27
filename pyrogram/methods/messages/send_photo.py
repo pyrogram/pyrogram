@@ -25,6 +25,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,7 +34,6 @@ class SendPhoto(Scaffold):
         self,
         chat_id: Union[int, str],
         photo: Union[str, BinaryIO],
-        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         ttl_seconds: int = None,
@@ -63,10 +63,6 @@ class SendPhoto(Scaffold):
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet,
                 pass a file path as string to upload a new photo that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
@@ -154,7 +150,7 @@ class SendPhoto(Scaffold):
                         ttl_seconds=ttl_seconds
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(photo, file_ref, 2)
+                    media = utils.get_input_media_from_file_id(photo, FileType.PHOTO)
             else:
                 file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedPhoto(

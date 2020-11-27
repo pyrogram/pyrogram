@@ -29,60 +29,7 @@ from typing import Union
 
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
-
-
-def decode_file_id(s: str) -> bytes:
-    s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
-    r = b""
-
-    major = s[-1]
-    minor = s[-2] if major != 2 else 0
-
-    assert minor in (0, 22, 24)
-
-    skip = 2 if minor else 1
-
-    i = 0
-
-    while i < len(s) - skip:
-        if s[i] != 0:
-            r += bytes([s[i]])
-        else:
-            r += b"\x00" * s[i + 1]
-            i += 1
-
-        i += 1
-
-    return r
-
-
-def encode_file_id(s: bytes) -> str:
-    r = b""
-    n = 0
-
-    for i in s + bytes([22]) + bytes([4]):
-        if i == 0:
-            n += 1
-        else:
-            if n:
-                r += b"\x00" + bytes([n])
-                n = 0
-
-            r += bytes([i])
-
-    return base64.urlsafe_b64encode(r).decode().rstrip("=")
-
-
-def encode_file_ref(file_ref: bytes) -> str:
-    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
-
-
-def decode_file_ref(file_ref: str) -> bytes:
-    if file_ref is None:
-        return b""
-
-    return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
+from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
 
 
 async def ainput(prompt: str = "", *, hide: bool = False):
@@ -102,52 +49,38 @@ def get_offset_date(dialogs):
 
 
 def get_input_media_from_file_id(
-    file_id_str: str,
-    file_ref: str = None,
-    expected_media_type: int = None
+    file_id: str,
+    expected_file_type: FileType = None
 ) -> Union["raw.types.InputMediaPhoto", "raw.types.InputMediaDocument"]:
-    try:
-        decoded = decode_file_id(file_id_str)
-    except Exception:
-        raise ValueError(f"Failed to decode file_id: {file_id_str}")
-    else:
-        media_type = decoded[0]
+    decoded = FileId.decode(file_id)
 
-        if expected_media_type is not None:
-            if media_type != expected_media_type:
-                media_type_str = Scaffold.MEDIA_TYPE_ID.get(media_type, None)
-                expected_media_type_str = Scaffold.MEDIA_TYPE_ID.get(expected_media_type, None)
+    file_type = decoded.file_type
 
-                raise ValueError(f'Expected: "{expected_media_type_str}", got "{media_type_str}" file_id instead')
+    if expected_file_type is not None and file_type != expected_file_type:
+        raise ValueError(f'Expected: "{expected_file_type}", got "{file_type}" file_id instead')
 
-        if media_type in (0, 1, 14):
-            raise ValueError(f"This file_id can only be used for download: {file_id_str}")
+    if file_type in (FileType.THUMBNAIL, FileType.CHAT_PHOTO):
+        raise ValueError(f"This file_id can only be used for download: {file_id}")
 
-        if media_type == 2:
-            unpacked = struct.unpack("<iiqqqiiii", decoded)
-            dc_id, file_id, access_hash, volume_id, _, _, type, local_id = unpacked[1:]
-
-            return raw.types.InputMediaPhoto(
-                id=raw.types.InputPhoto(
-                    id=file_id,
-                    access_hash=access_hash,
-                    file_reference=decode_file_ref(file_ref)
-                )
+    if file_type in PHOTO_TYPES:
+        return raw.types.InputMediaPhoto(
+            id=raw.types.InputPhoto(
+                id=decoded.media_id,
+                access_hash=decoded.access_hash,
+                file_reference=decoded.file_reference
             )
+        )
 
-        if media_type in (3, 4, 5, 8, 9, 10, 13):
-            unpacked = struct.unpack("<iiqq", decoded)
-            dc_id, file_id, access_hash = unpacked[1:]
-
-            return raw.types.InputMediaDocument(
-                id=raw.types.InputDocument(
-                    id=file_id,
-                    access_hash=access_hash,
-                    file_reference=decode_file_ref(file_ref)
-                )
+    if file_type in DOCUMENT_TYPES:
+        return raw.types.InputMediaDocument(
+            id=raw.types.InputDocument(
+                id=decoded.media_id,
+                access_hash=decoded.access_hash,
+                file_reference=decoded.file_reference
             )
+        )
 
-        raise ValueError(f"Unknown media type: {file_id_str}")
+    raise ValueError(f"Unknown file id: {file_id}")
 
 
 async def parse_messages(client, messages: "raw.types.messages.Messages", replies: int = 1) -> List["types.Message"]:

@@ -25,6 +25,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,7 +34,6 @@ class SendDocument(Scaffold):
         self,
         chat_id: Union[int, str],
         document: Union[str, BinaryIO],
-        file_ref: str = None,
         thumb: Union[str, BinaryIO] = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -65,10 +65,6 @@ class SendDocument(Scaffold):
                 pass an HTTP URL as a string for Telegram to get a file from the Internet,
                 pass a file path as string to upload a new file that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the file sent.
@@ -171,7 +167,7 @@ class SendDocument(Scaffold):
                         url=document
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(document, file_ref, 5)
+                    media = utils.get_input_media_from_file_id(document, FileType.DOCUMENT)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(document, progress=progress, progress_args=progress_args)

@@ -25,6 +25,7 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,7 +34,6 @@ class SendAudio(Scaffold):
         self,
         chat_id: Union[int, str],
         audio: Union[str, BinaryIO],
-        file_ref: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
         duration: int = 0,
@@ -68,10 +68,6 @@ class SendAudio(Scaffold):
                 pass an HTTP URL as a string for Telegram to get an audio file from the Internet,
                 pass a file path as string to upload a new audio file that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
@@ -188,7 +184,7 @@ class SendAudio(Scaffold):
                         url=audio
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(audio, file_ref, 9)
+                    media = utils.get_input_media_from_file_id(audio, FileType.AUDIO)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(audio, progress=progress, progress_args=progress_args)

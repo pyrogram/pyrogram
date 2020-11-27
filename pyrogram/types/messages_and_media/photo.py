@@ -16,13 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import List
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType, ThumbnailSource
 from ..object import Object
 
 
@@ -31,10 +30,11 @@ class Photo(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this photo.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         width (``int``):
             Photo width.
@@ -60,7 +60,7 @@ class Photo(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         width: int,
         height: int,
         file_size: int,
@@ -71,7 +71,7 @@ class Photo(Object):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.width = width
         self.height = height
         self.file_size = file_size
@@ -82,18 +82,36 @@ class Photo(Object):
     @staticmethod
     def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> "Photo":
         if isinstance(photo, raw.types.Photo):
-            big = list(filter(lambda p: isinstance(p, raw.types.PhotoSize), photo.sizes))[-1]
+            big = photo.sizes[-1]
+
+            if isinstance(big, raw.types.PhotoSizeProgressive):
+                big = raw.types.PhotoSize(
+                    type=big.type,
+                    location=big.location,
+                    w=big.w,
+                    h=big.h,
+                    size=big.sizes[-1]
+                )
 
             return Photo(
-                file_id=encode_file_id(
-                    pack(
-                        "<iiqqqiiii",
-                        2, photo.dc_id, photo.id, photo.access_hash,
-                        big.location.volume_id, 1, 2, ord(big.type),
-                        big.location.local_id
-                    )
-                ),
-                file_ref=encode_file_ref(photo.file_reference),
+                file_id=FileId(
+                    file_type=FileType.PHOTO,
+                    dc_id=photo.dc_id,
+                    media_id=photo.id,
+                    access_hash=photo.access_hash,
+                    file_reference=photo.file_reference,
+                    thumbnail_source=ThumbnailSource.THUMBNAIL,
+                    thumbnail_file_type=FileType.PHOTO,
+                    thumbnail_size=big.type,
+                    volume_id=big.location.volume_id,
+                    local_id=big.location.local_id
+                ).encode(),
+                file_unique_id=FileUniqueId(
+                    file_unique_type=FileUniqueType.PHOTO,
+                    media_id=photo.id,
+                    volume_id=big.location.volume_id,
+                    local_id=big.location.local_id
+                ).encode(),
                 width=big.w,
                 height=big.h,
                 file_size=big.size,

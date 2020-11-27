@@ -23,6 +23,7 @@ from typing import Union
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -102,7 +103,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
+                media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -139,7 +140,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
+                media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -175,7 +176,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
+                media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -213,7 +214,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
+                media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -244,7 +245,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
+                media = utils.get_input_media_from_file_id(media.media, FileType.DOCUMENT)
 
         r = await self.send(
             raw.functions.messages.EditMessage(
