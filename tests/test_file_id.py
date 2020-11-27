@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pytest
+
 from pyrogram.file_id import FileId, FileUniqueId, FileType, FileUniqueType
 
 
@@ -155,3 +157,38 @@ def test_chat_photo():
     check_unique(channel_photo_small_unique, FileUniqueType.PHOTO)
     check(channel_photo_big, FileType.CHAT_PHOTO)
     check_unique(channel_photo_big_unique, FileUniqueType.PHOTO)
+
+
+def test_old_file_id():
+    old = "BQADBAADQNKSZqjl5DcROGn_eu5JtgAEAgAEAg"
+    check(old, FileType.DOCUMENT)
+
+
+def test_unknown_file_type():
+    unknown = "RQACAgIAAx0CAAGgr9AAAgmPX7b4UxbjNoFEO_L0I4s6wrXNJA8AAgQAA4GkuUm9FFvIaOhXWR4E"
+
+    with pytest.raises(ValueError, match=r"Unknown file_type \d+ of file_id \w+"):
+        check(unknown, FileType.DOCUMENT)
+
+
+def test_unknown_thumbnail_source():
+    unknown = "AAMCAgADHQIAAaCv0AACCY9ftvhTFuM2gUQ78vQjizrCtc0kDwACBAADgaS5Sb0UW8ho6FdZIH3qihAAA6QBAAIeBA"
+
+    with pytest.raises(ValueError, match=r"Unknown thumbnail_source \d+ of file_id \w+"):
+        check(unknown, FileType.THUMBNAIL)
+
+
+def test_stringify_file_id():
+    file_id = "BQACAgIAAx0CAAGgr9AAAgmPX7b4UxbjNoFEO_L0I4s6wrXNJA8AAgQAA4GkuUm9FFvIaOhXWR4E"
+    string = "{'major': 4, 'minor': 30, 'file_type': <FileType.DOCUMENT: 5>, 'dc_id': 2, " \
+             "'file_reference': b'\\x02\\x00\\xa0\\xaf\\xd0\\x00\\x00\\t\\x8f_\\xb6\\xf8S\\x16\\xe36\\x81D;\\xf2\\xf4#\\x8b:\\xc2\\xb5\\xcd$\\x0f', " \
+             "'media_id': 5312458109417947140, 'access_hash': 6437869729085068477}"
+
+    assert str(FileId.decode(file_id)) == string
+
+
+def test_stringify_file_unique_id():
+    file_unique_id = "AgADBAADgaS5SQ"
+    string = "{'file_unique_type': <FileUniqueType.DOCUMENT: 2>, 'media_id': 5312458109417947140}"
+
+    assert str(FileUniqueId.decode(file_unique_id)) == string
