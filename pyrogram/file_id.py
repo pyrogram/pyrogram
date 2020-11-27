@@ -335,8 +335,8 @@ class FileId:
             )
 
     def encode(self, *, major: int = None, minor: int = None):
-        major = major if major is not None else self.MAJOR
-        minor = minor if minor is not None else self.MINOR
+        major = major if major is not None else self.major
+        minor = minor if minor is not None else self.minor
 
         buffer = BytesIO()
 
