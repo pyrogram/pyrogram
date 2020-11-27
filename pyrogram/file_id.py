@@ -395,7 +395,7 @@ class FileId:
         return b64_encode(rle_encode(buffer.getvalue()))
 
     def __str__(self):
-        return str(self.__dict__)
+        return str({k: v for k, v in self.__dict__.items() if v is not None})
 
 
 class FileUniqueType(IntEnum):
@@ -475,4 +475,4 @@ class FileUniqueId:
         return b64_encode(rle_encode(string))
 
     def __str__(self):
-        return str(self.__dict__)
+        return str({k: v for k, v in self.__dict__.items() if v is not None})
