@@ -18,7 +18,7 @@
 
 import inspect
 import re
-from typing import Callable, Union, List, Pattern
+from typing import Callable, Union, List, Pattern, Dict
 
 import pyrogram
 from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
@@ -699,21 +699,26 @@ linked_channel = create(linked_channel_filter)
 # endregion
 
 
-def command(commands: str or List[str], prefixes: str or List[str] = "/", case_sensitive: bool = False):
+def command(commands: str or List[str], prefixes: str or List[str] = "/",
+            options: Dict[str, List[str]] = {}, flags: List[str] = [], case_sensitive: bool = False):
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
-
     Parameters:
         commands (``str`` | ``list``):
             The command or list of commands as string the filter should look for.
             Examples: "start", ["start", "help", "settings"]. When a message text containing
             a command arrives, the command itself and its arguments will be stored in the *command*
             field of the :obj:`~pyrogram.types.Message`.
-
         prefixes (``str`` | ``list``, *optional*):
             A prefix or a list of prefixes as string the filter should look for.
             Defaults to "/" (slash). Examples: ".", "!", ["/", "!", "."], list(".:!").
             Pass None or "" (empty string) to allow commands with no prefix at all.
-
+        options (``dict { str : list }``, *optional*):
+            A dictionary with name and list of keywords to match. If a keyword is matched 
+            in the commands, it will be consumed together with next element and put in the 
+            resulting "options" dict for ease of access. Examples : { "time": ["-t"] }
+        flags (``list``, *optional*):
+            A list of flags to search in the commands. If an element equals a flag given, it 
+            will be consumed and put in the resulting "flags" list. Example : [ "-list" ]
         case_sensitive (``bool``, *optional*):
             Pass True if you want your command(s) to be case sensitive. Defaults to False.
             Examples: when True, command="Start" would trigger /Start but not /start.
@@ -743,10 +748,32 @@ def command(commands: str or List[str], prefixes: str or List[str] = "/", case_s
                 # between the quotes, group(3) is unquoted, whitespace-split text
 
                 # Remove the escape character from the arguments
-                message.command = [cmd] + [
+                match_list = [
                     re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
                     for m in command_re.finditer(without_prefix[len(cmd):])
                 ]
+
+                message.command = { "raw" : [cmd] + list(match_list), # make a copy
+                                    "flags" : [] }
+
+                i = 0
+                while i < len(match_list):
+                    if match_list[i] in flt.flags:
+                        message.command["flags"].append(match_list.pop(i))
+                        continue
+                    op = False
+                    for k in flt.options:
+                        if match_list[i] in flt.options[k]:
+                            op = True
+                            match_list.pop(i)
+                            message.command[k] = match_list.pop(i)
+                            break
+                    if not op:
+                        i +=1
+
+                if len(match_list) > 0:
+                    message.command["cmd"] = match_list # everything not consumed
+                    message.command["arg"] = " ".join(match_list) # provide a joined argument already
 
                 return True
 
@@ -759,12 +786,20 @@ def command(commands: str or List[str], prefixes: str or List[str] = "/", case_s
     prefixes = prefixes if isinstance(prefixes, list) else [prefixes]
     prefixes = set(prefixes) if prefixes else {""}
 
+    flags = flags if isinstance(flags, list) else [flags]
+
+    for k in options:
+        options[k] = options[k] if isinstance(options[k], list) else [options[k]]
+
+
     return create(
         func,
         "CommandFilter",
         commands=commands,
         prefixes=prefixes,
-        case_sensitive=case_sensitive
+        case_sensitive=case_sensitive,
+        options=options,
+        flags=flags
     )
 
 
