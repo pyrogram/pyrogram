@@ -728,6 +728,7 @@ def command(commands: str or List[str], prefixes: str or List[str] = "/",
     async def func(flt, _, message: Message):
         text = message.text or message.caption
         message.command = None
+        message.opts = None
 
         if not text:
             return False
@@ -753,27 +754,29 @@ def command(commands: str or List[str], prefixes: str or List[str] = "/",
                     for m in command_re.finditer(without_prefix[len(cmd):])
                 ]
 
-                message.command = { "raw" : [cmd] + list(match_list), # make a copy
+                message.command = [cmd] + list(match_list) # make a copy, keep this for compatibility
+
+                message.opts = { "raw" : [cmd] + list(match_list), # make a copy
                                     "flags" : [] }
 
                 i = 0
                 while i < len(match_list):
                     if match_list[i] in flt.flags:
-                        message.command["flags"].append(match_list.pop(i))
+                        message.opts["flags"].append(match_list.pop(i))
                         continue
                     op = False
                     for k in flt.options:
                         if match_list[i] in flt.options[k]:
                             op = True
                             match_list.pop(i)
-                            message.command[k] = match_list.pop(i)
+                            message.opts[k] = match_list.pop(i)
                             break
                     if not op:
                         i +=1
 
                 if len(match_list) > 0:
-                    message.command["cmd"] = match_list # everything not consumed
-                    message.command["arg"] = " ".join(match_list) # provide a joined argument already
+                    message.opts["cmd"] = match_list # everything not consumed
+                    message.opts["arg"] = " ".join(match_list) # provide a joined argument already
 
                 return True
 
