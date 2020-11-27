@@ -16,10 +16,45 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+try:
+    import orjson as python_json
+except ImportError:
+    import json as python_json
+
+from typing import Any, Dict
+
 import pyrogram
 
 
+class UpdateBucket(object):
+    __bucket: Dict[str, Any] = {}
+
+    def __setattr__(self, key: str, value: Any):
+        if key in ['json', 'parse_json']:
+            raise ValueError(f'You are unable to change {key} attribute')
+
+        self.__bucket[key.lower()] = value
+        return value
+
+    def __getattribute__(self, item: str):
+        if item in ['json', 'parse_json']:
+            raise AttributeError
+
+        return self.__bucket.get(item.lower(), None)
+
+    def json(self, **kwargs) -> str:
+        return python_json.dumps(self.__bucket, **kwargs)
+
+    def parse_json(self, json: str):
+        self.__bucket = python_json.loads(json)
+
+
 class Update:
+    bucket: UpdateBucket
+
+    def __init__(self):
+        self.bucket = UpdateBucket()
+
     def stop_propagation(self):
         raise pyrogram.StopPropagation
 
