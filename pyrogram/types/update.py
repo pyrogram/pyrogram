@@ -30,7 +30,7 @@ class UpdateBucket:
     __bucket: Dict[str, Any] = {}
 
     def __setattr__(self, key: str, value: Any):
-        if key in ['clear', 'set', 'update', 'json', 'parse_json']:
+        if key in ['__bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
             raise ValueError(f'You are unable to change {key} attribute')
 
         self.__bucket[key.lower()] = value
@@ -46,7 +46,7 @@ class UpdateBucket:
         raise AttributeError
 
     def clear(self):
-        self.__bucket = {}
+        self.__bucket.clear()
 
     def set(self, data: Dict[str, Any] = None, **kwargs):
         self.clear()
@@ -63,7 +63,7 @@ class UpdateBucket:
         return python_json.dumps(self.__bucket, **kwargs)
 
     def parse_json(self, json: str):
-        self.__bucket = python_json.loads(json)
+        self.set(python_json.loads(json))
 
 
 class Update:
