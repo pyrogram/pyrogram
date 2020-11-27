@@ -36,9 +36,9 @@ class UpdateBucket(object):
         self.__bucket[key.lower()] = value
         return value
 
-    def __getattribute__(self, item: str):
+    def __getattribute__(self, item):
         if item in ['clear', 'set', 'update', 'json', 'parse_json']:
-            raise AttributeError
+            return super(UpdateBucket, self).__getattribute__(item)
 
         return self.__bucket.get(item.lower(), None)
 
