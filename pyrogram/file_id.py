@@ -159,7 +159,7 @@ class FileId:
         minor: int = MINOR,
         file_type: FileType,
         dc_id: int,
-        file_reference: bytes = None,
+        file_reference: bytes = b"",
         url: str = None,
         media_id: int = None,
         access_hash: int = None,
@@ -239,7 +239,7 @@ class FileId:
                 access_hash=access_hash
             )
 
-        file_reference = Bytes.read(buffer) if has_file_reference else None
+        file_reference = Bytes.read(buffer) if has_file_reference else b""
         media_id, access_hash = struct.unpack("<qq", buffer.read(16))
 
         if file_type in PHOTO_TYPES:
