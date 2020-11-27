@@ -56,9 +56,10 @@ class UpdateBucket(object):
         self.update(data, **kwargs)
 
     def update(self, data: Dict[str, Any] = None, **kwargs):
-        if data is not None:
-            self._bucket.update(data)
+        if data is None:
+            data = {}
 
+        self._bucket.update(data)
         self._bucket.update(kwargs)
         return self._bucket
 

@@ -37,7 +37,8 @@ from typing import Union, List, Optional, Callable, AsyncGenerator
 import pyrogram
 from pyrogram import __version__, __license__
 from pyrogram import enums
-from pyrogram import raw, utils
+from pyrogram import raw
+from pyrogram import utils
 from pyrogram.crypto import aes
 from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.errors import (
@@ -48,8 +49,8 @@ from pyrogram.errors import (
 from pyrogram.handlers.handler import Handler
 from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
-from pyrogram.storage import FileStorage, MemoryStorage, Storage
-from pyrogram.types import TermsOfService, User
+from pyrogram.storage import Storage, FileStorage, MemoryStorage
+from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
 from .file_id import FileId, FileType, ThumbnailSource

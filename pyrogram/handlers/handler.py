@@ -29,20 +29,15 @@ class Handler:
         self.callback = callback
         self.filters = filters
 
-    async def __call__(self, client: "pyrogram.Client", *args, **kwargs):
-        if callable(self.callback):
-            if inspect.iscoroutinefunction(self.callback):
-                return await self.callback(client, *args, **kwargs)
-            else:
-                return await client.run_in_executor(self.callback, client, *args)
-
-        return None
-
     async def check(self, client: "pyrogram.Client", update: Update):
         if callable(self.filters):
             if inspect.iscoroutinefunction(self.filters.__call__):
                 return await self.filters(client, update)
             else:
-                return await client.run_in_executor(self.filters, client, update)
+                return await client.loop.run_in_executor(
+                    client.executor,
+                    self.filters,
+                    client, update
+                )
 
         return True
