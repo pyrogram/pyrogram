@@ -36,11 +36,17 @@ class UpdateBucket(object):
         self.__bucket[key.lower()] = value
         return value
 
-    def __getattribute__(self, item):
-        if item.lower() in self.__bucket.keys():
-            return self.__bucket.get(item.lower())
+    def __getattribute__(self, name):
+        if name in ['__bucket', 'clear', 'set', 'update', 'json', 'parse_json']:
+            return object.__getattribute__(self, name)
 
-        return super(UpdateBucket, self).__getattribute__(item)
+        _bucket = object.__getattribute__(self, '__bucket')
+        _item = _bucket.get(name)
+
+        if not bool(_item):
+            raise AttributeError
+
+        return _item
 
     def clear(self):
         self.__bucket.clear()
