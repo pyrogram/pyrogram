@@ -35,7 +35,7 @@ class OnInlineQuery(Scaffold):
         :obj:`~pyrogram.handlers.InlineQueryHandler`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of inline queries to be passed
                 in your function.
 

@@ -34,7 +34,7 @@ class OnUserStatus(Scaffold):
         :obj:`~pyrogram.handlers.UserStatusHandler`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.
 
             group (``int``, *optional*):

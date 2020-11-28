@@ -35,7 +35,7 @@ class OnDeletedMessages(Scaffold):
         :obj:`~pyrogram.handlers.DeletedMessagesHandler`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of messages to be passed
                 in your function.
 

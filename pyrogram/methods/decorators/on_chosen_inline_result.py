@@ -35,7 +35,7 @@ class OnChosenInlineResult(Scaffold):
         :obj:`~pyrogram.handlers.ChosenInlineResult`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of chosen inline results to be passed
                 in your function.
 
