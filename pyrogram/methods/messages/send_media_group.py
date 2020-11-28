@@ -42,7 +42,8 @@ class SendMediaGroup(Scaffold):
             "types.InputMediaDocument"
         ]],
         disable_notification: bool = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        schedule_date: int = None,
     ) -> List["types.Message"]:
         """Send a group of photos or videos as an album.
 
@@ -61,6 +62,9 @@ class SendMediaGroup(Scaffold):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of the sent messages is returned.
@@ -270,7 +274,8 @@ class SendMediaGroup(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                reply_to_msg_id=reply_to_message_id,
+                schedule_date=schedule_date
             ),
             sleep_threshold=60
         )
@@ -279,7 +284,9 @@ class SendMediaGroup(Scaffold):
             self,
             raw.types.messages.Messages(
                 messages=[m.message for m in filter(
-                    lambda u: isinstance(u, (raw.types.UpdateNewMessage, raw.types.UpdateNewChannelMessage)),
+                    lambda u: isinstance(u, (raw.types.UpdateNewMessage,
+                                             raw.types.UpdateNewChannelMessage,
+                                             raw.types.UpdateNewScheduledMessage)),
                     r.updates
                 )],
                 users=r.users,
