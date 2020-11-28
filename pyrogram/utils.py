@@ -52,7 +52,11 @@ def get_input_media_from_file_id(
     file_id: str,
     expected_file_type: FileType = None
 ) -> Union["raw.types.InputMediaPhoto", "raw.types.InputMediaDocument"]:
-    decoded = FileId.decode(file_id)
+    try:
+        decoded = FileId.decode(file_id)
+    except Exception:
+        raise ValueError(f'Failed to decode "{file_id}". The value does not represent an existing local file, '
+                         f'HTTP URL, or valid file id.')
 
     file_type = decoded.file_type
 
