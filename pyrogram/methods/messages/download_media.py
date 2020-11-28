@@ -32,7 +32,7 @@ DEFAULT_DOWNLOAD_DIR = "downloads/"
 class DownloadMedia(Scaffold):
     async def download_media(
         self,
-        media: Union["types.Message", str],
+        message: Union["types.Message", str],
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
@@ -41,7 +41,7 @@ class DownloadMedia(Scaffold):
         """Download the media from a message.
 
         Parameters:
-            media (:obj:`~pyrogram.types.Message` | ``str``):
+            message (:obj:`~pyrogram.types.Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id
                 as string.
 
@@ -103,14 +103,16 @@ class DownloadMedia(Scaffold):
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
                            "new_chat_photo")
 
-        if isinstance(media, types.Message):
+        if isinstance(message, types.Message):
             for kind in available_media:
-                media = getattr(media, kind, None)
+                media = getattr(message, kind, None)
 
                 if media is not None:
                     break
             else:
                 raise ValueError("This message doesn't contain any downloadable media")
+        else:
+            media = message
 
         if isinstance(media, str):
             file_id_str = media
