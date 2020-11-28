@@ -37,8 +37,8 @@ class RawUpdateHandler(Handler):
             The Client itself, useful when you want to call other API methods inside the update handler.
 
         update (``Update``):
-            The received update, which can be one of the many single Updates listed in the *updates*
-            field you see in the :obj:`~pyrogram.types.Update` type.
+            The received update, which can be one of the many single Updates listed in the
+            :obj:`~pyrogram.raw.base.Update` base type.
 
         users (``dict``):
             Dictionary of all :obj:`~pyrogram.types.User` mentioned in the update.
@@ -47,7 +47,7 @@ class RawUpdateHandler(Handler):
 
         chats (``dict``):
             Dictionary of all :obj:`~pyrogram.types.Chat` and
-            :obj:`Channel <pyrogram.api.types.Channel>` mentioned in the update.
+            :obj:`~pyrogram.raw.types.Channel` mentioned in the update.
             You can access extra info about the chat (such as *title*, *participants_count*, etc...)
             by using the IDs you find in the *update* argument (e.g.: *chats[1701277281]*).
 
@@ -55,10 +55,10 @@ class RawUpdateHandler(Handler):
         The following Empty or Forbidden types may exist inside the *users* and *chats* dictionaries.
         They mean you have been blocked by the user or banned from the group/channel.
 
-        - :obj:`UserEmpty <pyrogram.api.types.UserEmpty>`
-        - :obj:`ChatEmpty <pyrogram.api.types.ChatEmpty>`
-        - :obj:`ChatForbidden <pyrogram.api.types.ChatForbidden>`
-        - :obj:`ChannelForbidden <pyrogram.api.types.ChannelForbidden>`
+        - :obj:`~pyrogram.raw.types.UserEmpty`
+        - :obj:`~pyrogram.raw.types.ChatEmpty`
+        - :obj:`~pyrogram.raw.types.ChatForbidden`
+        - :obj:`~pyrogram.raw.types.ChannelForbidden`
     """
 
     def __init__(self, callback: callable):
