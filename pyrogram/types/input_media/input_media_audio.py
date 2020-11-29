@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
 from .input_media import InputMedia
+from ..messages_and_media import MessageEntity
 
 
 class InputMediaAudio(InputMedia):
@@ -48,6 +49,9 @@ class InputMediaAudio(InputMedia):
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
 
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
         duration (``int``, *optional*):
             Duration of the audio in seconds
 
@@ -64,11 +68,12 @@ class InputMediaAudio(InputMedia):
         thumb: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List[MessageEntity] = None,
         duration: int = 0,
         performer: str = "",
         title: str = ""
     ):
-        super().__init__(media, caption, parse_mode)
+        super().__init__(media, caption, parse_mode, caption_entities)
 
         self.thumb = thumb
         self.duration = duration

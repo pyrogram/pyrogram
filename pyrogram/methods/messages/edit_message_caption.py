@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
@@ -29,6 +29,7 @@ class EditMessageCaption(Scaffold):
         message_id: int,
         caption: str,
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "types.Message":
         """Edit the caption of media messages.
@@ -52,6 +53,9 @@ class EditMessageCaption(Scaffold):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
@@ -68,5 +72,6 @@ class EditMessageCaption(Scaffold):
             message_id=message_id,
             text=caption,
             parse_mode=parse_mode,
+            entities=caption_entities,
             reply_markup=reply_markup
         )

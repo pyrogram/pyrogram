@@ -711,6 +711,7 @@ class Message(Object, Update):
         text: str,
         quote: bool = None,
         parse_mode: Union[str, None] = object,
+        entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -749,6 +750,9 @@ class Message(Object, Update):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in message text, which can be specified instead of __parse_mode__.
+
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
 
@@ -779,6 +783,7 @@ class Message(Object, Update):
             chat_id=self.chat.id,
             text=text,
             parse_mode=parse_mode,
+            entities=entities,
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
@@ -793,6 +798,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -845,6 +851,9 @@ class Message(Object, Update):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             duration (``int``, *optional*):
                 Duration of sent animation in seconds.
@@ -913,6 +922,7 @@ class Message(Object, Update):
             animation=animation,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             duration=duration,
             width=width,
             height=height,
@@ -930,6 +940,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         performer: str = None,
         title: str = None,
@@ -982,6 +993,9 @@ class Message(Object, Update):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             duration (``int``, *optional*):
                 Duration of the audio in seconds.
@@ -1050,6 +1064,7 @@ class Message(Object, Update):
             audio=audio,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             duration=duration,
             performer=performer,
             title=title,
@@ -1067,6 +1082,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1112,6 +1128,9 @@ class Message(Object, Update):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -1140,6 +1159,7 @@ class Message(Object, Update):
             file_id=file_id,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup
@@ -1275,6 +1295,7 @@ class Message(Object, Update):
         thumb: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         reply_markup: Union[
@@ -1330,6 +1351,9 @@ class Message(Object, Update):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -1383,6 +1407,7 @@ class Message(Object, Update):
             thumb=thumb,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
             reply_markup=reply_markup,
@@ -1670,6 +1695,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1719,6 +1745,9 @@ class Message(Object, Update):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             ttl_seconds (``int``, *optional*):
                 Self-Destruct Timer.
@@ -1777,6 +1806,7 @@ class Message(Object, Update):
             photo=photo,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             ttl_seconds=ttl_seconds,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
@@ -2093,6 +2123,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -2146,6 +2177,9 @@ class Message(Object, Update):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -2217,6 +2251,7 @@ class Message(Object, Update):
             video=video,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             duration=duration,
             width=width,
             height=height,
@@ -2353,6 +2388,7 @@ class Message(Object, Update):
         quote: bool = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2402,6 +2438,9 @@ class Message(Object, Update):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             duration (``int``, *optional*):
                 Duration of the voice message in seconds.
@@ -2458,6 +2497,7 @@ class Message(Object, Update):
             voice=voice,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             duration=duration,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
@@ -2470,6 +2510,7 @@ class Message(Object, Update):
         self,
         text: str,
         parse_mode: Union[str, None] = object,
+        entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "Message":
@@ -2501,6 +2542,9 @@ class Message(Object, Update):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in message text, which can be specified instead of __parse_mode__.
+
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
 
@@ -2518,6 +2562,7 @@ class Message(Object, Update):
             message_id=self.message_id,
             text=text,
             parse_mode=parse_mode,
+            entities=entities,
             disable_web_page_preview=disable_web_page_preview,
             reply_markup=reply_markup
         )
@@ -2528,6 +2573,7 @@ class Message(Object, Update):
         self,
         caption: str,
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit_caption* of :obj:`~pyrogram.types.Message`.
@@ -2558,6 +2604,9 @@ class Message(Object, Update):
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
 
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
 
@@ -2572,6 +2621,7 @@ class Message(Object, Update):
             message_id=self.message_id,
             caption=caption,
             parse_mode=parse_mode,
+            caption_entities=caption_entities,
             reply_markup=reply_markup
         )
 

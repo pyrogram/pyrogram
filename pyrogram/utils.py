@@ -24,9 +24,9 @@ import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
 from getpass import getpass
-from typing import List
-from typing import Union
+from typing import Union, List, Dict
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
@@ -294,3 +294,24 @@ def compute_password_check(r: raw.types.account.Password, password: str) -> raw.
     )
 
     return raw.types.InputCheckPasswordSRP(srp_id=srp_id, A=A_bytes, M1=M1_bytes)
+
+
+async def parse_text_entities(
+    client: "pyrogram.Client",
+    text: str,
+    parse_mode: str,
+    entities: List["types.MessageEntity"]
+) -> Dict[str, raw.base.MessageEntity]:
+    if entities:
+        # Inject the client instance because parsing user mentions requires it
+        for entity in entities:
+            entity._client = client
+
+        text, entities = text, [await entity.write() for entity in entities]
+    else:
+        text, entities = (await client.parser.parse(text, parse_mode)).values()
+
+    return {
+        "message": text,
+        "entities": entities
+    }

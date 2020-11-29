@@ -16,6 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
+from ..messages_and_media import MessageEntity
 from ..object import Object
 
 
@@ -31,9 +34,16 @@ class InputMedia(Object):
     - :obj:`~pyrogram.types.InputMediaVideo`
     """
 
-    def __init__(self, media: str, caption: str, parse_mode: str):
+    def __init__(
+        self,
+        media: str,
+        caption: str = None,
+        parse_mode: str = None,
+        caption_entities: List[MessageEntity] = None
+    ):
         super().__init__()
 
         self.media = media
         self.caption = caption
         self.parse_mode = parse_mode
+        self.caption_entities = caption_entities

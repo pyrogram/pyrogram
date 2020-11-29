@@ -18,7 +18,7 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, List
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -37,6 +37,7 @@ class SendAnimation(Scaffold):
         caption: str = "",
         unsave: bool = False,
         parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -82,6 +83,9 @@ class SendAnimation(Scaffold):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
 
             duration (``int``, *optional*):
                 Duration of sent animation in seconds.
@@ -219,7 +223,7 @@ class SendAnimation(Scaffold):
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **await self.parser.parse(caption, parse_mode)
+                            **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:
