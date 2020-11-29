@@ -18,7 +18,7 @@
 
 import logging
 
-from typing import Union
+from typing import Optional
 
 from .tcp import TCP
 
@@ -43,7 +43,7 @@ class TCPAbridged(TCP):
             + data
         )
 
-    async def recv(self, length: int = 0) -> Union[bytes, None]:
+    async def recv(self, length: int = 0) -> Optional[bytes]:
         length = await super().recv(1)
 
         if length is None:

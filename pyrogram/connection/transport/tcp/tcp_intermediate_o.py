@@ -18,7 +18,7 @@
 
 import logging
 import os
-from typing import Union
+from typing import Optional
 from struct import pack, unpack
 
 from pyrogram.crypto import aes
@@ -63,7 +63,7 @@ class TCPIntermediateO(TCP):
             )
         )
 
-    async def recv(self, length: int = 0) -> Union[bytes, None]:
+    async def recv(self, length: int = 0) -> Optional[bytes]:
         length = await super().recv(4)
 
         if length is None:

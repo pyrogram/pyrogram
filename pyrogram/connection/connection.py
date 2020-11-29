@@ -19,7 +19,7 @@
 import asyncio
 import logging
 
-from typing import Union
+from typing import Optional
 
 from .transport import *
 from ..session.internals import DataCenter
@@ -81,5 +81,5 @@ class Connection:
         except Exception:
             raise OSError
 
-    async def recv(self) -> Union[bytes, None]:
+    async def recv(self) -> Optional[bytes]:
         return await self.protocol.recv()
