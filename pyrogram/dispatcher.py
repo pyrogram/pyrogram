@@ -324,16 +324,16 @@ class Dispatcher:
 
                 break
 
-    async def handle_update_with_middlewares(self, update, parsed_update, handler_type, users, chats):
+    async def handle_update_with_middlewares(self, parsed_update, handler_type):
         async def fn(*_, **__):
-            return await self.handle_update(update, parsed_update, handler_type, users, chats)
+            return await self.handle_update(None, parsed_update, handler_type, None, None)
 
         call_next = fn
 
         for m in self.__middlewares_handlers:
             call_next = update_wrapper(partial(m, call_next=call_next), call_next)
 
-        return await call_next(self.client, parsed_update if bool(parsed_update) else update)
+        return await call_next(self.client, parsed_update)
 
     async def handler_worker(self, lock):
         while True:
@@ -353,12 +353,11 @@ class Dispatcher:
                 )
 
                 async with lock:
-                    handler_args = (update, parsed_update, handler_type, users, chats)
-
-                    if bool(self.__middlewares_handlers):
-                        await self.handle_update_with_middlewares(*handler_args)
+                    # TODO: Add support for RawUpdateHandler
+                    if bool(parsed_update) and bool(self.__middlewares_handlers):
+                        await self.handle_update_with_middlewares(parsed_update, handler_type)
                     else:
-                        await self.handle_update(*handler_args)
+                        await self.handle_update(update, parsed_update, handler_type, users, chats)
 
             except pyrogram.StopPropagation:
                 pass
