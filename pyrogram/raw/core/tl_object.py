@@ -33,7 +33,7 @@ class TLObject:
         try:
             return cast(TLObject, objects[int.from_bytes(data.read(4), "little")]).read(data, *args)
         except KeyError as e:
-            left = data.read()
+            left = data.read().hex()
 
             left = [left[i:i + 64] for i in range(0, len(left), 64)]
             left = [[left[i:i + 8] for i in range(0, len(left), 8)] for left in left]
