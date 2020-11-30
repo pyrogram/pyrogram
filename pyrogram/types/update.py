@@ -44,7 +44,7 @@ class UpdateBucket(object):
         item = bucket.get(name)
 
         if not bool(item):
-            raise AttributeError
+            return object.__getattribute__(self, name)
 
         return item
 
