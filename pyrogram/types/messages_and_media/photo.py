@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -80,9 +80,12 @@ class Photo(Object):
         self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> "Photo":
+    def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> Optional["Photo"]:
         if isinstance(photo, raw.types.Photo):
             big = photo.sizes[-1]
+
+            if isinstance(big, raw.types.PhotoStrippedSize):
+                return None
 
             if isinstance(big, raw.types.PhotoSizeProgressive):
                 big = raw.types.PhotoSize(
