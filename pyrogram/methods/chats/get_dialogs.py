@@ -89,7 +89,7 @@ class GetDialogs(Scaffold):
         messages = {}
 
         for message in r.messages:
-            if message.empty:
+            if isinstance(message, raw.types.MessageEmpty):
                 continue
             
             peer_id = message.peer_id
