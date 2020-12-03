@@ -2124,6 +2124,7 @@ class Message(Object, Update):
         caption: str = "",
         parse_mode: Union[str, None] = object,
         caption_entities: List["types.MessageEntity"] = None,
+        ttl_seconds: int = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -2180,6 +2181,11 @@ class Message(Object, Update):
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
+            ttl_seconds (``int``, *optional*):
+                Self-Destruct Timer.
+                If you set a timer, the video will self-destruct in *ttl_seconds*
+                seconds after it was viewed.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -2252,6 +2258,7 @@ class Message(Object, Update):
             caption=caption,
             parse_mode=parse_mode,
             caption_entities=caption_entities,
+            ttl_seconds=ttl_seconds,
             duration=duration,
             width=width,
             height=height,
