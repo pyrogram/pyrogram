@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class CopyMessage(Scaffold):
-    async def copy_messages(
+    async def copy_message(
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
