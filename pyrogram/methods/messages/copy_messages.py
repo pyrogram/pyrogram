@@ -17,8 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from functools import partial
-from typing import Union, Iterable, List
+from typing import Union, List
 
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
@@ -31,7 +30,7 @@ class CopyMessage(Scaffold):
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
-        message_id: Union[int, Iterable[int]],
+        message_id: int,
         caption: str = None,
         parse_mode: Union[str, None] = object,
         caption_entities: List["types.MessageEntity"] = None,
@@ -105,102 +104,13 @@ class CopyMessage(Scaffold):
         """
         message: types.Message = await self.get_messages(from_chat_id, message_id)
 
-        if message.service:
-            log.warning(f"Service messages cannot be copied. "
-                        f"chat_id: {message.chat.id}, message_id: {message.message_id}")
-        elif message.game and not await self.storage.is_bot():
-            log.warning(f"Users cannot send messages with Game media type. "
-                        f"chat_id: {message.chat.id}, message_id: {message.message_id}")
-        elif message.text:
-            return await self.send_message(
-                chat_id,
-                text=message.text,
-                entities=message.entities,
-                disable_web_page_preview=not message.web_page,
-                disable_notification=disable_notification,
-                schedule_date=schedule_date
-            )
-        elif message.media:
-            send_media = partial(
-                self.send_cached_media,
-                chat_id=chat_id,
-                disable_notification=disable_notification,
-                reply_to_message_id=reply_to_message_id,
-                schedule_date=schedule_date,
-                reply_markup=reply_markup
-            )
-
-            if message.photo:
-                file_id = message.photo.file_id
-            elif message.audio:
-                file_id = message.audio.file_id
-            elif message.document:
-                file_id = message.document.file_id
-            elif message.video:
-                file_id = message.video.file_id
-            elif message.animation:
-                file_id = message.animation.file_id
-            elif message.voice:
-                file_id = message.voice.file_id
-            elif message.sticker:
-                file_id = message.sticker.file_id
-            elif message.video_note:
-                file_id = message.video_note.file_id
-            elif message.contact:
-                return await self.send_contact(
-                    chat_id,
-                    phone_number=message.contact.phone_number,
-                    first_name=message.contact.first_name,
-                    last_name=message.contact.last_name,
-                    vcard=message.contact.vcard,
-                    disable_notification=disable_notification,
-                    schedule_date=schedule_date
-                )
-            elif message.location:
-                return await self.send_location(
-                    chat_id,
-                    latitude=message.location.latitude,
-                    longitude=message.location.longitude,
-                    disable_notification=disable_notification,
-                    schedule_date=schedule_date
-                )
-            elif message.venue:
-                return await self.send_venue(
-                    chat_id,
-                    latitude=message.venue.location.latitude,
-                    longitude=message.venue.location.longitude,
-                    title=message.venue.title,
-                    address=message.venue.address,
-                    foursquare_id=message.venue.foursquare_id,
-                    foursquare_type=message.venue.foursquare_type,
-                    disable_notification=disable_notification,
-                    schedule_date=schedule_date
-                )
-            elif message.poll:
-                return await self.send_poll(
-                    chat_id,
-                    question=message.poll.question,
-                    options=[opt.text for opt in message.poll.options],
-                    disable_notification=disable_notification,
-                    schedule_date=schedule_date
-                )
-            elif message.game:
-                return await self.send_game(
-                    chat_id,
-                    game_short_name=message.game.short_name,
-                    disable_notification=disable_notification
-                )
-            else:
-                raise ValueError("Unknown media type")
-
-            if message.sticker or message.video_note:  # Sticker and VideoNote should have no caption
-                return await send_media(file_id=file_id)
-            else:
-                return await send_media(
-                    file_id=file_id,
-                    caption=caption if caption is not None else message.caption,
-                    parse_mode=parse_mode,
-                    caption_entities=caption_entities or message.caption_entities
-                )
-        else:
-            raise ValueError("Can't copy this message")
+        return await message.copy(
+            chat_id=chat_id,
+            caption=caption,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
+            reply_markup=reply_markup
+        )
