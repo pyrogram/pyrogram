@@ -18,7 +18,7 @@
 
 import os
 import re
-from typing import Union, BinaryIO, List
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -36,7 +36,7 @@ class SendAnimation(Scaffold):
         animation: Union[str, BinaryIO],
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
@@ -54,7 +54,7 @@ class SendAnimation(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Parameters:

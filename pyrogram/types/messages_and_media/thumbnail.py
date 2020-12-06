@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -68,7 +68,7 @@ class Thumbnail(Object):
     def _parse(
         client,
         media: Union["raw.types.Photo", "raw.types.Document"]
-    ) -> Union[List[Union["types.StrippedThumbnail", "Thumbnail"]], None]:
+    ) -> Optional[List[Union["types.StrippedThumbnail", "Thumbnail"]]]:
         if isinstance(media, raw.types.Photo):
             raw_thumbnails = media.sizes[:-1]
         elif isinstance(media, raw.types.Document):

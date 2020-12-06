@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, Optional
 
 from pyrogram import raw
 from pyrogram import types
@@ -37,7 +37,7 @@ class SendDice(Scaffold):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send a dice with a random value from 1 to 6.
 
         Parameters:

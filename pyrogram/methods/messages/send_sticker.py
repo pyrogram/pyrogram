@@ -18,7 +18,7 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -45,7 +45,7 @@ class SendSticker(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send static .webp or animated .tgs stickers.
 
         Parameters:

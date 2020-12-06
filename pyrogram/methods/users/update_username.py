@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional
 
 from pyrogram import raw
 from pyrogram.scaffold import Scaffold
@@ -25,7 +25,7 @@ from pyrogram.scaffold import Scaffold
 class UpdateUsername(Scaffold):
     async def update_username(
         self,
-        username: Union[str, None]
+        username: Optional[str]
     ) -> bool:
         """Update your own username.
 

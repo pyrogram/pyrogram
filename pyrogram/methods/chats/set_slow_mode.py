@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, Optional
 
 from pyrogram import raw
 from pyrogram.scaffold import Scaffold
@@ -26,7 +26,7 @@ class SetSlowMode(Scaffold):
     async def set_slow_mode(
         self,
         chat_id: Union[int, str],
-        seconds: Union[int, None]
+        seconds: Optional[int]
     ) -> bool:
         """Set the slow mode interval for a chat.
 
