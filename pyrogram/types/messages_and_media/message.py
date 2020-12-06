@@ -2763,7 +2763,7 @@ class Message(Object, Update):
         self,
         chat_id: Union[int, str],
         caption: str = None,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
