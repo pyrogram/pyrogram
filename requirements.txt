@@ -1,2 +1,2 @@
-pyaes==1.6.1
+tgcrypto
 pysocks==1.7.1
