@@ -315,3 +315,11 @@ async def parse_text_entities(
         "message": text,
         "entities": entities
     }
+
+
+async def maybe_run_in_executor(func, data, length, loop, *args):
+    return (
+        func(data, *args)
+        if length <= pyrogram.CRYPTO_EXECUTOR_SIZE_THRESHOLD
+        else await loop.run_in_executor(pyrogram.crypto_executor, func, data, *args)
+    )

@@ -19,6 +19,7 @@
 import logging
 import os
 
+from pyrogram import utils
 from pyrogram.crypto import aes
 from .tcp import TCP
 
@@ -55,16 +56,10 @@ class TCPAbridgedO(TCP):
 
     async def send(self, data: bytes, *args):
         length = len(data) // 4
+        data = (bytes([length]) if length <= 126 else b"\x7f" + length.to_bytes(3, "little")) + data
+        payload = await utils.maybe_run_in_executor(aes.ctr256_encrypt, data, len(data), self.loop, *self.encrypt)
 
-        await super().send(
-            aes.ctr256_encrypt(
-                (bytes([length])
-                 if length <= 126
-                 else b"\x7f" + length.to_bytes(3, "little"))
-                + data,
-                *self.encrypt
-            )
-        )
+        await super().send(payload)
 
     async def recv(self, length: int = 0) -> bytes or None:
         length = await super().recv(1)
@@ -87,4 +82,4 @@ class TCPAbridgedO(TCP):
         if data is None:
             return None
 
-        return aes.ctr256_decrypt(data, *self.decrypt)
+        return await utils.maybe_run_in_executor(aes.ctr256_decrypt, data, len(data), self.loop, *self.decrypt)

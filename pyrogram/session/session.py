@@ -19,13 +19,12 @@
 import asyncio
 import logging
 import os
-from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
 
 import pyrogram
-from pyrogram import __copyright__, __license__, __version__
+from pyrogram import __copyright__, __license__, __version__, utils
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
@@ -51,7 +50,6 @@ class Session:
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
-    EXECUTOR_SIZE_THRESHOLD = 512
 
     notice_displayed = False
 
@@ -68,8 +66,6 @@ class Session:
         48: "[48] incorrect server salt",
         64: "[64] invalid container"
     }
-
-    executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
 
     def __init__(
         self,
@@ -220,22 +216,12 @@ class Session:
         await self.start()
 
     async def handle_packet(self, packet):
-        if len(packet) <= self.EXECUTOR_SIZE_THRESHOLD:
-            data = mtproto.unpack(
-                BytesIO(packet),
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
-        else:
-            data = await self.loop.run_in_executor(
-                self.executor,
-                mtproto.unpack,
-                BytesIO(packet),
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
+        data = await utils.maybe_run_in_executor(
+            mtproto.unpack, BytesIO(packet), len(packet), self.loop,
+            self.session_id,
+            self.auth_key,
+            self.auth_key_id
+        )
 
         messages = (
             data.body.messages
@@ -375,24 +361,13 @@ class Session:
         log.debug(f"Sent:")
         log.debug(message)
 
-        if len(message) <= self.EXECUTOR_SIZE_THRESHOLD:
-            payload = mtproto.pack(
-                message,
-                self.current_salt.salt,
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
-        else:
-            payload = await self.loop.run_in_executor(
-                self.executor,
-                mtproto.pack,
-                message,
-                self.current_salt.salt,
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
+        payload = await utils.maybe_run_in_executor(
+            mtproto.pack, message, len(message), self.loop,
+            self.current_salt.salt,
+            self.session_id,
+            self.auth_key,
+            self.auth_key_id
+        )
 
         try:
             await self.connection.send(payload)

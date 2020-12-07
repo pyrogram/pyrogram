@@ -45,6 +45,7 @@ class TCP:
         self.writer = None  # type: asyncio.StreamWriter
 
         self.lock = asyncio.Lock()
+        self.loop = asyncio.get_event_loop()
 
         if proxy.get("enabled", False):
             hostname = proxy.get("hostname", None)

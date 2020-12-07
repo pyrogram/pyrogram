@@ -20,6 +20,8 @@ __version__ = "1.0.7"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
 __copyright__ = "Copyright (C) 2017-2020 Dan <https://github.com/delivrance>"
 
+from concurrent.futures.thread import ThreadPoolExecutor
+
 
 class StopTransmission(StopAsyncIteration):
     pass
@@ -41,3 +43,7 @@ from .sync import idle
 
 # Save the main thread loop for future references
 main_event_loop = asyncio.get_event_loop()
+
+CRYPTO_EXECUTOR_SIZE_THRESHOLD = 512
+
+crypto_executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
