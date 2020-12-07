@@ -26,8 +26,39 @@ from .inline_query_result import InlineQueryResult
 
 
 class InlineQueryResultCachedPhoto(InlineQueryResult):
+    """Link to a photo stored on the Telegram servers.
 
-    # TODO: Need to add documentation 
+    By default, this photo will be sent by the user with an optional caption. 
+    Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
+
+    Parameters:
+        file_id (``str``):
+            Pass a file_id as string to send a media that exists on the Telegram servers.
+
+        file_ref (``str``, *optional*):
+            A valid file reference obtained by a recently fetched media message.
+            To be used in combination with a file id in case a file reference is needed.
+
+        id (``str``, *optional*):
+            Unique identifier for this result, 1-64 bytes.
+            Defaults to a randomly generated UUID4.
+
+        caption (``str``, *optional*):
+            Caption of the photo to be sent, 0-1024 characters.
+        
+        parse_mode (``str``, *optional*):
+            By default, texts are parsed using both Markdown and HTML styles.
+            You can combine both syntaxes together.
+            Pass "markdown" or "md" to enable Markdown-style parsing only.
+            Pass "html" to enable HTML-style parsing only.
+            Pass None to completely disable style parsing.
+
+        reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
+            Inline keyboard attached to the message.
+
+        input_message_content (:obj:`~pyrogram.types.InputMessageContent`):
+            Content of the message to be sent.
+    """
 
     def __init__(
         self,
