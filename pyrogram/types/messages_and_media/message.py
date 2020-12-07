@@ -2920,7 +2920,7 @@ class Message(Object, Update):
                 return await send_media(file_id=file_id)
             else:
                 if caption is None:
-                    caption = self.caption
+                    caption = self.caption or ""
                     caption_entities = self.caption_entities
 
                 return await send_media(
