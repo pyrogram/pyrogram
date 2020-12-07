@@ -866,11 +866,11 @@ class Client(Methods, Scaffold):
             else:
                 if file_id.chat_access_hash == 0:
                     peer = raw.types.InputPeerChat(
-                        chat_id=file_id.chat_id
+                        chat_id=-file_id.chat_id
                     )
                 else:
                     peer = raw.types.InputPeerChannel(
-                        channel_id=file_id.chat_id,
+                        channel_id=utils.get_channel_id(file_id.chat_id),
                         access_hash=file_id.chat_access_hash
                     )
 
