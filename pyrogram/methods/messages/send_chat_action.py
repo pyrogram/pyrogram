@@ -36,6 +36,7 @@ class ChatAction:
     UPLOAD_VIDEO_NOTE = raw.types.SendMessageUploadRoundAction
     PLAYING = raw.types.SendMessageGamePlayAction
     CHOOSE_CONTACT = raw.types.SendMessageChooseContactAction
+    SPEAKING = raw.types.SpeakingInGroupCallAction
     CANCEL = raw.types.SendMessageCancelAction
 
 
@@ -57,8 +58,8 @@ class SendChatAction(Scaffold):
                 text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
                 *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
                 *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
-                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
-                displayed.
+                *"choose_contact"* for contacts, *"playing"* for games, *"speaking"* for speaking in group calls or
+                *"cancel"* to cancel any chat action currently displayed.
 
         Returns:
             ``bool``: On success, True is returned.
