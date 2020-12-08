@@ -84,7 +84,7 @@ class Photo(Object):
         if isinstance(photo, raw.types.Photo):
             big = photo.sizes[-1]
 
-            if isinstance(big, raw.types.PhotoStrippedSize):
+            if isinstance(big, (raw.types.PhotoStrippedSize, raw.types.PhotoPathSize)):
                 return None
 
             if isinstance(big, raw.types.PhotoSizeProgressive):
