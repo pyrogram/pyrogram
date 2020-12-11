@@ -824,7 +824,7 @@ class user(Filter, set):
             Defaults to None (no users).
     """
 
-    def __init__(self, users: Union[int, str, list] = None):
+    def __init__(self, users: Union[int, str, List[Union[int, str]]] = None):
         users = [] if users is None else users if isinstance(users, list) else [users]
 
         super().__init__(
@@ -856,7 +856,7 @@ class chat(Filter, set):
             Defaults to None (no chats).
     """
 
-    def __init__(self, chats: Union[int, str, list] = None):
+    def __init__(self, chats: Union[int, str, List[Union[int, str]]] = None):
         chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
         super().__init__(
