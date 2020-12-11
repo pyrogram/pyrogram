@@ -37,6 +37,7 @@ class SendVideo(Scaffold):
         caption: str = "",
         parse_mode: Union[str, None] = object,
         caption_entities: List["types.MessageEntity"] = None,
+        ttl_seconds: int = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -82,6 +83,11 @@ class SendVideo(Scaffold):
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of __parse_mode__.
+
+            ttl_seconds (``int``, *optional*):
+                Self-Destruct Timer.
+                If you set a timer, the video will self-destruct in *ttl_seconds*
+                seconds after it was viewed.
 
             duration (``int``, *optional*):
                 Duration of sent video in seconds.
@@ -155,6 +161,9 @@ class SendVideo(Scaffold):
                 # Add caption to the video
                 app.send_video("me", "video.mp4", caption="recording")
 
+                # Send self-destructing video
+                app.send_photo("me", "video.mp4", ttl_seconds=10)
+
                 # Keep track of the progress while uploading
                 def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
@@ -171,6 +180,7 @@ class SendVideo(Scaffold):
                     media = raw.types.InputMediaUploadedDocument(
                         mime_type=self.guess_mime_type(video) or "video/mp4",
                         file=file,
+                        ttl_seconds=ttl_seconds,
                         thumb=thumb,
                         attributes=[
                             raw.types.DocumentAttributeVideo(
@@ -184,7 +194,8 @@ class SendVideo(Scaffold):
                     )
                 elif re.match("^https?://", video):
                     media = raw.types.InputMediaDocumentExternal(
-                        url=video
+                        url=video,
+                        ttl_seconds=ttl_seconds
                     )
                 else:
                     media = utils.get_input_media_from_file_id(video, FileType.VIDEO)
@@ -194,6 +205,7 @@ class SendVideo(Scaffold):
                 media = raw.types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(video.name) or "video/mp4",
                     file=file,
+                    ttl_seconds=ttl_seconds,
                     thumb=thumb,
                     attributes=[
                         raw.types.DocumentAttributeVideo(
