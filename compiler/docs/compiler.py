@@ -216,6 +216,7 @@ def pyrogram_api():
             delete_channel
             delete_supergroup
             set_slow_mode
+            mark_chat_unread
         """,
         users="""
         Users
@@ -459,6 +460,7 @@ def pyrogram_api():
             Chat.add_members
             Chat.join
             Chat.leave
+            Chat.mark_unread
         """,
         user="""
         User
