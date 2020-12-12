@@ -19,6 +19,7 @@
 import asyncio
 import logging
 import os
+import time
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
@@ -303,17 +304,15 @@ class Session:
         log.info("NextSaltTask started")
 
         while True:
-            now = datetime.now()
+            now = datetime.fromtimestamp(time.perf_counter() - MsgId.reference_clock + MsgId.server_time)
 
             # Seconds to wait until middle-overlap, which is
             # 15 minutes before/after the current/next salt end/start time
             valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
             dt = (valid_until - now).total_seconds() - 900
 
-            log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
-                dt // 60, dt % 60,
-                now + timedelta(seconds=dt)
-            ))
+            minutes, seconds = divmod(int(dt), 60)
+            log.info(f"Next salt in {minutes:.0f}m {seconds:.0f}s (at {now + timedelta(seconds=dt)})")
 
             try:
                 await asyncio.wait_for(self.next_salt_task_event.wait(), dt)
