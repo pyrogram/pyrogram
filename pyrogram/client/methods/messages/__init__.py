@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
@@ -33,11 +33,14 @@ from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
+from .search_global import SearchGlobal
+from .search_messages import SearchMessages
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
 from .send_chat_action import SendChatAction
 from .send_contact import SendContact
+from .send_dice import SendDice
 from .send_document import SendDocument
 from .send_location import SendLocation
 from .send_media_group import SendMediaGroup
@@ -88,6 +91,9 @@ class Messages(
     EditInlineText,
     EditInlineCaption,
     EditInlineMedia,
-    EditInlineReplyMarkup
+    EditInlineReplyMarkup,
+    SendDice,
+    SearchMessages,
+    SearchGlobal
 ):
     pass

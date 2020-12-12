@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Union
 
@@ -23,7 +23,7 @@ from ...ext import BaseClient
 
 
 class SetAdministratorTitle(BaseClient):
-    def set_administrator_title(
+    async def set_administrator_title(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
@@ -54,15 +54,15 @@ class SetAdministratorTitle(BaseClient):
 
                 app.set_administrator_title(chat_id, user_id, "ฅ^•ﻌ•^ฅ")
         """
-        chat_id = self.resolve_peer(chat_id)
-        user_id = self.resolve_peer(user_id)
+        chat_id = await self.resolve_peer(chat_id)
+        user_id = await self.resolve_peer(user_id)
 
-        r = self.send(
+        r = (await self.send(
             functions.channels.GetParticipant(
                 channel=chat_id,
                 user_id=user_id
             )
-        ).participant
+        )).participant
 
         if isinstance(r, types.ChannelParticipantCreator):
             admin_rights = types.ChatAdminRights(
@@ -80,7 +80,31 @@ class SetAdministratorTitle(BaseClient):
         else:
             raise ValueError("Custom titles can only be applied to owners or administrators of supergroups")
 
-        self.send(
+        if not admin_rights.change_info:
+            admin_rights.change_info = None
+
+        if not admin_rights.post_messages:
+            admin_rights.post_messages = None
+
+        if not admin_rights.edit_messages:
+            admin_rights.edit_messages = None
+
+        if not admin_rights.delete_messages:
+            admin_rights.delete_messages = None
+
+        if not admin_rights.ban_users:
+            admin_rights.ban_users = None
+
+        if not admin_rights.invite_users:
+            admin_rights.invite_users = None
+
+        if not admin_rights.pin_messages:
+            admin_rights.pin_messages = None
+
+        if not admin_rights.add_admins:
+            admin_rights.add_admins = None
+
+        await self.send(
             functions.channels.EditAdmin(
                 channel=chat_id,
                 user_id=user_id,

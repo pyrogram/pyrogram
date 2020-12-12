@@ -17,6 +17,12 @@ Pyrogram uses a custom Markdown dialect for text formatting which adds some uniq
 texts easier in both Markdown and HTML. You can send sophisticated text messages and media captions using a great
 variety of decorations that can also be nested in order to combine multiple styles together.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Basic Styles
 ------------
 

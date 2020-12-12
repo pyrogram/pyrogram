@@ -1,39 +1,35 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import threading
-import time
-from datetime import timedelta, datetime
-from hashlib import sha1, sha256
+from datetime import datetime, timedelta
+from hashlib import sha1
 from io import BytesIO
-from os import urandom
-from queue import Queue
-from threading import Event, Thread
 
 import pyrogram
 from pyrogram import __copyright__, __license__, __version__
-from pyrogram.api import functions, types, core
+from pyrogram.api import functions, types
 from pyrogram.api.all import layer
-from pyrogram.api.core import Message, TLObject, MsgContainer, Long, FutureSalt, Int
+from pyrogram.api.core import TLObject, MsgContainer, Int, Long, FutureSalt, FutureSalts
 from pyrogram.connection import Connection
-from pyrogram.crypto import AES, KDF
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated
+from pyrogram.crypto import MTProto
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -42,7 +38,7 @@ log = logging.getLogger(__name__)
 class Result:
     def __init__(self):
         self.value = None
-        self.event = Event()
+        self.event = asyncio.Event()
 
 
 class Session:
@@ -50,6 +46,7 @@ class Session:
     NET_WORKERS = 1
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
+    SLEEP_THRESHOLD = 60
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
@@ -100,20 +97,21 @@ class Session:
 
         self.pending_acks = set()
 
-        self.recv_queue = Queue()
+        self.recv_queue = asyncio.Queue()
         self.results = {}
 
-        self.ping_thread = None
-        self.ping_thread_event = Event()
+        self.ping_task = None
+        self.ping_task_event = asyncio.Event()
 
-        self.next_salt_thread = None
-        self.next_salt_thread_event = Event()
+        self.next_salt_task = None
+        self.next_salt_task_event = asyncio.Event()
 
-        self.net_worker_list = []
+        self.net_worker_task = None
+        self.recv_task = None
 
-        self.is_connected = Event()
+        self.is_connected = asyncio.Event()
 
-    def start(self):
+    async def start(self):
         while True:
             self.connection = Connection(
                 self.dc_id,
@@ -123,35 +121,26 @@ class Session:
             )
 
             try:
-                self.connection.connect()
+                await self.connection.connect()
 
-                for i in range(self.NET_WORKERS):
-                    self.net_worker_list.append(
-                        Thread(
-                            target=self.net_worker,
-                            name="NetWorker#{}".format(i + 1)
-                        )
-                    )
+                self.net_worker_task = asyncio.ensure_future(self.net_worker())
+                self.recv_task = asyncio.ensure_future(self.recv())
 
-                    self.net_worker_list[-1].start()
-
-                Thread(target=self.recv, name="RecvThread").start()
-
-                self.current_salt = FutureSalt(0, 0, self.INITIAL_SALT)
+                self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
                 self.current_salt = FutureSalt(
                     0, 0,
-                    self._send(
+                    (await self._send(
                         functions.Ping(ping_id=0),
                         timeout=self.START_TIMEOUT
-                    ).new_server_salt
+                    )).new_server_salt
                 )
-                self.current_salt = self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT).salts[0]
+                self.current_salt = \
+                    (await self._send(functions.GetFutureSalts(num=1), timeout=self.START_TIMEOUT)).salts[0]
 
-                self.next_salt_thread = Thread(target=self.next_salt, name="NextSaltThread")
-                self.next_salt_thread.start()
+                self.next_salt_task = asyncio.ensure_future(self.next_salt())
 
                 if not self.is_cdn:
-                    self._send(
+                    await self._send(
                         functions.InvokeWithLayer(
                             layer=layer,
                             query=functions.InitConnection(
@@ -168,116 +157,81 @@ class Session:
                         timeout=self.START_TIMEOUT
                     )
 
-                self.ping_thread = Thread(target=self.ping, name="PingThread")
-                self.ping_thread.start()
+                self.ping_task = asyncio.ensure_future(self.ping())
 
                 log.info("Session initialized: Layer {}".format(layer))
                 log.info("Device: {} - {}".format(self.client.device_model, self.client.app_version))
                 log.info("System: {} ({})".format(self.client.system_version, self.client.lang_code.upper()))
 
             except AuthKeyDuplicated as e:
-                self.stop()
+                await self.stop()
                 raise e
             except (OSError, TimeoutError, RPCError):
-                self.stop()
+                await self.stop()
             except Exception as e:
-                self.stop()
+                await self.stop()
                 raise e
             else:
                 break
 
         self.is_connected.set()
 
-        log.debug("Session started")
+        log.info("Session started")
 
-    def stop(self):
+    async def stop(self):
         self.is_connected.clear()
 
-        self.ping_thread_event.set()
-        self.next_salt_thread_event.set()
+        self.ping_task_event.set()
+        self.next_salt_task_event.set()
 
-        if self.ping_thread is not None:
-            self.ping_thread.join()
+        if self.ping_task is not None:
+            await self.ping_task
 
-        if self.next_salt_thread is not None:
-            self.next_salt_thread.join()
+        if self.next_salt_task is not None:
+            await self.next_salt_task
 
-        self.ping_thread_event.clear()
-        self.next_salt_thread_event.clear()
+        self.ping_task_event.clear()
+        self.next_salt_task_event.clear()
 
         self.connection.close()
 
-        for i in range(self.NET_WORKERS):
-            self.recv_queue.put(None)
+        if self.recv_task:
+            await self.recv_task
 
-        for i in self.net_worker_list:
-            i.join()
-
-        self.net_worker_list.clear()
-        self.recv_queue.queue.clear()
+        if self.net_worker_task:
+            await self.net_worker_task
 
         for i in self.results.values():
             i.event.set()
 
         if not self.is_media and callable(self.client.disconnect_handler):
             try:
-                self.client.disconnect_handler(self.client)
+                await self.client.disconnect_handler(self.client)
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("Session stopped")
+        log.info("Session stopped")
 
-    def restart(self):
-        self.stop()
-        self.start()
+    async def restart(self):
+        await self.stop()
+        await self.start()
 
-    def pack(self, message: Message):
-        data = Long(self.current_salt.salt) + self.session_id + message.write()
-        padding = urandom(-(len(data) + 12) % 16 + 12)
-
-        # 88 = 88 + 0 (outgoing message)
-        msg_key_large = sha256(self.auth_key[88: 88 + 32] + data + padding).digest()
-        msg_key = msg_key_large[8:24]
-        aes_key, aes_iv = KDF(self.auth_key, msg_key, True)
-
-        return self.auth_key_id + msg_key + AES.ige256_encrypt(data + padding, aes_key, aes_iv)
-
-    def unpack(self, b: BytesIO) -> Message:
-        assert b.read(8) == self.auth_key_id, b.getvalue()
-
-        msg_key = b.read(16)
-        aes_key, aes_iv = KDF(self.auth_key, msg_key, False)
-        data = BytesIO(AES.ige256_decrypt(b.read(), aes_key, aes_iv))
-        data.read(8)
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
-        assert data.read(8) == self.session_id
-
-        message = Message.read(data)
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-sha256-hash-value-of-msg-key
-        # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
-        # 96 = 88 + 8 (incoming message)
-        assert msg_key == sha256(self.auth_key[96:96 + 32] + data.getvalue()).digest()[8:24]
-
-        # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
-        # TODO: check for lower msg_ids
-        assert message.msg_id % 2 != 0
-
-        return message
-
-    def net_worker(self):
-        name = threading.current_thread().name
-        log.debug("{} started".format(name))
+    async def net_worker(self):
+        logging.info("NetWorkerTask started")
 
         while True:
-            packet = self.recv_queue.get()
+            packet = await self.recv_queue.get()
 
             if packet is None:
                 break
 
             try:
-                data = self.unpack(BytesIO(packet))
+                data = MTProto.unpack(
+                    BytesIO(packet),
+                    self.session_id,
+                    self.auth_key,
+                    self.auth_key_id
+                )
 
                 messages = (
                     data.body.messages
@@ -285,7 +239,7 @@ class Session:
                     else [data]
                 )
 
-                log.debug(data)
+                log.debug("Received:\n{}".format(data))
 
                 for msg in messages:
                     if msg.seq_no % 2 != 0:
@@ -305,13 +259,13 @@ class Session:
 
                     if isinstance(msg.body, (types.BadMsgNotification, types.BadServerSalt)):
                         msg_id = msg.body.bad_msg_id
-                    elif isinstance(msg.body, (core.FutureSalts, types.RpcResult)):
+                    elif isinstance(msg.body, (FutureSalts, types.RpcResult)):
                         msg_id = msg.body.req_msg_id
                     elif isinstance(msg.body, types.Pong):
                         msg_id = msg.body.msg_id
                     else:
                         if self.client is not None:
-                            self.client.updates_queue.put(msg.body)
+                            self.client.updates_queue.put_nowait(msg.body)
 
                     if msg_id in self.results:
                         self.results[msg_id].value = getattr(msg.body, "result", msg.body)
@@ -321,7 +275,7 @@ class Session:
                     log.info("Send {} acks".format(len(self.pending_acks)))
 
                     try:
-                        self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
+                        await self._send(types.MsgsAck(msg_ids=list(self.pending_acks)), False)
                     except (OSError, TimeoutError):
                         pass
                     else:
@@ -329,28 +283,32 @@ class Session:
             except Exception as e:
                 log.error(e, exc_info=True)
 
-        log.debug("{} stopped".format(name))
+        log.info("NetWorkerTask stopped")
 
-    def ping(self):
-        log.debug("PingThread started")
+    async def ping(self):
+        log.info("PingTask started")
 
         while True:
-            self.ping_thread_event.wait(self.PING_INTERVAL)
-
-            if self.ping_thread_event.is_set():
+            try:
+                await asyncio.wait_for(self.ping_task_event.wait(), self.PING_INTERVAL)
+            except asyncio.TimeoutError:
+                pass
+            else:
                 break
 
             try:
-                self._send(functions.PingDelayDisconnect(
-                    ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
-                ), False)
+                await self._send(
+                    functions.PingDelayDisconnect(
+                        ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
+                    ), False
+                )
             except (OSError, TimeoutError, RPCError):
                 pass
 
-        log.debug("PingThread stopped")
+        log.info("PingTask stopped")
 
-    def next_salt(self):
-        log.debug("NextSaltThread started")
+    async def next_salt(self):
+        log.info("NextSaltTask started")
 
         while True:
             now = datetime.now()
@@ -360,66 +318,84 @@ class Session:
             valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
             dt = (valid_until - now).total_seconds() - 900
 
-            log.debug("Current salt: {} | Next salt in {:.0f}m {:.0f}s ({})".format(
-                self.current_salt.salt,
-                dt // 60,
-                dt % 60,
+            log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
+                dt // 60, dt % 60,
                 now + timedelta(seconds=dt)
             ))
 
-            self.next_salt_thread_event.wait(dt)
-
-            if self.next_salt_thread_event.is_set():
+            try:
+                await asyncio.wait_for(self.next_salt_task_event.wait(), dt)
+            except asyncio.TimeoutError:
+                pass
+            else:
                 break
 
             try:
-                self.current_salt = self._send(functions.GetFutureSalts(num=1)).salts[0]
+                self.current_salt = (await self._send(functions.GetFutureSalts(num=1))).salts[0]
             except (OSError, TimeoutError, RPCError):
                 self.connection.close()
                 break
 
-        log.debug("NextSaltThread stopped")
+        log.info("NextSaltTask stopped")
 
-    def recv(self):
-        log.debug("RecvThread started")
+    async def recv(self):
+        log.info("RecvTask started")
 
         while True:
-            packet = self.connection.recv()
+            packet = await self.connection.recv()
 
             if packet is None or len(packet) == 4:
+                self.recv_queue.put_nowait(None)
+
                 if packet:
                     log.warning("Server sent \"{}\"".format(Int.read(BytesIO(packet))))
 
                 if self.is_connected.is_set():
-                    Thread(target=self.restart, name="RestartThread").start()
+                    asyncio.ensure_future(self.restart())
+
                 break
 
-            self.recv_queue.put(packet)
+            self.recv_queue.put_nowait(packet)
 
-        log.debug("RecvThread stopped")
+        log.info("RecvTask stopped")
 
-    def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
+    async def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
         if wait_response:
             self.results[msg_id] = Result()
 
-        payload = self.pack(message)
+        log.debug("Sent:\n{}".format(message))
+
+        payload = MTProto.pack(
+            message,
+            self.current_salt.salt,
+            self.session_id,
+            self.auth_key,
+            self.auth_key_id
+        )
 
         try:
-            self.connection.send(payload)
+            await self.connection.send(payload)
         except OSError as e:
             self.results.pop(msg_id, None)
             raise e
 
         if wait_response:
-            self.results[msg_id].event.wait(timeout)
-            result = self.results.pop(msg_id).value
+            try:
+                await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
+            except asyncio.TimeoutError:
+                pass
+            finally:
+                result = self.results.pop(msg_id).value
 
             if result is None:
                 raise TimeoutError
             elif isinstance(result, types.RpcError):
+                if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+                    data = data.query
+
                 RPCError.raise_it(result, type(data))
             elif isinstance(result, types.BadMsgNotification):
                 raise Exception(self.BAD_MSG_DESCRIPTION.get(
@@ -429,19 +405,47 @@ class Session:
             else:
                 return result
 
-    def send(self, data: TLObject, retries: int = MAX_RETRIES, timeout: float = WAIT_TIMEOUT):
-        self.is_connected.wait(self.WAIT_TIMEOUT)
-
+    async def send(
+        self,
+        data: TLObject,
+        retries: int = MAX_RETRIES,
+        timeout: float = WAIT_TIMEOUT,
+        sleep_threshold: float = SLEEP_THRESHOLD
+    ):
         try:
-            return self._send(data, timeout=timeout)
-        except (OSError, TimeoutError, InternalServerError) as e:
-            if retries == 0:
-                raise e from None
+            await asyncio.wait_for(self.is_connected.wait(), self.WAIT_TIMEOUT)
+        except asyncio.TimeoutError:
+            pass
 
-            (log.warning if retries < 2 else log.info)(
-                "[{}] Retrying {} due to {}".format(
-                    Session.MAX_RETRIES - retries + 1,
-                    data.QUALNAME, e))
+        if isinstance(data, (functions.InvokeWithoutUpdates, functions.InvokeWithTakeout)):
+            query = data.query
+        else:
+            query = data
 
-            time.sleep(0.5)
-            return self.send(data, retries - 1, timeout)
+        query = ".".join(query.QUALNAME.split(".")[1:])
+
+        while True:
+            try:
+                return await self._send(data, timeout=timeout)
+            except FloodWait as e:
+                amount = e.x
+
+                if amount > sleep_threshold:
+                    raise
+
+                log.warning('[{}] Sleeping for {}s (required by "{}")'.format(
+                    self.client.session_name, amount, query))
+
+                await asyncio.sleep(amount)
+            except (OSError, TimeoutError, InternalServerError) as e:
+                if retries == 0:
+                    raise e from None
+
+                (log.warning if retries < 2 else log.info)(
+                    '[{}] Retrying "{}" due to {}'.format(
+                        Session.MAX_RETRIES - retries + 1,
+                        query, e))
+
+                await asyncio.sleep(0.5)
+
+                return await self.send(data, retries - 1, timeout)

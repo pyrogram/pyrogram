@@ -1,28 +1,26 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import time
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions, types
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
@@ -38,7 +36,7 @@ class Filters:
 
 
 class GetChatMembers(BaseClient):
-    def get_chat_members(
+    async def get_chat_members(
         self,
         chat_id: Union[int, str],
         offset: int = 0,
@@ -105,10 +103,10 @@ class GetChatMembers(BaseClient):
                 # Get all bots
                 app.get_chat_members("pyrogramchat", filter="bots")
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, types.InputPeerChat):
-            r = self.send(
+            r = await self.send(
                 functions.messages.GetFullChat(
                     chat_id=peer.chat_id
                 )
@@ -136,24 +134,19 @@ class GetChatMembers(BaseClient):
             else:
                 raise ValueError("Invalid filter \"{}\"".format(filter))
 
-            while True:
-                try:
-                    r = self.send(
-                        functions.channels.GetParticipants(
-                            channel=peer,
-                            filter=filter,
-                            offset=offset,
-                            limit=limit,
-                            hash=0
-                        )
-                    )
+            r = await self.send(
+                functions.channels.GetParticipants(
+                    channel=peer,
+                    filter=filter,
+                    offset=offset,
+                    limit=limit,
+                    hash=0
+                )
+            )
 
-                    members = r.participants
-                    users = {i.id: i for i in r.users}
+            members = r.participants
+            users = {i.id: i for i in r.users}
 
-                    return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
-                except FloodWait as e:
-                    log.warning("Sleeping for {}s".format(e.x))
-                    time.sleep(e.x)
+            return pyrogram.List(pyrogram.ChatMember._parse(self, member, users) for member in members)
         else:
             raise ValueError("The chat_id \"{}\" belongs to a user".format(chat_id))

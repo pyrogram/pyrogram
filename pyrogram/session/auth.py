@@ -1,21 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 import time
 from hashlib import sha1
@@ -57,14 +58,14 @@ class Auth:
         b.seek(20)  # Skip auth_key_id (8), message_id (8) and message_length (4)
         return TLObject.read(b)
 
-    def send(self, data: TLObject):
+    async def send(self, data: TLObject):
         data = self.pack(data)
-        self.connection.send(data)
-        response = BytesIO(self.connection.recv())
+        await self.connection.send(data)
+        response = BytesIO(await self.connection.recv())
 
         return self.unpack(response)
 
-    def create(self):
+    async def create(self):
         """
         https://core.telegram.org/mtproto/auth_key
         https://core.telegram.org/mtproto/samples-auth_key
@@ -79,12 +80,12 @@ class Auth:
             try:
                 log.info("Start creating a new auth key on DC{}".format(self.dc_id))
 
-                self.connection.connect()
+                await self.connection.connect()
 
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
                 log.debug("Send req_pq: {}".format(nonce))
-                res_pq = self.send(functions.ReqPqMulti(nonce=nonce))
+                res_pq = await self.send(functions.ReqPqMulti(nonce=nonce))
                 log.debug("Got ResPq: {}".format(res_pq.server_nonce))
                 log.debug("Server public key fingerprints: {}".format(res_pq.server_public_key_fingerprints))
 
@@ -128,7 +129,7 @@ class Auth:
 
                 # Step 5. TODO: Handle "server_DH_params_fail". Code assumes response is ok
                 log.debug("Send req_DH_params")
-                server_dh_params = self.send(
+                server_dh_params = await self.send(
                     functions.ReqDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,
@@ -188,7 +189,7 @@ class Auth:
                 encrypted_data = AES.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
-                set_client_dh_params_answer = self.send(
+                set_client_dh_params_answer = await self.send(
                     functions.SetClientDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,
@@ -255,7 +256,7 @@ class Auth:
                 else:
                     raise e
 
-                time.sleep(1)
+                await asyncio.sleep(1)
                 continue
             else:
                 return auth_key

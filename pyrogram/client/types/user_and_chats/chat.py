@@ -1,22 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Generator, Optional
 
 import pyrogram
 from pyrogram.api import types
@@ -101,6 +101,9 @@ class Chat(Object):
         distance (``int``, *optional*):
             Distance in meters of this group chat from your location.
             Returned only in :meth:`~Client.get_nearby_chats`.
+
+        linked_chat (:obj:`Chat`, *optional*):
+            The linked discussion group (in case of channels) or the linked channel (in case of supergroups).
     """
 
     def __init__(
@@ -127,7 +130,8 @@ class Chat(Object):
         members_count: int = None,
         restrictions: List[Restriction] = None,
         permissions: "pyrogram.ChatPermissions" = None,
-        distance: int = None
+        distance: int = None,
+        linked_chat: "pyrogram.Chat" = None
     ):
         super().__init__(client)
 
@@ -152,6 +156,7 @@ class Chat(Object):
         self.restrictions = restrictions
         self.permissions = permissions
         self.distance = distance
+        self.linked_chat = linked_chat
 
     @staticmethod
     def _parse_user_chat(client, user: types.User) -> "Chat":
@@ -228,23 +233,28 @@ class Chat(Object):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
+    async def _parse_full(client, chat_full: types.messages.ChatFull or types.UserFull) -> "Chat":
         if isinstance(chat_full, types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
             parsed_chat.description = chat_full.about
 
             if chat_full.pinned_msg_id:
-                parsed_chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
                     message_ids=chat_full.pinned_msg_id
                 )
         else:
             full_chat = chat_full.full_chat
             chat = None
+            linked_chat = None
 
-            for i in chat_full.chats:
-                if full_chat.id == i.id:
-                    chat = i
+            for c in chat_full.chats:
+                if full_chat.id == c.id:
+                    chat = c
+
+                if isinstance(full_chat, types.ChannelFull):
+                    if full_chat.linked_chat_id == c.id:
+                        linked_chat = c
 
             if isinstance(full_chat, types.ChatFull):
                 parsed_chat = Chat._parse_chat_chat(client, chat)
@@ -259,9 +269,11 @@ class Chat(Object):
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
+                if linked_chat:
+                    parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
 
             if full_chat.pinned_msg_id:
-                parsed_chat.pinned_message = client.get_messages(
+                parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
                     message_ids=full_chat.pinned_msg_id
                 )
@@ -280,7 +292,7 @@ class Chat(Object):
         else:
             return Chat._parse_channel_chat(client, chat)
 
-    def archive(self):
+    async def archive(self):
         """Bound method *archive* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -301,9 +313,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.archive_chats(self.id)
+        return await self._client.archive_chats(self.id)
 
-    def unarchive(self):
+    async def unarchive(self):
         """Bound method *unarchive* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -324,10 +336,10 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unarchive_chats(self.id)
+        return await self._client.unarchive_chats(self.id)
 
     # TODO: Remove notes about "All Members Are Admins" for basic groups, the attribute doesn't exist anymore
-    def set_title(self, title: str) -> bool:
+    async def set_title(self, title: str) -> bool:
         """Bound method *set_title* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -360,12 +372,12 @@ class Chat(Object):
             ValueError: In case a chat_id belongs to user.
         """
 
-        return self._client.set_chat_title(
+        return await self._client.set_chat_title(
             chat_id=self.id,
             title=title
         )
 
-    def set_description(self, description: str) -> bool:
+    async def set_description(self, description: str) -> bool:
         """Bound method *set_description* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -394,12 +406,12 @@ class Chat(Object):
             ValueError: If a chat_id doesn't belong to a supergroup or a channel.
         """
 
-        return self._client.set_chat_description(
+        return await self._client.set_chat_description(
             chat_id=self.id,
             description=description
         )
 
-    def set_photo(self, photo: str) -> bool:
+    async def set_photo(self, photo: str) -> bool:
         """Bound method *set_photo* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -428,12 +440,12 @@ class Chat(Object):
             ValueError: if a chat_id belongs to user.
         """
 
-        return self._client.set_chat_photo(
+        return await self._client.set_chat_photo(
             chat_id=self.id,
             photo=photo
         )
 
-    def kick_member(
+    async def kick_member(
         self,
         user_id: Union[int, str],
         until_date: int = 0
@@ -477,13 +489,13 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.kick_chat_member(
+        return await self._client.kick_chat_member(
             chat_id=self.id,
             user_id=user_id,
             until_date=until_date
         )
 
-    def unban_member(
+    async def unban_member(
         self,
         user_id: Union[int, str]
     ) -> bool:
@@ -515,23 +527,16 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unban_chat_member(
+        return await self._client.unban_chat_member(
             chat_id=self.id,
             user_id=user_id,
         )
 
-    def restrict_member(
+    async def restrict_member(
         self,
         user_id: Union[int, str],
+        permissions: ChatPermissions,
         until_date: int = 0,
-        can_send_messages: bool = False,
-        can_send_media_messages: bool = False,
-        can_send_other_messages: bool = False,
-        can_add_web_page_previews: bool = False,
-        can_send_polls: bool = False,
-        can_change_info: bool = False,
-        can_invite_users: bool = False,
-        can_pin_messages: bool = False
     ) -> "pyrogram.Chat":
         """Bound method *unban_member* of :obj:`Chat`.
 
@@ -541,49 +546,27 @@ class Chat(Object):
 
             client.restrict_chat_member(
                 chat_id=chat_id,
-                user_id=user_id
+                user_id=user_id,
+                permissions=ChatPermissions()
             )
 
         Example:
             .. code-block:: python
 
-                chat.restrict_member(123456789)
+                chat.restrict_member(user_id, ChatPermissions())
 
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
+            permissions (:obj:`ChatPermissions`):
+                New user permissions.
+
             until_date (``int``, *optional*):
                 Date when the user will be unbanned, unix time.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
                 considered to be banned forever. Defaults to 0 (ban forever).
-
-            can_send_messages (``bool``, *optional*):
-                Pass True, if the user can send text messages, contacts, locations and venues.
-
-            can_send_media_messages (``bool``, *optional*):
-                Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
-                implies can_send_messages.
-
-            can_send_other_messages (``bool``, *optional*):
-                Pass True, if the user can send animations, games, stickers and use inline bots,
-                implies can_send_media_messages.
-
-            can_add_web_page_previews (``bool``, *optional*):
-                Pass True, if the user may add web page previews to their messages, implies can_send_media_messages.
-
-            can_send_polls (``bool``, *optional*):
-                Pass True, if the user can send polls, implies can_send_media_messages.
-
-            can_change_info (``bool``, *optional*):
-                Pass True, if the user can change the chat title, photo and other settings.
-
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the user can invite new users to the chat.
-
-            can_pin_messages (``bool``, *optional*):
-                Pass True, if the user can pin messages.
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -592,21 +575,14 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.restrict_chat_member(
+        return await self._client.restrict_chat_member(
             chat_id=self.id,
             user_id=user_id,
+            permissions=permissions,
             until_date=until_date,
-            can_send_messages=can_send_messages,
-            can_send_media_messages=can_send_media_messages,
-            can_send_other_messages=can_send_other_messages,
-            can_add_web_page_previews=can_add_web_page_previews,
-            can_send_polls=can_send_polls,
-            can_change_info=can_change_info,
-            can_invite_users=can_invite_users,
-            can_pin_messages=can_pin_messages
         )
 
-    def promote_member(
+    async def promote_member(
         self,
         user_id: Union[int, str],
         can_change_info: bool = True,
@@ -673,7 +649,7 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.promote_chat_member(
+        return await self._client.promote_chat_member(
             chat_id=self.id,
             user_id=user_id,
             can_change_info=can_change_info,
@@ -686,7 +662,7 @@ class Chat(Object):
             can_promote_members=can_promote_members
         )
 
-    def join(self):
+    async def join(self):
         """Bound method *join* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -701,7 +677,7 @@ class Chat(Object):
                 chat.join()
 
         Note:
-            This only works for public groups and channels that have set a username.
+            This only works for public groups, channels that have set a username or linked chats.
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -710,9 +686,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.join_chat(self.username)
+        return await self._client.join_chat(self.username or self.id)
 
-    def leave(self):
+    async def leave(self):
         """Bound method *leave* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -730,9 +706,9 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.leave_chat(self.id)
+        return await self._client.leave_chat(self.id)
 
-    def export_invite_link(self):
+    async def export_invite_link(self):
         """Bound method *export_invite_link* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -753,24 +729,126 @@ class Chat(Object):
             ValueError: In case the chat_id belongs to a user.
         """
 
-        return self._client.export_invite_link(self.id)
+        return await self._client.export_chat_invite_link(self.id)
 
-    async def mark_unread(self):
-        """Bound method *mark_unread* of :obj:`Chat`.
+    async def get_member(
+        self,
+        user_id: Union[int, str],
+    ) -> "pyrogram.ChatMember":
+        """Bound method *get_member* of :obj:`Chat`.
 
         Use as a shortcut for:
 
         .. code-block:: python
 
-            client.mark_chat_unread(123456789)
+            client.get_chat_member(
+                chat_id=chat_id,
+                user_id=user_id
+            )
 
         Example:
             .. code-block:: python
 
-                chat.mark_unread()
+                chat.get_member(user_id)
+
+        Returns:
+            :obj:`ChatMember`: On success, a chat member is returned.
+        """
+
+        return await self._client.get_chat_member(
+            self.id,
+            user_id=user_id
+        )
+
+    async def get_members(
+        self,
+        offset: int = 0,
+        limit: int = 200,
+        query: str = "",
+        filter: str = "all"
+    ) -> List["pyrogram.ChatMember"]:
+        """Bound method *get_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.get_chat_members(chat_id)
+
+        Example:
+            .. code-block:: python
+
+                # Get first 200 recent members
+                chat.get_members()
+
+        Returns:
+            List of :obj:`ChatMember`: On success, a list of chat members is returned.
+        """
+
+        return await self._client.get_chat_members(
+            self.id,
+            offset=offset,
+            limit=limit,
+            query=query,
+            filter=filter
+        )
+
+    def iter_members(
+        self,
+        limit: int = 0,
+        query: str = "",
+        filter: str = "all"
+    ) -> Optional[Generator["pyrogram.ChatMember", None, None]]:
+        """Bound method *iter_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            for member in client.iter_chat_members(chat_id):
+                print(member.user.first_name)
+
+        Example:
+            .. code-block:: python
+
+                for member in chat.iter_members():
+                    print(member.user.first_name)
+
+        Returns:
+            ``Generator``: A generator yielding :obj:`ChatMember` objects.
+        """
+
+        return self._client.iter_chat_members(
+            self.id,
+            limit=limit,
+            query=query,
+            filter=filter
+        )
+
+    async def add_members(
+        self,
+        user_ids: Union[Union[int, str], List[Union[int, str]]],
+        forward_limit: int = 100
+    ) -> bool:
+        """Bound method *add_members* of :obj:`Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.add_chat_members(chat_id, user_id)
+
+        Example:
+            .. code-block:: python
+
+                chat.add_members(user_id)
 
         Returns:
             ``bool``: On success, True is returned.
         """
 
-        return await self._client.mark_chat_unread(self.id)
+        return await self._client.add_chat_members(
+            self.id,
+            user_ids=user_ids,
+            forward_limit=forward_limit
+        )

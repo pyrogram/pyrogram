@@ -1,23 +1,24 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+import re
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -26,10 +27,10 @@ from pyrogram.errors import FilePartMissing
 
 
 class SendSticker(BaseClient):
-    def send_sticker(
+    async def send_sticker(
         self,
         chat_id: Union[int, str],
-        sticker: str,
+        sticker: Union[str, BinaryIO],
         file_ref: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -51,11 +52,12 @@ class SendSticker(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            sticker (``str``):
+            sticker (``str`` | ``BinaryIO``):
                 Sticker to send.
                 Pass a file_id as string to send a sticker that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet, or
-                pass a file path as string to upload a new sticker that exists on your local machine.
+                pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet,
+                pass a file path as string to upload a new sticker that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -108,32 +110,42 @@ class SendSticker(BaseClient):
                 app.send_sticker("me", "sticker.webp")
 
                 # Send sticker using file_id
-                app.send_sticker("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+                app.send_sticker("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
         """
         file = None
 
         try:
-            if os.path.exists(sticker):
-                file = self.save_file(sticker, progress=progress, progress_args=progress_args)
+            if isinstance(sticker, str):
+                if os.path.isfile(sticker):
+                    file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(sticker) or "image/webp",
+                        file=file,
+                        attributes=[
+                            types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
+                        ]
+                    )
+                elif re.match("^https?://", sticker):
+                    media = types.InputMediaDocumentExternal(
+                        url=sticker
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(sticker, file_ref, 8)
+            else:
+                file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(sticker) or "image/webp",
+                    mime_type=self.guess_mime_type(sticker.name) or "image/webp",
                     file=file,
                     attributes=[
-                        types.DocumentAttributeFilename(file_name=os.path.basename(sticker))
+                        types.DocumentAttributeFilename(file_name=sticker.name)
                     ]
                 )
-            elif sticker.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=sticker
-                )
-            else:
-                media = utils.get_input_media_from_file_id(sticker, file_ref, 8)
 
             while True:
                 try:
-                    r = self.send(
+                    r = await self.send(
                         functions.messages.SendMedia(
-                            peer=self.resolve_peer(chat_id),
+                            peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
@@ -144,14 +156,14 @@ class SendSticker(BaseClient):
                         )
                     )
                 except FilePartMissing as e:
-                    self.save_file(sticker, file_id=file.id, file_part=e.x)
+                    await self.save_file(sticker, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
                         if isinstance(
                             i,
                             (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
                         ):
-                            return pyrogram.Message._parse(
+                            return await pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats},

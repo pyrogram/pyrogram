@@ -1,22 +1,23 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from typing import Union
 
 import pyrogram
@@ -30,12 +31,13 @@ from pyrogram.client.types.input_media import InputMedia
 
 
 class EditMessageMedia(BaseClient):
-    def edit_message_media(
+    async def edit_message_media(
         self,
         chat_id: Union[int, str],
         message_id: int,
         media: InputMedia,
-        reply_markup: "pyrogram.InlineKeyboardMarkup" = None
+        reply_markup: "pyrogram.InlineKeyboardMarkup" = None,
+        file_name: str = None
     ) -> "pyrogram.Message":
         """Edit animation, audio, document, photo or video messages.
 
@@ -56,6 +58,10 @@ class EditMessageMedia(BaseClient):
 
             reply_markup (:obj:`InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
+
+            file_name (``str``, *optional*):
+                File name of the media to be sent. Not applicable to photos.
+                Defaults to file's path basename.
 
         Returns:
             :obj:`Message`: On success, the edited message is returned.
@@ -78,12 +84,12 @@ class EditMessageMedia(BaseClient):
         parse_mode = media.parse_mode
 
         if isinstance(media, InputMediaPhoto):
-            if os.path.exists(media.media):
-                media = self.send(
+            if os.path.isfile(media.media):
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedPhoto(
-                            file=self.save_file(media.media)
+                            file=await self.save_file(media.media)
                         )
                     )
                 )
@@ -92,24 +98,24 @@ class EditMessageMedia(BaseClient):
                     id=types.InputPhoto(
                         id=media.photo.id,
                         access_hash=media.photo.access_hash,
-                        file_reference=b""
+                        file_reference=media.photo.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaPhotoExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
-            if os.path.exists(media.media):
-                media = self.send(
+            if os.path.isfile(media.media):
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=media.supports_streaming or None,
@@ -118,7 +124,7 @@ class EditMessageMedia(BaseClient):
                                     h=media.height
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
@@ -129,24 +135,24 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
-            if os.path.exists(media.media):
-                media = self.send(
+            if os.path.isfile(media.media):
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeAudio(
                                     duration=media.duration,
@@ -154,7 +160,7 @@ class EditMessageMedia(BaseClient):
                                     title=media.title
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
@@ -165,24 +171,24 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
-            if os.path.exists(media.media):
-                media = self.send(
+            if os.path.isfile(media.media):
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeVideo(
                                     supports_streaming=True,
@@ -191,7 +197,7 @@ class EditMessageMedia(BaseClient):
                                     h=media.height
                                 ),
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 ),
                                 types.DocumentAttributeAnimated()
                             ]
@@ -203,27 +209,27 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
-            if os.path.exists(media.media):
-                media = self.send(
+            if os.path.isfile(media.media):
+                media = await self.send(
                     functions.messages.UploadMedia(
-                        peer=self.resolve_peer(chat_id),
+                        peer=await self.resolve_peer(chat_id),
                         media=types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "application/zip",
-                            thumb=None if media.thumb is None else self.save_file(media.thumb),
-                            file=self.save_file(media.media),
+                            thumb=await self.save_file(media.thumb),
+                            file=await self.save_file(media.media),
                             attributes=[
                                 types.DocumentAttributeFilename(
-                                    file_name=os.path.basename(media.media)
+                                    file_name=file_name or os.path.basename(media.media)
                                 )
                             ]
                         )
@@ -234,29 +240,29 @@ class EditMessageMedia(BaseClient):
                     id=types.InputDocument(
                         id=media.document.id,
                         access_hash=media.document.access_hash,
-                        file_reference=b""
+                        file_reference=media.document.file_reference
                     )
                 )
-            elif media.media.startswith("http"):
+            elif re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        r = self.send(
+        r = await self.send(
             functions.messages.EditMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(caption, parse_mode)
+                **await self.parser.parse(caption, parse_mode)
             )
         )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateEditMessage, types.UpdateEditChannelMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}

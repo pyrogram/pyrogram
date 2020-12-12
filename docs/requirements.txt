@@ -1,0 +1,6 @@
+sphinx
+sphinx_rtd_theme
+sphinx_copybutton
+sphinx_tabs
+pypandoc
+requests

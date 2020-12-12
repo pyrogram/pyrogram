@@ -1,29 +1,32 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Generator
+from typing import Union, Optional, Generator
 
 import pyrogram
+from async_generator import async_generator, yield_
+
 from ...ext import BaseClient
 
 
 class IterHistory(BaseClient):
-    def iter_history(
+    @async_generator
+    async def iter_history(
         self,
         chat_id: Union[int, str],
         limit: int = 0,
@@ -31,7 +34,7 @@ class IterHistory(BaseClient):
         offset_id: int = 0,
         offset_date: int = 0,
         reverse: bool = False
-    ) -> Generator["pyrogram.Message", None, None]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Iterate through a chat history sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_history` in a loop, thus saving
@@ -76,7 +79,7 @@ class IterHistory(BaseClient):
         limit = min(100, total)
 
         while True:
-            messages = self.get_history(
+            messages = await self.get_history(
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
@@ -91,7 +94,7 @@ class IterHistory(BaseClient):
             offset_id = messages[-1].message_id + (1 if reverse else 0)
 
             for message in messages:
-                yield message
+                await yield_(message)
 
                 current += 1
 

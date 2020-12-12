@@ -5,12 +5,18 @@ Serializing means converting a Pyrogram object, which exists as Python class ins
 easily shared and stored anywhere. Pyrogram provides two formats for serializing its objects: one good looking for
 humans and another more compact for machines that is able to recover the original structures.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 For Humans - str(obj)
 ---------------------
 
 If you want a nicely formatted, human readable JSON representation of any object in the API -- namely, any object from
 :doc:`Pyrogram types <../api/types/index>`, :doc:`raw functions <../telegram/functions/index>` and
-:doc:`raw types <../telegram/types/index>` -- you can use use ``str(obj)``.
+:doc:`raw types <../telegram/types/index>` -- you can use ``str(obj)``.
 
 .. code-block:: python
 

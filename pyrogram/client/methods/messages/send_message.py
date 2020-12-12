@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Union
 
@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class SendMessage(BaseClient):
-    def send_message(
+    async def send_message(
         self,
         chat_id: Union[int, str],
         text: str,
@@ -80,7 +80,7 @@ class SendMessage(BaseClient):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8,11,21-23,26-33
+                :emphasize-lines: 2,5,8,11,21-23,26-32
 
                 # Simple example
                 app.send_message("haskell", "Thanks for creating **Pyrogram**!")
@@ -116,11 +116,11 @@ class SendMessage(BaseClient):
                         ]))
         """
 
-        message, entities = self.parser.parse(text, parse_mode).values()
+        message, entities = (await self.parser.parse(text, parse_mode)).values()
 
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMessage(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
@@ -133,7 +133,7 @@ class SendMessage(BaseClient):
         )
 
         if isinstance(r, types.UpdateShortSentMessage):
-            peer = self.resolve_peer(chat_id)
+            peer = await self.resolve_peer(chat_id)
 
             peer_id = (
                 peer.user_id
@@ -151,13 +151,16 @@ class SendMessage(BaseClient):
                 text=message,
                 date=r.date,
                 outgoing=r.out,
-                entities=entities,
+                entities=[
+                    pyrogram.MessageEntity._parse(None, entity, {})
+                    for entity in entities
+                ],
                 client=self
             )
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

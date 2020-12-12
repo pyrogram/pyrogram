@@ -15,6 +15,12 @@ follow the usual *PascalCase* convention.
     except FloodWait as e:
         ...
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 303 - SeeOther
 --------------
 

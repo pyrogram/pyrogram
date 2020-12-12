@@ -1,21 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 from typing import Iterable, Union, List
 
 import pyrogram
@@ -24,7 +25,7 @@ from ...ext import BaseClient
 
 
 class GetUsers(BaseClient):
-    def get_users(
+    async def get_users(
         self,
         user_ids: Union[Iterable[Union[int, str]], int, str]
     ) -> Union["pyrogram.User", List["pyrogram.User"]]:
@@ -53,9 +54,9 @@ class GetUsers(BaseClient):
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]
-        user_ids = [self.resolve_peer(i) for i in user_ids]
+        user_ids = await asyncio.gather(*[self.resolve_peer(i) for i in user_ids])
 
-        r = self.send(
+        r = await self.send(
             functions.users.GetUsers(
                 id=user_ids
             )

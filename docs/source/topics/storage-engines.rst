@@ -5,6 +5,12 @@ Every time you login to Telegram, some personal piece of data are created and he
 and the server, Telegram). This session data is uniquely bound to your own account, indefinitely (until you logout or
 decide to manually terminate it) and is used to authorize a client to execute API calls on behalf of your identity.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Persisting Sessions
 -------------------
 

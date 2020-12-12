@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from struct import pack
 from typing import List
@@ -60,6 +60,9 @@ class Video(Object):
         date (``int``, *optional*):
             Date the video was sent in Unix time.
 
+        ttl_seconds (``int``. *optional*):
+            Time-to-live seconds, for secret photos.
+
         thumbs (List of :obj:`Thumbnail`, *optional*):
             Video thumbnails.
     """
@@ -78,6 +81,7 @@ class Video(Object):
         supports_streaming: bool = None,
         file_size: int = None,
         date: int = None,
+        ttl_seconds: int = None,
         thumbs: List[Thumbnail] = None
     ):
         super().__init__(client)
@@ -92,6 +96,7 @@ class Video(Object):
         self.supports_streaming = supports_streaming
         self.file_size = file_size
         self.date = date
+        self.ttl_seconds = ttl_seconds
         self.thumbs = thumbs
 
     @staticmethod
@@ -99,7 +104,8 @@ class Video(Object):
         client,
         video: types.Document,
         video_attributes: types.DocumentAttributeVideo,
-        file_name: str
+        file_name: str,
+        ttl_seconds: int = None
     ) -> "Video":
         return Video(
             file_id=encode_file_id(
@@ -120,6 +126,7 @@ class Video(Object):
             supports_streaming=video_attributes.supports_streaming,
             file_size=video.size,
             date=video.date,
+            ttl_seconds=ttl_seconds,
             thumbs=Thumbnail._parse(client, video),
             client=client
         )

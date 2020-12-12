@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List, Union
 
@@ -38,11 +38,20 @@ class Poll(Object, Update):
         options (List of :obj:`PollOption`):
             List of poll options.
 
+        total_voter_count (``int``):
+            Total number of users that voted in the poll.
+
         is_closed (``bool``):
             True, if the poll is closed.
 
-        total_voters (``int``):
-            Total count of voters for this poll.
+        is_anonymous (``bool``, *optional*):
+            True, if the poll is anonymous
+
+        type (``str``, *optional*):
+            Poll type, currently can be "regular" or "quiz".
+
+        allows_multiple_answers (``bool``, *optional*):
+            True, if the poll allows multiple answers.
 
         chosen_option (``int``, *optional*):
             Index of your chosen option (0-9), None in case you haven't voted yet.
@@ -55,8 +64,12 @@ class Poll(Object, Update):
         id: str,
         question: str,
         options: List[PollOption],
+        total_voter_count: int,
         is_closed: bool,
-        total_voters: int,
+        is_anonymous: bool = None,
+        type: str = None,
+        allows_multiple_answers: bool = None,
+        # correct_option_id: int,
         chosen_option: int = None
     ):
         super().__init__(client)
@@ -64,15 +77,18 @@ class Poll(Object, Update):
         self.id = id
         self.question = question
         self.options = options
+        self.total_voter_count = total_voter_count
         self.is_closed = is_closed
-        self.total_voters = total_voters
+        self.is_anonymous = is_anonymous
+        self.type = type
+        self.allows_multiple_answers = allows_multiple_answers
+        # self.correct_option_id = correct_option_id
         self.chosen_option = chosen_option
 
     @staticmethod
     def _parse(client, media_poll: Union[types.MessageMediaPoll, types.UpdateMessagePoll]) -> "Poll":
-        poll = media_poll.poll
-        results = media_poll.results.results
-        total_voters = media_poll.results.total_voters
+        poll = media_poll.poll  # type: types.Poll
+        results = media_poll.results.results  # type: types.PollResults
         chosen_option = None
         options = []
 
@@ -99,8 +115,11 @@ class Poll(Object, Update):
             id=str(poll.id),
             question=poll.question,
             options=options,
+            total_voter_count=media_poll.results.total_voters,
             is_closed=poll.closed,
-            total_voters=total_voters,
+            is_anonymous=not poll.public_voters,
+            type="quiz" if poll.quiz else "regular",
+            allows_multiple_answers=poll.multiple_choice,
             chosen_option=chosen_option,
             client=client
         )
@@ -131,8 +150,8 @@ class Poll(Object, Update):
             id=str(update.poll_id),
             question="",
             options=options,
+            total_voter_count=update.results.total_voters,
             is_closed=False,
-            total_voters=update.results.total_voters,
             chosen_option=chosen_option,
             client=client
         )

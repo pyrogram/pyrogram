@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List
 
@@ -24,7 +24,7 @@ from ...types.inline_mode import InlineQueryResult
 
 
 class AnswerInlineQuery(BaseClient):
-    def answer_inline_query(
+    async def answer_inline_query(
         self,
         inline_query_id: str,
         results: List[InlineQueryResult],
@@ -93,10 +93,15 @@ class AnswerInlineQuery(BaseClient):
                             "Title",
                             InputTextMessageContent("Message content"))])
         """
-        return self.send(
+        written_results = []  # Py 3.5 doesn't support await inside comprehensions
+
+        for r in results:
+            written_results.append(await r.write())
+
+        return await self.send(
             functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
-                results=[r.write() for r in results],
+                results=written_results,
                 cache_time=cache_time,
                 gallery=is_gallery or None,
                 private=is_personal or None,

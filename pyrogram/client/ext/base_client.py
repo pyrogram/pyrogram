@@ -1,28 +1,27 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import os
 import platform
 import re
 import sys
 from pathlib import Path
-from queue import Queue
-from threading import Lock
 
 from pyrogram import __version__
 from ..parser import Parser
@@ -30,7 +29,7 @@ from ...session.internals import MsgId
 
 
 class BaseClient:
-    class StopTransmission(StopIteration):
+    class StopTransmission(StopAsyncIteration):
         pass
 
     APP_VERSION = "Pyrogram {}".format(__version__)
@@ -52,7 +51,7 @@ class BaseClient:
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
     DIALOGS_AT_ONCE = 100
     UPDATES_WORKERS = 4
-    DOWNLOAD_WORKERS = 1
+    DOWNLOAD_WORKERS = 4
     OFFLINE_SLEEP = 900
     WORKERS = 4
     WORKDIR = PARENT_DIR
@@ -100,24 +99,24 @@ class BaseClient:
 
         self.session = None
         self.media_sessions = {}
-        self.media_sessions_lock = Lock()
+        self.media_sessions_lock = asyncio.Lock()
 
         self.is_connected = None
         self.is_initialized = None
 
         self.takeout_id = None
 
-        self.updates_queue = Queue()
-        self.updates_workers_list = []
-        self.download_queue = Queue()
-        self.download_workers_list = []
+        self.updates_queue = asyncio.Queue()
+        self.updates_worker_tasks = []
+        self.download_queue = asyncio.Queue()
+        self.download_worker_tasks = []
 
         self.disconnect_handler = None
 
-    def send(self, *args, **kwargs):
+    async def send(self, *args, **kwargs):
         pass
 
-    def resolve_peer(self, *args, **kwargs):
+    async def resolve_peer(self, *args, **kwargs):
         pass
 
     def fetch_peers(self, *args, **kwargs):
@@ -126,50 +125,50 @@ class BaseClient:
     def add_handler(self, *args, **kwargs):
         pass
 
-    def save_file(self, *args, **kwargs):
+    async def save_file(self, *args, **kwargs):
         pass
 
-    def get_messages(self, *args, **kwargs):
+    async def get_messages(self, *args, **kwargs):
         pass
 
-    def get_history(self, *args, **kwargs):
+    async def get_history(self, *args, **kwargs):
         pass
 
-    def get_dialogs(self, *args, **kwargs):
+    async def get_dialogs(self, *args, **kwargs):
         pass
 
-    def get_chat_members(self, *args, **kwargs):
+    async def get_chat_members(self, *args, **kwargs):
         pass
 
-    def get_chat_members_count(self, *args, **kwargs):
+    async def get_chat_members_count(self, *args, **kwargs):
         pass
 
-    def answer_inline_query(self, *args, **kwargs):
+    async def answer_inline_query(self, *args, **kwargs):
+        pass
+
+    async def get_profile_photos(self, *args, **kwargs):
+        pass
+
+    async def edit_message_text(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_text(self, *args, **kwargs):
+        pass
+
+    async def edit_message_media(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_media(self, *args, **kwargs):
+        pass
+
+    async def edit_message_reply_markup(self, *args, **kwargs):
+        pass
+
+    async def edit_inline_reply_markup(self, *args, **kwargs):
         pass
 
     def guess_mime_type(self, *args, **kwargs):
         pass
 
     def guess_extension(self, *args, **kwargs):
-        pass
-
-    def get_profile_photos(self, *args, **kwargs):
-        pass
-
-    def edit_message_text(self, *args, **kwargs):
-        pass
-
-    def edit_inline_text(self, *args, **kwargs):
-        pass
-
-    def edit_message_media(self, *args, **kwargs):
-        pass
-
-    def edit_inline_media(self, *args, **kwargs):
-        pass
-
-    def edit_message_reply_markup(self, *args, **kwargs):
-        pass
-
-    def edit_inline_reply_markup(self, *args, **kwargs):
         pass

@@ -1,21 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import binascii
 import os
 import struct
@@ -32,7 +33,7 @@ DEFAULT_DOWNLOAD_DIR = "downloads/"
 
 
 class DownloadMedia(BaseClient):
-    def download_media(
+    async def download_media(
         self,
         message: Union["pyrogram.Message", str],
         file_ref: str = None,
@@ -98,7 +99,13 @@ class DownloadMedia(BaseClient):
                 app.download_media(message)
 
                 # Download from file id
-                app.download_media("CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+                app.download_media("CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
+
+                # Keep track of the progress while downloading
+                def progress(current, total):
+                    print("{:.1f}%".format(current * 100 / total))
+
+                app.download_media(message, progress=progress)
         """
         error_message = "This message doesn't contain any downloadable media"
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note")
@@ -196,7 +203,7 @@ class DownloadMedia(BaseClient):
         except (AssertionError, binascii.Error, struct.error):
             raise FileIdInvalid from None
 
-        done = Event()
+        done = asyncio.Event()
         path = [None]
 
         directory, file_name = os.path.split(file_name)
@@ -233,9 +240,9 @@ class DownloadMedia(BaseClient):
             )
 
         # Cast to string because Path objects aren't supported by Python 3.5
-        self.download_queue.put((data, str(directory), str(file_name), done, progress, progress_args, path))
+        self.download_queue.put_nowait((data, str(directory), str(file_name), done, progress, progress_args, path))
 
         if block:
-            done.wait()
+            await done.wait()
 
         return path[0]

@@ -1,24 +1,24 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from base64 import b64encode
 from struct import pack
-from typing import Union
+from typing import Union, List, Match
 
 import pyrogram
 from pyrogram.api import types
@@ -59,6 +59,9 @@ class CallbackQuery(Object, Update):
         game_short_name (``str``, *optional*):
             Short name of a Game to be returned, serves as the unique identifier for the game.
 
+        matches (List of regex Matches, *optional*):
+            A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
+            the data of this callback query. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
     """
 
     def __init__(
@@ -71,7 +74,8 @@ class CallbackQuery(Object, Update):
         message: "pyrogram.Message" = None,
         inline_message_id: str = None,
         data: Union[str, bytes] = None,
-        game_short_name: str = None
+        game_short_name: str = None,
+        matches: List[Match] = None
     ):
         super().__init__(client)
 
@@ -82,14 +86,15 @@ class CallbackQuery(Object, Update):
         self.inline_message_id = inline_message_id
         self.data = data
         self.game_short_name = game_short_name
+        self.matches = matches
 
     @staticmethod
-    def _parse(client, callback_query, users) -> "CallbackQuery":
+    async def _parse(client, callback_query, users) -> "CallbackQuery":
         message = None
         inline_message_id = None
 
         if isinstance(callback_query, types.UpdateBotCallbackQuery):
-            message = client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
+            message = await client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
         elif isinstance(callback_query, types.UpdateInlineBotCallbackQuery):
             inline_message_id = b64encode(
                 pack(
@@ -119,7 +124,7 @@ class CallbackQuery(Object, Update):
             client=client
         )
 
-    def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
+    async def answer(self, text: str = None, show_alert: bool = None, url: str = None, cache_time: int = 0):
         """Bound method *answer* of :obj:`CallbackQuery`.
 
         Use this method as a shortcut for:
@@ -138,24 +143,24 @@ class CallbackQuery(Object, Update):
                 callback_query.answer("Hello", show_alert=True)
 
         Parameters:
-            text (``str``):
+            text (``str``, *optional*):
                 Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters.
 
-            show_alert (``bool``):
+            show_alert (``bool`` *optional*):
                 If true, an alert will be shown by the client instead of a notification at the top of the chat screen.
                 Defaults to False.
 
-            url (``str``):
+            url (``str`` *optional*):
                 URL that will be opened by the user's client.
                 If you have created a Game and accepted the conditions via @Botfather, specify the URL that opens your
                 game – note that this will only work if the query comes from a callback_game button.
                 Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
 
-            cache_time (``int``):
+            cache_time (``int`` *optional*):
                 The maximum amount of time in seconds that the result of the callback query may be cached client-side.
                 Telegram apps will support caching starting in version 3.14. Defaults to 0.
         """
-        return self._client.answer_callback_query(
+        return await self._client.answer_callback_query(
             callback_query_id=self.id,
             text=text,
             show_alert=show_alert,
@@ -163,7 +168,7 @@ class CallbackQuery(Object, Update):
             cache_time=cache_time
         )
 
-    def edit_message_text(
+    async def edit_message_text(
         self,
         text: str,
         parse_mode: Union[str, None] = object,
@@ -199,7 +204,7 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_text(
+            return await self._client.edit_message_text(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 text=text,
@@ -208,7 +213,7 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_text(
+            return await self._client.edit_inline_text(
                 inline_message_id=self.inline_message_id,
                 text=text,
                 parse_mode=parse_mode,
@@ -216,7 +221,7 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
 
-    def edit_message_caption(
+    async def edit_message_caption(
         self,
         caption: str,
         parse_mode: Union[str, None] = object,
@@ -247,9 +252,9 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return self.edit_message_text(caption, parse_mode, reply_markup)
+        return await self.edit_message_text(caption, parse_mode, reply_markup)
 
-    def edit_message_media(
+    async def edit_message_media(
         self,
         media: "pyrogram.InputMedia",
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
@@ -273,20 +278,20 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_media(
+            return await self._client.edit_message_media(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 media=media,
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_media(
+            return await self._client.edit_inline_media(
                 inline_message_id=self.inline_message_id,
                 media=media,
                 reply_markup=reply_markup
             )
 
-    def edit_message_reply_markup(
+    async def edit_message_reply_markup(
         self,
         reply_markup: "pyrogram.InlineKeyboardMarkup" = None
     ) -> Union["pyrogram.Message", bool]:
@@ -306,13 +311,13 @@ class CallbackQuery(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if self.inline_message_id is None:
-            return self._client.edit_message_reply_markup(
+            return await self._client.edit_message_reply_markup(
                 chat_id=self.message.chat.id,
                 message_id=self.message.message_id,
                 reply_markup=reply_markup
             )
         else:
-            return self._client.edit_inline_reply_markup(
+            return await self._client.edit_inline_reply_markup(
                 inline_message_id=self.inline_message_id,
                 reply_markup=reply_markup
             )

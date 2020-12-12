@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import html
 import logging
@@ -110,11 +110,12 @@ class HTML:
     def __init__(self, client: Union["pyrogram.BaseClient", None]):
         self.client = client
 
-    def parse(self, text: str):
-        text = utils.add_surrogates(text)
+    async def parse(self, text: str):
+        # Strip whitespace characters from the end of the message, but preserve closing tags
+        text = re.sub(r"\s*(</[\w\W]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
-        parser.feed(text)
+        parser.feed(utils.add_surrogates(text))
         parser.close()
 
         if parser.tag_entities:
@@ -131,7 +132,7 @@ class HTML:
             if isinstance(entity, types.InputMessageEntityMentionName):
                 try:
                     if self.client is not None:
-                        entity.user_id = self.client.resolve_peer(entity.user_id)
+                        entity.user_id = await self.client.resolve_peer(entity.user_id)
                 except PeerIdInvalid:
                     continue
 

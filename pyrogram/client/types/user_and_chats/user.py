@@ -1,26 +1,26 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import html
 from typing import List
 
 import pyrogram
 from pyrogram.api import types
+from pyrogram.client.ext import Link
 from .chat_photo import ChatPhoto
 from .restriction import Restriction
 from ..object import Object
@@ -158,11 +158,9 @@ class User(Object, Update):
         self.photo = photo
         self.restrictions = restrictions
 
-    def __format__(self, format_spec):
-        if format_spec == "mention":
-            return '<a href="tg://user?id={0}">{1}</a>'.format(self.id, html.escape(self.first_name))
-
-        return html.escape(str(self))
+    @property
+    def mention(self):
+        return Link("tg://user?id={}".format(self.id), self.first_name, self._client.parse_mode)
 
     @staticmethod
     def _parse(client, user: types.User) -> "User" or None:
@@ -233,7 +231,7 @@ class User(Object, Update):
             client=client
         )
 
-    def archive(self):
+    async def archive(self):
         """Bound method *archive* of :obj:`User`.
 
         Use as a shortcut for:
@@ -254,9 +252,9 @@ class User(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.archive_chats(self.id)
+        return await self._client.archive_chats(self.id)
 
-    def unarchive(self):
+    async def unarchive(self):
         """Bound method *unarchive* of :obj:`User`.
 
         Use as a shortcut for:
@@ -277,7 +275,7 @@ class User(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return self._client.unarchive_chats(self.id)
+        return await self._client.unarchive_chats(self.id)
 
     def block(self):
         """Bound method *block* of :obj:`User`.

@@ -1,24 +1,24 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
 import time
-from threading import Thread, Event, Lock
 
 log = logging.getLogger(__name__)
 
@@ -27,13 +27,18 @@ class Syncer:
     INTERVAL = 20
 
     clients = {}
-    thread = None
-    event = Event()
-    lock = Lock()
+    event = None
+    lock = None
 
     @classmethod
-    def add(cls, client):
-        with cls.lock:
+    async def add(cls, client):
+        if cls.event is None:
+            cls.event = asyncio.Event()
+
+        if cls.lock is None:
+            cls.lock = asyncio.Lock()
+
+        async with cls.lock:
             cls.sync(client)
 
             cls.clients[id(client)] = client
@@ -42,8 +47,8 @@ class Syncer:
                 cls.start()
 
     @classmethod
-    def remove(cls, client):
-        with cls.lock:
+    async def remove(cls, client):
+        async with cls.lock:
             cls.sync(client)
 
             del cls.clients[id(client)]
@@ -54,24 +59,23 @@ class Syncer:
     @classmethod
     def start(cls):
         cls.event.clear()
-        cls.thread = Thread(target=cls.worker, name=cls.__name__)
-        cls.thread.start()
+        asyncio.ensure_future(cls.worker())
 
     @classmethod
     def stop(cls):
         cls.event.set()
 
     @classmethod
-    def worker(cls):
+    async def worker(cls):
         while True:
-            cls.event.wait(cls.INTERVAL)
-
-            if cls.event.is_set():
+            try:
+                await asyncio.wait_for(cls.event.wait(), cls.INTERVAL)
+            except asyncio.TimeoutError:
+                async with cls.lock:
+                    for client in cls.clients.values():
+                        cls.sync(client)
+            else:
                 break
-
-            with cls.lock:
-                for client in cls.clients.values():
-                    cls.sync(client)
 
     @classmethod
     def sync(cls, client):

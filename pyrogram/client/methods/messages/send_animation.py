@@ -1,23 +1,24 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union
+import re
+from typing import Union, BinaryIO
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -26,10 +27,10 @@ from pyrogram.errors import FilePartMissing
 
 
 class SendAnimation(BaseClient):
-    def send_animation(
+    async def send_animation(
         self,
         chat_id: Union[int, str],
-        animation: str,
+        animation: Union[str, BinaryIO],
         file_ref: str = None,
         caption: str = "",
         unsave: bool = False,
@@ -37,7 +38,8 @@ class SendAnimation(BaseClient):
         duration: int = 0,
         width: int = 0,
         height: int = 0,
-        thumb: str = None,
+        thumb: Union[str, BinaryIO] = None,
+        file_name: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -58,11 +60,12 @@ class SendAnimation(BaseClient):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            animation (``str``):
+            animation (``str`` | ``BinaryIO``):
                 Animation to send.
                 Pass a file_id as string to send an animation that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get an animation from the Internet, or
-                pass a file path as string to upload a new animation that exists on your local machine.
+                pass an HTTP URL as a string for Telegram to get an animation from the Internet,
+                pass a file path as string to upload a new animation that exists on your local machine, or
+                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             file_ref (``str``, *optional*):
                 A valid file reference obtained by a recently fetched media message.
@@ -91,11 +94,15 @@ class SendAnimation(BaseClient):
             height (``int``, *optional*):
                 Animation height.
 
-            thumb (``str``, *optional*):
+            thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the animation file sent.
                 The thumbnail should be in JPEG format and less than 200 KB in size.
                 A thumbnail's width and height should not exceed 320 pixels.
                 Thumbnails can't be reused and can be only uploaded as a new file.
+
+            file_name (``str``, *optional*):
+                File name of the animation sent.
+                Defaults to file's path basename.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -158,11 +165,36 @@ class SendAnimation(BaseClient):
         file = None
 
         try:
-            if os.path.exists(animation):
-                thumb = None if thumb is None else self.save_file(thumb)
-                file = self.save_file(animation, progress=progress, progress_args=progress_args)
+            if isinstance(animation, str):
+                if os.path.isfile(animation):
+                    thumb = await self.save_file(thumb)
+                    file = await self.save_file(animation, progress=progress, progress_args=progress_args)
+                    media = types.InputMediaUploadedDocument(
+                        mime_type=self.guess_mime_type(animation) or "video/mp4",
+                        file=file,
+                        thumb=thumb,
+                        attributes=[
+                            types.DocumentAttributeVideo(
+                                supports_streaming=True,
+                                duration=duration,
+                                w=width,
+                                h=height
+                            ),
+                            types.DocumentAttributeFilename(file_name=file_name or os.path.basename(animation)),
+                            types.DocumentAttributeAnimated()
+                        ]
+                    )
+                elif re.match("^https?://", animation):
+                    media = types.InputMediaDocumentExternal(
+                        url=animation
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(animation, file_ref, 10)
+            else:
+                thumb = await self.save_file(thumb)
+                file = await self.save_file(animation, progress=progress, progress_args=progress_args)
                 media = types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(animation) or "video/mp4",
+                    mime_type=self.guess_mime_type(animation.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
                     attributes=[
@@ -172,40 +204,34 @@ class SendAnimation(BaseClient):
                             w=width,
                             h=height
                         ),
-                        types.DocumentAttributeFilename(file_name=os.path.basename(animation)),
+                        types.DocumentAttributeFilename(file_name=animation.name),
                         types.DocumentAttributeAnimated()
                     ]
                 )
-            elif animation.startswith("http"):
-                media = types.InputMediaDocumentExternal(
-                    url=animation
-                )
-            else:
-                media = utils.get_input_media_from_file_id(animation, file_ref, 10)
 
             while True:
                 try:
-                    r = self.send(
+                    r = await self.send(
                         functions.messages.SendMedia(
-                            peer=self.resolve_peer(chat_id),
+                            peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **self.parser.parse(caption, parse_mode)
+                            **await self.parser.parse(caption, parse_mode)
                         )
                     )
                 except FilePartMissing as e:
-                    self.save_file(animation, file_id=file.id, file_part=e.x)
+                    await self.save_file(animation, file_id=file.id, file_part=e.x)
                 else:
                     for i in r.updates:
                         if isinstance(
                             i,
                             (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)
                         ):
-                            message = pyrogram.Message._parse(
+                            message = await pyrogram.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats},
@@ -216,7 +242,7 @@ class SendAnimation(BaseClient):
                                 document = message.animation or message.document
                                 document_id = utils.get_input_media_from_file_id(document.file_id, document.file_ref).id
 
-                                self.send(
+                                await self.send(
                                     functions.messages.SaveGif(
                                         id=document_id,
                                         unsave=True

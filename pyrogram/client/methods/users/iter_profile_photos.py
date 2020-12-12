@@ -1,34 +1,37 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Generator
+from typing import Union, Generator, Optional
 
 import pyrogram
+from async_generator import async_generator, yield_
+
 from ...ext import BaseClient
 
 
 class IterProfilePhotos(BaseClient):
-    def iter_profile_photos(
+    @async_generator
+    async def iter_profile_photos(
         self,
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 0,
-    ) -> Generator["pyrogram.Photo", None, None]:
+    ) -> Optional[Generator["pyrogram.Message", None, None]]:
         """Iterate through a chat or a user profile photos sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_profile_photos` in a loop, thus
@@ -62,7 +65,7 @@ class IterProfilePhotos(BaseClient):
         limit = min(100, total)
 
         while True:
-            photos = self.get_profile_photos(
+            photos = await self.get_profile_photos(
                 chat_id=chat_id,
                 offset=offset,
                 limit=limit
@@ -74,7 +77,7 @@ class IterProfilePhotos(BaseClient):
             offset += len(photos)
 
             for photo in photos:
-                yield photo
+                await yield_(photo)
 
                 current += 1
 

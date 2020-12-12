@@ -1,22 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2018 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import List, Match
 
 import pyrogram
 from pyrogram.api import types
@@ -47,6 +47,10 @@ class InlineQuery(Object, Update):
 
         location (:obj:`Location`. *optional*):
             Sender location, only for bots that request user location.
+
+        matches (List of regex Matches, *optional*):
+            A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
+            the query of this inline query. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
     """
 
     def __init__(
@@ -57,7 +61,8 @@ class InlineQuery(Object, Update):
         from_user: User,
         query: str,
         offset: str,
-        location: Location = None
+        location: Location = None,
+        matches: List[Match] = None
     ):
         super().__init__(client)
 
@@ -66,6 +71,7 @@ class InlineQuery(Object, Update):
         self.query = query
         self.offset = offset
         self.location = location
+        self.matches = matches
 
     @staticmethod
     def _parse(client, inline_query: types.UpdateBotInlineQuery, users: dict) -> "InlineQuery":
@@ -82,7 +88,7 @@ class InlineQuery(Object, Update):
             client=client
         )
 
-    def answer(
+    async def answer(
         self,
         results: List[InlineQueryResult],
         cache_time: int = 300,
@@ -145,7 +151,7 @@ class InlineQuery(Object, Update):
                 where they wanted to use the bot's inline capabilities.
         """
 
-        return self._client.answer_inline_query(
+        return await self._client.answer_inline_query(
             inline_query_id=self.id,
             results=results,
             cache_time=cache_time,

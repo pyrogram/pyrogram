@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
 from typing import Union
@@ -30,7 +30,7 @@ class Parser:
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    def parse(self, text: str, mode: Union[str, None] = object):
+    async def parse(self, text: str, mode: Union[str, None] = object):
         text = str(text).strip()
 
         if mode == object:
@@ -48,13 +48,13 @@ class Parser:
         mode = mode.lower()
 
         if mode == "combined":
-            return self.markdown.parse(text)
+            return await self.markdown.parse(text)
 
         if mode in ["markdown", "md"]:
-            return self.markdown.parse(text, True)
+            return await self.markdown.parse(text, True)
 
         if mode == "html":
-            return self.html.parse(text)
+            return await self.html.parse(text)
 
         raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
             ", ".join('"{}"'.format(m) for m in pyrogram.Client.PARSE_MODES[:-1]),

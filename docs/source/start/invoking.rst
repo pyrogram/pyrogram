@@ -4,6 +4,12 @@ Calling Methods
 At this point, we have successfully :doc:`installed Pyrogram <../intro/install>` and :doc:`authorized <auth>` our
 account; we are now aiming towards the core of the library. It's time to start playing with the API!
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Basic Usage
 -----------
 

@@ -8,6 +8,11 @@ general. Some words may as well link to dedicated articles in case the topic is 
 
     If you think something interesting could be added here, feel free to propose it by opening a `Feature Request`_.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
 
 Terms
 -----
@@ -56,6 +61,7 @@ Terms
     Userbot
         Also known as *user bot* or *ubot* for short, is a user logged in by third-party Telegram libraries --- such as
         Pyrogram --- to automate some behaviours, like sending messages or reacting to text commands or any other event.
+        Not to be confused with *bot*, that is, a normal Telegram bot created by `@BotFather <https://t.me/botfather>`_.
 
     Session
         Also known as *login session*, is a strictly personal piece of data created and held by both parties

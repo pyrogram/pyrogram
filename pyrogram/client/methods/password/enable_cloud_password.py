@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class EnableCloudPassword(BaseClient):
-    def enable_cloud_password(
+    async def enable_cloud_password(
         self,
         password: str,
         hint: str = "",
@@ -62,7 +62,7 @@ class EnableCloudPassword(BaseClient):
                 # Enable password with hint and email
                 app.enable_cloud_password("password", hint="hint", email="user@email.com")
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if r.has_password:
             raise ValueError("There is already a cloud password enabled")
@@ -71,7 +71,7 @@ class EnableCloudPassword(BaseClient):
         new_hash = btoi(compute_hash(r.new_algo, password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        self.send(
+        await self.send(
             functions.account.UpdatePasswordSettings(
                 password=types.InputCheckPasswordEmpty(),
                 new_settings=types.account.PasswordInputSettings(

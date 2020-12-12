@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
@@ -24,7 +24,7 @@ from ...ext import BaseClient
 
 
 class ChangeCloudPassword(BaseClient):
-    def change_cloud_password(
+    async def change_cloud_password(
         self,
         current_password: str,
         new_password: str,
@@ -57,7 +57,7 @@ class ChangeCloudPassword(BaseClient):
                 # Change password and hint
                 app.change_cloud_password("current_password", "new_password", new_hint="hint")
         """
-        r = self.send(functions.account.GetPassword())
+        r = await self.send(functions.account.GetPassword())
 
         if not r.has_password:
             raise ValueError("There is no cloud password to change")
@@ -66,7 +66,7 @@ class ChangeCloudPassword(BaseClient):
         new_hash = btoi(compute_hash(r.new_algo, new_password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        self.send(
+        await self.send(
             functions.account.UpdatePasswordSettings(
                 password=compute_check(r, current_password),
                 new_settings=types.account.PasswordInputSettings(

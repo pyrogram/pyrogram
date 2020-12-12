@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 from struct import pack, unpack
@@ -28,17 +28,17 @@ class TCPIntermediate(TCP):
     def __init__(self, ipv6: bool, proxy: dict):
         super().__init__(ipv6, proxy)
 
-    def connect(self, address: tuple):
-        super().connect(address)
-        super().sendall(b"\xee" * 4)
+    async def connect(self, address: tuple):
+        await super().connect(address)
+        await super().send(b"\xee" * 4)
 
-    def sendall(self, data: bytes, *args):
-        super().sendall(pack("<i", len(data)) + data)
+    async def send(self, data: bytes, *args):
+        await super().send(pack("<i", len(data)) + data)
 
-    def recvall(self, length: int = 0) -> bytes or None:
-        length = super().recvall(4)
+    async def recv(self, length: int = 0) -> bytes or None:
+        length = await super().recv(4)
 
         if length is None:
             return None
 
-        return super().recvall(unpack("<i", length)[0])
+        return await super().recv(unpack("<i", length)[0])

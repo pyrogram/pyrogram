@@ -13,6 +13,12 @@ This page is about Pyrogram methods. All the methods listed here are bound to a 
     with app:
         app.send_message("haskell", "hi")
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 .. currentmodule:: pyrogram.Client
 
 Utilities

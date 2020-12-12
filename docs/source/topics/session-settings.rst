@@ -20,6 +20,12 @@ That's how a session looks like on the Android app, showing the three main piece
 -   ``device_model``: **CPython 3.7.2**
 -   ``system_version``: **Linux 4.15.0-23-generic**
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 Set Custom Values
 -----------------
 

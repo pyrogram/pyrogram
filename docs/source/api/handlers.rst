@@ -20,6 +20,12 @@ For a much more convenient way of registering callback functions have a look at 
 
     app.run()
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 .. currentmodule:: pyrogram
 
 Index
@@ -32,6 +38,7 @@ Index
     - :class:`DeletedMessagesHandler`
     - :class:`CallbackQueryHandler`
     - :class:`InlineQueryHandler`
+    - :class:`ChosenInlineResultHandler`
     - :class:`UserStatusHandler`
     - :class:`PollHandler`
     - :class:`DisconnectHandler`
@@ -47,6 +54,7 @@ Details
 .. autoclass:: DeletedMessagesHandler()
 .. autoclass:: CallbackQueryHandler()
 .. autoclass:: InlineQueryHandler()
+.. autoclass:: ChosenInlineResultHandler()
 .. autoclass:: UserStatusHandler()
 .. autoclass:: PollHandler()
 .. autoclass:: DisconnectHandler()

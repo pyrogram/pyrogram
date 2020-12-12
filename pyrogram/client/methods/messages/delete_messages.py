@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Union, Iterable
 
@@ -23,7 +23,7 @@ from pyrogram.client.ext import BaseClient
 
 
 class DeleteMessages(BaseClient):
-    def delete_messages(
+    async def delete_messages(
         self,
         chat_id: Union[int, str],
         message_ids: Iterable[int],
@@ -62,18 +62,18 @@ class DeleteMessages(BaseClient):
                 # Delete messages only on your side (without revoking)
                 app.delete_messages(chat_id, message_id, revoke=False)
         """
-        peer = self.resolve_peer(chat_id)
+        peer = await self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]
 
         if isinstance(peer, types.InputPeerChannel):
-            r = self.send(
+            r = await self.send(
                 functions.channels.DeleteMessages(
                     channel=peer,
                     id=message_ids
                 )
             )
         else:
-            r = self.send(
+            r = await self.send(
                 functions.messages.DeleteMessages(
                     id=message_ids,
                     revoke=revoke or None

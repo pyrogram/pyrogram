@@ -1,33 +1,36 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Generator
+from typing import Generator, Optional
+
+from async_generator import async_generator, yield_
 
 import pyrogram
 from ...ext import BaseClient
 
 
 class IterDialogs(BaseClient):
-    def iter_dialogs(
+    @async_generator
+    async def iter_dialogs(
         self,
-        offset_date: int = 0,
-        limit: int = None
-    ) -> Generator["pyrogram.Dialog", None, None]:
+        limit: int = 0,
+        offset_date: int = 0
+    ) -> Optional[Generator["pyrogram.Dialog", None, None]]:
         """Iterate through a user's dialogs sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~Client.get_dialogs` in a loop, thus saving
@@ -35,13 +38,13 @@ class IterDialogs(BaseClient):
         single call.
 
         Parameters:
-            offset_date (``int``):
-                The offset date in Unix time taken from the top message of a :obj:`Dialog`.
-                Defaults to 0 (most recent dialog).
-
             limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.
                 By default, no limit is applied and all dialogs are returned.
+
+            offset_date (``int``):
+                The offset date in Unix time taken from the top message of a :obj:`Dialog`.
+                Defaults to 0 (most recent dialog).
 
         Returns:
             ``Generator``: A generator yielding :obj:`Dialog` objects.
@@ -57,12 +60,12 @@ class IterDialogs(BaseClient):
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
-        pinned_dialogs = self.get_dialogs(
+        pinned_dialogs = await self.get_dialogs(
             pinned_only=True
         )
 
         for dialog in pinned_dialogs:
-            yield dialog
+            await yield_(dialog)
 
             current += 1
 
@@ -70,7 +73,7 @@ class IterDialogs(BaseClient):
                 return
 
         while True:
-            dialogs = self.get_dialogs(
+            dialogs = await self.get_dialogs(
                 offset_date=offset_date,
                 limit=limit
             )
@@ -81,7 +84,7 @@ class IterDialogs(BaseClient):
             offset_date = dialogs[-1].top_message.date
 
             for dialog in dialogs:
-                yield dialog
+                await yield_(dialog)
 
                 current += 1
 

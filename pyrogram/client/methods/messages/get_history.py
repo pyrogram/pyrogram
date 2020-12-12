@@ -1,36 +1,35 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
 import logging
-import time
 from typing import Union, List
 
 import pyrogram
 from pyrogram.api import functions
 from pyrogram.client.ext import utils
-from pyrogram.errors import FloodWait
 from ...ext import BaseClient
 
 log = logging.getLogger(__name__)
 
 
 class GetHistory(BaseClient):
-    def get_history(
+    async def get_history(
         self,
         chat_id: Union[int, str],
         limit: int = 100,
@@ -85,28 +84,21 @@ class GetHistory(BaseClient):
 
         offset_id = offset_id or (1 if reverse else 0)
 
-        while True:
-            try:
-                messages = utils.parse_messages(
-                    self,
-                    self.send(
-                        functions.messages.GetHistory(
-                            peer=self.resolve_peer(chat_id),
-                            offset_id=offset_id,
-                            offset_date=offset_date,
-                            add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
-                            limit=limit,
-                            max_id=0,
-                            min_id=0,
-                            hash=0
-                        )
-                    )
+        messages = await utils.parse_messages(
+            self,
+            await self.send(
+                functions.messages.GetHistory(
+                    peer=await self.resolve_peer(chat_id),
+                    offset_id=offset_id,
+                    offset_date=offset_date,
+                    add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
+                    limit=limit,
+                    max_id=0,
+                    min_id=0,
+                    hash=0
                 )
-            except FloodWait as e:
-                log.warning("Sleeping for {}s".format(e.x))
-                time.sleep(e.x)
-            else:
-                break
+            )
+        )
 
         if reverse:
             messages.reverse()

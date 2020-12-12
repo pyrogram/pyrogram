@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Union, List
 
@@ -24,11 +24,15 @@ from pyrogram.client.ext import BaseClient
 
 
 class SendPoll(BaseClient):
-    def send_poll(
+    async def send_poll(
         self,
         chat_id: Union[int, str],
         question: str,
         options: List[str],
+        is_anonymous: bool = True,
+        allows_multiple_answers: bool = None,
+        type: str = "regular",
+        correct_option_id: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -53,6 +57,22 @@ class SendPoll(BaseClient):
             options (List of ``str``):
                 List of answer options, 2-10 strings 1-100 characters each.
 
+            is_anonymous (``bool``, *optional*):
+                True, if the poll needs to be anonymous.
+                Defaults to True.
+
+            type (``str``, *optional*):
+                Poll type, "quiz" or "regular".
+                Defaults to "regular"
+
+            allows_multiple_answers (``bool``, *optional*):
+                True, if the poll allows multiple answers, ignored for polls in quiz mode.
+                Defaults to False
+
+            correct_option_id (``int``, *optional*):
+                0-based identifier of the correct answer option (the index of the correct option)
+                Required for polls in quiz mode.
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -75,9 +95,9 @@ class SendPoll(BaseClient):
 
                 app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
-        r = self.send(
+        r = await self.send(
             functions.messages.SendMedia(
-                peer=self.resolve_peer(chat_id),
+                peer=await self.resolve_peer(chat_id),
                 media=types.InputMediaPoll(
                     poll=types.Poll(
                         id=0,
@@ -85,8 +105,12 @@ class SendPoll(BaseClient):
                         answers=[
                             types.PollAnswer(text=o, option=bytes([i]))
                             for i, o in enumerate(options)
-                        ]
-                    )
+                        ],
+                        multiple_choice=allows_multiple_answers or None,
+                        public_voters=not is_anonymous or None,
+                        quiz=type == "quiz" or None
+                    ),
+                    correct_answers=None if correct_option_id is None else [bytes([correct_option_id])]
                 ),
                 message="",
                 silent=disable_notification or None,
@@ -99,7 +123,7 @@ class SendPoll(BaseClient):
 
         for i in r.updates:
             if isinstance(i, (types.UpdateNewMessage, types.UpdateNewChannelMessage, types.UpdateNewScheduledMessage)):
-                return pyrogram.Message._parse(
+                return await pyrogram.Message._parse(
                     self, i.message,
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats},

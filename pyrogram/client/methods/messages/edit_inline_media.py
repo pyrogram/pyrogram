@@ -1,20 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
+import re
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -27,7 +29,7 @@ from pyrogram.client.types.input_media import InputMedia
 
 
 class EditInlineMedia(BaseClient):
-    def edit_inline_media(
+    async def edit_inline_media(
         self,
         inline_message_id: str,
         media: InputMedia,
@@ -72,46 +74,46 @@ class EditInlineMedia(BaseClient):
         parse_mode = media.parse_mode
 
         if isinstance(media, InputMediaPhoto):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaPhotoExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
         elif isinstance(media, InputMediaVideo):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
         elif isinstance(media, InputMediaAudio):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
         elif isinstance(media, InputMediaAnimation):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
         elif isinstance(media, InputMediaDocument):
-            if media.media.startswith("http"):
+            if re.match("^https?://", media.media):
                 media = types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
 
-        return self.send(
+        return await self.send(
             functions.messages.EditInlineBotMessage(
                 id=utils.unpack_inline_message_id(inline_message_id),
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **self.parser.parse(caption, parse_mode)
+                **await self.parser.parse(caption, parse_mode)
             )
         )

@@ -13,4 +13,4 @@ with app:
     app.send_location("me", 51.500729, -0.124583)
 
     # Send a sticker
-    app.send_sticker("me", "CAADBAADyg4AAvLQYAEYD4F7vcZ43AI")
+    app.send_sticker("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")

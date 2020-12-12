@@ -1,20 +1,22 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2019 Dan Tès <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+
+from typing import Union
 
 import pyrogram
 from pyrogram.api import functions, types
@@ -22,16 +24,16 @@ from ...ext import BaseClient
 
 
 class JoinChat(BaseClient):
-    def join_chat(
+    async def join_chat(
         self,
-        chat_id: str
+        chat_id: Union[int, str]
     ):
         """Join a group chat or channel.
 
         Parameters:
-            chat_id (``str``):
-                Unique identifier for the target chat in form of a *t.me/joinchat/* link or username of the target
-                channel/supergroup (in the format @username).
+            chat_id (``int`` | ``str``):
+                Unique identifier for the target chat in form of a *t.me/joinchat/* link, a username of the target
+                channel/supergroup (in the format @username) or a chat id of a linked chat (channel or supergroup).
 
         Returns:
             :obj:`Chat`: On success, a chat object is returned.
@@ -44,11 +46,14 @@ class JoinChat(BaseClient):
 
                 # Join chat via invite link
                 app.join_chat("https://t.me/joinchat/AAAAAE0QmSW3IUmm3UFR7A")
+
+                # Join a linked chat
+                app.join_chat(app.get_chat("pyrogram").linked_chat.id)
         """
-        match = self.INVITE_LINK_RE.match(chat_id)
+        match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            chat = self.send(
+            chat = await self.send(
                 functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
@@ -58,9 +63,9 @@ class JoinChat(BaseClient):
             elif isinstance(chat.chats[0], types.Channel):
                 return pyrogram.Chat._parse_channel_chat(self, chat.chats[0])
         else:
-            chat = self.send(
+            chat = await self.send(
                 functions.channels.JoinChannel(
-                    channel=self.resolve_peer(chat_id)
+                    channel=await self.resolve_peer(chat_id)
                 )
             )
 

@@ -6,6 +6,12 @@ already superior to, what is usually called, the official Bot API, in many respe
 why Pyrogram might be a better choice for your project by comparing the two APIs, but first, let's make it clear what
 actually is the MTProto and the Bot API.
 
+.. contents:: Contents
+    :backlinks: none
+    :local:
+
+-----
+
 What is the MTProto API?
 ------------------------
 
@@ -29,7 +35,7 @@ accounts that are authorized via tokens instead of phone numbers. The Bot API is
 Telegram API, but runs on an intermediate server application that in turn communicates with the actual Telegram servers
 using MTProto.
 
-.. figure:: https://i.imgur.com/C108qkX.png
+.. figure:: https://i.imgur.com/WvwBoZo.png
     :align: center
 
 .. _Bot API: https://core.telegram.org/bots/api
@@ -49,7 +55,7 @@ HTTP Bot API. Using Pyrogram you can:
 .. hlist::
     :columns: 1
 
-    - :guilabel:`+` **Upload & download any file, up to 1500 MB each (~1.5 GB)**
+    - :guilabel:`+` **Upload & download any file, up to 2000 MiB each (~2 GB)**
     - :guilabel:`--` The Bot API allows uploads and downloads of files only up to 50 MB / 20 MB in size (respectively).
 
 .. hlist::

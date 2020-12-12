@@ -1,6 +1,8 @@
-# User's personal information
+# Development
 *.session
 config.ini
+main.py
+unknown_errors.txt
 
 # Pyrogram generated code
 pyrogram/errors/exceptions/
