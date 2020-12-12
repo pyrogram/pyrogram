@@ -755,7 +755,7 @@ class Chat(Object):
 
         return self._client.export_invite_link(self.id)
 
-    def mark_unread(self):
+    async def mark_unread(self):
         """Bound method *mark_unread* of :obj:`Chat`.
 
         Use as a shortcut for:
@@ -773,4 +773,4 @@ class Chat(Object):
             ``bool``: On success, True is returned.
         """
 
-        return self._client.mark_chat_unread(self.id)
+        return await self._client.mark_chat_unread(self.id)
