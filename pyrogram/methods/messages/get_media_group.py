@@ -31,26 +31,29 @@ class GetMediaGroup(Scaffold):
         chat_id: Union[int, str],
         message_id: int
     ) -> List["types.Message"]:
-        """Get media group 
-
+        """Get the media group a message belongs to.
+        
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_id (int):
-                #TODO Pass one message of target media get_media_group
+            message_id (``int``):
+                The id of one of the messages that belong to the media group.
+                
         Returns:
-            List of :obj:`~pyrogram.types.Message`
+            List of :obj:`~pyrogram.types.Message`: On success, a list of messages of the media group is returned.
+            
         Raises:
-            #TODO ValueError: In case message isn't related to media group. 
+            ValueError: In case the passed message id doesn't belong to a media group.
         """
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id-9, message_id+10)], replies=0)
+        # There can be maximum 10 items in a media group. 
+        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)], replies=0)
 
-        if messages[9].media_group_id:
-            media_group_id = messages[9].media_group_id
-        else:
-            raise ValueError("Message isn't related to media group") #TODO
+        media_group_id = messages[9].media_group_id
+
+        if media_group_id is None:
+            raise ValueError("The message doesn't belong to a media group")
 
         return list.List(msg for msg in messages if msg.media_group_id == media_group_id)
