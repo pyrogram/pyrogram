@@ -22,6 +22,8 @@ from .inline_query_result import InlineQueryResult
 from .inline_query_result_animation import InlineQueryResultAnimation
 from .inline_query_result_article import InlineQueryResultArticle
 from .inline_query_result_photo import InlineQueryResultPhoto
+from .inline_query_result_cached_photo import InlineQueryResultCachedPhoto
+from .inline_query_result_cached_document import InlineQueryResultCachedDocument
 
 __all__ = [
     "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle", "InlineQueryResultPhoto",
