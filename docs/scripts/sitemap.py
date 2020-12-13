@@ -28,7 +28,7 @@ dirs = {
     "api": ("weekly", 0.8),
     "topics": ("weekly", 0.8),
     "releases": ("weekly", 0.8),
-    "telegram": ("weekly", 0.6)
+    "telegram": ("weekly", 0.6),
 }
 
 
@@ -42,7 +42,6 @@ with open("sitemap.xml", "w") as f:
 
     urls = []
 
-
     def search(path):
         try:
             for j in os.listdir(path):
@@ -53,18 +52,13 @@ with open("sitemap.xml", "w") as f:
 
             path = path.split("/")[1:]
 
-            if path[0].endswith(".rst"):
-                folder = "."
-            else:
-                folder = path[0]
-
-            path = f"{canonical}{'/'.join(path)}"[:-len(".rst")]
+            folder = "." if path[0].endswith(".rst") else path[0]
+            path = f"{canonical}{'/'.join(path)}"[: -len(".rst")]
 
             if path.endswith("index"):
-                path = path[:-len("index")]
+                path = path[: -len("index")]
 
             urls.append((path, now(), *dirs[folder]))
-
 
     search("../source")
 

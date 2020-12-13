@@ -37,7 +37,9 @@ incompatible code in your application, but also to take advantage of new feature
 
 **Contents**
 
-""".lstrip("\n")
+""".lstrip(
+    "\n"
+)
 
 shutil.rmtree(DEST, ignore_errors=True)
 DEST.mkdir(parents=True)
@@ -55,15 +57,14 @@ with open(DEST / "index.rst", "w") as index:
         name = title.split(" - ")[1]
 
         date = datetime.strptime(
-            release["published_at"],
-            "%Y-%m-%dT%H:%M:%SZ"
+            release["published_at"], "%Y-%m-%dT%H:%M:%SZ"
         ).strftime("%b %d, %Y")
 
         body = pypandoc.convert_text(
             release["body"].replace(r"\r\n", "\n"),
             "rst",
             format="markdown_github",
-            extra_args=["--wrap=none"]
+            extra_args=["--wrap=none"],
         )
 
         tarball_url = release["tarball_url"]
@@ -76,7 +77,9 @@ with open(DEST / "index.rst", "w") as index:
             page.write("Pyrogram " + tag + "\n" + "=" * (len(tag) + 9) + "\n\n")
             page.write("\t\tReleased on " + str(date) + "\n\n")
             page.write("- :download:`Source Code (zip) <{}>`\n".format(zipball_url))
-            page.write("- :download:`Source Code (tar.gz) <{}>`\n\n".format(tarball_url))
+            page.write(
+                "- :download:`Source Code (tar.gz) <{}>`\n\n".format(tarball_url)
+            )
             page.write(name + "\n" + "-" * len(name) + "\n\n")
             page.write(body + "\n\n")
 
