@@ -14,6 +14,8 @@ docs/source/telegram
 docs/source/api/methods/
 docs/source/api/bound-methods/
 docs/source/api/types/
+docs/source/releases/
+docs/scripts/sitemap.xml
 
 # PyCharm stuff
 .idea/
