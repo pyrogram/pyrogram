@@ -13,7 +13,7 @@
 - Change Directory to `docs` and install depenedencies: `cd docs && pip install -r requirements.txt`
 - Run releases inside `scripts` directory: `cd scripts && python releases.py`
 - Change back to project root and run `cd .. && cd .. && python setup.py generate --docs`
-- Finally go to `docs` directory and run `make html`: `cd docs && make html`
+- Finally go to `docs` directory and run `make html` to build the docs: `cd docs && make html` / or you can run `make lhtml` to run to see your docs build in a live webserver
 
 ### Note
 - Both builds will take a few minutes depending on your machine
