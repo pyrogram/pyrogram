@@ -414,6 +414,17 @@ web_page = create(web_page_filter)
 
 # endregion
 
+#region url_filter
+async def url_filter(_,__, m: Message):
+    return bool(True if True in ([True if (entities.type == 'url') else False for entities in m.entities] if m.entities else [False]) else False)
+
+
+has_url = create(url_filter)
+"""Filter messages that contains Url"""
+
+
+#endregion
+
 # region poll_filter
 async def poll_filter(_, __, m: Message):
     return m.poll
