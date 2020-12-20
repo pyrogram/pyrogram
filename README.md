@@ -6,15 +6,15 @@
     <b>Telegram MTProto API Framework for Python</b>
     <br>
     <a href="https://docs.pyrogram.org">
-        Documentation
+        📚 Documentation
     </a>
-    •
+    &nbsp;•
     <a href="https://github.com/pyrogram/pyrogram/releases">
-        Releases
+        🚢 Releases
     </a>
-    •
+    &nbsp;•
     <a href="https://t.me/Pyrogram">
-        Community
+        🙌 Community
     </a>
 </p>
 
