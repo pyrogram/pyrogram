@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import sys
+from io import StringIO
 from mimetypes import MimeTypes
 from pathlib import Path
 
@@ -28,6 +29,7 @@ import pyrogram
 from pyrogram import __version__
 from pyrogram.parser import Parser
 from pyrogram.session.internals import MsgId
+from .mime_types import mime_types
 
 
 class Scaffold:
@@ -46,7 +48,8 @@ class Scaffold:
 
     PARSE_MODES = ["combined", "markdown", "md", "html", None]
 
-    mimetypes = MimeTypes((f"{os.path.dirname(__file__)}/mime.types",))
+    mimetypes = MimeTypes()
+    mimetypes.readfp(StringIO(mime_types))
 
     def __init__(self):
         try:
