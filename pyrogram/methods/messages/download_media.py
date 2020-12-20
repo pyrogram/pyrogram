@@ -20,7 +20,7 @@ import asyncio
 import os
 import time
 from datetime import datetime
-from typing import Union
+from typing import Union, Optional
 
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES
@@ -37,7 +37,7 @@ class DownloadMedia(Scaffold):
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union[str, None]:
+    ) -> Optional[str]:
         """Download the media from a message.
 
         Parameters:

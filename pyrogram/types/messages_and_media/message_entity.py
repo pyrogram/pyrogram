@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum, auto
+from typing import Optional
 
 import pyrogram
 from pyrogram import raw
@@ -121,7 +122,7 @@ class MessageEntity(Object):
         self.language = language
 
     @staticmethod
-    def _parse(client, entity, users: dict) -> "MessageEntity" or None:
+    def _parse(client, entity, users: dict) -> Optional["MessageEntity"]:
         type = RAW_ENTITIES_TO_TYPE.get(entity.__class__, None)
 
         if type is None:

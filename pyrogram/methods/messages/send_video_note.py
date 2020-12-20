@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -47,7 +47,7 @@ class SendVideoNote(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send video messages.
 
         Parameters:

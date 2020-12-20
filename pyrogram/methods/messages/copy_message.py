@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
@@ -32,7 +32,7 @@ class CopyMessage(Scaffold):
         from_chat_id: Union[int, str],
         message_id: int,
         caption: str = None,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,

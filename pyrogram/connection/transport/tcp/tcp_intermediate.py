@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Optional
 from struct import pack, unpack
 
 from .tcp import TCP
@@ -35,7 +36,7 @@ class TCPIntermediate(TCP):
     async def send(self, data: bytes, *args):
         await super().send(pack("<i", len(data)) + data)
 
-    async def recv(self, length: int = 0) -> bytes or None:
+    async def recv(self, length: int = 0) -> Optional[bytes]:
         length = await super().recv(4)
 
         if length is None:

@@ -18,7 +18,7 @@
 
 import os
 import re
-from typing import Union, BinaryIO, List
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -35,7 +35,7 @@ class SendVoice(Scaffold):
         chat_id: Union[int, str],
         voice: Union[str, BinaryIO],
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         disable_notification: bool = None,
@@ -49,7 +49,7 @@ class SendVoice(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send audio files.
 
         Parameters:

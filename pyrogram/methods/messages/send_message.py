@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pyrogram import raw, utils
 from pyrogram import types
@@ -28,7 +28,7 @@ class SendMessage(Scaffold):
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,

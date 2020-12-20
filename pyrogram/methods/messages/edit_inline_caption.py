@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional
 
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
@@ -27,7 +27,7 @@ class EditInlineCaption(Scaffold):
         self,
         inline_message_id: str,
         caption: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> bool:
         """Edit the caption of inline media messages.

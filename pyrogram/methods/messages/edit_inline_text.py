@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional
 
 from pyrogram import raw
 from pyrogram import types
@@ -30,7 +30,7 @@ class EditInlineText(Scaffold):
         self,
         inline_message_id: str,
         text: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> bool:

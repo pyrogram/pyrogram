@@ -29,7 +29,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -396,7 +396,7 @@ class Client(Methods, Scaffold):
         return self._parse_mode
 
     @parse_mode.setter
-    def parse_mode(self, parse_mode: Union[str, None] = "combined"):
+    def parse_mode(self, parse_mode: Optional[str] = "combined"):
         if parse_mode not in self.PARSE_MODES:
             raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
                 ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
@@ -406,7 +406,7 @@ class Client(Methods, Scaffold):
         self._parse_mode = parse_mode
 
     # TODO: redundant, remove in next major version
-    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+    def set_parse_mode(self, parse_mode: Optional[str] = "combined"):
         """Set the parse mode to be used globally by the client.
 
         When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the

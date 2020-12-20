@@ -18,7 +18,7 @@
 
 import os
 import re
-from typing import Union, BinaryIO, List
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -36,7 +36,7 @@ class SendDocument(Scaffold):
         document: Union[str, BinaryIO],
         thumb: Union[str, BinaryIO] = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         file_name: str = None,
         force_document: bool = None,
@@ -51,7 +51,7 @@ class SendDocument(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send generic files.
 
         Parameters:

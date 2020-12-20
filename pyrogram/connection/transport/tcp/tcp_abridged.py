@@ -18,6 +18,8 @@
 
 import logging
 
+from typing import Optional
+
 from .tcp import TCP
 
 log = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ class TCPAbridged(TCP):
             + data
         )
 
-    async def recv(self, length: int = 0) -> bytes or None:
+    async def recv(self, length: int = 0) -> Optional[bytes]:
         length = await super().recv(1)
 
         if length is None:

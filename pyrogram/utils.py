@@ -24,7 +24,7 @@ import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
 from getpass import getpass
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -168,7 +168,7 @@ MIN_CHAT_ID = -2147483647
 MAX_USER_ID = 2147483647
 
 
-def get_raw_peer_id(peer: raw.base.Peer) -> Union[int, None]:
+def get_raw_peer_id(peer: raw.base.Peer) -> Optional[int]:
     """Get the raw peer id from a Peer object"""
     if isinstance(peer, raw.types.PeerUser):
         return peer.user_id

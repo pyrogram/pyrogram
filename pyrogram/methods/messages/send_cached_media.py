@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pyrogram import raw
 from pyrogram import types
@@ -30,7 +30,7 @@ class SendCachedMedia(Scaffold):
         chat_id: Union[int, str],
         file_id: str,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -41,7 +41,7 @@ class SendCachedMedia(Scaffold):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send any media stored on the Telegram servers using a file_id.
 
         This convenience method works with any valid file_id only.

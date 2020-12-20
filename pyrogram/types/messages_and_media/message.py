@@ -18,7 +18,7 @@
 
 import logging
 from functools import partial
-from typing import List, Match, Union, BinaryIO
+from typing import List, Match, Union, BinaryIO, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -710,7 +710,7 @@ class Message(Object, Update):
         self,
         text: str,
         quote: bool = None,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
@@ -797,7 +797,7 @@ class Message(Object, Update):
         animation: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
@@ -939,7 +939,7 @@ class Message(Object, Update):
         audio: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         performer: str = None,
@@ -1081,7 +1081,7 @@ class Message(Object, Update):
         file_id: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1294,7 +1294,7 @@ class Message(Object, Update):
         quote: bool = None,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1694,7 +1694,7 @@ class Message(Object, Update):
         photo: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         disable_notification: bool = None,
@@ -2122,7 +2122,7 @@ class Message(Object, Update):
         video: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         duration: int = 0,
@@ -2394,7 +2394,7 @@ class Message(Object, Update):
         voice: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         disable_notification: bool = None,
@@ -2516,7 +2516,7 @@ class Message(Object, Update):
     async def edit_text(
         self,
         text: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
@@ -2579,7 +2579,7 @@ class Message(Object, Update):
     async def edit_caption(
         self,
         caption: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "Message":
@@ -2711,7 +2711,7 @@ class Message(Object, Update):
 
     async def forward(
         self,
-        chat_id: int or str,
+        chat_id: Union[int, str],
         disable_notification: bool = None,
         schedule_date: int = None
     ) -> Union["types.Message", List["types.Message"]]:
@@ -2763,7 +2763,7 @@ class Message(Object, Update):
         self,
         chat_id: Union[int, str],
         caption: str = None,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2975,7 +2975,7 @@ class Message(Object, Update):
             revoke=revoke
         )
 
-    async def click(self, x: int or str = 0, y: int = None, quote: bool = None, timeout: int = 10):
+    async def click(self, x: Union[int, str] = 0, y: int = None, quote: bool = None, timeout: int = 10):
         """Bound method *click* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for clicking a button attached to the message instead of:

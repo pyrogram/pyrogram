@@ -20,7 +20,7 @@ import html
 import logging
 import re
 from html.parser import HTMLParser
-from typing import Union
+from typing import Optional
 
 import pyrogram
 from pyrogram import raw
@@ -106,7 +106,7 @@ class Parser(HTMLParser):
 
 
 class HTML:
-    def __init__(self, client: Union["pyrogram.Client", None]):
+    def __init__(self, client: Optional["pyrogram.Client"]):
         self.client = client
 
     async def parse(self, text: str):
