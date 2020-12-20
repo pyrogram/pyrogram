@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import sys
+from mimetypes import MimeTypes
 from pathlib import Path
 
 import pyrogram
@@ -45,33 +46,7 @@ class Scaffold:
 
     PARSE_MODES = ["combined", "markdown", "md", "html", None]
 
-    MEDIA_TYPE_ID = {
-        0: "photo_thumbnail",
-        1: "chat_photo",
-        2: "photo",
-        3: "voice",
-        4: "video",
-        5: "document",
-        8: "sticker",
-        9: "audio",
-        10: "animation",
-        13: "video_note",
-        14: "document_thumbnail"
-    }
-
-    mime_types_to_extensions = {}
-    extensions_to_mime_types = {}
-
-    with open(f"{os.path.dirname(__file__)}/mime.types", "r", encoding="UTF-8") as f:
-        for match in re.finditer(r"^([^#\s]+)\s+(.+)$", f.read(), flags=re.M):
-            mime_type, extensions = match.groups()
-
-            extensions = [f".{ext}" for ext in extensions.split(" ")]
-
-            for ext in extensions:
-                extensions_to_mime_types[ext] = mime_type
-
-            mime_types_to_extensions[mime_type] = " ".join(extensions)
+    mimetypes = MimeTypes((f"{os.path.dirname(__file__)}/mime.types",))
 
     def __init__(self):
         try:

@@ -1045,12 +1045,8 @@ class Client(Methods, Scaffold):
         else:
             return file_name
 
-    def guess_mime_type(self, filename: str):
-        extension = os.path.splitext(filename)[1]
-        return self.extensions_to_mime_types.get(extension)
+    def guess_mime_type(self, filename: str) -> Optional[str]:
+        return self.mimetypes.guess_type(filename)[0]
 
-    def guess_extension(self, mime_type: str):
-        extensions = self.mime_types_to_extensions.get(mime_type)
-
-        if extensions:
-            return extensions.split(" ")[0]
+    def guess_extension(self, mime_type: str) -> Optional[str]:
+        return self.mimetypes.guess_extension(mime_type)
