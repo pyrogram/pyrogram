@@ -33,19 +33,10 @@ from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
 
 
 async def ainput(prompt: str = "", *, hide: bool = False):
+    """Just like the built-in input, but async"""
     with ThreadPoolExecutor(1) as executor:
         func = functools.partial(getpass if hide else input, prompt)
         return await asyncio.get_event_loop().run_in_executor(executor, func)
-
-
-def get_offset_date(dialogs):
-    for m in reversed(dialogs.messages):
-        if isinstance(m, raw.types.MessageEmpty):
-            continue
-        else:
-            return m.date
-    else:
-        return 0
 
 
 def get_input_media_from_file_id(
