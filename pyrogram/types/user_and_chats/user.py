@@ -112,10 +112,10 @@ class User(Object, Update):
             *None*, for bots.
 
         last_online_date (``int``, *optional*):
-            Last online date of a user. Only available in case status is "*offline*".
+            Last online date of a user, unix time. Only available in case status is "*offline*".
 
         next_offline_date (``int``, *optional*):
-            Date when a user will automatically go offline. Only available in case status is "*online*".
+            Date when a user will automatically go offline, unix time. Only available in case status is "*online*".
 
         username (``str``, *optional*):
             User's or bot's username.
