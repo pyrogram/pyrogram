@@ -171,11 +171,7 @@ setup(
         "Documentation": "https://docs.pyrogram.org",
     },
     python_requires="~=3.6",
-    packages=find_packages(exclude=["compiler*"]),
-    package_data={
-        "pyrogram": ["mime.types"],
-        "pyrogram.storage": ["schema.sql"]
-    },
+    packages=find_packages(exclude=["compiler*", "tests*"]),
     zip_safe=False,
     install_requires=requires,
     cmdclass={
