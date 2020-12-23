@@ -51,7 +51,7 @@ with open("sitemap.xml", "w") as f:
             if not path.endswith(".rst"):
                 return
 
-            path = path.split("/")[1:]
+            path = path.split("/")[2:]
 
             if path[0].endswith(".rst"):
                 folder = "."
@@ -76,6 +76,6 @@ with open("sitemap.xml", "w") as f:
         f.write(f"        <lastmod>{i[1]}</lastmod>\n")
         f.write(f"        <changefreq>{i[2]}</changefreq>\n")
         f.write(f"        <priority>{i[3]}</priority>\n")
-        f.write(f"    </url>\n\n")
+        f.write(f"    </url>\n")
 
     f.write("</urlset>")
