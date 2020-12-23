@@ -91,7 +91,12 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
         parsed_messages.append(await types.Message._parse(client, message, users, chats, replies=0))
 
     if replies:
-        messages_with_replies = {i.id: i.reply_to.reply_to_msg_id for i in messages.messages if i.reply_to}
+        messages_with_replies = {
+            i.id: i.reply_to.reply_to_msg_id
+            for i in messages.messages
+            if not isinstance(i, raw.types.MessageEmpty) and i.reply_to
+        }
+
         reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
 
         if reply_message_ids:
