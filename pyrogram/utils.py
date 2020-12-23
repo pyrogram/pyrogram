@@ -97,9 +97,7 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
             if not isinstance(i, raw.types.MessageEmpty) and i.reply_to
         }
 
-        reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
-
-        if reply_message_ids:
+        if messages_with_replies:
             # We need a chat id, but some messages might be empty (no chat attribute available)
             # Scan until we find a message with a chat available (there must be one, because we are fetching replies)
             for m in parsed_messages:
@@ -111,12 +109,12 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
 
             reply_messages = await client.get_messages(
                 chat_id,
-                reply_to_message_ids=reply_message_ids,
+                reply_to_message_ids=messages_with_replies.keys(),
                 replies=replies - 1
             )
 
             for message in parsed_messages:
-                reply_id = messages_with_replies[message.message_id]
+                reply_id = messages_with_replies.get(message.message_id, None)
 
                 for reply in reply_messages:
                     if reply.message_id == reply_id:
