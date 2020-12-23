@@ -77,12 +77,15 @@ class IterDialogs(Scaffold):
 
             if not dialogs:
                 return
-
-            offset_date = dialogs[-1].top_message.date
+            
+            for d in dialogs[::-1]:
+                if d.top_message:
+                    offset_date = d.top_message.date
+                    break
 
             for dialog in dialogs:
                 yield dialog
-
+                
                 current += 1
 
                 if current >= total:
