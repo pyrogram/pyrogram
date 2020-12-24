@@ -134,22 +134,22 @@ class DownloadMedia(Scaffold):
             directory = self.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
 
         if not file_name:
-            guessed_extension = self.guess_extension(mime_type)
+            extension = ".unknown"                
 
             if file_type in PHOTO_TYPES:
                 extension = ".jpg"
-            elif file_type == FileType.VOICE:
-                extension = guessed_extension or ".ogg"
-            elif file_type in (FileType.VIDEO, FileType.ANIMATION, FileType.VIDEO_NOTE):
-                extension = guessed_extension or ".mp4"
-            elif file_type == FileType.DOCUMENT:
-                extension = guessed_extension or ".zip"
-            elif file_type == FileType.STICKER:
-                extension = guessed_extension or ".webp"
-            elif file_type == FileType.AUDIO:
-                extension = guessed_extension or ".mp3"
             else:
-                extension = ".unknown"
+                guessed_extension = self.guess_extension(mime_type)
+                if file_type == FileType.VOICE:
+                    extension = guessed_extension or ".ogg"
+                elif file_type in (FileType.VIDEO, FileType.ANIMATION, FileType.VIDEO_NOTE):
+                    extension = guessed_extension or ".mp4"
+                elif file_type == FileType.DOCUMENT:
+                    extension = guessed_extension or ".zip"
+                elif file_type == FileType.STICKER:
+                    extension = guessed_extension or ".webp"
+                elif file_type == FileType.AUDIO:
+                    extension = guessed_extension or ".mp3"
 
             file_name = "{}_{}_{}{}".format(
                 FileType(file_id_obj.file_type).name.lower(),
