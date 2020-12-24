@@ -31,7 +31,7 @@ class ForwardMessages(Scaffold):
         message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
         schedule_date: int = None
-    ) -> List["types.Message"]:
+    ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
 
         Parameters:
