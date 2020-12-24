@@ -124,7 +124,7 @@ class DownloadMedia(Scaffold):
         file_type = file_id_obj.file_type
         media_file_name = getattr(media, "file_name", "")
         file_size = getattr(media, "file_size", 0)
-        mime_type = getattr(media, "mime_type", None)
+        mime_type = getattr(media, "mime_type", "")
         date = getattr(media, "date", 0)
 
         directory, file_name = os.path.split(file_name)
