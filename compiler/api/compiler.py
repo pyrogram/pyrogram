@@ -399,15 +399,19 @@ def start(format: bool = False):
         write_types = read_types = "" if c.has_flags else "# No flags\n        "
 
         for arg_name, arg_type in c.args:
-            flag = FLAGS_RE_2.findall(arg_type)
+            flag = FLAGS_RE_2.match(arg_type)
 
             if arg_name == "flags" and arg_type == "#":
                 write_flags = []
 
                 for i in c.args:
-                    flag = FLAGS_RE.match(i[1])
+                    flag = FLAGS_RE_2.match(i[1])
+
                     if flag:
-                        write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} is not None else 0")
+                        if flag.group(2) == "true":
+                            write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} else 0")
+                        else:
+                            write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} is not None else 0")
 
                 write_flags = "\n        ".join([
                     "flags = 0",
@@ -421,7 +425,7 @@ def start(format: bool = False):
                 continue
 
             if flag:
-                index, flag_type = flag[0]
+                index, flag_type = flag.groups()
 
                 if flag_type == "true":
                     read_types += "\n        "
