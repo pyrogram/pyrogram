@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List, Optional
+from typing import List
 
 import pyrogram
 from pyrogram import raw
@@ -80,20 +80,22 @@ class Photo(Object):
         self.thumbs = thumbs
 
     @staticmethod
-    def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> Optional["Photo"]:
+    def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> "Photo":
         if isinstance(photo, raw.types.Photo):
-            big = photo.sizes[-1]
+            try:
+                progressive = next(p for p in photo.sizes if isinstance(p, raw.types.PhotoSizeProgressive))
+            except StopIteration:
+                photo_size_objs = [p for p in photo.sizes if isinstance(p, raw.types.PhotoSize)]
+                photo_size_objs.sort(key=lambda p: p.size)
 
-            if isinstance(big, (raw.types.PhotoStrippedSize, raw.types.PhotoPathSize)):
-                return None
-
-            if isinstance(big, raw.types.PhotoSizeProgressive):
+                big = photo_size_objs[-1]
+            else:
                 big = raw.types.PhotoSize(
-                    type=big.type,
-                    location=big.location,
-                    w=big.w,
-                    h=big.h,
-                    size=big.sizes[-1]
+                    type=progressive.type,
+                    location=progressive.location,
+                    w=progressive.w,
+                    h=progressive.h,
+                    size=sorted(progressive.sizes)[-1]
                 )
 
             return Photo(
