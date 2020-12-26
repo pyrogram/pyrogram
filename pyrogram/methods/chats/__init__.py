@@ -52,6 +52,7 @@ from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .mark_chat_unread import MarkChatUnread
 
 
 class Chats(
@@ -90,6 +91,7 @@ class Chats(
     SetAdministratorTitle,
     SetSlowMode,
     DeleteUserHistory,
-    UnpinAllChatMessages
+    UnpinAllChatMessages,
+    MarkChatUnread
 ):
     pass
