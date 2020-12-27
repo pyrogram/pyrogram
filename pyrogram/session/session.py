@@ -433,7 +433,7 @@ class Session:
                     raise e from None
 
                 (log.warning if retries < 2 else log.info)(
-                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {e}')
+                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {repr(e)}')
 
                 await asyncio.sleep(0.5)
 
