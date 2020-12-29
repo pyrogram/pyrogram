@@ -16,7 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from base64 import b64encode
+from functools import cached_property
+from struct import pack
 from typing import Union, List, Match, Optional
+from urllib.parse import urlparse, parse_qsl
 
 import pyrogram
 from pyrogram import raw, enums
@@ -311,3 +315,16 @@ class CallbackQuery(Object, Update):
                 inline_message_id=self.inline_message_id,
                 reply_markup=reply_markup
             )
+
+    @cached_property
+    def params(self) -> dict:
+        if not bool(self.data):
+            return {}
+
+        parsed_data = urlparse(self.data)
+        _params = {}
+
+        if parsed_data and parsed_data.query:
+            _params = dict(parse_qsl(parsed_data.query))
+
+        return _params
