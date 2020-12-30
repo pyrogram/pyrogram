@@ -60,16 +60,8 @@ class Start:
         try:
             if not is_authorized:
                 if self.login_by_qr_code:
-                    current_timeout = 0
-
-                    while current_timeout < 30:
-                        await asyncio.sleep(1)
-                        current_timeout += 1
-
-                        is_authorized = bool(await self.storage.user_id())
-
-                        if is_authorized:
-                            break
+                    asyncio.create_task(self._delayed_init())
+                    return self
                 else:
                     await self.authorize()
 
@@ -85,4 +77,25 @@ class Start:
             self.me = await self.get_me()
             await self.initialize()
 
+            return self
+
+    async def _delayed_init(self, max_delay: int = 30):
+        try:
+            current_timeout = 0
+
+            while current_timeout < max_delay:
+                await asyncio.sleep(1)
+                current_timeout += 1
+
+                is_authorized = bool(await self.storage.user_id())
+
+                if is_authorized:
+                    break
+
+            await self.send(raw.functions.updates.GetState())
+        except (Exception, KeyboardInterrupt):
+            await self.disconnect()
+            raise
+        else:
+            await self.initialize()
             return self
