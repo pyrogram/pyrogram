@@ -15,7 +15,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-import asyncio
 import logging
 
 import pyrogram
@@ -60,10 +59,9 @@ class Start:
         try:
             if not is_authorized:
                 if self.login_by_qr_code:
-                    asyncio.create_task(self.wait_qr_code_auth())
                     return self
-                else:
-                    await self.authorize()
+
+                await self.authorize()
 
             if not await self.storage.is_bot() and self.takeout:
                 self.takeout_id = (await self.invoke(raw.functions.account.InitTakeoutSession())).id
@@ -77,30 +75,4 @@ class Start:
             self.me = await self.get_me()
             await self.initialize()
 
-            return self
-
-    async def wait_qr_code_auth(self, max_wait: int = 30):
-        try:
-            current_timeout = 0
-
-            while current_timeout < max_wait:
-                await asyncio.sleep(1)
-                current_timeout += 1
-
-                is_authorized = bool(await self.storage.user_id())
-
-                if is_authorized:
-                    break
-
-            is_authorized = bool(await self.storage.user_id())
-
-            if not is_authorized:
-                raise TimeoutError
-
-            await self.send(raw.functions.updates.GetState())
-        except (Exception, KeyboardInterrupt):
-            await self.disconnect()
-            raise
-        else:
-            await self.initialize()
             return self

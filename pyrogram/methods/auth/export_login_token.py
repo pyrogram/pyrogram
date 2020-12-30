@@ -28,11 +28,11 @@ log = logging.getLogger(__name__)
 
 class ExportLoginToken(Scaffold):
     async def export_login_token(
-            self,
-            *,
-            api_id: int = None,
-            api_hash: str = None,
-            except_ids: List[int] = None
+        self,
+        *,
+        api_id: int = None,
+        api_hash: str = None,
+        except_ids: List[int] = None
     ) -> Union["types.User", str]:
         """Generate a login token, for login via QR code.
 
@@ -65,8 +65,10 @@ class ExportLoginToken(Scaffold):
             )
         )
 
+        log.info(f'Result is: {r.__class__.__name__}')
+
         if isinstance(r, raw.types.auth.LoginToken):
-            return f"tg://login?token={base64.urlsafe_b64encode(r.token)}"
+            return f"tg://login?token={base64.urlsafe_b64encode(r.token).decode()}"
 
         if isinstance(r, raw.types.auth.LoginTokenMigrateTo):
             r = await self.send(
