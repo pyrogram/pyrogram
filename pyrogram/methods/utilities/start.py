@@ -60,7 +60,7 @@ class Start:
         try:
             if not is_authorized:
                 if self.login_by_qr_code:
-                    asyncio.create_task(self._delayed_init())
+                    asyncio.create_task(self.wait_qr_code_auth())
                     return self
                 else:
                     await self.authorize()
@@ -79,11 +79,11 @@ class Start:
 
             return self
 
-    async def _delayed_init(self, max_delay: int = 30):
+    async def wait_qr_code_auth(self, max_wait: int = 30):
         try:
             current_timeout = 0
 
-            while current_timeout < max_delay:
+            while current_timeout < max_wait:
                 await asyncio.sleep(1)
                 current_timeout += 1
 
