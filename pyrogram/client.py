@@ -47,6 +47,7 @@ from pyrogram.errors import (
     BadRequest
 )
 from pyrogram.handlers.handler import Handler
+from pyrogram.handlers.raw_update_handler import RawUpdateHandler
 from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
 from pyrogram.storage import Storage, FileStorage, MemoryStorage
