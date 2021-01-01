@@ -166,7 +166,7 @@ class FileId:
         volume_id: int = None,
         thumbnail_source: ThumbnailSource = None,
         thumbnail_file_type: FileType = None,
-        thumbnail_size: str = None,
+        thumbnail_size: str = "",
         secret: int = None,
         local_id: int = None,
         chat_id: int = None,
