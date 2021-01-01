@@ -28,17 +28,18 @@ from .inline_query_result import InlineQueryResult
 
 class InlineQueryResultCachedPhoto(InlineQueryResult):
     """Link to a photo stored on the Telegram servers.
+    
     By default, this photo will be sent by the user with an optional caption. 
     Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
+    
     Parameters:
         file_id (``str``):
             Pass a file_id as string to send a media that exists on the Telegram servers.
-        file_ref (``str``, *optional*):
-            A valid file reference obtained by a recently fetched media message.
-            To be used in combination with a file id in case a file reference is needed.
+            
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
+            
         caption (``str``, *optional*):
             Caption of the photo to be sent, 0-1024 characters.
         
@@ -48,8 +49,10 @@ class InlineQueryResultCachedPhoto(InlineQueryResult):
             Pass "markdown" or "md" to enable Markdown-style parsing only.
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
+            
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
+            
         input_message_content (:obj:`~pyrogram.types.InputMessageContent`):
             Content of the message to be sent.
     """
@@ -57,7 +60,6 @@ class InlineQueryResultCachedPhoto(InlineQueryResult):
     def __init__(
         self,
         file_id: str,
-        file_ref: str = None,
         id: str = None,
         caption: str = "",
         parse_mode: Union[str, None] = object,
@@ -67,7 +69,6 @@ class InlineQueryResultCachedPhoto(InlineQueryResult):
         super().__init__("photo", id, input_message_content, reply_markup)
 
         self.file_id = file_id
-        self.file_ref = file_ref
         self.caption = caption
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup

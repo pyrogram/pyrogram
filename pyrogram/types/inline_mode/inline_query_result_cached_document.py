@@ -27,22 +27,24 @@ from .inline_query_result import InlineQueryResult
 
 class InlineQueryResultCachedDocument(InlineQueryResult):
     """Link to a file stored on the Telegram servers.
+    
     By default, this file will be sent by the user with an optional caption. 
     Alternatively, you can use input_message_content to send a message with the specified content instead of the file.
+    
     Parameters:
         title (``str``):
             Title for the result.
         
         file_id (``str``):
             Pass a file_id as string to send a media that exists on the Telegram servers.
-        file_ref (``str``, *optional*):
-            A valid file reference obtained by a recently fetched media message.
-            To be used in combination with a file id in case a file reference is needed.
+            
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
+            
         description (``str``, *optional*):
             Short description of the result.
+            
         caption (``str``, *optional*):
             Caption of the photo to be sent, 0-1024 characters.
         
@@ -52,8 +54,10 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
             Pass "markdown" or "md" to enable Markdown-style parsing only.
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
+            
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
+            
         input_message_content (:obj:`~pyrogram.types.InputMessageContent`):
             Content of the message to be sent.
     """
@@ -62,7 +66,6 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
         self,
         title: str,
         file_id: str,
-        file_ref: str = None,
         id: str = None,
         description: str = None,
         caption: str = "",
@@ -73,7 +76,6 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
         super().__init__("file", id, input_message_content, reply_markup)
 
         self.file_id = file_id
-        self.file_ref = file_ref
         self.title = title
         self.description = description
         self.caption = caption
