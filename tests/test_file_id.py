@@ -182,7 +182,7 @@ def test_stringify_file_id():
     file_id = "BQACAgIAAx0CAAGgr9AAAgmPX7b4UxbjNoFEO_L0I4s6wrXNJA8AAgQAA4GkuUm9FFvIaOhXWR4E"
     string = "{'major': 4, 'minor': 30, 'file_type': <FileType.DOCUMENT: 5>, 'dc_id': 2, " \
              "'file_reference': b'\\x02\\x00\\xa0\\xaf\\xd0\\x00\\x00\\t\\x8f_\\xb6\\xf8S\\x16\\xe36\\x81D;\\xf2\\xf4#\\x8b:\\xc2\\xb5\\xcd$\\x0f', " \
-             "'media_id': 5312458109417947140, 'access_hash': 6437869729085068477}"
+             "'media_id': 5312458109417947140, 'access_hash': 6437869729085068477, 'thumbnail_size': ''}"
 
     assert str(FileId.decode(file_id)) == string
 
