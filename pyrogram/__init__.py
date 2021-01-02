@@ -46,4 +46,4 @@ main_event_loop = asyncio.get_event_loop()
 
 CRYPTO_EXECUTOR_SIZE_THRESHOLD = 512
 
-crypto_executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
+crypto_executor = ThreadPoolExecutor(1, thread_name_prefix="CryptoWorker")

@@ -25,7 +25,7 @@ from hashlib import sha1
 from io import BytesIO
 
 import pyrogram
-from pyrogram import __copyright__, __license__, __version__, utils
+from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
@@ -217,8 +217,10 @@ class Session:
         await self.start()
 
     async def handle_packet(self, packet):
-        data = await utils.maybe_run_in_executor(
-            mtproto.unpack, BytesIO(packet), len(packet), self.loop,
+        data = await self.loop.run_in_executor(
+            pyrogram.crypto_executor,
+            mtproto.unpack,
+            BytesIO(packet),
             self.session_id,
             self.auth_key,
             self.auth_key_id
@@ -360,8 +362,10 @@ class Session:
         log.debug(f"Sent:")
         log.debug(message)
 
-        payload = await utils.maybe_run_in_executor(
-            mtproto.pack, message, len(message), self.loop,
+        payload = await self.loop.run_in_executor(
+            pyrogram.crypto_executor,
+            mtproto.pack,
+            message,
             self.current_salt.salt,
             self.session_id,
             self.auth_key,
