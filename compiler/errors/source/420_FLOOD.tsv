@@ -1,4 +1,5 @@
 id	message
+2FA_CONFIRM_WAIT_X	A wait of {x} seconds is required because this account is active and protected by a 2FA password
 FLOOD_TEST_PHONE_WAIT_X	A wait of {x} seconds is required in the test servers
 FLOOD_WAIT_X	A wait of {x} seconds is required
 SLOWMODE_WAIT_X	A wait of {x} seconds is required to send messages in this chat.

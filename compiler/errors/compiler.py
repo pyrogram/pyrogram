@@ -95,6 +95,7 @@ def start():
                     error_id, error_message = row
 
                     sub_class = caml(re.sub(r"_X", "_", error_id))
+                    sub_class = re.sub(r"^2", "Two", sub_class)
 
                     f_all.write("        \"{}\": \"{}\",\n".format(error_id, sub_class))
 

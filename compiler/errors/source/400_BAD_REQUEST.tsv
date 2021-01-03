@@ -17,6 +17,7 @@ AUTH_TOKEN_INVALID	An invalid authorization token was provided
 AUTOARCHIVE_NOT_AVAILABLE	This feature is not yet enabled for your account due to it not receiving too many private messages from strangers
 BANK_CARD_NUMBER_INVALID	The credit card number is invalid
 BANNED_RIGHTS_INVALID	You provided a set of restrictions that is invalid
+BASE_PORT_LOC_INVALID	The base port location is invalid
 BOTS_TOO_MUCH	The chat has too many bots
 BOT_CHANNELS_NA	Bots can't edit admin privileges
 BOT_COMMAND_DESCRIPTION_INVALID	The command description was empty, too long or had invalid characters
@@ -120,13 +121,16 @@ FOLDER_ID_EMPTY	The folder you tried to delete was already empty
 FOLDER_ID_INVALID	The folder id is invalid
 FRESH_CHANGE_ADMINS_FORBIDDEN	You can't change administrator settings in this chat because your session was logged-in recently
 FROM_MESSAGE_BOT_DISABLED	Bots can't use fromMessage min constructors
+FROM_PEER_INVALID	The from peer value is invalid
 GAME_BOT_INVALID	You cannot send that game with the current bot
 GEO_POINT_INVALID	Invalid geo point provided
 GIF_CONTENT_TYPE_INVALID	GIF content-type invalid
 GIF_ID_INVALID	The provided gif/animation id is invalid
 GRAPH_INVALID_RELOAD	Invalid graph token provided, please reload the stats and provide the updated token
 GRAPH_OUTDATED_RELOAD	The graph data is outdated
+GROUPCALL_SSRC_DUPLICATE_MUCH	Too many group call synchronization source duplicates
 GROUPED_MEDIA_INVALID	The album contains invalid media
+GROUP_CALL_INVALID	The group call is invalid
 HASH_INVALID	The provided hash is invalid
 IMAGE_PROCESS_FAILED	The server failed to process your image
 INLINE_RESULT_EXPIRED	The inline bot query expired
@@ -170,6 +174,7 @@ MSG_WAIT_FAILED	A waiting call returned an error
 MULTI_MEDIA_TOO_LONG	The album/media group contains too many items
 NEW_SALT_INVALID	The new salt is invalid
 NEW_SETTINGS_INVALID	The new settings are invalid
+NEXT_OFFSET_INVALID	The next offset value is invalid
 OFFSET_INVALID	The offset parameter is invalid
 OFFSET_PEER_ID_INVALID	The provided offset peer is invalid
 OPTIONS_TOO_MUCH	The poll options are too many
@@ -238,6 +243,7 @@ RANDOM_LENGTH_INVALID	The random length is invalid
 RANGES_INVALID	Invalid range provided
 REACTION_EMPTY	The reaction provided is empty
 REACTION_INVALID	Invalid reaction provided (only emoji are allowed)
+REFLECTOR_NOT_AVAILABLE	The call reflector is not available
 REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
 REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty
 REPLY_MARKUP_INVALID	The provided reply markup is invalid
