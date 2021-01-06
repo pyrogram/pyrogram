@@ -35,7 +35,10 @@ CREATE TABLE sessions
     auth_key  BLOB,
     date      INTEGER NOT NULL,
     user_id   INTEGER,
-    is_bot    INTEGER
+    is_bot    INTEGER,
+    pts       INTEGER,
+    qts       INTEGER,
+    seq       INTEGER
 );
 
 CREATE TABLE peers
@@ -109,8 +112,8 @@ class SQLiteStorage(Storage):
             )
 
             self.conn.execute(
-                "INSERT INTO sessions VALUES (?, ?, ?, ?, ?, ?)",
-                (2, None, None, 0, None, None)
+                "INSERT INTO sessions VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (2, None, None, 0, None, None, 1, -1, -1)
             )
 
     async def open(self):
@@ -208,6 +211,15 @@ class SQLiteStorage(Storage):
         return self._accessor(value)
 
     async def is_bot(self, value: bool = object):
+        return self._accessor(value)
+
+    async def pts(self, value: bool = object):
+        return self._accessor(value)
+
+    async def qts(self, value: bool = object):
+        return self._accessor(value)
+
+    async def seq(self, value: bool = object):
         return self._accessor(value)
 
     def version(self, value: int = object):
