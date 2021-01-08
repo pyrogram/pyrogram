@@ -34,7 +34,8 @@ class InputMediaPhoto(InputMedia):
             Sending photo by a URL is currently unsupported.
 
         caption (``str``, *optional*):
-            Caption of the photo to be sent, 0-1024 characters
+            Caption of the photo to be sent, 0-1024 characters.
+            If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -50,7 +51,7 @@ class InputMediaPhoto(InputMedia):
     def __init__(
         self,
         media: str,
-        caption: str = "",
+        caption: str = None,
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None
     ):

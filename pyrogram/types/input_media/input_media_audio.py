@@ -40,7 +40,8 @@ class InputMediaAudio(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the audio to be sent, 0-1024 characters
+            Caption of the audio to be sent, 0-1024 characters.
+            If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -66,7 +67,7 @@ class InputMediaAudio(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = "",
+        caption: str = None,
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         duration: int = 0,
