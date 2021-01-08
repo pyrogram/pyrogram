@@ -98,6 +98,7 @@ class Chat(Object):
 
         members_count (``int``, *optional*):
             Chat members count, for groups, supergroups and channels only.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
 
         restrictions (List of :obj:`~pyrogram.types.Restriction`, *optional*):
             The list of reasons why this chat might be unavailable to some users.
