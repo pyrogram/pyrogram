@@ -588,7 +588,6 @@ class Client(Methods, Scaffold):
                 self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
         elif isinstance(updates, raw.types.updates.State):
             local_pts = await self.storage.pts()
-            local_date = await self.storage.date()
 
             if local_pts >= updates.pts:
                 return
@@ -596,10 +595,13 @@ class Client(Methods, Scaffold):
             diff = await self.send(
                 raw.functions.updates.GetDifference(
                     pts=local_pts,
-                    date=local_date,
+                    date=await self.storage.date(),
                     qts=-1
                 )
             )
+
+            users = {u.id: u for u in diff.users}
+            chats = {c.id: c for c in diff.chats}
 
             for msg in diff.new_messages:
                 self.dispatcher.updates_queue.put_nowait((
@@ -608,12 +610,12 @@ class Client(Methods, Scaffold):
                         pts=diff.state.pts,
                         pts_count=-1
                     ),
-                    {u.id: u for u in diff.users},
-                    {c.id: c for c in diff.chats}
+                    users,
+                    chats
                 ))
 
             for update in diff.other_updates:
-                self.dispatcher.updates_queue.put_nowait((update, {}, {}))
+                self.dispatcher.updates_queue.put_nowait((update, users, chats))
 
             await self.storage.pts(diff.state.pts)
             await self.storage.date(diff.state.date)
