@@ -213,13 +213,13 @@ class SQLiteStorage(Storage):
     async def is_bot(self, value: bool = object):
         return self._accessor(value)
 
-    async def pts(self, value: bool = object):
+    async def pts(self, value: int = object):
         return self._accessor(value)
 
-    async def qts(self, value: bool = object):
+    async def qts(self, value: int = object):
         return self._accessor(value)
 
-    async def seq(self, value: bool = object):
+    async def seq(self, value: int = object):
         return self._accessor(value)
 
     def version(self, value: int = object):
