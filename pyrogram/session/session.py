@@ -262,8 +262,10 @@ class Session:
                 msg_id = msg.body.req_msg_id
             elif isinstance(msg.body, raw.types.RpcResult):
                 msg_id = msg.body.req_msg_id
-                if hasattr(msg.body, "result") and isinstance(msg.body.result, raw.types.updates.State):
-                    if self.client is not None:
+                if self.client is not None and hasattr(msg.body, "result"):
+                    if isinstance(msg.body.result, raw.types.updates.State):
+                        self.loop.create_task(self.client.handle_updates(msg.body.result))
+                    elif isinstance(msg.body.result, raw.types.UpdateShortSentMessage):
                         self.loop.create_task(self.client.handle_updates(msg.body.result))
             elif isinstance(msg.body, raw.types.Pong):
                 msg_id = msg.body.msg_id

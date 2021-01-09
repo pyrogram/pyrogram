@@ -620,6 +620,18 @@ class Client(Methods, Scaffold):
 
             await self.storage.pts(diff.state.pts)
             await self.storage.date(diff.state.date)
+        elif isinstance(updates, raw.types.UpdateShortSentMessage):
+            local_pts = await self.storage.pts()
+
+            if local_pts >= updates.pts:
+                return
+
+            if local_pts + updates.pts_count != updates.pts:
+                log.warning('something is wrong, fallback to updates.getDifference')
+                return
+
+            await self.storage.pts(updates.pts)
+            await self.storage.date(updates.date)
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
