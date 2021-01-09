@@ -565,6 +565,7 @@ class Client(Methods, Scaffold):
                                 chats.update({c.id: c for c in diff.chats})
 
                 self.dispatcher.updates_queue.put_nowait((update, users, chats))
+                await self.storage.pts(pts)
         elif isinstance(updates, (raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage)):
             diff = await self.send(
                 raw.functions.updates.GetDifference(
