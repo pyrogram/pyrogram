@@ -706,8 +706,6 @@ class Client(Methods, Scaffold):
             include = plugins["include"]
             exclude = plugins["exclude"]
 
-            count = 0
-
             if not include:
                 for path in sorted(Path(root.replace(".", "/")).rglob("*.py")):
                     module_path = '.'.join(path.parent.parts + (path.stem,))
@@ -724,7 +722,6 @@ class Client(Methods, Scaffold):
                                 log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count += 1
                         except Exception:
                             pass
             else:
@@ -757,7 +754,6 @@ class Client(Methods, Scaffold):
                                 log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -793,15 +789,14 @@ class Client(Methods, Scaffold):
                                 log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
                                     self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
                                     self.session_name, name, module_path))
 
-            if count > 0:
-                log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
-                    self.session_name, count, "s" if count > 1 else "", root))
+            if plugins:
+                log.info('[{}] Successfully loaded plugin{} from "{}"'.format(
+                    self.session_name, "s", root))
             else:
                 log.warning(f'[{self.session_name}] No plugin loaded from "{root}"')
 
