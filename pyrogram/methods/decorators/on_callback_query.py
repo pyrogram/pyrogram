@@ -24,7 +24,7 @@ from pyrogram.filters import Filter
 
 class OnCallbackQuery:
     def on_callback_query(
-        self: Union[Filter, pyrogram.Client] = None,
+        self=None,  # type: Union[Filter, pyrogram.Client]
         filters=None,
         group: int = 0
     ) -> Callable:
