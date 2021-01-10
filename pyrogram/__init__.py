@@ -18,7 +18,7 @@
 
 __version__ = "1.1.9"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__copyright__ = "Copyright (C) 2017-2020 Dan <https://github.com/delivrance>"
+__copyright__ = "Copyright (C) 2017-2021 Dan <https://github.com/delivrance>"
 
 from concurrent.futures.thread import ThreadPoolExecutor
 

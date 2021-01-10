@@ -28,7 +28,7 @@ from pygments.styles.friendly import FriendlyStyle
 FriendlyStyle.background_color = "#f3f2f1"
 
 project = "Pyrogram"
-copyright = "2017-2020, Dan"
+copyright = "2017-2021, Dan"
 author = "Dan"
 
 extensions = [
