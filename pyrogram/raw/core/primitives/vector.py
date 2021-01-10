@@ -33,7 +33,7 @@ class Vector(bytes, TLObject):
     def _read(b: BytesIO) -> Union[int, Any]:
         try:
             return TLObject.read(b)
-        except KeyError:
+        except ValueError:
             b.seek(-4, 1)
             return Int.read(b)
 
