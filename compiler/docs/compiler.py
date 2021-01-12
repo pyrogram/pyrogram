@@ -436,6 +436,7 @@ def pyrogram_api():
             Message.forward
             Message.copy
             Message.pin
+            Message.unpin
             Message.edit_text
             Message.edit_caption
             Message.edit_media
