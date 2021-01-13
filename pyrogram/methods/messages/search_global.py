@@ -70,6 +70,9 @@ class SearchGlobal(Scaffold):
                 await self.send(
                     raw.functions.messages.SearchGlobal(
                         q=query,
+                        filter=raw.types.InputMessagesFilterEmpty(),
+                        min_date=0,
+                        max_date=0,
                         offset_rate=offset_date,
                         offset_peer=offset_peer,
                         offset_id=offset_id,
