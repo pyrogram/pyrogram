@@ -61,6 +61,7 @@ class SearchGlobal(Scaffold):
         Parameters:
             query (``str``, *optional*):
                 Text query string.
+                Use "@" to search for mentions.
             
             filter (``str``, *optional*):
                 Pass a filter in order to search for specific kind of messages only:
