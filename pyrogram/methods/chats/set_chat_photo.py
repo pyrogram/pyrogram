@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -22,6 +22,7 @@ from typing import Union, BinaryIO
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.scaffold import Scaffold
+from pyrogram.file_id import FileType
 
 
 class SetChatPhoto(Scaffold):
@@ -30,8 +31,7 @@ class SetChatPhoto(Scaffold):
         chat_id: Union[int, str],
         *,
         photo: Union[str, BinaryIO] = None,
-        video: Union[str, BinaryIO] = None,
-        file_ref: str = None
+        video: Union[str, BinaryIO] = None
     ) -> bool:
         """Set a new chat photo or video (H.264/MPEG-4 AVC video, max 5 seconds).
 
@@ -45,18 +45,14 @@ class SetChatPhoto(Scaffold):
                 Unique identifier (int) or username (str) of the target chat.
 
             photo (``str`` | ``BinaryIO``, *optional*):
-                New chat photo. You can pass a :obj:`~pyrogram.types.Photo` file_id (in pair with a valid file_ref), a
-                file path to upload a new photo from your local machine or a binary file-like object with its attribute
+                New chat photo. You can pass a :obj:`~pyrogram.types.Photo` file_id, a file path to upload a new photo
+                from your local machine or a binary file-like object with its attribute
                 ".name" set for in-memory uploads.
 
             video (``str`` | ``BinaryIO``, *optional*):
-                New chat video. You can pass a :obj:`~pyrogram.types.Video` file_id (in pair with a valid file_ref), a
-                file path to upload a new video from your local machine or a binary file-like object with its attribute
+                New chat video. You can pass a :obj:`~pyrogram.types.Video` file_id, a file path to upload a new video
+                from your local machine or a binary file-like object with its attribute
                 ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file_id in case a file reference is needed.
 
         Returns:
             ``bool``: True on success.
@@ -71,14 +67,14 @@ class SetChatPhoto(Scaffold):
                 app.set_chat_photo(chat_id, photo="photo.jpg")
 
                 # Set chat photo using an exiting Photo file_id
-                app.set_chat_photo(chat_id, photo=photo.file_id, file_ref=photo.file_ref)
+                app.set_chat_photo(chat_id, photo=photo.file_id)
 
 
                 # Set chat video using a local file
                 app.set_chat_photo(chat_id, video="video.mp4")
 
                 # Set chat photo using an exiting Video file_id
-                app.set_chat_photo(chat_id, video=video.file_id, file_ref=video.file_ref)
+                app.set_chat_photo(chat_id, video=video.file_id)
         """
         peer = await self.resolve_peer(chat_id)
 
@@ -89,7 +85,7 @@ class SetChatPhoto(Scaffold):
                     video=await self.save_file(video)
                 )
             else:
-                photo = utils.get_input_media_from_file_id(photo, file_ref, 2)
+                photo = utils.get_input_media_from_file_id(photo, FileType.PHOTO)
                 photo = raw.types.InputChatPhoto(id=photo.id)
         else:
             photo = raw.types.InputChatUploadedPhoto(

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional
 
 from pyrogram import raw
 from pyrogram.parser import Parser
@@ -41,7 +41,7 @@ class InputTextMessageContent(InputMessageContent):
             Disables link previews for links in this message.
     """
 
-    def __init__(self, message_text: str, parse_mode: Union[str, None] = object, disable_web_page_preview: bool = None):
+    def __init__(self, message_text: str, parse_mode: Optional[str] = object, disable_web_page_preview: bool = None):
         super().__init__()
 
         self.message_text = message_text

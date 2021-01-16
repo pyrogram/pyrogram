@@ -1,0 +1,12 @@
+id	message
+AUTH_KEY_DUPLICATED	The same authorization key (session file) was used in more than one place simultaneously. You must delete your session file and log in again with your phone number or bot token
+FILEREF_UPGRADE_NEEDED	The file reference has expired and you must use a refreshed one by obtaining the original media message
+FRESH_CHANGE_ADMINS_FORBIDDEN	You were just elected admin, you can't add or modify other admins yet
+FRESH_CHANGE_PHONE_FORBIDDEN	You can't change your phone number because your session was logged-in recently
+FRESH_RESET_AUTHORISATION_FORBIDDEN	You can't terminate other authorized sessions because the current was logged-in recently
+PHONE_NUMBER_INVALID	The phone number is invalid
+PHONE_PASSWORD_FLOOD	You have tried to log-in too many times
+STICKERSET_INVALID	The sticker set is invalid
+STICKERSET_OWNER_ANONYMOUS	This sticker set can't be used as the group's sticker set because it was created by one of its anonymous admins
+USERPIC_UPLOAD_REQUIRED	You must have a profile picture to publish your geolocation
+USER_RESTRICTED	You are limited/restricted. You can't perform this action

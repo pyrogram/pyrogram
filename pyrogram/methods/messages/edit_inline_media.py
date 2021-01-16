@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -23,6 +23,7 @@ from pyrogram import types
 from pyrogram import utils
 from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
+from pyrogram.file_id import FileType
 
 
 class EditInlineMedia(Scaffold):
@@ -54,7 +55,7 @@ class EditInlineMedia(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InputMediaPhoto, InputMediaVideo, InputMediaAudio
+                from pyrogram.types import InputMediaPhoto, InputMediaVideo, InputMediaAudio
 
                 # Bots only
 
@@ -76,35 +77,35 @@ class EditInlineMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
+                media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
+                media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
             if re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
+                media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
+                media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
             if re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
+                media = utils.get_input_media_from_file_id(media.media, FileType.DOCUMENT)
 
         unpacked = utils.unpack_inline_message_id(inline_message_id)
         dc_id = unpacked.dc_id

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -84,7 +84,7 @@ class AnswerInlineQuery(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InlineQueryResultArticle, InputTextMessageContent
+                from pyrogram.types import InlineQueryResultArticle, InputTextMessageContent
 
                 app.answer_inline_query(
                     inline_query_id,

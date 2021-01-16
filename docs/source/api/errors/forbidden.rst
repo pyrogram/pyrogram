@@ -2,6 +2,6 @@
 ---------------
 
 .. csv-table::
-    :file: ../../../../compiler/error/source/403_FORBIDDEN.tsv
+    :file: ../../../../compiler/errors/source/403_FORBIDDEN.tsv
     :delim: tab
     :header-rows: 1

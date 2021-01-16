@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -163,7 +163,7 @@ all = create(all_filter)
 
 # region me_filter
 async def me_filter(_, __, m: Message):
-    return bool(m.from_user and m.from_user.is_self)
+    return bool(m.from_user and m.from_user.is_self or m.outgoing)
 
 
 me = create(me_filter)
@@ -699,7 +699,7 @@ linked_channel = create(linked_channel_filter)
 # endregion
 
 
-def command(commands: str or List[str], prefixes: str or List[str] = "/", case_sensitive: bool = False):
+def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
     Parameters:
@@ -824,7 +824,7 @@ class user(Filter, set):
             Defaults to None (no users).
     """
 
-    def __init__(self, users: int or str or list = None):
+    def __init__(self, users: Union[int, str, List[Union[int, str]]] = None):
         users = [] if users is None else users if isinstance(users, list) else [users]
 
         super().__init__(
@@ -856,7 +856,7 @@ class chat(Filter, set):
             Defaults to None (no chats).
     """
 
-    def __init__(self, chats: int or str or list = None):
+    def __init__(self, chats: Union[int, str, List[Union[int, str]]] = None):
         chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
         super().__init__(

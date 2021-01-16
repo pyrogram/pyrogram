@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -24,7 +24,7 @@ class ChosenInlineResultHandler(Handler):
     It is intended to be used with :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`~pyrogram.Client.on_chosen_inline_query` decorator.
+    :meth:`~pyrogram.Client.on_chosen_inline_result` decorator.
 
     Parameters:
         callback (``callable``):

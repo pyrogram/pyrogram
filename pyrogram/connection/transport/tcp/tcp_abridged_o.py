@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,7 +18,9 @@
 
 import logging
 import os
+from typing import Optional
 
+import pyrogram
 from pyrogram.crypto import aes
 from .tcp import TCP
 
@@ -55,18 +57,12 @@ class TCPAbridgedO(TCP):
 
     async def send(self, data: bytes, *args):
         length = len(data) // 4
+        data = (bytes([length]) if length <= 126 else b"\x7f" + length.to_bytes(3, "little")) + data
+        payload = await self.loop.run_in_executor(pyrogram.crypto_executor, aes.ctr256_encrypt, data, *self.encrypt)
 
-        await super().send(
-            aes.ctr256_encrypt(
-                (bytes([length])
-                 if length <= 126
-                 else b"\x7f" + length.to_bytes(3, "little"))
-                + data,
-                *self.encrypt
-            )
-        )
+        await super().send(payload)
 
-    async def recv(self, length: int = 0) -> bytes or None:
+    async def recv(self, length: int = 0) -> Optional[bytes]:
         length = await super().recv(1)
 
         if length is None:
@@ -87,4 +83,4 @@ class TCPAbridgedO(TCP):
         if data is None:
             return None
 
-        return aes.ctr256_decrypt(data, *self.decrypt)
+        return await self.loop.run_in_executor(pyrogram.crypto_executor, aes.ctr256_decrypt, data, *self.decrypt)

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional, List
 
 from .input_media import InputMedia
+from ..messages_and_media import MessageEntity
 
 
 class InputMediaVideo(InputMedia):
@@ -32,10 +33,6 @@ class InputMediaVideo(InputMedia):
             pass a file path as string to upload a new video that exists on your local machine.
             Sending video by a URL is currently unsupported.
 
-        file_ref (``str``, *optional*):
-            A valid file reference obtained by a recently fetched media message.
-            To be used in combination with a file id in case a file reference is needed.
-
         thumb (``str``):
             Thumbnail of the video sent.
             The thumbnail should be in JPEG format and less than 200 KB in size.
@@ -43,7 +40,8 @@ class InputMediaVideo(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the video to be sent, 0-1024 characters
+            Caption of the video to be sent, 0-1024 characters.
+            If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -51,6 +49,9 @@ class InputMediaVideo(InputMedia):
             Pass "markdown" or "md" to enable Markdown-style parsing only.
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
+
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
 
         width (``int``, *optional*):
             Video width.
@@ -68,16 +69,16 @@ class InputMediaVideo(InputMedia):
     def __init__(
         self,
         media: str,
-        file_ref: str = None,
         thumb: str = None,
-        caption: str = "",
-        parse_mode: Union[str, None] = object,
+        caption: str = None,
+        parse_mode: Optional[str] = object,
+        caption_entities: List[MessageEntity] = None,
         width: int = 0,
         height: int = 0,
         duration: int = 0,
         supports_streaming: bool = True
     ):
-        super().__init__(media, file_ref, caption, parse_mode)
+        super().__init__(media, caption, parse_mode, caption_entities)
 
         self.thumb = thumb
         self.width = width

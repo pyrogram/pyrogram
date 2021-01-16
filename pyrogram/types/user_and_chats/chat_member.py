@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -57,6 +57,10 @@ class ChatMember(Object):
 
         is_member (``bool``, *optional*):
             Restricted only. True, if the user is a member of the chat at the moment of the request.
+
+        is_anonymous (``bool``, *optional*):
+            True, if the user's presence in the chat is hidden.
+            Owner and administrators only.
 
         can_be_edited (``bool``, *optional*):
             Administrators only.
@@ -138,6 +142,7 @@ class ChatMember(Object):
         promoted_by: "types.User" = None,
         restricted_by: "types.User" = None,
         is_member: bool = None,
+        is_anonymous: bool = None,
 
         # Admin permissions
         can_be_edited: bool = None,
@@ -171,6 +176,7 @@ class ChatMember(Object):
         self.promoted_by = promoted_by
         self.restricted_by = restricted_by
         self.is_member = is_member
+        self.is_anonymous = is_anonymous
 
         self.can_be_edited = can_be_edited
         self.can_post_messages = can_post_messages
@@ -211,11 +217,10 @@ class ChatMember(Object):
                 client=client
             )
 
-        if isinstance(member, (raw.types.ChannelParticipantCreator, raw.types.ChatParticipantCreator)):
+        if isinstance(member, raw.types.ChatParticipantCreator):
             return ChatMember(
                 user=user,
                 status="creator",
-                title=getattr(member, "rank", None),
                 client=client
             )
 
@@ -225,6 +230,26 @@ class ChatMember(Object):
                 status="administrator",
                 joined_date=member.date,
                 invited_by=invited_by,
+                client=client
+            )
+
+        if isinstance(member, raw.types.ChannelParticipantCreator):
+            permissions = member.admin_rights
+
+            return ChatMember(
+                user=user,
+                status="creator",
+                title=member.rank,
+                invited_by=invited_by,
+                can_change_info=permissions.change_info,
+                can_post_messages=permissions.post_messages,
+                can_edit_messages=permissions.edit_messages,
+                can_delete_messages=permissions.delete_messages,
+                can_restrict_members=permissions.ban_users,
+                can_invite_users=permissions.invite_users,
+                can_pin_messages=permissions.pin_messages,
+                can_promote_members=permissions.add_admins,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 
@@ -247,6 +272,7 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 

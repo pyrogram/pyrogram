@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -19,7 +19,7 @@
 import asyncio
 import logging
 import os
-from concurrent.futures.thread import ThreadPoolExecutor
+import time
 from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
@@ -51,7 +51,6 @@ class Session:
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
-    EXECUTOR_SIZE_THRESHOLD = 512
 
     notice_displayed = False
 
@@ -68,8 +67,6 @@ class Session:
         48: "[48] incorrect server salt",
         64: "[64] invalid container"
     }
-
-    executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
 
     def __init__(
         self,
@@ -220,22 +217,14 @@ class Session:
         await self.start()
 
     async def handle_packet(self, packet):
-        if len(packet) <= self.EXECUTOR_SIZE_THRESHOLD:
-            data = mtproto.unpack(
-                BytesIO(packet),
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
-        else:
-            data = await self.loop.run_in_executor(
-                self.executor,
-                mtproto.unpack,
-                BytesIO(packet),
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
+        data = await self.loop.run_in_executor(
+            pyrogram.crypto_executor,
+            mtproto.unpack,
+            BytesIO(packet),
+            self.session_id,
+            self.auth_key,
+            self.auth_key_id
+        )
 
         messages = (
             data.body.messages
@@ -243,7 +232,10 @@ class Session:
             else [data]
         )
 
-        log.debug(f"Received:\n{data}")
+        # Call log.debug twice because calling it once by appending "data" to the previous string (i.e. f"Kind: {data}")
+        # will cause "data" to be evaluated as string every time instead of only when debug is actually enabled.
+        log.debug("Received:")
+        log.debug(data)
 
         for msg in messages:
             if msg.seq_no == 0:
@@ -314,17 +306,15 @@ class Session:
         log.info("NextSaltTask started")
 
         while True:
-            now = datetime.now()
+            now = datetime.fromtimestamp(time.perf_counter() - MsgId.reference_clock + MsgId.server_time)
 
             # Seconds to wait until middle-overlap, which is
             # 15 minutes before/after the current/next salt end/start time
             valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
             dt = (valid_until - now).total_seconds() - 900
 
-            log.info("Next salt in {:.0f}m {:.0f}s ({})".format(
-                dt // 60, dt % 60,
-                now + timedelta(seconds=dt)
-            ))
+            minutes, seconds = divmod(int(dt), 60)
+            log.info(f"Next salt in {minutes:.0f}m {seconds:.0f}s (at {now + timedelta(seconds=dt)})")
 
             try:
                 await asyncio.wait_for(self.next_salt_task_event.wait(), dt)
@@ -367,26 +357,20 @@ class Session:
         if wait_response:
             self.results[msg_id] = Result()
 
-        log.debug(f"Sent:\n{message}")
+        # Call log.debug twice because calling it once by appending "data" to the previous string (i.e. f"Kind: {data}")
+        # will cause "data" to be evaluated as string every time instead of only when debug is actually enabled.
+        log.debug(f"Sent:")
+        log.debug(message)
 
-        if len(message) <= self.EXECUTOR_SIZE_THRESHOLD:
-            payload = mtproto.pack(
-                message,
-                self.current_salt.salt,
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
-        else:
-            payload = await self.loop.run_in_executor(
-                self.executor,
-                mtproto.pack,
-                message,
-                self.current_salt.salt,
-                self.session_id,
-                self.auth_key,
-                self.auth_key_id
-            )
+        payload = await self.loop.run_in_executor(
+            pyrogram.crypto_executor,
+            mtproto.pack,
+            message,
+            self.current_salt.salt,
+            self.session_id,
+            self.auth_key,
+            self.auth_key_id
+        )
 
         try:
             await self.connection.send(payload)
@@ -453,7 +437,7 @@ class Session:
                     raise e from None
 
                 (log.warning if retries < 2 else log.info)(
-                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {e}')
+                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {repr(e)}')
 
                 await asyncio.sleep(0.5)
 

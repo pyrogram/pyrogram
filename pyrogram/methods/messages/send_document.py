@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,13 +18,14 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,10 +34,10 @@ class SendDocument(Scaffold):
         self,
         chat_id: Union[int, str],
         document: Union[str, BinaryIO],
-        file_ref: str = None,
         thumb: Union[str, BinaryIO] = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         file_name: str = None,
         force_document: bool = None,
         disable_notification: bool = None,
@@ -50,7 +51,7 @@ class SendDocument(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send generic files.
 
         Parameters:
@@ -65,10 +66,6 @@ class SendDocument(Scaffold):
                 pass an HTTP URL as a string for Telegram to get a file from the Internet,
                 pass a file path as string to upload a new file that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             thumb (``str`` | ``BinaryIO``, *optional*):
                 Thumbnail of the file sent.
@@ -85,6 +82,9 @@ class SendDocument(Scaffold):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
 
             file_name (``str``, *optional*):
                 File name of the document sent.
@@ -152,9 +152,6 @@ class SendDocument(Scaffold):
         """
         file = None
 
-        # if isinstance(document, PurePath):
-        #     document = str(document)
-
         try:
             if isinstance(document, str):
                 if os.path.isfile(document):
@@ -174,7 +171,7 @@ class SendDocument(Scaffold):
                         url=document
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(document, file_ref, 5)
+                    media = utils.get_input_media_from_file_id(document, FileType.DOCUMENT)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(document, progress=progress, progress_args=progress_args)
@@ -198,7 +195,7 @@ class SendDocument(Scaffold):
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **await self.parser.parse(caption, parse_mode)
+                            **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:

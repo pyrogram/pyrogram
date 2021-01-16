@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,13 +18,14 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,9 +34,9 @@ class SendVoice(Scaffold):
         self,
         chat_id: Union[int, str],
         voice: Union[str, BinaryIO],
-        file_ref=None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -48,7 +49,7 @@ class SendVoice(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send audio files.
 
         Parameters:
@@ -64,10 +65,6 @@ class SendVoice(Scaffold):
                 pass a file path as string to upload a new audio that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
-
             caption (``str``, *optional*):
                 Voice message caption, 0-1024 characters.
 
@@ -77,6 +74,9 @@ class SendVoice(Scaffold):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
 
             duration (``int``, *optional*):
                 Duration of the voice message in seconds.
@@ -154,7 +154,7 @@ class SendVoice(Scaffold):
                         url=voice
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(voice, file_ref, 3)
+                    media = utils.get_input_media_from_file_id(voice, FileType.VOICE)
             else:
                 file = await self.save_file(voice, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedDocument(
@@ -179,7 +179,7 @@ class SendVoice(Scaffold):
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
                             reply_markup=reply_markup.write() if reply_markup else None,
-                            **await self.parser.parse(caption, parse_mode)
+                            **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:

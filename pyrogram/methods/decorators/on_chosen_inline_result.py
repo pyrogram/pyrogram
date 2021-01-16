@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -35,7 +35,7 @@ class OnChosenInlineResult(Scaffold):
         :obj:`~pyrogram.handlers.ChosenInlineResult`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of chosen inline results to be passed
                 in your function.
 

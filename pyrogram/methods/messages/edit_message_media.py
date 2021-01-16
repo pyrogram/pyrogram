@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -23,6 +23,7 @@ from typing import Union
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -65,7 +66,7 @@ class EditMessageMedia(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InputMediaPhoto, InputMediaVideo, InputMediaAudio
+                from pyrogram.types import InputMediaPhoto, InputMediaVideo, InputMediaAudio
 
                 # Replace the current media with a local photo
                 app.edit_message_media(chat_id, message_id, InputMediaPhoto("new_photo.jpg"))
@@ -78,6 +79,11 @@ class EditMessageMedia(Scaffold):
         """
         caption = media.caption
         parse_mode = media.parse_mode
+
+        message, entities = None, None
+
+        if caption is not None:
+            message, entities = (await self.parser.parse(caption, parse_mode)).values()
 
         if isinstance(media, types.InputMediaPhoto):
             if os.path.isfile(media.media):
@@ -102,7 +108,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 2)
+                media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -139,7 +145,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 4)
+                media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -175,7 +181,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 9)
+                media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -213,7 +219,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 10)
+                media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -244,7 +250,7 @@ class EditMessageMedia(Scaffold):
                     url=media.media
                 )
             else:
-                media = utils.get_input_media_from_file_id(media.media, media.file_ref, 5)
+                media = utils.get_input_media_from_file_id(media.media, FileType.DOCUMENT)
 
         r = await self.send(
             raw.functions.messages.EditMessage(
@@ -252,7 +258,8 @@ class EditMessageMedia(Scaffold):
                 id=message_id,
                 media=media,
                 reply_markup=reply_markup.write() if reply_markup else None,
-                **await self.parser.parse(caption, parse_mode)
+                message=message,
+                entities=entities
             )
         )
 

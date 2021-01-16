@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,13 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import List
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
 
 
@@ -31,10 +30,11 @@ class Video(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         width (``int``):
             Video width as defined by sender.
@@ -51,17 +51,17 @@ class Video(Object):
         mime_type (``str``, *optional*):
             Mime type of a file as defined by sender.
 
-        supports_streaming (``bool``, *optional*):
-            True, if the video was uploaded with streaming support.
-
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the video was sent in Unix time.
+        supports_streaming (``bool``, *optional*):
+            True, if the video was uploaded with streaming support.
 
         ttl_seconds (``int``. *optional*):
             Time-to-live seconds, for secret photos.
+
+        date (``int``, *optional*):
+            Date the video was sent in Unix time.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Video thumbnails.
@@ -72,31 +72,31 @@ class Video(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         width: int,
         height: int,
         duration: int,
         file_name: str = None,
         mime_type: str = None,
-        supports_streaming: bool = None,
         file_size: int = None,
-        date: int = None,
+        supports_streaming: bool = None,
         ttl_seconds: int = None,
+        date: int = None,
         thumbs: List["types.Thumbnail"] = None
     ):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.width = width
         self.height = height
         self.duration = duration
         self.file_name = file_name
         self.mime_type = mime_type
-        self.supports_streaming = supports_streaming
         self.file_size = file_size
-        self.date = date
+        self.supports_streaming = supports_streaming
         self.ttl_seconds = ttl_seconds
+        self.date = date
         self.thumbs = thumbs
 
     @staticmethod
@@ -108,16 +108,17 @@ class Video(Object):
         ttl_seconds: int = None
     ) -> "Video":
         return Video(
-            file_id=encode_file_id(
-                pack(
-                    "<iiqq",
-                    4,
-                    video.dc_id,
-                    video.id,
-                    video.access_hash
-                )
-            ),
-            file_ref=encode_file_ref(video.file_reference),
+            file_id=FileId(
+                file_type=FileType.VIDEO,
+                dc_id=video.dc_id,
+                media_id=video.id,
+                access_hash=video.access_hash,
+                file_reference=video.file_reference
+            ).encode(),
+            file_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=video.id
+            ).encode(),
             width=video_attributes.w,
             height=video_attributes.h,
             duration=video_attributes.duration,

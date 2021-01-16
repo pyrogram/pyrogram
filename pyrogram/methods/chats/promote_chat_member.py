@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -27,6 +27,7 @@ class PromoteChatMember(Scaffold):
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
+        is_anonymous: bool = False,
         can_change_info: bool = True,
         can_post_messages: bool = False,
         can_edit_messages: bool = False,
@@ -48,6 +49,9 @@ class PromoteChatMember(Scaffold):
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            is_anonymous (``bool``, *optional*):
+                Pass True, if the administrator's presence in the chat is hidden.
 
             can_change_info (``bool``, *optional*):
                 Pass True, if the administrator can change chat title, photo and other settings.
@@ -89,6 +93,7 @@ class PromoteChatMember(Scaffold):
                 channel=await self.resolve_peer(chat_id),
                 user_id=await self.resolve_peer(user_id),
                 admin_rights=raw.types.ChatAdminRights(
+                    anonymous=is_anonymous or None,
                     change_info=can_change_info or None,
                     post_messages=can_post_messages or None,
                     edit_messages=can_edit_messages or None,

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from ..object import Object
 
@@ -64,7 +64,7 @@ class GameHighScore(Object):
     @staticmethod
     def _parse_action(client, service: raw.types.MessageService, users: dict):
         return GameHighScore(
-            user=types.User._parse(client, users[service.from_id]),
+            user=types.User._parse(client, users[utils.get_raw_peer_id(service.from_id)]),
             score=service.action.score,
             client=client
         )

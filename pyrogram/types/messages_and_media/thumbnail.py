@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,13 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.utils import encode_file_id
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType, ThumbnailSource
 from ..object import Object
 
 
@@ -31,7 +30,11 @@ class Thumbnail(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
+
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         width (``int``):
             Photo width.
@@ -48,6 +51,7 @@ class Thumbnail(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
+        file_unique_id: str,
         width: int,
         height: int,
         file_size: int
@@ -55,6 +59,7 @@ class Thumbnail(Object):
         super().__init__(client)
 
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.width = width
         self.height = height
         self.file_size = file_size
@@ -63,13 +68,11 @@ class Thumbnail(Object):
     def _parse(
         client,
         media: Union["raw.types.Photo", "raw.types.Document"]
-    ) -> Union[List[Union["types.StrippedThumbnail", "Thumbnail"]], None]:
+    ) -> Optional[List[Union["types.StrippedThumbnail", "Thumbnail"]]]:
         if isinstance(media, raw.types.Photo):
             raw_thumbnails = media.sizes[:-1]
-            media_type = 2
         elif isinstance(media, raw.types.Document):
             raw_thumbnails = media.thumbs
-            media_type = 14
 
             if not raw_thumbnails:
                 return None
@@ -78,6 +81,9 @@ class Thumbnail(Object):
 
         thumbnails = []
 
+        file_type = FileType.PHOTO if isinstance(media, raw.types.Photo) else FileType.THUMBNAIL
+        thumbnail_file_type = file_type
+
         for thumbnail in raw_thumbnails:
             # TODO: Enable this
             # if isinstance(thumbnail, types.PhotoStrippedSize):
@@ -85,14 +91,24 @@ class Thumbnail(Object):
             if isinstance(thumbnail, raw.types.PhotoSize):
                 thumbnails.append(
                     Thumbnail(
-                        file_id=encode_file_id(
-                            pack(
-                                "<iiqqqiiii",
-                                media_type, media.dc_id, media.id, media.access_hash,
-                                thumbnail.location.volume_id, 1, 2, ord(thumbnail.type),
-                                thumbnail.location.local_id
-                            )
-                        ),
+                        file_id=FileId(
+                            file_type=file_type,
+                            dc_id=media.dc_id,
+                            media_id=media.id,
+                            access_hash=media.access_hash,
+                            file_reference=media.file_reference,
+                            thumbnail_file_type=thumbnail_file_type,
+                            thumbnail_source=ThumbnailSource.THUMBNAIL,
+                            thumbnail_size=thumbnail.type,
+                            volume_id=thumbnail.location.volume_id,
+                            local_id=thumbnail.location.local_id
+                        ).encode(),
+                        file_unique_id=FileUniqueId(
+                            file_unique_type=FileUniqueType.PHOTO,
+                            media_id=media.id,
+                            volume_id=thumbnail.location.volume_id,
+                            local_id=thumbnail.location.local_id
+                        ).encode(),
                         width=thumbnail.w,
                         height=thumbnail.h,
                         file_size=thumbnail.size,

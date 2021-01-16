@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -143,6 +143,7 @@ def pyrogram_api():
         Messages
             send_message
             forward_messages
+            copy_message
             send_photo
             send_audio
             send_document
@@ -167,6 +168,7 @@ def pyrogram_api():
             send_chat_action
             delete_messages
             get_messages
+            get_media_group
             get_history
             get_history_count
             read_history
@@ -197,6 +199,7 @@ def pyrogram_api():
             set_chat_permissions
             pin_chat_message
             unpin_chat_message
+            unpin_all_chat_messages
             get_chat
             get_chat_member
             get_chat_members
@@ -206,7 +209,6 @@ def pyrogram_api():
             iter_dialogs
             get_dialogs_count
             update_chat_username
-            get_common_chats
             get_nearby_chats
             archive_chats
             unarchive_chats
@@ -216,7 +218,9 @@ def pyrogram_api():
             create_supergroup
             delete_channel
             delete_supergroup
+            delete_user_history
             set_slow_mode
+            mark_chat_unread
         """,
         users="""
         Users
@@ -231,6 +235,7 @@ def pyrogram_api():
             update_profile
             block_user
             unblock_user
+            get_common_chats
         """,
         contacts="""
         Contacts
@@ -429,7 +434,9 @@ def pyrogram_api():
             Message.delete
             Message.download
             Message.forward
+            Message.copy
             Message.pin
+            Message.unpin
             Message.edit_text
             Message.edit_caption
             Message.edit_media
@@ -470,6 +477,7 @@ def pyrogram_api():
             Chat.add_members
             Chat.join
             Chat.leave
+            Chat.mark_unread
         """,
         user="""
         User

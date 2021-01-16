@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .copy_message import CopyMessage
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
 from .edit_inline_caption import EditInlineCaption
@@ -29,6 +30,7 @@ from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
 from .get_history import GetHistory
 from .get_history_count import GetHistoryCount
+from .get_media_group import GetMediaGroup
 from .get_messages import GetMessages
 from .iter_history import IterHistory
 from .read_history import ReadHistory
@@ -64,6 +66,7 @@ class Messages(
     EditMessageText,
     ForwardMessages,
     GetHistory,
+    GetMediaGroup,
     GetMessages,
     SendAudio,
     SendChatAction,
@@ -94,6 +97,7 @@ class Messages(
     EditInlineReplyMarkup,
     SendDice,
     SearchMessages,
-    SearchGlobal
+    SearchGlobal,
+    CopyMessage
 ):
     pass

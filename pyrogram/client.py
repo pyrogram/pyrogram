@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -29,7 +29,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -47,6 +47,7 @@ from pyrogram.storage import Storage, FileStorage, MemoryStorage
 from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
+from .file_id import FileId, FileType, ThumbnailSource
 from .scaffold import Scaffold
 
 log = logging.getLogger(__name__)
@@ -395,7 +396,7 @@ class Client(Methods, Scaffold):
         return self._parse_mode
 
     @parse_mode.setter
-    def parse_mode(self, parse_mode: Union[str, None] = "combined"):
+    def parse_mode(self, parse_mode: Optional[str] = "combined"):
         if parse_mode not in self.PARSE_MODES:
             raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
                 ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
@@ -405,7 +406,7 @@ class Client(Methods, Scaffold):
         self._parse_mode = parse_mode
 
     # TODO: redundant, remove in next major version
-    def set_parse_mode(self, parse_mode: Union[str, None] = "combined"):
+    def set_parse_mode(self, parse_mode: Optional[str] = "combined"):
         """Set the parse mode to be used globally by the client.
 
         When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
@@ -493,22 +494,11 @@ class Client(Methods, Scaffold):
         final_file_path = ""
 
         try:
-            data, directory, file_name, progress, progress_args = packet
+            file_id, directory, file_name, file_size, progress, progress_args = packet
 
             temp_file_path = await self.get_file(
-                media_type=data.media_type,
-                dc_id=data.dc_id,
-                document_id=data.document_id,
-                access_hash=data.access_hash,
-                thumb_size=data.thumb_size,
-                peer_id=data.peer_id,
-                peer_type=data.peer_type,
-                peer_access_hash=data.peer_access_hash,
-                volume_id=data.volume_id,
-                local_id=data.local_id,
-                file_ref=data.file_ref,
-                file_size=data.file_size,
-                is_big=data.is_big,
+                file_id=file_id,
+                file_size=file_size,
                 progress=progress,
                 progress_args=progress_args
             )
@@ -539,7 +529,7 @@ class Client(Methods, Scaffold):
                     getattr(
                         getattr(
                             update, "message", None
-                        ), "to_id", None
+                        ), "peer_id", None
                     ), "channel_id", None
                 ) or getattr(update, "channel_id", None)
 
@@ -817,22 +807,13 @@ class Client(Methods, Scaffold):
 
     async def get_file(
         self,
-        media_type: int,
-        dc_id: int,
-        document_id: int,
-        access_hash: int,
-        thumb_size: str,
-        peer_id: int,
-        peer_type: str,
-        peer_access_hash: int,
-        volume_id: int,
-        local_id: int,
-        file_ref: str,
+        file_id: FileId,
         file_size: int,
-        is_big: bool,
         progress: callable,
         progress_args: tuple = ()
     ) -> str:
+        dc_id = file_id.dc_id
+
         async with self.media_sessions_lock:
             session = self.media_sessions.get(dc_id, None)
 
@@ -874,50 +855,44 @@ class Client(Methods, Scaffold):
 
                 self.media_sessions[dc_id] = session
 
-        file_ref = utils.decode_file_ref(file_ref)
+        file_type = file_id.file_type
 
-        if media_type == 1:
-            if peer_type == "user":
+        if file_type == FileType.CHAT_PHOTO:
+            if file_id.chat_id > 0:
                 peer = raw.types.InputPeerUser(
-                    user_id=peer_id,
-                    access_hash=peer_access_hash
-                )
-            elif peer_type == "chat":
-                peer = raw.types.InputPeerChat(
-                    chat_id=peer_id
+                    user_id=file_id.chat_id,
+                    access_hash=file_id.chat_access_hash
                 )
             else:
-                peer = raw.types.InputPeerChannel(
-                    channel_id=peer_id,
-                    access_hash=peer_access_hash
-                )
+                if file_id.chat_access_hash == 0:
+                    peer = raw.types.InputPeerChat(
+                        chat_id=-file_id.chat_id
+                    )
+                else:
+                    peer = raw.types.InputPeerChannel(
+                        channel_id=utils.get_channel_id(file_id.chat_id),
+                        access_hash=file_id.chat_access_hash
+                    )
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,
-                volume_id=volume_id,
-                local_id=local_id,
-                big=is_big or None
+                volume_id=file_id.volume_id,
+                local_id=file_id.local_id,
+                big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
             )
-        elif media_type in (0, 2):
+        elif file_type == FileType.PHOTO:
             location = raw.types.InputPhotoFileLocation(
-                id=document_id,
-                access_hash=access_hash,
-                file_reference=file_ref,
-                thumb_size=thumb_size
-            )
-        elif media_type == 14:
-            location = raw.types.InputDocumentFileLocation(
-                id=document_id,
-                access_hash=access_hash,
-                file_reference=file_ref,
-                thumb_size=thumb_size
+                id=file_id.media_id,
+                access_hash=file_id.access_hash,
+                file_reference=file_id.file_reference,
+                thumb_size=file_id.thumbnail_size
             )
         else:
             location = raw.types.InputDocumentFileLocation(
-                id=document_id,
-                access_hash=access_hash,
-                file_reference=file_ref,
-                thumb_size=""
+                id=file_id.media_id,
+                access_hash=file_id.access_hash,
+                file_reference=file_id.file_reference,
+                thumb_size=file_id.thumbnail_size
             )
 
         limit = 1024 * 1024
@@ -1070,12 +1045,8 @@ class Client(Methods, Scaffold):
         else:
             return file_name
 
-    def guess_mime_type(self, filename: str):
-        extension = os.path.splitext(filename)[1]
-        return self.extensions_to_mime_types.get(extension)
+    def guess_mime_type(self, filename: str) -> Optional[str]:
+        return self.mimetypes.guess_type(filename)[0]
 
-    def guess_extension(self, mime_type: str):
-        extensions = self.mime_types_to_extensions.get(mime_type)
-
-        if extensions:
-            return extensions.split(" ")[0]
+    def guess_extension(self, mime_type: str) -> Optional[str]:
+        return self.mimetypes.guess_extension(mime_type)

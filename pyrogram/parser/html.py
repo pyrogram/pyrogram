@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -20,7 +20,7 @@ import html
 import logging
 import re
 from html.parser import HTMLParser
-from typing import Union
+from typing import Optional
 
 import pyrogram
 from pyrogram import raw
@@ -106,12 +106,12 @@ class Parser(HTMLParser):
 
 
 class HTML:
-    def __init__(self, client: Union["pyrogram.Client", None]):
+    def __init__(self, client: Optional["pyrogram.Client"]):
         self.client = client
 
     async def parse(self, text: str):
         # Strip whitespace characters from the end of the message, but preserve closing tags
-        text = re.sub(r"\s*(</[\w\W]*>)\s*$", r"\1", text)
+        text = re.sub(r"\s+(</[\w\W]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
         parser.feed(utils.add_surrogates(text))

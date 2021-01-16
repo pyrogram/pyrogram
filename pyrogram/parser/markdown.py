@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,7 +18,7 @@
 
 import html
 import re
-from typing import Union
+from typing import Optional
 
 import pyrogram
 from . import utils
@@ -53,7 +53,7 @@ FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
 
 
 class Markdown:
-    def __init__(self, client: Union["pyrogram.Client", None]):
+    def __init__(self, client: Optional["pyrogram.Client"]):
         self.html = HTML(client)
 
     async def parse(self, text: str, strict: bool = False):

@@ -1,0 +1,6 @@
+id	message
+2FA_CONFIRM_WAIT_X	A wait of {x} seconds is required because this account is active and protected by a 2FA password
+FLOOD_TEST_PHONE_WAIT_X	A wait of {x} seconds is required in the test servers
+FLOOD_WAIT_X	A wait of {x} seconds is required
+SLOWMODE_WAIT_X	A wait of {x} seconds is required to send messages in this chat.
+TAKEOUT_INIT_DELAY_X	You have to confirm the data export request using one of your mobile devices or wait {x} seconds

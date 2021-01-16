@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -21,12 +21,15 @@ import os
 import platform
 import re
 import sys
+from io import StringIO
+from mimetypes import MimeTypes
 from pathlib import Path
 
 import pyrogram
 from pyrogram import __version__
 from pyrogram.parser import Parser
 from pyrogram.session.internals import MsgId
+from .mime_types import mime_types
 
 
 class Scaffold:
@@ -45,33 +48,8 @@ class Scaffold:
 
     PARSE_MODES = ["combined", "markdown", "md", "html", None]
 
-    MEDIA_TYPE_ID = {
-        0: "photo_thumbnail",
-        1: "chat_photo",
-        2: "photo",
-        3: "voice",
-        4: "video",
-        5: "document",
-        8: "sticker",
-        9: "audio",
-        10: "animation",
-        13: "video_note",
-        14: "document_thumbnail"
-    }
-
-    mime_types_to_extensions = {}
-    extensions_to_mime_types = {}
-
-    with open(f"{os.path.dirname(__file__)}/mime.types", "r", encoding="UTF-8") as f:
-        for match in re.finditer(r"^([^#\s]+)\s+(.+)$", f.read(), flags=re.M):
-            mime_type, extensions = match.groups()
-
-            extensions = [f".{ext}" for ext in extensions.split(" ")]
-
-            for ext in extensions:
-                extensions_to_mime_types[ext] = mime_type
-
-            mime_types_to_extensions[mime_type] = " ".join(extensions)
+    mimetypes = MimeTypes()
+    mimetypes.readfp(StringIO(mime_types))
 
     def __init__(self):
         try:

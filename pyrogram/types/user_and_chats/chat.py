@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -66,8 +66,12 @@ class Chat(Object):
         photo (:obj:`~pyrogram.types.ChatPhoto`, *optional*):
             Chat photo. Suitable for downloads only.
 
+        bio (``str``, *optional*):
+            Bio of the other party in a private chat.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
+
         description (``str``, *optional*):
-            Bio, for private chats and bots or description for groups, supergroups and channels.
+            Description, for groups, supergroups and channel chats.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
 
         dc_id (``int``, *optional*):
@@ -94,6 +98,7 @@ class Chat(Object):
 
         members_count (``int``, *optional*):
             Chat members count, for groups, supergroups and channels only.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
 
         restrictions (List of :obj:`~pyrogram.types.Restriction`, *optional*):
             The list of reasons why this chat might be unavailable to some users.
@@ -126,6 +131,7 @@ class Chat(Object):
         first_name: str = None,
         last_name: str = None,
         photo: "types.ChatPhoto" = None,
+        bio: str = None,
         description: str = None,
         dc_id: int = None,
         invite_link: str = None,
@@ -152,6 +158,7 @@ class Chat(Object):
         self.first_name = first_name
         self.last_name = last_name
         self.photo = photo
+        self.bio = bio
         self.description = description
         self.dc_id = dc_id
         self.invite_link = invite_link
@@ -223,14 +230,14 @@ class Chat(Object):
         )
 
     @staticmethod
-    def _parse(client, message: raw.types.Message or raw.types.MessageService, users: dict, chats: dict) -> "Chat":
-        if isinstance(message.to_id, raw.types.PeerUser):
-            return Chat._parse_user_chat(client, users[message.to_id.user_id if message.out else message.from_id])
+    def _parse(client, message: Union[raw.types.Message, raw.types.MessageService], users: dict, chats: dict) -> "Chat":
+        if isinstance(message.peer_id, raw.types.PeerUser):
+            return Chat._parse_user_chat(client, users[message.peer_id.user_id])
 
-        if isinstance(message.to_id, raw.types.PeerChat):
-            return Chat._parse_chat_chat(client, chats[message.to_id.chat_id])
+        if isinstance(message.peer_id, raw.types.PeerChat):
+            return Chat._parse_chat_chat(client, chats[message.peer_id.chat_id])
 
-        return Chat._parse_channel_chat(client, chats[message.to_id.channel_id])
+        return Chat._parse_channel_chat(client, chats[message.peer_id.channel_id])
 
     @staticmethod
     def _parse_dialog(client, peer, users: dict, chats: dict):
@@ -242,10 +249,10 @@ class Chat(Object):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    async def _parse_full(client, chat_full: raw.types.messages.ChatFull or raw.types.UserFull) -> "Chat":
+    async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.UserFull]) -> "Chat":
         if isinstance(chat_full, raw.types.UserFull):
             parsed_chat = Chat._parse_user_chat(client, chat_full.user)
-            parsed_chat.description = chat_full.about
+            parsed_chat.bio = chat_full.about
 
             if chat_full.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(

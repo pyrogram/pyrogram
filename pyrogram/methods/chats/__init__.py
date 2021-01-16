@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -49,8 +49,10 @@ from .set_chat_title import SetChatTitle
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
+from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .mark_chat_unread import MarkChatUnread
 
 
 class Chats(
@@ -88,6 +90,8 @@ class Chats(
     GetNearbyChats,
     SetAdministratorTitle,
     SetSlowMode,
-    DeleteUserHistory
+    DeleteUserHistory,
+    UnpinAllChatMessages,
+    MarkChatUnread
 ):
     pass

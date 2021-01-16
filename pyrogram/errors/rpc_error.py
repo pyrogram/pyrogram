@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -19,7 +19,7 @@
 import re
 from datetime import datetime
 from importlib import import_module
-from typing import Type
+from typing import Type, Union
 
 from pyrogram import raw
 from pyrogram.raw.core import TLObject
@@ -32,7 +32,7 @@ class RPCError(Exception):
     NAME = None
     MESSAGE = "{x}"
 
-    def __init__(self, x: int or raw.types.RpcError = None, rpc_name: str = None, is_unknown: bool = False):
+    def __init__(self, x: Union[int, raw.types.RpcError] = None, rpc_name: str = None, is_unknown: bool = False):
         super().__init__("[{} {}]: {} {}".format(
             self.CODE,
             self.ID or self.NAME,

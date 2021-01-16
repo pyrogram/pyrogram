@@ -54,7 +54,7 @@ following them in order using the :guilabel:`Next` button at the end of each pag
 list of the most relevant pages for a quick access.
 
 .. admonition :: Cloud Credits
-    :class: attention
+    :class: tip
 
     If you need a cloud server to host your applications, we recommend using **Hetzner Cloud**. Sign up with
     `this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram as

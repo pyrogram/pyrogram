@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -25,7 +25,7 @@ from setuptools import setup, find_packages, Command
 
 from compiler.api import compiler as api_compiler
 from compiler.docs import compiler as docs_compiler
-from compiler.error import compiler as error_compiler
+from compiler.errors import compiler as errors_compiler
 
 with open("requirements.txt", encoding="utf-8") as r:
     requires = [i.strip() for i in r]
@@ -119,7 +119,7 @@ class Generate(Command):
 
     def run(self):
         if self.api:
-            error_compiler.start()
+            errors_compiler.start()
             api_compiler.start()
 
         if self.docs:
@@ -128,7 +128,7 @@ class Generate(Command):
 
 if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
     api_compiler.start()
-    error_compiler.start()
+    errors_compiler.start()
 
 setup(
     name="Pyrogram",
@@ -171,11 +171,7 @@ setup(
         "Documentation": "https://docs.pyrogram.org",
     },
     python_requires="~=3.6",
-    packages=find_packages(exclude=["compiler*"]),
-    package_data={
-        "pyrogram": ["mime.types"],
-        "pyrogram.storage": ["schema.sql"]
-    },
+    packages=find_packages(exclude=["compiler*", "tests*"]),
     zip_safe=False,
     install_requires=requires,
     cmdclass={
