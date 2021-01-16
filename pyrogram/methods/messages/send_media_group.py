@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
 import os
 import re
 from typing import Union, List
@@ -27,8 +26,6 @@ from pyrogram import utils
 from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
-log = logging.getLogger(__name__)
-
 
 class SendMediaGroup(Scaffold):
     # TODO: Add progress parameter
@@ -36,16 +33,17 @@ class SendMediaGroup(Scaffold):
         self,
         chat_id: Union[int, str],
         media: List[Union[
+            "types.InputMediaAudio",
             "types.InputMediaPhoto",
             "types.InputMediaVideo",
-            "types.InputMediaAudio",
-            "types.InputMediaDocument"
+            "types.InputMediaCached",
+            "types.InputMediaDocument",
         ]],
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
     ) -> List["types.Message"]:
-        """Send a group of photos or videos as an album.
+        """Send a group of media files as an album.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -53,8 +51,8 @@ class SendMediaGroup(Scaffold):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio` and :obj:`~pyrogram.types.InputMediaDocument`):
-                A list describing photos and videos to be sent, must include 2–10 items.
+            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio`, :obj:`~pyrogram.types.InputMediaCached` and :obj:`~pyrogram.types.InputMediaDocument`):
+                A list describing media files to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -79,7 +77,8 @@ class SendMediaGroup(Scaffold):
                     [
                         InputMediaPhoto("photo1.jpg"),
                         InputMediaPhoto("photo2.jpg", caption="photo caption"),
-                        InputMediaVideo("video.mp4", caption="a video")
+                        InputMediaVideo("video.mp4", caption="a video"),
+                        InputMediaCached("AAMCAgADGQEAAQdw2mADFwuM", caption="is cached media")
                     ]
                 )
         """
@@ -218,6 +217,8 @@ class SendMediaGroup(Scaffold):
                     )
                 else:
                     media = utils.get_input_media_from_file_id(i.media, FileType.AUDIO)
+            elif isinstance(i, types.InputMediaCached):
+                media = utils.get_input_media_from_file_id(file_id=i.media)
             elif isinstance(i, types.InputMediaDocument):
                 if os.path.isfile(i.media):
                     media = await self.send(
