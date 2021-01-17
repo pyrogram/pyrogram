@@ -153,7 +153,7 @@ class HTML:
             start = entity.offset
             end = start + entity.length
 
-            if entity_type in ("bold", "italic", "underline", "strike"):
+            if entity_type in ("bold", "italic", "underline", "strikethrough"):
                 start_tag = f"<{entity_type[0]}>"
                 end_tag = f"</{entity_type[0]}>"
             elif entity_type in ("code", "pre", "blockquote"):
