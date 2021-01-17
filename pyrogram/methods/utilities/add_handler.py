@@ -18,11 +18,14 @@
 
 from pyrogram.handlers import DisconnectHandler
 from pyrogram.handlers.handler import Handler
+from pyrogram.handlers.error_handler import ErrorHandler
 from pyrogram.scaffold import Scaffold
+
+from typing import Union
 
 
 class AddHandler(Scaffold):
-    def add_handler(self, handler: "Handler", group: int = 0):
+    def add_handler(self, handler: Union["Handler", "ErrorHandler"], group: int = 0):
         """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group will be used for a single update.

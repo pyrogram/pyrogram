@@ -16,28 +16,33 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .on_callback_query import OnCallbackQuery
-from .on_chosen_inline_result import OnChosenInlineResult
-from .on_deleted_messages import OnDeletedMessages
-from .on_disconnect import OnDisconnect
-from .on_inline_query import OnInlineQuery
-from .on_message import OnMessage
-from .on_poll import OnPoll
-from .on_raw_update import OnRawUpdate
-from .on_user_status import OnUserStatus
-from .on_error import OnError
+
+from typing import Callable
+
+import pyrogram
+from pyrogram.scaffold import Scaffold
 
 
-class Decorators(
-    OnMessage,
-    OnDeletedMessages,
-    OnCallbackQuery,
-    OnRawUpdate,
-    OnDisconnect,
-    OnUserStatus,
-    OnInlineQuery,
-    OnPoll,
-    OnChosenInlineResult,
-    OnError
-):
-    pass
+class OnError(Scaffold):
+    def on_error(
+        self=None,
+        catch_all: bool = False,
+    ) -> callable:
+        """Decorator for handling errors.
+
+        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
+        :obj:`~pyrogram.handlers.ErrorHandler`.
+
+        Parameters:
+            catch_all (`bool`, *optional*):
+                Pass true in order to catch every error (not only RPCError) on your app.
+
+        """
+
+        def decorator(function: Callable) -> Callable:
+            self.add_handler(
+                pyrogram.handlers.error_handler.ErrorHandler(self, function, catch_all)
+            )
+            return function
+
+        return decorator
