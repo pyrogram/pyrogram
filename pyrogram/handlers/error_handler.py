@@ -46,7 +46,7 @@ class ErrorHandler:
     """
 
     original_run_in_executor = asyncio.BaseEventLoop.run_in_executor
-    origin_except_hook = sys.excepthook
+    original_except_hook = sys.excepthook
 
     def __init__(self, client, callback: callable, catch_all: bool = False):
         self.client = client
@@ -71,4 +71,4 @@ class ErrorHandler:
         try:
             self.callback(self.client, args[1])
         except BaseException:
-            self.origin_except_hook(*sys.exc_info())
+            self.original_except_hook(*sys.exc_info())
