@@ -791,11 +791,49 @@ class Chat(Object):
 
             client.get_chat_members(chat_id)
 
+
+        Parameters:
+            offset (``int``, *optional*):
+                Sequential number of the first member to be returned.
+                Only applicable to supergroups and channels. Defaults to 0 [1]_.
+
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
+                Defaults to 200, which is also the maximum server limit allowed per method call.
+
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
+                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
+                Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+
         Example:
             .. code-block:: python
 
                 # Get first 200 recent members
                 chat.get_members()
+
+                # Get all administrators
+                chat.get_members(filter="administrators")
+
+                # Get all bots
+                chat.get_members(filter="bots")
 
         Returns:
             List of :obj:`~pyrogram.types.ChatMember`: On success, a list of chat members is returned.
@@ -821,13 +859,50 @@ class Chat(Object):
 
         .. code-block:: python
 
-            for member in client.iter_chat_members(chat_id):
-                print(member.user.first_name)
+        Parameters:
+            offset (``int``, *optional*):
+                Sequential number of the first member to be returned.
+                Only applicable to supergroups and channels. Defaults to 0 [1]_.
+
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
+                Defaults to 200, which is also the maximum server limit allowed per method call.
+
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
+                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
+                Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Example:
             .. code-block:: python
 
-                for member in chat.iter_members():
+                # Get first 200 recent members
+                for member in chat.get_members():
+                    print(member.user.first_name)
+
+                # Get all administrators
+                for member in chat.iter_members(filter="administrators"):
+                    print(member.user.first_name)
+
+                # Get first 3 bots
+                for member in chat.iter_members(filter="bots", limit=3):
                     print(member.user.first_name)
 
         Returns:
