@@ -18,6 +18,7 @@
 
 import sys
 import asyncio
+import functools
 
 from pyrogram import errors
 
@@ -56,13 +57,15 @@ class ErrorHandler:
         if catch_all:
             self.exceptions_to_catch.append(BaseException)
             sys.excepthook = self.except_hook
+            asyncio.BaseEventLoop.run_in_executor = ErrorHandler.run_in_executor
+        else:
+            client.loop.run_in_executor = functools.partial(ErrorHandler.run_in_executor, client.loop)
 
         self.exceptions_to_catch = tuple(self.exceptions_to_catch)
-        asyncio.BaseEventLoop = self
 
     async def run_in_executor(self, *args, **kwargs):
         try:
-            result = await self.original_run_in_executor(*args, **kwargs)
+            result = await ErrorHandler.original_run_in_executor(self, *args, **kwargs)
         except errors.FloodWait:
             raise
         except self.exceptions_to_catch as exc:
