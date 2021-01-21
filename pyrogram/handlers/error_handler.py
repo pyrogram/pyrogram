@@ -57,11 +57,14 @@ class ErrorHandler:
             self.exceptions_to_catch.append(BaseException)
             sys.excepthook = self.except_hook
 
-        asyncio.BaseEventLoop.run_in_executor = self.run_in_executor
+        self.exceptions_to_catch = tuple(self.exceptions_to_catch)
+        asyncio.BaseEventLoop = self
 
     async def run_in_executor(self, *args, **kwargs):
         try:
             result = await self.original_run_in_executor(*args, **kwargs)
+        except errors.FloodWait:
+            raise
         except self.exceptions_to_catch as exc:
             self.callback(self.client, exc[1])
         else:
@@ -70,5 +73,5 @@ class ErrorHandler:
     def except_hook(self, *args):
         try:
             self.callback(self.client, args[1])
-        except BaseException:
+        except BaseException: # noqa
             self.original_except_hook(*sys.exc_info())
