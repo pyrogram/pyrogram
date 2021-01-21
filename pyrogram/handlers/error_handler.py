@@ -56,25 +56,35 @@ class ErrorHandler:
 
         if catch_all:
             self.exceptions_to_catch.append(BaseException)
-            sys.excepthook = self.except_hook
-            asyncio.BaseEventLoop.run_in_executor = ErrorHandler.run_in_executor
+            asyncio.BaseEventLoop.run_in_executor = self.run_in_executor
+            sys.excepthook = functools.partial(self.except_hook, True)
         else:
-            client.loop.run_in_executor = functools.partial(ErrorHandler.run_in_executor, client.loop)
+            client.loop.run_in_executor = functools.partial(self.run_in_executor)
+            sys.excepthook = functools.partial(self.except_hook, False)
 
         self.exceptions_to_catch = tuple(self.exceptions_to_catch)
 
     async def run_in_executor(self, *args, **kwargs):
         try:
-            result = await ErrorHandler.original_run_in_executor(self, *args, **kwargs)
+            result = await ErrorHandler.original_run_in_executor(self.client.loop, *args, **kwargs)
         except errors.FloodWait:
             raise
         except self.exceptions_to_catch as exc:
-            self.callback(self.client, exc[1])
+            self.callback(self.client, exc)
         else:
             return result
 
-    def except_hook(self, *args):
-        try:
-            self.callback(self.client, args[1])
-        except BaseException: # noqa
-            self.original_except_hook(*sys.exc_info())
+    def except_hook(self, catch_all: bool = False, *args):
+        if catch_all:
+            try:
+                self.callback(self.client, args[1])
+            except BaseException: # noqa
+                self.original_except_hook(*sys.exc_info())
+        else:
+            if 'pyrogram.errors' in getattr(args[1], '__module__', ''):
+                try:
+                    self.callback(self.client, args[1])
+                except BaseException:  # noqa
+                    self.original_except_hook(*sys.exc_info())
+            else:
+                self.original_except_hook(*args)
