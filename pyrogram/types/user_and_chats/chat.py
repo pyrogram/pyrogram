@@ -868,3 +868,23 @@ class Chat(Object):
             user_ids=user_ids,
             forward_limit=forward_limit
         )
+
+    async def mark_unread(self, ) -> bool:
+        """Bound method *mark_unread* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.mark_unread(chat_id)
+
+        Example:
+            .. code-block:: python
+
+                chat.mark_unread()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.mark_chat_unread(self.id)
