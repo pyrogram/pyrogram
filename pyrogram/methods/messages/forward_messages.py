@@ -63,16 +63,13 @@ class ForwardMessages(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8
+                :emphasize-lines: 2,5
 
                 # Forward a single message
                 app.forward_messages("me", "pyrogram", 20)
 
                 # Forward multiple messages at once
                 app.forward_messages("me", "pyrogram", [3, 20, 27])
-
-                # Forward messages as copy
-                app.forward_messages("me", "pyrogram", 20, as_copy=True)
         """
 
         is_iterable = not isinstance(message_ids, int)

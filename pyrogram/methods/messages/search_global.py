@@ -24,10 +24,31 @@ from pyrogram import utils
 from pyrogram.scaffold import Scaffold
 
 
+class Filters:
+    EMPTY = raw.types.InputMessagesFilterEmpty()
+    PHOTO = raw.types.InputMessagesFilterPhotos()
+    VIDEO = raw.types.InputMessagesFilterVideo()
+    PHOTO_VIDEO = raw.types.InputMessagesFilterPhotoVideo()
+    DOCUMENT = raw.types.InputMessagesFilterDocument()
+    URL = raw.types.InputMessagesFilterUrl()
+    ANIMATION = raw.types.InputMessagesFilterGif()
+    VOICE_NOTE = raw.types.InputMessagesFilterVoice()
+    AUDIO = raw.types.InputMessagesFilterMusic()
+    CHAT_PHOTO = raw.types.InputMessagesFilterChatPhotos()
+    AUDIO_VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
+    VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
+    LOCATION = raw.types.InputMessagesFilterGeo()
+    CONTACT = raw.types.InputMessagesFilterContacts()
+
+
+POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), Filters.__dict__.keys())))
+
+
 class SearchGlobal(Scaffold):
     async def search_global(
         self,
-        query: str,
+        query: str = "",
+        filter: str = "empty",
         limit: int = 0,
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Search messages globally from all of your chats.
@@ -38,8 +59,27 @@ class SearchGlobal(Scaffold):
             retrieved will not have any *reply_to_message* field.
 
         Parameters:
-            query (``str``):
+            query (``str``, *optional*):
                 Text query string.
+                Use "@" to search for mentions.
+            
+            filter (``str``, *optional*):
+                Pass a filter in order to search for specific kind of messages only:
+
+                - ``"empty"``: Search for all kind of messages (default).
+                - ``"photo"``: Search for photos.
+                - ``"video"``: Search for video.
+                - ``"photo_video"``: Search for either photo or video.
+                - ``"document"``: Search for documents (generic files).
+                - ``"url"``: Search for messages containing URLs (web links).
+                - ``"animation"``: Search for animations (GIFs).
+                - ``"voice_note"``: Search for voice notes.
+                - ``"audio"``: Search for audio files (music).
+                - ``"chat_photo"``: Search for chat photos.
+                - ``"audio_video_note"``: Search for either audio or video notes.
+                - ``"video_note"``: Search for video notes.
+                - ``"location"``: Search for location messages.
+                - ``"contact"``: Search for contact messages.
 
             limit (``int``, *optional*):
                 Limits the number of messages to be retrieved.
@@ -54,7 +94,16 @@ class SearchGlobal(Scaffold):
                 # Search for "pyrogram". Get the first 420 results
                 for message in app.search_global("pyrogram", limit=420):
                     print(message.text)
+
+                # Search for recent photos from Global. Get the first 69 results
+                for message in app.search_global(filter="photo", limit=69):
+                    print(message.photo)
         """
+        try:
+            filter = Filters.__dict__[filter.upper()]
+        except KeyError:
+            raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
+                filter, ", ".join(f'"{v}"' for v in POSSIBLE_VALUES))) from None
         current = 0
         # There seems to be an hard limit of 10k, beyond which Telegram starts spitting one message at a time.
         total = abs(limit) or (1 << 31)
@@ -70,6 +119,9 @@ class SearchGlobal(Scaffold):
                 await self.send(
                     raw.functions.messages.SearchGlobal(
                         q=query,
+                        filter=filter,
+                        min_date=0,
+                        max_date=0,
                         offset_rate=offset_date,
                         offset_peer=offset_peer,
                         offset_id=offset_id,
