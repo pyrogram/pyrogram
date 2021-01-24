@@ -18,6 +18,11 @@
     </a>
 </p>
 
+
+### Downloads
+
+[![Downloads](https://static.pepy.tech/personalized-badge/pyrogram?period=total&units=abbreviation&left_color=lightgrey&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pyrogram) [![Downloads](https://static.pepy.tech/personalized-badge/pyrogram?period=month&units=abbreviation&left_color=lightgrey&right_color=orange&left_text=Downloads/month)](https://pepy.tech/project/pyrogram) [![Downloads](https://static.pepy.tech/personalized-badge/pyrogram?period=week&units=abbreviation&left_color=lightgrey&right_color=orange&left_text=Downloads/week)](https://pepy.tech/project/pyrogram)
+
 ## Pyrogram
 
 ``` python
