@@ -68,7 +68,7 @@ async def idle():
     def signal_handler(_, __):
         global is_idling
 
-        logging.info("Stop signal received ({}). Exiting...".format(_))
+        logging.info(f"Stop signal received ({_}). Exiting...")
         is_idling = False
 
     for s in (SIGINT, SIGTERM, SIGABRT):

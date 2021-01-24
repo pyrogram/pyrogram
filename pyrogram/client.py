@@ -333,7 +333,7 @@ class Client(Methods, Scaffold):
                 print(e.MESSAGE)
 
                 while True:
-                    print("Password hint: {}".format(await self.get_password_hint()))
+                    print(f"Password hint: {await self.get_password_hint()}")
 
                     if not self.password:
                         self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
@@ -721,8 +721,7 @@ class Client(Methods, Scaffold):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                log.info(f'[{self.session_name}] [LOAD] {type(handler).__name__}("{name}") in group {group} from "{module_path}"')
 
                                 count += 1
                         except Exception:
@@ -754,14 +753,12 @@ class Client(Methods, Scaffold):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.add_handler(handler, group)
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                log.info(f'[{self.session_name}] [LOAD] {type(handler).__name__}("{name}") in group {} from "{module_path}"')
 
                                 count += 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.session_name, name, module_path))
+                                log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent function "{name}" from "{module_path}"')
 
             if exclude:
                 for path, handlers in exclude:
@@ -790,18 +787,15 @@ class Client(Methods, Scaffold):
                             if isinstance(handler, Handler) and isinstance(group, int):
                                 self.remove_handler(handler, group)
 
-                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                log.info(f'[{self.session_name}] [UNLOAD] {type(handler).__name__}("{name}") from group {group} in "{module_path}"')
 
                                 count -= 1
                         except Exception:
                             if warn_non_existent_functions:
-                                log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.session_name, name, module_path))
+                                log.warning(f'[{self.session_name}] [UNLOAD] Ignoring non-existent function "{name}" from "{module_path}"')
 
             if count > 0:
-                log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
-                    self.session_name, count, "s" if count > 1 else "", root))
+                log.info(f'[{self.session_name}] Successfully loaded {count} plugin{"s" if count > 1 else ""} from "{root}"')
             else:
                 log.warning(f'[{self.session_name}] No plugin loaded from "{root}"')
 

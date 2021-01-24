@@ -92,9 +92,9 @@ class Clean(Command):
             try:
                 shutil.rmtree(path) if os.path.isdir(path) else os.remove(path)
             except OSError:
-                print("skipping {}".format(path))
+                print(f"skipping {path}")
             else:
-                print("removing {}".format(path))
+                print(f"removing {path}")
 
 
 class Generate(Command):

@@ -56,10 +56,7 @@ class Parser:
         if mode == "html":
             return await self.html.parse(text)
 
-        raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-            ", ".join(f'"{m}"' for m in pyrogram.Client.PARSE_MODES[:-1]),
-            mode
-        ))
+        raise ValueError(f'parse_mode must be one of {", ".join(f'"{m}"' for m in pyrogram.Client.PARSE_MODES[:-1])} or None. Not "{mode}"')
 
     @staticmethod
     def unparse(text: str, entities: list, is_html: bool):

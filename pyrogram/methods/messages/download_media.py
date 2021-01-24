@@ -151,12 +151,7 @@ class DownloadMedia(Scaffold):
             else:
                 extension = ".unknown"
 
-            file_name = "{}_{}_{}{}".format(
-                FileType(file_id_obj.file_type).name.lower(),
-                datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                self.rnd_id(),
-                extension
-            )
+            file_name = f"{FileType(file_id_obj.file_type).name.lower()}_{datetime.fromtimestamp(date or time.time()).strftime('%Y-%m-%d_%H-%M-%S')}_{self.rnd_id()}{extension}"
 
         downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
 
