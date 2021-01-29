@@ -100,8 +100,16 @@ class DownloadMedia(Scaffold):
 
                 app.download_media(message, progress=progress)
         """
-        available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
-                           "new_chat_photo")
+        available_media = (
+            "audio",
+            "document",
+            "photo",
+            "sticker",
+            "animation",
+            "video",
+            "voice",
+            "video_note",
+            "new_chat_photo")
 
         if isinstance(message, types.Message):
             for kind in available_media:
@@ -110,7 +118,8 @@ class DownloadMedia(Scaffold):
                 if media is not None:
                     break
             else:
-                raise ValueError("This message doesn't contain any downloadable media")
+                raise ValueError(
+                    "This message doesn't contain any downloadable media")
         else:
             media = message
 
@@ -151,9 +160,12 @@ class DownloadMedia(Scaffold):
             else:
                 extension = ".unknown"
 
-            file_name = f"{FileType(file_id_obj.file_type).name.lower()}_{datetime.fromtimestamp(date or time.time()).strftime('%Y-%m-%d_%H-%M-%S')}_{self.rnd_id()}{extension}"
+            file_name = f"{FileType(file_id_obj.file_type).name.lower()}"
+                        f"_{datetime.fromtimestamp(date or time.time()).strftime('%Y-%m-%d_%H-%M-%S')}"
+                        f"_{self.rnd_id()}{extension}"
 
-        downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
+        downloader = self.handle_download(
+            (file_id_obj, directory, file_name, file_size, progress, progress_args))
 
         if block:
             return await downloader

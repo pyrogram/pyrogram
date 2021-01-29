@@ -38,7 +38,13 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 3):
+    def __init__(
+            self,
+            dc_id: int,
+            test_mode: bool,
+            ipv6: bool,
+            proxy: dict,
+            mode: int = 3):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
@@ -60,7 +66,9 @@ class Connection:
                 self.protocol.close()
                 await asyncio.sleep(1)
             else:
-                log.info(f"Connected! {'Test' if self.test_mode else 'Production'} DC{self.dc_id} - IPv{'6' if self.ipv6 else '4'} - {self.mode.__name__}")
+                log.info(
+                    f"Connected! {'Test' if self.test_mode else 'Production'} "
+                    f"DC{self.dc_id} - IPv{'6' if self.ipv6 else '4'} - {self.mode.__name__}")
                 break
         else:
             log.warning("Connection failed! Trying again...")
