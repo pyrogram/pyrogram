@@ -235,7 +235,7 @@ class User(Object, Update):
         )
 
     @staticmethod
-    def _parse_status(user_status: "raw.types.UpdateUserStatus", is_bot: bool = False):
+    def _parse_status(user_status: "raw.base.UserStatus", is_bot: bool = False):
         if isinstance(user_status, raw.types.UserStatusOnline):
             status, date = "online", user_status.expires
         elif isinstance(user_status, raw.types.UserStatusOffline):
