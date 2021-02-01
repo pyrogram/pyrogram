@@ -102,9 +102,9 @@ class CopyMediaGroup(Scaffold):
                     media=media,
                     random_id=self.rnd_id(),
                     **await self.parser.parse(
-                        caption[i] if type(caption) is list and i < len(caption) and caption[i] is not None else
-                        caption if type(caption) is str and i == 0 else
-                        message.caption if message.caption and message.caption != "None" and not type(caption) is str else "")
+                        captions[i] if type(captions) is list and i < len(captions) and captions[i] is not None else
+                        captions if type(captions) is str and i == 0 else
+                        message.caption if message.caption and message.caption != "None" and not type(captions) is str else "")
                 )
             )
 
