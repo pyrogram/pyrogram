@@ -228,7 +228,7 @@ class Client(Methods, Scaffold):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
-
+        self.is_bot = bot_token is not None
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
         if isinstance(session_name, str):

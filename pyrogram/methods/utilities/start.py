@@ -25,6 +25,8 @@ log = logging.getLogger(__name__)
 
 
 class Start(Scaffold):
+    _bot_username: str
+
     async def start(self):
         """Start the client.
 
@@ -66,4 +68,8 @@ class Start(Scaffold):
             raise
         else:
             await self.initialize()
+            self._bot_username = ""
+            if self.is_bot:
+                self._bot_username = (await self.get_me()).username.lower()
+                # Keeping bot username for filters.command since bot usernames don't change often.
             return self

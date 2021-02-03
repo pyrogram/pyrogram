@@ -720,7 +720,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     """
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
-    async def func(flt, _, message: Message):
+    async def func(flt, client, message: Message):
         text = message.text or message.caption
         message.command = None
 
@@ -733,10 +733,13 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             if not text.startswith(prefix):
                 continue
 
-            without_prefix = text[len(prefix):]
+            without_suffix = without_prefix = text[len(prefix):]
+            if message.chat and message.chat.type in {"group", "supergroup"}:  # such tags are only relevant in groups
+                if client.is_bot and without_prefix.lower().endswith(client._bot_username):
+                    without_suffix = without_prefix[:-len(client._bot_username) - 1]
 
             for cmd in flt.commands:
-                if not re.match(pattern.format(re.escape(cmd)), without_prefix):
+                if not re.match(pattern.format(re.escape(cmd)), without_suffix):
                     continue
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
