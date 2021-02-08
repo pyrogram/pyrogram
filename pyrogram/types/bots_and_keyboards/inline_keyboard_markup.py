@@ -55,6 +55,6 @@ class InlineKeyboardMarkup(Object):
     def write(self):
         return raw.types.ReplyInlineMarkup(
             rows=[raw.types.KeyboardButtonRow(
-                buttons=[j.write() for j in i]
+                buttons=[j.write() for j in i if j]
             ) for i in self.inline_keyboard]
         )
