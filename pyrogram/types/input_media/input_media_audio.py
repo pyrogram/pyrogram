@@ -56,10 +56,10 @@ class InputMediaAudio(InputMedia):
         duration (``int``, *optional*):
             Duration of the audio in seconds
 
-        performer (``int``, *optional*):
+        performer (``str``, *optional*):
             Performer of the audio
 
-        title (``int``, *optional*):
+        title (``str``, *optional*):
             Title of the audio
     """
 
