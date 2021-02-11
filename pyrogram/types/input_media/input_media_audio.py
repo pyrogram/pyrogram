@@ -68,7 +68,7 @@ class InputMediaAudio(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         duration: int = 0,

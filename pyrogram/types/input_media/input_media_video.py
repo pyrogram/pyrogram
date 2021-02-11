@@ -70,7 +70,7 @@ class InputMediaVideo(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         width: int = 0,

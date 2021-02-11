@@ -51,7 +51,7 @@ class InputMediaPhoto(InputMedia):
     def __init__(
         self,
         media: str,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None
     ):

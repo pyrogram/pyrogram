@@ -37,7 +37,7 @@ class InputMedia(Object):
     def __init__(
         self,
         media: str,
-        caption: str = None,
+        caption: str = "",
         parse_mode: str = None,
         caption_entities: List[MessageEntity] = None
     ):
