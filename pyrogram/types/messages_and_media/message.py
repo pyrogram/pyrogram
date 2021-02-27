@@ -2800,7 +2800,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardMarkup",
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
-        ] = None
+        ] = object
     ) -> Union["types.Message", List["types.Message"]]:
         """Bound method *copy* of :obj:`~pyrogram.types.Message`.
 
@@ -2853,6 +2853,8 @@ class Message(Object, Update):
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
+                If not specified, the original reply markup is kept.
+                Pass None to remove the reply markup.
 
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the copied message is returned.
@@ -2875,7 +2877,7 @@ class Message(Object, Update):
                 disable_notification=disable_notification,
                 reply_to_message_id=reply_to_message_id,
                 schedule_date=schedule_date,
-                reply_markup=reply_markup or self.reply_markup
+                reply_markup=self.reply_markup if reply_markup is object else reply_markup
             )
         elif self.media:
             send_media = partial(
@@ -2884,7 +2886,7 @@ class Message(Object, Update):
                 disable_notification=disable_notification,
                 reply_to_message_id=reply_to_message_id,
                 schedule_date=schedule_date,
-                reply_markup=reply_markup or self.reply_markup
+                reply_markup=self.reply_markup if reply_markup is object else reply_markup
             )
 
             if self.photo:
