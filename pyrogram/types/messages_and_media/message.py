@@ -708,17 +708,22 @@ class Message(Object, Update):
 
     async def get_media_group(self) -> List["types.Message"]:
         """Bound method *get_media_group* of :obj:`~pyrogram.types.Message`.
+        
         Use as a shortcut for:
+        
         .. code-block:: python
             client.get_media_group(
                 chat_id=message.chat.id,
                 message_id=message.message_id
             )
+            
         Example:
             .. code-block:: python
                 message.get_media_group()
+                
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of messages of the media group is returned.
+            
         Raises:
             ValueError: In case the passed message id doesn't belong to a media group.
         """
