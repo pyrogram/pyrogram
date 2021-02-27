@@ -116,6 +116,7 @@ class Chat(Object):
 
         linked_chat (:obj:`~pyrogram.types.Chat`, *optional*):
             The linked discussion group (in case of channels) or the linked channel (in case of supergroups).
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
     """
 
     def __init__(
