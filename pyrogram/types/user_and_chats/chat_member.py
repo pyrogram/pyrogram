@@ -100,6 +100,10 @@ class ChatMember(Object):
             Administrators and restricted only. Groups and supergroups only.
             True, if the user is allowed to pin messages.
 
+        can_manage_voice_chats (``bool``, *optional*):
+            Administrators only. Groups and supergroups only.
+            True, if the administrator can manage voice chats (also called group calls).
+
         can_send_messages (``bool``, *optional*):
             Restricted only.
             True, if the user is allowed to send text messages, contacts, locations and venues.
@@ -154,6 +158,7 @@ class ChatMember(Object):
         can_change_info: bool = None,
         can_invite_users: bool = None,
         can_pin_messages: bool = None,  # Groups and supergroups only
+        can_manage_voice_chats: bool = None,
 
         # Restricted user permissions
         can_send_messages: bool = None,  # Text, contacts, locations and venues
@@ -187,6 +192,7 @@ class ChatMember(Object):
         self.can_change_info = can_change_info
         self.can_invite_users = can_invite_users
         self.can_pin_messages = can_pin_messages
+        self.can_manage_voice_chats = can_manage_voice_chats
 
         self.can_send_messages = can_send_messages
         self.can_send_media_messages = can_send_media_messages
@@ -249,6 +255,7 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                can_manage_voice_chats=permissions.manage_call,
                 is_anonymous=permissions.anonymous,
                 client=client
             )
@@ -272,6 +279,7 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                can_manage_voice_chats=permissions.manage_call,
                 is_anonymous=permissions.anonymous,
                 client=client
             )
