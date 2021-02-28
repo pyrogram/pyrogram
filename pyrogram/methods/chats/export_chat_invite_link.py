@@ -57,7 +57,7 @@ class ExportChatInviteLink(Scaffold):
                 How many users should be able to use this link to join the chat.
 
         Returns:
-            ``str``: On success, the exported invite link is returned.
+            :obj:`~pyrogram.types.InviteLink`: On success, the exported Invite Link is returned.
 
         Raises:
             ValueError: In case the chat_id belongs to a user.
