@@ -15,6 +15,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+from typing import Union
 
 from pyrogram import raw
 from ..object import Object
@@ -57,7 +58,11 @@ class InviteLink(Object):
         self.usage_limit = usage_limit
 
     @staticmethod
-    def _parse(invite: "raw.types.ChatInviteExported") -> "InviteLink":
+    def _parse(invite: Union["raw.types.ChatInviteExported", "raw.types.messages.ExportedChatInvite"]) -> "InviteLink":
+        # EditExportedChatInvite returns a slightly different type to ExportChatInviteLink, hence this "hack"
+        if isinstance(invite, raw.types.messages.ExportedChatInvite):
+            invite = invite.invite
+
         return InviteLink(
             link=invite.link,
             date=invite.date,

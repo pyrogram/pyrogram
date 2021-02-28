@@ -41,7 +41,8 @@ class Scaffold:
 
     PARENT_DIR = Path(sys.argv[0]).parent
 
-    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/)([\w-]+)$")
+    # https://regex101.com/r/pme5ZE/2 Matches both the entire link and the hash itself
+    INVITE_LINK_RE = re.compile(r"^(?:(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/joinchat/))?(?P<hash>[\w-]+)$")
     WORKERS = min(32, os.cpu_count() + 4)
     WORKDIR = PARENT_DIR
     CONFIG_FILE = PARENT_DIR / "config.ini"
