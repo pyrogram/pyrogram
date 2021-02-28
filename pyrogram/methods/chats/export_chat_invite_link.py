@@ -19,6 +19,7 @@
 from typing import Union
 
 from pyrogram import raw
+from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
@@ -29,7 +30,7 @@ class ExportChatInviteLink(Scaffold):
         legacy_revoke_permanent: bool = None,
         expire_date: int = 0,
         usage_limit: int = 0,
-    ) -> str:
+    ) -> types.Invite:
         """Generate a new invite link for a chat.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
@@ -71,13 +72,15 @@ class ExportChatInviteLink(Scaffold):
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, (raw.types.InputPeerChat, raw.types.InputPeerChannel)):
-            return (await self.send(
+            r = await self.send(
                 raw.functions.messages.ExportChatInvite(
                     peer=peer,
                     legacy_revoke_permanent=legacy_revoke_permanent,
                     expire_date=expire_date,
                     usage_limit=usage_limit,
                 )
-            )).link
+            )
+
+            return types.Invite._parse(r)
         else:
             raise ValueError(f'The chat_id "{chat_id}" belongs to a user')

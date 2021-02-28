@@ -24,7 +24,8 @@ from .chat_preview import ChatPreview
 from .dialog import Dialog
 from .restriction import Restriction
 from .user import User
+from .invite import Invite
 
 __all__ = [
-    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction"
+    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction", "Invite"
 ]
