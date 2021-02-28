@@ -30,7 +30,7 @@ class ExportChatInviteLink(Scaffold):
         legacy_revoke_permanent: bool = None,
         expire_date: int = 0,
         usage_limit: int = 0,
-    ) -> types.Invite:
+    ) -> types.InviteLink:
         """Generate a new invite link for a chat.
 
         You must be an administrator in the chat for this to work and have the appropriate admin rights.
@@ -45,14 +45,17 @@ class ExportChatInviteLink(Scaffold):
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
+
             legacy_revoke_permanent (``bool``, *optional*):
                 Whether or not to revoke the "Primary link".
                 Mutually exclusive to ``expire_date`` and ``usage_limit``.
+
             expire_date (``int``, *optional*):
                 Unix timestamp of when the exported link should expire.
+
             usage_limit (``int``, *optional*):
                 How many users should be able to use this link to join the chat.
-        
+
         Returns:
             ``str``: On success, the exported invite link is returned.
 
@@ -81,6 +84,6 @@ class ExportChatInviteLink(Scaffold):
                 )
             )
 
-            return types.Invite._parse(r)
+            return types.InviteLink._parse(r)
         else:
             raise ValueError(f'The chat_id "{chat_id}" belongs to a user')

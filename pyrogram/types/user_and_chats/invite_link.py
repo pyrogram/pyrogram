@@ -20,7 +20,7 @@ from pyrogram import raw
 from ..object import Object
 
 
-class Invite(Object):
+class InviteLink(Object):
     """An invite link.
 
     Parameters:
@@ -57,8 +57,8 @@ class Invite(Object):
         self.usage_limit = usage_limit
 
     @staticmethod
-    def _parse(invite: "raw.types.ChatInviteExported") -> "Invite":
-        return Invite(
+    def _parse(invite: "raw.types.ChatInviteExported") -> "InviteLink":
+        return InviteLink(
             link=invite.link,
             date=invite.date,
             revoked=invite.revoked,
