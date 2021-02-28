@@ -53,6 +53,9 @@ from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
 from .mark_chat_unread import MarkChatUnread
+from .get_exported_chat_invites import GetExportedChatInvites
+from .edit_exported_chat_invite import EditExportedChatInvite
+from .get_admins_with_invites import GetAdminsWithInvites
 
 
 class Chats(
@@ -92,6 +95,9 @@ class Chats(
     SetSlowMode,
     DeleteUserHistory,
     UnpinAllChatMessages,
-    MarkChatUnread
+    MarkChatUnread,
+    GetExportedChatInvites,
+    EditExportedChatInvite,
+    GetAdminsWithInvites
 ):
     pass
