@@ -48,7 +48,7 @@ Projects Showcase
 | **A Telegram userbot based on Pyrogram**
 | --- by `Colin <https://t.me/ColinShark>`_
 
-- Source Code: https://git.colinshark.de/PyroBot/PyroBot
+- Source Code: https://github.com/ColinShark/PyroBot
 
 -----
 
