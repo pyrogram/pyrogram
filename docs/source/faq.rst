@@ -59,6 +59,21 @@ Why Pyrogram?
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
+Why is Pyrogram defined as both Client Library and Framework?
+-------------------------------------------------------------
+
+Simply because it falls in both categories, depending on how you use it.
+
+Pyrogram as a client library makes it easy and intuitive accessing the Telegram API by offering idiomatic Python code
+that is generated or hand-written. Low-level details and client-server communication protocols are handled under the
+hood. Pyrogram acts as a client library when *you call* its methods and use its types in a batch application that
+executes a set of instructions.
+
+Pyrogram as a framework makes it easy to handle live events by allowing you to register event handlers that will be
+executed as soon as they arrive from the server side. Pyrogram acts as a framework when it's Pyrogram itself that
+*calls your code*, that is, your registered event handlers. Such applications are usually started and left online
+indefinitely, until you decide to stop them.
+
 How stable and reliable is Pyrogram?
 ------------------------------------
 
