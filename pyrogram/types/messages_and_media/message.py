@@ -712,6 +712,7 @@ class Message(Object, Update):
         Use as a shortcut for:
         
         .. code-block:: python
+
             client.get_media_group(
                 chat_id=message.chat.id,
                 message_id=message.message_id
@@ -719,6 +720,7 @@ class Message(Object, Update):
             
         Example:
             .. code-block:: python
+
                 message.get_media_group()
                 
         Returns:
