@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .chat import Chat
+from .chat_event import ChatEvent
 from .chat_member import ChatMember
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
@@ -24,7 +25,9 @@ from .chat_preview import ChatPreview
 from .dialog import Dialog
 from .restriction import Restriction
 from .user import User
+from .chat_event_filter import ChatEventFilter
 
 __all__ = [
-    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction"
+    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction", "ChatEvent",
+    "ChatEventFilter"
 ]

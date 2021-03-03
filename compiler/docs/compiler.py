@@ -221,6 +221,7 @@ def pyrogram_api():
             delete_user_history
             set_slow_mode
             mark_chat_unread
+            get_chat_event_log
         """,
         users="""
         Users
@@ -245,7 +246,7 @@ def pyrogram_api():
             delete_contacts
         """,
         password="""
-        Pssword
+        Password
             enable_cloud_password
             change_cloud_password
             remove_cloud_password
@@ -331,6 +332,8 @@ def pyrogram_api():
             ChatPhoto
             ChatMember
             ChatPermissions
+            ChatEvent
+            ChatEventFilter
             Dialog
             Restriction
         """,
