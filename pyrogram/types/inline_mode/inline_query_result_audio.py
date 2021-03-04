@@ -40,8 +40,6 @@ class InlineQueryResultAudio(InlineQueryResult):
             Whether this file should be sent as voice message (default=False).
         performer (``str``, *optional*):
             Audio artist.
-        mime_type (``str``, *optional*):
-            File mime type (default="audio/ogg").
         thumb_url (``str``, *optional*):
             URL of the static thumbnail for the result (jpeg or gif)
             Defaults to the value passed in *animation_url*.
@@ -71,7 +69,6 @@ class InlineQueryResultAudio(InlineQueryResult):
             duration: int = 0,
             voice: bool = False,
             performer: str = "",
-            mime_type: str = "audio/ogg",
             thumb_url: str = None,
             id: str = None,
             description: str = None,
@@ -90,7 +87,6 @@ class InlineQueryResultAudio(InlineQueryResult):
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
-        self.mime_type = mime_type
         self.duration = duration
         self.voice = voice
         self.performer = performer
@@ -99,7 +95,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         audio = raw.types.InputWebDocument(
             url=self.audio_url,
             size=0,
-            mime_type=self.mime_type,
+            mime_type="audio/ogg",
             attributes=[raw.types.DocumentAttributeAudio(
                 duration=self.duration,
                 voice=self.voice,
