@@ -25,7 +25,17 @@ from .dialog import Dialog
 from .restriction import Restriction
 from .user import User
 from .invite_link import InviteLink
+from .invite_importer import InviteImporter
 
 __all__ = [
-    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction", "InviteLink"
+    "Chat",
+    "ChatMember",
+    "ChatPermissions",
+    "ChatPhoto",
+    "ChatPreview",
+    "Dialog",
+    "User",
+    "Restriction",
+    "InviteLink",
+    "InviteImporter",
 ]
