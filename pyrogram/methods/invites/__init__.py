@@ -16,30 +16,23 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .advanced import Advanced
-from .auth import Auth
-from .bots import Bots
-from .chats import Chats
-from .contacts import Contacts
-from .decorators import Decorators
-from .messages import Messages
-from .password import Password
-from .users import Users
-from .utilities import Utilities
-from .invites import Invites
+
+from .export_chat_invite_link import ExportChatInviteLink
+from .get_exported_chat_invites import GetExportedChatInvites
+from .edit_exported_chat_invite import EditExportedChatInvite
+from .get_admins_with_invites import GetAdminsWithInvites
+from .delete_revoked_exported_chat_invites import DeleteRevokedExportedChatInvites
+from .delete_exported_chat_invite import DeleteExportedChatInvite
+from .get_chat_invite_importers import GetChatInviteImporters
 
 
-class Methods(
-    Advanced,
-    Auth,
-    Bots,
-    Contacts,
-    Password,
-    Chats,
-    Users,
-    Messages,
-    Decorators,
-    Utilities,
-    Invites,
+class Invites(
+    ExportChatInviteLink,
+    GetExportedChatInvites,
+    EditExportedChatInvite,
+    GetAdminsWithInvites,
+    DeleteRevokedExportedChatInvites,
+    DeleteExportedChatInvite,
+    GetChatInviteImporters,
 ):
     pass

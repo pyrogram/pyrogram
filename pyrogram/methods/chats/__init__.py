@@ -25,7 +25,6 @@ from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
 from .delete_supergroup import DeleteSupergroup
 from .delete_user_history import DeleteUserHistory
-from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
 from .get_chat_member import GetChatMember
 from .get_chat_members import GetChatMembers
@@ -53,14 +52,10 @@ from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
 from .mark_chat_unread import MarkChatUnread
-from .get_exported_chat_invites import GetExportedChatInvites
-from .edit_exported_chat_invite import EditExportedChatInvite
-from .get_admins_with_invites import GetAdminsWithInvites
 
 
 class Chats(
     GetChat,
-    ExportChatInviteLink,
     LeaveChat,
     JoinChat,
     KickChatMember,
@@ -96,8 +91,5 @@ class Chats(
     DeleteUserHistory,
     UnpinAllChatMessages,
     MarkChatUnread,
-    GetExportedChatInvites,
-    EditExportedChatInvite,
-    GetAdminsWithInvites
 ):
     pass
