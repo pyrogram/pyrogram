@@ -23,8 +23,8 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class GetChatInviteImporters(Scaffold):
-    async def get_chat_invite_importers(
+class GetChatInviteLinkImporters(Scaffold):
+    async def get_chat_invite_link_importers(
         self,
         chat_id: Union[int, str],
         link: str,
@@ -32,7 +32,7 @@ class GetChatInviteImporters(Scaffold):
         offset_user: Union[int, str] = "me",
         limit: int = 0,
     ):
-        """Get a list of users that have used a specific invite link to join a chat.
+        """Get a list of users that have used the specified invite link to join a chat.
 
         Parameters:
             chat_id (``int``, ``str``):
@@ -82,6 +82,6 @@ class GetChatInviteImporters(Scaffold):
             )
         )
 
-        importers = types.InviteImporter._parse(self, r)
+        importers = types.InviteLinkImporter._parse(self, r)
 
         return importers[0] if len(importers) == 1 else importers

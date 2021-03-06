@@ -17,22 +17,22 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from .delete_exported_chat_invite_link import DeleteExportedChatInviteLink
+from .delete_revoked_exported_chat_invite_links import DeleteRevokedExportedChatInviteLinks
+from .edit_exported_chat_invite_link import EditExportedChatInviteLink
 from .export_chat_invite_link import ExportChatInviteLink
-from .get_exported_chat_invites import GetExportedChatInvites
-from .edit_exported_chat_invite import EditExportedChatInvite
-from .get_admins_with_invites import GetAdminsWithInvites
-from .delete_revoked_exported_chat_invites import DeleteRevokedExportedChatInvites
-from .delete_exported_chat_invite import DeleteExportedChatInvite
-from .get_chat_invite_importers import GetChatInviteImporters
+from .get_admins_with_invite_links import GetAdminsWithInviteLinks
+from .get_chat_invite_link_importers import GetChatInviteLinkImporters
+from .get_exported_chat_invite_links import GetExportedChatInviteLinks
 
 
 class Invites(
+    DeleteExportedChatInviteLink,
+    DeleteRevokedExportedChatInviteLinks,
+    EditExportedChatInviteLink,
     ExportChatInviteLink,
-    GetExportedChatInvites,
-    EditExportedChatInvite,
-    GetAdminsWithInvites,
-    DeleteRevokedExportedChatInvites,
-    DeleteExportedChatInvite,
-    GetChatInviteImporters,
+    GetAdminsWithInviteLinks,
+    GetChatInviteLinkImporters,
+    GetExportedChatInviteLinks,
 ):
     pass

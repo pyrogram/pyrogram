@@ -22,8 +22,8 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
-class GetExportedChatInvites(Scaffold):
-    async def get_exported_chat_invites(
+class GetExportedChatInviteLinks(Scaffold):
+    async def get_exported_chat_invite_links(
         self,
         chat_id: Union[int, str],
         admin_id: Union[int, str],
@@ -32,7 +32,7 @@ class GetExportedChatInvites(Scaffold):
         offset_date: int = None,
         offset_link: str = None,
     ) -> Union["types.InviteLink", List["types.InviteLink"]]:
-        """Get your exported invite links.
+        """Get exported invite links in a specific chat.
 
         .. note::
 

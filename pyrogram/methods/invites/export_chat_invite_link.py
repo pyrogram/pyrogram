@@ -38,8 +38,7 @@ class ExportChatInviteLink(Scaffold):
         .. note ::
 
             ``legacy_revoke_permanent`` is mutually exclusive with both ``expire_date`` and ``usage_limit``.
-            While you can use ``expire_date`` and ``usage_limit`` together,
-            you cannot combine either with ``legacy_revoke_permanent``.
+            While you can use ``expire_date`` and ``usage_limit`` together, you cannot combine either with ``legacy_revoke_permanent``.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -48,7 +47,7 @@ class ExportChatInviteLink(Scaffold):
 
             legacy_revoke_permanent (``bool``, *optional*):
                 Whether or not to revoke the "Primary link".
-                Mutually exclusive to ``expire_date`` and ``usage_limit``.
+                Mutually exclusive with ``expire_date`` and ``usage_limit``.
 
             expire_date (``int``, *optional*):
                 Unix timestamp of when the exported link should expire.

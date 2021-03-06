@@ -21,8 +21,8 @@ from pyrogram import types
 from ..object import Object
 
 
-class InviteImporter(Object):
-    """The date and user of when someone has joined
+class InviteLinkImporter(Object):
+    """The date and user of when someone has joined with an invite link.
 
     Parameters:
         date (``int``):
@@ -46,7 +46,7 @@ class InviteImporter(Object):
 
         for j in invite_importers.importers:
             importers.append(
-                InviteImporter(
+                InviteLinkImporter(
                     date=j.date,
                     user=types.User._parse(client=None, user=d[j.user_id])
                 )

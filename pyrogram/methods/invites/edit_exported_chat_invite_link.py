@@ -22,8 +22,8 @@ from pyrogram import raw
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
-class EditExportedChatInvite(Scaffold):
-    async def edit_exported_chat_invite(
+class EditExportedChatInviteLink(Scaffold):
+    async def edit_exported_chat_invite_link(
         self,
         chat_id: Union[int, str],
         link: str,

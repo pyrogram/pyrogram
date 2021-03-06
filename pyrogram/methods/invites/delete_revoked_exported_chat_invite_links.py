@@ -22,8 +22,8 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteRevokedExportedChatInvites(Scaffold):
-    async def delete_revoked_exported_chat_invites(
+class DeleteRevokedExportedChatInviteLinks(Scaffold):
+    async def delete_revoked_exported_chat_invite_links(
         self,
         chat_id: Union[int, str],
         admin_id: Union[int, str],
