@@ -74,22 +74,6 @@ executed as soon as they arrive from the server side. Pyrogram acts as a framewo
 *calls your code*, that is, your registered event handlers. Such applications are usually started and left online
 indefinitely, until you decide to stop them.
 
-How stable and reliable is Pyrogram?
-------------------------------------
-
-So far, since its first public release, Pyrogram has always shown itself to be quite reliable in handling client-server
-interconnections and just as stable when keeping long running applications online. The only annoying issues faced are
-actually coming from Telegram servers internal errors and down times, from which Pyrogram is able to recover itself
-automatically.
-
-To challenge the framework, the creator is constantly keeping a public
-`welcome bot <https://github.com/pyrogram/pyrogram/blob/develop/examples/welcomebot.py>`_ online 24/7 on his own,
-relatively-busy account for well over a year now.
-
-In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten from scratch
-:doc:`using Pyrogram <powered-by>` and is serving more than 200,000 Monthly Active Users since
-then, uninterruptedly and without any need for restarting it.
-
 What can MTProto do more than the Bot API?
 ------------------------------------------
 
