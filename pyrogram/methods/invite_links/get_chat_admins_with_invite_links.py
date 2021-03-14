@@ -18,29 +18,37 @@
 
 from typing import Union
 
-from pyrogram import raw
+from pyrogram import raw, types
 from pyrogram.scaffold import Scaffold
 
-class GetAdminsWithInviteLinks(Scaffold):
-    async def get_admins_with_invite_links(
+
+class GetChatAdminsWithInviteLinks(Scaffold):
+    async def get_chat_admins_with_invite_links(
         self,
         chat_id: Union[int, str],
     ):
-        """Get a list of administrators that have exported invite links.
+        """Get the list of the administrators that have exported invite links in a chat.
+
+        You must be the owner of a chat for this to work.
 
         Args:
             chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
         Returns:
-            :obj:`~pyrogram.raw.types.messages.ChatAdminsWithInvites`
+            List of :obj:`~pyrogram.types.ChatAdminWithInviteLink`: On success, the list of admins that have exported
+            invite links is returned.
         """
-        # TODO Docs
-        # Needs Creator permissions
-        peer = await self.resolve_peer(chat_id)
-
-        return await self.send(
+        r = await self.send(
             raw.functions.messages.GetAdminsWithInvites(
-                peer=peer
+                peer=await self.resolve_peer(chat_id)
             )
+        )
+
+        users = {i.id: i for i in r.users}
+
+        return types.List(
+            types.ChatAdminWithInviteLinks._parse(self, admin, users)
+            for admin in r.admins
         )

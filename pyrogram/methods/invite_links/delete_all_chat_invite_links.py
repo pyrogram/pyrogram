@@ -22,40 +22,31 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteRevokedExportedChatInviteLinks(Scaffold):
-    async def delete_revoked_exported_chat_invite_links(
+class DeleteAllChatInviteLinks(Scaffold):
+    async def delete_all_chat_invite_links(
         self,
         chat_id: Union[int, str],
         admin_id: Union[int, str],
     ) -> bool:
-        """Delete already revoked invite links of a specified administrator.
-        Owners can clear any administrators revoked links, administrators only their own.
+        """Delete all revoked invite links of an administrator.
 
         Parameters:
-            chat_id (``int``, ``str``):
-                Unique identifier (int) or username (str) of the target chat.
+            chat_id (``int`` | ``str``):
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
-            admin_id (``int`` ``str``):
-                Unique identifier (int) or username (str) of the target admin.
-
-        Raises:
-            ValueError: In case the chat_id belongs to a user or the admin_id belongs to a chat or channel.
+            admin_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target user.
+                For you yourself you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
             ``bool``: On success ``True`` is returned.
         """
-        peer = await self.resolve_peer(chat_id)
-        admin_peer = await self.resolve_peer(admin_id)
-
-        if not isinstance(peer, (raw.types.InputPeerChat, raw.types.InputPeerChannel)):
-            raise ValueError(f'The chat_id "{chat_id}" belongs to a user.')
-
-        if not isinstance(admin_peer, (raw.types.InputPeerUser, raw.types.InputPeerSelf)):
-            raise ValueError(f'The admin_id "{admin_id}" belongs to a chat or channel.')
 
         return await self.send(
             raw.functions.messages.DeleteRevokedExportedChatInvites(
-                peer=peer,
-                admin_id=admin_peer,
+                peer=await self.resolve_peer(chat_id),
+                admin_id=await self.resolve_peer(admin_id),
             )
         )

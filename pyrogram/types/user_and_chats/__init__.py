@@ -24,8 +24,9 @@ from .chat_preview import ChatPreview
 from .dialog import Dialog
 from .restriction import Restriction
 from .user import User
-from .invite_link import InviteLink
+from .chat_invite_link import ChatInviteLink
 from .invite_link_importer import InviteLinkImporter
+from .chat_admin_with_invite_links import ChatAdminWithInviteLinks
 
 __all__ = [
     "Chat",
@@ -36,6 +37,7 @@ __all__ = [
     "Dialog",
     "User",
     "Restriction",
-    "InviteLink",
+    "ChatInviteLink",
     "InviteLinkImporter",
+    "ChatAdminWithInviteLinks"
 ]

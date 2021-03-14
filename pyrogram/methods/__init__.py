@@ -22,11 +22,11 @@ from .bots import Bots
 from .chats import Chats
 from .contacts import Contacts
 from .decorators import Decorators
+from .invite_links import InviteLinks
 from .messages import Messages
 from .password import Password
 from .users import Users
 from .utilities import Utilities
-from .invites import Invites
 
 
 class Methods(
@@ -40,6 +40,6 @@ class Methods(
     Messages,
     Decorators,
     Utilities,
-    Invites,
+    InviteLinks,
 ):
     pass

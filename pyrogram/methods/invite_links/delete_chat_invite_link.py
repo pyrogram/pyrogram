@@ -22,42 +22,29 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteExportedChatInviteLink(Scaffold):
-    async def delete_exported_chat_invite_link(
+class DeleteChatInviteLink(Scaffold):
+    async def delete_chat_invite_link(
         self,
         chat_id: Union[int, str],
-        link: str,
+        invite_link: str,
     ) -> bool:
-        """Delete an invite link that has previously been revoked.
+        """Delete an already revoked invite link.
 
         Parameters:
             chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
-            link (``str``):
-                The Invite link or its hash that is to be deleted.
-
-        Raises:
-            ValueError:
-                In case the chat_id belongs to a user, or the invite link isn't valid, a ValueError is raised.
+            invite_link (``str``):
+                The revoked invite link to delete.
 
         Returns:
             ``bool``: On success ``True`` is returned.
         """
-        peer = await self.resolve_peer(chat_id)
 
-        match = self.INVITE_LINK_RE.match(link)
-
-        if not match:
-            raise ValueError(f'"{link}"" is not a valid invite link.')
-
-        if isinstance(peer, (raw.types.InputPeerChannel, raw.types.InputPeerChat)):
-            return await self.send(
-                raw.functions.messages.DeleteExportedChatInvite(
-                    peer=peer,
-                    link=match.group("hash"),
-                )
+        return await self.send(
+            raw.functions.messages.DeleteExportedChatInvite(
+                peer=await self.resolve_peer(chat_id),
+                link=invite_link,
             )
-        else:
-            raise ValueError(f'The chat_id "{chat_id}" belongs to a user')
-
+        )
