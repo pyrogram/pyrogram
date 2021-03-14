@@ -871,7 +871,7 @@ class Chat(Object):
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
                 Only applicable to supergroups and channels.
-                Defaults to 200, which is also the maximum server limit allowed per method call.
+                Defaults to 200, which is also the maximum server limit allowed per method call [1]_.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.

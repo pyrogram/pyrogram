@@ -84,7 +84,7 @@ class Message(Object, Update):
             For messages forwarded from users who have hidden their accounts, name of the user.
 
         forward_from_chat (:obj:`~pyrogram.types.Chat`, *optional*):
-            For messages forwarded from channels, information about the original channel.
+            For messages forwarded from channels, information about the original channel. For messages forwarded from anonymous group administrators, information about the original supergroup.
 
         forward_from_message_id (``int``, *optional*):
             For messages forwarded from channels, identifier of the original message in the channel.
@@ -712,6 +712,7 @@ class Message(Object, Update):
         Use as a shortcut for:
         
         .. code-block:: python
+
             client.get_media_group(
                 chat_id=message.chat.id,
                 message_id=message.message_id
@@ -719,6 +720,7 @@ class Message(Object, Update):
             
         Example:
             .. code-block:: python
+
                 message.get_media_group()
                 
         Returns:

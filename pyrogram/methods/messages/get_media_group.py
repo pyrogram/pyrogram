@@ -20,7 +20,7 @@ import logging
 from typing import Union, List
 
 from pyrogram.scaffold import Scaffold
-from pyrogram.types import list
+from pyrogram import types
 
 log = logging.getLogger(__name__)
 
@@ -56,4 +56,4 @@ class GetMediaGroup(Scaffold):
         if media_group_id is None:
             raise ValueError("The message doesn't belong to a media group")
 
-        return list.List(msg for msg in messages if msg.media_group_id == media_group_id)
+        return types.List(msg for msg in messages if msg.media_group_id == media_group_id)
