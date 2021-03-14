@@ -55,6 +55,7 @@ CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 CHAT_ID_EMPTY	The provided chat id is empty
 CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
 CHAT_INVALID	The chat is invalid
+CHAT_INVITE_PERMANENT	The chat invite link is primary
 CHAT_LINK_EXISTS	The action failed because the supergroup is linked to a channel
 CHAT_NOT_MODIFIED	The chat settings (title, permissions, photo, etc..) were not modified because you tried to edit them using the same content
 CHAT_RESTRICTED	The chat is restricted and cannot be used
@@ -98,6 +99,7 @@ ENCRYPTION_ID_INVALID	The provided secret chat id is invalid
 ENTITIES_TOO_LONG	The entity provided contains data that is too long, or you passed too many entities to this message
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
 ERROR_TEXT_EMPTY	The provided error message is empty
+EXPIRE_DATE_INVALID	The expiration date is invalid
 EXPORT_CARD_INVALID	The provided card is invalid
 EXTERNAL_URL_INVALID	The external media URL is invalid
 FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
@@ -133,6 +135,9 @@ GROUPED_MEDIA_INVALID	The album contains invalid media
 GROUP_CALL_INVALID	The group call is invalid
 HASH_INVALID	The provided hash is invalid
 IMAGE_PROCESS_FAILED	The server failed to process your image
+IMPORT_FILE_INVALID	The imported file is invalid
+IMPORT_FORMAT_UNRECOGNIZED	The imported format is unrecognized
+IMPORT_ID_INVALID	The import id is invalid
 INLINE_RESULT_EXPIRED	The inline bot query expired
 INPUT_CONSTRUCTOR_INVALID	The provided constructor is invalid
 INPUT_FETCH_ERROR	An error occurred while deserializing TL parameters
@@ -145,6 +150,7 @@ INPUT_USER_DEACTIVATED	The target user has been deleted/deactivated
 INVITE_HASH_EMPTY	The invite hash is empty
 INVITE_HASH_EXPIRED	The chat invite link is no longer valid
 INVITE_HASH_INVALID	The invite link hash is invalid
+INVITE_REVOKED_MISSING	The action required a chat invite link to be revoked first
 LANG_PACK_INVALID	The provided language pack is invalid
 LASTNAME_INVALID	The last name is invalid
 LIMIT_INVALID	The limit parameter is invalid
@@ -299,6 +305,7 @@ TYPES_EMPTY	The types parameter is empty
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
 UNTIL_DATE_INVALID	That date parameter is invalid
 URL_INVALID	The URL provided is invalid
+USAGE_LIMIT_INVALID	The usage limit is invalid
 USERNAME_INVALID	The username is invalid
 USERNAME_NOT_MODIFIED	The username was not modified because you tried to edit it using the same one
 USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
