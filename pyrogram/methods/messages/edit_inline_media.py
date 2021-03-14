@@ -21,9 +21,9 @@ import re
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
-from pyrogram.file_id import FileType
 
 
 class EditInlineMedia(Scaffold):
