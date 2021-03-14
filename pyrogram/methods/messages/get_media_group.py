@@ -46,8 +46,14 @@ class GetMediaGroup(Scaffold):
             List of :obj:`~pyrogram.types.Message`: On success, a list of messages of the media group is returned.
             
         Raises:
-            ValueError: In case the passed message id doesn't belong to a media group.
+            ValueError: 
+                In case the passed message_id is negative or equal 0. 
+                In case target message doesn't belong to a media group.
         """
+
+        if message_id <= 0:
+            raise ValueError("Passed message_id is negative or equal to zero.")
+
         messages = await self.get_messages(
             chat_id=chat_id,
             message_ids=[msg_id for msg_id in range(message_id - 9, message_id + 10)],
