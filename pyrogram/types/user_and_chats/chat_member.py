@@ -66,6 +66,12 @@ class ChatMember(Object):
             Administrators only.
             True, if you are allowed to edit administrator privileges of the user.
 
+        can_manage_chat (``bool``, *optional*):
+            Administrators only.
+            True, if the administrator can access the chat event log, chat statistics, message statistics in channels,
+            see channel members, see anonymous administrators in supergroups and ignore slow mode.
+            Implied by any other administrator privilege.
+
         can_post_messages (``bool``, *optional*):
             Administrators only. Channels only.
             True, if the administrator can post messages in the channel.
@@ -150,6 +156,7 @@ class ChatMember(Object):
 
         # Admin permissions
         can_be_edited: bool = None,
+        can_manage_chat: bool = None,
         can_post_messages: bool = None,  # Channels only
         can_edit_messages: bool = None,  # Channels only
         can_delete_messages: bool = None,
@@ -184,6 +191,7 @@ class ChatMember(Object):
         self.is_anonymous = is_anonymous
 
         self.can_be_edited = can_be_edited
+        self.can_manage_chat = can_manage_chat
         self.can_post_messages = can_post_messages
         self.can_edit_messages = can_edit_messages
         self.can_delete_messages = can_delete_messages
@@ -248,6 +256,7 @@ class ChatMember(Object):
                 title=member.rank,
                 invited_by=invited_by,
                 can_change_info=permissions.change_info,
+                can_manage_chat=permissions.other,
                 can_post_messages=permissions.post_messages,
                 can_edit_messages=permissions.edit_messages,
                 can_delete_messages=permissions.delete_messages,
@@ -271,6 +280,7 @@ class ChatMember(Object):
                 invited_by=invited_by,
                 promoted_by=types.User._parse(client, users[member.promoted_by]),
                 can_be_edited=member.can_edit,
+                can_manage_chat=permissions.other,
                 can_change_info=permissions.change_info,
                 can_post_messages=permissions.post_messages,
                 can_edit_messages=permissions.edit_messages,
