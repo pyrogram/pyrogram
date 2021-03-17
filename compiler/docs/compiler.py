@@ -349,6 +349,7 @@ def pyrogram_api():
             ChatAdminWithInviteLinks
             ChatEvent
             ChatEventFilter
+            ChatMemberUpdated
             Dialog
             Restriction
         """,
@@ -373,6 +374,9 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            VoiceChatStarted
+            VoiceChatEnded
+            VoiceChatMembersInvited
         """,
         bots_keyboard="""
         Bots & Keyboards
