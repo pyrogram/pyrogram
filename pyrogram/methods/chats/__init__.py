@@ -25,7 +25,6 @@ from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
 from .delete_supergroup import DeleteSupergroup
 from .delete_user_history import DeleteUserHistory
-from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat import GetChat
 from .get_chat_event_log import GetChatEventLog
 from .get_chat_member import GetChatMember
@@ -58,7 +57,6 @@ from .update_chat_username import UpdateChatUsername
 
 class Chats(
     GetChat,
-    ExportChatInviteLink,
     LeaveChat,
     JoinChat,
     KickChatMember,
