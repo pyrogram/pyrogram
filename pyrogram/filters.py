@@ -405,7 +405,7 @@ venue = create(venue_filter)
 
 # region web_page_filter
 async def web_page_filter(_, __, m: Message):
-    return m.web_page
+    return bool(m.web_page)
 
 
 web_page = create(web_page_filter)
@@ -416,11 +416,22 @@ web_page = create(web_page_filter)
 
 # region poll_filter
 async def poll_filter(_, __, m: Message):
-    return m.poll
+    return bool(m.poll)
 
 
 poll = create(poll_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Poll` objects."""
+
+
+# endregion
+
+# region dice_filter
+async def dice_filter(_, __, m: Message):
+    return bool(m.dice)
+
+
+dice = create(dice_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.Dice` objects."""
 
 
 # endregion
