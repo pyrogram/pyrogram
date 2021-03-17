@@ -32,7 +32,7 @@ class OnChosenInlineResult(Scaffold):
         """Decorator for handling chosen inline results.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.ChosenInlineResult`.
+        :obj:`~pyrogram.handlers.ChosenInlineResultHandler`.
 
         Parameters:
             filters (:obj:`~pyrogram.filters`, *optional*):

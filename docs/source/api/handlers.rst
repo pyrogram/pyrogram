@@ -41,7 +41,7 @@ Index
     - :class:`CallbackQueryHandler`
     - :class:`InlineQueryHandler`
     - :class:`ChosenInlineResultHandler`
-    - :class:`ChatMemberUpdated`
+    - :class:`ChatMemberUpdatedHandler`
     - :class:`UserStatusHandler`
     - :class:`PollHandler`
     - :class:`DisconnectHandler`
@@ -58,7 +58,7 @@ Details
 .. autoclass:: CallbackQueryHandler()
 .. autoclass:: InlineQueryHandler()
 .. autoclass:: ChosenInlineResultHandler()
-.. autoclass:: ChatMemberUpdated()
+.. autoclass:: ChatMemberUpdatedHandler()
 .. autoclass:: UserStatusHandler()
 .. autoclass:: PollHandler()
 .. autoclass:: DisconnectHandler()

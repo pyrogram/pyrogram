@@ -32,7 +32,7 @@ class OnChatMemberUpdated(Scaffold):
         """Decorator for handling event changes on chat members.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.ChatMemberUpdated`.
+        :obj:`~pyrogram.handlers.ChatMemberUpdatedHandler`.
 
         Parameters:
             filters (:obj:`~pyrogram.filters`, *optional*):
