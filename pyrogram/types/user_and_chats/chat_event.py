@@ -43,9 +43,9 @@ class ChatEventAction(AutoName):
     MESSAGE_DELETED = auto()
     # VOICE_CHAT_DISCARDED = auto()
     MESSAGE_EDITED = auto()
-    # LINK_DELETED = auto()
-    # LINK_EDITED = auto()
-    # LINK_REVOKED = auto()
+    INVITE_LINK_EDITED = auto()
+    INVITE_LINK_REVOKED = auto()
+    INVITE_LINK_DELETED = auto()
     MEMBER_INVITED = auto()
     MEMBER_JOINED = auto()
     # MEMBER_JOINED_BY_LINK = auto()
@@ -143,6 +143,15 @@ class ChatEvent(Object):
             - "message_unpinned": a message has been unpinned
               (see *unpinned_message* below).
 
+            - "invite_link_edited": an invite link has been edited
+              (see *edited_invite_link* below).
+
+            - "invite_link_revoked": an invite link has been revoked
+              (see *revoked_invite_link* below).
+
+            - "invite_link_deleted": an invite link has been deleted
+              (see *deleted_invite_link* below).
+
         user (:obj:`~pyrogram.types.User`):
             User that triggered the event.
 
@@ -211,7 +220,7 @@ class ChatEvent(Object):
             For "signatures_enabled" only.
 
         old_slow_mode, new_slow_mode (``int``, *optional*):
-            Previous slow mode value in seconds.
+            Previous and new slow mode value in seconds.
             For "slow_mode_changed" only.
 
         pinned_message (:obj:`~pyrogram.types.Message`, *optional*):
@@ -221,6 +230,18 @@ class ChatEvent(Object):
         unpinned_message (:obj:`~pyrogram.types.Message`, *optional*):
             Unpinned message.
             For "unpinned_message" only.
+
+        old_invite_link, new_invite_link (:obj:`~pyrogram.types.ChatInviteLink`, *optional*):
+            Previous and new edited invite link.
+            For "invite_link_edited" only.
+
+        revoked_invite_link (:obj:`~pyrogram.types.ChatInviteLink`, *optional*):
+            Revoked invite link.
+            For "invite_link_revoked" only.
+
+        deleted_invite_link (:obj:`~pyrogram.types.ChatInviteLink`, *optional*):
+            Deleted invite link.
+            For "invite_link_deleted" only.
     """
 
     def __init__(
@@ -276,7 +297,12 @@ class ChatEvent(Object):
         new_slow_mode: int = None,
 
         pinned_message: "types.Message" = None,
-        unpinned_message: "types.Message" = None
+        unpinned_message: "types.Message" = None,
+
+        old_invite_link: "types.ChatInviteLink" = None,
+        new_invite_link: "types.ChatInviteLink" = None,
+        revoked_invite_link: "types.ChatInviteLink" = None,
+        deleted_invite_link: "types.ChatInviteLink" = None,
     ):
         super().__init__()
 
@@ -332,6 +358,11 @@ class ChatEvent(Object):
 
         self.pinned_message = pinned_message
         self.unpinned_message = unpinned_message
+
+        self.old_invite_link = old_invite_link
+        self.new_invite_link = new_invite_link
+        self.revoked_invite_link = revoked_invite_link
+        self.deleted_invite_link = deleted_invite_link
 
     @staticmethod
     async def _parse(
@@ -393,6 +424,11 @@ class ChatEvent(Object):
 
         pinned_message: Optional[types.Message] = None
         unpinned_message: Optional[types.Message] = None
+
+        old_invite_link: Optional[types.ChatInviteLink] = None
+        new_invite_link: Optional[types.ChatInviteLink] = None
+        revoked_invite_link: Optional[types.ChatInviteLink] = None
+        deleted_invite_link: Optional[types.ChatInviteLink] = None
 
         if isinstance(action, raw.types.ChannelAdminLogEventActionChangeAbout):
             old_description = action.prev_value
@@ -489,6 +525,19 @@ class ChatEvent(Object):
                 unpinned_message = await types.Message._parse(client, message, users, chats)
                 action = ChatEventAction.MESSAGE_UNPINNED.value
 
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionExportedInviteEdit):
+            old_invite_link = types.ChatInviteLink._parse(client, action.prev_invite, users)
+            new_invite_link = types.ChatInviteLink._parse(client, action.new_invite, users)
+            action = ChatEventAction.INVITE_LINK_EDITED.value
+
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionExportedInviteRevoke):
+            revoked_invite_link = types.ChatInviteLink._parse(client, action.invite, users)
+            action = ChatEventAction.INVITE_LINK_REVOKED
+
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionExportedInviteDelete):
+            deleted_invite_link = types.ChatInviteLink._parse(client, action.invite, users)
+            action = ChatEventAction.INVITE_LINK_DELETED.value
+
         else:
             action = f"{ChatEventAction.UNKNOWN.value}-{action.QUALNAME}"
 
@@ -543,5 +592,10 @@ class ChatEvent(Object):
             new_slow_mode=new_slow_mode,
 
             pinned_message=pinned_message,
-            unpinned_message=unpinned_message
+            unpinned_message=unpinned_message,
+
+            old_invite_link=old_invite_link,
+            new_invite_link=new_invite_link,
+            revoked_invite_link=revoked_invite_link,
+            deleted_invite_link=deleted_invite_link
         )

@@ -77,7 +77,7 @@ class GetChatEventLog(Scaffold):
                     min_id=0,
                     max_id=offset_id,
                     limit=limit,
-                    events_filter=filters.write(),
+                    events_filter=filters.write() if filters else None,
                     admins=(
                         [await self.resolve_peer(i) for i in user_ids]
                         if user_ids is not None
