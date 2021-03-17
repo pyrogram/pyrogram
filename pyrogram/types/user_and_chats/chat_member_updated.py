@@ -38,10 +38,10 @@ class ChatMemberUpdated(Object, Update):
         date (``int``):
             Date the change was done in Unix time.
 
-        old_chat_member (:obj:`~pyrogram.types.ChatMember`):
+        old_chat_member (:obj:`~pyrogram.types.ChatMember`, *optional*):
             Previous information about the chat member.
 
-        new_chat_member (:obj:`~pyrogram.types.ChatMember`):
+        new_chat_member (:obj:`~pyrogram.types.ChatMember`, *optional*):
             New information about the chat member.
 
         invite_link (:obj:`~pyrogram.types.ChatInviteLink`, *optional*):
@@ -76,14 +76,26 @@ class ChatMemberUpdated(Object, Update):
         chats: Dict[int, "raw.types.Chat"]
     ) -> "ChatMemberUpdated":
         chat_id = getattr(update, "chat_id", None) or getattr(update, "channel_id")
-        invite_link = types.ChatInviteLink._parse(client, update.invite, users) if update.invite else None
+
+        old_chat_member = None
+        new_chat_member = None
+        invite_link = None
+
+        if update.prev_participant:
+            old_chat_member = types.ChatMember._parse(client, update.prev_participant, users)
+
+        if update.new_participant:
+            new_chat_member = types.ChatMember._parse(client, update.new_participant, users)
+
+        if update.invite:
+            invite_link = types.ChatInviteLink._parse(client, update.invite, users)
 
         return ChatMemberUpdated(
             chat=types.Chat._parse_chat(client, chats[chat_id]),
             from_user=types.User._parse(client, users[update.actor_id]),
             date=update.date,
-            old_chat_member=types.ChatMember._parse(client, update.prev_participant, users),
-            new_chat_member=types.ChatMember._parse(client, update.new_participant, users),
+            old_chat_member=old_chat_member,
+            new_chat_member=new_chat_member,
             invite_link=invite_link,
             client=client
         )
