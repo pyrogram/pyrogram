@@ -29,6 +29,9 @@ from .dialog import Dialog
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
+from .voice_chat_ended import VoiceChatEnded
+from .voice_chat_members_invited import VoiceChatMembersInvited
+from .voice_chat_started import VoiceChatStarted
 
 __all__ = [
     "Chat",
@@ -43,5 +46,8 @@ __all__ = [
     "ChatEventFilter",
     "ChatInviteLink",
     "InviteLinkImporter",
-    "ChatAdminWithInviteLinks"
+    "ChatAdminWithInviteLinks",
+    "VoiceChatStarted",
+    "VoiceChatEnded",
+    "VoiceChatMembersInvited"
 ]

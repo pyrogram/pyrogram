@@ -264,6 +264,15 @@ class Message(Object, Update):
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`~pyrogram.filters.command`.
 
+        voice_chat_started (:obj:`~pyrogram.types.VoiceChatStarted`, *optional*):
+            Service message: the voice chat started.
+
+        voice_chat_ended (:obj:`~pyrogram.types.VoiceChatEnded`, *optional*):
+            Service message: the voice chat has ended.
+
+        voice_chat_members_invited (:obj:`~pyrogram.types.VoiceChatParticipantsInvited`, *optional*):
+            Service message: new members were invited to the voice chat.
+
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
             instructions to remove reply keyboard or to force a reply from the user.
@@ -335,6 +344,9 @@ class Message(Object, Update):
         outgoing: bool = None,
         matches: List[Match] = None,
         command: List[str] = None,
+        voice_chat_started: "types.VoiceChatStarted" = None,
+        voice_chat_ended: "types.VoiceChatEnded" = None,
+        voice_chat_members_invited: "types.VoiceChatMemberInvited" = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -402,6 +414,9 @@ class Message(Object, Update):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+        self.voice_chat_started = voice_chat_started
+        self.voice_chat_ended = voice_chat_ended
+        self.voice_chat_members_invited = voice_chat_members_invited
 
     @staticmethod
     async def _parse(
@@ -427,6 +442,9 @@ class Message(Object, Update):
             group_chat_created = None
             channel_chat_created = None
             new_chat_photo = None
+            voice_chat_started = None
+            voice_chat_ended = None
+            voice_chat_members_invited = None
 
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
@@ -448,6 +466,13 @@ class Message(Object, Update):
                 channel_chat_created = True
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
+            elif isinstance(action, raw.types.MessageActionGroupCall):
+                if action.duration:
+                    voice_chat_ended = types.VoiceChatEnded._parse(action)
+                else:
+                    voice_chat_started = types.VoiceChatStarted()
+            elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
+                voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
 
             user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
             from_user = types.User._parse(client, users.get(user, None))
@@ -469,7 +494,10 @@ class Message(Object, Update):
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
-                client=client
+                client=client,
+                voice_chat_started=voice_chat_started,
+                voice_chat_ended=voice_chat_ended,
+                voice_chat_members_invited=voice_chat_members_invited
                 # TODO: supergroup_chat_created
             )
 
