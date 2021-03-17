@@ -47,9 +47,14 @@ class OnChosenInlineResult(Scaffold):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.handlers.ChosenInlineResultHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.handler = (
-                    pyrogram.handlers.ChosenInlineResultHandler(func, self),
-                    group if filters is None else filters
+                if not hasattr(func, "handlers"):
+                    func.handlers = []
+
+                func.handlers.append(
+                    (
+                        pyrogram.handlers.ChosenInlineResultHandler(func, self),
+                        group if filters is None else filters
+                    )
                 )
 
             return func

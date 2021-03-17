@@ -41,9 +41,14 @@ class OnRawUpdate(Scaffold):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.handlers.RawUpdateHandler(func), group)
             else:
-                func.handler = (
-                    pyrogram.handlers.RawUpdateHandler(func),
-                    group if self is None else group
+                if not hasattr(func, "handlers"):
+                    func.handlers = []
+
+                func.handlers.append(
+                    (
+                        pyrogram.handlers.RawUpdateHandler(func),
+                        group if self is None else group
+                    )
                 )
 
             return func
