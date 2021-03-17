@@ -716,13 +716,12 @@ class Client(Methods, Scaffold):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
-
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
                                 count += 1
                         except Exception:

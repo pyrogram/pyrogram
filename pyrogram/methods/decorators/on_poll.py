@@ -47,9 +47,14 @@ class OnPoll(Scaffold):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.handlers.PollHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.handler = (
-                    pyrogram.handlers.PollHandler(func, self),
-                    group if filters is None else filters
+                if not hasattr(func, "handlers"):
+                    func.handlers = []
+
+                func.handlers.append(
+                    (
+                        pyrogram.handlers.PollHandler(func, self),
+                        group if filters is None else filters
+                    )
                 )
 
             return func
