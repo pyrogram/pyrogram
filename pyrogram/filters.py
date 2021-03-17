@@ -645,6 +645,39 @@ via_bot = create(via_bot_filter)
 
 # endregion
 
+# region voice_chat_started_filter
+async def voice_chat_started_filter(_, __, m: Message):
+    return bool(m.voice_chat_started)
+
+
+voice_chat_started = create(voice_chat_started_filter)
+"""Filter messages for started voice chats"""
+
+
+# endregion
+
+# region voice_chat_ended_filter
+async def voice_chat_ended_filter(_, __, m: Message):
+    return bool(m.voice_chat_ended)
+
+
+voice_chat_ended = create(voice_chat_ended_filter)
+"""Filter messages for ended voice chats"""
+
+
+# endregion
+
+# region voice_chat_members_invited_filter
+async def voice_chat_members_invited_filter(_, __, m: Message):
+    return bool(m.voice_chat_members_invited)
+
+
+voice_chat_members_invited = create(voice_chat_members_invited_filter)
+"""Filter messages for voice chat invited members"""
+
+
+# endregion
+
 # region service_filter
 async def service_filter(_, __, m: Message):
     return bool(m.service)
@@ -655,7 +688,8 @@ service = create(service_filter)
 
 A service message contains any of the following fields set: *left_chat_member*,
 *new_chat_title*, *new_chat_photo*, *delete_chat_photo*, *group_chat_created*, *supergroup_chat_created*,
-*channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*.
+*channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*,
+*voice_chat_started*, *voice_chat_ended*, *voice_chat_members_invited*.
 """
 
 
