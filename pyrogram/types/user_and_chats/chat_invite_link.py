@@ -29,7 +29,8 @@ class ChatInviteLink(Object):
 
     Parameters:
         invite_link (``str``):
-            The invite link.
+            The invite link. If the link was created by another chat administrator, then the second part of the
+            link will be replaced with "...".
 
         date (``int``):
             The date in Unix timestamp when the link was created.
