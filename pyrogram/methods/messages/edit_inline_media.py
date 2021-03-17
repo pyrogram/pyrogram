@@ -116,7 +116,7 @@ class EditInlineMedia(Scaffold):
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
                 media=media,
-                reply_markup=reply_markup.write() if reply_markup else None,
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
                 **await self.parser.parse(caption, parse_mode)
             ),
             sleep_threshold=self.sleep_threshold

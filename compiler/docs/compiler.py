@@ -385,6 +385,7 @@ def pyrogram_api():
             ReplyKeyboardRemove
             InlineKeyboardMarkup
             InlineKeyboardButton
+            LoginUrl
             ForceReply
             CallbackQuery
             GameHighScore
