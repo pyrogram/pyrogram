@@ -174,7 +174,6 @@ class Client(Methods, Scaffold):
             terminal environments.
     """
 
-
     def __init__(
         self,
         session_name: Union[str, Storage],
