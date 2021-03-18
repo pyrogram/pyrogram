@@ -245,10 +245,11 @@ def pyrogram_api():
             revoke_chat_invite_link
             delete_chat_invite_link
             delete_all_chat_invite_links
-            get_chat_invite_links
-            get_chat_invite_links_count
+            get_chat_invite_link
             get_chat_invite_link_members
             get_chat_invite_link_members_count
+            get_chat_invite_links
+            get_chat_invite_links_count
             get_chat_admins_with_invite_links
         """,
         contacts="""
