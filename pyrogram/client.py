@@ -786,7 +786,6 @@ class Client(Methods, Scaffold):
                         # noinspection PyBroadException
                         try:
                             for handler, group in getattr(module, name).handlers:
-
                                 if isinstance(handler, Handler) and isinstance(group, int):
                                     self.remove_handler(handler, group)
 
