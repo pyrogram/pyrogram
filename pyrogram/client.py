@@ -586,7 +586,8 @@ class Client(Methods, Scaffold):
                     {c.id: c for c in diff.chats}
                 ))
             else:
-                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+                if diff.other_updates:  # The other_updates list can be empty
+                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):

@@ -99,7 +99,7 @@ class CopyMessage(Scaffold):
             .. code-block:: python
 
                 # Copy a message
-                app.copy_messages("me", "pyrogram", 20)
+                app.copy_message("me", "pyrogram", 20)
 
         """
         message: types.Message = await self.get_messages(from_chat_id, message_id)

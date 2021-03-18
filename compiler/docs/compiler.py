@@ -191,7 +191,6 @@ def pyrogram_api():
             restrict_chat_member
             promote_chat_member
             set_administrator_title
-            export_chat_invite_link
             set_chat_photo
             delete_chat_photo
             set_chat_title
@@ -221,6 +220,7 @@ def pyrogram_api():
             delete_user_history
             set_slow_mode
             mark_chat_unread
+            get_chat_event_log
         """,
         users="""
         Users
@@ -237,6 +237,20 @@ def pyrogram_api():
             unblock_user
             get_common_chats
         """,
+        invite_links="""
+        Invite Links
+            export_chat_invite_link
+            create_chat_invite_link
+            edit_chat_invite_link
+            revoke_chat_invite_link
+            delete_chat_invite_link
+            delete_all_chat_invite_links
+            get_chat_invite_links
+            get_chat_invite_links_count
+            get_chat_invite_link_members
+            get_chat_invite_link_members_count
+            get_chat_admins_with_invite_links
+        """,
         contacts="""
         Contacts
             add_contacts
@@ -245,7 +259,7 @@ def pyrogram_api():
             delete_contacts
         """,
         password="""
-        Pssword
+        Password
             enable_cloud_password
             change_cloud_password
             remove_cloud_password
@@ -331,6 +345,11 @@ def pyrogram_api():
             ChatPhoto
             ChatMember
             ChatPermissions
+            ChatInviteLink
+            ChatAdminWithInviteLinks
+            ChatEvent
+            ChatEventFilter
+            ChatMemberUpdated
             Dialog
             Restriction
         """,
@@ -355,6 +374,9 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            VoiceChatStarted
+            VoiceChatEnded
+            VoiceChatMembersInvited
         """,
         bots_keyboard="""
         Bots & Keyboards
@@ -363,6 +385,7 @@ def pyrogram_api():
             ReplyKeyboardRemove
             InlineKeyboardMarkup
             InlineKeyboardButton
+            LoginUrl
             ForceReply
             CallbackQuery
             GameHighScore
@@ -459,6 +482,7 @@ def pyrogram_api():
             Message.reply_video
             Message.reply_video_note
             Message.reply_voice
+            Message.get_media_group
         """,
         chat="""
         Chat

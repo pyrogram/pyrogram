@@ -59,21 +59,20 @@ Why Pyrogram?
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 
-How stable and reliable is Pyrogram?
-------------------------------------
+Why is Pyrogram defined as both Client Library and Framework?
+-------------------------------------------------------------
 
-So far, since its first public release, Pyrogram has always shown itself to be quite reliable in handling client-server
-interconnections and just as stable when keeping long running applications online. The only annoying issues faced are
-actually coming from Telegram servers internal errors and down times, from which Pyrogram is able to recover itself
-automatically.
+Simply because it falls in both categories, depending on how you use it.
 
-To challenge the framework, the creator is constantly keeping a public
-`welcome bot <https://github.com/pyrogram/pyrogram/blob/develop/examples/welcomebot.py>`_ online 24/7 on his own,
-relatively-busy account for well over a year now.
+Pyrogram as a client library makes it easy and intuitive accessing the Telegram API by offering idiomatic Python code
+that is generated or hand-written. Low-level details and client-server communication protocols are handled under the
+hood. Pyrogram acts as a client library when *you call* its methods and use its types in a batch application that
+executes a set of instructions.
 
-In addition to that, about six months ago, one of the most popular Telegram bot has been rewritten from scratch
-:doc:`using Pyrogram <powered-by>` and is serving more than 200,000 Monthly Active Users since
-then, uninterruptedly and without any need for restarting it.
+Pyrogram as a framework makes it easy to handle live events by allowing you to register event handlers that will be
+executed as soon as they arrive from the server side. Pyrogram acts as a framework when it's Pyrogram itself that
+*calls your code*, that is, your registered event handlers. Such applications are usually started and left online
+indefinitely, until you decide to stop them.
 
 What can MTProto do more than the Bot API?
 ------------------------------------------

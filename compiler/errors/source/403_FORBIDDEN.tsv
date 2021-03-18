@@ -10,6 +10,7 @@ CHAT_SEND_MEDIA_FORBIDDEN	You can't send media messages in this chat
 CHAT_SEND_POLL_FORBIDDEN	You can't send polls in this chat
 CHAT_SEND_STICKERS_FORBIDDEN	You can't send stickers in this chat
 CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
+EDIT_BOT_INVITE_FORBIDDEN	Bots' chat invite links can't be edited
 INLINE_BOT_REQUIRED	The action must be performed through an inline bot callback
 MESSAGE_AUTHOR_REQUIRED	You are not the author of this message
 MESSAGE_DELETE_FORBIDDEN	You don't have rights to delete messages in this chat, most likely because you are not the author of them
@@ -23,4 +24,4 @@ USER_INVALID	The provided user is invalid
 USER_IS_BLOCKED	The user is blocked
 USER_NOT_MUTUAL_CONTACT	The provided user is not a mutual contact
 USER_PRIVACY_RESTRICTED	The user's privacy settings is preventing you to perform this action
-USER_RESTRICTED	You are limited/restricted. You can't perform this action.
+USER_RESTRICTED	You are limited/restricted. You can't perform this action

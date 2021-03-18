@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
+
 from ..object import Object
 
 """- :obj:`~pyrogram.types.InputLocationMessageContent`
@@ -34,5 +36,5 @@ class InputMessageContent(Object):
     def __init__(self):
         super().__init__()
 
-    def write(self, reply_markup):
+    async def write(self, client: "pyrogram.Client", reply_markup):
         raise NotImplementedError

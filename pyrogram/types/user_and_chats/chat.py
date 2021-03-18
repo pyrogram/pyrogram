@@ -46,7 +46,10 @@ class Chat(Object):
             True, if this chat owner is the current user. Supergroups, channels and groups only.
 
         is_scam (``bool``, *optional*):
-            True, if this chat has been flagged for scam. Supergroups, channels and bots only.
+            True, if this chat has been flagged for scam.
+
+        is_fake (``bool``, *optional*):
+            True, if this chat has been flagged for impersonation.
 
         is_support (``bool``):
             True, if this chat is part of the Telegram support team. Users and bots only.
@@ -113,6 +116,7 @@ class Chat(Object):
 
         linked_chat (:obj:`~pyrogram.types.Chat`, *optional*):
             The linked discussion group (in case of channels) or the linked channel (in case of supergroups).
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
     """
 
     def __init__(
@@ -125,6 +129,7 @@ class Chat(Object):
         is_restricted: bool = None,
         is_creator: bool = None,
         is_scam: bool = None,
+        is_fake: bool = None,
         is_support: bool = None,
         title: str = None,
         username: str = None,
@@ -152,6 +157,7 @@ class Chat(Object):
         self.is_restricted = is_restricted
         self.is_creator = is_creator
         self.is_scam = is_scam
+        self.is_fake = is_fake
         self.is_support = is_support
         self.title = title
         self.username = username
@@ -181,6 +187,7 @@ class Chat(Object):
             is_verified=getattr(user, "verified", None),
             is_restricted=getattr(user, "restricted", None),
             is_scam=getattr(user, "scam", None),
+            is_fake=getattr(user, "fake", None),
             is_support=getattr(user, "support", None),
             username=user.username,
             first_name=user.first_name,
@@ -219,6 +226,7 @@ class Chat(Object):
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
             is_scam=getattr(channel, "scam", None),
+            is_fake=getattr(channel, "fake", None),
             title=channel.title,
             username=getattr(channel, "username", None),
             photo=types.ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id, channel.access_hash),
@@ -791,11 +799,49 @@ class Chat(Object):
 
             client.get_chat_members(chat_id)
 
+
+        Parameters:
+            offset (``int``, *optional*):
+                Sequential number of the first member to be returned.
+                Only applicable to supergroups and channels. Defaults to 0 [1]_.
+
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
+                Defaults to 200, which is also the maximum server limit allowed per method call.
+
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
+                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
+                Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+
         Example:
             .. code-block:: python
 
                 # Get first 200 recent members
                 chat.get_members()
+
+                # Get all administrators
+                chat.get_members(filter="administrators")
+
+                # Get all bots
+                chat.get_members(filter="bots")
 
         Returns:
             List of :obj:`~pyrogram.types.ChatMember`: On success, a list of chat members is returned.
@@ -821,13 +867,46 @@ class Chat(Object):
 
         .. code-block:: python
 
-            for member in client.iter_chat_members(chat_id):
-                print(member.user.first_name)
+        Parameters:
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
+                Defaults to 200, which is also the maximum server limit allowed per method call [1]_.
+
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
+                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"kicked"* - kicked (banned) members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
+                Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
 
         Example:
             .. code-block:: python
 
-                for member in chat.iter_members():
+                # Get first 200 recent members
+                for member in chat.get_members():
+                    print(member.user.first_name)
+
+                # Get all administrators
+                for member in chat.iter_members(filter="administrators"):
+                    print(member.user.first_name)
+
+                # Get first 3 bots
+                for member in chat.iter_members(filter="bots", limit=3):
                     print(member.user.first_name)
 
         Returns:
@@ -868,3 +947,23 @@ class Chat(Object):
             user_ids=user_ids,
             forward_limit=forward_limit
         )
+
+    async def mark_unread(self, ) -> bool:
+        """Bound method *mark_unread* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.mark_unread(chat_id)
+
+        Example:
+            .. code-block:: python
+
+                chat.mark_unread()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.mark_chat_unread(self.id)

@@ -97,7 +97,7 @@ class AnswerInlineQuery(Scaffold):
         return await self.send(
             raw.functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
-                results=[await r.write() for r in results],
+                results=[await r.write(self) for r in results],
                 cache_time=cache_time,
                 gallery=is_gallery or None,
                 private=is_personal or None,

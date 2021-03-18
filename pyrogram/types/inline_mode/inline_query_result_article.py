@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 
@@ -66,11 +67,11 @@ class InlineQueryResultArticle(InlineQueryResult):
         self.description = description
         self.thumb_url = thumb_url
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         return raw.types.InputBotInlineResult(
             id=self.id,
             type=self.type,
-            send_message=await self.input_message_content.write(self.reply_markup),
+            send_message=await self.input_message_content.write(client, self.reply_markup),
             title=self.title,
             description=self.description,
             url=self.url,

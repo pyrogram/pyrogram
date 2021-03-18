@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
+from typing import Optional, List
 
-from pyrogram import raw
-from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from .input_message_content import InputMessageContent
 
 
@@ -37,20 +37,35 @@ class InputTextMessageContent(InputMessageContent):
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
 
+        entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in message text, which can be specified instead of *parse_mode*.
+
         disable_web_page_preview (``bool``, *optional*):
             Disables link previews for links in this message.
     """
 
-    def __init__(self, message_text: str, parse_mode: Optional[str] = object, disable_web_page_preview: bool = None):
+    def __init__(
+        self,
+        message_text: str,
+        parse_mode: Optional[str] = object,
+        entities: List["types.MessageEntity"] = None,
+        disable_web_page_preview: bool = None
+    ):
         super().__init__()
 
         self.message_text = message_text
         self.parse_mode = parse_mode
+        self.entities = entities
         self.disable_web_page_preview = disable_web_page_preview
 
-    async def write(self, reply_markup):
+    async def write(self, client: "pyrogram.Client", reply_markup):
+        message, entities = (await utils.parse_text_entities(
+            client, self.message_text, self.parse_mode, self.entities
+        )).values()
+
         return raw.types.InputBotInlineMessageText(
             no_webpage=self.disable_web_page_preview or None,
-            reply_markup=reply_markup.write() if reply_markup else None,
-            **await(Parser(None)).parse(self.message_text, self.parse_mode)
+            reply_markup=await reply_markup.write(client) if reply_markup else None,
+            message=message,
+            entities=entities
         )

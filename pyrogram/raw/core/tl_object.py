@@ -30,16 +30,7 @@ class TLObject:
 
     @classmethod
     def read(cls, data: BytesIO, *args: Any) -> Any:
-        try:
-            return cast(TLObject, objects[int.from_bytes(data.read(4), "little")]).read(data, *args)
-        except KeyError as e:
-            left = data.read().hex()
-
-            left = [left[i:i + 64] for i in range(0, len(left), 64)]
-            left = [[left[i:i + 8] for i in range(0, len(left), 8)] for left in left]
-            left = "\n".join(" ".join(x for x in left) for left in left)
-
-            raise ValueError(f"Unknown constructor found: {hex(e.args[0])}\n{left}")
+        return cast(TLObject, objects[int.from_bytes(data.read(4), "little")]).read(data, *args)
 
     def write(self, *args: Any) -> bytes:
         pass
