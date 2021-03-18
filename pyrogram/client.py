@@ -174,6 +174,7 @@ class Client(Methods, Scaffold):
             terminal environments.
     """
 
+
     def __init__(
         self,
         session_name: Union[str, Storage],
@@ -717,13 +718,14 @@ class Client(Methods, Scaffold):
                         # noinspection PyBroadException
                         try:
                             for handler, group in getattr(module, name).handlers:
+
                                 if isinstance(handler, Handler) and isinstance(group, int):
                                     self.add_handler(handler, group)
 
                                     log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
                                         self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count += 1
+                            count += 1
                         except Exception:
                             pass
             else:
@@ -748,15 +750,15 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count += 1
+                            count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -784,15 +786,15 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.remove_handler(handler, group)
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.remove_handler(handler, group)
 
-                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
+                                    log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                count -= 1
+                            count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
