@@ -350,7 +350,7 @@ class Message(Object, Update):
         command: List[str] = None,
         voice_chat_started: "types.VoiceChatStarted" = None,
         voice_chat_ended: "types.VoiceChatEnded" = None,
-        voice_chat_members_invited: "types.VoiceChatMemberInvited" = None,
+        voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
