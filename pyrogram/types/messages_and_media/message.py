@@ -649,7 +649,7 @@ class Message(Object, Update):
                 sticker, document, web_page,
                 poll, dice
             )
-            media_type = False
+            media_type = None
             for media_type in media_types:
                 if media_type:
                     break
