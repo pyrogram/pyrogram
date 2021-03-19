@@ -461,10 +461,12 @@ def pyrogram_api():
             Message.copy
             Message.pin
             Message.unpin
+            Message.edit
             Message.edit_text
             Message.edit_caption
             Message.edit_media
             Message.edit_reply_markup
+            Message.reply
             Message.reply_text
             Message.reply_animation
             Message.reply_audio

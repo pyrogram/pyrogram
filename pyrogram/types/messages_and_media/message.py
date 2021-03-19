@@ -776,6 +776,8 @@ class Message(Object, Update):
     ) -> "Message":
         """Bound method *reply_text* of :obj:`~pyrogram.types.Message`.
 
+        An alias exists as *reply*.
+
         Use as a shortcut for:
 
         .. code-block:: python
@@ -2579,6 +2581,8 @@ class Message(Object, Update):
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "Message":
         """Bound method *edit_text* of :obj:`~pyrogram.types.Message`.
+
+        An alias exists as *edit*.
 
         Use as a shortcut for:
 
