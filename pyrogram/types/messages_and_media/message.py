@@ -112,10 +112,13 @@ class Message(Object, Update):
             new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
             migrate_to_chat_id, migrate_from_chat_id, pinned_message.
 
-        media (``bool``, *optional*):
+        has_media (``bool``, *optional*):
             The message is a media message.
             A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
             voice, video_note, contact, location, venue.
+
+        media (:obj:`~pyrogram.object.Object`, *optional*):
+            Contains the media object in case that has_media is True.
 
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
@@ -304,7 +307,8 @@ class Message(Object, Update):
         service: bool = None,
         scheduled: bool = None,
         from_scheduled: bool = None,
-        media: bool = None,
+        has_media: bool = False,
+        media: Object = None,
         edit_date: int = None,
         media_group_id: str = None,
         author_signature: str = None,
@@ -373,6 +377,7 @@ class Message(Object, Update):
         self.service = service
         self.scheduled = scheduled
         self.from_scheduled = from_scheduled
+        self.has_media = has_media
         self.media = media
         self.edit_date = edit_date
         self.media_group_id = media_group_id
@@ -571,6 +576,7 @@ class Message(Object, Update):
             poll = None
             dice = None
 
+
             media = message.media
 
             if media:
@@ -636,6 +642,17 @@ class Message(Object, Update):
                 else:
                     media = None
 
+            media_types = (
+                photo, location, contact,
+                venue, game, audio, voice,
+                animation, video, video_note,
+                sticker, document, web_page,
+                poll, dice
+            )
+            media_type = False
+            for media_type in media_types:
+                if media_type:
+                    break
             reply_markup = message.reply_markup
 
             if reply_markup:
@@ -690,7 +707,8 @@ class Message(Object, Update):
                 mentioned=message.mentioned,
                 scheduled=is_scheduled,
                 from_scheduled=message.from_scheduled,
-                media=bool(media) or None,
+                has_media=bool(media),
+                media=media_type,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
@@ -2909,7 +2927,7 @@ class Message(Object, Update):
                 schedule_date=schedule_date,
                 reply_markup=self.reply_markup if reply_markup is object else reply_markup
             )
-        elif self.media:
+        elif self.has_media:
             send_media = partial(
                 self._client.send_cached_media,
                 chat_id=chat_id,
