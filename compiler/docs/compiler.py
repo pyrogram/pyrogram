@@ -254,10 +254,11 @@ def pyrogram_api():
         """,
         contacts="""
         Contacts
-            add_contacts
+            add_contact
+            delete_contacts
+            import_contacts
             get_contacts
             get_contacts_count
-            delete_contacts
         """,
         password="""
         Password
