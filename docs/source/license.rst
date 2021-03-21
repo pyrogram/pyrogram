@@ -13,4 +13,4 @@ license, or even proprietary) for any purpose whatsoever without being required 
 applications. Derivative works, including modifications to the library itself can only be redistributed under the same
 LGPLv3+ license.
 
-.. _GNU Lesser General Public License v3 or later (LGPLv3+): https://github.com/pyrogram/pyrogram/blob/develop/COPYING.lesser
+.. _GNU Lesser General Public License v3 or later (LGPLv3+): https://github.com/pyrogram/pyrogram/blob/master/COPYING.lesser
