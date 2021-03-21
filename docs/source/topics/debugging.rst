@@ -79,9 +79,11 @@ full-fledged Python objects and the correct way to access any attribute of them 
 .. code-block:: json
 
     {
-        "_": "pyrogram.ChatPhoto",
-        "small_file_id": "AQADBAAD8tBgAQAEJjCxGgAEo5IBAAIC",
-        "big_file_id": "AQADBAAD8tBgAQAEJjCxGgAEpZIBAAEBAg"
+        "_": "ChatPhoto",
+        "small_file_id": "AQADBAAD2LcxG_LQYAEACLWTBiddAAMCAAPy0GABAASTS1_WgMIzLR3RAgABHgQ",
+        "small_photo_unique_id": "AQADtZMGJ10AAx3RAgAB",
+        "big_file_id": "AQADBAAD2LcxG_LQYAEACLWTBiddAAMDAAPy0GABAASTS1_WgMIzLR_RAgABHgQ",
+        "big_photo_unique_id": "AQADtZMGJ10AAx_RAgAB"
     }
 
 However, the bracket notation ``[]`` is also supported, but its usage is discouraged:
@@ -98,7 +100,7 @@ However, the bracket notation ``[]`` is also supported, but its usage is discour
 
 .. code-block:: text
 
-    AQADBAAD8tBgAQAEJjCxGgAEpZIBAAEBAg
+    AQADBAAD2LcxG_LQYAEACLWTBiddAAMDAAPy0GABAASTS1_WgMIzLR_RAgABHgQ
 
 Checking an Object's Type
 -------------------------
