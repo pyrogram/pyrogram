@@ -23,8 +23,8 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class GetChatInviteLinks(Scaffold):
-    async def get_chat_invite_links(
+class GetChatAdminInviteLinks(Scaffold):
+    async def get_chat_admin_invite_links(
         self,
         chat_id: Union[int, str],
         admin_id: Union[int, str],

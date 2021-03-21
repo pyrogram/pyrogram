@@ -239,18 +239,18 @@ def pyrogram_api():
         """,
         invite_links="""
         Invite Links
+            get_chat_invite_link
             export_chat_invite_link
             create_chat_invite_link
             edit_chat_invite_link
             revoke_chat_invite_link
             delete_chat_invite_link
-            delete_all_chat_invite_links
-            get_chat_invite_link
             get_chat_invite_link_members
             get_chat_invite_link_members_count
-            get_chat_invite_links
-            get_chat_invite_links_count
+            get_chat_admin_invite_links
+            get_chat_admin_invite_links_count
             get_chat_admins_with_invite_links
+            delete_chat_admin_invite_links
         """,
         contacts="""
         Contacts
