@@ -75,7 +75,7 @@ class KickChatMember(Scaffold):
             r = await self.send(
                 raw.functions.channels.EditBanned(
                     channel=chat_peer,
-                    user_id=user_peer,
+                    participant=user_peer,
                     banned_rights=raw.types.ChatBannedRights(
                         until_date=until_date,
                         view_messages=True,

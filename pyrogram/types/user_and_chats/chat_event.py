@@ -475,17 +475,17 @@ class ChatEvent(Object):
             action = ChatEventAction.MESSAGE_EDITED.value
 
         elif isinstance(action, raw.types.ChannelAdminLogEventActionParticipantInvite):
-            invited_member = types.ChatMember._parse(client, action.participant, users)
+            invited_member = types.ChatMember._parse(client, action.participant, users, chats)
             action = ChatEventAction.MEMBER_INVITED.value
 
         elif isinstance(action, raw.types.ChannelAdminLogEventActionParticipantToggleAdmin):
-            old_admin_rights = types.ChatMember._parse(client, action.prev_participant, users)
-            new_admin_rights = types.ChatMember._parse(client, action.new_participant, users)
+            old_admin_rights = types.ChatMember._parse(client, action.prev_participant, users, chats)
+            new_admin_rights = types.ChatMember._parse(client, action.new_participant, users, chats)
             action = ChatEventAction.ADMIN_RIGHTS_CHANGED.value
 
         elif isinstance(action, raw.types.ChannelAdminLogEventActionParticipantToggleBan):
-            old_member_permissions = types.ChatMember._parse(client, action.prev_participant, users)
-            new_member_permissions = types.ChatMember._parse(client, action.new_participant, users)
+            old_member_permissions = types.ChatMember._parse(client, action.prev_participant, users, chats)
+            new_member_permissions = types.ChatMember._parse(client, action.new_participant, users, chats)
             action = ChatEventAction.MEMBER_PERMISSIONS_CHANGED.value
 
         elif isinstance(action, raw.types.ChannelAdminLogEventActionStopPoll):
