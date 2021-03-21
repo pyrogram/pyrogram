@@ -307,16 +307,19 @@ sqlite3.OperationalError: unable to open database file
 
 Stackoverflow to the rescue: https://stackoverflow.com/questions/4636970
 
-FileNotFoundError when using PyInstaller
-----------------------------------------
+sqlite3.InterfaceError: Error binding parameter 0
+-------------------------------------------------
 
-Pyrogram uses two files that are not Python files, which are not included automatically in the PyInstaller bundle:
+This error occurs when you pass a chat id value of the wrong type when trying to call a method. Most likely, you
+accidentally passed the whole user or chat object instead of the id or username.
 
-- ``pyrogram/mime.types``
-- ``pyrogram/storage/schema.sql``
+.. code-block:: python
 
-To fix the issue, you have to locate your local Pyrogram installation and pass those files to PyInstaller. More info in
-their docs https://pyinstaller.readthedocs.io/en/stable/spec-files.html#adding-files-to-the-bundle.
+    # Wrong. You passed the whole Chat instance
+    app.send_message(chat, "text")
+
+    # Correct
+    app.send_message(chat.id, "text")
 
 My verification code expires immediately!
 -----------------------------------------

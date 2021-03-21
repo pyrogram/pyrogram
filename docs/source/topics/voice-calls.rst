@@ -1,10 +1,19 @@
 Voice Calls
 ===========
 
-A working proof-of-concept of Telegram voice calls using Pyrogram can be found here:
-https://github.com/bakatrouble/pylibtgvoip. Thanks to `@bakatrouble <https://t.me/bakatrouble>`_.
+Both private voice calls and group voice calls are currently supported by third-party libraries that integrate with
+Pyrogram.
 
-.. note::
+Libraries
+---------
 
-    This page will be updated with more information once voice calls become eventually more usable and more integrated
-    in Pyrogram itself.
+There are currently two main libraries (with very similar names) you can use:
+
+1. https://github.com/pytgcalls/pytgcalls
+2. https://github.com/MarshalX/tgcalls
+
+Older implementations
+---------------------
+
+An older implementation of Telegram voice calls can be found at https://github.com/bakatrouble/pylibtgvoip (currently
+outdated due to the deprecation of the Telegram VoIP library used underneath).

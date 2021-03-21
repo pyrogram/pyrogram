@@ -10,18 +10,18 @@ Welcome to Pyrogram
     </div>
 
     <p align="center">
-        <b>Telegram MTProto API Framework for Python</b>
+        <b>Telegram MTProto API Library for Python</b>
 
         <br>
         <a href="https://github.com/pyrogram/pyrogram">
             Source Code
         </a>
         •
-        <a href="https://github.com/pyrogram/pyrogram/releases">
+        <a href="https://docs.pyrogram.org/releases">
             Releases
         </a>
         •
-        <a href="https://t.me/Pyrogram">
+        <a href="https://t.me/pyrogram">
             Community
         </a>
     </p>
@@ -35,15 +35,16 @@ Welcome to Pyrogram
 
     @app.on_message(filters.private)
     async def hello(client, message):
-        await message.reply_text(f"Hello {message.from_user.mention}")
+        await message.reply(f"Hello from Pyrogram!")
 
 
     app.run()
 
-**Pyrogram** is a modern, elegant and easy-to-use Telegram_ framework written from the ground up in Python and C.
-It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the
-:doc:`MTProto API <topics/mtproto-vs-botapi>`.
+**Pyrogram** is a modern, asynchronous MTProto_ library for building Telegram_ client applications in Python. It
+enables you to easily interact with the main Telegram API through a user account (custom client) or a bot identity (bot
+API alternative).
 
+.. _MTProto: https://docs.pyrogram.org/topics/mtproto-vs-botapi
 .. _Telegram: https://telegram.org
 
 How the Documentation is Organized

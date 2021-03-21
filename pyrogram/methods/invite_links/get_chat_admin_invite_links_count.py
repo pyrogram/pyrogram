@@ -22,8 +22,8 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class GetChatInviteLinksCount(Scaffold):
-    async def get_chat_invite_links_count(
+class GetChatAdminInviteLinksCount(Scaffold):
+    async def get_chat_admin_invite_links_count(
         self,
         chat_id: Union[int, str],
         admin_id: Union[int, str],
