@@ -697,7 +697,7 @@ A service message contains any of the following fields set: *left_chat_member*,
 
 # region media_filter
 async def media_filter(_, __, m: Message):
-    return m.has_media
+    return bool(m.media)
 
 
 media = create(media_filter)
