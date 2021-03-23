@@ -47,6 +47,8 @@ class InlineQueryResult(Object):
 
     Pyrogram currently supports results of the following types:
 
+    - :obj:`~pyrogram.types.InlineQueryResultCachedDocument`
+    - :obj:`~pyrogram.types.InlineQueryResultCachedPhoto`
     - :obj:`~pyrogram.types.InlineQueryResultArticle`
     - :obj:`~pyrogram.types.InlineQueryResultPhoto`
     - :obj:`~pyrogram.types.InlineQueryResultAnimation`
