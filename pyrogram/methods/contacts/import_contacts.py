@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -23,12 +23,12 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class AddContacts(Scaffold):
-    async def add_contacts(
+class ImportContacts(Scaffold):
+    async def import_contacts(
         self,
         contacts: List["types.InputPhoneContact"]
     ):
-        """Add contacts to your Telegram address book.
+        """Import contacts to your Telegram address book.
 
         Parameters:
             contacts (List of :obj:`~pyrogram.types.InputPhoneContact`):
@@ -42,7 +42,7 @@ class AddContacts(Scaffold):
 
                 from pyrogram.types import InputPhoneContact
 
-                app.add_contacts([
+                app.import_contacts([
                     InputPhoneContact("39123456789", "Foo"),
                     InputPhoneContact("38987654321", "Bar"),
                     InputPhoneContact("01234567891", "Baz")])

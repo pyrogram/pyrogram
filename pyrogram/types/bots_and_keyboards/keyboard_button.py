@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,25 +52,23 @@ class KeyboardButton(Object):
         self.request_location = request_location
 
     @staticmethod
-    def read(o):
-        if isinstance(o, raw.types.KeyboardButton):
-            return o.text
+    def read(b):
+        if isinstance(b, raw.types.KeyboardButton):
+            return b.text
 
-        if isinstance(o, raw.types.KeyboardButtonRequestPhone):
+        if isinstance(b, raw.types.KeyboardButtonRequestPhone):
             return KeyboardButton(
-                text=o.text,
+                text=b.text,
                 request_contact=True
             )
 
-        if isinstance(o, raw.types.KeyboardButtonRequestGeoLocation):
+        if isinstance(b, raw.types.KeyboardButtonRequestGeoLocation):
             return KeyboardButton(
-                text=o.text,
+                text=b.text,
                 request_location=True
             )
 
     def write(self):
-        # TODO: Enforce optional args mutual exclusiveness
-
         if self.request_contact:
             return raw.types.KeyboardButtonRequestPhone(text=self.text)
         elif self.request_location:

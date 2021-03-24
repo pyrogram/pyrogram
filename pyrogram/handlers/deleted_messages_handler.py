@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,4 +52,4 @@ class DeletedMessagesHandler(Handler):
         super().__init__(callback, filters)
 
     async def check(self, client: "pyrogram.Client", messages: List[Message]):
-        return await super().check(client, messages[0])
+        return await super().check(client, messages[0]) if messages else False  # The messages list can be empty

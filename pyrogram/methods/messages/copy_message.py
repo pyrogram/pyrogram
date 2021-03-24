@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -99,7 +99,7 @@ class CopyMessage(Scaffold):
             .. code-block:: python
 
                 # Copy a message
-                app.copy_messages("me", "pyrogram", 20)
+                app.copy_message("me", "pyrogram", 20)
 
         """
         message: types.Message = await self.get_messages(from_chat_id, message_id)

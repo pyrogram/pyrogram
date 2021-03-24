@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,10 +52,10 @@ def get_input_media_from_file_id(
     file_type = decoded.file_type
 
     if expected_file_type is not None and file_type != expected_file_type:
-        raise ValueError(f'Expected: "{expected_file_type}", got "{file_type}" file_id instead')
+        raise ValueError(f"Expected {expected_file_type.name}, got {file_type.name} file id instead")
 
     if file_type in (FileType.THUMBNAIL, FileType.CHAT_PHOTO):
-        raise ValueError(f"This file_id can only be used for download: {file_id}")
+        raise ValueError(f"This file id can only be used for download: {file_id}")
 
     if file_type in PHOTO_TYPES:
         return raw.types.InputMediaPhoto(
@@ -344,11 +344,3 @@ async def parse_text_entities(
         "message": text,
         "entities": entities
     }
-
-
-async def maybe_run_in_executor(func, data, length, loop, *args):
-    return (
-        func(data, *args)
-        if length <= pyrogram.CRYPTO_EXECUTOR_SIZE_THRESHOLD
-        else await loop.run_in_executor(pyrogram.crypto_executor, func, data, *args)
-    )

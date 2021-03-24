@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -121,7 +121,7 @@ class Markdown:
                 start_tag = end_tag = ITALIC_DELIM
             elif entity_type == "underline":
                 start_tag = end_tag = UNDERLINE_DELIM
-            elif entity_type == "strike":
+            elif entity_type == "strikethrough":
                 start_tag = end_tag = STRIKE_DELIM
             elif entity_type == "code":
                 start_tag = end_tag = CODE_DELIM

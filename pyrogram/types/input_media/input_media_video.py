@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -40,7 +40,8 @@ class InputMediaVideo(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the video to be sent, 0-1024 characters
+            Caption of the video to be sent, 0-1024 characters.
+            If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -69,7 +70,7 @@ class InputMediaVideo(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = "",
+        caption: str = None,
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         width: int = 0,

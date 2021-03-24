@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -95,6 +95,7 @@ def start():
                     error_id, error_message = row
 
                     sub_class = caml(re.sub(r"_X", "_", error_id))
+                    sub_class = re.sub(r"^2", "Two", sub_class)
 
                     f_all.write("        \"{}\": \"{}\",\n".format(error_id, sub_class))
 

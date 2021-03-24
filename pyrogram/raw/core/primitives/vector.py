@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -33,7 +33,7 @@ class Vector(bytes, TLObject):
     def _read(b: BytesIO) -> Union[int, Any]:
         try:
             return TLObject.read(b)
-        except KeyError:
+        except ValueError:
             b.seek(-4, 1)
             return Int.read(b)
 

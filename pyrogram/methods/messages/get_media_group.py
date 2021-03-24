@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -19,8 +19,8 @@
 import logging
 from typing import Union, List
 
+from pyrogram import types
 from pyrogram.scaffold import Scaffold
-from pyrogram.types import list
 
 log = logging.getLogger(__name__)
 
@@ -49,11 +49,12 @@ class GetMediaGroup(Scaffold):
             ValueError: In case the passed message id doesn't belong to a media group.
         """
         # There can be maximum 10 items in a media group. 
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)], replies=0)
+        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)],
+                                           replies=0)
 
         media_group_id = messages[9].media_group_id
 
         if media_group_id is None:
             raise ValueError("The message doesn't belong to a media group")
 
-        return list.List(msg for msg in messages if msg.media_group_id == media_group_id)
+        return types.List(msg for msg in messages if msg.media_group_id == media_group_id)

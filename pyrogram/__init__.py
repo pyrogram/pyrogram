@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,9 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = "1.1.7"
+__version__ = "1.2.4"
 __license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__copyright__ = "Copyright (C) 2017-2020 Dan <https://github.com/delivrance>"
+__copyright__ = "Copyright (C) 2017-2021 Dan <https://github.com/delivrance>"
 
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -46,4 +46,4 @@ main_event_loop = asyncio.get_event_loop()
 
 CRYPTO_EXECUTOR_SIZE_THRESHOLD = 512
 
-crypto_executor = ThreadPoolExecutor(2, thread_name_prefix="CryptoWorker")
+crypto_executor = ThreadPoolExecutor(1, thread_name_prefix="CryptoWorker")

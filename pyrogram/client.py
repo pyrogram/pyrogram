@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -585,7 +585,8 @@ class Client(Methods, Scaffold):
                     {c.id: c for c in diff.chats}
                 ))
             else:
-                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+                if diff.other_updates:  # The other_updates list can be empty
+                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
@@ -716,15 +717,14 @@ class Client(Methods, Scaffold):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count += 1
+                                    count += 1
                         except Exception:
                             pass
             else:
@@ -749,15 +749,14 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count += 1
+                                    count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -785,15 +784,14 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.remove_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.remove_handler(handler, group)
+                                    log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count -= 1
+                                    count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -880,7 +878,7 @@ class Client(Methods, Scaffold):
                 local_id=file_id.local_id,
                 big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
             )
-        elif file_type in (FileType.THUMBNAIL, FileType.PHOTO):
+        elif file_type == FileType.PHOTO:
             location = raw.types.InputPhotoFileLocation(
                 id=file_id.media_id,
                 access_hash=file_id.access_hash,
@@ -892,7 +890,7 @@ class Client(Methods, Scaffold):
                 id=file_id.media_id,
                 access_hash=file_id.access_hash,
                 file_reference=file_id.file_reference,
-                thumb_size=""
+                thumb_size=file_id.thumbnail_size
             )
 
         limit = 1024 * 1024

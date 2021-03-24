@@ -17,6 +17,7 @@ AUTH_TOKEN_INVALID	An invalid authorization token was provided
 AUTOARCHIVE_NOT_AVAILABLE	This feature is not yet enabled for your account due to it not receiving too many private messages from strangers
 BANK_CARD_NUMBER_INVALID	The credit card number is invalid
 BANNED_RIGHTS_INVALID	You provided a set of restrictions that is invalid
+BASE_PORT_LOC_INVALID	The base port location is invalid
 BOTS_TOO_MUCH	The chat has too many bots
 BOT_CHANNELS_NA	Bots can't edit admin privileges
 BOT_COMMAND_DESCRIPTION_INVALID	The command description was empty, too long or had invalid characters
@@ -54,6 +55,7 @@ CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 CHAT_ID_EMPTY	The provided chat id is empty
 CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
 CHAT_INVALID	The chat is invalid
+CHAT_INVITE_PERMANENT	The chat invite link is primary
 CHAT_LINK_EXISTS	The action failed because the supergroup is linked to a channel
 CHAT_NOT_MODIFIED	The chat settings (title, permissions, photo, etc..) were not modified because you tried to edit them using the same content
 CHAT_RESTRICTED	The chat is restricted and cannot be used
@@ -97,6 +99,7 @@ ENCRYPTION_ID_INVALID	The provided secret chat id is invalid
 ENTITIES_TOO_LONG	The entity provided contains data that is too long, or you passed too many entities to this message
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
 ERROR_TEXT_EMPTY	The provided error message is empty
+EXPIRE_DATE_INVALID	The expiration date is invalid
 EXPORT_CARD_INVALID	The provided card is invalid
 EXTERNAL_URL_INVALID	The external media URL is invalid
 FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
@@ -120,15 +123,21 @@ FOLDER_ID_EMPTY	The folder you tried to delete was already empty
 FOLDER_ID_INVALID	The folder id is invalid
 FRESH_CHANGE_ADMINS_FORBIDDEN	You can't change administrator settings in this chat because your session was logged-in recently
 FROM_MESSAGE_BOT_DISABLED	Bots can't use fromMessage min constructors
+FROM_PEER_INVALID	The from peer value is invalid
 GAME_BOT_INVALID	You cannot send that game with the current bot
 GEO_POINT_INVALID	Invalid geo point provided
 GIF_CONTENT_TYPE_INVALID	GIF content-type invalid
 GIF_ID_INVALID	The provided gif/animation id is invalid
 GRAPH_INVALID_RELOAD	Invalid graph token provided, please reload the stats and provide the updated token
 GRAPH_OUTDATED_RELOAD	The graph data is outdated
+GROUPCALL_SSRC_DUPLICATE_MUCH	Too many group call synchronization source duplicates
 GROUPED_MEDIA_INVALID	The album contains invalid media
+GROUP_CALL_INVALID	The group call is invalid
 HASH_INVALID	The provided hash is invalid
 IMAGE_PROCESS_FAILED	The server failed to process your image
+IMPORT_FILE_INVALID	The imported file is invalid
+IMPORT_FORMAT_UNRECOGNIZED	The imported format is unrecognized
+IMPORT_ID_INVALID	The import id is invalid
 INLINE_RESULT_EXPIRED	The inline bot query expired
 INPUT_CONSTRUCTOR_INVALID	The provided constructor is invalid
 INPUT_FETCH_ERROR	An error occurred while deserializing TL parameters
@@ -141,6 +150,7 @@ INPUT_USER_DEACTIVATED	The target user has been deleted/deactivated
 INVITE_HASH_EMPTY	The invite hash is empty
 INVITE_HASH_EXPIRED	The chat invite link is no longer valid
 INVITE_HASH_INVALID	The invite link hash is invalid
+INVITE_REVOKED_MISSING	The action required a chat invite link to be revoked first
 LANG_PACK_INVALID	The provided language pack is invalid
 LASTNAME_INVALID	The last name is invalid
 LIMIT_INVALID	The limit parameter is invalid
@@ -170,6 +180,7 @@ MSG_WAIT_FAILED	A waiting call returned an error
 MULTI_MEDIA_TOO_LONG	The album/media group contains too many items
 NEW_SALT_INVALID	The new salt is invalid
 NEW_SETTINGS_INVALID	The new settings are invalid
+NEXT_OFFSET_INVALID	The next offset value is invalid
 OFFSET_INVALID	The offset parameter is invalid
 OFFSET_PEER_ID_INVALID	The provided offset peer is invalid
 OPTIONS_TOO_MUCH	The poll options are too many
@@ -238,6 +249,7 @@ RANDOM_LENGTH_INVALID	The random length is invalid
 RANGES_INVALID	Invalid range provided
 REACTION_EMPTY	The reaction provided is empty
 REACTION_INVALID	Invalid reaction provided (only emoji are allowed)
+REFLECTOR_NOT_AVAILABLE	The call reflector is not available
 REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
 REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty
 REPLY_MARKUP_INVALID	The provided reply markup is invalid
@@ -293,6 +305,7 @@ TYPES_EMPTY	The types parameter is empty
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
 UNTIL_DATE_INVALID	That date parameter is invalid
 URL_INVALID	The URL provided is invalid
+USAGE_LIMIT_INVALID	The usage limit is invalid
 USERNAME_INVALID	The username is invalid
 USERNAME_NOT_MODIFIED	The username was not modified because you tried to edit it using the same one
 USERNAME_NOT_OCCUPIED	The username is not occupied by anyone

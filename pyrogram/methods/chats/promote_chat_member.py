@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -28,14 +28,16 @@ class PromoteChatMember(Scaffold):
         chat_id: Union[int, str],
         user_id: Union[int, str],
         is_anonymous: bool = False,
-        can_change_info: bool = True,
+        can_manage_chat: bool = True,
+        can_change_info: bool = False,
         can_post_messages: bool = False,
         can_edit_messages: bool = False,
-        can_delete_messages: bool = True,
-        can_restrict_members: bool = True,
-        can_invite_users: bool = True,
+        can_delete_messages: bool = False,
+        can_restrict_members: bool = False,
+        can_invite_users: bool = False,
         can_pin_messages: bool = False,
-        can_promote_members: bool = False
+        can_promote_members: bool = False,
+        can_manage_voice_chats: bool = False
     ) -> bool:
         """Promote or demote a user in a supergroup or a channel.
 
@@ -52,6 +54,11 @@ class PromoteChatMember(Scaffold):
 
             is_anonymous (``bool``, *optional*):
                 Pass True, if the administrator's presence in the chat is hidden.
+
+            can_manage_chat (``bool``, *optional*):
+                Pass True, if the administrator can access the chat event log, chat statistics, message statistics
+                in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode.
+                Implied by any other administrator privilege.
 
             can_change_info (``bool``, *optional*):
                 Pass True, if the administrator can change chat title, photo and other settings.
@@ -79,6 +86,9 @@ class PromoteChatMember(Scaffold):
                 demote administrators that he has promoted, directly or indirectly (promoted by administrators that
                 were appointed by him).
 
+            can_manage_voice_chats (``bool``, *optional*):
+                Pass True, if the administration can manage voice chats (also called group calls).
+
         Returns:
             ``bool``: True on success.
 
@@ -102,6 +112,8 @@ class PromoteChatMember(Scaffold):
                     invite_users=can_invite_users or None,
                     pin_messages=can_pin_messages or None,
                     add_admins=can_promote_members or None,
+                    manage_call=can_manage_voice_chats or None,
+                    other=can_manage_chat or None
                 ),
                 rank=""
             )

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -54,7 +54,7 @@ class SetSlowMode(Scaffold):
         await self.send(
             raw.functions.channels.ToggleSlowMode(
                 channel=await self.resolve_peer(chat_id),
-                seconds=0 if seconds is None else seconds
+                seconds=seconds or 0
             )
         )
 
