@@ -16,12 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional, List
 
-from pyrogram import raw
-from pyrogram import utils
-from pyrogram import types
-from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from .inline_query_result import InlineQueryResult
 
 
@@ -54,6 +52,9 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
             Pass "markdown" or "md" to enable Markdown-style parsing only.
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
+
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
             
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
@@ -69,7 +70,8 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
         id: str = None,
         description: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None
     ):
@@ -79,12 +81,17 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
         self.title = title
         self.description = description
         self.caption = caption
+        self.caption_entities = caption_entities
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         document = utils.get_input_file_from_file_id(self.file_id)
+
+        message, entities = (await utils.parse_text_entities(
+            client, self.caption, self.parse_mode, self.caption_entities
+        )).values()
 
         return raw.types.InputBotInlineResultDocument(
             id=self.id,
@@ -93,11 +100,12 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
             description=self.description,
             document=document,
             send_message=(
-                await self.input_message_content.write(self.reply_markup)
+                await self.input_message_content.write(client, self.reply_markup)
                 if self.input_message_content
                 else raw.types.InputBotInlineMessageMediaAuto(
-                    reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **await (Parser(None)).parse(self.caption, self.parse_mode)
+                    reply_markup=await self.reply_markup.write(client) if self.reply_markup else None,
+                    message=message,
+                    entities=entities
                 )
             )
         )
