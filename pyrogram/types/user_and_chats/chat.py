@@ -609,6 +609,7 @@ class Chat(Object):
     async def promote_member(
         self,
         user_id: Union[int, str],
+        can_manage_chat: bool = True,
         can_change_info: bool = True,
         can_post_messages: bool = False,
         can_edit_messages: bool = False,
@@ -616,7 +617,8 @@ class Chat(Object):
         can_restrict_members: bool = True,
         can_invite_users: bool = True,
         can_pin_messages: bool = False,
-        can_promote_members: bool = False
+        can_promote_members: bool = False,
+        can_manage_voice_chats: bool = False
     ) -> bool:
         """Bound method *promote_member* of :obj:`~pyrogram.types.Chat`.
 
@@ -639,6 +641,11 @@ class Chat(Object):
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            can_manage_chat (``bool``, *optional*):
+                Pass True, if the administrator can access the chat event log, chat statistics, message statistics
+                in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode.
+                Implied by any other administrator privilege.
 
             can_change_info (``bool``, *optional*):
                 Pass True, if the administrator can change chat title, photo and other settings.
@@ -666,6 +673,9 @@ class Chat(Object):
                 demote administrators that he has promoted, directly or indirectly (promoted by administrators that
                 were appointed by him).
 
+            can_manage_voice_chats (``bool``, *optional*):
+                Pass True, if the administration can manage voice chats (also called group calls).
+
         Returns:
             ``bool``: True on success.
 
@@ -676,6 +686,7 @@ class Chat(Object):
         return await self._client.promote_chat_member(
             chat_id=self.id,
             user_id=user_id,
+            can_manage_chat=can_manage_chat,
             can_change_info=can_change_info,
             can_post_messages=can_post_messages,
             can_edit_messages=can_edit_messages,
@@ -683,7 +694,8 @@ class Chat(Object):
             can_restrict_members=can_restrict_members,
             can_invite_users=can_invite_users,
             can_pin_messages=can_pin_messages,
-            can_promote_members=can_promote_members
+            can_promote_members=can_promote_members,
+            can_manage_voice_chats=can_manage_voice_chats
         )
 
     async def join(self):

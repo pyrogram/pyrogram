@@ -18,15 +18,16 @@
 
 
 from .create_chat_invite_link import CreateChatInviteLink
-from .delete_all_chat_invite_links import DeleteAllChatInviteLinks
+from .delete_chat_admin_invite_links import DeleteChatAdminInviteLinks
 from .delete_chat_invite_link import DeleteChatInviteLink
 from .edit_chat_invite_link import EditChatInviteLink
 from .export_chat_invite_link import ExportChatInviteLink
 from .get_chat_admins_with_invite_links import GetChatAdminsWithInviteLinks
+from .get_chat_invite_link import GetChatInviteLink
 from .get_chat_invite_link_members import GetChatInviteLinkMembers
 from .get_chat_invite_link_members_count import GetChatInviteLinkMembersCount
-from .get_chat_invite_links import GetChatInviteLinks
-from .get_chat_invite_links_count import GetChatInviteLinksCount
+from .get_chat_admin_invite_links import GetChatAdminInviteLinks
+from .get_chat_admin_invite_links_count import GetChatAdminInviteLinksCount
 from .revoke_chat_invite_link import RevokeChatInviteLink
 
 
@@ -37,10 +38,11 @@ class InviteLinks(
     CreateChatInviteLink,
     GetChatInviteLinkMembers,
     GetChatInviteLinkMembersCount,
-    GetChatInviteLinks,
+    GetChatAdminInviteLinks,
     ExportChatInviteLink,
-    DeleteAllChatInviteLinks,
-    GetChatInviteLinksCount,
-    GetChatAdminsWithInviteLinks
+    DeleteChatAdminInviteLinks,
+    GetChatAdminInviteLinksCount,
+    GetChatAdminsWithInviteLinks,
+    GetChatInviteLink
 ):
     pass

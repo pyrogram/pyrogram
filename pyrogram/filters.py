@@ -141,7 +141,7 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
 
         **kwargs (``any``, *optional*):
             Any keyword argument you would like to pass. Useful when creating parameterized custom filters, such as
-            :meth:`~Filters.command` or :meth:`~Filters.regex`.
+            :meth:`~pyrogram.filters.command` or :meth:`~pyrogram.filters.regex`.
     """
     return type(
         name or func.__name__ or CUSTOM_FILTER_NAME,

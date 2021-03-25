@@ -212,8 +212,14 @@ class ChatMember(Object):
         self.can_send_polls = can_send_polls
 
     @staticmethod
-    def _parse(client, member, users) -> "ChatMember":
-        user = types.User._parse(client, users[member.user_id])
+    def _parse(client, member, users, chats) -> "ChatMember":
+        if not isinstance(member, (raw.types.ChannelParticipantBanned, raw.types.ChannelParticipantLeft)):
+            user = types.User._parse(client, users[member.user_id])
+        else:
+            if isinstance(member.peer, raw.types.PeerUser):
+                user = types.User._parse(client, users[member.peer.user_id])
+            else:
+                user = None
 
         invited_by = (
             types.User._parse(client, users[member.inviter_id])

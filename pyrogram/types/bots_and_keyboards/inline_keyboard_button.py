@@ -129,7 +129,7 @@ class InlineKeyboardButton(Object):
             )
 
     async def write(self, client: "pyrogram.Client"):
-        if self.callback_data:
+        if self.callback_data is not None:
             # Telegram only wants bytes, but we are allowed to pass strings too, for convenience.
             data = bytes(self.callback_data, "utf-8") if isinstance(self.callback_data, str) else self.callback_data
 
@@ -138,32 +138,32 @@ class InlineKeyboardButton(Object):
                 data=data
             )
 
-        if self.url:
+        if self.url is not None:
             return raw.types.KeyboardButtonUrl(
                 text=self.text,
                 url=self.url
             )
 
-        if self.login_url:
+        if self.login_url is not None:
             return self.login_url.write(
                 text=self.text,
                 bot=await client.resolve_peer(self.login_url.bot_username)
             )
 
-        if self.switch_inline_query:
+        if self.switch_inline_query is not None:
             return raw.types.KeyboardButtonSwitchInline(
                 text=self.text,
                 query=self.switch_inline_query
             )
 
-        if self.switch_inline_query_current_chat:
+        if self.switch_inline_query_current_chat is not None:
             return raw.types.KeyboardButtonSwitchInline(
                 text=self.text,
                 query=self.switch_inline_query_current_chat,
                 same_peer=True
             )
 
-        if self.callback_game:
+        if self.callback_game is not None:
             return raw.types.KeyboardButtonGame(
                 text=self.text
             )
