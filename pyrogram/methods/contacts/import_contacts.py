@@ -42,7 +42,7 @@ class ImportContacts(Scaffold):
 
                 from pyrogram.types import InputPhoneContact
 
-                app.add_contacts([
+                app.import_contacts([
                     InputPhoneContact("39123456789", "Foo"),
                     InputPhoneContact("38987654321", "Bar"),
                     InputPhoneContact("01234567891", "Baz")])

@@ -60,7 +60,7 @@ class SetAdministratorTitle(Scaffold):
         r = (await self.send(
             raw.functions.channels.GetParticipant(
                 channel=chat_id,
-                user_id=user_id
+                participant=user_id
             )
         )).participant
 

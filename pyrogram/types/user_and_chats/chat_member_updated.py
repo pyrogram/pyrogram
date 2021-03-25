@@ -82,10 +82,10 @@ class ChatMemberUpdated(Object, Update):
         invite_link = None
 
         if update.prev_participant:
-            old_chat_member = types.ChatMember._parse(client, update.prev_participant, users)
+            old_chat_member = types.ChatMember._parse(client, update.prev_participant, users, chats)
 
         if update.new_participant:
-            new_chat_member = types.ChatMember._parse(client, update.new_participant, users)
+            new_chat_member = types.ChatMember._parse(client, update.new_participant, users, chats)
 
         if update.invite:
             invite_link = types.ChatInviteLink._parse(client, update.invite, users)
