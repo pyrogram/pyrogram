@@ -133,7 +133,7 @@ class MessageEntity(Object):
 
     @staticmethod
     def _parse(client, entity, users: dict) -> Optional["MessageEntity"]:
-        type = RAW_ENTITIES_TO_TYPE.get(entity.__class__, None)
+        type = RAW_ENTITIES_TO_TYPE.get(entity.__class__)
 
         if type is None:
             return None
