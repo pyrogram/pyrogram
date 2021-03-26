@@ -49,7 +49,7 @@ class GetMediaGroup(Scaffold):
             ValueError: In case the passed message id doesn't belong to a media group.
         """
         # There can be maximum 10 items in a media group. 
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)],
+        messages = await self.get_messages(chat_id, list(range(message_id - 9, message_id + 10)),
                                            replies=0)
 
         media_group_id = messages[9].media_group_id
