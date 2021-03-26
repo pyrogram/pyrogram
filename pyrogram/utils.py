@@ -301,7 +301,7 @@ async def parse_text_entities(
         for entity in entities:
             entity._client = client
 
-        text, entities = text, [await entity.write() for entity in entities]
+        entities = [await entity.write() for entity in entities]
     else:
         text, entities = (await client.parser.parse(text, parse_mode)).values()
 
