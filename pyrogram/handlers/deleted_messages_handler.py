@@ -48,8 +48,5 @@ class DeletedMessagesHandler(Handler):
             The deleted messages, as list.
     """
 
-    def __init__(self, callback: Callable, filters: Filter = None):
-        super().__init__(callback, filters)
-
     async def check(self, client: "pyrogram.Client", messages: List[Message]):
         return await super().check(client, messages[0]) if messages else False  # The messages list can be empty

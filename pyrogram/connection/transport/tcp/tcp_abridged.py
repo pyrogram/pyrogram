@@ -26,8 +26,6 @@ log = logging.getLogger(__name__)
 
 
 class TCPAbridged(TCP):
-    def __init__(self, ipv6: bool, proxy: dict):
-        super().__init__(ipv6, proxy)
 
     async def connect(self, address: tuple):
         await super().connect(address)

@@ -27,8 +27,6 @@ log = logging.getLogger(__name__)
 
 
 class MemoryStorage(SQLiteStorage):
-    def __init__(self, name: str):
-        super().__init__(name)
 
     async def open(self):
         self.conn = sqlite3.connect(":memory:", check_same_thread=False)
