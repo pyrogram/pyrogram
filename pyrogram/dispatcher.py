@@ -201,7 +201,7 @@ class Dispatcher:
                             if isinstance(handler, handler_type):
                                 try:
                                     if await handler.check(self.client, parsed_update):
-                                        args = (parsed_update,)
+                                        args = (parsed_update)
                                 except Exception as e:
                                     log.error(e, exc_info=True)
                                     continue
