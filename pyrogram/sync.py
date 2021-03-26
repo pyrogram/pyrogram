@@ -82,4 +82,4 @@ for class_name in dir(types):
 
 # Special case for idle, because it's not inside Methods
 async_to_sync(idle_module, "idle")
-idle = getattr(idle_module, "idle")
+idle = idle_module.idle

@@ -75,7 +75,7 @@ class ChatMemberUpdated(Object, Update):
         users: Dict[int, "raw.types.User"],
         chats: Dict[int, "raw.types.Chat"]
     ) -> "ChatMemberUpdated":
-        chat_id = getattr(update, "chat_id", None) or getattr(update, "channel_id")
+        chat_id = getattr(update, "chat_id", None) or update.channel_id
 
         old_chat_member = None
         new_chat_member = None
