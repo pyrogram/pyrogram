@@ -104,5 +104,5 @@ class KickChatMember(Scaffold):
                     {i.id: i for i in r.users},
                     {i.id: i for i in r.chats}
                 )
-            
-        return True
+        else:
+            return True
