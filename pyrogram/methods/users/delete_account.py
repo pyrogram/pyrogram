@@ -22,7 +22,7 @@ from pyrogram.scaffold import Scaffold
 class DeleteAccount(Scaffold):
     def delete_account(
         self,
-        reason: str = None
+        reason: str = ""
     ) -> bool:
         """Delete your own account.
         
