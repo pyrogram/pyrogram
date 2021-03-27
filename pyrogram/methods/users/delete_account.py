@@ -44,7 +44,7 @@ class DeleteAccount(Scaffold):
         return bool(
             await self.send(
                 raw.functions.account.DeleteAccount(
-                    reason=reason or ""
+                    reason=reason
                 )
             )
         )
