@@ -28,6 +28,7 @@ from .set_profile_photo import SetProfilePhoto
 from .unblock_user import UnblockUser
 from .update_profile import UpdateProfile
 from .update_username import UpdateUsername
+from .delete_account import DeleteAccount
 
 
 class Users(
@@ -43,5 +44,6 @@ class Users(
     IterProfilePhotos,
     UnblockUser,
     UpdateProfile,
+    DeleteAccount,
 ):
     pass
