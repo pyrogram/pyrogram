@@ -53,6 +53,7 @@ from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .get_chat_onlines import GetChatOnlines
 
 
 class Chats(
@@ -92,6 +93,7 @@ class Chats(
     DeleteUserHistory,
     UnpinAllChatMessages,
     MarkChatUnread,
-    GetChatEventLog
+    GetChatEventLog,
+    GetChatOnlines
 ):
     pass
