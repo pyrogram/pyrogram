@@ -26,6 +26,8 @@ from .keyboard_button import KeyboardButton
 from .login_url import LoginUrl
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
+from .bot_command import BotCommand
+from .bot_commands_list import BotCommandsList
 
 __all__ = [
     "CallbackGame",
@@ -37,5 +39,7 @@ __all__ = [
     "KeyboardButton",
     "ReplyKeyboardMarkup",
     "ReplyKeyboardRemove",
-    "LoginUrl"
+    "LoginUrl",
+    "BotCommand",
+    "BotCommandsList"
 ]

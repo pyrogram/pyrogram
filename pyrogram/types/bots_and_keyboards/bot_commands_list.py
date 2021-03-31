@@ -16,26 +16,24 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .answer_callback_query import AnswerCallbackQuery
-from .answer_inline_query import AnswerInlineQuery
-from .get_game_high_scores import GetGameHighScores
-from .get_inline_bot_results import GetInlineBotResults
-from .request_callback_answer import RequestCallbackAnswer
-from .send_game import SendGame
-from .send_inline_bot_result import SendInlineBotResult
-from .set_game_score import SetGameScore
-from .set_bot_commands import SetBotCommands
+from typing import List
+
+from pyrogram import types
+from ..object import Object
 
 
-class Bots(
-    AnswerCallbackQuery,
-    AnswerInlineQuery,
-    GetInlineBotResults,
-    RequestCallbackAnswer,
-    SendInlineBotResult,
-    SendGame,
-    SetGameScore,
-    GetGameHighScores,
-    SetBotCommands
-):
-    pass
+class BotCommandsList(Object):
+    """A commands list that appears when pressing '/' in the official clients.
+
+    Parameters:
+        commands (List of :obj:`~pyrogram.types.BotCommand`):
+            The command that will be sent when clicking on that.
+    """
+
+    def __init__(self, commands: List["types.BotCommand"]):
+        super().__init__()
+
+        self.commands = commands
+
+    def write(self):
+        return [types.BotCommand.write(command) for command in self.commands]
