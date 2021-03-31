@@ -155,6 +155,7 @@ class SendMessage(Scaffold):
                 text=message,
                 date=r.date,
                 outgoing=r.out,
+                reply_markup=reply_markup,
                 entities=[
                     types.MessageEntity._parse(None, entity, {})
                     for entity in entities
