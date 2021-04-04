@@ -80,6 +80,11 @@ class EditMessageMedia(Scaffold):
         caption = media.caption
         parse_mode = media.parse_mode
 
+        message, entities = None, None
+
+        if caption is not None:
+            message, entities = (await self.parser.parse(caption, parse_mode)).values()
+
         if isinstance(media, types.InputMediaPhoto):
             if os.path.isfile(media.media):
                 media = await self.send(
@@ -252,8 +257,9 @@ class EditMessageMedia(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 media=media,
-                reply_markup=reply_markup.write() if reply_markup else None,
-                **await self.parser.parse(caption, parse_mode)
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
+                message=message,
+                entities=entities
             )
         )
 

@@ -18,6 +18,7 @@
 
 from typing import List, Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -81,7 +82,7 @@ class ReplyKeyboardMarkup(Object):
             selective=kb.selective
         )
 
-    def write(self):
+    async def write(self, _: "pyrogram.Client"):
         return raw.types.ReplyKeyboardMarkup(
             rows=[raw.types.KeyboardButtonRow(
                 buttons=[

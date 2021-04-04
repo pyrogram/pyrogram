@@ -23,12 +23,12 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class AddContacts(Scaffold):
-    async def add_contacts(
+class ImportContacts(Scaffold):
+    async def import_contacts(
         self,
         contacts: List["types.InputPhoneContact"]
     ):
-        """Add contacts to your Telegram address book.
+        """Import contacts to your Telegram address book.
 
         Parameters:
             contacts (List of :obj:`~pyrogram.types.InputPhoneContact`):
@@ -42,7 +42,7 @@ class AddContacts(Scaffold):
 
                 from pyrogram.types import InputPhoneContact
 
-                app.add_contacts([
+                app.import_contacts([
                     InputPhoneContact("39123456789", "Foo"),
                     InputPhoneContact("38987654321", "Bar"),
                     InputPhoneContact("01234567891", "Baz")])

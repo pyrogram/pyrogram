@@ -62,7 +62,7 @@ class EditMessageReplyMarkup(Scaffold):
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
-                reply_markup=reply_markup.write() if reply_markup else None,
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
             )
         )
 

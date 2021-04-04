@@ -68,7 +68,7 @@ class StopPoll(Scaffold):
                         answers=[]
                     )
                 ),
-                reply_markup=reply_markup.write() if reply_markup else None
+                reply_markup=await reply_markup.write(self) if reply_markup else None
             )
         )
 

@@ -121,7 +121,7 @@ class Markdown:
                 start_tag = end_tag = ITALIC_DELIM
             elif entity_type == "underline":
                 start_tag = end_tag = UNDERLINE_DELIM
-            elif entity_type == "strike":
+            elif entity_type == "strikethrough":
                 start_tag = end_tag = STRIKE_DELIM
             elif entity_type == "code":
                 start_tag = end_tag = CODE_DELIM

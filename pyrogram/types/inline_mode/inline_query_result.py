@@ -18,6 +18,7 @@
 
 from uuid import uuid4
 
+import pyrogram
 from pyrogram import types
 from ..object import Object
 
@@ -66,5 +67,5 @@ class InlineQueryResult(Object):
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         pass
