@@ -38,12 +38,13 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, mode: int = 3):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
         self.proxy = proxy
-        self.address = DataCenter(dc_id, test_mode, ipv6)
+        self.media = media
+        self.address = DataCenter(dc_id, test_mode, ipv6, media)
         self.mode = self.MODES.get(mode, TCPAbridged)
 
         self.protocol = None  # type: TCP
@@ -60,11 +61,13 @@ class Connection:
                 self.protocol.close()
                 await asyncio.sleep(1)
             else:
-                log.info("Connected! {} DC{} - IPv{} - {}".format(
+                log.info("Connected! {} DC{} - IPv{} - {}{} {}".format(
                     "Test" if self.test_mode else "Production",
                     self.dc_id,
                     "6" if self.ipv6 else "4",
-                    self.mode.__name__
+                    self.mode.__name__,
+                    " (media)" if self.media else "",
+                    self.address
                 ))
                 break
         else:

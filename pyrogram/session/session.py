@@ -120,7 +120,8 @@ class Session:
                 self.dc_id,
                 self.test_mode,
                 self.client.ipv6,
-                self.client.proxy
+                self.client.proxy,
+                self.is_media
             )
 
             try:
