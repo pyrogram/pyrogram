@@ -16,11 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 import pyrogram
 from pyrogram import raw
-from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType, ThumbnailSource
 from ..object import Object
 
@@ -65,55 +64,48 @@ class Thumbnail(Object):
         self.file_size = file_size
 
     @staticmethod
-    def _parse(
-        client,
-        media: Union["raw.types.Photo", "raw.types.Document"]
-    ) -> Optional[List[Union["types.StrippedThumbnail", "Thumbnail"]]]:
+    def _parse(client, media: Union["raw.types.Photo", "raw.types.Document"]) -> Optional[List["Thumbnail"]]:
         if isinstance(media, raw.types.Photo):
-            raw_thumbnails = media.sizes[:-1]
+            raw_thumbs = [i for i in media.sizes if isinstance(i, raw.types.PhotoSize)]
+            raw_thumbs.sort(key=lambda p: p.size)
+            raw_thumbs = raw_thumbs[:-1]
+
+            file_type = FileType.PHOTO
         elif isinstance(media, raw.types.Document):
-            raw_thumbnails = media.thumbs
-
-            if not raw_thumbnails:
-                return None
+            raw_thumbs = media.thumbs
+            file_type = FileType.THUMBNAIL
         else:
-            return None
+            return
 
-        thumbnails = []
+        parsed_thumbs = []
 
-        file_type = FileType.PHOTO if isinstance(media, raw.types.Photo) else FileType.THUMBNAIL
-        thumbnail_file_type = file_type
+        for thumb in raw_thumbs:
+            if not isinstance(thumb, raw.types.PhotoSize):
+                continue
 
-        for thumbnail in raw_thumbnails:
-            # TODO: Enable this
-            # if isinstance(thumbnail, types.PhotoStrippedSize):
-            #     thumbnails.append(StrippedThumbnail._parse(client, thumbnail))
-            if isinstance(thumbnail, raw.types.PhotoSize):
-                thumbnails.append(
-                    Thumbnail(
-                        file_id=FileId(
-                            file_type=file_type,
-                            dc_id=media.dc_id,
-                            media_id=media.id,
-                            access_hash=media.access_hash,
-                            file_reference=media.file_reference,
-                            thumbnail_file_type=thumbnail_file_type,
-                            thumbnail_source=ThumbnailSource.THUMBNAIL,
-                            thumbnail_size=thumbnail.type,
-                            volume_id=thumbnail.location.volume_id,
-                            local_id=thumbnail.location.local_id
-                        ).encode(),
-                        file_unique_id=FileUniqueId(
-                            file_unique_type=FileUniqueType.PHOTO,
-                            media_id=media.id,
-                            volume_id=thumbnail.location.volume_id,
-                            local_id=thumbnail.location.local_id
-                        ).encode(),
-                        width=thumbnail.w,
-                        height=thumbnail.h,
-                        file_size=thumbnail.size,
-                        client=client
-                    )
+            parsed_thumbs.append(
+                Thumbnail(
+                    file_id=FileId(
+                        file_type=file_type,
+                        dc_id=media.dc_id,
+                        media_id=media.id,
+                        access_hash=media.access_hash,
+                        file_reference=media.file_reference,
+                        thumbnail_file_type=file_type,
+                        thumbnail_source=ThumbnailSource.THUMBNAIL,
+                        thumbnail_size=thumb.type,
+                        volume_id=0,
+                        local_id=0
+                    ).encode(),
+                    file_unique_id=FileUniqueId(
+                        file_unique_type=FileUniqueType.DOCUMENT,
+                        media_id=media.id
+                    ).encode(),
+                    width=thumb.w,
+                    height=thumb.h,
+                    file_size=thumb.size,
+                    client=client
                 )
+            )
 
-        return thumbnails or None
+        return parsed_thumbs or None
