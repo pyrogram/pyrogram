@@ -358,7 +358,7 @@ class Session:
 
         # Call log.debug twice because calling it once by appending "data" to the previous string (i.e. f"Kind: {data}")
         # will cause "data" to be evaluated as string every time instead of only when debug is actually enabled.
-        log.debug("Sent:")
+        log.debug("Sent:\n%s", message)
         log.debug(message)
 
         payload = await self.loop.run_in_executor(
