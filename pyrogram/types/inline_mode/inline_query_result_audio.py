@@ -42,10 +42,10 @@ class InlineQueryResultAudio(InlineQueryResult):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
 
-        title (``str``, *optional*):
+        title (``str``):
             Title for the result.
 
-        mime_type (``str``, *optional*):
+        mime_type (``str``):
             Mime type of the content of audio url, “text/html” or “audio/mp3”.
 
         description (``str``, *optional*):
@@ -77,8 +77,8 @@ class InlineQueryResultAudio(InlineQueryResult):
         audio_url: str,
         thumb_url: str,
         id: str = None,
-        title: str = None,
-        mime_type: str = None,
+        title: str,
+        mime_type: str,
         description: str = None,
         caption: str = "",
         parse_mode: Optional[str] = object,
@@ -92,10 +92,6 @@ class InlineQueryResultAudio(InlineQueryResult):
 
         self.thumb_url = thumb_url
         self.title = title
-
-#        if mime_type != "text/html" and mime_type != "audio/mp3":
- #           raise ValueError("Invalid mime type")
-
         self.mime_type = mime_type
         self.description = description
         self.caption = caption
