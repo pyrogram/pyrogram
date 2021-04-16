@@ -16,11 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
+from typing import Optional, List
 
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from .inline_query_result import InlineQueryResult
 
 
@@ -32,27 +34,39 @@ class InlineQueryResultAudio(InlineQueryResult):
     Parameters:
         audio_url (``str``):
             A valid URL for the embedded audio player or audio file.
+
         thumb_url (``str``):
             URL of the thumbnail (jpeg only) for the audio.
+
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
+
         title (``str``, *optional*):
             Title for the result.
+
         mime_type (``str``, *optional*):
             Mime type of the content of audio url, “text/html” or “audio/mp3”.
+
         description (``str``, *optional*):
             Short description of the result.
+
         caption (``str``, *optional*):
             Caption of the audio to be sent, 0-1024 characters.
+
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
             You can combine both syntaxes together.
             Pass "markdown" or "md" to enable Markdown-style parsing only.
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
+
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+        
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             An InlineKeyboardMarkup object.
+        
         input_message_content (:obj:`~pyrogram.types.InputMessageContent`):
             Content of the message to be sent instead of the audio. This field is required if InlineQueryResultAudio is
             used to send an HTML-page as a result.
@@ -68,6 +82,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         description: str = None,
         caption: str = "",
         parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None
     ):
@@ -78,12 +93,13 @@ class InlineQueryResultAudio(InlineQueryResult):
         self.thumb_url = thumb_url
         self.title = title
 
-        if mime_type != "text/html" and mime_type != "audio/mp3":
-            raise ValueError("Invalid mime type")
+#        if mime_type != "text/html" and mime_type != "audio/mp3":
+ #           raise ValueError("Invalid mime type")
 
         self.mime_type = mime_type
         self.description = description
         self.caption = caption
+        self.caption_entities = caption_entities
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup
 
@@ -92,7 +108,7 @@ class InlineQueryResultAudio(InlineQueryResult):
 
         self.input_message_content = input_message_content
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         audio = raw.types.InputWebDocument(
             url=self.audio_url,
             size=0,
@@ -107,6 +123,10 @@ class InlineQueryResultAudio(InlineQueryResult):
             attributes=[]
         )
 
+        message, entities = (await utils.parse_text_entities(
+            client, self.caption, self.parse_mode, self.caption_entities
+        )).values()
+
         return raw.types.InputBotInlineResult(
             id=self.id,
             type=self.type,
@@ -115,11 +135,11 @@ class InlineQueryResultAudio(InlineQueryResult):
             thumb=thumb,
             content=audio,
             send_message=(
-                await self.input_message_content.write(self.reply_markup)
+                await self.input_message_content.write(client, self.reply_markup)
                 if self.input_message_content
                 else raw.types.InputBotInlineMessageMediaAuto(
-                    reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **await(Parser(None)).parse(self.caption, self.parse_mode)
-                )
+                    reply_markup=await self.reply_markup.write(client) if self.reply_markup else None,
+                    message=message,
+                    entities=entities)
             )
         )
