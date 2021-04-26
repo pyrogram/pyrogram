@@ -264,6 +264,9 @@ class Message(Object, Update):
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`~pyrogram.filters.command`.
 
+        voice_chat_scheduled (:obj:`~pyrogram.types.VoiceChatScheduled`, *optional*):
+            Service message: voice chat scheduled.
+
         voice_chat_started (:obj:`~pyrogram.types.VoiceChatStarted`, *optional*):
             Service message: the voice chat started.
 
@@ -344,6 +347,7 @@ class Message(Object, Update):
         outgoing: bool = None,
         matches: List[Match] = None,
         command: List[str] = None,
+        voice_chat_scheduled: "types.VoiceChatScheduled" = None,
         voice_chat_started: "types.VoiceChatStarted" = None,
         voice_chat_ended: "types.VoiceChatEnded" = None,
         voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
@@ -414,6 +418,7 @@ class Message(Object, Update):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+        self.voice_chat_scheduled = voice_chat_scheduled
         self.voice_chat_started = voice_chat_started
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
@@ -442,6 +447,7 @@ class Message(Object, Update):
             group_chat_created = None
             channel_chat_created = None
             new_chat_photo = None
+            voice_chat_scheduled = None
             voice_chat_started = None
             voice_chat_ended = None
             voice_chat_members_invited = None
@@ -466,6 +472,8 @@ class Message(Object, Update):
                 channel_chat_created = True
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
+            elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
+                voice_chat_scheduled = types.VoiceChatScheduled._parse(action)
             elif isinstance(action, raw.types.MessageActionGroupCall):
                 if action.duration:
                     voice_chat_ended = types.VoiceChatEnded._parse(action)
@@ -495,6 +503,7 @@ class Message(Object, Update):
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
                 client=client,
+                voice_chat_scheduled=voice_chat_scheduled,
                 voice_chat_started=voice_chat_started,
                 voice_chat_ended=voice_chat_ended,
                 voice_chat_members_invited=voice_chat_members_invited

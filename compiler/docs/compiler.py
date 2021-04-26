@@ -376,6 +376,7 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            VoiceChatScheduled
             VoiceChatStarted
             VoiceChatEnded
             VoiceChatMembersInvited
