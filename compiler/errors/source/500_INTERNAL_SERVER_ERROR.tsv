@@ -41,3 +41,4 @@ VOLUME_LOC_NOT_FOUND	Telegram is having internal problems. Please try again late
 WORKER_BUSY_TOO_LONG_RETRY	Server workers are too busy right now due to Telegram having internal problems. Please try again later
 WP_ID_GENERATE_FAILED	Telegram is having internal problems. Please try again later
 GROUPCALL_ADD_PARTICIPANTS_FAILED	Failure while adding voice chat member due to Telegram having internal problems. Please try again later
+No workers running	The Telegram server is restarting its workers. Try again later.
