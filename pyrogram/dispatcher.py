@@ -20,6 +20,7 @@ import asyncio
 import inspect
 import logging
 from collections import OrderedDict
+from functools import partial
 
 import pyrogram
 from pyrogram import utils
@@ -200,8 +201,12 @@ class Dispatcher:
 
                             if isinstance(handler, handler_type):
                                 try:
-                                    if await handler.check(self.client, parsed_update):
+                                    result = await handler.check(self.client, parsed_update)
+                                    if result:
                                         args = (parsed_update,)
+                                        kwargs = {}
+                                        if isinstance(result, dict):
+                                            kwargs.update(result)
                                 except Exception as e:
                                     log.error(e, exc_info=True)
                                     continue
@@ -214,13 +219,16 @@ class Dispatcher:
 
                             try:
                                 if inspect.iscoroutinefunction(handler.callback):
-                                    await handler.callback(self.client, *args)
+                                    await handler.callback(self.client, *args, **kwargs)
                                 else:
                                     await self.loop.run_in_executor(
                                         self.client.executor,
-                                        handler.callback,
-                                        self.client,
-                                        *args
+                                        partial(
+                                            handler.callback,
+                                            self.client,
+                                            *args,
+                                            **kwargs
+                                        )
                                     )
                             except pyrogram.StopPropagation:
                                 raise
