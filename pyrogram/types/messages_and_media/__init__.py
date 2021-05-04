@@ -35,9 +35,10 @@ from .venue import Venue
 from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
+from .web_document import WebDocument
 from .webpage import WebPage
 
 __all__ = [
-    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
-    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice", "WebPage", "Dice"
+    "Animation", "Audio", "Contact", "Dice", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
+    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice", "WebDocument", "WebPage"
 ]
