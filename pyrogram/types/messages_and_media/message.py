@@ -106,16 +106,17 @@ class Message(Object, Update):
             The message is empty.
             A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
 
-        service (``bool``, *optional*):
-            The message is a service message.
-            A service message has one and only one of these fields set: left_chat_member, new_chat_title,
-            new_chat_photo, delete_chat_photo, group_chat_created, supergroup_chat_created, channel_chat_created,
-            migrate_to_chat_id, migrate_from_chat_id, pinned_message.
+        service (``str``, *optional*):
+            The message is a service message. This field will contain the name of the service message.
+            A service message has one and only one of these fields set: new_chat_members, left_chat_member,
+            new_chat_title, new_chat_photo, delete_chat_photo, group_chat_created, channel_chat_created,
+            migrate_to_chat_id, migrate_from_chat_id, pinned_message, game_high_score, voice_chat_started,
+            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited.
 
-        media (``bool``, *optional*):
-            The message is a media message.
+        media (``str``, *optional*):
+            The message is a media message. This field will contain the name of the media message.
             A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
-            voice, video_note, contact, location, venue.
+            voice, video_note, contact, location, venue, poll, web_page, dice, game.
 
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
@@ -304,10 +305,10 @@ class Message(Object, Update):
         reply_to_message: "Message" = None,
         mentioned: bool = None,
         empty: bool = None,
-        service: bool = None,
+        service: str = None,
         scheduled: bool = None,
         from_scheduled: bool = None,
-        media: bool = None,
+        media: str = None,
         edit_date: int = None,
         media_group_id: str = None,
         author_signature: str = None,
@@ -452,35 +453,51 @@ class Message(Object, Update):
             voice_chat_ended = None
             voice_chat_members_invited = None
 
+            service_type = None
+
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
+                service_type = "new_chat_members"
             elif isinstance(action, raw.types.MessageActionChatJoinedByLink):
                 new_chat_members = [types.User._parse(client, users[utils.get_raw_peer_id(message.from_id)])]
+                service_type = "new_chat_members"
             elif isinstance(action, raw.types.MessageActionChatDeleteUser):
                 left_chat_member = types.User._parse(client, users[action.user_id])
+                service_type = "left_chat_member"
             elif isinstance(action, raw.types.MessageActionChatEditTitle):
                 new_chat_title = action.title
+                service_type = "new_chat_title"
             elif isinstance(action, raw.types.MessageActionChatDeletePhoto):
                 delete_chat_photo = True
+                service_type = "delete_chat_photo"
             elif isinstance(action, raw.types.MessageActionChatMigrateTo):
                 migrate_to_chat_id = action.channel_id
+                service_type = "migrate_to_chat_id"
             elif isinstance(action, raw.types.MessageActionChannelMigrateFrom):
                 migrate_from_chat_id = action.chat_id
+                service_type = "migrate_from_chat_id"
             elif isinstance(action, raw.types.MessageActionChatCreate):
                 group_chat_created = True
+                service_type = "group_chat_created"
             elif isinstance(action, raw.types.MessageActionChannelCreate):
                 channel_chat_created = True
+                service_type = "channel_chat_created"
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
+                service_type = "new_chat_photo"
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
                 voice_chat_scheduled = types.VoiceChatScheduled._parse(action)
+                service_type = "voice_chat_scheduled"
             elif isinstance(action, raw.types.MessageActionGroupCall):
                 if action.duration:
                     voice_chat_ended = types.VoiceChatEnded._parse(action)
+                    service_type = "voice_chat_ended"
                 else:
                     voice_chat_started = types.VoiceChatStarted()
+                    service_type = "voice_chat_started"
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
                 voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
+                service_type = "voice_chat_members_invited"
 
             user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
             from_user = types.User._parse(client, users.get(user, None))
@@ -492,7 +509,7 @@ class Message(Object, Update):
                 chat=types.Chat._parse(client, message, users, chats),
                 from_user=from_user,
                 sender_chat=sender_chat,
-                service=True,
+                service=service_type,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,
@@ -502,11 +519,11 @@ class Message(Object, Update):
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
-                client=client,
                 voice_chat_scheduled=voice_chat_scheduled,
                 voice_chat_started=voice_chat_started,
                 voice_chat_ended=voice_chat_ended,
-                voice_chat_members_invited=voice_chat_members_invited
+                voice_chat_members_invited=voice_chat_members_invited,
+                client=client
                 # TODO: supergroup_chat_created
             )
 
@@ -517,6 +534,8 @@ class Message(Object, Update):
                         reply_to_message_ids=message.id,
                         replies=0
                     )
+
+                    parsed_message.service = "pinned_message"
                 except MessageIdsEmpty:
                     pass
 
@@ -530,8 +549,12 @@ class Message(Object, Update):
                             reply_to_message_ids=message.id,
                             replies=0
                         )
+
+                        parsed_message.service = "game_high_score"
                     except MessageIdsEmpty:
                         pass
+
+
 
             return parsed_message
 
@@ -581,18 +604,24 @@ class Message(Object, Update):
             dice = None
 
             media = message.media
+            media_type = None
 
             if media:
                 if isinstance(media, raw.types.MessageMediaPhoto):
                     photo = types.Photo._parse(client, media.photo, media.ttl_seconds)
+                    media_type = "photo"
                 elif isinstance(media, raw.types.MessageMediaGeo):
                     location = types.Location._parse(client, media.geo)
+                    media_type = "location"
                 elif isinstance(media, raw.types.MessageMediaContact):
                     contact = types.Contact._parse(client, media)
+                    media_type = "contact"
                 elif isinstance(media, raw.types.MessageMediaVenue):
                     venue = types.Venue._parse(client, media)
+                    media_type = "venue"
                 elif isinstance(media, raw.types.MessageMediaGame):
                     game = types.Game._parse(client, message)
+                    media_type = "game"
                 elif isinstance(media, raw.types.MessageMediaDocument):
                     doc = media.document
 
@@ -610,20 +639,23 @@ class Message(Object, Update):
 
                             if audio_attributes.voice:
                                 voice = types.Voice._parse(client, doc, audio_attributes)
+                                media_type = "voice"
                             else:
                                 audio = types.Audio._parse(client, doc, audio_attributes, file_name)
+                                media_type = "audio"
                         elif raw.types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
-
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
+                            media_type = "animation"
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
 
                             if video_attributes.round_message:
                                 video_note = types.VideoNote._parse(client, doc, video_attributes)
+                                media_type = "video_note"
                             else:
-                                video = types.Video._parse(client, doc, video_attributes, file_name,
-                                                           media.ttl_seconds)
+                                video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
+                                media_type = "video"
                         elif raw.types.DocumentAttributeSticker in attributes:
                             sticker = await types.Sticker._parse(
                                 client, doc,
@@ -631,17 +663,22 @@ class Message(Object, Update):
                                 attributes[raw.types.DocumentAttributeSticker],
                                 file_name
                             )
+                            media_type = "sticker"
                         else:
                             document = types.Document._parse(client, doc, file_name)
+                            media_type = "document"
                 elif isinstance(media, raw.types.MessageMediaWebPage):
                     if isinstance(media.webpage, raw.types.WebPage):
                         web_page = types.WebPage._parse(client, media.webpage)
+                        media_type = "web_page"
                     else:
                         media = None
                 elif isinstance(media, raw.types.MessageMediaPoll):
                     poll = types.Poll._parse(client, media)
+                    media_type = "poll"
                 elif isinstance(media, raw.types.MessageMediaDice):
                     dice = types.Dice._parse(client, media)
+                    media_type = "dice"
                 else:
                     media = None
 
@@ -699,7 +736,7 @@ class Message(Object, Update):
                 mentioned=message.mentioned,
                 scheduled=is_scheduled,
                 from_scheduled=message.from_scheduled,
-                media=bool(media) or None,
+                media=media_type,
                 edit_date=message.edit_date,
                 media_group_id=message.grouped_id,
                 photo=photo,
