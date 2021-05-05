@@ -764,15 +764,21 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             Examples: when True, command="Start" would trigger /Start but not /start.
     """
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
+    username = None
 
-    async def func(flt, _, message: Message):
+    async def func(flt, client: pyrogram.Client, message: Message):
+        nonlocal username
+
+        if username is None:
+            username = (await client.get_me()).username
+
         text = message.text or message.caption
         message.command = None
 
         if not text:
             return False
 
-        pattern = r"^{}(?:\s|$)" if flt.case_sensitive else r"(?i)^{}(?:\s|$)"
+        pattern = rf"^(?:{{cmd}}|{{cmd}}@{username})(?:\s|$)" if username else r"^{cmd}(?:\s|$)"
 
         for prefix in flt.prefixes:
             if not text.startswith(prefix):
@@ -781,7 +787,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             without_prefix = text[len(prefix):]
 
             for cmd in flt.commands:
-                if not re.match(pattern.format(re.escape(cmd)), without_prefix):
+                if not re.match(pattern.format(cmd=re.escape(cmd)), without_prefix,
+                                flags=re.IGNORECASE if not flt.case_sensitive else 0):
                     continue
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
