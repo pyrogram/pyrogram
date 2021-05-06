@@ -103,6 +103,14 @@ async def test_with_mention():
 async def test_with_args():
     f = filters.command("start")
 
+    m = Message("/start")
+    await f(c, m)
+    assert m.command == ["start"]
+
+    m = Message("/start@username")
+    await f(c, m)
+    assert m.command == ["start"]
+
     m = Message("/start a b c")
     await f(c, m)
     assert m.command == ["start"] + list("abc")
