@@ -107,6 +107,10 @@ async def test_with_args():
     await f(c, m)
     assert m.command == ["start"] + list("abc")
 
+    m = Message('/start@username a b c')
+    await f(c, m)
+    assert m.command == ["start"] + list("abc")
+
     m = Message("/start 'a b' c")
     await f(c, m)
     assert m.command == ["start", "a b", "c"]
