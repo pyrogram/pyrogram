@@ -19,54 +19,68 @@
 import base64
 import struct
 from typing import List, Tuple
+from abc import ABC, abstractmethod
 
-
-class Storage:
+class Storage(ABC):
     SESSION_STRING_FORMAT = ">B?256sI?"
     SESSION_STRING_SIZE = 351
 
     def __init__(self, name: str):
         self.name = name
-
+    
+    @abstractmethod
     async def open(self):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def save(self):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def close(self):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def delete(self):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def get_peer_by_id(self, peer_id: int):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def get_peer_by_username(self, username: str):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def get_peer_by_phone_number(self, phone_number: str):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def dc_id(self, value: int = object):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def test_mode(self, value: bool = object):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def auth_key(self, value: bytes = object):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def date(self, value: int = object):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def user_id(self, value: int = object):
         raise NotImplementedError
-
+    
+    @abstractmethod
     async def is_bot(self, value: bool = object):
         raise NotImplementedError
 
