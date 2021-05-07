@@ -740,8 +740,13 @@ async def linked_channel_filter(_, __, m: Message):
 linked_channel = create(linked_channel_filter)
 """Filter messages that are automatically forwarded from the linked channel to the group chat."""
 
-
 # endregion
+
+
+# region command_filter
+
+# Used by the command filter below
+username = None
 
 
 def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
@@ -764,10 +769,10 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             Examples: when True, command="Start" would trigger /Start but not /start.
     """
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
-    username = None
 
     async def func(flt, client: pyrogram.Client, message: Message):
-        nonlocal username
+        # Username shared among all commands; used for mention commands, e.g.: /start@username
+        global username
 
         if username is None:
             username = (await client.get_me()).username or ""
@@ -819,6 +824,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
         case_sensitive=case_sensitive
     )
 
+
+# endregion
 
 def regex(pattern: Union[str, Pattern], flags: int = 0):
     """Filter updates that match a given regular expression pattern.
