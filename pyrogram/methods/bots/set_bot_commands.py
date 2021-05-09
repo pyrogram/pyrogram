@@ -27,7 +27,7 @@ class SetBotCommands(Scaffold):
     async def set_bot_commands(
             self,
             commands: Union[
-                "types.BotCommandsList",
+                List[types.BotCommand],
                 List[List[str]],
                 None
             ]
@@ -52,21 +52,20 @@ class SetBotCommands(Scaffold):
                 )
                 # or
                 app.set_bot_commands(
-                    commands=pyrogram.types.BotCommandsList(
-                        [
-                            pyrogram.types.BotCommand("start", "start the bot"),
-                            pyrogram.types.BotCommand("stop", "stop the bot")
-                        ]
-                    )
+                    [
+                        pyrogram.types.BotCommand("start", "start the bot"),
+                        pyrogram.types.BotCommand("stop", "stop the bot")
+                    ]
                 )
                 # in order to remove all commands we can pass [] or None.
         """
 
-        if isinstance(commands, types.BotCommandsList):
-            commands_list = commands.write()
         elif isinstance(commands, list):
             commands_list = []
             for command in commands:
+                if isinstance(command, types.BotCommand):
+                    commands_list.append(command.write())
+                    continue
                 try:
                     command, description = command
                 except (ValueError, TypeError):
@@ -75,7 +74,7 @@ class SetBotCommands(Scaffold):
         elif commands is None:
             commands_list = []
         else:
-            raise ValueError("commands must be either pyrogram.types.BotCommandsList or a list of commands")
+            raise ValueError("commands must be a list of commands")
         if await self.send(
             raw.functions.bots.SetBotCommands(
                 commands=commands_list
