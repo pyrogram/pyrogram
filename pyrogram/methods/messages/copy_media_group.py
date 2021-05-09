@@ -33,7 +33,7 @@ class CopyMediaGroup(Scaffold):
         reply_to_message_id: int = None,
         schedule_date: int = None,
     ) -> List["types.Message"]:
-        """Copy media group.
+        """Copy a media group by providing one of the message ids.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -56,7 +56,7 @@ class CopyMediaGroup(Scaffold):
 
                 If a ``string`` is passed, it becomes a caption only for the first media.
                 If a list of ``string`` passed, each element becomes caption for each media element.
-                You can pass ``None`` in list to keep the original caption. Please check examples.
+                You can pass ``None`` in list to keep the original caption (see examples below).
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -75,16 +75,15 @@ class CopyMediaGroup(Scaffold):
             .. code-block:: python
 
                 # Copy a media group
-                app.copy_media_group("me", "pyrogramlounge", 470061)
-                app.copy_media_group("me", "pyrogramlounge", 470061, captions="Single caption")
-                app.copy_media_group("me", "pyrogramlounge", 470061, captions=["Media 1 caption", None, ""])
+                app.copy_media_group("me", source_chat, message_id)
+                app.copy_media_group("me", source_chat, message_id, captions="single caption")
+                app.copy_media_group("me", source_chat, message_id, captions=["caption 1", None, ""])
         """
 
         media_group = await self.get_media_group(from_chat_id, message_id)
         multi_media = []
 
         for i, message in enumerate(media_group):
-
             if message.photo:
                 file_id = message.photo.file_id
             elif message.audio:
