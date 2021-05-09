@@ -127,12 +127,12 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
 
     Parameters:
         func (``callable``):
-            A function that accepts two positional arguments *(filter, update)* and returns a boolean: True if the
-            update should be handled, False otherwise. The *filter* argument refers to the filter itself and can be used
-            to access keyword arguments (read below). The *update* argument type will vary depending on which
-            `Handler <handlers>`_ is coming from. For example, in a :obj:`~pyrogram.handlers.MessageHandler` the
-            *update* argument will be a :obj:`~pyrogram.types.Message`; in a
-            :obj:`~pyrogram.handlers.CallbackQueryHandler` the *update* will be a :obj:`~pyrogram.types.CallbackQuery`.
+            A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
+            update should be handled, False otherwise. 
+            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 
+            The *client* argument refers to the :obj:`~pyrogram.Client` that received the update.
+            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from. 
+            For example, in a :obj:`~pyrogram.handlers.MessageHandler` the *update* argument will be a :obj:`~pyrogram.types.Message`; in a :obj:`~pyrogram.handlers.CallbackQueryHandler` the *update* will be a :obj:`~pyrogram.types.CallbackQuery`.
             Your function body can then access the incoming update attributes and decide whether to allow it or not.
 
         name (``str``, *optional*):
@@ -141,7 +141,7 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
 
         **kwargs (``any``, *optional*):
             Any keyword argument you would like to pass. Useful when creating parameterized custom filters, such as
-            :meth:`~Filters.command` or :meth:`~Filters.regex`.
+            :meth:`~pyrogram.filters.command` or :meth:`~pyrogram.filters.regex`.
     """
     return type(
         name or func.__name__ or CUSTOM_FILTER_NAME,
@@ -405,7 +405,7 @@ venue = create(venue_filter)
 
 # region web_page_filter
 async def web_page_filter(_, __, m: Message):
-    return m.web_page
+    return bool(m.web_page)
 
 
 web_page = create(web_page_filter)
@@ -416,11 +416,22 @@ web_page = create(web_page_filter)
 
 # region poll_filter
 async def poll_filter(_, __, m: Message):
-    return m.poll
+    return bool(m.poll)
 
 
 poll = create(poll_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Poll` objects."""
+
+
+# endregion
+
+# region dice_filter
+async def dice_filter(_, __, m: Message):
+    return bool(m.dice)
+
+
+dice = create(dice_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.Dice` objects."""
 
 
 # endregion
@@ -634,6 +645,39 @@ via_bot = create(via_bot_filter)
 
 # endregion
 
+# region voice_chat_started_filter
+async def voice_chat_started_filter(_, __, m: Message):
+    return bool(m.voice_chat_started)
+
+
+voice_chat_started = create(voice_chat_started_filter)
+"""Filter messages for started voice chats"""
+
+
+# endregion
+
+# region voice_chat_ended_filter
+async def voice_chat_ended_filter(_, __, m: Message):
+    return bool(m.voice_chat_ended)
+
+
+voice_chat_ended = create(voice_chat_ended_filter)
+"""Filter messages for ended voice chats"""
+
+
+# endregion
+
+# region voice_chat_members_invited_filter
+async def voice_chat_members_invited_filter(_, __, m: Message):
+    return bool(m.voice_chat_members_invited)
+
+
+voice_chat_members_invited = create(voice_chat_members_invited_filter)
+"""Filter messages for voice chat invited members"""
+
+
+# endregion
+
 # region service_filter
 async def service_filter(_, __, m: Message):
     return bool(m.service)
@@ -644,7 +688,8 @@ service = create(service_filter)
 
 A service message contains any of the following fields set: *left_chat_member*,
 *new_chat_title*, *new_chat_photo*, *delete_chat_photo*, *group_chat_created*, *supergroup_chat_created*,
-*channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*.
+*channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*,
+*voice_chat_started*, *voice_chat_ended*, *voice_chat_members_invited*.
 """
 
 
@@ -695,8 +740,13 @@ async def linked_channel_filter(_, __, m: Message):
 linked_channel = create(linked_channel_filter)
 """Filter messages that are automatically forwarded from the linked channel to the group chat."""
 
-
 # endregion
+
+
+# region command_filter
+
+# Used by the command filter below
+username = None
 
 
 def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
@@ -720,14 +770,18 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     """
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
-    async def func(flt, _, message: Message):
+    async def func(flt, client: pyrogram.Client, message: Message):
+        # Username shared among all commands; used for mention commands, e.g.: /start@username
+        global username
+
+        if username is None:
+            username = (await client.get_me()).username or ""
+
         text = message.text or message.caption
         message.command = None
 
         if not text:
             return False
-
-        pattern = r"^{}(?:\s|$)" if flt.case_sensitive else r"(?i)^{}(?:\s|$)"
 
         for prefix in flt.prefixes:
             if not text.startswith(prefix):
@@ -736,8 +790,11 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             without_prefix = text[len(prefix):]
 
             for cmd in flt.commands:
-                if not re.match(pattern.format(re.escape(cmd)), without_prefix):
+                if not re.match(rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)", without_prefix,
+                                flags=re.IGNORECASE if not flt.case_sensitive else 0):
                     continue
+
+                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1)
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text
@@ -745,7 +802,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
                 # Remove the escape character from the arguments
                 message.command = [cmd] + [
                     re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
-                    for m in command_re.finditer(without_prefix[len(cmd):])
+                    for m in command_re.finditer(without_command)
                 ]
 
                 return True
@@ -767,6 +824,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
         case_sensitive=case_sensitive
     )
 
+
+# endregion
 
 def regex(pattern: Union[str, Pattern], flags: int = 0):
     """Filter updates that match a given regular expression pattern.

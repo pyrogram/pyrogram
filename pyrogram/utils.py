@@ -52,10 +52,10 @@ def get_input_media_from_file_id(
     file_type = decoded.file_type
 
     if expected_file_type is not None and file_type != expected_file_type:
-        raise ValueError(f'Expected: "{expected_file_type}", got "{file_type}" file_id instead')
+        raise ValueError(f"Expected {expected_file_type.name}, got {file_type.name} file id instead")
 
     if file_type in (FileType.THUMBNAIL, FileType.CHAT_PHOTO):
-        raise ValueError(f"This file_id can only be used for download: {file_id}")
+        raise ValueError(f"This file id can only be used for download: {file_id}")
 
     if file_type in PHOTO_TYPES:
         return raw.types.InputMediaPhoto(

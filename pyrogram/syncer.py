@@ -85,4 +85,4 @@ class Syncer:
         except Exception as e:
             log.critical(e, exc_info=True)
         else:
-            log.info(f'Synced "{client.storage.name}" in {(time.time() - start) * 1000:.6} ms')
+            log.debug(f'Synced "{client.storage.name}" in {(time.time() - start) * 1000:.6} ms')

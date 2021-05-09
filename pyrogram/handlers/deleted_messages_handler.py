@@ -52,4 +52,4 @@ class DeletedMessagesHandler(Handler):
         super().__init__(callback, filters)
 
     async def check(self, client: "pyrogram.Client", messages: List[Message]):
-        return await super().check(client, messages[0])
+        return await super().check(client, messages[0]) if messages else False  # The messages list can be empty

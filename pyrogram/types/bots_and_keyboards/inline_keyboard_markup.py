@@ -18,6 +18,7 @@
 
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -52,9 +53,24 @@ class InlineKeyboardMarkup(Object):
             inline_keyboard=inline_keyboard
         )
 
-    def write(self):
-        return raw.types.ReplyInlineMarkup(
-            rows=[raw.types.KeyboardButtonRow(
-                buttons=[j.write() for j in i]
-            ) for i in self.inline_keyboard]
-        )
+    async def write(self, client: "pyrogram.Client"):
+        rows = []
+
+        for r in self.inline_keyboard:
+            buttons = []
+
+            for b in r:
+                buttons.append(await b.write(client))
+
+            rows.append(raw.types.KeyboardButtonRow(buttons=buttons))
+
+        return raw.types.ReplyInlineMarkup(rows=rows)
+
+        # There seems to be a Python issues with nested async comprehensions.
+        # See: https://bugs.python.org/issue33346
+        #
+        # return raw.types.ReplyInlineMarkup(
+        #     rows=[raw.types.KeyboardButtonRow(
+        #         buttons=[await j.write(client) for j in i]
+        #     ) for i in self.inline_keyboard]
+        # )

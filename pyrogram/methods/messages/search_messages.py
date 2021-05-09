@@ -181,7 +181,7 @@ class SearchMessages(Scaffold):
             if not messages:
                 return
 
-            offset += 100
+            offset += len(messages)
 
             for message in messages:
                 yield message

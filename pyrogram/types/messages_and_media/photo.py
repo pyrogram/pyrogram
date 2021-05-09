@@ -82,21 +82,25 @@ class Photo(Object):
     @staticmethod
     def _parse(client, photo: "raw.types.Photo", ttl_seconds: int = None) -> "Photo":
         if isinstance(photo, raw.types.Photo):
-            try:
-                progressive = next(p for p in photo.sizes if isinstance(p, raw.types.PhotoSizeProgressive))
-            except StopIteration:
-                photo_size_objs = [p for p in photo.sizes if isinstance(p, raw.types.PhotoSize)]
-                photo_size_objs.sort(key=lambda p: p.size)
+            photos: List[raw.types.PhotoSize] = []
 
-                big = photo_size_objs[-1]
-            else:
-                big = raw.types.PhotoSize(
-                    type=progressive.type,
-                    location=progressive.location,
-                    w=progressive.w,
-                    h=progressive.h,
-                    size=sorted(progressive.sizes)[-1]
-                )
+            for p in photo.sizes:
+                if isinstance(p, raw.types.PhotoSize):
+                    photos.append(p)
+
+                if isinstance(p, raw.types.PhotoSizeProgressive):
+                    photos.append(
+                        raw.types.PhotoSize(
+                            type=p.type,
+                            w=p.w,
+                            h=p.h,
+                            size=max(p.sizes)
+                        )
+                    )
+
+            photos.sort(key=lambda p: p.size)
+
+            main = photos[-1]
 
             return Photo(
                 file_id=FileId(
@@ -107,19 +111,17 @@ class Photo(Object):
                     file_reference=photo.file_reference,
                     thumbnail_source=ThumbnailSource.THUMBNAIL,
                     thumbnail_file_type=FileType.PHOTO,
-                    thumbnail_size=big.type,
-                    volume_id=big.location.volume_id,
-                    local_id=big.location.local_id
+                    thumbnail_size=main.type,
+                    volume_id=0,
+                    local_id=0
                 ).encode(),
                 file_unique_id=FileUniqueId(
-                    file_unique_type=FileUniqueType.PHOTO,
-                    media_id=photo.id,
-                    volume_id=big.location.volume_id,
-                    local_id=big.location.local_id
+                    file_unique_type=FileUniqueType.DOCUMENT,
+                    media_id=photo.id
                 ).encode(),
-                width=big.w,
-                height=big.h,
-                file_size=big.size,
+                width=main.w,
+                height=main.h,
+                file_size=main.size,
                 date=photo.date,
                 ttl_seconds=ttl_seconds,
                 thumbs=types.Thumbnail._parse(client, photo),

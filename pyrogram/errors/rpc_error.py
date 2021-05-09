@@ -32,8 +32,15 @@ class RPCError(Exception):
     NAME = None
     MESSAGE = "{x}"
 
-    def __init__(self, x: Union[int, raw.types.RpcError] = None, rpc_name: str = None, is_unknown: bool = False):
-        super().__init__("[{} {}]: {} {}".format(
+    def __init__(
+        self,
+        x: Union[int, str, raw.types.RpcError] = None,
+        rpc_name: str = None,
+        is_unknown: bool = False,
+        is_signed: bool = False
+    ):
+        super().__init__("[{}{} {}]: {} {}".format(
+            "-" if is_signed else "",
             self.CODE,
             self.ID or self.NAME,
             self.MESSAGE.format(x=x),
@@ -52,14 +59,19 @@ class RPCError(Exception):
     @staticmethod
     def raise_it(rpc_error: "raw.types.RpcError", rpc_type: Type[TLObject]):
         error_code = rpc_error.error_code
+        is_signed = error_code < 0
         error_message = rpc_error.error_message
         rpc_name = ".".join(rpc_type.QUALNAME.split(".")[1:])
+
+        if is_signed:
+            error_code = -error_code
 
         if error_code not in exceptions:
             raise UnknownError(
                 x=f"[{error_code} {error_message}]",
                 rpc_name=rpc_name,
-                is_unknown=True
+                is_unknown=True,
+                is_signed=is_signed
             )
 
         error_id = re.sub(r"_\d+", "_X", error_message)
@@ -70,7 +82,8 @@ class RPCError(Exception):
                 exceptions[error_code]["_"]
             )(x=f"[{error_code} {error_message}]",
               rpc_name=rpc_name,
-              is_unknown=True)
+              is_unknown=True,
+              is_signed=is_signed)
 
         x = re.search(r"_(\d+)", error_message)
         x = x.group(1) if x is not None else x
@@ -80,7 +93,8 @@ class RPCError(Exception):
             exceptions[error_code][error_id]
         )(x=x,
           rpc_name=rpc_name,
-          is_unknown=False)
+          is_unknown=False,
+          is_signed=is_signed)
 
 
 class UnknownError(RPCError):

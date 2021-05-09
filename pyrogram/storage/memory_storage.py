@@ -50,4 +50,4 @@ class MemoryStorage(SQLiteStorage):
             await self.date(0)
 
     async def delete(self):
-        raise NotImplementedError
+        pass

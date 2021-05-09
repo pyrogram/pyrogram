@@ -54,7 +54,7 @@ class SetSlowMode(Scaffold):
         await self.send(
             raw.functions.channels.ToggleSlowMode(
                 channel=await self.resolve_peer(chat_id),
-                seconds=0 if seconds is None else seconds
+                seconds=seconds or 0
             )
         )
 

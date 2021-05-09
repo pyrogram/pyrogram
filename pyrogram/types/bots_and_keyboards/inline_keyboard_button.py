@@ -18,6 +18,7 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -38,6 +39,10 @@ class InlineKeyboardButton(Object):
         url (``str``, *optional*):
             HTTP url to be opened when button is pressed.
 
+        login_url (:obj:`~pyrogram.types.LoginUrl`, *optional*):
+             An HTTP URL used to automatically authorize the user. Can be used as a replacement for
+             the `Telegram Login Widget <https://core.telegram.org/widgets/login>`_.
+
         switch_inline_query (``str``, *optional*):
             If set, pressing the button will prompt the user to select one of their chats, open that chat and insert
             the bot's username and the specified inline query in the input field. Can be empty, in which case just
@@ -51,15 +56,18 @@ class InlineKeyboardButton(Object):
             chat's input field. Can be empty, in which case only the bot's username will be inserted.This offers a
             quick way for the user to open your bot in inline mode in the same chat – good for selecting something
             from multiple options.
-    """
 
-    # TODO: Add callback_game and pay fields
+        callback_game (:obj:`~pyrogram.types.CallbackGame`, *optional*):
+            Description of the game that will be launched when the user presses the button.
+            **NOTE**: This type of button **must** always be the first button in the first row.
+    """
 
     def __init__(
         self,
         text: str,
         callback_data: Union[str, bytes] = None,
         url: str = None,
+        login_url: "types.LoginUrl" = None,
         switch_inline_query: str = None,
         switch_inline_query_current_chat: str = None,
         callback_game: "types.CallbackGame" = None
@@ -68,6 +76,7 @@ class InlineKeyboardButton(Object):
 
         self.text = str(text)
         self.url = url
+        self.login_url = login_url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
@@ -75,55 +84,77 @@ class InlineKeyboardButton(Object):
         # self.pay = pay
 
     @staticmethod
-    def read(o):
-        if isinstance(o, raw.types.KeyboardButtonUrl):
-            return InlineKeyboardButton(
-                text=o.text,
-                url=o.url
-            )
-
-        if isinstance(o, raw.types.KeyboardButtonCallback):
+    def read(b: "raw.base.KeyboardButton"):
+        if isinstance(b, raw.types.KeyboardButtonCallback):
             # Try decode data to keep it as string, but if fails, fallback to bytes so we don't lose any information,
             # instead of decoding by ignoring/replacing errors.
             try:
-                data = o.data.decode()
+                data = b.data.decode()
             except UnicodeDecodeError:
-                data = o.data
+                data = b.data
 
             return InlineKeyboardButton(
-                text=o.text,
+                text=b.text,
                 callback_data=data
             )
 
-        if isinstance(o, raw.types.KeyboardButtonSwitchInline):
-            if o.same_peer:
+        if isinstance(b, raw.types.KeyboardButtonUrl):
+            return InlineKeyboardButton(
+                text=b.text,
+                url=b.url
+            )
+
+        if isinstance(b, raw.types.KeyboardButtonUrlAuth):
+            return InlineKeyboardButton(
+                text=b.text,
+                login_url=types.LoginUrl.read(b)
+            )
+
+        if isinstance(b, raw.types.KeyboardButtonSwitchInline):
+            if b.same_peer:
                 return InlineKeyboardButton(
-                    text=o.text,
-                    switch_inline_query_current_chat=o.query
+                    text=b.text,
+                    switch_inline_query_current_chat=b.query
                 )
             else:
                 return InlineKeyboardButton(
-                    text=o.text,
-                    switch_inline_query=o.query
+                    text=b.text,
+                    switch_inline_query=b.query
                 )
 
-        if isinstance(o, raw.types.KeyboardButtonGame):
+        if isinstance(b, raw.types.KeyboardButtonGame):
             return InlineKeyboardButton(
-                text=o.text,
+                text=b.text,
                 callback_game=types.CallbackGame()
             )
 
-    def write(self):
+    async def write(self, client: "pyrogram.Client"):
         if self.callback_data is not None:
             # Telegram only wants bytes, but we are allowed to pass strings too, for convenience.
             data = bytes(self.callback_data, "utf-8") if isinstance(self.callback_data, str) else self.callback_data
-            return raw.types.KeyboardButtonCallback(text=self.text, data=data)
+
+            return raw.types.KeyboardButtonCallback(
+                text=self.text,
+                data=data
+            )
 
         if self.url is not None:
-            return raw.types.KeyboardButtonUrl(text=self.text, url=self.url)
+            return raw.types.KeyboardButtonUrl(
+                text=self.text,
+                url=self.url
+            )
+
+        if self.login_url is not None:
+            return self.login_url.write(
+                text=self.text,
+                bot=await client.resolve_peer(self.login_url.bot_username)
+            )
 
         if self.switch_inline_query is not None:
-            return raw.types.KeyboardButtonSwitchInline(text=self.text, query=self.switch_inline_query)
+            return raw.types.KeyboardButtonSwitchInline(
+                text=self.text,
+                query=self.switch_inline_query
+            )
 
         if self.switch_inline_query_current_chat is not None:
             return raw.types.KeyboardButtonSwitchInline(
@@ -133,4 +164,6 @@ class InlineKeyboardButton(Object):
             )
 
         if self.callback_game is not None:
-            return raw.types.KeyboardButtonGame(text=self.text)
+            return raw.types.KeyboardButtonGame(
+                text=self.text
+            )
