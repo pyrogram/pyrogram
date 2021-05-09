@@ -93,7 +93,7 @@ class CopyMediaGroup(Scaffold):
             elif message.video:
                 file_id = message.video.file_id
             else:
-                raise TypeError("Message with this type can't be copied.")
+                raise ValueError("Message with this type can't be copied.")
 
             media = utils.get_input_media_from_file_id(file_id=file_id)
             multi_media.append(
