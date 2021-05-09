@@ -144,6 +144,7 @@ def pyrogram_api():
             send_message
             forward_messages
             copy_message
+            copy_media_group
             send_photo
             send_audio
             send_document
