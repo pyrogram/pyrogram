@@ -49,7 +49,7 @@ class CopyMediaGroup(Scaffold):
             message_id (``int``):
                 Message identifier in the chat specified in *from_chat_id*.
 
-            captions (``string`` or list of ``string`` , *optional*):
+            captions (``str`` | List of ``str`` , *optional*):
                 New caption for media, 0-1024 characters after entities parsing for each media.
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
