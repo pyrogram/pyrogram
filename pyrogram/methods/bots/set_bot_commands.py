@@ -60,7 +60,7 @@ class SetBotCommands(Scaffold):
                 # in order to remove all commands we can pass [] or None.
         """
 
-        elif isinstance(commands, list):
+        if isinstance(commands, list):
             commands_list = []
             for command in commands:
                 if isinstance(command, types.BotCommand):
