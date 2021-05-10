@@ -28,7 +28,6 @@ class SetBotCommands(Scaffold):
             self,
             commands: Union[
                 List[types.BotCommand],
-                List[List[str]],
                 None
             ]
     ):
@@ -43,14 +42,6 @@ class SetBotCommands(Scaffold):
 
         Example:
             .. code-block:: python
-
-                app.set_bot_commands(
-                    commands=[
-                        ["start", "start the bot"],
-                        ["stop", "stop the bot"]
-                    ]
-                )
-                # or
                 app.set_bot_commands(
                     [
                         pyrogram.types.BotCommand("start", "start the bot"),
@@ -63,18 +54,11 @@ class SetBotCommands(Scaffold):
         if isinstance(commands, list):
             commands_list = []
             for command in commands:
-                if isinstance(command, types.BotCommand):
-                    commands_list.append(command.write())
-                    continue
-                try:
-                    command, description = command
-                except (ValueError, TypeError):
-                    raise ValueError("A command must be a list of two strings, command and description.") from None
-                commands_list.append(raw.types.BotCommand(command=command, description=description))
+                commands_list.append(command.write())
         elif commands is None:
             commands_list = []
         else:
-            raise ValueError("commands must be a list of commands")
+            raise ValueError("commands must be a list of pyrogram.types.BotCommand")
         if await self.send(
             raw.functions.bots.SetBotCommands(
                 commands=commands_list
