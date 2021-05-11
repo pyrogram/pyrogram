@@ -394,6 +394,7 @@ def pyrogram_api():
             CallbackQuery
             GameHighScore
             CallbackGame
+            BotCommand
         """,
         input_media="""
         Input Media
