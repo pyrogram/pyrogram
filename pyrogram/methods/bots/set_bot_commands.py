@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Optional, List
 
 from pyrogram import raw
 from pyrogram import types
@@ -24,44 +24,36 @@ from pyrogram.scaffold import Scaffold
 
 
 class SetBotCommands(Scaffold):
-    async def set_bot_commands(
-            self,
-            commands: Union[
-                List[types.BotCommand],
-                None
-            ]
-    ):
-        """Set Bot's commands list.
+    async def set_bot_commands(self, commands: Optional[List[BotCommand]]):
+        """Set the bot commands list.
+        
+        The commands passed will overwrite any command set previously.
+        This method can be used by the own bot only.
 
         Parameters:
-            commands (List of List of (``str``, ``str``) | :obj:`~pyrogram.types.BotCommandsList` | ``NoneType``):
-                A list of commands to b appeared when clicking on '/' in an official client.
+            commands (List of :obj:`~pyrogram.types.BotCommand`):
+                A list of bot commands.
+                Pass None to remove all commands.
 
         Returns:
-            True on success.
+            ``bool``: True on success, False otherwise.
 
         Example:
             .. code-block:: python
-                app.set_bot_commands(
-                    [
-                        pyrogram.types.BotCommand("start", "start the bot"),
-                        pyrogram.types.BotCommand("stop", "stop the bot")
-                    ]
-                )
-                # in order to remove all commands we can pass [] or None.
+                
+                from pyrogram.types import BotCommand
+                
+                # Set new commands
+                app.set_bot_commands([
+                    BotCommand("start", "Start the bot"),
+                    BotCommand("settings", "Bot settings")])
+                
+                # Remove commands
+                app.set_bot_commands(None)
         """
 
-        if isinstance(commands, list):
-            commands_list = []
-            for command in commands:
-                commands_list.append(command.write())
-        elif commands is None:
-            commands_list = []
-        else:
-            raise ValueError("commands must be a list of pyrogram.types.BotCommand")
-        if await self.send(
+        return await self.send(
             raw.functions.bots.SetBotCommands(
-                commands=commands_list
+                commands=[c.write() for c in commands or []]
             )
-        ):
-            return True
+        )
