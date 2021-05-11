@@ -24,7 +24,7 @@ from pyrogram.scaffold import Scaffold
 
 
 class SetBotCommands(Scaffold):
-    async def set_bot_commands(self, commands: Optional[List[BotCommand]]):
+    async def set_bot_commands(self, commands: Optional[List[types.BotCommand]]):
         """Set the bot commands list.
         
         The commands passed will overwrite any command set previously.
