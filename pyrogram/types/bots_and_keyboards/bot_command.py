@@ -21,11 +21,14 @@ from ..object import Object
 
 
 class BotCommand(Object):
-    """A command that appears in the commands list when pressing '/' in the official clients.
+    """A bot command with the standard slash "/" prefix.
 
     Parameters:
         command (``str``):
-            The command that will be sent when clicking on it.
+            The bot command, for example: "/start".
+            
+        description (``str``):
+            Description of the bot command.
     """
 
     def __init__(self, command: str, description: str):
