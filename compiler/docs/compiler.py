@@ -222,6 +222,7 @@ def pyrogram_api():
             set_slow_mode
             mark_chat_unread
             get_chat_event_log
+            get_chat_online_count
         """,
         users="""
         Users
