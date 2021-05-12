@@ -20,7 +20,7 @@ from typing import Union, List
 
 import pyrogram
 from pyrogram import raw, types, utils
-from pyrogram.types import InlineQueryResult
+from .inline_query_result import InlineQueryResult
 
 
 class InlineQueryResultAudio(InlineQueryResult):
