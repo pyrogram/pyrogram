@@ -69,7 +69,7 @@ class EditInlineMedia(Scaffold):
                 # Replace the current media with a local audio
                 app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
         """
-        caption = media.caption
+        caption = media.caption or ""
         parse_mode = media.parse_mode
 
         if isinstance(media, types.InputMediaPhoto):
