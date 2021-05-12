@@ -16,11 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List
 
-from pyrogram import raw
-from pyrogram import types
-from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from pyrogram.types import InlineQueryResult
 
 
@@ -69,17 +68,17 @@ class InlineQueryResultAudio(InlineQueryResult):
     """
 
     def __init__(
-            self,
-            audio_url: str,
-            title: str,
-            id: str = None,
-            performer: str = "",
-            audio_duration: int = 0,
-            caption: str = "",
-            parse_mode: Union[str, None] = object,
-            caption_entities: List["types.MessageEntity"] = None,
-            reply_markup: "types.InlineKeyboardMarkup" = None,
-            input_message_content: "types.InputMessageContent" = None
+        self,
+        audio_url: str,
+        title: str,
+        id: str = None,
+        performer: str = "",
+        audio_duration: int = 0,
+        caption: str = "",
+        parse_mode: Union[str, None] = object,
+        caption_entities: List["types.MessageEntity"] = None,
+        reply_markup: "types.InlineKeyboardMarkup" = None,
+        input_message_content: "types.InputMessageContent" = None
     ):
         super().__init__("audio", id, input_message_content, reply_markup)
 
@@ -91,7 +90,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         self.parse_mode = parse_mode
         self.caption_entities = caption_entities
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         audio = raw.types.InputWebDocument(
             url=self.audio_url,
             size=0,
@@ -100,9 +99,9 @@ class InlineQueryResultAudio(InlineQueryResult):
                 duration=self.audio_duration,
                 title=self.title,
                 performer=self.performer
-            )],
+            )]
         )
-        
+
         message, entities = (await utils.parse_text_entities(
             client, self.caption, self.parse_mode, self.caption_entities
         )).values()

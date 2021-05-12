@@ -16,18 +16,17 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
+from typing import Optional, List
 
-from pyrogram import raw
-from pyrogram import types
-from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from .inline_query_result import InlineQueryResult
 
 
 class InlineQueryResultVideo(InlineQueryResult):
-    """Link to a video.
+    """Link to a page containing an embedded video player or a video file.
 
-    By default, this video will be sent by the user with optional caption.
+    By default, this video file will be sent by the user with an optional caption.
     Alternatively, you can use *input_message_content* to send a message with the specified content instead of the
     video.
 
@@ -38,21 +37,31 @@ class InlineQueryResultVideo(InlineQueryResult):
         thumb_url (``str``):
             URL of the thumbnail (jpeg only) for the video.
 
+        title (``str``):
+            Title for the result.
+
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
 
-        title (``str``, *optional*):
-            Title for the result.
+        mime_type (``str``):
+            Mime type of the content of video url, "text/html" or "video/mp4".
+            Defaults to "video/mp4".
 
-        mime_type (``str``, *optional*):
-            Mime type of the content of video url, “text/html” or “video/mp4”.
+        video_width (``int``):
+            Video width.
+
+        video_height (``int``):
+            Video height.
+
+        video_duration (``int``):
+            Video duration in seconds.
 
         description (``str``, *optional*):
             Short description of the result.
 
         caption (``str``, *optional*):
-            Caption of the video to be sent, 0-1024 characters.
+            Caption of the photo to be sent, 0-1024 characters.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -61,8 +70,11 @@ class InlineQueryResultVideo(InlineQueryResult):
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
 
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
-            An InlineKeyboardMarkup object.
+            Inline keyboard attached to the message
 
         input_message_content (:obj:`~pyrogram.types.InputMessageContent`):
             Content of the message to be sent instead of the video. This field is required if InlineQueryResultVideo is
@@ -73,42 +85,43 @@ class InlineQueryResultVideo(InlineQueryResult):
         self,
         video_url: str,
         thumb_url: str,
+        title: str,
         id: str = None,
-        title: str = None,
-        mime_type: str = None,
+        mime_type: str = "video/mp4",
+        video_width: int = 0,
+        video_height: int = 0,
+        video_duration: int = 0,
         description: str = None,
         caption: str = "",
         parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None
     ):
         super().__init__("video", id, input_message_content, reply_markup)
 
         self.video_url = video_url
-
         self.thumb_url = thumb_url
         self.title = title
-
-        if mime_type != "text/html" and mime_type != "video/mp4":
-            raise ValueError("Invalid mime type")
-
-        self.mime_type = mime_type
+        self.video_width = video_width
+        self.video_height = video_height
+        self.video_duration = video_duration
         self.description = description
         self.caption = caption
         self.parse_mode = parse_mode
-        self.reply_markup = reply_markup
+        self.caption_entities = caption_entities
+        self.mime_type = mime_type
 
-        if mime_type == "text/html" and input_message_content is None:
-            raise ValueError("input_message_content is required for videos with `text/html` mime type")
-
-        self.input_message_content = input_message_content
-
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         video = raw.types.InputWebDocument(
             url=self.video_url,
             size=0,
             mime_type=self.mime_type,
-            attributes=[]
+            attributes=[raw.types.DocumentAttributeVideo(
+                duration=self.video_duration,
+                w=self.video_width,
+                h=self.video_height
+            )]
         )
 
         thumb = raw.types.InputWebDocument(
@@ -118,6 +131,10 @@ class InlineQueryResultVideo(InlineQueryResult):
             attributes=[]
         )
 
+        message, entities = (await utils.parse_text_entities(
+            client, self.caption, self.parse_mode, self.caption_entities
+        )).values()
+
         return raw.types.InputBotInlineResult(
             id=self.id,
             type=self.type,
@@ -126,11 +143,12 @@ class InlineQueryResultVideo(InlineQueryResult):
             thumb=thumb,
             content=video,
             send_message=(
-                await self.input_message_content.write(self.reply_markup)
+                await self.input_message_content.write(client, self.reply_markup)
                 if self.input_message_content
                 else raw.types.InputBotInlineMessageMediaAuto(
-                    reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **await(Parser(None)).parse(self.caption, self.parse_mode)
+                    reply_markup=await self.reply_markup.write(client) if self.reply_markup else None,
+                    message=message,
+                    entities=entities
                 )
             )
         )
