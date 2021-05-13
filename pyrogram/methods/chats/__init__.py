@@ -54,6 +54,7 @@ from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
 from .get_chat_online_count import GetChatOnlineCount
+from .set_history_ttl import SetHistoryTTL
 
 
 class Chats(
@@ -94,6 +95,7 @@ class Chats(
     UnpinAllChatMessages,
     MarkChatUnread,
     GetChatEventLog,
-    GetChatOnlineCount
+    GetChatOnlineCount,
+    SetHistoryTTL,
 ):
     pass
