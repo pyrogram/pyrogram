@@ -352,7 +352,7 @@ class Message(Object, Update):
         voice_chat_started: "types.VoiceChatStarted" = None,
         voice_chat_ended: "types.VoiceChatEnded" = None,
         voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
-        history_ttl: int = None,
+        chat_history_ttl: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -424,7 +424,7 @@ class Message(Object, Update):
         self.voice_chat_started = voice_chat_started
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
-        self.history_ttl = history_ttl
+        self.chat_history_ttl = chat_history_ttl
 
     @staticmethod
     async def _parse(
@@ -454,7 +454,7 @@ class Message(Object, Update):
             voice_chat_started = None
             voice_chat_ended = None
             voice_chat_members_invited = None
-            history_ttl = None
+            chat_history_ttl = None
 
             service_type = None
 
@@ -502,8 +502,8 @@ class Message(Object, Update):
                 voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
                 service_type = "voice_chat_members_invited"
             elif isinstance(action, raw.types.MessageActionSetMessagesTTL):
-                history_ttl = action.period
-                service_type = "history_ttl"
+                chat_history_ttl = action.period
+                service_type = "chat_history_ttl"
 
             user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
             from_user = types.User._parse(client, users.get(user, None))
@@ -529,7 +529,7 @@ class Message(Object, Update):
                 voice_chat_started=voice_chat_started,
                 voice_chat_ended=voice_chat_ended,
                 voice_chat_members_invited=voice_chat_members_invited,
-                history_ttl=history_ttl,
+                chat_history_ttl=chat_history_ttl,
                 client=client
                 # TODO: supergroup_chat_created
             )

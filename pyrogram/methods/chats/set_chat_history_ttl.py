@@ -23,8 +23,8 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class SetHistoryTTL(Scaffold):
-    async def set_history_ttl(
+class SetChatHistoryTTL(Scaffold):
+    async def set_chat_history_ttl(
         self, chat_id: Union[int, str], period: int
     ) -> "types.Message":
         """Set the time-to-live for the chat history.
@@ -58,26 +58,18 @@ class SetHistoryTTL(Scaffold):
             ValueError: In case the chat_id doesn't belong to a supergroup or the time-to-live isn't 1 day or week.
         """
 
-        peer = await self.resolve_peer(chat_id)
-        if not isinstance(peer, raw.types.InputPeerChannel):
-            raise ValueError(f'The chat_id "{chat_id}" does not belong to a channel')
-
-        if period not in (0, 86400, 604800):
-            raise ValueError(f'The time-to-live "{period}" needs to be either 86400 (1 day) or 604800 (1 week).')
-
-        else:
-            r = await self.send(
-                raw.functions.messages.SetHistoryTTL(
-                    peer=await self.resolve_peer(chat_id),
-                    period=period,
-                )
+        r = await self.send(
+            raw.functions.messages.SetHistoryTTL(
+                peer=await self.resolve_peer(chat_id),
+                period=period,
             )
+        )
 
-            for i in r.updates:
-                if isinstance(i, raw.types.UpdateNewChannelMessage):
-                    return await types.Message._parse(
-                        self,
-                        i.message,
-                        {i.id: i for i in r.users},
-                        {i.id: i for i in r.chats},
-                    )
+        for i in r.updates:
+            if isinstance(i, raw.types.UpdateNewChannelMessage):
+                return await types.Message._parse(
+                    self,
+                    i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats},
+                )
