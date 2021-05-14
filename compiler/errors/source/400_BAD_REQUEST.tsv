@@ -290,6 +290,8 @@ STICKER_ID_INVALID	The provided sticker id is invalid
 STICKER_INVALID	The provided sticker is invalid
 STICKER_PNG_DIMENSIONS	The sticker png dimensions are invalid
 STICKER_PNG_NOPNG	Stickers must be png files but the provided image was not a png
+STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provided
+STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 TEMP_AUTH_KEY_EMPTY	The temporary auth key provided is empty
@@ -298,6 +300,7 @@ THEME_FORMAT_INVALID	Invalid theme format provided
 THEME_INVALID	Invalid theme provided
 THEME_MIME_INVALID	You cannot create this theme because the mime-type is invalid
 TMP_PASSWORD_DISABLED	The temporary password is disabled
+TMP_PASSWORD_INVALID	The temporary password is invalid
 TOKEN_INVALID	The provided token is invalid
 TTL_DAYS_INVALID	The provided TTL days is invalid
 TTL_MEDIA_INVALID	The media does not support self-destruction
@@ -310,6 +313,7 @@ USERNAME_INVALID	The username is invalid
 USERNAME_NOT_MODIFIED	The username was not modified because you tried to edit it using the same one
 USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
 USERNAME_OCCUPIED	The username is already in use by someone else
+USERPIC_UPLOAD_REQUIRED	You are required to upload a profile picture for this action
 USERS_TOO_FEW	Not enough users (to create a chat, for example)
 USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
 USER_ADMIN_INVALID	The action requires admin privileges. Probably you tried to edit admin privileges on someone you don't have rights to
@@ -333,6 +337,7 @@ VIDEO_FILE_INVALID	The video file is invalid
 VOLUME_LOC_NOT_FOUND	The volume location can't be found
 WALLPAPER_FILE_INVALID	The provided file cannot be used as a wallpaper
 WALLPAPER_INVALID	The input wallpaper was not valid
+WALLPAPER_MIME_INVALID	The wallpaper mime type is invalid
 WC_CONVERT_URL_INVALID	WC convert URL invalid
 WEBDOCUMENT_INVALID	The web document is invalid
 WEBDOCUMENT_MIME_INVALID	The web document mime type is invalid
