@@ -31,7 +31,8 @@ class InputMediaAudio(InputMedia):
         media (``str``):
             Audio to send.
             Pass a file_id as string to send an audio that exists on the Telegram servers or
-            pass a file path as string to upload a new audio that exists on your local machine.
+            pass a file path as string to upload a new audio that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get an audio file from the Internet.
 
         thumb (``str``, *optional*):
             Thumbnail of the music file album cover.
@@ -56,10 +57,10 @@ class InputMediaAudio(InputMedia):
         duration (``int``, *optional*):
             Duration of the audio in seconds
 
-        performer (``int``, *optional*):
+        performer (``str``, *optional*):
             Performer of the audio
 
-        title (``int``, *optional*):
+        title (``str``, *optional*):
             Title of the audio
     """
 
@@ -67,7 +68,7 @@ class InputMediaAudio(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         duration: int = 0,

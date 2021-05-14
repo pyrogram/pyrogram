@@ -17,14 +17,41 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .chat import Chat
+from .chat_admin_with_invite_links import ChatAdminWithInviteLinks
+from .chat_event import ChatEvent
+from .chat_event_filter import ChatEventFilter
+from .chat_invite_link import ChatInviteLink
 from .chat_member import ChatMember
+from .chat_member_updated import ChatMemberUpdated
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from .chat_preview import ChatPreview
 from .dialog import Dialog
+from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
+from .voice_chat_ended import VoiceChatEnded
+from .voice_chat_members_invited import VoiceChatMembersInvited
+from .voice_chat_scheduled import VoiceChatScheduled
+from .voice_chat_started import VoiceChatStarted
 
 __all__ = [
-    "Chat", "ChatMember", "ChatPermissions", "ChatPhoto", "ChatPreview", "Dialog", "User", "Restriction"
+    "Chat",
+    "ChatMember",
+    "ChatPermissions",
+    "ChatPhoto",
+    "ChatPreview",
+    "Dialog",
+    "User",
+    "Restriction",
+    "ChatEvent",
+    "ChatEventFilter",
+    "ChatInviteLink",
+    "InviteLinkImporter",
+    "ChatAdminWithInviteLinks",
+    "VoiceChatStarted",
+    "VoiceChatEnded",
+    "VoiceChatMembersInvited",
+    "ChatMemberUpdated",
+    "VoiceChatScheduled"
 ]

@@ -18,11 +18,18 @@
 
 import asyncio
 import logging
-from signal import signal, SIGINT, SIGTERM, SIGABRT
+import signal
+from signal import signal as signal_fn, SIGINT, SIGTERM, SIGABRT
 
 log = logging.getLogger(__name__)
 
 is_idling = False
+
+# Signal number to name
+signals = {
+    k: v for v, k in signal.__dict__.items()
+    if v.startswith("SIG") and not v.startswith("SIG_")
+}
 
 
 async def idle():
@@ -65,14 +72,14 @@ async def idle():
     """
     global is_idling
 
-    def signal_handler(_, __):
+    def signal_handler(signum, __):
         global is_idling
 
-        logging.info("Stop signal received ({}). Exiting...".format(_))
+        logging.info(f"Stop signal received ({signals[signum]}). Exiting...")
         is_idling = False
 
     for s in (SIGINT, SIGTERM, SIGABRT):
-        signal(s, signal_handler)
+        signal_fn(s, signal_handler)
 
     is_idling = True
 

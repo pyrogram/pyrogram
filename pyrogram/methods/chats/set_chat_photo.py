@@ -21,8 +21,8 @@ from typing import Union, BinaryIO
 
 from pyrogram import raw
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 from pyrogram.file_id import FileType
+from pyrogram.scaffold import Scaffold
 
 
 class SetChatPhoto(Scaffold):

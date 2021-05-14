@@ -257,7 +257,7 @@ class EditMessageMedia(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
                 media=media,
-                reply_markup=reply_markup.write() if reply_markup else None,
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=message,
                 entities=entities
             )

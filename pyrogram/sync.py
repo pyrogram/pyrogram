@@ -31,7 +31,7 @@ def async_to_sync(obj, name):
     main_loop = asyncio.get_event_loop()
 
     async def consume_generator(coroutine):
-        return [i async for i in coroutine]
+        return types.List([i async for i in coroutine])
 
     @functools.wraps(function)
     def async_to_sync_wrap(*args, **kwargs):

@@ -29,7 +29,8 @@ class InputMediaDocument(InputMedia):
         media (``str``):
             File to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
-            pass a file path as string to upload a new file that exists on your local machine.
+            pass a file path as string to upload a new file that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get a file from the Internet.
 
         thumb (``str``):
             Thumbnail of the file sent.
@@ -56,7 +57,7 @@ class InputMediaDocument(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None
     ):

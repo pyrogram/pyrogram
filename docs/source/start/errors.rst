@@ -96,10 +96,12 @@ The value is stored in the ``x`` attribute of the exception object:
 
 .. code-block:: python
 
-    import time
+    import asyncio
     from pyrogram.errors import FloodWait
 
-    try:
-        ...  # Your code
-    except FloodWait as e:
-        time.sleep(e.x)  # Wait "x" seconds before continuing
+    ...
+        try:
+            ...  # Your code
+        except FloodWait as e:
+            await asyncio.sleep(e.x)  # Wait "x" seconds before continuing
+    ...

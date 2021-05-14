@@ -19,8 +19,8 @@
 import logging
 from typing import Union, List
 
+from pyrogram import types
 from pyrogram.scaffold import Scaffold
-from pyrogram.types import list
 
 log = logging.getLogger(__name__)
 
@@ -46,14 +46,29 @@ class GetMediaGroup(Scaffold):
             List of :obj:`~pyrogram.types.Message`: On success, a list of messages of the media group is returned.
             
         Raises:
-            ValueError: In case the passed message id doesn't belong to a media group.
+            ValueError: 
+                In case the passed message_id is negative or equal 0. 
+                In case target message doesn't belong to a media group.
         """
+        
         # There can be maximum 10 items in a media group. 
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)], replies=0)
+        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)],
+                                           replies=0)
 
-        media_group_id = messages[9].media_group_id
+        if message_id <= 0:
+            raise ValueError("Passed message_id is negative or equal to zero.")
+
+        messages = await self.get_messages(
+            chat_id=chat_id,
+            message_ids=[msg_id for msg_id in range(message_id - 9, message_id + 10)],
+            replies=0
+        )
+
+        # There can be maximum 10 items in a media group.
+        # The if/else condition to fix the problem of getting correct `media_group_id` when it has `message_id` less then 10.
+        media_group_id = messages[9].media_group_id if len(messages) == 19 else messages[message_id-1].media_group_id
 
         if media_group_id is None:
             raise ValueError("The message doesn't belong to a media group")
 
-        return list.List(msg for msg in messages if msg.media_group_id == media_group_id)
+        return types.List(msg for msg in messages if msg.media_group_id == media_group_id)

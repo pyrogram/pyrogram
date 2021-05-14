@@ -29,7 +29,8 @@ class InputMediaAnimation(InputMedia):
         media (``str``):
             Animation to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
-            pass a file path as string to upload a new file that exists on your local machine.
+            pass a file path as string to upload a new file that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get an animation from the Internet.
 
         thumb (``str``, *optional*):
             Thumbnail of the animation file sent.
@@ -65,7 +66,7 @@ class InputMediaAnimation(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         width: int = 0,

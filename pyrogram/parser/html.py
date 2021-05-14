@@ -96,7 +96,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            log.warning(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
+            log.debug(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)

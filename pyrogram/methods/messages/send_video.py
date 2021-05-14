@@ -162,7 +162,7 @@ class SendVideo(Scaffold):
                 app.send_video("me", "video.mp4", caption="recording")
 
                 # Send self-destructing video
-                app.send_photo("me", "video.mp4", ttl_seconds=10)
+                app.send_video("me", "video.mp4", ttl_seconds=10)
 
                 # Keep track of the progress while uploading
                 def progress(current, total):
@@ -228,7 +228,7 @@ class SendVideo(Scaffold):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
-                            reply_markup=reply_markup.write() if reply_markup else None,
+                            reply_markup=await reply_markup.write(self) if reply_markup else None,
                             **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )

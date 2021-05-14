@@ -88,6 +88,19 @@ Users
 
     {users}
 
+Invite Links
+------------
+
+.. autosummary::
+    :nosignatures:
+
+    {invite_links}
+
+.. toctree::
+    :hidden:
+
+    {invite_links}
+
 Contacts
 --------
 
