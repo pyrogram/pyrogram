@@ -25,7 +25,7 @@ from pyrogram.session import Session
 from pyrogram.session.auth import Auth
 
 lock = Lock()
-session = None
+sessions = {}
 
 
 async def get_session(client: "pyrogram.Client", dc_id: int):
@@ -33,12 +33,12 @@ async def get_session(client: "pyrogram.Client", dc_id: int):
         return client
 
     async with lock:
-        global session
+        global sessions
 
-        if session is not None:
-            return session
+        if sessions.get(dc_id):
+            return sessions[dc_id]
 
-        session = Session(
+        session = sessions[dc_id] = Session(
             client, dc_id,
             await Auth(client, dc_id, False).create(),
             False, is_media=True
