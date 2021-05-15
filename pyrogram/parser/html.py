@@ -111,7 +111,7 @@ class HTML:
 
     async def parse(self, text: str):
         # Strip whitespace characters from the end of the message, but preserve closing tags
-        text = re.sub(r"\s*(</[\w]*>)\s*$", r"\1", text)
+        text = re.sub(r"\s*(</[\w</>]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
         parser.feed(utils.add_surrogates(text))
