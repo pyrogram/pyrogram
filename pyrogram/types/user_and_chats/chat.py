@@ -987,12 +987,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.set_chat_history_ttl()
+            client.set_chat_history_ttl(chat_id, 604800)
 
         Example:
             .. code-block:: python
 
-                chat.set_history_ttl(68400)
+                chat.set_history_ttl(604800)
         
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the generated service message is returned.
