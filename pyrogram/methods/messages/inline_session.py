@@ -69,4 +69,3 @@ async def get_session(client: "pyrogram.Client", dc_id: int):
             raise AuthBytesInvalid
 
         return session
-    
