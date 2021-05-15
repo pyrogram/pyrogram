@@ -111,7 +111,7 @@ class Message(Object, Update):
             A service message has one and only one of these fields set: new_chat_members, left_chat_member,
             new_chat_title, new_chat_photo, delete_chat_photo, group_chat_created, channel_chat_created,
             migrate_to_chat_id, migrate_from_chat_id, pinned_message, game_high_score, voice_chat_started,
-            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited.
+            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited, chat_history_ttl.
 
         media (``str``, *optional*):
             The message is a media message. This field will contain the name of the media message.
