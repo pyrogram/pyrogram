@@ -35,9 +35,7 @@ class SetChatHistoryTTL(Scaffold):
 
             period (``int``):
                 The time-to-live for the chat history.
-                Either 86000 for 1 day or 608000 for 1 week.
-                0 (zero) can be used to disable it.
-                Other values are not supported by Telegram.
+                Either 86000 for 1 day, 604800 for 1 week or 0 (zero) to disable it.
 
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the generated Service Message is returned.
@@ -46,16 +44,13 @@ class SetChatHistoryTTL(Scaffold):
             .. code-block:: python
 
                 # One Day
-                app.set_history_ttl("PyrogramChat", 86400)
+                app.set_chat_history_ttl(chat_id, 86400)
 
                 # A Week
-                app.set_history_ttl("PyrogramChat", 604800)
+                app.set_chat_history_ttl(chat_id, 604800)
 
                 # Disabling
-                app.set_history_ttl("PyrogramChat", 0)
-
-        Raises:
-            ValueError: In case the chat_id doesn't belong to a supergroup or the time-to-live isn't 1 day or week.
+                app.set_chat_history_ttl(chat_id, 0)
         """
 
         r = await self.send(
@@ -66,7 +61,8 @@ class SetChatHistoryTTL(Scaffold):
         )
 
         for i in r.updates:
-            if isinstance(i, raw.types.UpdateNewChannelMessage):
+            if isinstance(i, (raw.types.UpdateNewMessage,
+                              raw.types.UpdateNewChannelMessage)):
                 return await types.Message._parse(
                     self,
                     i.message,
