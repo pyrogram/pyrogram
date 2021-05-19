@@ -30,8 +30,8 @@ class InputMediaPhoto(InputMedia):
         media (``str``):
             Photo to send.
             Pass a file_id as string to send a photo that exists on the Telegram servers or
-            pass a file path as string to upload a new photo that exists on your local machine.
-            Sending photo by a URL is currently unsupported.
+            pass a file path as string to upload a new photo that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get a photo from the Internet.
 
         caption (``str``, *optional*):
             Caption of the photo to be sent, 0-1024 characters.
@@ -51,7 +51,7 @@ class InputMediaPhoto(InputMedia):
     def __init__(
         self,
         media: str,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None
     ):

@@ -30,8 +30,8 @@ class InputMediaVideo(InputMedia):
         media (``str``):
             Video to send.
             Pass a file_id as string to send a video that exists on the Telegram servers or
-            pass a file path as string to upload a new video that exists on your local machine.
-            Sending video by a URL is currently unsupported.
+            pass a file path as string to upload a new video that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get a video from the Internet.
 
         thumb (``str``):
             Thumbnail of the video sent.
@@ -70,7 +70,7 @@ class InputMediaVideo(InputMedia):
         self,
         media: str,
         thumb: str = None,
-        caption: str = None,
+        caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List[MessageEntity] = None,
         width: int = 0,

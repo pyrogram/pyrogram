@@ -29,7 +29,7 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait
+from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable
 from pyrogram.raw.all import layer
 from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
 from .internals import MsgId, MsgFactory
@@ -120,7 +120,8 @@ class Session:
                 self.dc_id,
                 self.test_mode,
                 self.client.ipv6,
-                self.client.proxy
+                self.client.proxy,
+                self.is_media
             )
 
             try:
@@ -432,12 +433,12 @@ class Session:
                 log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
 
                 await asyncio.sleep(amount)
-            except (OSError, TimeoutError, InternalServerError) as e:
+            except (OSError, TimeoutError, InternalServerError, ServiceUnavailable) as e:
                 if retries == 0:
                     raise e from None
 
                 (log.warning if retries < 2 else log.info)(
-                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {repr(e)}')
+                    f'[{Session.MAX_RETRIES - retries + 1}] Retrying "{query}" due to {str(e) or repr(e)}')
 
                 await asyncio.sleep(0.5)
 

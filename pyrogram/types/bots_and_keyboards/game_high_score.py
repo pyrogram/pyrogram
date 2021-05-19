@@ -64,7 +64,7 @@ class GameHighScore(Object):
     @staticmethod
     def _parse_action(client, service: raw.types.MessageService, users: dict):
         return GameHighScore(
-            user=types.User._parse(client, users[utils.get_raw_peer_id(service.from_id)]),
+            user=types.User._parse(client, users[utils.get_raw_peer_id(service.from_id or service.peer_id)]),
             score=service.action.score,
             client=client
         )

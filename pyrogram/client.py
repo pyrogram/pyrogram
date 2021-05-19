@@ -397,6 +397,9 @@ class Client(Methods, Scaffold):
 
     @parse_mode.setter
     def parse_mode(self, parse_mode: Optional[str] = "combined"):
+        if isinstance(parse_mode, str):
+            parse_mode = parse_mode.lower()
+
         if parse_mode not in self.PARSE_MODES:
             raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
                 ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
@@ -874,8 +877,7 @@ class Client(Methods, Scaffold):
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,
-                volume_id=file_id.volume_id,
-                local_id=file_id.local_id,
+                photo_id=file_id.media_id,
                 big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
             )
         elif file_type == FileType.PHOTO:

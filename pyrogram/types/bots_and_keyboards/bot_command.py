@@ -16,34 +16,29 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
-
-from ..messages_and_media import MessageEntity
+from pyrogram import raw
 from ..object import Object
 
 
-class InputMedia(Object):
-    """Content of a media message to be sent.
+class BotCommand(Object):
+    """A bot command with the standard slash "/" prefix.
 
-    It should be one of:
-
-    - :obj:`~pyrogram.types.InputMediaAnimation`
-    - :obj:`~pyrogram.types.InputMediaDocument`
-    - :obj:`~pyrogram.types.InputMediaAudio`
-    - :obj:`~pyrogram.types.InputMediaPhoto`
-    - :obj:`~pyrogram.types.InputMediaVideo`
+    Parameters:
+        command (``str``):
+            The bot command, for example: "/start".
+            
+        description (``str``):
+            Description of the bot command.
     """
 
-    def __init__(
-        self,
-        media: str,
-        caption: str = "",
-        parse_mode: str = None,
-        caption_entities: List[MessageEntity] = None
-    ):
+    def __init__(self, command: str, description: str):
         super().__init__()
 
-        self.media = media
-        self.caption = caption
-        self.parse_mode = parse_mode
-        self.caption_entities = caption_entities
+        self.command = command
+        self.description = description
+
+    def write(self):
+        return raw.types.BotCommand(
+            command=self.command,
+            description=self.description
+        )
