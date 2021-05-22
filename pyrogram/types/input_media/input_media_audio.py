@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional, List
 
 from .input_media import InputMedia
+from ..messages_and_media import MessageEntity
 
 
 class InputMediaAudio(InputMedia):
@@ -30,11 +31,8 @@ class InputMediaAudio(InputMedia):
         media (``str``):
             Audio to send.
             Pass a file_id as string to send an audio that exists on the Telegram servers or
-            pass a file path as string to upload a new audio that exists on your local machine.
-
-        file_ref (``str``, *optional*):
-            A valid file reference obtained by a recently fetched media message.
-            To be used in combination with a file id in case a file reference is needed.
+            pass a file path as string to upload a new audio that exists on your local machine or
+            pass an HTTP URL as a string for Telegram to get an audio file from the Internet.
 
         thumb (``str``, *optional*):
             Thumbnail of the music file album cover.
@@ -43,7 +41,8 @@ class InputMediaAudio(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the audio to be sent, 0-1024 characters
+            Caption of the audio to be sent, 0-1024 characters.
+            If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
@@ -52,28 +51,31 @@ class InputMediaAudio(InputMedia):
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
 
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
         duration (``int``, *optional*):
             Duration of the audio in seconds
 
-        performer (``int``, *optional*):
+        performer (``str``, *optional*):
             Performer of the audio
 
-        title (``int``, *optional*):
+        title (``str``, *optional*):
             Title of the audio
     """
 
     def __init__(
         self,
         media: str,
-        file_ref: str = None,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List[MessageEntity] = None,
         duration: int = 0,
         performer: str = "",
         title: str = ""
     ):
-        super().__init__(media, file_ref, caption, parse_mode)
+        super().__init__(media, caption, parse_mode, caption_entities)
 
         self.thumb = thumb
         self.duration = duration

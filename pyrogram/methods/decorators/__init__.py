@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .on_callback_query import OnCallbackQuery
+from .on_chat_member_updated import OnChatMemberUpdated
 from .on_chosen_inline_result import OnChosenInlineResult
 from .on_deleted_messages import OnDeletedMessages
 from .on_disconnect import OnDisconnect
@@ -36,6 +37,7 @@ class Decorators(
     OnUserStatus,
     OnInlineQuery,
     OnPoll,
-    OnChosenInlineResult
+    OnChosenInlineResult,
+    OnChatMemberUpdated
 ):
     pass

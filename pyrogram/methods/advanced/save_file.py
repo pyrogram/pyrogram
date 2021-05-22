@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -54,8 +54,9 @@ class SaveFile(Scaffold):
             available yet in the Client class as an easy-to-use method).
 
         Parameters:
-            path (``str``):
-                The path of the file you want to upload that exists on your local machine.
+            path (``str`` | ``BinaryIO``):
+                The path of the file you want to upload that exists on your local machine or a binary file-like object
+                with its attribute ".name" set for in-memory uploads.
 
             file_id (``int``, *optional*):
                 In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,13 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import List
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
 
 
@@ -31,10 +30,11 @@ class VideoNote(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         length (``int``):
             Video width and height as defined by sender.
@@ -60,7 +60,7 @@ class VideoNote(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         length: int,
         duration: int,
         thumbs: List["types.Thumbnail"] = None,
@@ -71,7 +71,7 @@ class VideoNote(Object):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.mime_type = mime_type
         self.file_size = file_size
         self.date = date
@@ -86,16 +86,17 @@ class VideoNote(Object):
         video_attributes: "raw.types.DocumentAttributeVideo"
     ) -> "VideoNote":
         return VideoNote(
-            file_id=encode_file_id(
-                pack(
-                    "<iiqq",
-                    13,
-                    video_note.dc_id,
-                    video_note.id,
-                    video_note.access_hash
-                )
-            ),
-            file_ref=encode_file_ref(video_note.file_reference),
+            file_id=FileId(
+                file_type=FileType.VIDEO_NOTE,
+                dc_id=video_note.dc_id,
+                media_id=video_note.id,
+                access_hash=video_note.access_hash,
+                file_reference=video_note.file_reference
+            ).encode(),
+            file_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=video_note.id
+            ).encode(),
             length=video_attributes.w,
             duration=video_attributes.duration,
             file_size=video_note.size,

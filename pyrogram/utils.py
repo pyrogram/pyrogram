@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -24,130 +24,58 @@ import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
 from getpass import getpass
-from typing import List
-from typing import Union
+from typing import Union, List, Dict, Optional
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
-
-
-def decode_file_id(s: str) -> bytes:
-    s = base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
-    r = b""
-
-    major = s[-1]
-    minor = s[-2] if major != 2 else 0
-
-    assert minor in (0, 22, 24)
-
-    skip = 2 if minor else 1
-
-    i = 0
-
-    while i < len(s) - skip:
-        if s[i] != 0:
-            r += bytes([s[i]])
-        else:
-            r += b"\x00" * s[i + 1]
-            i += 1
-
-        i += 1
-
-    return r
-
-
-def encode_file_id(s: bytes) -> str:
-    r = b""
-    n = 0
-
-    for i in s + bytes([22]) + bytes([4]):
-        if i == 0:
-            n += 1
-        else:
-            if n:
-                r += b"\x00" + bytes([n])
-                n = 0
-
-            r += bytes([i])
-
-    return base64.urlsafe_b64encode(r).decode().rstrip("=")
-
-
-def encode_file_ref(file_ref: bytes) -> str:
-    return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
-
-
-def decode_file_ref(file_ref: str) -> bytes:
-    if file_ref is None:
-        return b""
-
-    return base64.urlsafe_b64decode(file_ref + "=" * (-len(file_ref) % 4))
+from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
 
 
 async def ainput(prompt: str = "", *, hide: bool = False):
+    """Just like the built-in input, but async"""
     with ThreadPoolExecutor(1) as executor:
         func = functools.partial(getpass if hide else input, prompt)
         return await asyncio.get_event_loop().run_in_executor(executor, func)
 
 
-def get_offset_date(dialogs):
-    for m in reversed(dialogs.messages):
-        if isinstance(m, raw.types.MessageEmpty):
-            continue
-        else:
-            return m.date
-    else:
-        return 0
-
-
 def get_input_media_from_file_id(
-    file_id_str: str,
-    file_ref: str = None,
-    expected_media_type: int = None
+    file_id: str,
+    expected_file_type: FileType = None
 ) -> Union["raw.types.InputMediaPhoto", "raw.types.InputMediaDocument"]:
     try:
-        decoded = decode_file_id(file_id_str)
+        decoded = FileId.decode(file_id)
     except Exception:
-        raise ValueError(f"Failed to decode file_id: {file_id_str}")
-    else:
-        media_type = decoded[0]
+        raise ValueError(f'Failed to decode "{file_id}". The value does not represent an existing local file, '
+                         f'HTTP URL, or valid file id.')
 
-        if expected_media_type is not None:
-            if media_type != expected_media_type:
-                media_type_str = Scaffold.MEDIA_TYPE_ID.get(media_type, None)
-                expected_media_type_str = Scaffold.MEDIA_TYPE_ID.get(expected_media_type, None)
+    file_type = decoded.file_type
 
-                raise ValueError(f'Expected: "{expected_media_type_str}", got "{media_type_str}" file_id instead')
+    if expected_file_type is not None and file_type != expected_file_type:
+        raise ValueError(f"Expected {expected_file_type.name}, got {file_type.name} file id instead")
 
-        if media_type in (0, 1, 14):
-            raise ValueError(f"This file_id can only be used for download: {file_id_str}")
+    if file_type in (FileType.THUMBNAIL, FileType.CHAT_PHOTO):
+        raise ValueError(f"This file id can only be used for download: {file_id}")
 
-        if media_type == 2:
-            unpacked = struct.unpack("<iiqqqiiii", decoded)
-            dc_id, file_id, access_hash, volume_id, _, _, type, local_id = unpacked[1:]
-
-            return raw.types.InputMediaPhoto(
-                id=raw.types.InputPhoto(
-                    id=file_id,
-                    access_hash=access_hash,
-                    file_reference=decode_file_ref(file_ref)
-                )
+    if file_type in PHOTO_TYPES:
+        return raw.types.InputMediaPhoto(
+            id=raw.types.InputPhoto(
+                id=decoded.media_id,
+                access_hash=decoded.access_hash,
+                file_reference=decoded.file_reference
             )
+        )
 
-        if media_type in (3, 4, 5, 8, 9, 10, 13):
-            unpacked = struct.unpack("<iiqq", decoded)
-            dc_id, file_id, access_hash = unpacked[1:]
-
-            return raw.types.InputMediaDocument(
-                id=raw.types.InputDocument(
-                    id=file_id,
-                    access_hash=access_hash,
-                    file_reference=decode_file_ref(file_ref)
-                )
+    if file_type in DOCUMENT_TYPES:
+        return raw.types.InputMediaDocument(
+            id=raw.types.InputDocument(
+                id=decoded.media_id,
+                access_hash=decoded.access_hash,
+                file_reference=decoded.file_reference
             )
+        )
 
-        raise ValueError(f"Unknown media type: {file_id_str}")
+    raise ValueError(f"Unknown file id: {file_id}")
 
 
 async def parse_messages(client, messages: "raw.types.messages.Messages", replies: int = 1) -> List["types.Message"]:
@@ -163,10 +91,13 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
         parsed_messages.append(await types.Message._parse(client, message, users, chats, replies=0))
 
     if replies:
-        messages_with_replies = {i.id: getattr(i, "reply_to_msg_id", None) for i in messages.messages}
-        reply_message_ids = [i[0] for i in filter(lambda x: x[1] is not None, messages_with_replies.items())]
+        messages_with_replies = {
+            i.id: i.reply_to.reply_to_msg_id
+            for i in messages.messages
+            if not isinstance(i, raw.types.MessageEmpty) and i.reply_to
+        }
 
-        if reply_message_ids:
+        if messages_with_replies:
             # We need a chat id, but some messages might be empty (no chat attribute available)
             # Scan until we find a message with a chat available (there must be one, because we are fetching replies)
             for m in parsed_messages:
@@ -178,12 +109,12 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
 
             reply_messages = await client.get_messages(
                 chat_id,
-                reply_to_message_ids=reply_message_ids,
+                reply_to_message_ids=messages_with_replies.keys(),
                 replies=replies - 1
             )
 
             for message in parsed_messages:
-                reply_id = messages_with_replies[message.message_id]
+                reply_id = messages_with_replies.get(message.message_id, None)
 
                 for reply in reply_messages:
                     if reply.message_id == reply_id:
@@ -231,7 +162,22 @@ MIN_CHAT_ID = -2147483647
 MAX_USER_ID = 2147483647
 
 
+def get_raw_peer_id(peer: raw.base.Peer) -> Optional[int]:
+    """Get the raw peer id from a Peer object"""
+    if isinstance(peer, raw.types.PeerUser):
+        return peer.user_id
+
+    if isinstance(peer, raw.types.PeerChat):
+        return peer.chat_id
+
+    if isinstance(peer, raw.types.PeerChannel):
+        return peer.channel_id
+
+    return None
+
+
 def get_peer_id(peer: raw.base.Peer) -> int:
+    """Get the non-raw peer id from a Peer object"""
     if isinstance(peer, raw.types.PeerUser):
         return peer.user_id
 
@@ -342,3 +288,24 @@ def compute_password_check(r: raw.types.account.Password, password: str) -> raw.
     )
 
     return raw.types.InputCheckPasswordSRP(srp_id=srp_id, A=A_bytes, M1=M1_bytes)
+
+
+async def parse_text_entities(
+    client: "pyrogram.Client",
+    text: str,
+    parse_mode: str,
+    entities: List["types.MessageEntity"]
+) -> Dict[str, raw.base.MessageEntity]:
+    if entities:
+        # Inject the client instance because parsing user mentions requires it
+        for entity in entities:
+            entity._client = client
+
+        text, entities = text, [await entity.write() for entity in entities]
+    else:
+        text, entities = (await client.parser.parse(text, parse_mode)).values()
+
+    return {
+        "message": text,
+        "entities": entities
+    }

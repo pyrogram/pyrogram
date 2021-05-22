@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,13 +18,14 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, List, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,10 +34,10 @@ class SendAnimation(Scaffold):
         self,
         chat_id: Union[int, str],
         animation: Union[str, BinaryIO],
-        file_ref: str = None,
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -53,7 +54,7 @@ class SendAnimation(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send animation files (animation or H.264/MPEG-4 AVC video without sound).
 
         Parameters:
@@ -69,10 +70,6 @@ class SendAnimation(Scaffold):
                 pass a file path as string to upload a new animation that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
-
             caption (``str``, *optional*):
                 Animation caption, 0-1024 characters.
 
@@ -86,6 +83,9 @@ class SendAnimation(Scaffold):
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
 
             duration (``int``, *optional*):
                 Duration of sent animation in seconds.
@@ -192,7 +192,7 @@ class SendAnimation(Scaffold):
                         url=animation
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(animation, file_ref, 10)
+                    media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(animation, progress=progress, progress_args=progress_args)
@@ -222,8 +222,8 @@ class SendAnimation(Scaffold):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
-                            reply_markup=reply_markup.write() if reply_markup else None,
-                            **await self.parser.parse(caption, parse_mode)
+                            reply_markup=await reply_markup.write(self) if reply_markup else None,
+                            **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:
@@ -242,7 +242,9 @@ class SendAnimation(Scaffold):
 
                             if unsave:
                                 document = message.animation or message.document
-                                document_id = utils.get_input_media_from_file_id(document.file_id, document.file_ref).id
+                                document_id = utils.get_input_media_from_file_id(
+                                    document.file_id, FileType.ANIMATION
+                                ).id
 
                                 await self.send(
                                     raw.functions.messages.SaveGif(

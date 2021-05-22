@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -41,6 +41,7 @@ class Filters:
     MENTION = raw.types.InputMessagesFilterMyMentions()
     LOCATION = raw.types.InputMessagesFilterGeo()
     CONTACT = raw.types.InputMessagesFilterContacts()
+    PINNED = raw.types.InputMessagesFilterPinned()
 
 
 POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), Filters.__dict__.keys())))
@@ -135,6 +136,7 @@ class SearchMessages(Scaffold):
                 - ``"mention"``: Search for messages containing mentions to yourself.
                 - ``"location"``: Search for location messages.
                 - ``"contact"``: Search for contact messages.
+                - ``"pinned"``: Search for pinned messages.
 
             limit (``int``, *optional*):
                 Limits the number of messages to be retrieved.
@@ -153,8 +155,12 @@ class SearchMessages(Scaffold):
                 for message in app.search_messages("pyrogramchat", query="dan", limit=333):
                     print(message.text)
 
-                # Search for photos sent by @haskell in @pyrogramchat
-                for message in app.search_messages("pyrogramchat", "", filter="photo" limit=333, from_user="haskell"):
+                # Search for pinned messages in @pyrogramchat
+                for message in app.search_messages("pyrogramchat", filter="pinned"):
+                    print(message.text)
+
+                # Search for messages containing "hi" sent by @haskell in @pyrogramchat
+                for message in app.search_messages("pyrogramchat", "hi", from_user="haskell"):
                     print(message.text)
         """
         current = 0
@@ -175,7 +181,7 @@ class SearchMessages(Scaffold):
             if not messages:
                 return
 
-            offset += 100
+            offset += len(messages)
 
             for message in messages:
                 yield message

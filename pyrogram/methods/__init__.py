@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -22,6 +22,7 @@ from .bots import Bots
 from .chats import Chats
 from .contacts import Contacts
 from .decorators import Decorators
+from .invite_links import InviteLinks
 from .messages import Messages
 from .password import Password
 from .users import Users
@@ -38,6 +39,7 @@ class Methods(
     Users,
     Messages,
     Decorators,
-    Utilities
+    Utilities,
+    InviteLinks,
 ):
     pass

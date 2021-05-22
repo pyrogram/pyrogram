@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -115,7 +115,7 @@ class GetChatMembers(Scaffold):
             members = r.full_chat.participants.participants
             users = {i.id: i for i in r.users}
 
-            return types.List(types.ChatMember._parse(self, member, users) for member in members)
+            return types.List(types.ChatMember._parse(self, member, users, {}) for member in members)
         elif isinstance(peer, raw.types.InputPeerChannel):
             filter = filter.lower()
 
@@ -147,7 +147,8 @@ class GetChatMembers(Scaffold):
 
             members = r.participants
             users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
 
-            return types.List(types.ChatMember._parse(self, member, users) for member in members)
+            return types.List(types.ChatMember._parse(self, member, users, chats) for member in members)
         else:
             raise ValueError(f'The chat_id "{chat_id}" belongs to a user')

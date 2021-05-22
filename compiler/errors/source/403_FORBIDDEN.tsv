@@ -1,0 +1,27 @@
+id	message
+BROADCAST_FORBIDDEN	The request can't be used in channels
+CHANNEL_PUBLIC_GROUP_NA	The channel/supergroup is not available
+CHAT_ADMIN_INVITE_REQUIRED	You don't have rights to invite other users
+CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
+CHAT_FORBIDDEN	You cannot write in this chat
+CHAT_SEND_GIFS_FORBIDDEN	You can't send animations in this chat
+CHAT_SEND_INLINE_FORBIDDEN	You cannot use inline bots to send messages in this chat
+CHAT_SEND_MEDIA_FORBIDDEN	You can't send media messages in this chat
+CHAT_SEND_POLL_FORBIDDEN	You can't send polls in this chat
+CHAT_SEND_STICKERS_FORBIDDEN	You can't send stickers in this chat
+CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
+EDIT_BOT_INVITE_FORBIDDEN	Bots' chat invite links can't be edited
+INLINE_BOT_REQUIRED	The action must be performed through an inline bot callback
+MESSAGE_AUTHOR_REQUIRED	You are not the author of this message
+MESSAGE_DELETE_FORBIDDEN	You don't have rights to delete messages in this chat, most likely because you are not the author of them
+POLL_VOTE_REQUIRED	Cast a vote in the poll before calling this method
+RIGHT_FORBIDDEN	You don't have enough rights for this action, or you tried to set one or more admin rights that can't be applied to this kind of chat (channel or supergroup)
+SENSITIVE_CHANGE_FORBIDDEN	Your sensitive content settings can't be changed at this time
+TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
+USER_BOT_INVALID	This method can only be called by a bot
+USER_CHANNELS_TOO_MUCH	One of the users you tried to add is already in too many channels/supergroups
+USER_INVALID	The provided user is invalid
+USER_IS_BLOCKED	The user is blocked
+USER_NOT_MUTUAL_CONTACT	The provided user is not a mutual contact
+USER_PRIVACY_RESTRICTED	The user's privacy settings is preventing you to perform this action
+USER_RESTRICTED	You are limited/restricted. You can't perform this action

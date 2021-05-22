@@ -2,10 +2,10 @@
 name: Ask Question
 about: Ask a Pyrogram related question
 title: For Q&A purposes, please read this template body
-labels: "question"
+labels: "invalid"
 ---
 
-<!-- WARNING: Ignoring this template could lead to the issue being closed as incomplete -->
+<!-- WARNING: Ignoring this template could lead to the issue being closed as invalid -->
 
 # Important
 This place is for issues about Pyrogram, it's **not a forum**.

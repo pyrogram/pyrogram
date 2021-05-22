@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -34,7 +34,7 @@ class OnUserStatus(Scaffold):
         :obj:`~pyrogram.handlers.UserStatusHandler`.
 
         Parameters:
-            filters (:obj:`~pyrogram.Filters`, *optional*):
+            filters (:obj:`~pyrogram.filters`, *optional*):
                 Pass one or more filters to allow only a subset of UserStatus updated to be passed in your function.
 
             group (``int``, *optional*):
@@ -45,9 +45,14 @@ class OnUserStatus(Scaffold):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.handlers.UserStatusHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
-                func.handler = (
-                    pyrogram.handlers.UserStatusHandler(func, self),
-                    group if filters is None else filters
+                if not hasattr(func, "handlers"):
+                    func.handlers = []
+
+                func.handlers.append(
+                    (
+                        pyrogram.handlers.UserStatusHandler(func, self),
+                        group if filters is None else filters
+                    )
                 )
 
             return func

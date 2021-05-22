@@ -1,0 +1,349 @@
+id	message
+ABOUT_TOO_LONG	The provided about/bio text is too long
+ACCESS_TOKEN_EXPIRED	The bot token has expired
+ACCESS_TOKEN_INVALID	The bot access token is invalid
+ADMINS_TOO_MUCH	The chat has too many administrators
+ADMIN_RANK_EMOJI_NOT_ALLOWED	Emoji are not allowed in custom administrator titles
+ADMIN_RANK_INVALID	The custom administrator title is invalid or is longer than 16 characters
+ALBUM_PHOTOS_TOO_MANY	Too many photos were included in the album
+API_ID_INVALID	The api_id/api_hash combination is invalid
+API_ID_PUBLISHED_FLOOD	You are using an API key that is limited on the server side because it was published somewhere
+ARTICLE_TITLE_EMPTY	The article title is empty
+AUDIO_TITLE_EMPTY	The title attribute of the audio is empty
+AUTH_BYTES_INVALID	The authorization bytes are invalid
+AUTH_TOKEN_ALREADY_ACCEPTED	The authorization token was already used
+AUTH_TOKEN_EXPIRED	The provided authorization token has expired and the updated QR-code must be re-scanned
+AUTH_TOKEN_INVALID	An invalid authorization token was provided
+AUTOARCHIVE_NOT_AVAILABLE	This feature is not yet enabled for your account due to it not receiving too many private messages from strangers
+BANK_CARD_NUMBER_INVALID	The credit card number is invalid
+BANNED_RIGHTS_INVALID	You provided a set of restrictions that is invalid
+BASE_PORT_LOC_INVALID	The base port location is invalid
+BOTS_TOO_MUCH	The chat has too many bots
+BOT_CHANNELS_NA	Bots can't edit admin privileges
+BOT_COMMAND_DESCRIPTION_INVALID	The command description was empty, too long or had invalid characters
+BOT_DOMAIN_INVALID	The domain used for the auth button does not match the one configured in @BotFather
+BOT_GAMES_DISABLED	Bot games cannot be used in this type of chat
+BOT_GROUPS_BLOCKED	This bot can't be added to groups
+BOT_INLINE_DISABLED	The inline feature of the bot is disabled
+BOT_INVALID	This is not a valid bot
+BOT_METHOD_INVALID	The method can't be used by bots
+BOT_MISSING	This method can only be run by a bot
+BOT_PAYMENTS_DISABLED	This method can only be run by a bot
+BOT_POLLS_DISABLED	Sending polls by bots has been disabled
+BOT_RESPONSE_TIMEOUT	The bot did not answer to the callback query in time
+BOT_SCORE_NOT_MODIFIED	The bot score was not modified
+BROADCAST_ID_INVALID	The channel is invalid
+BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels
+BROADCAST_REQUIRED	The request can only be used with a channel
+BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
+BUTTON_TYPE_INVALID	The type of one of the buttons you provided is invalid
+BUTTON_URL_INVALID	The button url is invalid
+CALL_ALREADY_ACCEPTED	The call is already accepted
+CALL_ALREADY_DECLINED	The call is already declined
+CALL_PEER_INVALID	The provided call peer object is invalid
+CALL_PROTOCOL_FLAGS_INVALID	Call protocol flags invalid
+CDN_METHOD_INVALID	The method can't be used on CDN DCs
+CHANNELS_ADMIN_PUBLIC_TOO_MUCH	You are an administrator of too many public channels
+CHANNELS_TOO_MUCH	You have joined too many channels or supergroups, leave some and try again
+CHANNEL_BANNED	The channel is banned
+CHANNEL_INVALID	The channel parameter is invalid
+CHANNEL_PRIVATE	The channel/supergroup is not accessible
+CHANNEL_TOO_LARGE	The channel is too large to be deleted; this error is issued when trying to delete channels with more than 1000 members (subject to change)
+CHAT_ABOUT_NOT_MODIFIED	The chat about text was not modified because you tried to edit it using the same content
+CHAT_ABOUT_TOO_LONG	The chat about text is too long
+CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
+CHAT_ID_EMPTY	The provided chat id is empty
+CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
+CHAT_INVALID	The chat is invalid
+CHAT_INVITE_PERMANENT	The chat invite link is primary
+CHAT_LINK_EXISTS	The action failed because the supergroup is linked to a channel
+CHAT_NOT_MODIFIED	The chat settings (title, permissions, photo, etc..) were not modified because you tried to edit them using the same content
+CHAT_RESTRICTED	The chat is restricted and cannot be used
+CHAT_SEND_INLINE_FORBIDDEN	You cannot use inline bots to send messages in this chat
+CHAT_TITLE_EMPTY	The chat title is empty
+CODE_EMPTY	The provided code is empty
+CODE_HASH_INVALID	The provided code hash invalid
+CODE_INVALID	The provided code is invalid (i.e. from email)
+CONNECTION_API_ID_INVALID	The provided API id is invalid
+CONNECTION_APP_VERSION_EMPTY	App version is empty
+CONNECTION_DEVICE_MODEL_EMPTY	The device model is empty
+CONNECTION_LANG_PACK_INVALID	The specified language pack is not valid
+CONNECTION_LAYER_INVALID	The connection layer is invalid. Missing InvokeWithLayer-InitConnection call
+CONNECTION_NOT_INITED	The connection was not initialized
+CONNECTION_SYSTEM_EMPTY	The connection to the system is empty
+CONNECTION_SYSTEM_LANG_CODE_EMPTY	The system language code is empty
+CONTACT_ADD_MISSING	Contact to add is missing
+CONTACT_ID_INVALID	The provided contact id is invalid
+CONTACT_NAME_EMPTY	The provided contact name is empty
+CONTACT_REQ_MISSING	Missing contact request
+DATA_INVALID	The encrypted data is invalid
+DATA_JSON_INVALID	The provided JSON data is invalid
+DATA_TOO_LONG	Data too long
+DATE_EMPTY	The date argument is empty
+DC_ID_INVALID	The dc_id parameter is invalid
+DH_G_A_INVALID	The g_a parameter invalid
+DOCUMENT_INVALID	The document is invalid
+EMAIL_HASH_EXPIRED	The email hash expired and cannot be used to verify it
+EMAIL_INVALID	The email provided is invalid
+EMAIL_UNCONFIRMED	Email unconfirmed
+EMAIL_UNCONFIRMED_X	The provided email isn't confirmed, {x} is the length of the verification code that was just sent to the email
+EMAIL_VERIFY_EXPIRED	The verification email has expired
+EMOTICON_EMPTY	The emoticon parameter is empty
+EMOTICON_INVALID	The emoticon parameter is invalid
+EMOTICON_STICKERPACK_MISSING	The emoticon sticker pack you are trying to obtain is missing
+ENCRYPTED_MESSAGE_INVALID	The special binding message (bind_auth_key_inner) contains invalid data
+ENCRYPTION_ALREADY_ACCEPTED	The secret chat is already accepted
+ENCRYPTION_ALREADY_DECLINED	The secret chat is already declined
+ENCRYPTION_DECLINED	The secret chat was declined
+ENCRYPTION_ID_INVALID	The provided secret chat id is invalid
+ENTITIES_TOO_LONG	The entity provided contains data that is too long, or you passed too many entities to this message
+ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
+ERROR_TEXT_EMPTY	The provided error message is empty
+EXPIRE_DATE_INVALID	The expiration date is invalid
+EXPORT_CARD_INVALID	The provided card is invalid
+EXTERNAL_URL_INVALID	The external media URL is invalid
+FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
+FIELD_NAME_INVALID	The field with the name FIELD_NAME is invalid
+FILE_ID_INVALID	The file id is invalid
+FILE_MIGRATE_X	The file is in Data Center No. {x}
+FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 4000
+FILE_PART_EMPTY	The file part sent is empty
+FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 3999
+FILE_PART_LENGTH_INVALID	The length of a file part is invalid
+FILE_PART_SIZE_CHANGED	The part size is different from the size of one of the previous parts in the same file
+FILE_PART_SIZE_INVALID	512 KB cannot be evenly divided by part_size
+FILE_PART_TOO_BIG	The size limit (512 KB) for the content of the file part has been exceeded
+FILE_PART_X_MISSING	Part {x} of the file is missing from storage
+FILE_REFERENCE_EMPTY	The file id contains an empty file reference, you must obtain a valid one by fetching the message from the origin context
+FILE_REFERENCE_EXPIRED	The file id contains an expired file reference, you must obtain a valid one by fetching the message from the origin context
+FILE_REFERENCE_INVALID	The file id contains an invalid file reference, you must obtain a valid one by fetching the message from the origin context
+FILTER_ID_INVALID	The specified filter ID is invalid
+FIRSTNAME_INVALID	The first name is invalid
+FOLDER_ID_EMPTY	The folder you tried to delete was already empty
+FOLDER_ID_INVALID	The folder id is invalid
+FRESH_CHANGE_ADMINS_FORBIDDEN	You can't change administrator settings in this chat because your session was logged-in recently
+FROM_MESSAGE_BOT_DISABLED	Bots can't use fromMessage min constructors
+FROM_PEER_INVALID	The from peer value is invalid
+GAME_BOT_INVALID	You cannot send that game with the current bot
+GEO_POINT_INVALID	Invalid geo point provided
+GIF_CONTENT_TYPE_INVALID	GIF content-type invalid
+GIF_ID_INVALID	The provided gif/animation id is invalid
+GRAPH_INVALID_RELOAD	Invalid graph token provided, please reload the stats and provide the updated token
+GRAPH_OUTDATED_RELOAD	The graph data is outdated
+GROUPCALL_SSRC_DUPLICATE_MUCH	Too many group call synchronization source duplicates
+GROUPED_MEDIA_INVALID	The album contains invalid media
+GROUP_CALL_INVALID	The group call is invalid
+HASH_INVALID	The provided hash is invalid
+IMAGE_PROCESS_FAILED	The server failed to process your image
+IMPORT_FILE_INVALID	The imported file is invalid
+IMPORT_FORMAT_UNRECOGNIZED	The imported format is unrecognized
+IMPORT_ID_INVALID	The import id is invalid
+INLINE_RESULT_EXPIRED	The inline bot query expired
+INPUT_CONSTRUCTOR_INVALID	The provided constructor is invalid
+INPUT_FETCH_ERROR	An error occurred while deserializing TL parameters
+INPUT_FETCH_FAIL	Failed deserializing TL payload
+INPUT_FILTER_INVALID	The filter is invalid for this query
+INPUT_LAYER_INVALID	The provided layer is invalid
+INPUT_METHOD_INVALID	The method invoked is invalid in the current schema
+INPUT_REQUEST_TOO_LONG	The input request is too long
+INPUT_USER_DEACTIVATED	The target user has been deleted/deactivated
+INVITE_HASH_EMPTY	The invite hash is empty
+INVITE_HASH_EXPIRED	The chat invite link is no longer valid
+INVITE_HASH_INVALID	The invite link hash is invalid
+INVITE_REVOKED_MISSING	The action required a chat invite link to be revoked first
+LANG_PACK_INVALID	The provided language pack is invalid
+LASTNAME_INVALID	The last name is invalid
+LIMIT_INVALID	The limit parameter is invalid
+LINK_NOT_MODIFIED	The chat link was not modified because you tried to link to the same target
+LOCATION_INVALID	The file location is invalid
+MAX_ID_INVALID	The max_id parameter is invalid
+MAX_QTS_INVALID	The provided QTS is invalid
+MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
+MEDIA_CAPTION_TOO_LONG	The media caption is longer than 1024 characters
+MEDIA_EMPTY	The media you tried to send is invalid
+MEDIA_INVALID	The media is invalid
+MEDIA_NEW_INVALID	The new media to edit the message with is invalid
+MEDIA_PREV_INVALID	The previous media cannot be edited with anything else
+MEGAGROUP_ID_INVALID	The supergroup is invalid
+MEGAGROUP_PREHISTORY_HIDDEN	The action failed because the supergroup has the pre-history hidden
+MEGAGROUP_REQUIRED	The request can only be used with a supergroup
+MESSAGE_EDIT_TIME_EXPIRED	You can no longer edit this message because too much time has passed
+MESSAGE_EMPTY	The message sent is empty or contains invalid characters
+MESSAGE_IDS_EMPTY	The requested message doesn't exist or you provided no message id
+MESSAGE_ID_INVALID	The message id is invalid
+MESSAGE_NOT_MODIFIED	The message was not modified because you tried to edit it using the same content
+MESSAGE_POLL_CLOSED	You can't interact with a closed poll
+MESSAGE_TOO_LONG	The message text is over 4096 characters
+METHOD_INVALID	The API method is invalid and cannot be used
+MSG_ID_INVALID	The message ID used in the peer was invalid
+MSG_WAIT_FAILED	A waiting call returned an error
+MULTI_MEDIA_TOO_LONG	The album/media group contains too many items
+NEW_SALT_INVALID	The new salt is invalid
+NEW_SETTINGS_INVALID	The new settings are invalid
+NEXT_OFFSET_INVALID	The next offset value is invalid
+OFFSET_INVALID	The offset parameter is invalid
+OFFSET_PEER_ID_INVALID	The provided offset peer is invalid
+OPTIONS_TOO_MUCH	The poll options are too many
+OPTION_INVALID	The option specified is invalid and does not exist in the target poll
+PACK_SHORT_NAME_INVALID	Invalid sticker pack name. It must begin with a letter, can't contain consecutive underscores and must end in '_by_<bot username>'.
+PACK_SHORT_NAME_OCCUPIED	A sticker pack with this name already exists
+PACK_TITLE_INVALID	The sticker pack title is invalid
+PARTICIPANTS_TOO_FEW	The chat doesn't have enough participants
+PARTICIPANT_VERSION_OUTDATED	The other participant is using an outdated Telegram app version
+PASSWORD_EMPTY	The password provided is empty
+PASSWORD_HASH_INVALID	The two-step verification password is invalid
+PASSWORD_MISSING	The account is missing the two-step verification password
+PASSWORD_RECOVERY_NA	The password recovery e-mail is not available
+PASSWORD_REQUIRED	The two-step verification password is required for this method
+PASSWORD_TOO_FRESH_X	The two-step verification password was added recently and you are required to wait {x} seconds
+PAYMENT_PROVIDER_INVALID	The payment provider was not recognised or its token was invalid
+PEER_FLOOD	The method can't be used because your account is currently limited
+PEER_ID_INVALID	The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it
+PEER_ID_NOT_SUPPORTED	The provided peer id is not supported
+PERSISTENT_TIMESTAMP_EMPTY	The pts argument is empty
+PERSISTENT_TIMESTAMP_INVALID	The persistent timestamp is invalid
+PHONE_CODE_EMPTY	The phone code is missing
+PHONE_CODE_EXPIRED	The confirmation code has expired
+PHONE_CODE_HASH_EMPTY	The phone code hash is missing
+PHONE_CODE_INVALID	The confirmation code is invalid
+PHONE_NUMBER_APP_SIGNUP_FORBIDDEN	You can't sign up using this app
+PHONE_NUMBER_BANNED	The phone number is banned from Telegram and cannot be used
+PHONE_NUMBER_FLOOD	This number has tried to login too many times
+PHONE_NUMBER_INVALID	The phone number is invalid
+PHONE_NUMBER_OCCUPIED	The phone number is already in use
+PHONE_NUMBER_UNOCCUPIED	The phone number is not yet being used
+PHONE_PASSWORD_PROTECTED	The phone is password protected
+PHOTO_CONTENT_TYPE_INVALID	The photo content type is invalid
+PHOTO_CONTENT_URL_EMPTY	The photo content URL is empty
+PHOTO_CROP_FILE_MISSING	Photo crop file missing
+PHOTO_CROP_SIZE_SMALL	The photo is too small
+PHOTO_EXT_INVALID	The photo extension is invalid
+PHOTO_FILE_MISSING	Profile photo file missing
+PHOTO_ID_INVALID	The photo id is invalid
+PHOTO_INVALID	The photo is invalid
+PHOTO_INVALID_DIMENSIONS	The photo dimensions are invalid
+PHOTO_SAVE_FILE_INVALID	The photo you tried to send cannot be saved by Telegram. A reason may be that it exceeds 10 MB. Try resizing it locally
+PHOTO_THUMB_URL_EMPTY	The photo thumb URL is empty
+PHOTO_THUMB_URL_INVALID	The photo thumb URL is invalid
+PINNED_DIALOGS_TOO_MUCH	Too many pinned dialogs
+PIN_RESTRICTED	You can't pin messages in private chats with other people
+POLL_ANSWERS_INVALID	The poll answers are invalid
+POLL_OPTION_DUPLICATE	A duplicate option was sent in the same poll
+POLL_OPTION_INVALID	A poll option used invalid data (the data may be too long)
+POLL_QUESTION_INVALID	The poll question is invalid
+POLL_UNSUPPORTED	This layer does not support polls in the invoked method
+POLL_VOTE_REQUIRED	Cast a vote in the poll before calling this method
+PRIVACY_KEY_INVALID	The privacy key is invalid
+PRIVACY_TOO_LONG	Your privacy exception list has exceeded the maximum capacity
+PRIVACY_VALUE_INVALID	The privacy value is invalid
+QUERY_ID_EMPTY	The query ID is empty
+QUERY_ID_INVALID	The callback query id is invalid
+QUERY_TOO_SHORT	The query is too short
+QUIZ_CORRECT_ANSWERS_EMPTY	The correct answers of the quiz are empty
+QUIZ_CORRECT_ANSWERS_TOO_MUCH	The quiz contains too many correct answers
+QUIZ_CORRECT_ANSWER_INVALID	The correct answers of the quiz are invalid
+QUIZ_MULTIPLE_INVALID	A quiz can't have multiple answers
+RANDOM_ID_EMPTY	The random ID is empty
+RANDOM_ID_INVALID	The provided random ID is invalid
+RANDOM_LENGTH_INVALID	The random length is invalid
+RANGES_INVALID	Invalid range provided
+REACTION_EMPTY	The reaction provided is empty
+REACTION_INVALID	Invalid reaction provided (only emoji are allowed)
+REFLECTOR_NOT_AVAILABLE	The call reflector is not available
+REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
+REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty
+REPLY_MARKUP_INVALID	The provided reply markup is invalid
+REPLY_MARKUP_TOO_LONG	The reply markup is too long
+RESULTS_TOO_MUCH	The result contains too many items
+RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers
+RESULT_ID_EMPTY	Result ID empty
+RESULT_ID_INVALID	The given result cannot be used to send the selection to the bot
+RESULT_TYPE_INVALID	The result type is invalid
+REVOTE_NOT_ALLOWED	You cannot change your vote
+RSA_DECRYPT_FAILED	Internal RSA decryption failed
+SCHEDULE_BOT_NOT_ALLOWED	Bots are not allowed to schedule messages
+SCHEDULE_DATE_INVALID	Invalid schedule date provided
+SCHEDULE_DATE_TOO_LATE	The date you tried to schedule is too far in the future (more than one year)
+SCHEDULE_STATUS_PRIVATE	You cannot schedule a message until the person comes online if their privacy does not show this information
+SCHEDULE_TOO_MUCH	You cannot schedule more than 100 messages in this chat
+SEARCH_QUERY_EMPTY	The search query is empty
+SECONDS_INVALID	The seconds interval is invalid, for slow mode try with 0 (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h)
+SEND_MESSAGE_MEDIA_INVALID	The message media is invalid
+SEND_MESSAGE_TYPE_INVALID	The message type is invalid
+SESSION_TOO_FRESH_X	You can't do this action because the current session was logged-in recently
+SETTINGS_INVALID	Invalid settings were provided
+SHA256_HASH_INVALID	The provided SHA256 hash is invalid
+SHORTNAME_OCCUPY_FAILED	An error occurred when trying to register the short-name used for the sticker pack. Try a different name
+SLOWMODE_MULTI_MSGS_DISABLED	Slowmode is enabled, you cannot forward multiple messages to this group
+SMS_CODE_CREATE_FAILED	An error occurred while creating the SMS code
+SRP_ID_INVALID	Invalid SRP ID provided
+SRP_PASSWORD_CHANGED	The password has changed
+START_PARAM_EMPTY	The start parameter is empty
+START_PARAM_INVALID	The start parameter is invalid
+START_PARAM_TOO_LONG	The start parameter is too long
+STICKERSET_INVALID	The requested sticker set is invalid
+STICKERS_EMPTY	The sticker provided is empty
+STICKER_DOCUMENT_INVALID	The sticker document is invalid
+STICKER_EMOJI_INVALID	The sticker emoji is invalid
+STICKER_FILE_INVALID	The sticker file is invalid
+STICKER_ID_INVALID	The provided sticker id is invalid
+STICKER_INVALID	The provided sticker is invalid
+STICKER_PNG_DIMENSIONS	The sticker png dimensions are invalid
+STICKER_PNG_NOPNG	Stickers must be png files but the provided image was not a png
+STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provided
+STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
+TAKEOUT_INVALID	The takeout id is invalid
+TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
+TEMP_AUTH_KEY_EMPTY	The temporary auth key provided is empty
+THEME_FILE_INVALID	Invalid theme file provided
+THEME_FORMAT_INVALID	Invalid theme format provided
+THEME_INVALID	Invalid theme provided
+THEME_MIME_INVALID	You cannot create this theme because the mime-type is invalid
+TMP_PASSWORD_DISABLED	The temporary password is disabled
+TMP_PASSWORD_INVALID	The temporary password is invalid
+TOKEN_INVALID	The provided token is invalid
+TTL_DAYS_INVALID	The provided TTL days is invalid
+TTL_MEDIA_INVALID	The media does not support self-destruction
+TYPES_EMPTY	The types parameter is empty
+TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
+UNTIL_DATE_INVALID	That date parameter is invalid
+URL_INVALID	The URL provided is invalid
+USAGE_LIMIT_INVALID	The usage limit is invalid
+USERNAME_INVALID	The username is invalid
+USERNAME_NOT_MODIFIED	The username was not modified because you tried to edit it using the same one
+USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
+USERNAME_OCCUPIED	The username is already in use by someone else
+USERPIC_UPLOAD_REQUIRED	You are required to upload a profile picture for this action
+USERS_TOO_FEW	Not enough users (to create a chat, for example)
+USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
+USER_ADMIN_INVALID	The action requires admin privileges. Probably you tried to edit admin privileges on someone you don't have rights to
+USER_ALREADY_PARTICIPANT	The user is already a participant of this chat
+USER_BANNED_IN_CHANNEL	You are limited from sending messages in supergroups/channels, check @SpamBot for details
+USER_BLOCKED	The user is blocked
+USER_BOT	Bots in channels can only be administrators, not members.
+USER_BOT_INVALID	This method can only be used by a bot
+USER_BOT_REQUIRED	The method can be used by bots only
+USER_CHANNELS_TOO_MUCH	The user is already in too many channels or supergroups
+USER_CREATOR	You can't leave this channel because you're its creator
+USER_ID_INVALID	The user id being used is invalid or not known yet. Make sure you meet the user before interacting with it
+USER_INVALID	The provided user is invalid
+USER_IS_BLOCKED	The user blocked you
+USER_IS_BOT	A bot cannot send messages to other bots or to itself
+USER_KICKED	This user was kicked from this chat
+USER_NOT_MUTUAL_CONTACT	The user is not a mutual contact
+USER_NOT_PARTICIPANT	The user is not a member of this chat
+VIDEO_CONTENT_TYPE_INVALID	The video content type is invalid (i.e.: not streamable)
+VIDEO_FILE_INVALID	The video file is invalid
+VOLUME_LOC_NOT_FOUND	The volume location can't be found
+WALLPAPER_FILE_INVALID	The provided file cannot be used as a wallpaper
+WALLPAPER_INVALID	The input wallpaper was not valid
+WALLPAPER_MIME_INVALID	The wallpaper mime type is invalid
+WC_CONVERT_URL_INVALID	WC convert URL invalid
+WEBDOCUMENT_INVALID	The web document is invalid
+WEBDOCUMENT_MIME_INVALID	The web document mime type is invalid
+WEBDOCUMENT_SIZE_TOO_BIG	The web document is too big
+WEBDOCUMENT_URL_EMPTY	The web document URL is empty
+WEBDOCUMENT_URL_INVALID	The web document URL is invalid
+WEBPAGE_CURL_FAILED	Telegram server could not fetch the provided URL
+WEBPAGE_MEDIA_EMPTY	The URL doesn't contain any valid media
+YOU_BLOCKED_USER	You blocked this user

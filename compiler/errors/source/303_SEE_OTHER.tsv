@@ -1,0 +1,6 @@
+id	message
+FILE_MIGRATE_X	The file to be accessed is currently stored in DC{x}
+NETWORK_MIGRATE_X	The source IP address is associated with DC{x} (for registration)
+PHONE_MIGRATE_X	The phone number a user is trying to use for authorization is associated with DC{x}
+STATS_MIGRATE_X	The statistics of the group/channel are stored in DC{x}
+USER_MIGRATE_X	The user whose identity is being used to execute queries is associated with DC{x} (for registration)

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -25,6 +25,7 @@ from typing import Union, List
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
@@ -35,9 +36,15 @@ class SendMediaGroup(Scaffold):
     async def send_media_group(
         self,
         chat_id: Union[int, str],
-        media: List[Union["types.InputMediaPhoto", "types.InputMediaVideo"]],
+        media: List[Union[
+            "types.InputMediaPhoto",
+            "types.InputMediaVideo",
+            "types.InputMediaAudio",
+            "types.InputMediaDocument"
+        ]],
         disable_notification: bool = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        schedule_date: int = None,
     ) -> List["types.Message"]:
         """Send a group of photos or videos as an album.
 
@@ -47,7 +54,7 @@ class SendMediaGroup(Scaffold):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (List of :obj:`~pyrogram.types.InputMediaPhoto` and :obj:`~pyrogram.types.InputMediaVideo`):
+            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio` and :obj:`~pyrogram.types.InputMediaDocument`):
                 A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
@@ -56,6 +63,9 @@ class SendMediaGroup(Scaffold):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of the sent messages is returned.
@@ -113,7 +123,7 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 2)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
             elif isinstance(i, types.InputMediaVideo):
                 if os.path.isfile(i.media) or isinstance(i.media, io.IOBase):
                     media = await self.send(
@@ -161,7 +171,96 @@ class SendMediaGroup(Scaffold):
                         )
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(i.media, i.file_ref, 4)
+                    media = utils.get_input_media_from_file_id(i.media, FileType.VIDEO)
+            elif isinstance(i, types.InputMediaAudio):
+                if os.path.isfile(i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaUploadedDocument(
+                                mime_type=self.guess_mime_type(i.media) or "audio/mpeg",
+                                file=await self.save_file(i.media),
+                                thumb=await self.save_file(i.thumb),
+                                attributes=[
+                                    raw.types.DocumentAttributeAudio(
+                                        duration=i.duration,
+                                        performer=i.performer,
+                                        title=i.title
+                                    ),
+                                    raw.types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                ]
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                elif re.match("^https?://", i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaDocumentExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(i.media, FileType.AUDIO)
+            elif isinstance(i, types.InputMediaDocument):
+                if os.path.isfile(i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaUploadedDocument(
+                                mime_type=self.guess_mime_type(i.media) or "application/zip",
+                                file=await self.save_file(i.media),
+                                thumb=await self.save_file(i.thumb),
+                                attributes=[
+                                    raw.types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                ]
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                elif re.match("^https?://", i.media):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaDocumentExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaDocument(
+                        id=raw.types.InputDocument(
+                            id=media.document.id,
+                            access_hash=media.document.access_hash,
+                            file_reference=media.document.file_reference
+                        )
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(i.media, FileType.DOCUMENT)
 
             multi_media.append(
                 raw.types.InputSingleMedia(
@@ -176,7 +275,8 @@ class SendMediaGroup(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                reply_to_msg_id=reply_to_message_id,
+                schedule_date=schedule_date
             ),
             sleep_threshold=60
         )
@@ -185,7 +285,9 @@ class SendMediaGroup(Scaffold):
             self,
             raw.types.messages.Messages(
                 messages=[m.message for m in filter(
-                    lambda u: isinstance(u, (raw.types.UpdateNewMessage, raw.types.UpdateNewChannelMessage)),
+                    lambda u: isinstance(u, (raw.types.UpdateNewMessage,
+                                             raw.types.UpdateNewChannelMessage,
+                                             raw.types.UpdateNewScheduledMessage)),
                     r.updates
                 )],
                 users=r.users,

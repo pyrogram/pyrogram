@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,6 +18,7 @@
 
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
@@ -28,7 +29,7 @@ from pygments.styles.friendly import FriendlyStyle
 FriendlyStyle.background_color = "#f3f2f1"
 
 project = "Pyrogram"
-copyright = "2017-2020, Dan"
+copyright = f"2017-{datetime.now().year}, Dan"
 author = "Dan"
 
 extensions = [
@@ -67,6 +68,8 @@ html_theme_options = {
     "display_version": True,
     "style_external_links": True
 }
+
+napoleon_use_param = False
 
 html_logo = "_images/pyrogram.png"
 html_favicon = "_images/favicon.ico"

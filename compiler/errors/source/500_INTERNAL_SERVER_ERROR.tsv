@@ -1,0 +1,45 @@
+id	message
+API_CALL_ERROR	API call error due to Telegram having internal problems. Please try again later
+AUTH_RESTART	User authorization has restarted
+CALL_OCCUPY_FAILED	The call failed because the user is already making another call
+CHAT_ID_GENERATE_FAILED	Failure while generating the chat ID due to Telegram having internal problems. Please try again later
+CHAT_OCCUPY_LOC_FAILED	An internal error occurred while creating the chat
+CHAT_OCCUPY_USERNAME_FAILED	Failure to occupy chat username due to Telegram having internal problems. Please try again later
+CHP_CALL_FAIL	Telegram is having internal problems. Please try again later
+ENCRYPTION_OCCUPY_ADMIN_FAILED	Failed occupying memory for admin info due to Telegram having internal problems. Please try again later
+ENCRYPTION_OCCUPY_FAILED	Internal server error while accepting secret chat
+FOLDER_DEAC_AUTOFIX_ALL	Telegram is having internal problems. Please try again later
+GROUPCALL_ADD_PARTICIPANTS_FAILED	Failure while adding voice chat member due to Telegram having internal problems. Please try again later
+GROUPED_ID_OCCUPY_FAILED	Telegram is having internal problems. Please try again later
+HISTORY_GET_FAILED	The chat history couldn't be retrieved due to Telegram having internal problems. Please try again later
+IMAGE_ENGINE_DOWN	Image engine down due to Telegram having internal problems. Please try again later
+INTERDC_X_CALL_ERROR	An error occurred while Telegram was intercommunicating with DC{x}. Please try again later
+INTERDC_X_CALL_RICH_ERROR	A rich error occurred while Telegram was intercommunicating with DC{x}. Please try again later
+MEMBER_FETCH_FAILED	Telegram is having internal problems. Please try again later
+MEMBER_NO_LOCATION	Couldn't find the member's location due to Telegram having internal problems. Please try again later
+MEMBER_OCCUPY_PRIMARY_LOC_FAILED	Telegram is having internal problems. Please try again later
+MEMBER_OCCUPY_USERNAME_FAILED	Failure to occupy member username due to Telegram having internal problems. Please try again later
+MSGID_DECREASE_RETRY	Telegram is having internal problems. Please try again later
+MSG_RANGE_UNSYNC	Message range unsynchronized due to Telegram having internal problems. Please try again later
+MT_SEND_QUEUE_TOO_LONG	The MTProto send queue has grown too much due to Telegram having internal problems. Please try again later
+NEED_CHAT_INVALID	The provided chat is invalid
+NEED_MEMBER_INVALID	The provided member is invalid or does not exist
+No workers running	The Telegram server is restarting its workers. Try again later.
+PARTICIPANT_CALL_FAILED	Failure while making call due to Telegram having internal problems. Please try again later
+PERSISTENT_TIMESTAMP_OUTDATED	The persistent timestamp is outdated due to Telegram having internal problems. Please try again later
+PHOTO_CREATE_FAILED	The creation of the photo failed due to Telegram having internal problems. Please try again later
+POSTPONED_TIMEOUT	Telegram is having internal problems. Please try again later
+PTS_CHANGE_EMPTY	No PTS change
+RANDOM_ID_DUPLICATE	You provided a random ID that was already used
+REG_ID_GENERATE_FAILED	The registration id failed to generate due to Telegram having internal problems. Please try again later
+RPC_CALL_FAIL	Telegram is having internal problems. Please try again later
+RPC_CONNECT_FAILED	Telegram is having internal problems. Please try again later
+RPC_MCGET_FAIL	Telegram is having internal problems. Please try again later
+SIGN_IN_FAILED	Failure while signing in due to Telegram having internal problems. Please try again later
+STORAGE_CHECK_FAILED	Server storage check failed due to Telegram having internal problems. Please try again later
+STORE_INVALID_SCALAR_TYPE	Telegram is having internal problems. Please try again later
+UNKNOWN_METHOD	The method you tried to call cannot be called on non-CDN DCs
+UPLOAD_NO_VOLUME	Telegram is having internal problems. Please try again later
+VOLUME_LOC_NOT_FOUND	Telegram is having internal problems. Please try again later
+WORKER_BUSY_TOO_LONG_RETRY	Server workers are too busy right now due to Telegram having internal problems. Please try again later
+WP_ID_GENERATE_FAILED	Telegram is having internal problems. Please try again later

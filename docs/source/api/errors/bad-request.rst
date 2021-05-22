@@ -2,6 +2,6 @@
 ----------------
 
 .. csv-table::
-    :file: ../../../../compiler/error/source/400_BAD_REQUEST.tsv
+    :file: ../../../../compiler/errors/source/400_BAD_REQUEST.tsv
     :delim: tab
     :header-rows: 1

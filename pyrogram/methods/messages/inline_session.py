@@ -1,20 +1,20 @@
-# Pyrogram - Telegram MTProto API Client Library for Python
-# Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Pyrogram - Telegram MTProto API Client Library for Python
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
-# This file is part of Pyrogram.
+#  This file is part of Pyrogram.
 #
-# Pyrogram is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#  Pyrogram is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-# Pyrogram is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+#  Pyrogram is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from asyncio import Lock
 
@@ -25,26 +25,22 @@ from pyrogram.session import Session
 from pyrogram.session.auth import Auth
 
 lock = Lock()
-session = None
-dest_dc_id = 4
+sessions = {}
 
 
 async def get_session(client: "pyrogram.Client", dc_id: int):
-    if dc_id != dest_dc_id:
-        return client
-
     if dc_id == await client.storage.dc_id():
         return client
 
     async with lock:
-        global session
+        global sessions
 
-        if session is not None:
-            return session
+        if sessions.get(dc_id):
+            return sessions[dc_id]
 
-        session = Session(
-            client, dest_dc_id,
-            await Auth(client, dest_dc_id, False).create(),
+        session = sessions[dc_id] = Session(
+            client, dc_id,
+            await Auth(client, dc_id, False).create(),
             False, is_media=True
         )
 
@@ -53,7 +49,7 @@ async def get_session(client: "pyrogram.Client", dc_id: int):
         for _ in range(3):
             exported_auth = await client.send(
                 raw.functions.auth.ExportAuthorization(
-                    dc_id=dest_dc_id
+                    dc_id=dc_id
                 )
             )
 

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -50,4 +50,4 @@ class MemoryStorage(SQLiteStorage):
             await self.date(0)
 
     async def delete(self):
-        raise NotImplementedError
+        pass

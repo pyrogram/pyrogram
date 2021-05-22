@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,11 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
-
 import pyrogram
 from pyrogram import raw
-from pyrogram.utils import encode_file_id, encode_file_ref
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
 
 
@@ -29,10 +27,11 @@ class Voice(Object):
 
     Parameters:
         file_id (``str``):
-            Unique identifier for this file.
+            Identifier for this file, which can be used to download or reuse the file.
 
-        file_ref (``str``):
-            Up to date file reference.
+        file_unique_id (``str``):
+            Unique identifier for this file, which is supposed to be the same over time and for different accounts.
+            Can't be used to download or reuse the file.
 
         duration (``int``):
             Duration of the audio in seconds as defined by sender.
@@ -55,7 +54,7 @@ class Voice(Object):
         *,
         client: "pyrogram.Client" = None,
         file_id: str,
-        file_ref: str,
+        file_unique_id: str,
         duration: int,
         waveform: bytes = None,
         mime_type: str = None,
@@ -65,7 +64,7 @@ class Voice(Object):
         super().__init__(client)
 
         self.file_id = file_id
-        self.file_ref = file_ref
+        self.file_unique_id = file_unique_id
         self.duration = duration
         self.waveform = waveform
         self.mime_type = mime_type
@@ -75,16 +74,17 @@ class Voice(Object):
     @staticmethod
     def _parse(client, voice: "raw.types.Document", attributes: "raw.types.DocumentAttributeAudio") -> "Voice":
         return Voice(
-            file_id=encode_file_id(
-                pack(
-                    "<iiqq",
-                    3,
-                    voice.dc_id,
-                    voice.id,
-                    voice.access_hash
-                )
-            ),
-            file_ref=encode_file_ref(voice.file_reference),
+            file_id=FileId(
+                file_type=FileType.VOICE,
+                dc_id=voice.dc_id,
+                media_id=voice.id,
+                access_hash=voice.access_hash,
+                file_reference=voice.file_reference
+            ).encode(),
+            file_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=voice.id
+            ).encode(),
             duration=attributes.duration,
             mime_type=voice.mime_type,
             file_size=voice.size,

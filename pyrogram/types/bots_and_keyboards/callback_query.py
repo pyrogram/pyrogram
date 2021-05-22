@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,7 +18,7 @@
 
 from base64 import b64encode
 from struct import pack
-from typing import Union, List, Match
+from typing import Union, List, Match, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -171,7 +171,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_text(
         self,
         text: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
@@ -224,7 +224,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_caption(
         self,
         caption: str,
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
         """Edit the caption of media messages attached to callback queries.
@@ -252,7 +252,7 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self.edit_message_text(caption, parse_mode, reply_markup)
+        return await self.edit_message_text(caption, parse_mode, reply_markup=reply_markup)
 
     async def edit_message_media(
         self,

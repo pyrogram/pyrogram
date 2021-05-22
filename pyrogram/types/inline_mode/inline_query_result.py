@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,6 +18,7 @@
 
 from uuid import uuid4
 
+import pyrogram
 from pyrogram import types
 from ..object import Object
 
@@ -66,5 +67,5 @@ class InlineQueryResult(Object):
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         pass

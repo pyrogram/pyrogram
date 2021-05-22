@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,14 +16,12 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from struct import pack
 from typing import Union
 
 import pyrogram
 from pyrogram import raw
-from pyrogram.utils import encode_file_id
+from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType, ThumbnailSource
 from ..object import Object
-from ... import utils
 
 
 class ChatPhoto(Object):
@@ -34,9 +32,17 @@ class ChatPhoto(Object):
             File identifier of small (160x160) chat photo.
             This file_id can be used only for photo download and only for as long as the photo is not changed.
 
+        small_photo_unique_id (``str``):
+            Unique file identifier of small (160x160) chat photo, which is supposed to be the same over time and for
+            different accounts. Can't be used to download or reuse the file.
+
         big_file_id (``str``):
             File identifier of big (640x640) chat photo.
             This file_id can be used only for photo download and only for as long as the photo is not changed.
+
+        big_photo_unique_id (``str``):
+            Unique file identifier of big (640x640) chat photo, which is supposed to be the same over time and for
+            different accounts. Can't be used to download or reuse the file.
     """
 
     def __init__(
@@ -44,12 +50,17 @@ class ChatPhoto(Object):
         *,
         client: "pyrogram.Client" = None,
         small_file_id: str,
-        big_file_id: str
+        small_photo_unique_id: str,
+        big_file_id: str,
+        big_photo_unique_id: str
+
     ):
         super().__init__(client)
 
         self.small_file_id = small_file_id
+        self.small_photo_unique_id = small_photo_unique_id
         self.big_file_id = big_file_id
+        self.big_photo_unique_id = big_photo_unique_id
 
     @staticmethod
     def _parse(
@@ -61,39 +72,36 @@ class ChatPhoto(Object):
         if not isinstance(chat_photo, (raw.types.UserProfilePhoto, raw.types.ChatPhoto)):
             return None
 
-        if peer_access_hash is None:
-            return None
-
-        photo_id = getattr(chat_photo, "photo_id", 0)
-        loc_small = chat_photo.photo_small
-        loc_big = chat_photo.photo_big
-
-        peer_type = utils.get_peer_type(peer_id)
-
-        if peer_type == "user":
-            x = 0
-        elif peer_type == "chat":
-            x = -1
-        else:
-            peer_id += 1000727379968
-            x = -234
-
         return ChatPhoto(
-            small_file_id=encode_file_id(
-                pack(
-                    "<iiqqqiiiqi",
-                    1, chat_photo.dc_id, photo_id,
-                    0, loc_small.volume_id,
-                    2, peer_id, x, peer_access_hash, loc_small.local_id
-                )
-            ),
-            big_file_id=encode_file_id(
-                pack(
-                    "<iiqqqiiiqi",
-                    1, chat_photo.dc_id, photo_id,
-                    0, loc_big.volume_id,
-                    3, peer_id, x, peer_access_hash, loc_big.local_id
-                )
-            ),
+            small_file_id=FileId(
+                file_type=FileType.CHAT_PHOTO,
+                dc_id=chat_photo.dc_id,
+                media_id=chat_photo.photo_id,
+                access_hash=0,
+                volume_id=0,
+                thumbnail_source=ThumbnailSource.CHAT_PHOTO_SMALL,
+                local_id=0,
+                chat_id=peer_id,
+                chat_access_hash=peer_access_hash
+            ).encode(),
+            small_photo_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=chat_photo.photo_id
+            ).encode(),
+            big_file_id=FileId(
+                file_type=FileType.CHAT_PHOTO,
+                dc_id=chat_photo.dc_id,
+                media_id=chat_photo.photo_id,
+                access_hash=0,
+                volume_id=0,
+                thumbnail_source=ThumbnailSource.CHAT_PHOTO_BIG,
+                local_id=0,
+                chat_id=peer_id,
+                chat_access_hash=peer_access_hash
+            ).encode(),
+            big_photo_unique_id=FileUniqueId(
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=chat_photo.photo_id
+            ).encode(),
             client=client
         )

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -44,7 +44,8 @@ class AddHandler(Scaffold):
             .. code-block:: python
                 :emphasize-lines: 8
 
-                from pyrogram import Client, MessageHandler
+                from pyrogram import Client
+                from pyrogram.handlers import MessageHandler
 
                 def dump(client, message):
                     print(message)

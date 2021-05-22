@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,13 +18,14 @@
 
 import os
 import re
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Optional
 
 from pyrogram import StopTransmission
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -33,7 +34,6 @@ class SendSticker(Scaffold):
         self,
         chat_id: Union[int, str],
         sticker: Union[str, BinaryIO],
-        file_ref: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -45,7 +45,7 @@ class SendSticker(Scaffold):
         ] = None,
         progress: callable = None,
         progress_args: tuple = ()
-    ) -> Union["types.Message", None]:
+    ) -> Optional["types.Message"]:
         """Send static .webp or animated .tgs stickers.
 
         Parameters:
@@ -60,10 +60,6 @@ class SendSticker(Scaffold):
                 pass an HTTP URL as a string for Telegram to get a .webp sticker file from the Internet,
                 pass a file path as string to upload a new sticker that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            file_ref (``str``, *optional*):
-                A valid file reference obtained by a recently fetched media message.
-                To be used in combination with a file id in case a file reference is needed.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -133,7 +129,7 @@ class SendSticker(Scaffold):
                         url=sticker
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(sticker, file_ref, 8)
+                    media = utils.get_input_media_from_file_id(sticker, FileType.STICKER)
             else:
                 file = await self.save_file(sticker, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedDocument(
@@ -154,7 +150,7 @@ class SendSticker(Scaffold):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
-                            reply_markup=reply_markup.write() if reply_markup else None,
+                            reply_markup=await reply_markup.write(self) if reply_markup else None,
                             message=""
                         )
                     )

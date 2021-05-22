@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -44,7 +44,7 @@ class EditInlineReplyMarkup(Scaffold):
         Example:
             .. code-block:: python
 
-                from pyrogram import InlineKeyboardMarkup, InlineKeyboardButton
+                from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
                 # Bots only
                 app.edit_inline_reply_markup(
@@ -61,7 +61,7 @@ class EditInlineReplyMarkup(Scaffold):
         return await session.send(
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
-                reply_markup=reply_markup.write() if reply_markup else None,
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
             ),
             sleep_threshold=self.sleep_threshold
         )

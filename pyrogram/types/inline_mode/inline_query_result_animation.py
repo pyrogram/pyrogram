@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,11 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Optional, List
 
-from pyrogram import raw
-from pyrogram import types
-from pyrogram.parser import Parser
+import pyrogram
+from pyrogram import raw, types, utils
 from .inline_query_result import InlineQueryResult
 
 
@@ -60,6 +59,9 @@ class InlineQueryResultAnimation(InlineQueryResult):
             Pass "html" to enable HTML-style parsing only.
             Pass None to completely disable style parsing.
 
+        caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             An InlineKeyboardMarkup object.
 
@@ -75,7 +77,8 @@ class InlineQueryResultAnimation(InlineQueryResult):
         title: str = None,
         description: str = None,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional[str] = object,
+        caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None
     ):
@@ -87,10 +90,11 @@ class InlineQueryResultAnimation(InlineQueryResult):
         self.description = description
         self.caption = caption
         self.parse_mode = parse_mode
+        self.caption_entities = caption_entities
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
-    async def write(self):
+    async def write(self, client: "pyrogram.Client"):
         animation = raw.types.InputWebDocument(
             url=self.animation_url,
             size=0,
@@ -108,6 +112,10 @@ class InlineQueryResultAnimation(InlineQueryResult):
                 attributes=[]
             )
 
+        message, entities = (await utils.parse_text_entities(
+            client, self.caption, self.parse_mode, self.caption_entities
+        )).values()
+
         return raw.types.InputBotInlineResult(
             id=self.id,
             type=self.type,
@@ -116,11 +124,12 @@ class InlineQueryResultAnimation(InlineQueryResult):
             thumb=thumb,
             content=animation,
             send_message=(
-                self.input_message_content.write(self.reply_markup)
+                self.input_message_content.write(client, self.reply_markup)
                 if self.input_message_content
                 else raw.types.InputBotInlineMessageMediaAuto(
-                    reply_markup=self.reply_markup.write() if self.reply_markup else None,
-                    **await(Parser(None)).parse(self.caption, self.parse_mode)
+                    reply_markup=await self.reply_markup.write(client) if self.reply_markup else None,
+                    message=message,
+                    entities=entities
                 )
             )
         )

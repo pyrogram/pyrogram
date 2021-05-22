@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -89,16 +89,10 @@ class GetDialogs(Scaffold):
         messages = {}
 
         for message in r.messages:
-            to_id = message.to_id
+            if isinstance(message, raw.types.MessageEmpty):
+                continue
 
-            if isinstance(to_id, raw.types.PeerUser):
-                if message.out:
-                    chat_id = to_id.user_id
-                else:
-                    chat_id = message.from_id
-            else:
-                chat_id = utils.get_peer_id(to_id)
-
+            chat_id = utils.get_peer_id(message.peer_id)
             messages[chat_id] = await types.Message._parse(self, message, users, chats)
 
         parsed_dialogs = []

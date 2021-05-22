@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -58,9 +58,19 @@ class ChatMember(Object):
         is_member (``bool``, *optional*):
             Restricted only. True, if the user is a member of the chat at the moment of the request.
 
+        is_anonymous (``bool``, *optional*):
+            True, if the user's presence in the chat is hidden.
+            Owner and administrators only.
+
         can_be_edited (``bool``, *optional*):
             Administrators only.
             True, if you are allowed to edit administrator privileges of the user.
+
+        can_manage_chat (``bool``, *optional*):
+            Administrators only.
+            True, if the administrator can access the chat event log, chat statistics, message statistics in channels,
+            see channel members, see anonymous administrators in supergroups and ignore slow mode.
+            Implied by any other administrator privilege.
 
         can_post_messages (``bool``, *optional*):
             Administrators only. Channels only.
@@ -95,6 +105,10 @@ class ChatMember(Object):
         can_pin_messages (``bool``, *optional*):
             Administrators and restricted only. Groups and supergroups only.
             True, if the user is allowed to pin messages.
+
+        can_manage_voice_chats (``bool``, *optional*):
+            Administrators only. Groups and supergroups only.
+            True, if the administrator can manage voice chats (also called group calls).
 
         can_send_messages (``bool``, *optional*):
             Restricted only.
@@ -138,9 +152,11 @@ class ChatMember(Object):
         promoted_by: "types.User" = None,
         restricted_by: "types.User" = None,
         is_member: bool = None,
+        is_anonymous: bool = None,
 
         # Admin permissions
         can_be_edited: bool = None,
+        can_manage_chat: bool = None,
         can_post_messages: bool = None,  # Channels only
         can_edit_messages: bool = None,  # Channels only
         can_delete_messages: bool = None,
@@ -149,6 +165,7 @@ class ChatMember(Object):
         can_change_info: bool = None,
         can_invite_users: bool = None,
         can_pin_messages: bool = None,  # Groups and supergroups only
+        can_manage_voice_chats: bool = None,
 
         # Restricted user permissions
         can_send_messages: bool = None,  # Text, contacts, locations and venues
@@ -171,8 +188,10 @@ class ChatMember(Object):
         self.promoted_by = promoted_by
         self.restricted_by = restricted_by
         self.is_member = is_member
+        self.is_anonymous = is_anonymous
 
         self.can_be_edited = can_be_edited
+        self.can_manage_chat = can_manage_chat
         self.can_post_messages = can_post_messages
         self.can_edit_messages = can_edit_messages
         self.can_delete_messages = can_delete_messages
@@ -181,6 +200,7 @@ class ChatMember(Object):
         self.can_change_info = can_change_info
         self.can_invite_users = can_invite_users
         self.can_pin_messages = can_pin_messages
+        self.can_manage_voice_chats = can_manage_voice_chats
 
         self.can_send_messages = can_send_messages
         self.can_send_media_messages = can_send_media_messages
@@ -192,8 +212,14 @@ class ChatMember(Object):
         self.can_send_polls = can_send_polls
 
     @staticmethod
-    def _parse(client, member, users) -> "ChatMember":
-        user = types.User._parse(client, users[member.user_id])
+    def _parse(client, member, users, chats) -> "ChatMember":
+        if not isinstance(member, (raw.types.ChannelParticipantBanned, raw.types.ChannelParticipantLeft)):
+            user = types.User._parse(client, users[member.user_id])
+        else:
+            if isinstance(member.peer, raw.types.PeerUser):
+                user = types.User._parse(client, users[member.peer.user_id])
+            else:
+                user = None
 
         invited_by = (
             types.User._parse(client, users[member.inviter_id])
@@ -211,11 +237,10 @@ class ChatMember(Object):
                 client=client
             )
 
-        if isinstance(member, (raw.types.ChannelParticipantCreator, raw.types.ChatParticipantCreator)):
+        if isinstance(member, raw.types.ChatParticipantCreator):
             return ChatMember(
                 user=user,
                 status="creator",
-                title=getattr(member, "rank", None),
                 client=client
             )
 
@@ -225,6 +250,28 @@ class ChatMember(Object):
                 status="administrator",
                 joined_date=member.date,
                 invited_by=invited_by,
+                client=client
+            )
+
+        if isinstance(member, raw.types.ChannelParticipantCreator):
+            permissions = member.admin_rights
+
+            return ChatMember(
+                user=user,
+                status="creator",
+                title=member.rank,
+                invited_by=invited_by,
+                can_change_info=permissions.change_info,
+                can_manage_chat=permissions.other,
+                can_post_messages=permissions.post_messages,
+                can_edit_messages=permissions.edit_messages,
+                can_delete_messages=permissions.delete_messages,
+                can_restrict_members=permissions.ban_users,
+                can_invite_users=permissions.invite_users,
+                can_pin_messages=permissions.pin_messages,
+                can_promote_members=permissions.add_admins,
+                can_manage_voice_chats=permissions.manage_call,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 
@@ -239,6 +286,7 @@ class ChatMember(Object):
                 invited_by=invited_by,
                 promoted_by=types.User._parse(client, users[member.promoted_by]),
                 can_be_edited=member.can_edit,
+                can_manage_chat=permissions.other,
                 can_change_info=permissions.change_info,
                 can_post_messages=permissions.post_messages,
                 can_edit_messages=permissions.edit_messages,
@@ -247,6 +295,8 @@ class ChatMember(Object):
                 can_invite_users=permissions.invite_users,
                 can_pin_messages=permissions.pin_messages,
                 can_promote_members=permissions.add_admins,
+                can_manage_voice_chats=permissions.manage_call,
+                is_anonymous=permissions.anonymous,
                 client=client
             )
 

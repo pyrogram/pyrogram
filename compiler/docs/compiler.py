@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -143,6 +143,8 @@ def pyrogram_api():
         Messages
             send_message
             forward_messages
+            copy_message
+            copy_media_group
             send_photo
             send_audio
             send_document
@@ -167,6 +169,7 @@ def pyrogram_api():
             send_chat_action
             delete_messages
             get_messages
+            get_media_group
             get_history
             get_history_count
             read_history
@@ -189,7 +192,6 @@ def pyrogram_api():
             restrict_chat_member
             promote_chat_member
             set_administrator_title
-            export_chat_invite_link
             set_chat_photo
             delete_chat_photo
             set_chat_title
@@ -197,6 +199,7 @@ def pyrogram_api():
             set_chat_permissions
             pin_chat_message
             unpin_chat_message
+            unpin_all_chat_messages
             get_chat
             get_chat_member
             get_chat_members
@@ -206,7 +209,6 @@ def pyrogram_api():
             iter_dialogs
             get_dialogs_count
             update_chat_username
-            get_common_chats
             get_nearby_chats
             archive_chats
             unarchive_chats
@@ -216,7 +218,11 @@ def pyrogram_api():
             create_supergroup
             delete_channel
             delete_supergroup
+            delete_user_history
             set_slow_mode
+            mark_chat_unread
+            get_chat_event_log
+            get_chat_online_count
         """,
         users="""
         Users
@@ -231,16 +237,33 @@ def pyrogram_api():
             update_profile
             block_user
             unblock_user
+            get_common_chats
+        """,
+        invite_links="""
+        Invite Links
+            get_chat_invite_link
+            export_chat_invite_link
+            create_chat_invite_link
+            edit_chat_invite_link
+            revoke_chat_invite_link
+            delete_chat_invite_link
+            get_chat_invite_link_members
+            get_chat_invite_link_members_count
+            get_chat_admin_invite_links
+            get_chat_admin_invite_links_count
+            get_chat_admins_with_invite_links
+            delete_chat_admin_invite_links
         """,
         contacts="""
         Contacts
-            add_contacts
+            add_contact
+            delete_contacts
+            import_contacts
             get_contacts
             get_contacts_count
-            delete_contacts
         """,
         password="""
-        Pssword
+        Password
             enable_cloud_password
             change_cloud_password
             remove_cloud_password
@@ -326,6 +349,11 @@ def pyrogram_api():
             ChatPhoto
             ChatMember
             ChatPermissions
+            ChatInviteLink
+            ChatAdminWithInviteLinks
+            ChatEvent
+            ChatEventFilter
+            ChatMemberUpdated
             Dialog
             Restriction
         """,
@@ -350,6 +378,10 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            VoiceChatScheduled
+            VoiceChatStarted
+            VoiceChatEnded
+            VoiceChatMembersInvited
         """,
         bots_keyboard="""
         Bots & Keyboards
@@ -358,10 +390,12 @@ def pyrogram_api():
             ReplyKeyboardRemove
             InlineKeyboardMarkup
             InlineKeyboardButton
+            LoginUrl
             ForceReply
             CallbackQuery
             GameHighScore
             CallbackGame
+            BotCommand
         """,
         input_media="""
         Input Media
@@ -429,11 +463,15 @@ def pyrogram_api():
             Message.delete
             Message.download
             Message.forward
+            Message.copy
             Message.pin
+            Message.unpin
+            Message.edit
             Message.edit_text
             Message.edit_caption
             Message.edit_media
             Message.edit_reply_markup
+            Message.reply
             Message.reply_text
             Message.reply_animation
             Message.reply_audio
@@ -452,6 +490,7 @@ def pyrogram_api():
             Message.reply_video
             Message.reply_video_note
             Message.reply_voice
+            Message.get_media_group
         """,
         chat="""
         Chat
@@ -470,6 +509,7 @@ def pyrogram_api():
             Chat.add_members
             Chat.join
             Chat.leave
+            Chat.mark_unread
         """,
         user="""
         User

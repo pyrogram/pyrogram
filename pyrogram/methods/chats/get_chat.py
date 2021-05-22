@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -67,7 +67,7 @@ class GetChat(Scaffold):
 
             await self.fetch_peers([r.chat])
 
-            if isinstance(r.chat, types.Chat):
+            if isinstance(r.chat, raw.types.Chat):
                 chat_id = -r.chat.id
 
             if isinstance(r.chat, raw.types.Channel):

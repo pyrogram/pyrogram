@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,7 +52,7 @@ class UnbanChatMember(Scaffold):
         await self.send(
             raw.functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
-                user_id=await self.resolve_peer(user_id),
+                participant=await self.resolve_peer(user_id),
                 banned_rights=raw.types.ChatBannedRights(
                     until_date=0
                 )

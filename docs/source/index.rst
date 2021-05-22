@@ -54,7 +54,7 @@ following them in order using the :guilabel:`Next` button at the end of each pag
 list of the most relevant pages for a quick access.
 
 .. admonition :: Cloud Credits
-    :class: attention
+    :class: tip
 
     If you need a cloud server to host your applications, we recommend using **Hetzner Cloud**. Sign up with
     `this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram as
@@ -90,8 +90,7 @@ Meta
 
     - :doc:`Pyrogram FAQ <faq>`: Answers to common Pyrogram questions.
     - :doc:`Pyrogram Glossary <glossary>`: List of words with brief explanations.
-    - :doc:`Powered by Pyrogram <powered-by>`: Collection of Pyrogram Projects.
-    - :doc:`Support Pyrogram <support-pyrogram>`: Ways to show your appreciation.
+    - :doc:`Support Pyrogram <support>`: Ways to show your appreciation.
     - :doc:`About the License <license>`: Information about the Project license.
     - :doc:`Release Notes <releases/index>`: Release notes for Pyrogram releases.
 
@@ -157,8 +156,7 @@ Last updated on |today|
 
     faq
     glossary
-    powered-by
-    support-pyrogram
+    support
     license
     releases/index
 

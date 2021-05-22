@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2020 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -20,6 +20,7 @@ from typing import List, Union
 
 from pyrogram import raw
 from pyrogram import utils
+from pyrogram.file_id import FileType
 from pyrogram.scaffold import Scaffold
 
 
@@ -51,7 +52,7 @@ class DeleteProfilePhotos(Scaffold):
                 app.delete_profile_photos([p.file_id for p in photos[1:]])
         """
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
-        input_photos = [utils.get_input_media_from_file_id(i).id for i in photo_ids]
+        input_photos = [utils.get_input_media_from_file_id(i, FileType.PHOTO).id for i in photo_ids]
 
         return bool(await self.send(
             raw.functions.photos.DeletePhotos(
