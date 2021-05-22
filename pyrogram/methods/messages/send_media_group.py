@@ -19,6 +19,7 @@
 import logging
 import os
 import re
+import io
 from typing import Union, List
 
 from pyrogram import raw
@@ -87,7 +88,7 @@ class SendMediaGroup(Scaffold):
 
         for i in media:
             if isinstance(i, types.InputMediaPhoto):
-                if os.path.isfile(i.media):
+                if os.path.isfile(i.media) or isinstance(i.media, io.IOBase):
                     media = await self.send(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
@@ -124,7 +125,7 @@ class SendMediaGroup(Scaffold):
                 else:
                     media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
             elif isinstance(i, types.InputMediaVideo):
-                if os.path.isfile(i.media):
+                if os.path.isfile(i.media) or isinstance(i.media, io.IOBase):
                     media = await self.send(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
