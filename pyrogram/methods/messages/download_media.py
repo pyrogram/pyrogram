@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+from io import IOBase
 import os
 import time
 from datetime import datetime
@@ -33,7 +34,7 @@ class DownloadMedia(Scaffold):
     async def download_media(
         self,
         message: Union["types.Message", str],
-        file_name: str = DEFAULT_DOWNLOAD_DIR,
+        file: Union[IOBase, str] = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -45,11 +46,12 @@ class DownloadMedia(Scaffold):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id
                 as string.
 
-            file_name (``str``, *optional*):
-                A custom *file_name* to be used instead of the one provided by Telegram.
-                By default, all files are downloaded in the *downloads* folder in your working directory.
+            file (``str``, *optional*):
+                If a *file* object is a ``str`` then it's a custom file name to be used instead of the one provided 
+                by Telegram. By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
-                are considered directories. All non-existent folders will be created automatically.
+                are considered directories. All non-existent folders will be created automatically. If a *file* object is
+                ``IOBase`` then all content donwnloaded will be writen in that.
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -80,7 +82,7 @@ class DownloadMedia(Scaffold):
         Returns:
             ``str`` | ``None``: On success, the absolute path of the downloaded file is returned, otherwise, in case
             the download failed or was deliberately stopped with :meth:`~pyrogram.Client.stop_transmission`, None is
-            returned.
+            returned. If a *file* object is a ``IOBase`` then always return ``None``
 
         Raises:
             ValueError: if the message doesn't contain any downloadable media
@@ -127,38 +129,41 @@ class DownloadMedia(Scaffold):
         mime_type = getattr(media, "mime_type", "")
         date = getattr(media, "date", 0)
 
-        directory, file_name = os.path.split(file_name)
-        file_name = file_name or media_file_name or ""
+        if isinstance(file, str): # path
+            directory, file_name = os.path.split(file)
+            file_name = file_name or media_file_name or ""
 
-        if not os.path.isabs(file_name):
-            directory = self.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
+            if not os.path.isabs(file_name):
+                directory = self.PARENT_DIR / (directory or DEFAULT_DOWNLOAD_DIR)
 
-        if not file_name:
-            guessed_extension = self.guess_extension(mime_type)
+            if not file_name:
+                guessed_extension = self.guess_extension(mime_type)
 
-            if file_type in PHOTO_TYPES:
-                extension = ".jpg"
-            elif file_type == FileType.VOICE:
-                extension = guessed_extension or ".ogg"
-            elif file_type in (FileType.VIDEO, FileType.ANIMATION, FileType.VIDEO_NOTE):
-                extension = guessed_extension or ".mp4"
-            elif file_type == FileType.DOCUMENT:
-                extension = guessed_extension or ".zip"
-            elif file_type == FileType.STICKER:
-                extension = guessed_extension or ".webp"
-            elif file_type == FileType.AUDIO:
-                extension = guessed_extension or ".mp3"
-            else:
-                extension = ".unknown"
+                if file_type in PHOTO_TYPES:
+                    extension = ".jpg"
+                elif file_type == FileType.VOICE:
+                    extension = guessed_extension or ".ogg"
+                elif file_type in (FileType.VIDEO, FileType.ANIMATION, FileType.VIDEO_NOTE):
+                    extension = guessed_extension or ".mp4"
+                elif file_type == FileType.DOCUMENT:
+                    extension = guessed_extension or ".zip"
+                elif file_type == FileType.STICKER:
+                    extension = guessed_extension or ".webp"
+                elif file_type == FileType.AUDIO:
+                    extension = guessed_extension or ".mp3"
+                else:
+                    extension = ".unknown"
 
-            file_name = "{}_{}_{}{}".format(
-                FileType(file_id_obj.file_type).name.lower(),
-                datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
-                self.rnd_id(),
-                extension
-            )
+                file_name = "{}_{}_{}{}".format(
+                    FileType(file_id_obj.file_type).name.lower(),
+                    datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                    self.rnd_id(),
+                    extension
+                )
 
-        downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
+            downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
+        else:
+            downloader = self.handle_download_to_buffer((file_id_obj, file, file_size, progress, progress_args))
 
         if block:
             return await downloader

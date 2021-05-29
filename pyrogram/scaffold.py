@@ -181,6 +181,12 @@ class Scaffold:
     async def handle_download(self, *args, **kwargs):
         pass
 
+    async def handle_download_to_buffer(self,  *args, **kwargs):
+        pass
+
+    async def iter_handle_download(self,  *args, **kwargs):
+        pass
+
     async def start(self, *args, **kwargs):
         pass
 

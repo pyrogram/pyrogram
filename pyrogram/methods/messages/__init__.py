@@ -33,6 +33,7 @@ from .get_history import GetHistory
 from .get_history_count import GetHistoryCount
 from .get_media_group import GetMediaGroup
 from .get_messages import GetMessages
+from .iter_download_media import IterDownloadMedia
 from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
@@ -88,6 +89,7 @@ class Messages(
     StopPoll,
     RetractVote,
     DownloadMedia,
+    IterDownloadMedia,    
     IterHistory,
     SendCachedMedia,
     GetHistoryCount,
