@@ -182,6 +182,7 @@ def pyrogram_api():
             search_messages
             search_global
             download_media
+            iter_download_media
         """,
         chats="""
         Chats
@@ -462,6 +463,7 @@ def pyrogram_api():
             Message.click
             Message.delete
             Message.download
+            Message.iter_download
             Message.forward
             Message.copy
             Message.pin

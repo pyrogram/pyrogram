@@ -18,7 +18,8 @@
 
 import logging
 from functools import partial
-from typing import List, Match, Union, BinaryIO, Optional
+from typing import List, Match, Union, BinaryIO, Optional, AsyncGenerator, Tuple
+from io import IOBase
 
 import pyrogram
 from pyrogram import raw
@@ -3240,7 +3241,7 @@ class Message(Object, Update):
 
     async def download(
         self,
-        file_name: str = "",
+        file: Union[IOBase, str] = "",
         block: bool = True,
         progress: callable = None,
         progress_args: tuple = ()
@@ -3259,11 +3260,12 @@ class Message(Object, Update):
                 message.download()
 
         Parameters:
-            file_name (``str``, *optional*):
-                A custom *file_name* to be used instead of the one provided by Telegram.
-                By default, all files are downloaded in the *downloads* folder in your working directory.
+            file (``str`` | ``IOBase``, *optional*):
+                If a *file* object is a ``str`` then it's a custom file name to be used instead of the one provided 
+                by Telegram. By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
-                are considered directories. All non-existent folders will be created automatically.
+                are considered directories. All non-existent folders will be created automatically. If a *file* object is
+                ``IOBase`` then all content donwnloaded will be writen in that.
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -3300,11 +3302,34 @@ class Message(Object, Update):
         """
         return await self._client.download_media(
             message=self,
-            file_name=file_name,
+            file=file,
             block=block,
             progress=progress,
             progress_args=progress_args,
         )
+
+    async def iter_download(
+        self
+    ) -> AsyncGenerator[Tuple[bytes, int, int], None]:
+        """Bound method *iter_download* of :obj:`~pyrogram.types.Message`.
+
+        Example:
+            .. code-block:: python
+
+                # Download from Message
+                with open(file_name, 'wb') as f:
+                    async for chunk, current, total in message.iter_download():
+                        f.write(chunk)
+                        print(f"{current * 100 / total:.1f}%")
+
+        Returns:
+            ``AsyncGenerator`` Returns an asynchronous generator that yields tuples (chunk, current, total).
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            ``ValueError``: If the message doesn't contain any downloadable media
+        """
+        return (x async for x in await self._client.iter_download_media(self))
 
     async def vote(
         self,

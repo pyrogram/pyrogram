@@ -77,4 +77,4 @@ class IterDownloadMedia(Scaffold):
         file_id_obj = FileId.decode(file_id_str)
         file_size = getattr(media, "file_size", 0)
 
-        return self.iter_handle_download((file_id_obj, file_size))
+        return (x async for x in await self.iter_handle_download((file_id_obj, file_size)))

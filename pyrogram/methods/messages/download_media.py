@@ -46,7 +46,7 @@ class DownloadMedia(Scaffold):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id
                 as string.
 
-            file (``str``, *optional*):
+            file (``str`` | ``IOBase``, *optional*):
                 If a *file* object is a ``str`` then it's a custom file name to be used instead of the one provided 
                 by Telegram. By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
