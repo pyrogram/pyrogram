@@ -3329,7 +3329,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
             ``ValueError``: If the message doesn't contain any downloadable media
         """
-        return (x async for x in await self._client.iter_download_media(self))
+        return (x async for x in self._client.iter_download_media(self))
 
     async def vote(
         self,
