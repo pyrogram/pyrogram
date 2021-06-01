@@ -1,9 +1,9 @@
 ---
 name: Bug Report
-about: Create a bug report affecting the library
+about: Create a bug report affecting the library or the documentation
 ---
 
-<!-- WARNING: Ignoring this template could lead to the issue being closed as invalid -->
+<!-- WARNING: Ignoring or altering this template could lead to the issue being closed as invalid -->
 
 ## Checklist
 - [ ] I am sure the error is coming from Pyrogram's code and not elsewhere.
@@ -11,10 +11,18 @@ about: Create a bug report affecting the library
 - [ ] I ran `pip3 install -U https://github.com/pyrogram/pyrogram/archive/master.zip` and reproduced the issue using the latest development version.
 
 ## Description
-A **clear** and **concise** description of the problem. Code snippets must be formatted properly.
+A **clear** and **concise** description of the problem. Code snippets must be
+[minimal, reproducible](https://stackoverflow.com/help/minimal-reproducible-example) and properly formatted.
 
-## Steps to Reproduce
-[A minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
+``` python
+from pyrogram import Client
+...
+```
 
 ## Traceback
 The full traceback (if applicable).
+
+```
+Traceback (most recent call last):
+  File "main.py", line 1, in <module>
+```
