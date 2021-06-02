@@ -23,7 +23,7 @@ class {name}(TLObject):  # type: ignore
         {fields}
 
     @staticmethod
-    def read(data: BytesIO, *args: Any) -> "{name}":
+    def read(data_: BytesIO, *args: Any) -> "{name}":
         {read_types}
         return {name}({return_arguments})
 

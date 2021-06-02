@@ -420,7 +420,7 @@ def start(format: bool = False):
                 ])
 
                 write_types += write_flags
-                read_types += "flags = Int.read(data)\n        "
+                read_types += "flags = Int.read(data_)\n        "
 
                 continue
 
@@ -436,7 +436,7 @@ def start(format: bool = False):
                     write_types += f"data.write({flag_type.title()}(self.{arg_name}))\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = {flag_type.title()}.read(data) if flags & (1 << {index}) else None"
+                    read_types += f"{arg_name} = {flag_type.title()}.read(data_) if flags & (1 << {index}) else None"
                 elif "vector" in flag_type.lower():
                     sub_type = arg_type.split("<")[1][:-1]
 
@@ -447,7 +447,7 @@ def start(format: bool = False):
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(data{}) if flags & (1 << {}) else []\n        ".format(
+                    read_types += "{} = TLObject.read(data_{}) if flags & (1 << {}) else []\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else "", index
                     )
                 else:
@@ -456,14 +456,14 @@ def start(format: bool = False):
                     write_types += f"data.write(self.{arg_name}.write())\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = TLObject.read(data) if flags & (1 << {index}) else None\n        "
+                    read_types += f"{arg_name} = TLObject.read(data_) if flags & (1 << {index}) else None\n        "
             else:
                 if arg_type in CORE_TYPES:
                     write_types += "\n        "
                     write_types += f"data.write({arg_type.title()}(self.{arg_name}))\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = {arg_type.title()}.read(data)\n        "
+                    read_types += f"{arg_name} = {arg_type.title()}.read(data_)\n        "
                 elif "vector" in arg_type.lower():
                     sub_type = arg_type.split("<")[1][:-1]
 
@@ -473,7 +473,7 @@ def start(format: bool = False):
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(data{})\n        ".format(
+                    read_types += "{} = TLObject.read(data_{})\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )
                 else:
@@ -481,7 +481,7 @@ def start(format: bool = False):
                     write_types += f"data.write(self.{arg_name}.write())\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = TLObject.read(data)\n        "
+                    read_types += f"{arg_name} = TLObject.read(data_)\n        "
 
         slots = ", ".join([f'"{i[0]}"' for i in sorted_args])
         return_arguments = ", ".join([f"{i[0]}={i[0]}" for i in sorted_args])
