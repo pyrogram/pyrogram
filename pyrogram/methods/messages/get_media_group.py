@@ -50,10 +50,6 @@ class GetMediaGroup(Scaffold):
                 In case the passed message_id is negative or equal 0. 
                 In case target message doesn't belong to a media group.
         """
-        
-        # There can be maximum 10 items in a media group. 
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)],
-                                           replies=0)
 
         if message_id <= 0:
             raise ValueError("Passed message_id is negative or equal to zero.")
