@@ -37,19 +37,25 @@ class KeyboardButton(Object):
         request_location (``bool``, *optional*):
             If True, the user's current location will be sent when the button is pressed.
             Available in private chats only.
+        
+        request_poll (``KeyboardButtonPollType``, *optional*):
+            If specified, the user will be asked to create a poll and send it to the bot when the button is pressed.
+            Available in private chats only
     """
 
     def __init__(
         self,
         text: str,
         request_contact: bool = None,
-        request_location: bool = None
+        request_location: bool = None,
+        request_poll: KeyboardButtonPollType = None
     ):
         super().__init__()
 
         self.text = str(text)
         self.request_contact = request_contact
         self.request_location = request_location
+        self.request_poll = request_poll
 
     @staticmethod
     def read(b):
@@ -67,11 +73,24 @@ class KeyboardButton(Object):
                 text=b.text,
                 request_location=True
             )
+        
+        if isinstance(b, raw.types.KeyboardButtonRequestPoll):
+            return KeyboardButton(
+                text=b.text,
+                request_poll=KeyboardButtonPollType(
+                    type="quiz" if b.quiz else "regular"
+                )
+            )
 
     def write(self):
         if self.request_contact:
             return raw.types.KeyboardButtonRequestPhone(text=self.text)
         elif self.request_location:
             return raw.types.KeyboardButtonRequestGeoLocation(text=self.text)
+        elif self.request_poll:
+            return raw.types.KeyboardButtonRequestPoll(
+                text=self.text,
+                quiz=True if self.request_poll.type == "quiz" else False
+            )
         else:
             return raw.types.KeyboardButton(text=self.text)
