@@ -38,7 +38,7 @@ class KeyboardButton(Object):
             If True, the user's current location will be sent when the button is pressed.
             Available in private chats only.
         
-        request_poll (``KeyboardButtonPollType``, *optional*):
+        request_poll (:obj:`~pyrogram.types.KeyboardButtonPollType`, *optional*):
             If specified, the user will be asked to create a poll and send it to the bot when the button is pressed.
             Available in private chats only
     """
@@ -48,7 +48,7 @@ class KeyboardButton(Object):
         text: str,
         request_contact: bool = None,
         request_location: bool = None,
-        request_poll: KeyboardButtonPollType = None
+        request_poll: "types.KeyboardButtonPollType" = None
     ):
         super().__init__()
 
