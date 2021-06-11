@@ -19,6 +19,7 @@
 import asyncio
 import inspect
 import logging
+from collections.abc import Iterable
 from collections import OrderedDict
 
 import pyrogram
@@ -112,11 +113,11 @@ class Dispatcher:
 
         async def connection_status_parser(update:UpdateNetworkStatus, users, chats):
             if update.connected:
-                return None, ConnectHandler
-            return None, DisconnectHandler
+                return (), ConnectHandler
+            return (), DisconnectHandler
 
         async def client_ready_parser(update:UpdateClientReady, user, chats):
-            return None, ClientReadyHandler
+            return (), ClientReadyHandler
 
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
@@ -215,7 +216,9 @@ class Dispatcher:
                             if isinstance(handler, handler_type):
                                 try:
                                     if await handler.check(self.client, parsed_update):
-                                        args = (parsed_update,)
+                                        args = parsed_update
+                                        if not isinstance(args, Iterable):
+                                            args = (args,)
                                 except Exception as e:
                                     log.error(e, exc_info=True)
                                     continue
