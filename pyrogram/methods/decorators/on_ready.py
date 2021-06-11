@@ -23,8 +23,8 @@ from pyrogram.filters import Filter
 from pyrogram.scaffold import Scaffold
 
 
-class OnClientReady(Scaffold):
-    def on_client_ready(self=None, group: int = 0) -> callable:
+class OnReady(Scaffold):
+    def on_ready(self=None, group: int = 0) -> callable:
         """Decorator for handling client signaling itself ready.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

@@ -49,7 +49,7 @@ Index
     - :meth:`~Client.on_poll`
     - :meth:`~Client.on_connect`
     - :meth:`~Client.on_disconnect`
-    - :meth:`~Client.on_client_ready`
+    - :meth:`~Client.on_ready`
     - :meth:`~Client.on_raw_update`
 
 -----
@@ -68,5 +68,5 @@ Details
 .. autodecorator:: pyrogram.Client.on_poll()
 .. autodecorator:: pyrogram.Client.on_connect()
 .. autodecorator:: pyrogram.Client.on_disconnect()
-.. autodecorator:: pyrogram.Client.on_client_ready()
+.. autodecorator:: pyrogram.Client.on_ready()
 .. autodecorator:: pyrogram.Client.on_raw_update()

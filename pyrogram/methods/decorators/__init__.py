@@ -22,7 +22,7 @@ from .on_chosen_inline_result import OnChosenInlineResult
 from .on_deleted_messages import OnDeletedMessages
 from .on_disconnect import OnDisconnect
 from .on_connect import OnConnect
-from .on_client_ready import OnClientReady
+from .on_ready import OnReady
 from .on_inline_query import OnInlineQuery
 from .on_message import OnMessage
 from .on_poll import OnPoll
@@ -37,7 +37,7 @@ class Decorators(
     OnRawUpdate,
     OnDisconnect,
     OnConnect,
-    OnClientReady,
+    OnReady,
     OnUserStatus,
     OnInlineQuery,
     OnPoll,
