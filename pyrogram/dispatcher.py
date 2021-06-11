@@ -127,8 +127,8 @@ class Dispatcher:
             (UpdateMessagePoll,): poll_parser,
             (UpdateBotInlineSend,): chosen_inline_result_parser,
             Dispatcher.CHAT_MEMBER_UPDATES: chat_member_updated_parser,
-            UpdateNetworkStatus: connection_status_parser,
-            UpdateClientReady: client_ready_parser,
+            (UpdateNetworkStatus,): connection_status_parser,
+            (UpdateClientReady,): client_ready_parser,
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}
