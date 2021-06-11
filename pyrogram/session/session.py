@@ -36,6 +36,13 @@ from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
 
+class UpdateNetworkStatus:
+    def __init__(self, connected: bool):
+        self.connected = connected
+
+class UpdateClientReady:
+    pass
+
 
 class Result:
     def __init__(self):
@@ -180,6 +187,9 @@ class Session:
 
         self.is_connected.set()
 
+        if not self.is_media:
+            self.client.dispatcher.updates_queue.put_nowait((UpdateNetworkStatus(True), None, None))
+
         log.info("Session started")
 
     async def stop(self):
@@ -205,11 +215,8 @@ class Session:
         for i in self.results.values():
             i.event.set()
 
-        if not self.is_media and callable(self.client.disconnect_handler):
-            try:
-                await self.client.disconnect_handler(self.client)
-            except Exception as e:
-                log.error(e, exc_info=True)
+        if not self.is_media:
+            self.client.dispatcher.updates_queue.put_nowait((UpdateNetworkStatus(False), None, None))
 
         log.info("Session stopped")
 

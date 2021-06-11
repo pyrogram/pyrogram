@@ -20,6 +20,7 @@ import logging
 
 from pyrogram import raw
 from pyrogram.scaffold import Scaffold
+from pyrogram.session.session import UpdateClientReady
 
 log = logging.getLogger(__name__)
 
@@ -66,4 +67,5 @@ class Start(Scaffold):
             raise
         else:
             await self.initialize()
+            self.dispatcher.updates_queue.put_nowait((UpdateClientReady(), None, None))
             return self

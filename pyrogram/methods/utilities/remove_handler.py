@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.handlers import DisconnectHandler
 from pyrogram.handlers.handler import Handler
 from pyrogram.scaffold import Scaffold
 
@@ -54,7 +53,4 @@ class RemoveHandler(Scaffold):
 
                 app.run()
         """
-        if isinstance(handler, DisconnectHandler):
-            self.disconnect_handler = None
-        else:
-            self.dispatcher.remove_handler(handler, group)
+        self.dispatcher.remove_handler(handler, group)
