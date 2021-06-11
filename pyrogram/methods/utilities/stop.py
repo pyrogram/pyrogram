@@ -17,7 +17,6 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.scaffold import Scaffold
-from pyrogram.session.session import UpdateNetworkStatus
 
 
 class Stop(Scaffold):

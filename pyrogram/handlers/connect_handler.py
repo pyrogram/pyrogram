@@ -24,7 +24,7 @@ class ConnectHandler(Handler):
     :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`~pyrogram.Client.on_connect` decorator.
+    :meth:`~pyrogram.Client.on_connected` decorator.
 
     Parameters:
         callback (``callable``):

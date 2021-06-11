@@ -24,7 +24,7 @@ class DisconnectHandler(Handler):
     :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`~pyrogram.Client.on_disconnect` decorator.
+    :meth:`~pyrogram.Client.on_disconnected` decorator.
 
     Parameters:
         callback (``callable``):

@@ -23,12 +23,12 @@ from pyrogram.filters import Filter
 from pyrogram.scaffold import Scaffold
 
 
-class OnConnect(Scaffold):
-    def on_connect(self=None, group: int = 0) -> callable:
-        """Decorator for handling connections.
+class OnDisconnected(Scaffold):
+    def on_disconnected(self=None, group: int = 0) -> callable:
+        """Decorator for handling disconnections.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.ConnectHandler`.
+        :obj:`~pyrogram.handlers.DisconnectHandler`.
 
         Parameters:
             group (``int``, *optional*):
@@ -37,14 +37,14 @@ class OnConnect(Scaffold):
 
         def decorator(func: Callable) -> Callable:
             if isinstance(self, pyrogram.Client):
-                self.add_handler(pyrogram.handlers.ConnectHandler(func), group)
+                self.add_handler(pyrogram.handlers.DisconnectHandler(func), group)
             elif isinstance(self, Filter) or self is None:
                 if not hasattr(func, "handlers"):
                     func.handlers = []
 
                 func.handlers.append(
                     (
-                        pyrogram.handlers.ConnectHandler(func), group
+                        pyrogram.handlers.DisconnectHandler(func), group
                     )
                 )
 
