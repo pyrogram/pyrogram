@@ -17,47 +17,6 @@
 
 // null#56730bcc = Null;  // Parsed manually
 
-///////////////////////////////
-/////////////////// Layer cons
-///////////////////////////////
-
-//invokeAfterMsg#cb9f372d msg_id:long query:!X = X;
-//invokeAfterMsgs#3dc4b4f0 msg_ids:Vector<long> query:!X = X;
-//invokeWithLayer1#53835315 query:!X = X;
-//invokeWithLayer2#289dd1f6 query:!X = X;
-//invokeWithLayer3#b7475268 query:!X = X;
-//invokeWithLayer4#dea0d430 query:!X = X;
-//invokeWithLayer5#417a57ae query:!X = X;
-//invokeWithLayer6#3a64d54d query:!X = X;
-//invokeWithLayer7#a5be56d3 query:!X = X;
-//invokeWithLayer8#e9abd9fd query:!X = X;
-//invokeWithLayer9#76715a63 query:!X = X;
-//invokeWithLayer10#39620c41 query:!X = X;
-//invokeWithLayer11#a6b88fdf query:!X = X;
-//invokeWithLayer12#dda60d3c query:!X = X;
-//invokeWithLayer13#427c8ea2 query:!X = X;
-//invokeWithLayer14#2b9b08fa query:!X = X;
-//invokeWithLayer15#b4418b64 query:!X = X;
-//invokeWithLayer16#cf5f0987 query:!X = X;
-//invokeWithLayer17#50858a19 query:!X = X;
-//invokeWithLayer18#1c900537 query:!X = X;
-//invokeWithLayer#da9b0d0d layer:int query:!X = X; // after 18 layer
-
-///////////////////////////////
-///////// Main application API
-///////////////////////////////
-
-boolFalse#bc799737 = Bool;
-boolTrue#997275b5 = Bool;
-
-true#3fedd339 = True;
-
-vector#1cb5c415 {t:Type} # [ t ] = Vector t;
-
-error#c4b9f9bb code:int text:string = Error;
-
-null#56730bcc = Null;
-
 inputPeerEmpty#7f3b18ea = InputPeer;
 inputPeerSelf#7da07ec9 = InputPeer;
 inputPeerChat#179be863 chat_id:int = InputPeer;
