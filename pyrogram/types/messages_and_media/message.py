@@ -1401,8 +1401,11 @@ class Message(Object, Update):
         caption: str = "",
         parse_mode: Optional[str] = object,
         caption_entities: List["types.MessageEntity"] = None,
+        file_name: str = None,
+        force_document: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1458,6 +1461,15 @@ class Message(Object, Update):
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+            
+            file_name (``str``, *optional*):
+                File name of the document sent.
+                Defaults to file's path basename.
+
+            force_document (``bool``, *optional*):
+                Pass True to force sending files as document. Useful for video files that need to be sent as
+                document messages instead of video messages.
+                Defaults to False.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -1465,6 +1477,9 @@ class Message(Object, Update):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+            
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -1513,8 +1528,11 @@ class Message(Object, Update):
             caption=caption,
             parse_mode=parse_mode,
             caption_entities=caption_entities,
+            file_name=file_name,
+            force_document=force_document,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
