@@ -103,7 +103,7 @@ class SaveFile(Scaffold):
                     return
 
                 try:
-                    await self.loop.create_task(session.send(data))
+                    await session.send(data)
                 except Exception as e:
                     log.error(e)
 
