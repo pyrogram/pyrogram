@@ -21,7 +21,7 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
-from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, StatusUpdate, Update
 
 
 class Filter:
@@ -941,4 +941,56 @@ async def dan_filter(_, __, m: Message):
 
 
 dan = create(dan_filter)
+# endregion
+
+# region client_ready_filter
+async def client_ready_filter(_, __, u: StatusUpdate):
+    if not isinstance(u, StatusUpdate):
+        raise ValueError(f"Client_Status filters doesn't work with {type(u)}")
+    return u.ready is not None and u.ready
+
+
+client_ready = create(client_ready_filter)
+"""Filter status events for the 'client ready' event."""
+
+
+# endregion
+
+# region client_stopping_filter
+async def client_stopping_filter(_, __, u: StatusUpdate):
+    if not isinstance(u, StatusUpdate):
+        raise ValueError(f"Client_Status filters doesn't work with {type(u)}")
+    return u.ready is not None and not u.ready
+
+
+client_stopping = create(client_stopping_filter)
+"""Filter status events for the 'client stopping' event."""
+
+
+# endregion
+
+# region client_connected_filter
+async def client_connected_filter(_, __, u: StatusUpdate):
+    if not isinstance(u, StatusUpdate):
+        raise ValueError(f"Client_Status filters doesn't work with {type(u)}")
+    return u.connected is not None and u.connected
+
+
+client_connected = create(client_connected_filter)
+"""Filter client status events for the 'client connected' event."""
+
+
+# endregion
+
+# region client_disconnected_filter
+async def client_disconnected_filter(_, __, u: StatusUpdate):
+    if not isinstance(u, StatusUpdate):
+        raise ValueError(f"Client_Status filters doesn't work with {type(u)}")
+    return u.connected is not None and not u.connected
+
+
+client_disconnected = create(client_disconnected_filter)
+"""Filter status events for the 'client connected' event."""
+
+
 # endregion

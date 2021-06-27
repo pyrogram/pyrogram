@@ -23,28 +23,37 @@ from pyrogram.filters import Filter
 from pyrogram.scaffold import Scaffold
 
 
-class OnConnected(Scaffold):
-    def on_connected(self=None, group: int = 0) -> callable:
-        """Decorator for handling connections.
+class OnClientStatus(Scaffold):
+    def on_client_status( 
+        self=None,
+        filters=None,
+        group: int = 0
+    ) -> callable:
+        """Decorator for handling client status updates.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.ConnectHandler`.
+        :obj:`~pyrogram.handlers.ClientStatusHandler`.
 
         Parameters:
+            filters (:obj:`~pyrogram.filters`, *optional*):
+                Pass one or more filters to allow only a subset of chosen inline results to be passed
+                in your function.
+
             group (``int``, *optional*):
                 The group identifier, defaults to 0.
         """
 
         def decorator(func: Callable) -> Callable:
             if isinstance(self, pyrogram.Client):
-                self.add_handler(pyrogram.handlers.ConnectHandler(func), group)
+                self.add_handler(pyrogram.handlers.ClientStatusHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
                 if not hasattr(func, "handlers"):
                     func.handlers = []
 
                 func.handlers.append(
                     (
-                        pyrogram.handlers.ConnectHandler(func), group
+                        pyrogram.handlers.ClientStatusHandler(func, self),
+                        group if filters is None else filters
                     )
                 )
 

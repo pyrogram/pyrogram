@@ -44,9 +44,7 @@ Index
     - :class:`ChatMemberUpdatedHandler`
     - :class:`UserStatusHandler`
     - :class:`PollHandler`
-    - :class:`ConnectHandler`
-    - :class:`DisconnectHandler`
-    - :class:`ClientReadyHandler`
+    - :class:`ClientStatusHandler`
     - :class:`RawUpdateHandler`
 
 -----
@@ -63,7 +61,5 @@ Details
 .. autoclass:: ChatMemberUpdatedHandler()
 .. autoclass:: UserStatusHandler()
 .. autoclass:: PollHandler()
-.. autoclass:: ConnectHandler()
-.. autoclass:: DisconnectHandler()
-.. autoclass:: ClientReadyHandler()
+.. autoclass:: ClientStatusHandler()
 .. autoclass:: RawUpdateHandler()

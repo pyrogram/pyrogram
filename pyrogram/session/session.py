@@ -32,16 +32,10 @@ from pyrogram.crypto import mtproto
 from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable
 from pyrogram.raw.all import layer
 from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
+from pyrogram.types.client_status.status_update import StatusUpdateRaw
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
-
-class UpdateNetworkStatus:
-    def __init__(self, connected: bool):
-        self.connected = connected
-
-class UpdateClientReady:
-    pass
 
 
 class Result:
@@ -188,7 +182,7 @@ class Session:
         self.is_connected.set()
 
         if not self.is_media:
-            self.client.dispatcher.updates_queue.put_nowait((UpdateNetworkStatus(True), None, None))
+            self.client.dispatcher.updates_queue.put_nowait(StatusUpdateRaw["CONNECTED"]._packet())
 
         log.info("Session started")
 
@@ -216,7 +210,7 @@ class Session:
             i.event.set()
 
         if not self.is_media:
-            self.client.dispatcher.updates_queue.put_nowait((UpdateNetworkStatus(False), None, None))
+            self.client.dispatcher.updates_queue.put_nowait(StatusUpdateRaw["DISCONNECTED"]._packet())
 
         log.info("Session stopped")
 

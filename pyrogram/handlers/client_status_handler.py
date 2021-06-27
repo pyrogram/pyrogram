@@ -19,23 +19,30 @@
 from .handler import Handler
 
 
-class ConnectHandler(Handler):
-    """The Connect handler class. Used to handle connections. It is intended to be used with
+class ClientStatusHandler(Handler):
+    """The Client Status handler class. Used to handle client status updates (connected, ready, ...). It is intended to be used with
     :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`~pyrogram.Client.on_connected` decorator.
+    :meth:`~pyrogram.Client.on_client_status` decorator.
 
     Parameters:
         callback (``callable``):
             Pass a function that will be called when a connection occurs. It takes *(client)*
             as positional argument (look at the section below for a detailed description).
 
+        filters (:obj:`Filters`):
+            Pass one or more filters to allow only a subset of messages to be passed
+            in your callback function.
+
     Other parameters:
         client (:obj:`~pyrogram.Client`):
             The Client itself. Useful, for example, when you want to change the proxy before a new connection
             is established.
+
+        client_status (:obj:`~pyrogram.types.StatusUpdate`):
+            The deleted messages, as list.
     """
 
-    def __init__(self, callback: callable):
-        super().__init__(callback)
+    def __init__(self, callback: callable, filters=None):
+        super().__init__(callback, filters)

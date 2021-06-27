@@ -20,9 +20,7 @@ from .callback_query_handler import CallbackQueryHandler
 from .chat_member_updated_handler import ChatMemberUpdatedHandler
 from .chosen_inline_result_handler import ChosenInlineResultHandler
 from .deleted_messages_handler import DeletedMessagesHandler
-from .disconnect_handler import DisconnectHandler
-from .connect_handler import ConnectHandler
-from .client_ready_handler import ClientReadyHandler
+from .client_status_handler import ClientStatusHandler
 from .inline_query_handler import InlineQueryHandler
 from .message_handler import MessageHandler
 from .poll_handler import PollHandler
