@@ -38,7 +38,7 @@ from pyrogram.raw.types import (
     UpdateBotInlineSend, UpdateChatParticipant, UpdateChannelParticipant
 )
 
-from pyrogram.types.client_status import StatusUpdateRaw
+from pyrogram.types.client_status.status_update import StatusUpdateRaw
 
 log = logging.getLogger(__name__)
 
