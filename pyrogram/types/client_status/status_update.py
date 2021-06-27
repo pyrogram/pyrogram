@@ -48,10 +48,10 @@ class StatusUpdate(Object, Update):
     def __init__(
         self,
         *,
-        client: "pyrogram.Client",
-        type : StatusUpdateRaw = StatusUpdateRaw.UNKNOWN,
+        client: "pyrogram.Client" = None,
         ready : Optional[bool] = None,
         connected : Optional[bool] = None,
+        type : StatusUpdateRaw = StatusUpdateRaw.UNKNOWN,
     ):
         super().__init__(client)
 
@@ -62,11 +62,11 @@ class StatusUpdate(Object, Update):
     @staticmethod
     def _parse(client, event_raw:StatusUpdateRaw) -> "StatusUpdate":
         if event_raw == StatusUpdateRaw.READY:
-            return StatusUpdate(client, event_raw, ready=True)
+            return StatusUpdate(client=client, type=event_raw, ready=True)
         if event_raw == StatusUpdateRaw.STOPPING:
-            return StatusUpdate(client, event_raw, ready=False)
+            return StatusUpdate(client=client, type=event_raw, ready=False)
         if event_raw == StatusUpdateRaw.CONNECTED:
-            return StatusUpdate(client, event_raw, connected=True)
+            return StatusUpdate(client=client, type=event_raw, connected=True)
         if event_raw == StatusUpdateRaw.DISCONNECTED:
-            return StatusUpdate(client, event_raw, connected=False)
-        return StatusUpdate(client, event_raw)
+            return StatusUpdate(client=client, type=event_raw, connected=False)
+        return StatusUpdate(client=client, type=event_raw)
