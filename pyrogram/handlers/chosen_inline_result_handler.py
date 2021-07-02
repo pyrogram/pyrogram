@@ -22,8 +22,8 @@ import pyrogram
 from pyrogram.filters import Filter
 from .handler import Handler
 
-CallbackFunc: Callable = Callable[[pyrogram.Client, pyrogram.types.ChosenInlineResult],
-                                  Any]
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   pyrogram.types.ChosenInlineResult], Any]
 
 
 class ChosenInlineResultHandler(Handler):

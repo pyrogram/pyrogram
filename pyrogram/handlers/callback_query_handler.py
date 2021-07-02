@@ -22,7 +22,8 @@ import pyrogram
 from pyrogram.filters import Filter
 from .handler import Handler
 
-CallbackFunc: Callable = Callable[[pyrogram.Client, pyrogram.types.CallbackQuery], Any]
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   pyrogram.types.CallbackQuery], Any]
 
 class CallbackQueryHandler(Handler):
     """The CallbackQuery handler class. Used to handle callback queries coming from inline buttons.

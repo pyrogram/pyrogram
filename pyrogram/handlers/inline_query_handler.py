@@ -22,7 +22,8 @@ import pyrogram
 from pyrogram.filters import Filter
 from .handler import Handler
 
-CallbackFunc: Callable = Callable[[pyrogram.Client, pyrogram.types.InlineQuery], Any]
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   pyrogram.types.InlineQuery], Any]
 
 
 class InlineQueryHandler(Handler):

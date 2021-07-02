@@ -23,7 +23,8 @@ from pyrogram.filters import Filter
 from pyrogram.types import Message
 from .handler import Handler
 
-CallbackFunc: Callable = Callable[[pyrogram.Client, List[pyrogram.types.Message]], Any]
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   List[pyrogram.types.Message]], Any]
 
 
 class DeletedMessagesHandler(Handler):
@@ -53,7 +54,7 @@ class DeletedMessagesHandler(Handler):
     def __init__(self, callback: CallbackFunc, filters: Filter = None):
         super().__init__(callback, filters)
 
-    async def check(self, client: pyrogram.Client, messages: List[Message]) -> bool:
+    async def check(self, client: "pyrogram.Client", messages: List[Message]) -> bool:
         # Every message should be checked, if at least one matches the filter True is returned
         # otherwise, or if the list is empty, False is returned
         for message in messages:
