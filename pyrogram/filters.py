@@ -458,6 +458,17 @@ group = create(group_filter)
 
 # endregion
 
+# region group_query_filter
+async def group_query_filter(_, __, q: CallbackQuery):
+    return bool(q.message and q.message.chat and q.message.chat.type in {"group", "supergroup"})
+
+
+group_query = create(group_query_filter)
+"""Filter queries sent in group or supergroup chats."""
+
+
+# endregion
+
 # region channel_filter
 async def channel_filter(_, __, m: Message):
     return bool(m.chat and m.chat.type == "channel")
