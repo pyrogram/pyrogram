@@ -36,24 +36,31 @@ class ForceReply(Object):
             Use this parameter if you want to force reply from specific users only. Targets:
             1) users that are @mentioned in the text of the Message object;
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
+
+        placeholder (``str``, *optional*):
+            The placeholder to be shown in the input field when the keyboard is active; 1-64 characters.
     """
 
     def __init__(
         self,
-        selective: bool = None
+        selective: bool = None,
+        placeholder: str = None
     ):
         super().__init__()
 
         self.selective = selective
+        self.placeholder = placeholder
 
     @staticmethod
     def read(b):
         return ForceReply(
-            selective=b.selective
+            selective=b.selective,
+            placeholder=b.placeholder
         )
 
     async def write(self, _: "pyrogram.Client"):
         return raw.types.ReplyKeyboardForceReply(
             single_use=True,
-            selective=self.selective or None
+            selective=self.selective or None,
+            placeholder=self.placeholder or None
         )

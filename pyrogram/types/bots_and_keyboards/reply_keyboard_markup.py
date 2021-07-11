@@ -47,6 +47,9 @@ class ReplyKeyboardMarkup(Object):
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
             Example: A user requests to change the bot's language, bot replies to the request with a keyboard to
             select the new language. Other users in the group don't see the keyboard.
+
+        placeholder (``str``, *optional*):
+            The placeholder to be shown in the input field when the keyboard is active; 1-64 characters.
     """
 
     def __init__(
@@ -54,7 +57,8 @@ class ReplyKeyboardMarkup(Object):
         keyboard: List[List[Union["types.KeyboardButton", str]]],
         resize_keyboard: bool = None,
         one_time_keyboard: bool = None,
-        selective: bool = None
+        selective: bool = None,
+        placeholder: str = None
     ):
         super().__init__()
 
@@ -62,6 +66,7 @@ class ReplyKeyboardMarkup(Object):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
+        self.placeholder = placeholder
 
     @staticmethod
     def read(kb):
@@ -79,7 +84,8 @@ class ReplyKeyboardMarkup(Object):
             keyboard=keyboard,
             resize_keyboard=kb.resize,
             one_time_keyboard=kb.single_use,
-            selective=kb.selective
+            selective=kb.selective,
+            placeholder=kb.placeholder
         )
 
     async def write(self, _: "pyrogram.Client"):
@@ -93,5 +99,6 @@ class ReplyKeyboardMarkup(Object):
             ) for i in self.keyboard],
             resize=self.resize_keyboard or None,
             single_use=self.one_time_keyboard or None,
-            selective=self.selective or None
+            selective=self.selective or None,
+            placeholder=self.placeholder or None
         )
