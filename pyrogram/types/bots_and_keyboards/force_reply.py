@@ -38,7 +38,7 @@ class ForceReply(Object):
             2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
 
         placeholder (``str``, *optional*):
-            The placeholder to be shown in the input field when the keyboard is active; 1-64 characters.
+            The placeholder to be shown in the input field when the reply is active; 1-64 characters.
     """
 
     def __init__(
