@@ -16,36 +16,33 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Union
+
+import pyrogram
 from pyrogram import raw
-from ..object import Object
+from .bot_command_scope import BotCommandScope
 
 
-class BotCommand(Object):
-    """A bot command with the standard slash "/" prefix.
+class BotCommandScopeChatMember(BotCommandScope):
+    """Represents the scope of bot commands, covering a specific member of a group or supergroup chat.
 
     Parameters:
-        command (``str``):
-            The bot command, for example: "/start".
-            
-        description (``str``):
-            Description of the bot command.
+        chat_id (``int`` | ``str``, *optional*):
+            Unique identifier (int) or username (str) of the target chat.
+
+        user_id (``int`` | ``str``)::
+            Unique identifier (int) or username (str) of the target user.
     """
+    def __init__(
+        self,
+        chat_id: Union[int, str],
+        user_id: Union[int, str]
+    ):
+        self.chat_id = chat_id
+        self.user_id = user_id
 
-    def __init__(self, command: str, description: str):
-        super().__init__()
-
-        self.command = command
-        self.description = description
-
-    @staticmethod
-    def read(c):
-        return BotCommand(
-            command=c.command,
-            description=c.description
-        )
-
-    def write(self):
-        return raw.types.BotCommand(
-            command=self.command,
-            description=self.description
+    async def write(self, client: "pyrogram.Client"):
+        return raw.types.BotCommandScopePeerUser(
+            peer=await client.resolve_peer(self.chat_id),
+            user_id=await client.resolve_peer(self.user_id)
         )

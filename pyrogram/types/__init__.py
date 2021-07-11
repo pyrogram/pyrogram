@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .authorization import *
+from .bot_command_scope import *
 from .bots_and_keyboards import *
 from .inline_mode import *
 from .input_media import *

@@ -16,36 +16,22 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+import pyrogram
 from ..object import Object
 
 
-class BotCommand(Object):
-    """A bot command with the standard slash "/" prefix.
+class BotCommandScope(Object):
+    """This object represents the scope to which bot commands are applied. 
+    
+    Currently the following 7 scopes are supported:
 
-    Parameters:
-        command (``str``):
-            The bot command, for example: "/start".
-            
-        description (``str``):
-            Description of the bot command.
+    - :obj:`~pyrogram.types.BotCommandScopeDefault`
+    - :obj:`~pyrogram.types.BotCommandScopeAllPrivateChats`
+    - :obj:`~pyrogram.types.BotCommandScopeAllGroupChats`
+    - :obj:`~pyrogram.types.BotCommandScopeAllChatAdmins`
+    - :obj:`~pyrogram.types.BotCommandScopeChat`
+    - :obj:`~pyrogram.types.BotCommandScopeChatAdmins`
+    - :obj:`~pyrogram.types.BotCommandScopeChatMember`
     """
-
-    def __init__(self, command: str, description: str):
-        super().__init__()
-
-        self.command = command
-        self.description = description
-
-    @staticmethod
-    def read(c):
-        return BotCommand(
-            command=c.command,
-            description=c.description
-        )
-
-    def write(self):
-        return raw.types.BotCommand(
-            command=self.command,
-            description=self.description
-        )
+    async def write(self, _: "pyrogram.Client"):
+        pass

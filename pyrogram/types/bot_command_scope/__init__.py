@@ -16,36 +16,22 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
-from ..object import Object
+from .bot_command_scope import BotCommandScope
+from .bot_command_scope_default import BotCommandScopeDefault
+from .bot_command_scope_all_private_chats import BotCommandScopeAllPrivateChats
+from .bot_command_scope_all_group_chats import BotCommandScopeAllGroupChats
+from .bot_command_scope_all_chat_admins import BotCommandScopeAllChatAdmins
+from .bot_command_scope_chat import BotCommandScopeChat
+from .bot_command_scope_chat_admins import BotCommandScopeChatAdmins
+from .bot_command_chat_member import BotCommandScopeChatMember
 
-
-class BotCommand(Object):
-    """A bot command with the standard slash "/" prefix.
-
-    Parameters:
-        command (``str``):
-            The bot command, for example: "/start".
-            
-        description (``str``):
-            Description of the bot command.
-    """
-
-    def __init__(self, command: str, description: str):
-        super().__init__()
-
-        self.command = command
-        self.description = description
-
-    @staticmethod
-    def read(c):
-        return BotCommand(
-            command=c.command,
-            description=c.description
-        )
-
-    def write(self):
-        return raw.types.BotCommand(
-            command=self.command,
-            description=self.description
-        )
+__all__ = [
+    "BotCommandScope",
+    "BotCommandScopeDefault",
+    "BotCommandScopeAllPrivateChats",
+    "BotCommandScopeAllGroupChats",
+    "BotCommandScopeAllChatAdmins",
+    "BotCommandScopeChat",
+    "BotCommandScopeChatAdmins",
+    "BotCommandScopeChatMember"
+]

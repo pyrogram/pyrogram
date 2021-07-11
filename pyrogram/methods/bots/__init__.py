@@ -18,9 +18,11 @@
 
 from .answer_callback_query import AnswerCallbackQuery
 from .answer_inline_query import AnswerInlineQuery
+from .get_bot_commands import GetBotCommands
 from .get_game_high_scores import GetGameHighScores
 from .get_inline_bot_results import GetInlineBotResults
 from .request_callback_answer import RequestCallbackAnswer
+from .reset_bot_commands import ResetBotCommands
 from .send_game import SendGame
 from .send_inline_bot_result import SendInlineBotResult
 from .set_game_score import SetGameScore
@@ -35,7 +37,9 @@ class Bots(
     SendInlineBotResult,
     SendGame,
     SetGameScore,
+    GetBotCommands,
     GetGameHighScores,
+    ResetBotCommands,
     SetBotCommands
 ):
     pass

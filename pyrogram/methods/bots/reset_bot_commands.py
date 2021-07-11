@@ -16,30 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional, List
-
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class SetBotCommands(Scaffold):
-    async def set_bot_commands(
+class ResetBotCommands(Scaffold):
+    async def reset_bot_commands(
         self,
-        commands: Optional[List[types.BotCommand]],
         scope: types.BotCommandScope = None,
         language_code: str = ''
     ):
-        """Set the bot commands list.
-        
-        The commands passed will overwrite any command set previously.
-        This method can be used by the own bot only.
+        """Reset the bot commands list.
 
         Parameters:
-            commands (List of :obj:`~pyrogram.types.BotCommand`):
-                A list of bot commands.
-                Pass None to remove all commands.
-
             scope (:obj:`~pyrogram.types.BotCommandScope`):
                 Scope of users for which the commands are relevant. Defaults to :obj:`~pyrogram.types.BotCommandScopeDefault`.
 
@@ -49,26 +39,13 @@ class SetBotCommands(Scaffold):
 
         Returns:
             ``bool``: True on success, False otherwise.
-
-        Example:
-            .. code-block:: python
-                
-                from pyrogram.types import BotCommand
-                
-                # Set new commands
-                app.set_bot_commands([
-                    BotCommand("start", "Start the bot"),
-                    BotCommand("settings", "Bot settings")])
-                
-                # Remove commands
-                app.set_bot_commands(None)
         """
         if scope is None:
             scope = types.BotCommandScopeDefault()
 
         return await self.send(
-            raw.functions.bots.SetBotCommands(
+            raw.functions.bots.ResetBotCommands(
                 scope=await scope.write(self),
-                lang_code=language_code,
-                commands=[c.write() for c in commands or []])
+                lang_code=language_code
+            )
         )
