@@ -25,15 +25,13 @@ from .bot_command_scope import BotCommandScope
 
 class BotCommandScopeChatAdmins(BotCommandScope):
     """Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat.
-    
+
     Parameters:
         chat_id (``int`` | ``str``, *optional*):
             Unique identifier (int) or username (str) of the target chat.
     """
-    def __init__(
-        self,
-        chat_id: Union[int, str]
-    ):
+
+    def __init__(self, chat_id: Union[int, str]):
         self.chat_id = chat_id
 
     async def write(self, client: "pyrogram.Client"):

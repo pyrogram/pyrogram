@@ -23,5 +23,6 @@ from .bot_command_scope import BotCommandScope
 
 class BotCommandScopeAllPrivateChats(BotCommandScope):
     """Represents the scope of bot commands, covering all private chats."""
+
     async def write(self, _: "pyrogram.Client"):
         return raw.types.BotCommandScopeUsers()

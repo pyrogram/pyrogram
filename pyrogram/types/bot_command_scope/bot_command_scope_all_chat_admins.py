@@ -23,5 +23,6 @@ from .bot_command_scope import BotCommandScope
 
 class BotCommandScopeAllChatAdmins(BotCommandScope):
     """Represents the scope of bot commands, covering all group and supergroup chat administrators."""
+
     async def write(self, _: "pyrogram.Client"):
         return raw.types.BotCommandScopeChatAdmins()

@@ -33,5 +33,6 @@ class BotCommandScope(Object):
     - :obj:`~pyrogram.types.BotCommandScopeChatAdmins`
     - :obj:`~pyrogram.types.BotCommandScopeChatMember`
     """
+
     async def write(self, _: "pyrogram.Client"):
         pass

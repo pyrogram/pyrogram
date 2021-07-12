@@ -30,10 +30,8 @@ class BotCommandScopeChat(BotCommandScope):
         chat_id (``int`` | ``str``, *optional*):
             Unique identifier (int) or username (str) of the target chat.
     """
-    def __init__(
-        self,
-        chat_id: Union[int, str]
-    ):
+
+    def __init__(self, chat_id: Union[int, str]):
         self.chat_id = chat_id
 
     async def write(self, client: "pyrogram.Client"):
