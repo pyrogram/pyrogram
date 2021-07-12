@@ -32,11 +32,11 @@ class ConversationHandler(MessageHandler, CallbackQueryHandler):
 
     async def check(self, client: "pyrogram.Client", update: Union[Message, CallbackQuery]):
         try:
-            waiter_id = update.chat.id if isinstance(update, Message) else update.message.chat.id
+            chat_id = update.chat.id if isinstance(update, Message) else update.message.chat.id
         except AttributeError:
             return False
 
-        waiter = self.waiters.get(waiter_id)
+        waiter = self.waiters.get(chat_id)
         if not waiter or not isinstance(update, waiter['update_type']) or waiter['future'].done():
             return False
 
@@ -60,6 +60,6 @@ class ConversationHandler(MessageHandler, CallbackQueryHandler):
     async def callback(_, __):
         pass
 
-    def delete_waiter(self, waiter_id, future):
-        if future == self.waiters[waiter_id]['future']:
-            del self.waiters[waiter_id]
+    def delete_waiter(self, chat_id, future):
+        if future == self.waiters[chat_id]['future']:
+            del self.waiters[chat_id]
