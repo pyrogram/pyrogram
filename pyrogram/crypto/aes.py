@@ -90,12 +90,11 @@ except ImportError:
 
         data = [data[i: i + 16] for i in range(0, len(data), 16)]
 
-        if encrypt:
-            for i, chunk in enumerate(data):
+        for i, chunk in enumerate(data):
+            if encrypt:
                 iv_1 = data[i] = xor(cipher.encrypt(xor(chunk, iv_1)), iv_2)
                 iv_2 = chunk
-        else:
-            for i, chunk in enumerate(data):
+            else:
                 iv_2 = data[i] = xor(cipher.decrypt(xor(chunk, iv_2)), iv_1)
                 iv_1 = chunk
 
@@ -109,7 +108,7 @@ except ImportError:
         chunk = cipher.encrypt(iv)
 
         for i in range(0, len(data), 16):
-            for j in range(0, min(len(data) - i, 16)):
+            for j in range(min(len(data) - i, 16)):
                 out[i + j] ^= chunk[state[0]]
 
                 state[0] += 1

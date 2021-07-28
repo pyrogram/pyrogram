@@ -42,10 +42,7 @@ class InlineKeyboardMarkup(Object):
         inline_keyboard = []
 
         for i in o.rows:
-            row = []
-
-            for j in i.buttons:
-                row.append(types.InlineKeyboardButton.read(j))
+            row = [types.InlineKeyboardButton.read(j) for j in i.buttons]
 
             inline_keyboard.append(row)
 

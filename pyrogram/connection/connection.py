@@ -49,7 +49,7 @@ class Connection:
         self.protocol = None  # type: TCP
 
     async def connect(self):
-        for i in range(Connection.MAX_RETRIES):
+        for _ in range(Connection.MAX_RETRIES):
             self.protocol = self.mode(self.ipv6, self.proxy)
 
             try:

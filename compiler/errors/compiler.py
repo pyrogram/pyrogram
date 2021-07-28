@@ -34,7 +34,7 @@ def snek(s):
 
 def caml(s):
     s = snek(s).split("_")
-    return "".join([str(i.title()) for i in s])
+    return "".join(str(i.title()) for i in s)
 
 
 def start():
@@ -44,10 +44,7 @@ def start():
     files = [i for i in os.listdir("{}/source".format(HOME))]
 
     with open(NOTICE_PATH, encoding="utf-8") as f:
-        notice = []
-
-        for line in f.readlines():
-            notice.append("# {}".format(line).strip())
+        notice = ["# {}".format(line).strip() for line in f.readlines()]
 
         notice = "\n".join(notice)
 
@@ -72,12 +69,15 @@ def start():
             with open(init, "a", encoding="utf-8") as f_init:
                 f_init.write("from .{}_{} import *\n".format(name.lower(), code))
 
-            with open("{}/source/{}".format(HOME, i), encoding="utf-8") as f_csv, \
-                open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
+            with open("{}/source/{}".format(HOME, i), encoding="utf-8") as f_csv, open("{}/{}_{}.py".format(DEST, name.lower(), code), "w", encoding="utf-8") as f_class:
                 reader = csv.reader(f_csv, delimiter="\t")
 
                 super_class = caml(name)
-                name = " ".join([str(i.capitalize()) for i in re.sub(r"_", " ", name).lower().split(" ")])
+                name = " ".join(
+                    str(i.capitalize())
+                    for i in re.sub(r"_", " ", name).lower().split(" ")
+                )
+
 
                 sub_classes = []
 
@@ -113,13 +113,17 @@ def start():
                         super_class=super_class,
                         code=code,
                         docstring='"""{}"""'.format(name),
-                        sub_classes="".join([sub_class_template.format(
-                            sub_class=k[0],
-                            super_class=super_class,
-                            id="\"{}\"".format(k[1]),
-                            docstring='"""{}"""'.format(k[2])
-                        ) for k in sub_classes])
+                        sub_classes="".join(
+                            sub_class_template.format(
+                                sub_class=k[0],
+                                super_class=super_class,
+                                id="\"{}\"".format(k[1]),
+                                docstring='"""{}"""'.format(k[2]),
+                            )
+                            for k in sub_classes
+                        ),
                     )
+
 
                 f_class.write(class_template)
 
@@ -136,7 +140,7 @@ def start():
     print("Compiling Errors: [100%]")
 
 
-if "__main__" == __name__:
+if __name__ == "__main__":
     HOME = "."
     DEST = "../../pyrogram/errors/exceptions"
     NOTICE_PATH = "../../NOTICE"

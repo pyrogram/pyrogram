@@ -95,12 +95,11 @@ class GetDialogs(Scaffold):
             chat_id = utils.get_peer_id(message.peer_id)
             messages[chat_id] = await types.Message._parse(self, message, users, chats)
 
-        parsed_dialogs = []
+        parsed_dialogs = [
+            types.Dialog._parse(self, dialog, messages, users, chats)
+            for dialog in r.dialogs
+            if isinstance(dialog, raw.types.Dialog)
+        ]
 
-        for dialog in r.dialogs:
-            if not isinstance(dialog, raw.types.Dialog):
-                continue
-
-            parsed_dialogs.append(types.Dialog._parse(self, dialog, messages, users, chats))
 
         return types.List(parsed_dialogs)

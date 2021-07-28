@@ -101,7 +101,6 @@ class ChatEventFilter(Object):
 
     def write(self) -> "raw.base.ChannelAdminLogEventsFilter":
         join = False
-        leave = False
         invite = False
         ban = False
         unban = False
@@ -109,14 +108,6 @@ class ChatEventFilter(Object):
         unkick = False
         promote = False
         demote = False
-        info = False
-        settings = False
-        pinned = False
-        edit = False
-        delete = False
-        group_call = False
-        invites = False
-
         if self.new_restrictions:
             ban = True
             unban = True
@@ -131,30 +122,14 @@ class ChatEventFilter(Object):
             join = True
             invite = True
 
-        if self.chat_info:
-            info = True
-
-        if self.chat_settings:
-            settings = True
-
-        if self.invite_links:
-            invites = True
-
-        if self.deleted_messages:
-            delete = True
-
-        if self.edited_messages:
-            edit = True
-
-        if self.pinned_messages:
-            pinned = True
-
-        if self.leaving_members:
-            leave = True
-
-        if self.voice_chats:
-            group_call = True
-
+        info = bool(self.chat_info)
+        settings = bool(self.chat_settings)
+        invites = bool(self.invite_links)
+        delete = bool(self.deleted_messages)
+        edit = bool(self.edited_messages)
+        pinned = bool(self.pinned_messages)
+        leave = bool(self.leaving_members)
+        group_call = bool(self.voice_chats)
         return raw.types.ChannelAdminLogEventsFilter(
             join=join,
             leave=leave,

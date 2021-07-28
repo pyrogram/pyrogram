@@ -52,12 +52,11 @@ class Run(Scaffold):
 
         if coroutine is not None:
             run(coroutine)
+        elif inspect.iscoroutinefunction(self.start):
+            run(self.start())
+            run(idle())
+            run(self.stop())
         else:
-            if inspect.iscoroutinefunction(self.start):
-                run(self.start())
-                run(idle())
-                run(self.stop())
-            else:
-                self.start()
-                run(idle())
-                self.stop()
+            self.start()
+            run(idle())
+            self.stop()

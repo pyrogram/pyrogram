@@ -45,12 +45,11 @@ def async_to_sync(obj, name):
         if loop.is_running():
             if threading.current_thread() is threading.main_thread():
                 return coroutine
-            else:
-                if inspect.iscoroutine(coroutine):
-                    return asyncio.run_coroutine_threadsafe(coroutine, loop).result()
+            if inspect.iscoroutine(coroutine):
+                return asyncio.run_coroutine_threadsafe(coroutine, loop).result()
 
-                if inspect.isasyncgen(coroutine):
-                    return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), loop).result()
+            if inspect.isasyncgen(coroutine):
+                return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), loop).result()
 
         if inspect.iscoroutine(coroutine):
             return loop.run_until_complete(coroutine)
@@ -65,9 +64,11 @@ def wrap(source):
     for name in dir(source):
         method = getattr(source, name)
 
-        if not name.startswith("_"):
-            if inspect.iscoroutinefunction(method) or inspect.isasyncgenfunction(method):
-                async_to_sync(source, name)
+        if not name.startswith("_") and (
+            inspect.iscoroutinefunction(method)
+            or inspect.isasyncgenfunction(method)
+        ):
+            async_to_sync(source, name)
 
 
 # Wrap all Client's relevant methods

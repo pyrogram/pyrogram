@@ -114,11 +114,7 @@ class DownloadMedia(Scaffold):
         else:
             media = message
 
-        if isinstance(media, str):
-            file_id_str = media
-        else:
-            file_id_str = media.file_id
-
+        file_id_str = media if isinstance(media, str) else media.file_id
         file_id_obj = FileId.decode(file_id_str)
 
         file_type = file_id_obj.file_type

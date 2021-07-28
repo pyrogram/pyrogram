@@ -77,14 +77,7 @@ class Thumbnail(Object):
         else:
             return
 
-        parsed_thumbs = []
-
-        for thumb in raw_thumbs:
-            if not isinstance(thumb, raw.types.PhotoSize):
-                continue
-
-            parsed_thumbs.append(
-                Thumbnail(
+        parsed_thumbs = [Thumbnail(
                     file_id=FileId(
                         file_type=file_type,
                         dc_id=media.dc_id,
@@ -105,7 +98,6 @@ class Thumbnail(Object):
                     height=thumb.h,
                     file_size=thumb.size,
                     client=client
-                )
-            )
+                ) for thumb in raw_thumbs if isinstance(thumb, raw.types.PhotoSize)]
 
         return parsed_thumbs or None

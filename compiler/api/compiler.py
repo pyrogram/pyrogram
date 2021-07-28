@@ -80,7 +80,7 @@ def snake(s: str):
 
 
 def camel(s: str):
-    return "".join([i[0].upper() + i[1:] for i in s.split("_")])
+    return "".join(i[0].upper() + i[1:] for i in s.split("_"))
 
 
 # noinspection PyShadowingBuiltins, PyShadowingNames
@@ -116,11 +116,10 @@ def get_type_hint(type: str) -> str:
 
     if is_core:
         return f"Union[None, {type}] = None" if is_flag else type
-    else:
-        ns, name = type.split(".") if "." in type else ("", type)
-        type = f'"raw.base.' + ".".join([ns, name]).strip(".") + '"'
+    ns, name = type.split(".") if "." in type else ("", type)
+    type = f'"raw.base.' + ".".join([ns, name]).strip(".") + '"'
 
-        return f'{type}{" = None" if is_flag else ""}'
+    return f'{type}{" = None" if is_flag else ""}'
 
 
 def sort_args(args):

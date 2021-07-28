@@ -78,21 +78,18 @@ class SetChatPhoto(Scaffold):
         """
         peer = await self.resolve_peer(chat_id)
 
-        if isinstance(photo, str):
-            if os.path.isfile(photo):
-                photo = raw.types.InputChatUploadedPhoto(
-                    file=await self.save_file(photo),
-                    video=await self.save_file(video)
-                )
-            else:
-                photo = utils.get_input_media_from_file_id(photo, FileType.PHOTO)
-                photo = raw.types.InputChatPhoto(id=photo.id)
-        else:
+        if (
+            isinstance(photo, str)
+            and os.path.isfile(photo)
+            or not isinstance(photo, str)
+        ):
             photo = raw.types.InputChatUploadedPhoto(
                 file=await self.save_file(photo),
                 video=await self.save_file(video)
             )
-
+        else:
+            photo = utils.get_input_media_from_file_id(photo, FileType.PHOTO)
+            photo = raw.types.InputChatPhoto(id=photo.id)
         if isinstance(peer, raw.types.InputPeerChat):
             await self.send(
                 raw.functions.messages.EditChatPhoto(

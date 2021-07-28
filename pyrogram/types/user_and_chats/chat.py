@@ -276,9 +276,11 @@ class Chat(Object):
                 if full_chat.id == c.id:
                     chat = c
 
-                if isinstance(full_chat, raw.types.ChannelFull):
-                    if full_chat.linked_chat_id == c.id:
-                        linked_chat = c
+                if (
+                    isinstance(full_chat, raw.types.ChannelFull)
+                    and full_chat.linked_chat_id == c.id
+                ):
+                    linked_chat = c
 
             if isinstance(full_chat, raw.types.ChatFull):
                 parsed_chat = Chat._parse_chat_chat(client, chat)

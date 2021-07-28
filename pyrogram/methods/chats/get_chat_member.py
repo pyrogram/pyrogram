@@ -66,12 +66,13 @@ class GetChatMember(Scaffold):
             for member in members:
                 member = types.ChatMember._parse(self, member, users, {})
 
-                if isinstance(user, raw.types.InputPeerSelf):
-                    if member.user.is_self:
-                        return member
-                else:
-                    if member.user.id == user.user_id:
-                        return member
+                if (
+                    isinstance(user, raw.types.InputPeerSelf)
+                    and member.user.is_self
+                    or not isinstance(user, raw.types.InputPeerSelf)
+                    and member.user.id == user.user_id
+                ):
+                    return member
             else:
                 raise UserNotParticipant
         elif isinstance(chat, raw.types.InputPeerChannel):

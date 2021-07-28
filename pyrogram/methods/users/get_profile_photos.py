@@ -100,11 +100,7 @@ class GetProfilePhotos(Scaffold):
                 else:
                     photos = extra
             else:
-                if current:
-                    photos = [current]
-                else:
-                    photos = []
-
+                photos = [current] if current else []
             return types.List(photos[offset:limit])
         else:
             r = await self.send(
