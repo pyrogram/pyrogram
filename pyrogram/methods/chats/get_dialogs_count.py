@@ -40,18 +40,17 @@ class GetDialogsCount(Scaffold):
 
         if pinned_only:
             return len((await self.send(raw.functions.messages.GetPinnedDialogs(folder_id=0))).dialogs)
-        else:
-            r = await self.send(
-                raw.functions.messages.GetDialogs(
-                    offset_date=0,
-                    offset_id=0,
-                    offset_peer=raw.types.InputPeerEmpty(),
-                    limit=1,
-                    hash=0
-                )
+        r = await self.send(
+            raw.functions.messages.GetDialogs(
+                offset_date=0,
+                offset_id=0,
+                offset_peer=raw.types.InputPeerEmpty(),
+                limit=1,
+                hash=0
             )
+        )
 
-            if isinstance(r, raw.types.messages.Dialogs):
-                return len(r.dialogs)
-            else:
-                return r.count
+        if isinstance(r, raw.types.messages.Dialogs):
+            return len(r.dialogs)
+        else:
+            return r.count

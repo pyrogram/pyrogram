@@ -48,8 +48,8 @@ class TCP:
         self.loop = asyncio.get_event_loop()
 
         if proxy.get("enabled", False):
-            hostname = proxy.get("hostname", None)
-            port = proxy.get("port", None)
+            hostname = proxy.get("hostname")
+            port = proxy.get("port")
 
             try:
                 ip_address = ipaddress.ip_address(hostname)
@@ -65,9 +65,10 @@ class TCP:
                 proxy_type=socks.SOCKS5,
                 addr=hostname,
                 port=port,
-                username=proxy.get("username", None),
-                password=proxy.get("password", None)
+                username=proxy.get("username"),
+                password=proxy.get("password"),
             )
+
 
             log.info(f"Using proxy {hostname}:{port}")
         else:

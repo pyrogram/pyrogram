@@ -339,27 +339,26 @@ class Client(Methods, Scaffold):
                         self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
 
                     try:
-                        if not self.password:
-                            confirm = await ainput("Confirm password recovery (y/n): ")
-
-                            if confirm == "y":
-                                email_pattern = await self.send_recovery_code()
-                                print(f"The recovery code has been sent to {email_pattern}")
-
-                                while True:
-                                    recovery_code = await ainput("Enter recovery code: ")
-
-                                    try:
-                                        return await self.recover_password(recovery_code)
-                                    except BadRequest as e:
-                                        print(e.MESSAGE)
-                                    except Exception as e:
-                                        log.error(e, exc_info=True)
-                                        raise
-                            else:
-                                self.password = None
-                        else:
+                        if self.password:
                             return await self.check_password(self.password)
+                        confirm = await ainput("Confirm password recovery (y/n): ")
+
+                        if confirm == "y":
+                            email_pattern = await self.send_recovery_code()
+                            print(f"The recovery code has been sent to {email_pattern}")
+
+                            while True:
+                                recovery_code = await ainput("Enter recovery code: ")
+
+                                try:
+                                    return await self.recover_password(recovery_code)
+                                except BadRequest as e:
+                                    print(e.MESSAGE)
+                                except Exception as e:
+                                    log.error(e, exc_info=True)
+                                    raise
+                        else:
+                            self.password = None
                     except BadRequest as e:
                         print(e.MESSAGE)
                         self.password = None
@@ -587,9 +586,8 @@ class Client(Methods, Scaffold):
                     {u.id: u for u in diff.users},
                     {c.id: c for c in diff.chats}
                 ))
-            else:
-                if diff.other_updates:  # The other_updates list can be empty
-                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+            elif diff.other_updates:  # The other_updates list can be empty
+                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
@@ -599,24 +597,17 @@ class Client(Methods, Scaffold):
         parser = ConfigParser()
         parser.read(str(self.config_file))
 
-        if self.bot_token:
-            pass
-        else:
+        if not self.bot_token:
             self.bot_token = parser.get("pyrogram", "bot_token", fallback=None)
 
-        if self.api_id and self.api_hash:
-            pass
-        else:
-            if parser.has_section("pyrogram"):
-                self.api_id = parser.getint("pyrogram", "api_id")
-                self.api_hash = parser.get("pyrogram", "api_hash")
-            else:
+        if not self.api_id or not self.api_hash:
+            if not parser.has_section("pyrogram"):
                 raise AttributeError("No API Key found. More info: https://docs.pyrogram.org/intro/setup")
 
+            self.api_id = parser.getint("pyrogram", "api_id")
+            self.api_hash = parser.get("pyrogram", "api_hash")
         for option in ["app_version", "device_model", "system_version", "lang_code"]:
-            if getattr(self, option):
-                pass
-            else:
+            if not getattr(self, option):
                 if parser.has_section("pyrogram"):
                     setattr(self, option, parser.get(
                         "pyrogram",
@@ -693,18 +684,17 @@ class Client(Methods, Scaffold):
             await self.storage.is_bot(None)
 
     def load_plugins(self):
-        if self.plugins:
-            plugins = self.plugins.copy()
-
-            for option in ["include", "exclude"]:
-                if plugins[option]:
-                    plugins[option] = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in self.plugins[option]
-                    ]
-        else:
+        if not self.plugins:
             return
 
+        plugins = self.plugins.copy()
+
+        for option in ["include", "exclude"]:
+            if plugins[option]:
+                plugins[option] = [
+                    (i.split()[0], i.split()[1:] or None)
+                    for i in self.plugins[option]
+                ]
         if plugins.get("enabled", False):
             root = plugins["root"]
             include = plugins["include"]
@@ -864,16 +854,15 @@ class Client(Methods, Scaffold):
                     user_id=file_id.chat_id,
                     access_hash=file_id.chat_access_hash
                 )
+            elif file_id.chat_access_hash == 0:
+                peer = raw.types.InputPeerChat(
+                    chat_id=-file_id.chat_id
+                )
             else:
-                if file_id.chat_access_hash == 0:
-                    peer = raw.types.InputPeerChat(
-                        chat_id=-file_id.chat_id
-                    )
-                else:
-                    peer = raw.types.InputPeerChannel(
-                        channel_id=utils.get_channel_id(file_id.chat_id),
-                        access_hash=file_id.chat_access_hash
-                    )
+                peer = raw.types.InputPeerChannel(
+                    channel_id=utils.get_channel_id(file_id.chat_id),
+                    access_hash=file_id.chat_access_hash
+                )
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,

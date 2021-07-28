@@ -101,11 +101,21 @@ class CopyMediaGroup(Scaffold):
                     media=media,
                     random_id=self.rnd_id(),
                     **await self.parser.parse(
-                        captions[i] if isinstance(captions, list) and i < len(captions) and captions[i] else
-                        captions if isinstance(captions, str) and i == 0 else
-                        message.caption if message.caption and message.caption != "None" and not type(captions) is str else "")
+                        captions[i]
+                        if isinstance(captions, list)
+                        and i < len(captions)
+                        and captions[i]
+                        else captions
+                        if isinstance(captions, str) and i == 0
+                        else message.caption
+                        if message.caption
+                        and message.caption != "None"
+                        and type(captions) is not str
+                        else ""
+                    )
                 )
             )
+
 
         r = await self.send(
             raw.functions.messages.SendMultiMedia(

@@ -87,44 +87,11 @@ class SendMediaGroup(Scaffold):
 
         for i in media:
             if isinstance(i, types.InputMediaPhoto):
-                if isinstance(i.media, str):
-                    if os.path.isfile(i.media):
-                        media = await self.send(
-                            raw.functions.messages.UploadMedia(
-                                peer=await self.resolve_peer(chat_id),
-                                media=raw.types.InputMediaUploadedPhoto(
-                                    file=await self.save_file(i.media)
-                                )
-                            )
-                        )
-
-                        media = raw.types.InputMediaPhoto(
-                            id=raw.types.InputPhoto(
-                                id=media.photo.id,
-                                access_hash=media.photo.access_hash,
-                                file_reference=media.photo.file_reference
-                            )
-                        )
-                    elif re.match("^https?://", i.media):
-                        media = await self.send(
-                            raw.functions.messages.UploadMedia(
-                                peer=await self.resolve_peer(chat_id),
-                                media=raw.types.InputMediaPhotoExternal(
-                                    url=i.media
-                                )
-                            )
-                        )
-
-                        media = raw.types.InputMediaPhoto(
-                            id=raw.types.InputPhoto(
-                                id=media.photo.id,
-                                access_hash=media.photo.access_hash,
-                                file_reference=media.photo.file_reference
-                            )
-                        )
-                    else:
-                        media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
-                else:
+                if (
+                    isinstance(i.media, str)
+                    and os.path.isfile(i.media)
+                    or not isinstance(i.media, str)
+                ):
                     media = await self.send(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
@@ -141,6 +108,29 @@ class SendMediaGroup(Scaffold):
                             file_reference=media.photo.file_reference
                         )
                     )
+                elif (
+                    isinstance(i.media, str)
+                    and not os.path.isfile(i.media)
+                    and re.match("^https?://", i.media)
+                ):
+                    media = await self.send(
+                        raw.functions.messages.UploadMedia(
+                            peer=await self.resolve_peer(chat_id),
+                            media=raw.types.InputMediaPhotoExternal(
+                                url=i.media
+                            )
+                        )
+                    )
+
+                    media = raw.types.InputMediaPhoto(
+                        id=raw.types.InputPhoto(
+                            id=media.photo.id,
+                            access_hash=media.photo.access_hash,
+                            file_reference=media.photo.file_reference
+                        )
+                    )
+                else:
+                    media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
             elif isinstance(i, types.InputMediaVideo):
                 if isinstance(i.media, str):
                     if os.path.isfile(i.media):

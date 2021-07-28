@@ -34,11 +34,7 @@ class Parser:
         text = str(text).strip()
 
         if mode == object:
-            if self.client:
-                mode = self.client.parse_mode
-            else:
-                mode = "combined"
-
+            mode = self.client.parse_mode if self.client else "combined"
         if mode is None:
             return OrderedDict([
                 ("message", text),

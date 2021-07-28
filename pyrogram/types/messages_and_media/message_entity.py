@@ -143,9 +143,11 @@ class MessageEntity(Object):
             offset=entity.offset,
             length=entity.length,
             url=getattr(entity, "url", None),
-            user=types.User._parse(client, users.get(getattr(entity, "user_id", None), None)),
+            user=types.User._parse(
+                client, users.get(getattr(entity, "user_id", None))
+            ),
             language=getattr(entity, "language", None),
-            client=client
+            client=client,
         )
 
     async def write(self):

@@ -39,9 +39,9 @@ class Link(str):
 
     @staticmethod
     def format(url: str, text: str, style: str):
-        if style in ["md", "markdown"]:
+        if style in {"md", "markdown"}:
             fmt = Link.MD
-        elif style in ["combined", "html", None]:
+        elif style in {"combined", "html", None}:
             fmt = Link.HTML
         else:
             raise ValueError(f"{style} is not a valid style/parse mode")
@@ -255,11 +255,11 @@ class User(Object, Update):
         if is_bot:
             status = None
 
-        if status == "online":
-            next_offline_date = date
-
         if status == "offline":
             last_online_date = date
+
+        elif status == "online":
+            next_offline_date = date
 
         return {
             "status": status,

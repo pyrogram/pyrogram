@@ -215,11 +215,10 @@ class ChatMember(Object):
     def _parse(client, member, users, chats) -> "ChatMember":
         if not isinstance(member, (raw.types.ChannelParticipantBanned, raw.types.ChannelParticipantLeft)):
             user = types.User._parse(client, users[member.user_id])
+        elif isinstance(member.peer, raw.types.PeerUser):
+            user = types.User._parse(client, users[member.peer.user_id])
         else:
-            if isinstance(member.peer, raw.types.PeerUser):
-                user = types.User._parse(client, users[member.peer.user_id])
-            else:
-                user = None
+            user = None
 
         invited_by = (
             types.User._parse(client, users[member.inviter_id])
