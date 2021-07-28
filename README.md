@@ -62,7 +62,7 @@ and bot identities (bot API alternative) via the [MTProto API](https://docs.pyro
 ``` bash
 pip3 install pyrogram
 ```
-
+        
 ### Resources
 
 - The docs contain lots of resources to help you get started with Pyrogram: https://docs.pyrogram.org.
