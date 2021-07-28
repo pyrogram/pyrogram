@@ -172,6 +172,10 @@ class Client(Methods, Scaffold):
             Pass True to hide the password when typing it during the login.
             Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
             terminal environments.
+
+        recover_gaps (``bool``, *optional*):
+            Pass True to fetching updates that arrived while the client was offline.
+            Defaults to False.
     """
 
     def __init__(
@@ -199,7 +203,8 @@ class Client(Methods, Scaffold):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        recover_gaps: bool = False
     ):
         super().__init__()
 
@@ -228,6 +233,7 @@ class Client(Methods, Scaffold):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
+        self.recover_gaps = recover_gaps
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
@@ -591,6 +597,9 @@ class Client(Methods, Scaffold):
         elif isinstance(updates, raw.types.updates.State):
             local_pts = await self.storage.pts()
             date = await self.storage.date()
+
+            if self.recover_gaps is False:
+                return
 
             if local_pts >= updates.pts:
                 return
