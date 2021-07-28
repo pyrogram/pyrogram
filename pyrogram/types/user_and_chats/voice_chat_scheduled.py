@@ -16,34 +16,26 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
-
-from ..messages_and_media import MessageEntity
+from pyrogram import raw
 from ..object import Object
 
 
-class InputMedia(Object):
-    """Content of a media message to be sent.
+class VoiceChatScheduled(Object):
+    """A service message about a voice chat scheduled in the chat.
 
-    It should be one of:
-
-    - :obj:`~pyrogram.types.InputMediaAnimation`
-    - :obj:`~pyrogram.types.InputMediaDocument`
-    - :obj:`~pyrogram.types.InputMediaAudio`
-    - :obj:`~pyrogram.types.InputMediaPhoto`
-    - :obj:`~pyrogram.types.InputMediaVideo`
+    Parameters:
+        start_date (``int``):
+            Point in time (Unix timestamp) when the voice chat is supposed to be started by a chat administrator.
     """
 
     def __init__(
-        self,
-        media: str,
-        caption: str = "",
-        parse_mode: str = None,
-        caption_entities: List[MessageEntity] = None
+        self, *,
+        start_date: int
     ):
         super().__init__()
 
-        self.media = media
-        self.caption = caption
-        self.parse_mode = parse_mode
-        self.caption_entities = caption_entities
+        self.start_date = start_date
+
+    @staticmethod
+    def _parse(action: "raw.types.MessageActionGroupCallScheduled") -> "VoiceChatScheduled":
+        return VoiceChatScheduled(start_date=action.schedule_date)

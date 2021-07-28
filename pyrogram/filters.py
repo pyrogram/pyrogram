@@ -740,8 +740,13 @@ async def linked_channel_filter(_, __, m: Message):
 linked_channel = create(linked_channel_filter)
 """Filter messages that are automatically forwarded from the linked channel to the group chat."""
 
-
 # endregion
+
+
+# region command_filter
+
+# Used by the command filter below
+username = None
 
 
 def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
@@ -765,14 +770,18 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     """
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
-    async def func(flt, _, message: Message):
+    async def func(flt, client: pyrogram.Client, message: Message):
+        # Username shared among all commands; used for mention commands, e.g.: /start@username
+        global username
+
+        if username is None:
+            username = (await client.get_me()).username or ""
+
         text = message.text or message.caption
         message.command = None
 
         if not text:
             return False
-
-        pattern = r"^{}(?:\s|$)" if flt.case_sensitive else r"(?i)^{}(?:\s|$)"
 
         for prefix in flt.prefixes:
             if not text.startswith(prefix):
@@ -781,8 +790,11 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             without_prefix = text[len(prefix):]
 
             for cmd in flt.commands:
-                if not re.match(pattern.format(re.escape(cmd)), without_prefix):
+                if not re.match(rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)", without_prefix,
+                                flags=re.IGNORECASE if not flt.case_sensitive else 0):
                     continue
+
+                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1)
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text
@@ -790,7 +802,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
                 # Remove the escape character from the arguments
                 message.command = [cmd] + [
                     re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
-                    for m in command_re.finditer(without_prefix[len(cmd):])
+                    for m in command_re.finditer(without_command)
                 ]
 
                 return True
@@ -812,6 +824,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
         case_sensitive=case_sensitive
     )
 
+
+# endregion
 
 def regex(pattern: Union[str, Pattern], flags: int = 0):
     """Filter updates that match a given regular expression pattern.

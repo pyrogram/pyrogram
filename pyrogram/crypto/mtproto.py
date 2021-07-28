@@ -63,13 +63,16 @@ def unpack(b: BytesIO, session_id: bytes, auth_key: bytes, auth_key_id: bytes) -
     try:
         message = Message.read(data)
     except KeyError as e:
+        if e.args[0] == 0:
+            raise ConnectionError(f"Received empty data. Check your internet connection.")
+
         left = data.read().hex()
 
         left = [left[i:i + 64] for i in range(0, len(left), 64)]
         left = [[left[i:i + 8] for i in range(0, len(left), 8)] for left in left]
         left = "\n".join(" ".join(x for x in left) for left in left)
 
-        raise ValueError(f"Unknown constructor found: {hex(e.args[0])}\n{left}")
+        raise ValueError(f"The server sent an unknown constructor: {hex(e.args[0])}\n{left}")
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-sha256-hash-value-of-msg-key
     # https://core.telegram.org/mtproto/security_guidelines#checking-message-length

@@ -16,34 +16,19 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+class Client:
+    @staticmethod
+    async def get_me():
+        return User("username")
 
-from ..messages_and_media import MessageEntity
-from ..object import Object
+
+class User:
+    def __init__(self, username: str = None):
+        self.username = username
 
 
-class InputMedia(Object):
-    """Content of a media message to be sent.
-
-    It should be one of:
-
-    - :obj:`~pyrogram.types.InputMediaAnimation`
-    - :obj:`~pyrogram.types.InputMediaDocument`
-    - :obj:`~pyrogram.types.InputMediaAudio`
-    - :obj:`~pyrogram.types.InputMediaPhoto`
-    - :obj:`~pyrogram.types.InputMediaVideo`
-    """
-
-    def __init__(
-        self,
-        media: str,
-        caption: str = "",
-        parse_mode: str = None,
-        caption_entities: List[MessageEntity] = None
-    ):
-        super().__init__()
-
-        self.media = media
+class Message:
+    def __init__(self, text: str = None, caption: str = None):
+        self.text = text
         self.caption = caption
-        self.parse_mode = parse_mode
-        self.caption_entities = caption_entities
+        self.command = None

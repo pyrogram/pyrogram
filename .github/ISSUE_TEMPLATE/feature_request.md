@@ -4,7 +4,7 @@ about: Suggest ideas, new features or enhancements
 labels: "enhancement"
 ---
 
-<!-- WARNING: Ignoring this template could lead to the issue being closed as invalid -->
+<!-- WARNING: Ignoring or altering this template could lead to the issue being closed as invalid -->
 
 ## Checklist
 - [ ] I believe the idea is awesome and would benefit the library.

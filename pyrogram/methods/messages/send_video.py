@@ -162,7 +162,7 @@ class SendVideo(Scaffold):
                 app.send_video("me", "video.mp4", caption="recording")
 
                 # Send self-destructing video
-                app.send_photo("me", "video.mp4", ttl_seconds=10)
+                app.send_video("me", "video.mp4", ttl_seconds=10)
 
                 # Keep track of the progress while uploading
                 def progress(current, total):

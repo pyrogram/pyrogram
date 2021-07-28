@@ -252,7 +252,7 @@ class CallbackQuery(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self.edit_message_text(caption, parse_mode, reply_markup)
+        return await self.edit_message_text(caption, parse_mode, reply_markup=reply_markup)
 
     async def edit_message_media(
         self,

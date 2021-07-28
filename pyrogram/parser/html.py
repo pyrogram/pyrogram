@@ -96,7 +96,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            log.warning(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
+            log.debug(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -111,7 +111,7 @@ class HTML:
 
     async def parse(self, text: str):
         # Strip whitespace characters from the end of the message, but preserve closing tags
-        text = re.sub(r"\s+(</[\w\W]*>)\s*$", r"\1", text)
+        text = re.sub(r"\s*(</[\w</>]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
         parser.feed(utils.add_surrogates(text))
