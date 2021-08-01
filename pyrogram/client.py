@@ -738,7 +738,7 @@ class Client(Methods, Scaffold):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}" error is "{e}"')
                         continue
 
                     if "__path__" in dir(module):
