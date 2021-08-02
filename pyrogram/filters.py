@@ -470,18 +470,27 @@ channel = create(channel_filter)
 # endregion
 
 # region new_chat_members_filter
-async def new_chat_members_filter(_, __, m: Message):
+async def new_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
+    if isinstance(m, ChatMemberUpdated):
+        ncm = m.new_chat_member
+        if ncm and ncm.status == 'member':
+            return bool(abs(m.date - ncm.joined_date) <= 3)
+        elif ncm and ncm.status == 'administrator' and not m.old_chat_member:
+            return bool(abs(m.date - ncm.joined_date) <= 3)
+        return False
     return bool(m.new_chat_members)
 
 
-new_chat_members = create(new_chat_members_filter)
-"""Filter service messages for new chat members."""
+new_chat_member = create(new_chat_member_filter)
+"""Filter new chat members."""
 
 
 # endregion
 
 # region left_chat_member_filter
-async def left_chat_member_filter(_, __, m: Message):
+async def left_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
+    if isinstance(m, ChatMemberUpdated):
+        return not bool(m.new_chat_member)
     return bool(m.left_chat_member)
 
 
