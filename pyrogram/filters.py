@@ -471,14 +471,18 @@ channel = create(channel_filter)
 
 # region new_chat_members_filter
 async def new_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
-    if isinstance(m, ChatMemberUpdated):
+    if isinstance(m, Message):
+        return bool(m.new_chat_members)
+    if m.new_chat_member:
+        threshold = 2
         ncm = m.new_chat_member
-        if ncm and ncm.status == 'member':
-            return bool(abs(m.date - ncm.joined_date) <= 3)
-        elif ncm and ncm.status == 'administrator' and not m.old_chat_member:
-            return bool(abs(m.date - ncm.joined_date) <= 3)
-        return False
-    return bool(m.new_chat_members)
+        ocm = m.old_chat_member
+        is_joined_now = abs(m.date - (ncm.joined_date or m.date)) <= threshold
+        if ocm and ncm.status == 'restricted' and ocm.is_member is False:
+            return is_joined_now and ncm.is_member
+        elif ncm.status in ['administrator', 'member', 'creator']:
+            return is_joined_now and (not ocm or ocm.is_member is False)
+    return False
 
 
 new_chat_member = create(new_chat_member_filter)
@@ -490,7 +494,11 @@ new_chat_member = create(new_chat_member_filter)
 # region left_chat_member_filter
 async def left_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
     if isinstance(m, ChatMemberUpdated):
-        return not bool(m.new_chat_member)
+        ncm = m.new_chat_member
+        ocm = m.old_chat_member
+        if ncm and ocm and ncm.status in ['restricted', 'kicked']:
+            return bool(ocm.is_member is not False and not ncm.is_member)
+        return bool(not ncm and ocm.status not in ['restricted', 'kicked'])
     return bool(m.left_chat_member)
 
 
