@@ -21,7 +21,7 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
-from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update, ChatMemberUpdated
 
 
 class Filter:
@@ -486,7 +486,7 @@ async def new_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
 
 
 new_chat_member = create(new_chat_member_filter)
-"""Filter new chat members."""
+"""Filter for members that joined the chat."""
 
 
 # endregion
@@ -503,7 +503,7 @@ async def left_chat_member_filter(_, __, m: Union[Message, ChatMemberUpdated]):
 
 
 left_chat_member = create(left_chat_member_filter)
-"""Filter service messages for members that left the chat."""
+"""Filter for members that left the chat."""
 
 
 # endregion
