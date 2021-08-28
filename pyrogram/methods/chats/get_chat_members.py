@@ -112,7 +112,7 @@ class GetChatMembers(Scaffold):
                 )
             )
 
-            members = r.full_chat.participants.participants
+            members = getattr(r.full_chat.participants, "participants", [])
             users = {i.id: i for i in r.users}
 
             return types.List(types.ChatMember._parse(self, member, users, {}) for member in members)
