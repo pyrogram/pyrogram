@@ -2909,7 +2909,7 @@ class Message(Object, Update):
             client.copy_message(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
-                message_ids=message.message_id
+                message_id=message.message_id
             )
 
         Example:
