@@ -41,6 +41,7 @@ def async_to_sync(obj, name):
             loop = asyncio.get_event_loop()
         except RuntimeError:
             loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
         if threading.current_thread() is threading.main_thread():
             if loop.is_running():
@@ -53,12 +54,13 @@ def async_to_sync(obj, name):
                     return loop.run_until_complete(consume_generator(coroutine))
         else:
             if inspect.iscoroutine(coroutine):
-                future = asyncio.run_coroutine_threadsafe(coroutine, main_loop)
-
                 if loop.is_running():
-                    return asyncio.wrap_future(future)
+                    async def coro_wrapper():
+                        return await asyncio.wrap_future(asyncio.run_coroutine_threadsafe(coroutine, main_loop))
+
+                    return coro_wrapper()
                 else:
-                    return future.result()
+                    return asyncio.run_coroutine_threadsafe(coroutine, main_loop).result()
 
             if inspect.isasyncgen(coroutine):
                 if loop.is_running():
