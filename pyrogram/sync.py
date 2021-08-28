@@ -40,49 +40,31 @@ def async_to_sync(obj, name):
         try:
             loop = asyncio.get_event_loop()
         except RuntimeError:
-            loop = main_loop
+            loop = asyncio.new_event_loop()
 
         if threading.current_thread() is threading.main_thread():
             if loop.is_running():
                 return coroutine
+            else:
+                if inspect.iscoroutine(coroutine):
+                    return loop.run_until_complete(coroutine)
 
-            if inspect.iscoroutine(coroutine):
-                return loop.run_until_complete(coroutine)
-
-            if inspect.isasyncgen(coroutine):
-                return loop.run_until_complete(consume_generator(coroutine))
-
-        elif loop is main_loop:
-            # This Thread hasn't an Event loop. So can do blocking calls
-            # the main_loop still may not be running
-            if inspect.iscoroutine(coroutine):
-                return asyncio.run_coroutine_threadsafe(coroutine, loop).result()
-
-            if inspect.isasyncgen(coroutine):
-                return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), loop).result()
-
+                if inspect.isasyncgen(coroutine):
+                    return loop.run_until_complete(consume_generator(coroutine))
         else:
-            # This Thread has an Event loop. So better to do it in async way as possible
-            # the main_loop still may not be running
             if inspect.iscoroutine(coroutine):
+                future = asyncio.run_coroutine_threadsafe(coroutine, main_loop)
+
                 if loop.is_running():
-                    # We can't just await future here.
-                    # Because it will instantly submit this coroutine to the main_loop.
-                    # Is there a better way ?
-                    async def coro_wrapper():
-                        return await asyncio.wrap_future(
-                            asyncio.run_coroutine_threadsafe(coroutine, main_loop))
-
-                    return coro_wrapper()
-
-                return asyncio.run_coroutine_threadsafe(coroutine, main_loop).result()
+                    return asyncio.wrap_future(future)
+                else:
+                    return future.result()
 
             if inspect.isasyncgen(coroutine):
                 if loop.is_running():
-                    # Inner methods are already wrapped
                     return coroutine
-
-                return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), main_loop).result()
+                else:
+                    return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), main_loop).result()
 
     setattr(obj, name, async_to_sync_wrap)
 
