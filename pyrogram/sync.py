@@ -40,23 +40,33 @@ def async_to_sync(obj, name):
         try:
             loop = asyncio.get_event_loop()
         except RuntimeError:
-            loop = main_loop
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        if loop.is_running():
-            if threading.current_thread() is threading.main_thread():
+        if threading.current_thread() is threading.main_thread():
+            if loop.is_running():
                 return coroutine
             else:
                 if inspect.iscoroutine(coroutine):
-                    return asyncio.run_coroutine_threadsafe(coroutine, loop).result()
+                    return loop.run_until_complete(coroutine)
 
                 if inspect.isasyncgen(coroutine):
-                    return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), loop).result()
+                    return loop.run_until_complete(consume_generator(coroutine))
+        else:
+            if inspect.iscoroutine(coroutine):
+                if loop.is_running():
+                    async def coro_wrapper():
+                        return await asyncio.wrap_future(asyncio.run_coroutine_threadsafe(coroutine, main_loop))
 
-        if inspect.iscoroutine(coroutine):
-            return loop.run_until_complete(coroutine)
+                    return coro_wrapper()
+                else:
+                    return asyncio.run_coroutine_threadsafe(coroutine, main_loop).result()
 
-        if inspect.isasyncgen(coroutine):
-            return loop.run_until_complete(consume_generator(coroutine))
+            if inspect.isasyncgen(coroutine):
+                if loop.is_running():
+                    return coroutine
+                else:
+                    return asyncio.run_coroutine_threadsafe(consume_generator(coroutine), main_loop).result()
 
     setattr(obj, name, async_to_sync_wrap)
 
