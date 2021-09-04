@@ -74,8 +74,10 @@ class IterDialogs(Scaffold):
                 offset_date=offset_date,
                 limit=limit
             )
-
-            if len(dialogs) <= 1:
+            
+            print(len(dialogs))
+            
+            if if not dialogs:
                 return
 
             offset_date = dialogs[-1].top_message.date
