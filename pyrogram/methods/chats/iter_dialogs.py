@@ -77,7 +77,7 @@ class IterDialogs(Scaffold):
             
             print(len(dialogs))
             
-            if offset_date = dialogs[-1].top_message.date
+            if offset_date == dialogs[-1].top_message.date:
                 return
 
             offset_date = dialogs[-1].top_message.date
