@@ -110,7 +110,7 @@ class CallbackQuery(Object, Update):
         # ignoring/replacing errors, this way, button clicks will still work.
         try:
             data = callback_query.data.decode()
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, AttributeError):
             data = callback_query.data
 
         return CallbackQuery(
