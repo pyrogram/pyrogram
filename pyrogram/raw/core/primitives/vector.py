@@ -19,7 +19,7 @@
 from io import BytesIO
 from typing import cast, Union, Any
 
-from .int import Int
+from .int import Int, Long
 from ..list import List
 from ..tl_object import TLObject
 
@@ -30,19 +30,29 @@ class Vector(bytes, TLObject):
     # Method added to handle the special case when a query returns a bare Vector (of Ints);
     # i.e., RpcResult body starts with 0x1cb5c415 (Vector Id) - e.g., messages.GetMessagesViews.
     @staticmethod
-    def _read(b: BytesIO) -> Union[int, Any]:
+    def read_bare(b: BytesIO, n: int) -> Union[int, Any]:
+        left = len(b.read())
+        size = left // n
+        b.seek(-left, 1)
+
         try:
             return TLObject.read(b)
-        except ValueError:
+        except KeyError:
             b.seek(-4, 1)
-            return Int.read(b)
+
+            if size == 4:
+                return Int.read(b)
+            else:
+                return Long.read(b)
 
     @classmethod
     def read(cls, data: BytesIO, t: Any = None, *args: Any) -> List:
+        count = Int.read(data)
+
         return List(
             t.read(data) if t
-            else Vector._read(data)
-            for _ in range(Int.read(data))
+            else Vector.read_bare(data, count)
+            for _ in range(count)
         )
 
     def __new__(cls, value: list, t: Any = None) -> bytes:  # type: ignore
