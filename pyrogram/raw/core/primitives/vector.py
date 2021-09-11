@@ -30,11 +30,7 @@ class Vector(bytes, TLObject):
     # Method added to handle the special case when a query returns a bare Vector (of Ints);
     # i.e., RpcResult body starts with 0x1cb5c415 (Vector Id) - e.g., messages.GetMessagesViews.
     @staticmethod
-    def read_bare(b: BytesIO, n: int) -> Union[int, Any]:
-        left = len(b.read())
-        size = left // n
-        b.seek(-left, 1)
-
+    def read_bare(b: BytesIO, size: int) -> Union[int, Any]:
         try:
             return TLObject.read(b)
         except KeyError:
@@ -48,10 +44,13 @@ class Vector(bytes, TLObject):
     @classmethod
     def read(cls, data: BytesIO, t: Any = None, *args: Any) -> List:
         count = Int.read(data)
+        left = len(data.read())
+        size = left // count
+        data.seek(-left, 1)
 
         return List(
             t.read(data) if t
-            else Vector.read_bare(data, count)
+            else Vector.read_bare(data, size)
             for _ in range(count)
         )
 
