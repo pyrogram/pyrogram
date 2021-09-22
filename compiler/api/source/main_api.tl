@@ -1243,6 +1243,12 @@ account.resetPasswordFailedWait#e3779861 retry_date:int = account.ResetPasswordR
 account.resetPasswordRequestedWait#e9effc7d until_date:int = account.ResetPasswordResult;
 account.resetPasswordOk#e926d63e = account.ResetPasswordResult;
 
+messageUserReaction#d267dcbc user_id:int reaction:string = MessageUserReaction;
+messageReactionList#e3ae6108 flags:# count:int reactions:Vector<MessageUserReaction> users:Vector<User> next_offset:flags.0?string = MessageReactionsList;
+messageReactions#b87a24d1 flags:# min:flags.0?true results:Vector<ReactionCount> = MessageReactions;
+updateMessageReactions#154798c3 peer:Peer msg_id:int reactions:MessageReactions = Update;
+reactionCount#6fb250d1 flags:# chosen:flags.0?true reaction:string count:int = ReactionCount;
+
 ---functions---
 
 invokeAfterMsg#cb9f372d {X:Type} msg_id:long query:!X = X;
@@ -1511,6 +1517,10 @@ messages.getAdminsWithInvites#3920e6ef peer:InputPeer = messages.ChatAdminsWithI
 messages.getChatInviteImporters#26fb7289 peer:InputPeer link:string offset_date:int offset_user:InputUser limit:int = messages.ChatInviteImporters;
 messages.setHistoryTTL#b80e5fe4 peer:InputPeer period:int = Updates;
 messages.checkHistoryImportPeer#5dc60f03 peer:InputPeer = messages.CheckedHistoryImportPeer;
+
+messages.getMessageReactionsList#15b1376a flags:# peer:InputPeer id:int reaction:flags.0?string offset:flags.1?string limit:int = MessageReactionsList;
+messages.getMessagesReactions#8bba90e6 peer:InputPeer id:Vector<int> = Updates;
+messages.sendReaction#25690ce4 flags:# peer:InputPeer msg_id:int reaction:flags.0?string = Updates;
 
 updates.getState#edd4882a = updates.State;
 updates.getDifference#25939651 flags:# pts:int pts_total_limit:flags.0?int date:int qts:int = updates.Difference;
