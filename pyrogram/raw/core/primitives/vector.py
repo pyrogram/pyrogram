@@ -31,21 +31,19 @@ class Vector(bytes, TLObject):
     # i.e., RpcResult body starts with 0x1cb5c415 (Vector Id) - e.g., messages.GetMessagesViews.
     @staticmethod
     def read_bare(b: BytesIO, size: int) -> Union[int, Any]:
-        try:
-            return TLObject.read(b)
-        except KeyError:
-            b.seek(-4, 1)
+        if size == 4:
+            return Int.read(b)
+        
+        if size == 8:
+            return Long.read(b)
 
-            if size == 4:
-                return Int.read(b)
-            else:
-                return Long.read(b)
+        return TLObject.read(b)
 
     @classmethod
     def read(cls, data: BytesIO, t: Any = None, *args: Any) -> List:
         count = Int.read(data)
         left = len(data.read())
-        size = (left // count) if count else 0
+        size = (left / count) if count else 0
         data.seek(-left, 1)
 
         return List(
