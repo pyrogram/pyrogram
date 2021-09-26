@@ -61,7 +61,7 @@ class InlineQueryResultVideo(InlineQueryResult):
             Short description of the result.
 
         caption (``str``, *optional*):
-            Caption of the photo to be sent, 0-1024 characters.
+            Caption of the video to be sent, 0-1024 characters.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.

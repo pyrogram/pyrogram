@@ -52,17 +52,16 @@ class SetChatPermissions(Scaffold):
                 # Completely restrict chat
                 app.set_chat_permissions(chat_id, ChatPermissions())
 
-                # Chat members can only send text messages, media, stickers and GIFs
+                # Chat members can only send text messages and media messages
                 app.set_chat_permissions(
                     chat_id,
                     ChatPermissions(
                         can_send_messages=True,
-                        can_send_media_messages=True,
-                        can_send_stickers=True,
-                        can_send_animations=True
+                        can_send_media_messages=True
                     )
                 )
         """
+
         r = await self.send(
             raw.functions.messages.EditChatDefaultBannedRights(
                 peer=await self.resolve_peer(chat_id),
@@ -70,10 +69,10 @@ class SetChatPermissions(Scaffold):
                     until_date=0,
                     send_messages=True if not permissions.can_send_messages else None,
                     send_media=True if not permissions.can_send_media_messages else None,
-                    send_stickers=True if not permissions.can_send_stickers else None,
-                    send_gifs=True if not permissions.can_send_animations else None,
-                    send_games=True if not permissions.can_send_games else None,
-                    send_inline=True if not permissions.can_use_inline_bots else None,
+                    send_stickers=permissions.can_send_other_messages,
+                    send_gifs=permissions.can_send_other_messages,
+                    send_games=permissions.can_send_other_messages,
+                    send_inline=permissions.can_send_other_messages,
                     embed_links=True if not permissions.can_add_web_page_previews else None,
                     send_polls=True if not permissions.can_send_polls else None,
                     change_info=True if not permissions.can_change_info else None,
