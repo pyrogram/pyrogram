@@ -181,7 +181,7 @@ class Client(Methods, Scaffold):
 
             .. code-block:: python
 
-                def your_function(
+                async def your_function(
                     input_type: Scaffold.InputType,
                     formats: Sequence[str] = (),
                     hide: bool = False
@@ -206,7 +206,7 @@ class Client(Methods, Scaffold):
                     Default is False.
             Example:
                 ..code-block:: python
-                    def your_function(
+                    async def your_function(
                         input_type: Scaffold.InputType,
                         formats: Sequence[str] = (),
                         hide: bool = False
