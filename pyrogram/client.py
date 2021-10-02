@@ -202,7 +202,7 @@ class Client(Methods, Scaffold):
 
                 hide (``bool``, *optional*):
                     Determines whether the input should be hidden while is being typed.
-                    Determined by the `hide_password` parameter of ``~pyrogram.Client`.
+                    Determined by the `hide_password` parameter of ``~pyrogram.Client``.
                     Default is False.
             Example:
                 ..code-block:: python
