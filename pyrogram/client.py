@@ -29,7 +29,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
 from pathlib import Path
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Callable, Awaitable
 
 import pyrogram
 from pyrogram import raw
@@ -172,6 +172,50 @@ class Client(Methods, Scaffold):
             Pass True to hide the password when typing it during the login.
             Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
             terminal environments.
+
+        input_function(``callable``, *optional**):
+            Pass a function which will be called every time pyrogram needs to get input from the user
+            and *must* return a string.
+            The default value is ``ainput`` - asynchronous input.
+            Your function must be defined like:
+
+            .. code-block:: python
+
+                def your_function(
+                    input_type: Scaffold.InputType,
+                    formats: Sequence[str] = (),
+                    hide: bool = False
+                ) -> str: ...
+
+            Function parameters:
+                input_type (:obj:`~pyrogram.scaffold.Scaffold.InputType`):
+                    an instance of `Scaffold.InputType` which represents the data that pyrogram needs
+                    at the moment, and input_type.value will contain its prompt.
+                    example:
+                        input_type = Scaffold.InputType.EnterPhoneOrToken
+                        input_type.value == 'Enter phone number or bot token: '
+
+                formats (``tuple``, *optional*):
+                    A tuple of strings to be inserted into `input_type`.
+                    Example: `input_type.value.format(*formats)`.
+                    Default is ().
+
+                hide (``bool``, *optional*):
+                    Determines whether the input should be hidden while is being typed.
+                    Determined by the `hide_password` parameter of ``~pyrogram.Client`.
+                    Default is False.
+            Example:
+                ..code-block:: python
+                    def your_function(
+                        input_type: Scaffold.InputType,
+                        formats: Sequence[str] = (),
+                        hide: bool = False
+                    ) -> str:
+                        if input_type == Scaffold.InputType.EnterPhoneOrToken:
+                            return PHONE_NUMBER
+
+                        # Make sure to handle all inputs correctly.
+
     """
 
     def __init__(
@@ -199,7 +243,8 @@ class Client(Methods, Scaffold):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        input_function: Callable[..., Awaitable[str]] = ainput
     ):
         super().__init__()
 
@@ -228,6 +273,7 @@ class Client(Methods, Scaffold):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
+        self.input_function = input_function
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
@@ -284,13 +330,12 @@ class Client(Methods, Scaffold):
             try:
                 if not self.phone_number:
                     while True:
-                        value = await ainput("Enter phone number or bot token: ")
+                        value = await self.input_function(Scaffold.InputType.EnterPhoneOrToken)
 
                         if not value:
                             continue
 
-                        confirm = (await ainput(f'Is "{value}" correct? (y/N): ')).lower()
-
+                        confirm = (await self.input_function(Scaffold.InputType.IsPhoneCorrect, (value,))).lower()
                         if confirm == "y":
                             break
 
@@ -322,7 +367,7 @@ class Client(Methods, Scaffold):
 
         while True:
             if not self.phone_code:
-                self.phone_code = await ainput("Enter confirmation code: ")
+                self.phone_code = await self.input_function(Scaffold.InputType.EnterConfirmationCode)
 
             try:
                 signed_in = await self.sign_in(self.phone_number, sent_code.phone_code_hash, self.phone_code)
@@ -336,18 +381,18 @@ class Client(Methods, Scaffold):
                     print("Password hint: {}".format(await self.get_password_hint()))
 
                     if not self.password:
-                        self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
+                        self.password = await self.input_function(Scaffold.InputType.EnterPassword, hide=self.hide_password)
 
                     try:
                         if not self.password:
-                            confirm = await ainput("Confirm password recovery (y/n): ")
+                            confirm = await self.input_function(Scaffold.InputType.ConfirmPasswordRecovery)
 
                             if confirm == "y":
                                 email_pattern = await self.send_recovery_code()
                                 print(f"The recovery code has been sent to {email_pattern}")
 
                                 while True:
-                                    recovery_code = await ainput("Enter recovery code: ")
+                                    recovery_code = await self.input_function(Scaffold.InputType.EnterRecoveryCode)
 
                                     try:
                                         return await self.recover_password(recovery_code)
@@ -370,8 +415,8 @@ class Client(Methods, Scaffold):
             return signed_in
 
         while True:
-            first_name = await ainput("Enter first name: ")
-            last_name = await ainput("Enter last name (empty to skip): ")
+            first_name = await self.input_function(Scaffold.InputType.EnterFirstName)
+            last_name = await self.input_function(Scaffold.InputType.EnterLastName)
 
             try:
                 signed_up = await self.sign_up(

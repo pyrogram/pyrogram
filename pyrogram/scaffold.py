@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import enum
 import os
 import platform
 import re
@@ -50,6 +51,16 @@ class Scaffold:
 
     mimetypes = MimeTypes()
     mimetypes.readfp(StringIO(mime_types))
+
+    class InputType(enum.Enum):
+        EnterPhoneOrToken = 'Enter phone number or bot token: '
+        IsPhoneCorrect = 'Is "{}" correct? (y/N): '
+        EnterConfirmationCode = 'Enter confirmation code: '
+        EnterPassword = 'Enter password (empty to recover): '
+        ConfirmPasswordRecovery = 'Confirm password recovery (y/n): '
+        EnterRecoveryCode = 'Enter recovery code: '
+        EnterFirstName = 'Enter first name: '
+        EnterLastName = 'Enter last name (empty to skip): '
 
     def __init__(self):
         try:

@@ -24,16 +24,27 @@ import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
 from getpass import getpass
-from typing import Union, List, Dict, Optional
+from typing import Union, List, Dict, Optional, Sequence
 
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
+from pyrogram import scaffold
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
 
 
-async def ainput(prompt: str = "", *, hide: bool = False):
+async def ainput(
+        input_type: scaffold.Scaffold.InputType = None,
+        formats: Sequence[str] = (),
+        *,
+        hide: bool = False
+) -> str:
     """Just like the built-in input, but async"""
+    prompt = ""
+    if input_type:
+        prompt = input_type.value
+    if formats:
+        prompt = prompt.format(*formats)
     with ThreadPoolExecutor(1) as executor:
         func = functools.partial(getpass if hide else input, prompt)
         return await asyncio.get_event_loop().run_in_executor(executor, func)
