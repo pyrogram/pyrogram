@@ -811,7 +811,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
                                 flags=re.IGNORECASE if not flt.case_sensitive else 0):
                     continue
 
-                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1)
+                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1,
+                                         flags=re.IGNORECASE if not flt.case_sensitive else 0)
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text

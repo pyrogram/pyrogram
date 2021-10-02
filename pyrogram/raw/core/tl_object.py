@@ -29,8 +29,8 @@ class TLObject:
     QUALNAME = "Base"
 
     @classmethod
-    def read(cls, data: BytesIO, *args: Any) -> Any:
-        return cast(TLObject, objects[int.from_bytes(data.read(4), "little")]).read(data, *args)
+    def read(cls, b: BytesIO, *args: Any) -> Any:
+        return cast(TLObject, objects[int.from_bytes(b.read(4), "little")]).read(b, *args)
 
     def write(self, *args: Any) -> bytes:
         pass
