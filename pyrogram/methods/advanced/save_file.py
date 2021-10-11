@@ -152,6 +152,8 @@ class SaveFile(Scaffold):
 
             while True:
                 chunk = fp.read(part_size)
+                if inspect.isawaitable(chunk):
+                    chunk = await chunk
 
                 if not chunk:
                     if not is_big and not is_missing_part:
