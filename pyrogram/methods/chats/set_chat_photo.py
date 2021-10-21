@@ -31,7 +31,8 @@ class SetChatPhoto(Scaffold):
         chat_id: Union[int, str],
         *,
         photo: Union[str, BinaryIO] = None,
-        video: Union[str, BinaryIO] = None
+        video: Union[str, BinaryIO] = None,
+        video_start_ts: Union[float, int] = None,
     ) -> bool:
         """Set a new chat photo or video (H.264/MPEG-4 AVC video, max 5 seconds).
 
@@ -53,6 +54,9 @@ class SetChatPhoto(Scaffold):
                 New chat video. You can pass a :obj:`~pyrogram.types.Video` file_id, a file path to upload a new video
                 from your local machine or a binary file-like object with its attribute
                 ".name" set for in-memory uploads.
+
+            video_start_ts (``float`` | ``int``, *optional*):
+                The timestamp of the video in seconds to use as preview.
 
         Returns:
             ``bool``: True on success.
@@ -82,7 +86,8 @@ class SetChatPhoto(Scaffold):
             if os.path.isfile(photo):
                 photo = raw.types.InputChatUploadedPhoto(
                     file=await self.save_file(photo),
-                    video=await self.save_file(video)
+                    video=await self.save_file(video),
+                    video_start_ts=video_start_ts,
                 )
             else:
                 photo = utils.get_input_media_from_file_id(photo, FileType.PHOTO)
@@ -90,14 +95,15 @@ class SetChatPhoto(Scaffold):
         else:
             photo = raw.types.InputChatUploadedPhoto(
                 file=await self.save_file(photo),
-                video=await self.save_file(video)
+                video=await self.save_file(video),
+                video_start_ts=video_start_ts,
             )
 
         if isinstance(peer, raw.types.InputPeerChat):
             await self.send(
                 raw.functions.messages.EditChatPhoto(
                     chat_id=peer.chat_id,
-                    photo=photo
+                    photo=photo,
                 )
             )
         elif isinstance(peer, raw.types.InputPeerChannel):
