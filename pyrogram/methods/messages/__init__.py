@@ -16,8 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .copy_message import CopyMessage
 from .copy_media_group import CopyMediaGroup
+from .copy_message import CopyMessage
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
 from .edit_inline_caption import EditInlineCaption
@@ -37,7 +37,9 @@ from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
 from .search_global import SearchGlobal
+from .search_global_count import SearchGlobalCount
 from .search_messages import SearchMessages
+from .search_messages_count import SearchMessagesCount
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
@@ -100,6 +102,8 @@ class Messages(
     SearchMessages,
     SearchGlobal,
     CopyMessage,
-    CopyMediaGroup
+    CopyMediaGroup,
+    SearchMessagesCount,
+    SearchGlobalCount
 ):
     pass
