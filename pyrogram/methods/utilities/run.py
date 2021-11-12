@@ -59,6 +59,11 @@ class Run(Scaffold):
                 run(self.stop())
             else:
                 self.start()
-                self.set_bot_commands(bot_commands)
+
+                try:
+                    self.set_bot_commands(bot_commands)
+                except:
+                    pass
+
                 run(idle())
                 self.stop()
