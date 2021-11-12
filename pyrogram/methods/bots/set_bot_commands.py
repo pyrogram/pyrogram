@@ -24,9 +24,14 @@ from pyrogram.scaffold import Scaffold
 
 
 class SetBotCommands(Scaffold):
-    async def set_bot_commands(self, commands: Optional[List[types.BotCommand]]):
+    async def set_bot_commands(
+        self,
+        commands: Optional[List[types.BotCommand]],
+        lang_code: Optional[str] = "",
+        scope: Optional[raw.base.BotCommandScope] = raw.types.BotCommandScopeDefault(),
+    ):
         """Set the bot commands list.
-        
+
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
 
@@ -40,20 +45,22 @@ class SetBotCommands(Scaffold):
 
         Example:
             .. code-block:: python
-                
+
                 from pyrogram.types import BotCommand
-                
+
                 # Set new commands
                 app.set_bot_commands([
                     BotCommand("start", "Start the bot"),
                     BotCommand("settings", "Bot settings")])
-                
+
                 # Remove commands
                 app.set_bot_commands(None)
         """
 
         return await self.send(
             raw.functions.bots.SetBotCommands(
-                commands=[c.write() for c in commands or []]
+                commands=[c.write() for c in commands or []],
+                scope=scope,
+                lang_code=lang_code,
             )
         )
