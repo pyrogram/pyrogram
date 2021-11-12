@@ -24,7 +24,7 @@ from pyrogram.scaffold import Scaffold
 
 
 class Run(Scaffold):
-    def run(self, coroutine=None):
+    def run(self, coroutine=None, bot_commands=None):
         """Start the client, idle the main script and finally stop the client.
 
         This is a convenience method that calls :meth:`~pyrogram.Client.start`, :meth:`~pyrogram.idle` and
@@ -59,5 +59,6 @@ class Run(Scaffold):
                 run(self.stop())
             else:
                 self.start()
+                self.set_bot_commands(bot_commands)
                 run(idle())
                 self.stop()
