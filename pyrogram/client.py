@@ -895,7 +895,7 @@ class Client(Methods, Scaffold):
                 thumb_size=file_id.thumbnail_size
             )
 
-        limit = 1024 * 1024
+        limit = 1024 * 32
         offset = 0
         file_name = ""
 
@@ -915,6 +915,9 @@ class Client(Methods, Scaffold):
 
                     while True:
                         chunk = r.bytes
+                        
+                        if offset + limit > file_size:
+                            break
 
                         if not chunk:
                             break
