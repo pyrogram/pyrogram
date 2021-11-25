@@ -94,10 +94,12 @@ class Poll(Object, Update):
 
         for i, answer in enumerate(poll.answers):
             voter_count = 0
+            correct = None
 
             if results:
                 result = results[i]
                 voter_count = result.voters
+                correct = result.correct
 
                 if result.chosen:
                     chosen_option = i
@@ -106,6 +108,7 @@ class Poll(Object, Update):
                 types.PollOption(
                     text=answer.text,
                     voter_count=voter_count,
+                    correct=correct,
                     data=answer.option,
                     client=client
                 )
