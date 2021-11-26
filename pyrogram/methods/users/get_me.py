@@ -34,11 +34,12 @@ class GetMe(Scaffold):
                 me = app.get_me()
                 print(me)
         """
-        return types.User._parse(
-            self,
-            (await self.send(
-                raw.functions.users.GetFullUser(
-                    id=raw.types.InputUserSelf()
-                )
-            )).user
+        r = await self.send(
+            raw.functions.users.GetFullUser(
+                id=raw.types.InputUserSelf()
+            )
         )
+
+        users = {u.id: u for u in r.users}
+
+        return types.User._parse(self, users[r.full_user.id])
