@@ -38,6 +38,7 @@ class ChatAction:
     CHOOSE_CONTACT = raw.types.SendMessageChooseContactAction
     SPEAKING = raw.types.SpeakingInGroupCallAction
     CANCEL = raw.types.SendMessageCancelAction
+    CHOOSE_STICKER = raw.types.SendMessageChooseStickerAction
 
 
 POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), ChatAction.__dict__.keys())))
@@ -58,7 +59,7 @@ class SendChatAction(Scaffold):
                 text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
                 *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
                 *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
-                *"choose_contact"* for contacts, *"playing"* for games, *"speaking"* for speaking in group calls or
+                *"choose_contact"* for contacts, *"choose_sticker"* for stickers, *"playing"* for games, *"speaking"* for speaking in group calls or
                 *"cancel"* to cancel any chat action currently displayed.
 
         Returns:
