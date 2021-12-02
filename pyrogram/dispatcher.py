@@ -344,11 +344,15 @@ class Dispatcher:
                 update, users, chats = packet
                 parser = self.update_parsers.get(type(update), None)
 
-                parsed_update, handler_type = (
-                    await parser(update, users, chats)
-                    if parser is not None
-                    else (None, type(None))
-                )
+                try:
+                    parsed_update, handler_type = (
+                        await parser(update, users, chats)
+                        if parser is not None
+                        else (None, type(None))
+                    )
+                except KeyError as e:
+                    log.warning(f"{e}: \n{users}\n{chats}")
+                    continue
 
                 async with lock:
                     # TODO: Add support for RawUpdateHandler
