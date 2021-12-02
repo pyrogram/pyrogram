@@ -351,7 +351,7 @@ class Dispatcher:
                         else (None, type(None))
                     )
                 except KeyError as e:
-                    log.warning(f"{e}: \n{users}\n{chats}")
+                    log.error(f"{e.__class__.__name__} {e}: Update: {type(update)} Users: {users} Chats: {chats}")
                     continue
 
                 async with lock:
