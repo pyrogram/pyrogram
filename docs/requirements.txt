@@ -4,3 +4,4 @@ sphinx_copybutton
 pypandoc
 requests
 sphinx-autobuild
+sphinx_tabs
