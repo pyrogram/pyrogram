@@ -1,5 +1,5 @@
 ## Include
-include README.md requirements.txt
+include README.md NOTICE requirements.txt
 recursive-include compiler *.py *.tl *.tsv *.txt
 recursive-include tests *.py
 
