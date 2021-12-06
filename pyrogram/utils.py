@@ -159,7 +159,7 @@ def unpack_inline_message_id(inline_message_id: str) -> "raw.types.InputBotInlin
 MIN_CHANNEL_ID = -1002147483647
 MAX_CHANNEL_ID = -1000000000000
 MIN_CHAT_ID = -2147483647
-MAX_USER_ID = 999999999999
+MAX_USER_ID = 9223372036854775807
 
 
 def get_raw_peer_id(peer: raw.base.Peer) -> Optional[int]:
