@@ -513,12 +513,12 @@ class Message(Object, Update):
                 service_type = "voice_chat_members_invited"
 
             from_user = types.User._parse(client, users.get(user_id, None))
-            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+            sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=types.Chat._parse(client, message, users, chats),
+                chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
                 service=service_type,
@@ -707,12 +707,12 @@ class Message(Object, Update):
                     reply_markup = None
 
             from_user = types.User._parse(client, users.get(user_id, None))
-            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+            sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=types.Chat._parse(client, message, users, chats),
+                chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
                 text=(
