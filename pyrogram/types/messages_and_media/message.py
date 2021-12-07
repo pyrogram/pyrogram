@@ -24,7 +24,7 @@ import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.errors import MessageIdsEmpty
+from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid
 from pyrogram.parser import utils as parser_utils, Parser
 from ..object import Object
 from ..update import Update
@@ -435,13 +435,16 @@ class Message(Object, Update):
     ):
         user_id = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
         if user_id not in users:
-            r = (await client.send(
-                raw.functions.users.GetUsers(
-                    id=[await client.resolve_peer(user_id)]
-                )
-            ))[0]
-
-            users[r.id] = r
+            try:
+                r = (await client.send(
+                    raw.functions.users.GetUsers(
+                        id=[await client.resolve_peer(user_id)]
+                    )
+                ))[0]
+            except PeerIdInvalid:
+                pass
+            else:
+                users[r.id] = r
 
         if isinstance(message, raw.types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
