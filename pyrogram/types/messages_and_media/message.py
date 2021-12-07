@@ -433,6 +433,9 @@ class Message(Object, Update):
         is_scheduled: bool = False,
         replies: int = 1
     ):
+        if isinstance(message, raw.types.MessageEmpty):
+            return Message(message_id=message.id, empty=True, client=client)
+
         user_id = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
         if user_id not in users:
             try:
@@ -445,9 +448,6 @@ class Message(Object, Update):
                 pass
             else:
                 users[r.id] = r
-
-        if isinstance(message, raw.types.MessageEmpty):
-            return Message(message_id=message.id, empty=True, client=client)
 
         if isinstance(message, raw.types.MessageService):
             action = message.action
