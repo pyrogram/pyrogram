@@ -23,7 +23,7 @@ from typing import List, Tuple
 
 class Storage:
     SESSION_STRING_FORMAT = ">B?256sQ?"
-    SESSION_STRING_SIZE = 351
+    SESSION_STRING_SIZE = 356
 
     def __init__(self, name: str):
         self.name = name
