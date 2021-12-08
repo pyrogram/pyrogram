@@ -943,3 +943,14 @@ async def dan_filter(_, __, m: Message):
 
 dan = create(dan_filter)
 # endregion
+
+
+# region admin_filter
+async def admin_filter(_, __, message: Message):
+    return (message.sender_chat and message.sender_chat.id == message.chat.id) or \
+           (message.from_user and (await message.chat.get_member(message.from_user.id)).status in ('creator',
+                                                                                                   'administrator'))
+
+
+admin = create(admin_filter)
+# endregion
