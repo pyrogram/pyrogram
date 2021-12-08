@@ -946,10 +946,11 @@ dan = create(dan_filter)
 
 
 # region admin_filter
-async def admin_filter(_, __, message: Message):
-    return (message.sender_chat and message.sender_chat.id == message.chat.id) or \
-           (message.from_user and (await message.chat.get_member(message.from_user.id)).status in ('creator',
-                                                                                                   'administrator'))
+async def admin_filter(_, __, m: Message):
+    if await private_filter(_, __, m):
+        return False
+    return (m.sender_chat and m.sender_chat.id == m.chat.id) or \
+           (m.from_user and (await m.chat.get_member(m.from_user.id)).status in ('creator', 'administrator'))
 
 
 admin = create(admin_filter)
