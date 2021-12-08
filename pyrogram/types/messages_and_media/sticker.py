@@ -121,7 +121,8 @@ class Sticker(Object):
                     stickerset=raw.types.InputStickerSetID(
                         id=set_id,
                         access_hash=set_access_hash
-                    )
+                    ),
+                    hash=0
                 )
             )).set.short_name
 

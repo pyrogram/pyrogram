@@ -238,14 +238,24 @@ class Chat(Object):
         )
 
     @staticmethod
-    def _parse(client, message: Union[raw.types.Message, raw.types.MessageService], users: dict, chats: dict) -> "Chat":
+    def _parse(
+        client,
+        message: Union[raw.types.Message, raw.types.MessageService],
+        users: dict,
+        chats: dict,
+        is_chat: bool
+    ) -> "Chat":
+        from_id = utils.get_raw_peer_id(message.from_id)
+        peer_id = utils.get_raw_peer_id(message.peer_id)
+        chat_id = (peer_id or from_id) if is_chat else (from_id or peer_id)
+
         if isinstance(message.peer_id, raw.types.PeerUser):
-            return Chat._parse_user_chat(client, users[message.peer_id.user_id])
+            return Chat._parse_user_chat(client, users[chat_id])
 
         if isinstance(message.peer_id, raw.types.PeerChat):
-            return Chat._parse_chat_chat(client, chats[message.peer_id.chat_id])
+            return Chat._parse_chat_chat(client, chats[chat_id])
 
-        return Chat._parse_channel_chat(client, chats[message.peer_id.channel_id])
+        return Chat._parse_channel_chat(client, chats[chat_id])
 
     @staticmethod
     def _parse_dialog(client, peer, users: dict, chats: dict):
@@ -257,15 +267,15 @@ class Chat(Object):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.UserFull]) -> "Chat":
-        if isinstance(chat_full, raw.types.UserFull):
-            parsed_chat = Chat._parse_user_chat(client, chat_full.user)
-            parsed_chat.bio = chat_full.about
+    async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.users.UserFull]) -> "Chat":
+        if isinstance(chat_full, raw.types.users.UserFull):
+            parsed_chat = Chat._parse_user_chat(client, chat_full.users[0])
+            parsed_chat.bio = chat_full.full_user.about
 
-            if chat_full.pinned_msg_id:
+            if chat_full.full_user.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
-                    message_ids=chat_full.pinned_msg_id
+                    message_ids=chat_full.full_user.pinned_msg_id
                 )
         else:
             full_chat = chat_full.full_chat

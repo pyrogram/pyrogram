@@ -24,7 +24,7 @@ import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.errors import MessageIdsEmpty
+from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid
 from pyrogram.parser import utils as parser_utils, Parser
 from ..object import Object
 from ..update import Update
@@ -436,6 +436,19 @@ class Message(Object, Update):
         if isinstance(message, raw.types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 
+        user_id = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
+        if user_id not in users:
+            try:
+                r = (await client.send(
+                    raw.functions.users.GetUsers(
+                        id=[await client.resolve_peer(user_id)]
+                    )
+                ))[0]
+            except PeerIdInvalid:
+                pass
+            else:
+                users[r.id] = r
+
         if isinstance(message, raw.types.MessageService):
             action = message.action
 
@@ -499,14 +512,13 @@ class Message(Object, Update):
                 voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
                 service_type = "voice_chat_members_invited"
 
-            user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
-            from_user = types.User._parse(client, users.get(user, None))
-            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+            from_user = types.User._parse(client, users.get(user_id, None))
+            sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=types.Chat._parse(client, message, users, chats),
+                chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
                 service=service_type,
@@ -553,8 +565,6 @@ class Message(Object, Update):
                         parsed_message.service = "game_high_score"
                     except MessageIdsEmpty:
                         pass
-
-
 
             return parsed_message
 
@@ -696,14 +706,13 @@ class Message(Object, Update):
                 else:
                     reply_markup = None
 
-            user = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
-            from_user = types.User._parse(client, users.get(user, None))
-            sender_chat = types.Chat._parse(client, message, users, chats) if not from_user else None
+            from_user = types.User._parse(client, users.get(user_id, None))
+            sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
-                chat=types.Chat._parse(client, message, users, chats),
+                chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
                 text=(
