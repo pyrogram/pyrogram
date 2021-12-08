@@ -22,6 +22,7 @@ from typing import Callable, Union, List, Pattern
 
 import pyrogram
 from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.errors import UserNotParticipant
 
 
 class Filter:
@@ -949,8 +950,14 @@ dan = create(dan_filter)
 async def admin_filter(_, __, m: Message):
     if await private_filter(_, __, m):
         return False
-    return (m.sender_chat and m.sender_chat.id == m.chat.id) or \
-           (m.from_user and (await m.chat.get_member(m.from_user.id)).status in ('creator', 'administrator'))
+    if m.sender_chat and m.sender_chat.id == m.chat.id:
+        return True
+    if m.from_user:
+        try:
+            chat_member = await m.chat.get_member(m.from_user.id)
+            return chat_member.status in ('creator', 'administrator')
+        except UserNotParticipant:
+            return False
 
 
 admin = create(admin_filter)
