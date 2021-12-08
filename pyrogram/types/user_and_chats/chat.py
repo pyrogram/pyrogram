@@ -266,15 +266,15 @@ class Chat(Object):
             return Chat._parse_channel_chat(client, chats[peer.channel_id])
 
     @staticmethod
-    async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.UserFull]) -> "Chat":
-        if isinstance(chat_full, raw.types.UserFull):
-            parsed_chat = Chat._parse_user_chat(client, chat_full.user)
-            parsed_chat.bio = chat_full.about
+    async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.users.UserFull]) -> "Chat":
+        if isinstance(chat_full, raw.types.users.UserFull):
+            parsed_chat = Chat._parse_user_chat(client, chat_full.users[0])
+            parsed_chat.bio = chat_full.full_user.about
 
-            if chat_full.pinned_msg_id:
+            if chat_full.full_user.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
-                    message_ids=chat_full.pinned_msg_id
+                    message_ids=chat_full.full_user.pinned_msg_id
                 )
         else:
             full_chat = chat_full.full_chat
