@@ -245,16 +245,17 @@ class Chat(Object):
         chats: dict,
         is_chat: bool
     ) -> "Chat":
+        from_id = utils.get_raw_peer_id(message.from_id)
+        peer_id = utils.get_raw_peer_id(message.peer_id)
+        chat_id = (peer_id or from_id) if is_chat else (from_id or peer_id)
+
         if isinstance(message.peer_id, raw.types.PeerUser):
-            user_id = message.peer_id.user_id if is_chat else message.from_id.user_id
-            return Chat._parse_user_chat(client, users[user_id])
+            return Chat._parse_user_chat(client, users[chat_id])
 
         if isinstance(message.peer_id, raw.types.PeerChat):
-            chat_id = message.peer_id.chat_id if is_chat else message.from_id.chat_id
             return Chat._parse_chat_chat(client, chats[chat_id])
 
-        channel_id = message.peer_id.channel_id if is_chat else message.from_id.channel_id
-        return Chat._parse_channel_chat(client, chats[channel_id])
+        return Chat._parse_channel_chat(client, chats[chat_id])
 
     @staticmethod
     def _parse_dialog(client, peer, users: dict, chats: dict):
