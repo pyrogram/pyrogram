@@ -916,9 +916,6 @@ class Client(Methods, Scaffold):
                     while True:
                         chunk = r.bytes
 
-                        if not chunk:
-                            break
-
                         f.write(chunk)
 
                         offset += limit
@@ -938,6 +935,9 @@ class Client(Methods, Scaffold):
                             else:
                                 await self.loop.run_in_executor(self.executor, func)
 
+                        if len(chunk) < limit:
+                            break        
+                        
                         r = await session.send(
                             raw.functions.upload.GetFile(
                                 location=location,
