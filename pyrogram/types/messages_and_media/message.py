@@ -436,18 +436,25 @@ class Message(Object, Update):
         if isinstance(message, raw.types.MessageEmpty):
             return Message(message_id=message.id, empty=True, client=client)
 
-        user_id = utils.get_raw_peer_id(message.from_id) or utils.get_raw_peer_id(message.peer_id)
-        if user_id not in users:
-            try:
-                r = (await client.send(
-                    raw.functions.users.GetUsers(
-                        id=[await client.resolve_peer(user_id)]
+        from_id = utils.get_raw_peer_id(message.from_id)
+        peer_id = utils.get_raw_peer_id(message.peer_id)
+        user_id = from_id or peer_id
+
+        if isinstance(message.from_id, raw.types.PeerUser) and isinstance(message.peer_id, raw.types.PeerUser):
+            if from_id not in users or peer_id not in users:
+                try:
+                    r = await client.send(
+                        raw.functions.users.GetUsers(
+                            id=[
+                                await client.resolve_peer(from_id),
+                                await client.resolve_peer(peer_id)
+                            ]
+                        )
                     )
-                ))[0]
-            except PeerIdInvalid:
-                pass
-            else:
-                users[r.id] = r
+                except PeerIdInvalid:
+                    pass
+                else:
+                    users.update({i.id: i for i in r})
 
         if isinstance(message, raw.types.MessageService):
             action = message.action
