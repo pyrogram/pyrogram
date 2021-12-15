@@ -26,6 +26,8 @@ from pyrogram.raw.core import Message, Long
 from . import aes
 from ..session.internals import MsgId
 
+STORED_MSG_IDS_MAX_SIZE = 1000 * 2
+
 
 def kdf(auth_key: bytes, msg_key: bytes, outgoing: bool) -> tuple:
     # https://core.telegram.org/mtproto/description#defining-aes-key-and-initialization-vector
@@ -97,8 +99,8 @@ def unpack(
     # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
     assert message.msg_id % 2 != 0
 
-    if len(stored_msg_ids) > 200:
-        stored_msg_ids = stored_msg_ids[50:]
+    if len(stored_msg_ids) > STORED_MSG_IDS_MAX_SIZE:
+        del stored_msg_ids[:STORED_MSG_IDS_MAX_SIZE // 2]
 
     if stored_msg_ids:
         # Ignored message: msg_id is lower than all of the stored values
