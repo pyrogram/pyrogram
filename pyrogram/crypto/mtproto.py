@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import bisect
 from hashlib import sha256
 from io import BytesIO
 from os import urandom
@@ -118,6 +119,6 @@ def unpack(
         if time_diff < -300:
             return None
 
-    stored_msg_ids.append(message.msg_id)
+    bisect.insort(stored_msg_ids, message.msg_id)
 
     return message
