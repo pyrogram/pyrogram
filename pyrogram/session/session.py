@@ -221,7 +221,7 @@ class Session:
 
     async def handle_packet(self, packet):
         try:
-            data, ok = await self.loop.run_in_executor(
+            data = await self.loop.run_in_executor(
                 pyrogram.crypto_executor,
                 mtproto.unpack,
                 BytesIO(packet),
@@ -231,10 +231,6 @@ class Session:
                 self.stored_msg_ids
             )
         except AssertionError:
-            self.connection.close()
-            return
-
-        if not ok:
             self.connection.close()
             return
 

@@ -20,7 +20,7 @@ import bisect
 from hashlib import sha256
 from io import BytesIO
 from os import urandom
-from typing import List, Tuple
+from typing import List
 
 from pyrogram.raw.core import Message, Long
 from . import aes
@@ -60,8 +60,8 @@ def unpack(
     auth_key: bytes,
     auth_key_id: bytes,
     stored_msg_ids: List[int]
-) -> Tuple[Message, bool]:
-    assert b.read(8) == auth_key_id, b.getvalue()
+) -> Message:
+    assert b.read(8) == auth_key_id
 
     msg_key = b.read(16)
     aes_key, aes_iv = kdf(auth_key, msg_key, False)
@@ -105,22 +105,22 @@ def unpack(
     if stored_msg_ids:
         # Ignored message: msg_id is lower than all of the stored values
         if message.msg_id < stored_msg_ids[0]:
-            return message, False
+            assert False
 
         # Ignored message: msg_id is equal to any of the stored values
         if message.msg_id in stored_msg_ids:
-            return message, False
+            assert False
 
         time_diff = (message.msg_id - MsgId()) / 2 ** 32
 
         # Ignored message: msg_id belongs over 30 seconds in the future
         if time_diff > 30:
-            return message, False
+            assert False
 
         # Ignored message: msg_id belongs over 300 seconds in the past
         if time_diff < -300:
-            return message, False
+            assert False
 
     bisect.insort(stored_msg_ids, message.msg_id)
 
-    return message, True
+    return message
