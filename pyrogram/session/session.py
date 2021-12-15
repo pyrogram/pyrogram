@@ -102,6 +102,8 @@ class Session:
 
         self.results = {}
 
+        self.stored_msg_ids = []
+
         self.ping_task = None
         self.ping_task_event = asyncio.Event()
 
@@ -224,8 +226,12 @@ class Session:
             BytesIO(packet),
             self.session_id,
             self.auth_key,
-            self.auth_key_id
+            self.auth_key_id,
+            self.stored_msg_ids
         )
+
+        if data is None:
+            return
 
         messages = (
             data.body.messages
