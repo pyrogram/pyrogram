@@ -106,21 +106,21 @@ def unpack(
     if stored_msg_ids:
         # Ignored message: msg_id is lower than all of the stored values
         if message.msg_id < stored_msg_ids[0]:
-            SecurityCheckMismatch.check(False)
+            raise SecurityCheckMismatch
 
         # Ignored message: msg_id is equal to any of the stored values
         if message.msg_id in stored_msg_ids:
-            SecurityCheckMismatch.check(False)
+            raise SecurityCheckMismatch
 
         time_diff = (message.msg_id - MsgId()) / 2 ** 32
 
         # Ignored message: msg_id belongs over 30 seconds in the future
         if time_diff > 30:
-            SecurityCheckMismatch.check(False)
+            raise SecurityCheckMismatch
 
         # Ignored message: msg_id belongs over 300 seconds in the past
         if time_diff < -300:
-            SecurityCheckMismatch.check(False)
+            raise SecurityCheckMismatch
 
     bisect.insort(stored_msg_ids, message.msg_id)
 
