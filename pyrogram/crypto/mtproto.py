@@ -22,6 +22,7 @@ from io import BytesIO
 from os import urandom
 from typing import List
 
+from pyrogram.errors import SecurityCheckMismatch
 from pyrogram.raw.core import Message, Long
 from . import aes
 from ..session.internals import MsgId
@@ -61,7 +62,7 @@ def unpack(
     auth_key_id: bytes,
     stored_msg_ids: List[int]
 ) -> Message:
-    assert b.read(8) == auth_key_id
+    SecurityCheckMismatch.check(b.read(8) == auth_key_id)
 
     msg_key = b.read(16)
     aes_key, aes_iv = kdf(auth_key, msg_key, False)
@@ -69,7 +70,7 @@ def unpack(
     data.read(8)  # Salt
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-session-id
-    assert data.read(8) == session_id
+    SecurityCheckMismatch.check(data.read(8) == session_id)
 
     try:
         message = Message.read(data)
@@ -87,17 +88,17 @@ def unpack(
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-sha256-hash-value-of-msg-key
     # 96 = 88 + 8 (incoming message)
-    assert msg_key == sha256(auth_key[96:96 + 32] + data.getvalue()).digest()[8:24]
+    SecurityCheckMismatch.check(msg_key == sha256(auth_key[96:96 + 32] + data.getvalue()).digest()[8:24])
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-message-length
     data.seek(32)  # Get to the payload, skip salt (8) + session_id (8) + msg_id (8) + seq_no (4) + length (4)
     payload = data.read()
     padding = payload[message.length:]
-    assert 12 <= len(padding) <= 1024
-    assert len(payload) % 4 == 0
+    SecurityCheckMismatch.check(12 <= len(padding) <= 1024)
+    SecurityCheckMismatch.check(len(payload) % 4 == 0)
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
-    assert message.msg_id % 2 != 0
+    SecurityCheckMismatch.check(message.msg_id % 2 != 0)
 
     if len(stored_msg_ids) > STORED_MSG_IDS_MAX_SIZE:
         del stored_msg_ids[:STORED_MSG_IDS_MAX_SIZE // 2]
@@ -105,21 +106,21 @@ def unpack(
     if stored_msg_ids:
         # Ignored message: msg_id is lower than all of the stored values
         if message.msg_id < stored_msg_ids[0]:
-            assert False
+            SecurityCheckMismatch.check(False)
 
         # Ignored message: msg_id is equal to any of the stored values
         if message.msg_id in stored_msg_ids:
-            assert False
+            SecurityCheckMismatch.check(False)
 
         time_diff = (message.msg_id - MsgId()) / 2 ** 32
 
         # Ignored message: msg_id belongs over 30 seconds in the future
         if time_diff > 30:
-            assert False
+            SecurityCheckMismatch.check(False)
 
         # Ignored message: msg_id belongs over 300 seconds in the past
         if time_diff < -300:
-            assert False
+            SecurityCheckMismatch.check(False)
 
     bisect.insort(stored_msg_ids, message.msg_id)
 

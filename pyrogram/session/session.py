@@ -29,7 +29,10 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable
+from pyrogram.errors import (
+    RPCError, InternalServerError, AuthKeyDuplicated, FloodWait,
+    ServiceUnavailable, SecurityCheckMismatch
+)
 from pyrogram.raw.all import layer
 from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
 from .internals import MsgId, MsgFactory
@@ -230,7 +233,7 @@ class Session:
                 self.auth_key_id,
                 self.stored_msg_ids
             )
-        except AssertionError:
+        except SecurityCheckMismatch:
             self.connection.close()
             return
 
