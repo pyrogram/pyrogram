@@ -989,3 +989,22 @@ class Chat(Object):
         """
 
         return await self._client.mark_chat_unread(self.id)
+
+    async def set_history_ttl(self, period: int) -> "types.Message":
+        """Bound method *set_history_ttl* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_history_ttl(chat_id, 604800)
+
+        Example:
+            .. code-block:: python
+
+                chat.set_history_ttl(604800)
+        
+        Returns:
+            :obj:`~pyrogram.types.Message`: On success, the generated service message is returned.
+        """
+        return await self._client.set_chat_history_ttl(self.id, period=period)

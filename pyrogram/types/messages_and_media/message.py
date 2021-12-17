@@ -111,7 +111,7 @@ class Message(Object, Update):
             A service message has one and only one of these fields set: new_chat_members, left_chat_member,
             new_chat_title, new_chat_photo, delete_chat_photo, group_chat_created, channel_chat_created,
             migrate_to_chat_id, migrate_from_chat_id, pinned_message, game_high_score, voice_chat_started,
-            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited.
+            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited, chat_history_ttl.
 
         media (``str``, *optional*):
             The message is a media message. This field will contain the name of the media message.
@@ -352,6 +352,7 @@ class Message(Object, Update):
         voice_chat_started: "types.VoiceChatStarted" = None,
         voice_chat_ended: "types.VoiceChatEnded" = None,
         voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
+        chat_history_ttl: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -423,6 +424,7 @@ class Message(Object, Update):
         self.voice_chat_started = voice_chat_started
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
+        self.chat_history_ttl = chat_history_ttl
 
     @staticmethod
     async def _parse(
@@ -472,6 +474,7 @@ class Message(Object, Update):
             voice_chat_started = None
             voice_chat_ended = None
             voice_chat_members_invited = None
+            chat_history_ttl = None
 
             service_type = None
 
@@ -518,6 +521,9 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
                 voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
                 service_type = "voice_chat_members_invited"
+            elif isinstance(action, raw.types.MessageActionSetMessagesTTL):
+                chat_history_ttl = action.period
+                service_type = "chat_history_ttl"
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -542,6 +548,7 @@ class Message(Object, Update):
                 voice_chat_started=voice_chat_started,
                 voice_chat_ended=voice_chat_ended,
                 voice_chat_members_invited=voice_chat_members_invited,
+                chat_history_ttl=chat_history_ttl,
                 client=client
                 # TODO: supergroup_chat_created
             )
