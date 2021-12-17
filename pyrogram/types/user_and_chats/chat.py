@@ -221,7 +221,7 @@ class Chat(Object):
 
         return Chat(
             id=peer_id,
-            type="supergroup" if channel.megagroup else "channel",
+            type="supergroup" if getattr(channel, "megagroup", None) else "channel",
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
