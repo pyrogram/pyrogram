@@ -52,6 +52,7 @@ CHANNEL_TOO_LARGE	The channel is too large to be deleted; this error is issued w
 CHAT_ABOUT_NOT_MODIFIED	The chat about text was not modified because you tried to edit it using the same content
 CHAT_ABOUT_TOO_LONG	The chat about text is too long
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
+CHAT_FORWARD_RESTRICTED The chat restricts forwarding content
 CHAT_ID_EMPTY	The provided chat id is empty
 CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
 CHAT_INVALID	The chat is invalid
