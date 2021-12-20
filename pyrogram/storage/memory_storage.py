@@ -36,7 +36,8 @@ class MemoryStorage(SQLiteStorage):
 
         if self.name != ":memory:":
             dc_id, test_mode, auth_key, user_id, is_bot = struct.unpack(
-                self.SESSION_STRING_FORMAT,
+                (self.SESSION_STRING_FORMAT if len(self.name) == MemoryStorage.SESSION_STRING_SIZE else
+                 self.SESSION_STRING_FORMAT_64),
                 base64.urlsafe_b64decode(
                     self.name + "=" * (-len(self.name) % 4)
                 )
