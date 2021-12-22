@@ -253,6 +253,8 @@ def pyrogram_api():
             get_chat_admin_invite_links_count
             get_chat_admins_with_invite_links
             delete_chat_admin_invite_links
+            approve_chat_join_request
+            decline_chat_join_request
         """,
         contacts="""
         Contacts
