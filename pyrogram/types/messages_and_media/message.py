@@ -128,6 +128,9 @@ class Message(Object, Update):
             Signature of the post author for messages in channels, or the custom title of an anonymous group
             administrator.
 
+        has_protected_content (``str``, *optional*):
+            True, if the message can't be forwarded.
+
         text (``str``, *optional*):
             For text messages, the actual UTF-8 text of the message, 0-4096 characters.
             If the message contains entities (bold, italic, ...) you can access *text.markdown* or
@@ -312,6 +315,7 @@ class Message(Object, Update):
         edit_date: int = None,
         media_group_id: str = None,
         author_signature: str = None,
+        has_protected_content: bool = None,
         text: Str = None,
         entities: List["types.MessageEntity"] = None,
         caption_entities: List["types.MessageEntity"] = None,
@@ -382,6 +386,7 @@ class Message(Object, Update):
         self.edit_date = edit_date
         self.media_group_id = media_group_id
         self.author_signature = author_signature
+        self.has_protected_content = has_protected_content
         self.text = text
         self.entities = entities
         self.caption_entities = caption_entities
@@ -743,6 +748,7 @@ class Message(Object, Update):
                     else None
                 ),
                 author_signature=message.post_author,
+                has_protected_content=message.noforwards,
                 forward_from=forward_from,
                 forward_sender_name=forward_sender_name,
                 forward_from_chat=forward_from_chat,

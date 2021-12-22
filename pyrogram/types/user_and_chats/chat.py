@@ -83,6 +83,9 @@ class Chat(Object):
             It is accurate only in case the owner has set the chat photo, otherwise the dc_id will be the one assigned
             to the administrator who set the current chat photo.
 
+        has_protected_content (``bool``, *optional*):
+            True, if messages from the chat can't be forwarded to other chats.
+
         invite_link (``str``, *optional*):
             Chat invite link, for groups, supergroups and channels.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
@@ -139,6 +142,7 @@ class Chat(Object):
         bio: str = None,
         description: str = None,
         dc_id: int = None,
+        has_protected_content: bool = None,
         invite_link: str = None,
         pinned_message=None,
         sticker_set_name: str = None,
@@ -167,6 +171,7 @@ class Chat(Object):
         self.bio = bio
         self.description = description
         self.dc_id = dc_id
+        self.has_protected_content = has_protected_content
         self.invite_link = invite_link
         self.pinned_message = pinned_message
         self.sticker_set_name = sticker_set_name
@@ -211,6 +216,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
             dc_id=getattr(getattr(chat, "photo", None), "dc_id", None),
+            has_protected_content=chat.noforwards,
             client=client
         )
 
@@ -234,6 +240,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),
             dc_id=getattr(getattr(channel, "photo", None), "dc_id", None),
+            has_protected_content=channel.noforwards,
             client=client
         )
 
