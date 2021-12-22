@@ -29,6 +29,7 @@ from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
 from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
+from .get_discussion_message import GetDiscussionMessage
 from .get_history import GetHistory
 from .get_history_count import GetHistoryCount
 from .get_media_group import GetMediaGroup
@@ -104,6 +105,7 @@ class Messages(
     CopyMessage,
     CopyMediaGroup,
     SearchMessagesCount,
-    SearchGlobalCount
+    SearchGlobalCount,
+    GetDiscussionMessage
 ):
     pass

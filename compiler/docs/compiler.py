@@ -182,6 +182,7 @@ def pyrogram_api():
             search_messages
             search_global
             download_media
+            get_discussion_message
         """,
         chats="""
         Chats
