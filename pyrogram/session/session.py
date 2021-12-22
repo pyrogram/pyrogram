@@ -29,7 +29,9 @@ from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable
+from pyrogram.errors import (
+    RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable, BadMsgNotification
+)
 from pyrogram.raw.all import layer
 from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
 from .internals import MsgId, MsgFactory
@@ -44,7 +46,6 @@ class Result:
 
 
 class Session:
-    INITIAL_SALT = 0x616e67656c696361
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 10
@@ -53,20 +54,6 @@ class Session:
     PING_INTERVAL = 5
 
     notice_displayed = False
-
-    BAD_MSG_DESCRIPTION = {
-        16: "[16] msg_id too low, the client time has to be synchronized",
-        17: "[17] msg_id too high, the client time has to be synchronized",
-        18: "[18] incorrect two lower order msg_id bits, the server expects client message msg_id to be divisible by 4",
-        19: "[19] container msg_id is the same as msg_id of a previously received message",
-        20: "[20] message too old, it cannot be verified by the server",
-        32: "[32] msg_seqno too low",
-        33: "[33] msg_seqno too high",
-        34: "[34] an even msg_seqno expected, but odd received",
-        35: "[35] odd msg_seqno expected, but even received",
-        48: "[48] incorrect server salt",
-        64: "[64] invalid container"
-    }
 
     def __init__(
         self,
@@ -129,7 +116,7 @@ class Session:
 
                 self.network_task = self.loop.create_task(self.network_worker())
 
-                self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
+                self.current_salt = FutureSalt(0, 0, 0)
                 self.current_salt = FutureSalt(
                     0, 0,
                     (await self._send(
@@ -243,9 +230,7 @@ class Session:
                 MsgId.set_server_time(msg.msg_id / (2 ** 32))
 
             if msg.seq_no % 2 != 0:
-                if msg.msg_id in self.pending_acks:
-                    continue
-                else:
+                if msg.msg_id not in self.pending_acks:
                     self.pending_acks.add(msg.msg_id)
 
             if isinstance(msg.body, (raw.types.MsgDetailedInfo, raw.types.MsgNewDetailedInfo)):
@@ -395,10 +380,7 @@ class Session:
 
                 RPCError.raise_it(result, type(data))
             elif isinstance(result, raw.types.BadMsgNotification):
-                raise Exception(self.BAD_MSG_DESCRIPTION.get(
-                    result.error_code,
-                    f"Error code {result.error_code}"
-                ))
+                raise BadMsgNotification(result.error_code)
             else:
                 return result
 
