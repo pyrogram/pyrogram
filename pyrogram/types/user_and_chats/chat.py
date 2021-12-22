@@ -479,18 +479,18 @@ class Chat(Object):
             photo=photo
         )
 
-    async def kick_member(
+    async def ban_member(
         self,
         user_id: Union[int, str],
         until_date: int = 0
     ) -> Union["types.Message", bool]:
-        """Bound method *kick_member* of :obj:`~pyrogram.types.Chat`.
+        """Bound method *ban_member* of :obj:`~pyrogram.types.Chat`.
 
         Use as a shortcut for:
 
         .. code-block:: python
 
-            client.kick_chat_member(
+            client.ban_chat_member(
                 chat_id=chat_id,
                 user_id=user_id
             )
@@ -498,7 +498,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.kick_member(123456789)
+                chat.ban_member(123456789)
 
         Note:
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins" setting is
@@ -523,7 +523,7 @@ class Chat(Object):
             RPCError: In case of a Telegram RPC error.
         """
 
-        return await self._client.kick_chat_member(
+        return await self._client.ban_chat_member(
             chat_id=self.id,
             user_id=user_id,
             until_date=until_date
@@ -840,7 +840,7 @@ class Chat(Object):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
                 and channels. It can be any of the followings:
                 *"all"* - all kind of members,
-                *"kicked"* - kicked (banned) members only,
+                *"banned"* - banned members only,
                 *"restricted"* - restricted members only,
                 *"bots"* - bots only,
                 *"recent"* - recent members only,
@@ -851,7 +851,7 @@ class Chat(Object):
         .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
             on channels.
 
-        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
 
         Example:
             .. code-block:: python
@@ -903,7 +903,7 @@ class Chat(Object):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
                 and channels. It can be any of the followings:
                 *"all"* - all kind of members,
-                *"kicked"* - kicked (banned) members only,
+                *"banned"* - banned members only,
                 *"restricted"* - restricted members only,
                 *"bots"* - bots only,
                 *"recent"* - recent members only,
@@ -914,7 +914,7 @@ class Chat(Object):
         .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
             on channels.
 
-        .. [2] A query string is applicable only for *"all"*, *"kicked"* and *"restricted"* filters only.
+        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
 
         Example:
             .. code-block:: python

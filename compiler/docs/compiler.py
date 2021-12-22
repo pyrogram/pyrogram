@@ -187,7 +187,7 @@ def pyrogram_api():
         Chats
             join_chat
             leave_chat
-            kick_chat_member
+            ban_chat_member
             unban_chat_member
             restrict_chat_member
             promote_chat_member
@@ -501,7 +501,7 @@ def pyrogram_api():
             Chat.set_title
             Chat.set_description
             Chat.set_photo
-            Chat.kick_member
+            Chat.ban_member
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
