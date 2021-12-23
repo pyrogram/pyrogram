@@ -224,6 +224,8 @@ def pyrogram_api():
             mark_chat_unread
             get_chat_event_log
             get_chat_online_count
+            get_send_as_chats
+            set_send_as_chat
         """,
         users="""
         Users

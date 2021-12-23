@@ -35,6 +35,7 @@ from .get_chat_online_count import GetChatOnlineCount
 from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
 from .get_nearby_chats import GetNearbyChats
+from .get_send_as_chats import GetSendAsChats
 from .iter_chat_members import IterChatMembers
 from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
@@ -48,6 +49,7 @@ from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
 from .set_chat_title import SetChatTitle
+from .set_send_as_chat import SetSendAsChat
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
@@ -94,6 +96,8 @@ class Chats(
     UnpinAllChatMessages,
     MarkChatUnread,
     GetChatEventLog,
-    GetChatOnlineCount
+    GetChatOnlineCount,
+    GetSendAsChats,
+    SetSendAsChat
 ):
     pass

@@ -120,6 +120,10 @@ class Chat(Object):
         linked_chat (:obj:`~pyrogram.types.Chat`, *optional*):
             The linked discussion group (in case of channels) or the linked channel (in case of supergroups).
             Returned only in :meth:`~pyrogram.Client.get_chat`.
+
+        send_as_chat (:obj:`~pyrogram.types.Chat`, *optional*):
+            The default "send_as" chat.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
     """
 
     def __init__(
@@ -151,7 +155,8 @@ class Chat(Object):
         restrictions: List["types.Restriction"] = None,
         permissions: "types.ChatPermissions" = None,
         distance: int = None,
-        linked_chat: "types.Chat" = None
+        linked_chat: "types.Chat" = None,
+        send_as_chat: "types.Chat" = None
     ):
         super().__init__(client)
 
@@ -181,6 +186,7 @@ class Chat(Object):
         self.permissions = permissions
         self.distance = distance
         self.linked_chat = linked_chat
+        self.send_as_chat = send_as_chat
 
     @staticmethod
     def _parse_user_chat(client, user: raw.types.User) -> "Chat":
@@ -275,43 +281,51 @@ class Chat(Object):
 
     @staticmethod
     async def _parse_full(client, chat_full: Union[raw.types.messages.ChatFull, raw.types.users.UserFull]) -> "Chat":
-        if isinstance(chat_full, raw.types.users.UserFull):
-            parsed_chat = Chat._parse_user_chat(client, chat_full.users[0])
-            parsed_chat.bio = chat_full.full_user.about
+        users = {u.id: u for u in chat_full.users}
+        chats = {c.id: c for c in chat_full.chats}
 
-            if chat_full.full_user.pinned_msg_id:
+        if isinstance(chat_full, raw.types.users.UserFull):
+            full_user = chat_full.full_user
+
+            parsed_chat = Chat._parse_user_chat(client, users[full_user.id])
+            parsed_chat.bio = full_user.about
+
+            if full_user.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
                     parsed_chat.id,
-                    message_ids=chat_full.full_user.pinned_msg_id
+                    message_ids=full_user.pinned_msg_id
                 )
         else:
             full_chat = chat_full.full_chat
-            chat = None
-            linked_chat = None
-
-            for c in chat_full.chats:
-                if full_chat.id == c.id:
-                    chat = c
-
-                if isinstance(full_chat, raw.types.ChannelFull):
-                    if full_chat.linked_chat_id == c.id:
-                        linked_chat = c
+            chat_raw = chats[full_chat.id]
 
             if isinstance(full_chat, raw.types.ChatFull):
-                parsed_chat = Chat._parse_chat_chat(client, chat)
+                parsed_chat = Chat._parse_chat_chat(client, chat_raw)
                 parsed_chat.description = full_chat.about or None
 
                 if isinstance(full_chat.participants, raw.types.ChatParticipants):
                     parsed_chat.members_count = len(full_chat.participants.participants)
             else:
-                parsed_chat = Chat._parse_channel_chat(client, chat)
+                parsed_chat = Chat._parse_channel_chat(client, chat_raw)
                 parsed_chat.members_count = full_chat.participants_count
                 parsed_chat.description = full_chat.about or None
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
-                if linked_chat:
-                    parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat)
+
+                linked_chat_raw = chats.get(full_chat.linked_chat_id, None)
+
+                if linked_chat_raw:
+                    parsed_chat.linked_chat = Chat._parse_channel_chat(client, linked_chat_raw)
+
+                default_send_as = full_chat.default_send_as
+
+                if isinstance(default_send_as, raw.types.PeerUser):
+                    send_as_raw = users[default_send_as.user_id]
+                else:
+                    send_as_raw = chats[default_send_as.channel_id]
+
+                parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
