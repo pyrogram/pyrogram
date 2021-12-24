@@ -22,6 +22,7 @@ from .chat_event import ChatEvent
 from .chat_event_filter import ChatEventFilter
 from .chat_invite_link import ChatInviteLink
 from .chat_member import ChatMember
+from .chat_member_join_request import ChatMemberJoinRequest
 from .chat_member_updated import ChatMemberUpdated
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
@@ -53,5 +54,6 @@ __all__ = [
     "VoiceChatEnded",
     "VoiceChatMembersInvited",
     "ChatMemberUpdated",
+    "ChatMemberJoinRequest",
     "VoiceChatScheduled"
 ]
