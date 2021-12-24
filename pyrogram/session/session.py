@@ -30,7 +30,8 @@ from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
 from pyrogram.errors import (
-    RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable, BadMsgNotification
+    RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable, BadMsgNotification,
+    SecurityCheckMismatch
 )
 from pyrogram.raw.all import layer
 from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
@@ -88,6 +89,8 @@ class Session:
         self.pending_acks = set()
 
         self.results = {}
+
+        self.stored_msg_ids = []
 
         self.ping_task = None
         self.ping_task_event = asyncio.Event()
@@ -205,14 +208,19 @@ class Session:
         await self.start()
 
     async def handle_packet(self, packet):
-        data = await self.loop.run_in_executor(
-            pyrogram.crypto_executor,
-            mtproto.unpack,
-            BytesIO(packet),
-            self.session_id,
-            self.auth_key,
-            self.auth_key_id
-        )
+        try:
+            data = await self.loop.run_in_executor(
+                pyrogram.crypto_executor,
+                mtproto.unpack,
+                BytesIO(packet),
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id,
+                self.stored_msg_ids
+            )
+        except SecurityCheckMismatch:
+            self.connection.close()
+            return
 
         messages = (
             data.body.messages

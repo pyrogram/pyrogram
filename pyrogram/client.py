@@ -35,6 +35,7 @@ import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.crypto import aes
+from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.errors import (
     SessionPasswordNeeded,
     VolumeLocNotFound, ChannelPrivate,
@@ -1009,7 +1010,7 @@ class Client(Methods, Scaffold):
                             # https://core.telegram.org/cdn#verifying-files
                             for i, h in enumerate(hashes):
                                 cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
-                                assert h.hash == sha256(cdn_chunk).digest(), f"Invalid CDN hash part {i}"
+                                CDNFileHashMismatch.check(h.hash == sha256(cdn_chunk).digest())
 
                             f.write(decrypted_chunk)
 
