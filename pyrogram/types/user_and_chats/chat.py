@@ -1029,4 +1029,7 @@ class Chat(Object):
             ``bool``: On success, True is returned.
         """
 
-        return await self._client.toggle_no_forwards(self.id)
+        return await self._client.toggle_no_forwards(
+            self.id,
+            enabled=enabled
+        )
