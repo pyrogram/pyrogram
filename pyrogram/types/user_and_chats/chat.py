@@ -320,13 +320,13 @@ class Chat(Object):
 
                 default_send_as = full_chat.default_send_as
 
-                if isinstance(default_send_as, raw.types.PeerUser):
-                    send_as_raw = users[default_send_as.user_id]
+                if default_send_as:
+                    if isinstance(default_send_as, raw.types.PeerUser):
+                        send_as_raw = users[default_send_as.user_id]
+                    else:
+                        send_as_raw = chats[default_send_as.channel_id]
+    
                     parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
-                elif default_send_as:
-                    send_as_raw = chats[default_send_as.channel_id]
-                    parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
-
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
