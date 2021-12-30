@@ -61,6 +61,8 @@ class Parser(HTMLParser):
         elif tag == "pre":
             entity = raw.types.MessageEntityPre
             extra["language"] = ""
+        elif tag == "spoiler":
+            entity = raw.types.MessageEntitySpoiler
         elif tag == "a":
             url = attrs.get("href", "")
 
@@ -153,7 +155,7 @@ class HTML:
             start = entity.offset
             end = start + entity.length
 
-            if entity_type in ("bold", "italic", "underline", "strikethrough"):
+            if entity_type in ("bold", "italic", "underline", "strikethrough", "spoiler"):
                 start_tag = f"<{entity_type[0]}>"
                 end_tag = f"</{entity_type[0]}>"
             elif entity_type in ("code", "pre", "blockquote"):

@@ -28,6 +28,7 @@ BOLD_DELIM = "**"
 ITALIC_DELIM = "__"
 UNDERLINE_DELIM = "--"
 STRIKE_DELIM = "~~"
+SPOILER_DELIM = "##"
 CODE_DELIM = "`"
 PRE_DELIM = "```"
 
@@ -41,7 +42,8 @@ MARKDOWN_RE = re.compile(r"({d})|\[(.+?)\]\((.+?)\)".format(
                 STRIKE_DELIM,
                 UNDERLINE_DELIM,
                 ITALIC_DELIM,
-                BOLD_DELIM
+                BOLD_DELIM,
+                SPOILER_DELIM
             ]
         ]]
     )))
@@ -90,6 +92,8 @@ class Markdown:
                 tag = "code"
             elif delim == PRE_DELIM:
                 tag = "pre"
+            elif delim == SPOILER_DELIM:
+                tag = "spoiler"
             else:
                 continue
 
@@ -127,6 +131,8 @@ class Markdown:
                 start_tag = end_tag = CODE_DELIM
             elif entity_type in ("pre", "blockquote"):
                 start_tag = end_tag = PRE_DELIM
+            elif entity_type == "spoiler":
+                start_tag = end_tag = SPOILER_DELIM
             elif entity_type == "text_link":
                 url = entity.url
                 start_tag = "["
