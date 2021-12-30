@@ -284,6 +284,9 @@ class Message(Object, Update):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
             instructions to remove reply keyboard or to force a reply from the user.
 
+        reactions (List of :obj:`~pyrogram.types.Reaction`):
+            List of the reactions to this message.
+
         link (``str``, *property*):
             Generate a link to this message, only for groups and channels.
     """
@@ -361,7 +364,8 @@ class Message(Object, Update):
             "types.ReplyKeyboardMarkup",
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
-        ] = None
+        ] = None,
+        reactions: List["types.Reaction"] = None
     ):
         super().__init__(client)
 
@@ -428,6 +432,7 @@ class Message(Object, Update):
         self.voice_chat_started = voice_chat_started
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
+        self.reactions = reactions
 
     @staticmethod
     async def _parse(
@@ -721,6 +726,9 @@ class Message(Object, Update):
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
+            reactions = [types.Reaction(emoji=r.reaction, count=r.count, chosen=r.chosen)
+                         for r in message.reactions.results] if message.reactions else None
+
             parsed_message = Message(
                 message_id=message.id,
                 date=message.date,
@@ -780,6 +788,7 @@ class Message(Object, Update):
                 via_bot=types.User._parse(client, users.get(message.via_bot_id, None)),
                 outgoing=message.out,
                 reply_markup=reply_markup,
+                reactions=reactions,
                 client=client
             )
 
