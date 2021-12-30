@@ -249,7 +249,7 @@ RANDOM_ID_INVALID	The provided random ID is invalid
 RANDOM_LENGTH_INVALID	The random length is invalid
 RANGES_INVALID	Invalid range provided
 REACTION_EMPTY	The reaction provided is empty
-REACTION_INVALID	Invalid reaction provided (only emoji are allowed)
+REACTION_INVALID	Invalid reaction provided (only valid emoji are allowed)
 REFLECTOR_NOT_AVAILABLE	The call reflector is not available
 REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
 REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty
