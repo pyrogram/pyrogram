@@ -445,15 +445,16 @@ class Message(Object, Update):
         peer_id = utils.get_raw_peer_id(message.peer_id)
         user_id = from_id or peer_id
 
-        if isinstance(message.from_id, raw.types.PeerUser) and isinstance(message.peer_id, raw.types.PeerUser):
+        if isinstance(message.from_id, raw.types.PeerUser) or isinstance(message.peer_id, raw.types.PeerUser):
             if from_id not in users or peer_id not in users:
                 try:
+                    id = [await client.resolve_peer(peer_id)]
+                    if from_id:
+                        id += [await client.resolve_peer(from_id)]
+
                     r = await client.send(
                         raw.functions.users.GetUsers(
-                            id=[
-                                await client.resolve_peer(from_id),
-                                await client.resolve_peer(peer_id)
-                            ]
+                            id=id
                         )
                     )
                 except PeerIdInvalid:
