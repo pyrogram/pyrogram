@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2022 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -320,13 +320,12 @@ class Chat(Object):
 
                 default_send_as = full_chat.default_send_as
 
-                if default_send_as:
-                    if isinstance(default_send_as, raw.types.PeerUser):
-                        send_as_raw = users[default_send_as.user_id]
-                    else:
-                        send_as_raw = chats[default_send_as.channel_id]
-    
-                    parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
+                if isinstance(default_send_as, raw.types.PeerUser):
+                    send_as_raw = users[default_send_as.user_id]
+                else:
+                    send_as_raw = chats[default_send_as.channel_id]
+
+                parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
 
             if full_chat.pinned_msg_id:
                 parsed_chat.pinned_message = await client.get_messages(
