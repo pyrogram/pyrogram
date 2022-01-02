@@ -21,7 +21,7 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
-from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update, ChatMemberUpdated
 
 
 class Filter:
@@ -942,4 +942,60 @@ async def dan_filter(_, __, m: Message):
 
 
 dan = create(dan_filter)
+# endregion
+
+# region new_chat_members_update_filter
+async def join_chat_member_update_filter(_, __, m: ChatMemberUpdated):
+    if m.new_chat_member:
+        ncm = m.new_chat_member
+        ocm = m.old_chat_member
+        if ocm and ncm.status == 'restricted' and ocm.is_member is False:
+            return ncm.is_member
+        elif ncm.status in ['administrator', 'member', 'creator']:
+            return bool(not ocm or ocm.is_member is False)
+    return False
+
+
+join_chat_member_update = create(join_chat_member_update_filter)
+"""Filter ChatMemberUpdate for new chat members."""
+
+# endregion
+
+# region left_chat_member_update_filter
+async def left_chat_member_update_filter(_, __, m: ChatMemberUpdated):
+    ncm = m.new_chat_member
+    ocm = m.old_chat_member
+    if ncm and ocm and ncm.status in ['restricted', 'kicked']:
+        return bool(ocm.is_member is not False and not ncm.is_member)
+    return bool(not ncm and ocm.status not in ['restricted', 'kicked'])
+
+
+left_chat_member_update = create(left_chat_member_update_filter)
+"""Filter ChatMemberUpdate for members that left the chat."""
+
+# endregion
+
+# region admin_title_changed_filter
+async def admin_title_changed_filter(_, __, m: ChatMemberUpdated):
+    if m.new_chat_member and m.old_chat_member:
+        return m.old_chat_member.title != m.new_chat_member.title
+    return False
+
+
+admin_title_changed = create(admin_title_changed_filter)
+"""Filter ChatMemberUpdate for admin and creator that changed the title."""
+
+# endregion
+
+
+# region anonymous_admin_filter
+async def anonymous_admin_filter(_, __, m: ChatMemberUpdated):
+    if m.new_chat_member and m.old_chat_member:
+        return bool(m.new_chat_member.is_anonymous) ^ \
+               bool(m.old_chat_member.is_anonymous)
+
+    
+anonymous_admin_changed = create(anonymous_admin_filter)
+"""Filter ChatMemberUpdate If admin has become anonymous or non-anonymous ."""
+
 # endregion
