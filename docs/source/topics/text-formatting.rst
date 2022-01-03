@@ -64,7 +64,7 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
 
     ~~strike~~
 
-    ##spoiler##
+    ||spoiler||
 
     [text URL](https://docs.pyrogram.org/)
 
@@ -89,7 +89,7 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
             "__italic__, "
             "--underline--, "
             "~~strike~~, "
-            "##spoiler##, "
+            "||spoiler||, "
             "[mention](tg://user?id=23122162), "
             "[URL](https://pyrogram.org), "
             "`code`, "

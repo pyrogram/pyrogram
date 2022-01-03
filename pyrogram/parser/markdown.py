@@ -28,7 +28,7 @@ BOLD_DELIM = "**"
 ITALIC_DELIM = "__"
 UNDERLINE_DELIM = "--"
 STRIKE_DELIM = "~~"
-SPOILER_DELIM = "##"
+SPOILER_DELIM = "||"
 CODE_DELIM = "`"
 PRE_DELIM = "```"
 
