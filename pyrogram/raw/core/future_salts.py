@@ -45,3 +45,17 @@ class FutureSalts(TLObject):
         salts = [FutureSalt.read(data) for _ in range(count)]
 
         return FutureSalts(req_msg_id, now, salts)
+
+    def write(self, *args: Any) -> bytes:
+        b = BytesIO()
+
+        b.write(Long(self.req_msg_id))
+        b.write(Int(self.now))
+
+        count = len(self.salts)
+        b.write(Int(count))
+
+        for salt in self.salts:
+            b.write(salt.write())
+
+        return b.getvalue()

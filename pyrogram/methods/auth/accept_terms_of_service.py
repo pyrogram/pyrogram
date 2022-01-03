@@ -36,6 +36,4 @@ class AcceptTermsOfService(Scaffold):
             )
         )
 
-        assert r
-
-        return True
+        return bool(r)

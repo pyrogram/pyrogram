@@ -19,35 +19,44 @@
 from typing import Union
 
 from pyrogram import raw
+from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteUserHistory(Scaffold):
-    async def delete_user_history(
+class GetDiscussionMessage(Scaffold):
+    async def get_discussion_message(
         self,
         chat_id: Union[int, str],
-        user_id: Union[int, str],
-    ) -> bool:
-        """Delete all messages sent by a certain user in a supergroup.
+        message_id: int,
+    ) -> "types.Message":
+        """Get the discussion message from the linked discussion group of a channel post.
+
+        Reply to the returned message to leave a comment on the linked channel post.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            user_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the user whose messages will be deleted.
+            message_id (``int``):
+                Message id.
 
-        Returns:
-            ``bool``: True on success, False otherwise.
+        Example:
+            .. code-block:: python
+
+                # Get the discussion message
+                m = app.get_discussion_message(channel_id, message_id)
+
+                # Comment to the post by replying
+                m.reply("comment")
         """
-
         r = await self.send(
-            raw.functions.channels.DeleteParticipantHistory(
-                channel=await self.resolve_peer(chat_id),
-                participant=await self.resolve_peer(user_id)
+            raw.functions.messages.GetDiscussionMessage(
+                peer=await self.resolve_peer(chat_id),
+                msg_id=message_id
             )
         )
 
-        # Deleting messages you don't have right onto won't raise any error.
-        # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)
+        users = {u.id: u for u in r.users}
+        chats = {c.id: c for c in r.chats}
+
+        return await types.Message._parse(self, r.messages[0], users, chats)

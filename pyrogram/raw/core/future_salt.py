@@ -42,3 +42,12 @@ class FutureSalt(TLObject):
         salt = Long.read(data)
 
         return FutureSalt(valid_since, valid_until, salt)
+
+    def write(self, *args: Any) -> bytes:
+        b = BytesIO()
+
+        b.write(Int(self.valid_since))
+        b.write(Int(self.valid_until))
+        b.write(Long(self.salt))
+
+        return b.getvalue()

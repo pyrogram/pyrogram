@@ -43,6 +43,9 @@ class InlineKeyboardButton(Object):
              An HTTP URL used to automatically authorize the user. Can be used as a replacement for
              the `Telegram Login Widget <https://core.telegram.org/widgets/login>`_.
 
+        user_id (``id``, *optional*):
+            User id, for links to the user profile.
+
         switch_inline_query (``str``, *optional*):
             If set, pressing the button will prompt the user to select one of their chats, open that chat and insert
             the bot's username and the specified inline query in the input field. Can be empty, in which case just
@@ -68,6 +71,7 @@ class InlineKeyboardButton(Object):
         callback_data: Union[str, bytes] = None,
         url: str = None,
         login_url: "types.LoginUrl" = None,
+        user_id: int = None,
         switch_inline_query: str = None,
         switch_inline_query_current_chat: str = None,
         callback_game: "types.CallbackGame" = None
@@ -75,9 +79,10 @@ class InlineKeyboardButton(Object):
         super().__init__()
 
         self.text = str(text)
+        self.callback_data = callback_data
         self.url = url
         self.login_url = login_url
-        self.callback_data = callback_data
+        self.user_id = user_id
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
@@ -108,6 +113,12 @@ class InlineKeyboardButton(Object):
             return InlineKeyboardButton(
                 text=b.text,
                 login_url=types.LoginUrl.read(b)
+            )
+
+        if isinstance(b, raw.types.KeyboardButtonUserProfile):
+            return InlineKeyboardButton(
+                text=b.text,
+                user_id=b.user_id
             )
 
         if isinstance(b, raw.types.KeyboardButtonSwitchInline):
@@ -147,7 +158,13 @@ class InlineKeyboardButton(Object):
         if self.login_url is not None:
             return self.login_url.write(
                 text=self.text,
-                bot=await client.resolve_peer(self.login_url.bot_username)
+                bot=await client.resolve_peer(self.login_url.bot_username or "self")
+            )
+
+        if self.user_id is not None:
+            return raw.types.InputKeyboardButtonUserProfile(
+                text=self.text,
+                user_id=await client.resolve_peer(self.user_id)
             )
 
         if self.switch_inline_query is not None:

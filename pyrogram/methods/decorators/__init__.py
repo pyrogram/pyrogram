@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .on_callback_query import OnCallbackQuery
+from .on_chat_join_request import OnChatJoinRequest
 from .on_chat_member_updated import OnChatMemberUpdated
 from .on_chosen_inline_result import OnChosenInlineResult
 from .on_client_status import OnClientStatus
@@ -38,6 +39,7 @@ class Decorators(
     OnInlineQuery,
     OnPoll,
     OnChosenInlineResult,
-    OnChatMemberUpdated
+    OnChatMemberUpdated,
+    OnChatJoinRequest
 ):
     pass

@@ -22,32 +22,34 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteUserHistory(Scaffold):
-    async def delete_user_history(
+class DeclineChatJoinRequest(Scaffold):
+    async def decline_chat_join_request(
         self,
         chat_id: Union[int, str],
-        user_id: Union[int, str],
+        user_id: int,
     ) -> bool:
-        """Delete all messages sent by a certain user in a supergroup.
+        """Decline a chat join request.
+
+        The bot must be an administrator in the chat for this to work and must have the *can_invite_users* administrator
+        right.
 
         Parameters:
             chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
+                Unique identifier for the target chat or username of the target channel/supergroup
+                (in the format @username).
 
-            user_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the user whose messages will be deleted.
+            user_id (``int``):
+                Unique identifier of the target user.
 
         Returns:
-            ``bool``: True on success, False otherwise.
+            ``bool``: True on success.
         """
-
-        r = await self.send(
-            raw.functions.channels.DeleteParticipantHistory(
-                channel=await self.resolve_peer(chat_id),
-                participant=await self.resolve_peer(user_id)
+        await self.send(
+            raw.functions.messages.HideChatJoinRequest(
+                peer=await self.resolve_peer(chat_id),
+                user_id=await self.resolve_peer(user_id),
+                approved=False
             )
         )
 
-        # Deleting messages you don't have right onto won't raise any error.
-        # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)
+        return True

@@ -27,6 +27,7 @@ import pyrogram
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import aes, rsa, prime
+from pyrogram.errors import SecurityCheckMismatch
 from pyrogram.raw.core import TLObject, Long, Int
 from .internals import MsgId
 
@@ -210,33 +211,33 @@ class Auth:
                 # Security checks
                 #######################
 
-                assert dh_prime == prime.CURRENT_DH_PRIME
+                SecurityCheckMismatch.check(dh_prime == prime.CURRENT_DH_PRIME)
                 log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
                 g_b = int.from_bytes(g_b, "big")
-                assert 1 < g < dh_prime - 1
-                assert 1 < g_a < dh_prime - 1
-                assert 1 < g_b < dh_prime - 1
-                assert 2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64)
-                assert 2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64)
+                SecurityCheckMismatch.check(1 < g < dh_prime - 1)
+                SecurityCheckMismatch.check(1 < g_a < dh_prime - 1)
+                SecurityCheckMismatch.check(1 < g_b < dh_prime - 1)
+                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64))
+                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64))
                 log.debug("g_a and g_b validation: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-values
                 answer = server_dh_inner_data.write()  # Call .write() to remove padding
-                assert answer_with_hash[:20] == sha1(answer).digest()
+                SecurityCheckMismatch.check(answer_with_hash[:20] == sha1(answer).digest())
                 log.debug("SHA1 hash values check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-nonce-server-nonce-and-new-nonce-fields
                 # 1st message
-                assert nonce == res_pq.nonce
+                SecurityCheckMismatch.check(nonce == res_pq.nonce)
                 # 2nd message
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
-                assert nonce == server_dh_params.nonce
-                assert server_nonce == server_dh_params.server_nonce
+                SecurityCheckMismatch.check(nonce == server_dh_params.nonce)
+                SecurityCheckMismatch.check(server_nonce == server_dh_params.server_nonce)
                 # 3rd message
-                assert nonce == set_client_dh_params_answer.nonce
-                assert server_nonce == set_client_dh_params_answer.server_nonce
+                SecurityCheckMismatch.check(nonce == set_client_dh_params_answer.nonce)
+                SecurityCheckMismatch.check(server_nonce == set_client_dh_params_answer.server_nonce)
                 server_nonce = server_nonce.to_bytes(16, "little", signed=True)
                 log.debug("Nonce fields check: OK")
 
