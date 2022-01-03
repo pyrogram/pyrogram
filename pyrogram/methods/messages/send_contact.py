@@ -34,6 +34,7 @@ class SendContact(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -71,6 +72,9 @@ class SendContact(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -97,6 +101,7 @@ class SendContact(Scaffold):
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 schedule_date=schedule_date,
+                noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None
             )
         )
