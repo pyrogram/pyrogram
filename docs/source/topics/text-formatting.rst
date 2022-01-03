@@ -34,6 +34,7 @@ list of the basic styles currently supported by Pyrogram.
 - *italic*
 - :strike:`strike`
 - :underline:`underline`
+- spoiler
 - `text URL <https://pyrogram.org>`_
 - `user text mention <https://t.me/haskell>`_
 - ``inline fixed-width code``
@@ -63,6 +64,8 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
 
     ~~strike~~
 
+    ||spoiler||
+
     [text URL](https://docs.pyrogram.org/)
 
     [text user mention](tg://user?id=23122162)
@@ -86,6 +89,7 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
             "__italic__, "
             "--underline--, "
             "~~strike~~, "
+            "||spoiler||, "
             "[mention](tg://user?id=23122162), "
             "[URL](https://pyrogram.org), "
             "`code`, "
@@ -113,6 +117,8 @@ The following tags are currently supported:
 
     <s>strike</s>, <del>strike</del>, <strike>strike</strike>
 
+    <spoiler>spoiler</spoiler>
+
     <a href="http://docs.pyrogram.org/">text URL</a>
 
     <a href="tg://user?id=23122162">inline mention</a>
@@ -136,6 +142,7 @@ The following tags are currently supported:
             "<i>italic</i>, "
             "<u>underline</u>, "
             "<s>strike</s>, "
+            "<spoiler>spoiler</spoiler>, "
             "<a href=\"tg://user?id=23122162\">mention</a>, "
             "<a href=\"https://pyrogram.org/\">URL</a>, "
             "<code>code</code>\n\n"

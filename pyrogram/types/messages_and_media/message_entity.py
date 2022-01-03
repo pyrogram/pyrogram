@@ -42,6 +42,7 @@ class MessageEntityType(AutoName):
     ITALIC = auto()
     UNDERLINE = auto()
     STRIKETHROUGH = auto()
+    SPOILER = auto()
     CODE = auto()
     PRE = auto()
     TEXT_LINK = auto()
@@ -62,6 +63,7 @@ RAW_ENTITIES_TO_TYPE = {
     raw.types.MessageEntityPre: MessageEntityType.PRE,
     raw.types.MessageEntityUnderline: MessageEntityType.UNDERLINE,
     raw.types.MessageEntityStrike: MessageEntityType.STRIKETHROUGH,
+    raw.types.MessageEntitySpoiler: MessageEntityType.SPOILER,
     raw.types.MessageEntityBlockquote: MessageEntityType.BLOCKQUOTE,
     raw.types.MessageEntityTextUrl: MessageEntityType.TEXT_LINK,
     raw.types.MessageEntityMentionName: MessageEntityType.TEXT_MENTION,
@@ -90,6 +92,7 @@ class MessageEntity(Object):
             - "italic": *italic text*.
             - "underline": underlined text.
             - "strikethrough": strikethrough text.
+            - "spoiler": spoiler text.
             - "code": monowidth string.
             - "pre": monowidth block (see *language* below).
             - "text_link": for clickable text URLs.

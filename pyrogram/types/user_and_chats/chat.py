@@ -124,6 +124,10 @@ class Chat(Object):
         send_as_chat (:obj:`~pyrogram.types.Chat`, *optional*):
             The default "send_as" chat.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
+
+        available_reactions (List of ``str``, *optional*):
+            Available reactions in the chat.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
     """
 
     def __init__(
@@ -156,7 +160,8 @@ class Chat(Object):
         permissions: "types.ChatPermissions" = None,
         distance: int = None,
         linked_chat: "types.Chat" = None,
-        send_as_chat: "types.Chat" = None
+        send_as_chat: "types.Chat" = None,
+        available_reactions: List[str] = None
     ):
         super().__init__(client)
 
@@ -187,6 +192,7 @@ class Chat(Object):
         self.distance = distance
         self.linked_chat = linked_chat
         self.send_as_chat = send_as_chat
+        self.available_reactions = available_reactions
 
     @staticmethod
     def _parse_user_chat(client, user: raw.types.User) -> "Chat":
@@ -336,6 +342,8 @@ class Chat(Object):
 
             if isinstance(full_chat.exported_invite, raw.types.ChatInviteExported):
                 parsed_chat.invite_link = full_chat.exported_invite.link
+
+            parsed_chat.available_reactions = full_chat.available_reactions or None
 
         return parsed_chat
 
