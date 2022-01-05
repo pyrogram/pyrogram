@@ -48,6 +48,7 @@ from .set_administrator_title import SetAdministratorTitle
 from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
+from .set_chat_protected_content import SetChatProtectedContent
 from .set_chat_title import SetChatTitle
 from .set_send_as_chat import SetSendAsChat
 from .set_slow_mode import SetSlowMode
@@ -56,7 +57,6 @@ from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
-from .toggle_no_forwards import ToggleNoForwards
 
 
 class Chats(
@@ -100,6 +100,6 @@ class Chats(
     GetChatOnlineCount,
     GetSendAsChats,
     SetSendAsChat,
-    ToggleNoForwards
+    SetChatProtectedContent
 ):
     pass

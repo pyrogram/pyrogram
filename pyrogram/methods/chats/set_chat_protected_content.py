@@ -22,28 +22,30 @@ from pyrogram.raw import functions
 from pyrogram.scaffold import Scaffold
 
 
-class ToggleNoForwards(Scaffold):
-    async def toggle_no_forwards(
+class SetChatProtectedContent(Scaffold):
+    async def set_chat_protected_content(
         self,
         chat_id: Union[int, str],
-        enabled: bool = False
+        enabled: bool
     ) -> bool:
-        """Toggle no forwards chat option
+        """Set the chat protected content setting.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            enabled (``bool``, *optional*):
-                Pass True to enable no forwards
+            enabled (``bool``):
+                Pass True to enable the protected content setting, False to disable.
 
         Returns:
             ``bool``: On success, True is returned.
         """
 
-        return await self.send(
+        await self.send(
             functions.messages.ToggleNoForwards(
                 peer=await self.resolve_peer(chat_id),
                 enabled=enabled
             )
         )
+
+        return True
