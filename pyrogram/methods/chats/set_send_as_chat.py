@@ -22,32 +22,34 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteUserHistory(Scaffold):
-    async def delete_user_history(
+class SetSendAsChat(Scaffold):
+    async def set_send_as_chat(
         self,
         chat_id: Union[int, str],
-        user_id: Union[int, str],
+        send_as_chat_id: Union[int, str]
     ) -> bool:
-        """Delete all messages sent by a certain user in a supergroup.
+        """Set the default "send_as" chat for a chat.
+
+        Use :meth:`~pyrogram.Client.get_send_as_chats` to get all the "send_as" chats available for use.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            user_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the user whose messages will be deleted.
+            send_as_chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the send_as chat.
 
         Returns:
-            ``bool``: True on success, False otherwise.
-        """
+            ``bool``: On success, true is returned
 
-        r = await self.send(
-            raw.functions.channels.DeleteParticipantHistory(
-                channel=await self.resolve_peer(chat_id),
-                participant=await self.resolve_peer(user_id)
+        Example:
+            .. code-block:: python
+
+                app.set_send_as_chat(chat_id, send_as_chat_id)
+        """
+        return await self.send(
+            raw.functions.messages.SaveDefaultSendAs(
+                peer=await self.resolve_peer(chat_id),
+                send_as=await self.resolve_peer(send_as_chat_id)
             )
         )
-
-        # Deleting messages you don't have right onto won't raise any error.
-        # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)

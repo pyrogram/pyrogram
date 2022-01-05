@@ -16,38 +16,48 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import List, Union
 
 from pyrogram import raw
+from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class DeleteUserHistory(Scaffold):
-    async def delete_user_history(
+class GetSendAsChats(Scaffold):
+    async def get_send_as_chats(
         self,
-        chat_id: Union[int, str],
-        user_id: Union[int, str],
-    ) -> bool:
-        """Delete all messages sent by a certain user in a supergroup.
+        chat_id: Union[int, str]
+    ) -> List["types.Chat"]:
+        """Get the list of "send_as" chats available.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            user_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the user whose messages will be deleted.
-
         Returns:
-            ``bool``: True on success, False otherwise.
-        """
+            List[:obj:`~pyrogram.types.Chat`]: The list of chats.
 
+        Example:
+            .. code-block:: python
+
+                chats = app.get_send_as_chats(chat_id)
+                print(chats)
+        """
         r = await self.send(
-            raw.functions.channels.DeleteParticipantHistory(
-                channel=await self.resolve_peer(chat_id),
-                participant=await self.resolve_peer(user_id)
+            raw.functions.channels.GetSendAs(
+                peer=await self.resolve_peer(chat_id)
             )
         )
 
-        # Deleting messages you don't have right onto won't raise any error.
-        # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)
+        users = {u.id: u for u in r.users}
+        chats = {c.id: c for c in r.chats}
+
+        send_as_chats = types.List()
+
+        for p in r.peers:
+            if isinstance(p, raw.types.PeerUser):
+                send_as_chats.append(types.Chat._parse_chat(self, users[p.user_id]))
+            else:
+                send_as_chats.append(types.Chat._parse_chat(self, chats[p.channel_id]))
+
+        return send_as_chats

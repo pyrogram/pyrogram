@@ -23,14 +23,14 @@ from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
 
-class KickChatMember(Scaffold):
-    async def kick_chat_member(
+class BanChatMember(Scaffold):
+    async def ban_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
         until_date: int = 0
     ) -> Union["types.Message", bool]:
-        """Kick a user from a group, a supergroup or a channel.
+        """Ban a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
         invite links, etc., unless unbanned first. You must be an administrator in the chat for this to work and must
         have the appropriate admin rights.
@@ -63,10 +63,10 @@ class KickChatMember(Scaffold):
                 from time import time
 
                 # Ban chat member forever
-                app.kick_chat_member(chat_id, user_id)
+                app.ban_chat_member(chat_id, user_id)
 
-                # Kick chat member and automatically unban after 24h
-                app.kick_chat_member(chat_id, user_id, int(time.time() + 86400))
+                # Ban chat member and automatically unban after 24h
+                app.ban_chat_member(chat_id, user_id, int(time.time() + 86400))
         """
         chat_peer = await self.resolve_peer(chat_id)
         user_peer = await self.resolve_peer(user_id)

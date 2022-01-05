@@ -27,8 +27,10 @@ class CreateChatInviteLink(Scaffold):
     async def create_chat_invite_link(
         self,
         chat_id: Union[int, str],
+        name: str = None,
         expire_date: int = None,
         member_limit: int = None,
+        creates_join_request: bool = None
     ) -> "types.ChatInviteLink":
         """Create an additional invite link for a chat.
 
@@ -41,6 +43,9 @@ class CreateChatInviteLink(Scaffold):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
+            name (``str``, *optional*):
+                Invite link name.
+
             expire_date (``int``, *optional*):
                 Point in time (Unix timestamp) when the link will expire.
                 Defaults to None (no expiration date).
@@ -49,6 +54,10 @@ class CreateChatInviteLink(Scaffold):
                 Maximum number of users that can be members of the chat simultaneously after joining the chat via
                 this invite link; 1-99999.
                 Defaults to None (no member limit).
+
+            creates_join_request (``bool``, *optional*):
+                True, if users joining the chat via the link need to be approved by chat administrators.
+                If True, member_limit can't be specified.
 
         Returns:
             :obj:`~pyrogram.types.ChatInviteLink`: On success, the new invite link is returned.
@@ -67,6 +76,8 @@ class CreateChatInviteLink(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 expire_date=expire_date,
                 usage_limit=member_limit,
+                title=name,
+                request_needed=creates_join_request
             )
         )
 

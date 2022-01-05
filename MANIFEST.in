@@ -1,6 +1,7 @@
 ## Include
 include README.md COPYING COPYING.lesser NOTICE requirements.txt
 recursive-include compiler *.py *.tl *.tsv *.txt
+recursive-include tests *.py
 
 ## Exclude
 prune pyrogram/errors/exceptions
