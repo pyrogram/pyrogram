@@ -56,6 +56,7 @@ from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
+from .toggle_no_forwards import ToggleNoForwards
 
 
 class Chats(
@@ -98,6 +99,7 @@ class Chats(
     GetChatEventLog,
     GetChatOnlineCount,
     GetSendAsChats,
-    SetSendAsChat
+    SetSendAsChat,
+    ToggleNoForwards
 ):
     pass

@@ -1011,3 +1011,26 @@ class Chat(Object):
         """
 
         return await self._client.mark_chat_unread(self.id)
+
+    async def no_forwards(self, enabled: bool = False) -> bool:
+        """Bound method *toggle_no_forwards* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.toggle_no_forwards(chat_id, enabled)
+
+        Example:
+            .. code-block:: python
+
+                chat.toggle_no_forwards(True)
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.toggle_no_forwards(
+            self.id,
+            enabled=enabled
+        )

@@ -515,6 +515,7 @@ def pyrogram_api():
             Chat.join
             Chat.leave
             Chat.mark_unread
+            Chat.no_forwards
         """,
         user="""
         User
