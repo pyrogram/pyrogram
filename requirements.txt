@@ -1,2 +1,2 @@
-pyaes==1.6.1
-pysocks==1.7.1
+git+https://github.com/ricmoo/pyaes@master
+git+https://github.com/Anorov/PySocks@master
