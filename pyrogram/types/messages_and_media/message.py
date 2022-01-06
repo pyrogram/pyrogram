@@ -279,6 +279,9 @@ class Message(Object, Update):
 
         voice_chat_members_invited (:obj:`~pyrogram.types.VoiceChatParticipantsInvited`, *optional*):
             Service message: new members were invited to the voice chat.
+            
+        silent (``bool``, *optional*):
+            Whether this is a silent message (no notification triggered).
 
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -356,6 +359,7 @@ class Message(Object, Update):
         voice_chat_started: "types.VoiceChatStarted" = None,
         voice_chat_ended: "types.VoiceChatEnded" = None,
         voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
+        silent: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -428,6 +432,7 @@ class Message(Object, Update):
         self.voice_chat_started = voice_chat_started
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
+        self.silent = silent
 
     @staticmethod
     async def _parse(
@@ -547,6 +552,7 @@ class Message(Object, Update):
                 voice_chat_started=voice_chat_started,
                 voice_chat_ended=voice_chat_ended,
                 voice_chat_members_invited=voice_chat_members_invited,
+                silent=message.silent,
                 client=client
                 # TODO: supergroup_chat_created
             )
