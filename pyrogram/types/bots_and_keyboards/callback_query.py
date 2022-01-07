@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -110,7 +110,7 @@ class CallbackQuery(Object, Update):
         # ignoring/replacing errors, this way, button clicks will still work.
         try:
             data = callback_query.data.decode()
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, AttributeError):
             data = callback_query.data
 
         return CallbackQuery(

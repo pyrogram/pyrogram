@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -37,6 +37,7 @@ class SendSticker(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -70,6 +71,9 @@ class SendSticker(Scaffold):
 
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
+
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -109,7 +113,7 @@ class SendSticker(Scaffold):
                 app.send_sticker("me", "sticker.webp")
 
                 # Send sticker using file_id
-                app.send_sticker("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
+                app.send_sticker("me", file_id)
         """
         file = None
 
@@ -150,7 +154,8 @@ class SendSticker(Scaffold):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
-                            reply_markup=reply_markup.write() if reply_markup else None,
+                            noforwards=protect_content,
+                            reply_markup=await reply_markup.write(self) if reply_markup else None,
                             message=""
                         )
                     )

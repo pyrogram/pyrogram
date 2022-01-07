@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .copy_media_group import CopyMediaGroup
 from .copy_message import CopyMessage
 from .delete_messages import DeleteMessages
 from .download_media import DownloadMedia
@@ -28,6 +29,7 @@ from .edit_message_media import EditMessageMedia
 from .edit_message_reply_markup import EditMessageReplyMarkup
 from .edit_message_text import EditMessageText
 from .forward_messages import ForwardMessages
+from .get_discussion_message import GetDiscussionMessage
 from .get_history import GetHistory
 from .get_history_count import GetHistoryCount
 from .get_media_group import GetMediaGroup
@@ -36,7 +38,9 @@ from .iter_history import IterHistory
 from .read_history import ReadHistory
 from .retract_vote import RetractVote
 from .search_global import SearchGlobal
+from .search_global_count import SearchGlobalCount
 from .search_messages import SearchMessages
+from .search_messages_count import SearchMessagesCount
 from .send_animation import SendAnimation
 from .send_audio import SendAudio
 from .send_cached_media import SendCachedMedia
@@ -49,6 +53,7 @@ from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
 from .send_photo import SendPhoto
 from .send_poll import SendPoll
+from .send_reaction import SendReaction
 from .send_sticker import SendSticker
 from .send_venue import SendVenue
 from .send_video import SendVideo
@@ -98,6 +103,11 @@ class Messages(
     SendDice,
     SearchMessages,
     SearchGlobal,
-    CopyMessage
+    CopyMessage,
+    CopyMediaGroup,
+    SearchMessagesCount,
+    SearchGlobalCount,
+    GetDiscussionMessage,
+    SendReaction
 ):
     pass

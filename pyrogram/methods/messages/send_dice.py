@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -31,6 +31,7 @@ class SendDice(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -47,7 +48,10 @@ class SendDice(Scaffold):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             emoji (``str``, *optional*):
-                Emoji on which the dice throw animation is based. Currently, must be one of "🎲",  "🎯", "🏀" or "⚽️".
+                Emoji on which the dice throw animation is based.
+                Currently, must be one of "🎲", "🎯", "🏀", "⚽", "🎳", or "🎰".
+                Dice can have values 1-6 for "🎲", "🎯" and "🎳", values 1-5 for "🏀" and "⚽", and
+                values 1-64 for "🎰".
                 Defaults to "🎲".
 
             disable_notification (``bool``, *optional*):
@@ -60,6 +64,9 @@ class SendDice(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -71,13 +78,13 @@ class SendDice(Scaffold):
             .. code-block:: python
 
                 # Send a dice
-                app.send_dice("pyrogramlounge")
+                app.send_dice(chat_id)
 
                 # Send a dart
-                app.send_dice("pyrogramlounge", "🎯")
+                app.send_dice(chat_id, "🎯")
 
                 # Send a basketball
-                app.send_dice("pyrogramlounge", "🏀")
+                app.send_dice(chat_id, "🏀")
         """
 
         r = await self.send(
@@ -88,7 +95,8 @@ class SendDice(Scaffold):
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
                 schedule_date=schedule_date,
-                reply_markup=reply_markup.write() if reply_markup else None,
+                noforwards=protect_content,
+                reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=""
             )
         )

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,10 +52,10 @@ def get_input_media_from_file_id(
     file_type = decoded.file_type
 
     if expected_file_type is not None and file_type != expected_file_type:
-        raise ValueError(f'Expected: "{expected_file_type}", got "{file_type}" file_id instead')
+        raise ValueError(f"Expected {expected_file_type.name}, got {file_type.name} file id instead")
 
     if file_type in (FileType.THUMBNAIL, FileType.CHAT_PHOTO):
-        raise ValueError(f"This file_id can only be used for download: {file_id}")
+        raise ValueError(f"This file id can only be used for download: {file_id}")
 
     if file_type in PHOTO_TYPES:
         return raw.types.InputMediaPhoto(
@@ -159,7 +159,8 @@ def unpack_inline_message_id(inline_message_id: str) -> "raw.types.InputBotInlin
 MIN_CHANNEL_ID = -1002147483647
 MAX_CHANNEL_ID = -1000000000000
 MIN_CHAT_ID = -2147483647
-MAX_USER_ID = 2147483647
+MAX_USER_ID_OLD = 2147483647
+MAX_USER_ID = 999999999999
 
 
 def get_raw_peer_id(peer: raw.base.Peer) -> Optional[int]:

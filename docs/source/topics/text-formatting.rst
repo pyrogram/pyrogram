@@ -14,7 +14,7 @@ Text Formatting
     :class: strike-italic
 
 Pyrogram uses a custom Markdown dialect for text formatting which adds some unique features that make writing styled
-texts easier in both Markdown and HTML. You can send sophisticated text messages and media captions using a great
+texts easier in both Markdown and HTML. You can send sophisticated text messages and media captions using a
 variety of decorations that can also be nested in order to combine multiple styles together.
 
 .. contents:: Contents
@@ -34,8 +34,9 @@ list of the basic styles currently supported by Pyrogram.
 - *italic*
 - :strike:`strike`
 - :underline:`underline`
+- spoiler
 - `text URL <https://pyrogram.org>`_
-- `user text mention <https://t.me/haskell>`_
+- `user text mention <tg://user?id=123456789>`_
 - ``inline fixed-width code``
 - .. code-block:: text
 
@@ -63,9 +64,11 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
 
     ~~strike~~
 
-    [text URL](https://docs.pyrogram.org/)
+    ||spoiler||
 
-    [text user mention](tg://user?id=23122162)
+    [text URL](https://pyrogram.org/)
+
+    [text user mention](tg://user?id=123456789)
 
     `inline fixed-width code`
 
@@ -80,13 +83,13 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
 .. code-block:: python
 
     app.send_message(
-        "haskell",
+        "me",
         (
             "**bold**, "
             "__italic__, "
             "--underline--, "
             "~~strike~~, "
-            "[mention](tg://user?id=23122162), "
+            "||spoiler||, "
             "[URL](https://pyrogram.org), "
             "`code`, "
             "```"
@@ -113,9 +116,11 @@ The following tags are currently supported:
 
     <s>strike</s>, <del>strike</del>, <strike>strike</strike>
 
-    <a href="http://docs.pyrogram.org/">text URL</a>
+    <spoiler>spoiler</spoiler>
 
-    <a href="tg://user?id=23122162">inline mention</a>
+    <a href="https://pyrogram.org/">text URL</a>
+
+    <a href="tg://user?id=123456789">inline mention</a>
 
     <code>inline fixed-width code</code>
 
@@ -130,13 +135,13 @@ The following tags are currently supported:
 .. code-block:: python
 
     app.send_message(
-        "haskell",
+        "me",
         (
             "<b>bold</b>, "
             "<i>italic</i>, "
             "<u>underline</u>, "
             "<s>strike</s>, "
-            "<a href=\"tg://user?id=23122162\">mention</a>, "
+            "<spoiler>spoiler</spoiler>, "
             "<a href=\"https://pyrogram.org/\">URL</a>, "
             "<code>code</code>\n\n"
             "<pre>"
@@ -174,7 +179,7 @@ This means you can combine together both syntaxes in the same text:
 
 .. code-block:: python
 
-    app.send_message("haskell", "**bold**, <i>italic</i>")
+    app.send_message("me", "**bold**, <i>italic</i>")
 
 Result:
 
@@ -185,8 +190,8 @@ If you don't like this behaviour you can always choose to only enable either Mar
 
 .. code-block::
 
-    app.send_message("haskell", "**bold**, <i>italic</i>", parse_mode="markdown")
-    app.send_message("haskell", "**bold**, <i>italic</i>", parse_mode="html")
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode="markdown")
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode="html")
 
 Result:
 
@@ -199,7 +204,7 @@ as-is.
 
 .. code-block:: python
 
-    app.send_message("haskell", "**bold**, <i>italic</i>", parse_mode=None)
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=None)
 
 Result:
 

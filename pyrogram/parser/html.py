@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -61,6 +61,8 @@ class Parser(HTMLParser):
         elif tag == "pre":
             entity = raw.types.MessageEntityPre
             extra["language"] = ""
+        elif tag == "spoiler":
+            entity = raw.types.MessageEntitySpoiler
         elif tag == "a":
             url = attrs.get("href", "")
 
@@ -96,7 +98,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            log.warning(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
+            log.debug(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -111,7 +113,7 @@ class HTML:
 
     async def parse(self, text: str):
         # Strip whitespace characters from the end of the message, but preserve closing tags
-        text = re.sub(r"\s+(</[\w\W]*>)\s*$", r"\1", text)
+        text = re.sub(r"\s*(</[\w</>]*>)\s*$", r"\1", text)
 
         parser = Parser(self.client)
         parser.feed(utils.add_surrogates(text))
@@ -153,7 +155,7 @@ class HTML:
             start = entity.offset
             end = start + entity.length
 
-            if entity_type in ("bold", "italic", "underline", "strikethrough"):
+            if entity_type in ("bold", "italic", "underline", "strikethrough", "spoiler"):
                 start_tag = f"<{entity_type[0]}>"
                 end_tag = f"</{entity_type[0]}>"
             elif entity_type in ("code", "pre", "blockquote"):

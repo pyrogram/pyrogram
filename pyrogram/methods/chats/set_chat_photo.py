@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -21,8 +21,8 @@ from typing import Union, BinaryIO
 
 from pyrogram import raw
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 from pyrogram.file_id import FileType
+from pyrogram.scaffold import Scaffold
 
 
 class SetChatPhoto(Scaffold):

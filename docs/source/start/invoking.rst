@@ -2,7 +2,7 @@ Calling Methods
 ===============
 
 At this point, we have successfully :doc:`installed Pyrogram <../intro/install>` and :doc:`authorized <auth>` our
-account; we are now aiming towards the core of the library. It's time to start playing with the API!
+account; we are now aiming towards the core of the framework.
 
 .. contents:: Contents
     :backlinks: none
@@ -22,60 +22,53 @@ Making API method calls with Pyrogram is very simple. Here's a basic example we 
 
     app = Client("my_account")
 
-    with app:
-        app.send_message("me", "Hi!")
+    async def main():
+        async with app:
+            await app.send_message("me", "Hi!")
 
-Basic step-by-step
-^^^^^^^^^^^^^^^^^^
+    app.run(main())
 
-#.  Let's begin by importing the Client class:
+Step-by-step
+^^^^^^^^^^^^
+
+#.  Let's begin by importing the Client class.
 
     .. code-block:: python
 
         from pyrogram import Client
 
-#.  Now instantiate a new Client object, "my_account" is a session name of your choice:
+#.  Now instantiate a new Client object, "my_account" is a session name of your choice.
 
     .. code-block:: python
 
         app = Client("my_account")
 
-#.  The ``with`` context manager is a shortcut for starting, executing and stopping the Client:
+#.  Async methods can't be executed at the top level, because they must be inside an async context.
+    Here we define an async function and put our code inside. Also notice the ``await`` keyword in front of the method
+    call; this is required for all asynchronous methods.
 
     .. code-block:: python
 
-        with app:
+        async def main():
+            async with app:
+                await app.send_message("me", "Hi!")
 
-#.  Now, you can call any method you like:
+#.  Finally, we tell Python to schedule our ``main()`` async function by using Pyrogram's :meth:`~pyrogram.Client.run`
+    method.
 
     .. code-block:: python
 
-        app.send_message("me", "Hi!")
+        app.run(main())
 
 Context Manager
 ---------------
 
-The ``with`` statement starts a context manager used as a shortcut to automatically call :meth:`~pyrogram.Client.start`
-and :meth:`~pyrogram.Client.stop`, which are methods required for Pyrogram to work properly. The context manager does
-also gracefully stop the client, even in case of unhandled exceptions in your code.
+The ``async with`` statement starts a context manager, which is used as a shortcut for starting, executing and stopping
+the Client, asynchronously. It does so by automatically calling :meth:`~pyrogram.Client.start` and
+:meth:`~pyrogram.Client.stop` in a more convenient way which also gracefully stops the client, even in case of
+unhandled exceptions in your code.
 
-This is how Pyrogram looks without the context manager:
-
-.. code-block:: python
-
-    from pyrogram import Client
-
-    app = Client("my_account")
-
-    app.start()
-    app.send_message("me", "Hi!")
-    app.stop()
-
-Asynchronous Calls
-------------------
-
-In case you want Pyrogram to run asynchronously (e.g.: if you are using third party libraries that require you to call
-them with ``await``), use the asynchronous context manager:
+Below there's the same example as above, but without the use of the context manager:
 
 .. code-block:: python
 
@@ -84,36 +77,48 @@ them with ``await``), use the asynchronous context manager:
     app = Client("my_account")
 
     async def main():
-        async with app:
-            await app.send_message("me", "Hi!")
+        await app.start()
+        await app.send_message("me", "Hi!")
+        await app.stop()
 
     app.run(main())
 
-Asynchronous step-by-step
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Using asyncio.run()
+-------------------
 
-#.  Import the Client class and create an instance:
+Alternatively to the :meth:`~pyrogram.Client.run` method, you can use Python's ``asyncio.run()`` to execute the main
+function, with one little caveat: the Client instance (and possibly other asyncio resources you are going to use) must
+be instantiated inside the main function.
 
-    .. code-block:: python
+.. code-block:: python
 
-        from pyrogram import Client
+    import asyncio
+    from pyrogram import Client
 
+    async def main():
         app = Client("my_account")
 
-#.  Async methods can't normally be executed at the top level, because they must be inside an async-defined function;
-    here we define one and put our code inside; the context manager is also being used differently in asyncio and
-    method calls require the await keyword:
+        async with app:
+            await app.send_message("me", "Hi!")
 
-    .. code-block:: python
+    asyncio.run(main())
 
-        async def main():
-            async with app:
-                await app.send_message("me", "Hi!")
+Synchronous Calls
+------------------
 
-#.  Finally, we tell Python to schedule our ``main()`` async function, which in turn will execute Pyrogram's methods.
-    Using :meth:`~pyrogram.Client.run` this way is a friendly alternative for the much more verbose
-    ``asyncio.get_event_loop().run_until_complete(main())``:
+Pyrogram is an asynchronous framework, but it also provides a convenience way for calling methods without the need
+of async/await keywords and the extra boilerplate. In case you want Pyrogram to run synchronously, simply  use the
+synchronous context manager:
 
-    .. code-block:: python
+.. code-block:: python
 
-        app.run(main())
+    from pyrogram import Client
+
+    app = Client("my_account")
+
+    with app:
+        app.send_message("me", "Hi!")
+
+As you can see, the non-async example becomes less cluttered. Use Pyrogram in this non-asynchronous way only when you
+want to write something without the boilerplate or in case you want to combine Pyrogram with other libraries that are
+not async.

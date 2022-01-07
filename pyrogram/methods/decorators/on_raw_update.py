@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -41,9 +41,14 @@ class OnRawUpdate(Scaffold):
             if isinstance(self, pyrogram.Client):
                 self.add_handler(pyrogram.handlers.RawUpdateHandler(func), group)
             else:
-                func.handler = (
-                    pyrogram.handlers.RawUpdateHandler(func),
-                    group if self is None else group
+                if not hasattr(func, "handlers"):
+                    func.handlers = []
+
+                func.handlers.append(
+                    (
+                        pyrogram.handlers.RawUpdateHandler(func),
+                        group if self is None else group
+                    )
                 )
 
             return func

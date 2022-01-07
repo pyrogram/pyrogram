@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -32,9 +32,11 @@ from pathlib import Path
 from typing import Union, List, Optional
 
 import pyrogram
+from pyrogram import __version__, __license__
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.crypto import aes
+from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.errors import (
     SessionPasswordNeeded,
     VolumeLocNotFound, ChannelPrivate,
@@ -280,6 +282,10 @@ class Client(Methods, Scaffold):
         if self.bot_token:
             return await self.sign_in_bot(self.bot_token)
 
+        print(f"Welcome to Pyrogram (version {__version__})")
+        print(f"Pyrogram is free software and comes with ABSOLUTELY NO WARRANTY. Licensed\n"
+              f"under the terms of the {__license__}.\n")
+
         while True:
             try:
                 if not self.phone_number:
@@ -397,6 +403,9 @@ class Client(Methods, Scaffold):
 
     @parse_mode.setter
     def parse_mode(self, parse_mode: Optional[str] = "combined"):
+        if isinstance(parse_mode, str):
+            parse_mode = parse_mode.lower()
+
         if parse_mode not in self.PARSE_MODES:
             raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
                 ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
@@ -424,7 +433,6 @@ class Client(Methods, Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 10,14,18,22
 
                 from pyrogram import Client
 
@@ -432,23 +440,23 @@ class Client(Methods, Scaffold):
 
                 with app:
                     # Default combined mode: Markdown + HTML
-                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+                    app.send_message("me", "1. **markdown** and <i>html</i>")
 
                     # Force Markdown-only, HTML is disabled
                     app.set_parse_mode("markdown")
-                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+                    app.send_message("me", "2. **markdown** and <i>html</i>")
 
                     # Force HTML-only, Markdown is disabled
                     app.set_parse_mode("html")
-                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+                    app.send_message("me", "3. **markdown** and <i>html</i>")
 
                     # Disable the parser completely
                     app.set_parse_mode(None)
-                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+                    app.send_message("me", "4. **markdown** and <i>html</i>")
 
                     # Bring back the default combined mode
                     app.set_parse_mode()
-                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+                    app.send_message("me", "5. **markdown** and <i>html</i>")
         """
 
         self.parse_mode = parse_mode
@@ -585,7 +593,8 @@ class Client(Methods, Scaffold):
                     {c.id: c for c in diff.chats}
                 ))
             else:
-                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+                if diff.other_updates:  # The other_updates list can be empty
+                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
@@ -716,15 +725,14 @@ class Client(Methods, Scaffold):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count += 1
+                                    count += 1
                         except Exception:
                             pass
             else:
@@ -749,15 +757,14 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.add_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.add_handler(handler, group)
+                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count += 1
+                                    count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -785,15 +792,14 @@ class Client(Methods, Scaffold):
                     for name in handlers:
                         # noinspection PyBroadException
                         try:
-                            handler, group = getattr(module, name).handler
+                            for handler, group in getattr(module, name).handlers:
+                                if isinstance(handler, Handler) and isinstance(group, int):
+                                    self.remove_handler(handler, group)
 
-                            if isinstance(handler, Handler) and isinstance(group, int):
-                                self.remove_handler(handler, group)
+                                    log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
+                                        self.session_name, type(handler).__name__, name, group, module_path))
 
-                                log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                    self.session_name, type(handler).__name__, name, group, module_path))
-
-                                count -= 1
+                                    count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
@@ -876,8 +882,7 @@ class Client(Methods, Scaffold):
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,
-                volume_id=file_id.volume_id,
-                local_id=file_id.local_id,
+                photo_id=file_id.media_id,
                 big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
             )
         elif file_type == FileType.PHOTO:
@@ -916,9 +921,6 @@ class Client(Methods, Scaffold):
                     while True:
                         chunk = r.bytes
 
-                        if not chunk:
-                            break
-
                         f.write(chunk)
 
                         offset += limit
@@ -937,6 +939,9 @@ class Client(Methods, Scaffold):
                                 await func()
                             else:
                                 await self.loop.run_in_executor(self.executor, func)
+
+                        if len(chunk) < limit:
+                            break
 
                         r = await session.send(
                             raw.functions.upload.GetFile(
@@ -1009,7 +1014,7 @@ class Client(Methods, Scaffold):
                             # https://core.telegram.org/cdn#verifying-files
                             for i, h in enumerate(hashes):
                                 cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
-                                assert h.hash == sha256(cdn_chunk).digest(), f"Invalid CDN hash part {i}"
+                                CDNFileHashMismatch.check(h.hash == sha256(cdn_chunk).digest())
 
                             f.write(decrypted_chunk)
 

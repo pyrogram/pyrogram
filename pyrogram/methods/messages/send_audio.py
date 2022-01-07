@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -45,6 +45,7 @@ class SendAudio(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -113,6 +114,9 @@ class SendAudio(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -145,18 +149,17 @@ class SendAudio(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8-10,13-16
 
                 # Send audio file by uploading from file
                 app.send_audio("me", "audio.mp3")
 
                 # Add caption to the audio
-                app.send_audio("me", "audio.mp3", caption="shoegaze")
+                app.send_audio("me", "audio.mp3", caption="audio caption")
 
                 # Set audio metadata
                 app.send_audio(
                     "me", "audio.mp3",
-                    title="Printemps émeraude", performer="Alcest", duration=440)
+                    title="Title", performer="Performer", duration=234)
 
                 # Keep track of the progress while uploading
                 def progress(current, total):
@@ -217,7 +220,8 @@ class SendAudio(Scaffold):
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
                             schedule_date=schedule_date,
-                            reply_markup=reply_markup.write() if reply_markup else None,
+                            noforwards=protect_content,
+                            reply_markup=await reply_markup.write(self) if reply_markup else None,
                             **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -91,6 +91,9 @@ class User(Object, Update):
         is_scam (``bool``, *optional*):
             True, if this user has been flagged for scam.
 
+        is_fake (``bool``, *optional*):
+            True, if this user has been flagged for impersonation.
+
         is_support (``bool``, *optional*):
             True, if this user is part of the Telegram support team.
 
@@ -159,6 +162,7 @@ class User(Object, Update):
         is_verified: bool = None,
         is_restricted: bool = None,
         is_scam: bool = None,
+        is_fake: bool = None,
         is_support: bool = None,
         first_name: str = None,
         last_name: str = None,
@@ -183,6 +187,7 @@ class User(Object, Update):
         self.is_verified = is_verified
         self.is_restricted = is_restricted
         self.is_scam = is_scam
+        self.is_fake = is_fake
         self.is_support = is_support
         self.first_name = first_name
         self.last_name = last_name
@@ -215,6 +220,7 @@ class User(Object, Update):
             is_verified=user.verified,
             is_restricted=user.restricted,
             is_scam=user.scam,
+            is_fake=user.fake,
             is_support=user.support,
             first_name=user.first_name,
             last_name=user.last_name,
@@ -229,7 +235,7 @@ class User(Object, Update):
         )
 
     @staticmethod
-    def _parse_status(user_status: "raw.types.UpdateUserStatus", is_bot: bool = False):
+    def _parse_status(user_status: "raw.base.UserStatus", is_bot: bool = False):
         if isinstance(user_status, raw.types.UserStatusOnline):
             status, date = "online", user_status.expires
         elif isinstance(user_status, raw.types.UserStatusOffline):

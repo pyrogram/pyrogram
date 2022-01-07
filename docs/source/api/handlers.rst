@@ -5,7 +5,6 @@ Handlers are used to instruct Pyrogram about which kind of updates you'd like to
 For a much more convenient way of registering callback functions have a look at :doc:`Decorators <decorators>` instead.
 
 .. code-block:: python
-    :emphasize-lines: 2, 11
 
     from pyrogram import Client
     from pyrogram.handlers import MessageHandler
@@ -41,6 +40,7 @@ Index
     - :class:`CallbackQueryHandler`
     - :class:`InlineQueryHandler`
     - :class:`ChosenInlineResultHandler`
+    - :class:`ChatMemberUpdatedHandler`
     - :class:`UserStatusHandler`
     - :class:`PollHandler`
     - :class:`DisconnectHandler`
@@ -57,6 +57,7 @@ Details
 .. autoclass:: CallbackQueryHandler()
 .. autoclass:: InlineQueryHandler()
 .. autoclass:: ChosenInlineResultHandler()
+.. autoclass:: ChatMemberUpdatedHandler()
 .. autoclass:: UserStatusHandler()
 .. autoclass:: PollHandler()
 .. autoclass:: DisconnectHandler()

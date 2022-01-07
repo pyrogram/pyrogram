@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -28,7 +28,7 @@ class IterProfilePhotos(Scaffold):
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["types.Message", None]]:
+    ) -> Optional[AsyncGenerator["types.Photo", None]]:
         """Iterate through a chat or a user profile photos sequentially.
 
         This convenience method does the same as repeatedly calling :meth:`~pyrogram.Client.get_profile_photos` in a
@@ -54,7 +54,7 @@ class IterProfilePhotos(Scaffold):
         Example:
             .. code-block:: python
 
-                for photo in app.iter_profile_photos("haskell"):
+                for photo in app.iter_profile_photos("me"):
                     print(photo.file_id)
         """
         current = 0

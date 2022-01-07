@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
 from ..object import Object
 
@@ -46,12 +47,12 @@ class ReplyKeyboardRemove(Object):
         self.selective = selective
 
     @staticmethod
-    def read(o):
+    def read(b):
         return ReplyKeyboardRemove(
-            selective=o.selective
+            selective=b.selective
         )
 
-    def write(self):
+    async def write(self, _: "pyrogram.Client"):
         return raw.types.ReplyKeyboardHide(
             selective=self.selective or None
         )

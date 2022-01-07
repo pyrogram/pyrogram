@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -144,6 +144,7 @@ def pyrogram_api():
             send_message
             forward_messages
             copy_message
+            copy_media_group
             send_photo
             send_audio
             send_document
@@ -157,6 +158,7 @@ def pyrogram_api():
             send_venue
             send_contact
             send_cached_media
+            send_reaction
             edit_message_text
             edit_message_caption
             edit_message_media
@@ -179,19 +181,21 @@ def pyrogram_api():
             retract_vote
             send_dice
             search_messages
+            search_messages_count
             search_global
+            search_global_count
             download_media
+            get_discussion_message
         """,
         chats="""
         Chats
             join_chat
             leave_chat
-            kick_chat_member
+            ban_chat_member
             unban_chat_member
             restrict_chat_member
             promote_chat_member
             set_administrator_title
-            export_chat_invite_link
             set_chat_photo
             delete_chat_photo
             set_chat_title
@@ -221,6 +225,11 @@ def pyrogram_api():
             delete_user_history
             set_slow_mode
             mark_chat_unread
+            get_chat_event_log
+            get_chat_online_count
+            get_send_as_chats
+            set_send_as_chat
+            set_chat_protected_content
         """,
         users="""
         Users
@@ -237,15 +246,33 @@ def pyrogram_api():
             unblock_user
             get_common_chats
         """,
+        invite_links="""
+        Invite Links
+            get_chat_invite_link
+            export_chat_invite_link
+            create_chat_invite_link
+            edit_chat_invite_link
+            revoke_chat_invite_link
+            delete_chat_invite_link
+            get_chat_invite_link_members
+            get_chat_invite_link_members_count
+            get_chat_admin_invite_links
+            get_chat_admin_invite_links_count
+            get_chat_admins_with_invite_links
+            delete_chat_admin_invite_links
+            approve_chat_join_request
+            decline_chat_join_request
+        """,
         contacts="""
         Contacts
-            add_contacts
+            add_contact
+            delete_contacts
+            import_contacts
             get_contacts
             get_contacts_count
-            delete_contacts
         """,
         password="""
-        Pssword
+        Password
             enable_cloud_password
             change_cloud_password
             remove_cloud_password
@@ -260,6 +287,7 @@ def pyrogram_api():
             send_game
             set_game_score
             get_game_high_scores
+            set_bot_commands
         """,
         authorization="""
         Authorization
@@ -331,6 +359,12 @@ def pyrogram_api():
             ChatPhoto
             ChatMember
             ChatPermissions
+            ChatInviteLink
+            ChatAdminWithInviteLinks
+            ChatEvent
+            ChatEventFilter
+            ChatMemberUpdated
+            ChatJoinRequest
             Dialog
             Restriction
         """,
@@ -355,6 +389,11 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            Reaction
+            VoiceChatScheduled
+            VoiceChatStarted
+            VoiceChatEnded
+            VoiceChatMembersInvited
         """,
         bots_keyboard="""
         Bots & Keyboards
@@ -363,10 +402,12 @@ def pyrogram_api():
             ReplyKeyboardRemove
             InlineKeyboardMarkup
             InlineKeyboardButton
+            LoginUrl
             ForceReply
             CallbackQuery
             GameHighScore
             CallbackGame
+            BotCommand
         """,
         input_media="""
         Input Media
@@ -385,6 +426,8 @@ def pyrogram_api():
             InlineQueryResultArticle
             InlineQueryResultPhoto
             InlineQueryResultAnimation
+            InlineQueryResultAudio
+            InlineQueryResultVideo
             ChosenInlineResult
         """,
         input_message_content="""
@@ -437,10 +480,12 @@ def pyrogram_api():
             Message.copy
             Message.pin
             Message.unpin
+            Message.edit
             Message.edit_text
             Message.edit_caption
             Message.edit_media
             Message.edit_reply_markup
+            Message.reply
             Message.reply_text
             Message.reply_animation
             Message.reply_audio
@@ -459,6 +504,7 @@ def pyrogram_api():
             Message.reply_video
             Message.reply_video_note
             Message.reply_voice
+            Message.get_media_group
         """,
         chat="""
         Chat
@@ -467,7 +513,7 @@ def pyrogram_api():
             Chat.set_title
             Chat.set_description
             Chat.set_photo
-            Chat.kick_member
+            Chat.ban_member
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
@@ -478,6 +524,7 @@ def pyrogram_api():
             Chat.join
             Chat.leave
             Chat.mark_unread
+            Chat.set_protected_content
         """,
         user="""
         User

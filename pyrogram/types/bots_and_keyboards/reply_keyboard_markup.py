@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,6 +18,7 @@
 
 from typing import List, Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -81,7 +82,7 @@ class ReplyKeyboardMarkup(Object):
             selective=kb.selective
         )
 
-    def write(self):
+    async def write(self, _: "pyrogram.Client"):
         return raw.types.ReplyKeyboardMarkup(
             rows=[raw.types.KeyboardButtonRow(
                 buttons=[

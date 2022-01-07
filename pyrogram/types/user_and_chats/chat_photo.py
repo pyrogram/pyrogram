@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -72,40 +72,36 @@ class ChatPhoto(Object):
         if not isinstance(chat_photo, (raw.types.UserProfilePhoto, raw.types.ChatPhoto)):
             return None
 
-        media_id = chat_photo.photo_id if isinstance(chat_photo, raw.types.UserProfilePhoto) else 0
-
         return ChatPhoto(
             small_file_id=FileId(
                 file_type=FileType.CHAT_PHOTO,
                 dc_id=chat_photo.dc_id,
-                media_id=media_id,
+                media_id=chat_photo.photo_id,
                 access_hash=0,
-                volume_id=chat_photo.photo_small.volume_id,
+                volume_id=0,
                 thumbnail_source=ThumbnailSource.CHAT_PHOTO_SMALL,
-                local_id=chat_photo.photo_small.local_id,
+                local_id=0,
                 chat_id=peer_id,
                 chat_access_hash=peer_access_hash
             ).encode(),
             small_photo_unique_id=FileUniqueId(
-                file_unique_type=FileUniqueType.PHOTO,
-                volume_id=chat_photo.photo_small.volume_id,
-                local_id=chat_photo.photo_small.local_id
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=chat_photo.photo_id
             ).encode(),
             big_file_id=FileId(
                 file_type=FileType.CHAT_PHOTO,
                 dc_id=chat_photo.dc_id,
-                media_id=media_id,
+                media_id=chat_photo.photo_id,
                 access_hash=0,
-                volume_id=chat_photo.photo_big.volume_id,
+                volume_id=0,
                 thumbnail_source=ThumbnailSource.CHAT_PHOTO_BIG,
-                local_id=chat_photo.photo_big.local_id,
+                local_id=0,
                 chat_id=peer_id,
                 chat_access_hash=peer_access_hash
             ).encode(),
             big_photo_unique_id=FileUniqueId(
-                file_unique_type=FileUniqueType.PHOTO,
-                volume_id=chat_photo.photo_big.volume_id,
-                local_id=chat_photo.photo_big.local_id
+                file_unique_type=FileUniqueType.DOCUMENT,
+                media_id=chat_photo.photo_id
             ).encode(),
             client=client
         )

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -17,8 +17,6 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List
-
-from async_lru import alru_cache
 
 import pyrogram
 from pyrogram import raw
@@ -105,18 +103,36 @@ class Sticker(Object):
         self.thumbs = thumbs
         # self.mask_position = mask_position
 
+    cache = {}
+
     @staticmethod
-    @alru_cache(maxsize=256)
     async def _get_sticker_set_name(send, input_sticker_set_id):
         try:
-            return (await send(
+            set_id = input_sticker_set_id[0]
+            set_access_hash = input_sticker_set_id[1]
+
+            name = Sticker.cache.get((set_id, set_access_hash), None)
+
+            if name is not None:
+                return name
+
+            name = (await send(
                 raw.functions.messages.GetStickerSet(
                     stickerset=raw.types.InputStickerSetID(
-                        id=input_sticker_set_id[0],
-                        access_hash=input_sticker_set_id[1]
-                    )
+                        id=set_id,
+                        access_hash=set_access_hash
+                    ),
+                    hash=0
                 )
             )).set.short_name
+
+            Sticker.cache[(set_id, set_access_hash)] = name
+
+            if len(Sticker.cache) > 250:
+                for i in range(50):
+                    Sticker.cache.pop(next(iter(Sticker.cache)))
+
+            return name
         except StickersetInvalid:
             return None
 

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,7 +52,7 @@ class SetAdministratorTitle(Scaffold):
         Example:
             .. code-block:: python
 
-                app.set_administrator_title(chat_id, user_id, "ฅ^•ﻌ•^ฅ")
+                app.set_administrator_title(chat_id, user_id, "Admin Title")
         """
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)
@@ -60,7 +60,7 @@ class SetAdministratorTitle(Scaffold):
         r = (await self.send(
             raw.functions.channels.GetParticipant(
                 channel=chat_id,
-                user_id=user_id
+                participant=user_id
             )
         )).participant
 

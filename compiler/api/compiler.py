@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -416,11 +416,11 @@ def start(format: bool = False):
                 write_flags = "\n        ".join([
                     "flags = 0",
                     "\n        ".join(write_flags),
-                    "data.write(Int(flags))\n        "
+                    "b.write(Int(flags))\n        "
                 ])
 
                 write_types += write_flags
-                read_types += "flags = Int.read(data)\n        "
+                read_types += "flags = Int.read(b)\n        "
 
                 continue
 
@@ -433,55 +433,55 @@ def start(format: bool = False):
                 elif flag_type in CORE_TYPES:
                     write_types += "\n        "
                     write_types += f"if self.{arg_name} is not None:\n            "
-                    write_types += f"data.write({flag_type.title()}(self.{arg_name}))\n        "
+                    write_types += f"b.write({flag_type.title()}(self.{arg_name}))\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = {flag_type.title()}.read(data) if flags & (1 << {index}) else None"
+                    read_types += f"{arg_name} = {flag_type.title()}.read(b) if flags & (1 << {index}) else None"
                 elif "vector" in flag_type.lower():
                     sub_type = arg_type.split("<")[1][:-1]
 
                     write_types += "\n        "
                     write_types += f"if self.{arg_name} is not None:\n            "
-                    write_types += "data.write(Vector(self.{}{}))\n        ".format(
+                    write_types += "b.write(Vector(self.{}{}))\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(data{}) if flags & (1 << {}) else []\n        ".format(
+                    read_types += "{} = TLObject.read(b{}) if flags & (1 << {}) else []\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else "", index
                     )
                 else:
                     write_types += "\n        "
                     write_types += f"if self.{arg_name} is not None:\n            "
-                    write_types += f"data.write(self.{arg_name}.write())\n        "
+                    write_types += f"b.write(self.{arg_name}.write())\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = TLObject.read(data) if flags & (1 << {index}) else None\n        "
+                    read_types += f"{arg_name} = TLObject.read(b) if flags & (1 << {index}) else None\n        "
             else:
                 if arg_type in CORE_TYPES:
                     write_types += "\n        "
-                    write_types += f"data.write({arg_type.title()}(self.{arg_name}))\n        "
+                    write_types += f"b.write({arg_type.title()}(self.{arg_name}))\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = {arg_type.title()}.read(data)\n        "
+                    read_types += f"{arg_name} = {arg_type.title()}.read(b)\n        "
                 elif "vector" in arg_type.lower():
                     sub_type = arg_type.split("<")[1][:-1]
 
                     write_types += "\n        "
-                    write_types += "data.write(Vector(self.{}{}))\n        ".format(
+                    write_types += "b.write(Vector(self.{}{}))\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(data{})\n        ".format(
+                    read_types += "{} = TLObject.read(b{})\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )
                 else:
                     write_types += "\n        "
-                    write_types += f"data.write(self.{arg_name}.write())\n        "
+                    write_types += f"b.write(self.{arg_name}.write())\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = TLObject.read(data)\n        "
+                    read_types += f"{arg_name} = TLObject.read(b)\n        "
 
         slots = ", ".join([f'"{i[0]}"' for i in sorted_args])
         return_arguments = ", ".join([f"{i[0]}={i[0]}" for i in sorted_args])

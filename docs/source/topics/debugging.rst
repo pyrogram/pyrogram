@@ -2,7 +2,7 @@ Debugging
 =========
 
 When working with the API, chances are you'll stumble upon bugs, get stuck and start wondering how to continue. Nothing
-to actually worry about -- that's normal -- and luckily for you, Pyrogram provides some commodities to help you in this.
+to actually worry about since Pyrogram provides some commodities to help you in this.
 
 .. contents:: Contents
     :backlinks: none
@@ -27,8 +27,8 @@ Consider the following code:
 
 .. code-block:: python
 
-    dan = app.get_users("haskell")
-    print(dan)  # User
+    me = app.get_users("me")
+    print(me)  # User
 
 This will show a JSON representation of the object returned by :meth:`~pyrogram.Client.get_users`, which is a
 :class:`~pyrogram.types.User` instance, in this case. The output on your terminal will be something similar to this:
@@ -36,9 +36,9 @@ This will show a JSON representation of the object returned by :meth:`~pyrogram.
 .. code-block:: json
 
     {
-        "_": "pyrogram.User",
-        "id": 23122162,
-        "is_self": false,
+        "_": "User",
+        "id": 123456789,
+        "is_self": true,
         "is_contact": false,
         "is_mutual_contact": false,
         "is_deleted": false,
@@ -46,19 +46,13 @@ This will show a JSON representation of the object returned by :meth:`~pyrogram.
         "is_verified": false,
         "is_restricted": false,
         "is_support": false,
-        "is_scam": false,
-        "first_name": "Dan",
-        "status": {
-            "_": "pyrogram.UserStatus",
-            "user_id": 23122162,
-            "recently": true
-        },
-        "username": "haskell",
-        "language_code": "en",
+        "first_name": "Pyrogram",
         "photo": {
-            "_": "pyrogram.ChatPhoto",
-            "small_file_id": "AQADBAAD8tBgAQAEJjCxGgAEo5IBAAIC",
-            "big_file_id": "AQADBAAD8tBgAQAEJjCxGgAEpZIBAAEBAg"
+            "_": "ChatPhoto",
+            "small_file_id": "AbCdE...EdCbA",
+            "small_photo_unique_id": "VwXyZ...ZyXwV",
+            "big_file_id": "AbCdE...EdCbA",
+            "big_photo_unique_id": "VwXyZ...ZyXwV"
         }
     }
 
@@ -69,36 +63,22 @@ Accessing Attributes
 --------------------
 
 Even though you see a JSON output, it doesn't mean we are dealing with dictionaries; in fact, all Pyrogram types are
-full-fledged Python objects and the correct way to access any attribute of them is by using the dot notation ``.``:
+fully-fledged Python objects and the correct way to access any attribute of them is by using the dot notation ``.``:
 
 .. code-block:: python
 
-    dan_photo = dan.photo
-    print(dan_photo)  # ChatPhoto
+    photo = me.photo
+    print(photo)  # ChatPhoto
 
 .. code-block:: json
 
     {
-        "_": "pyrogram.ChatPhoto",
-        "small_file_id": "AQADBAAD8tBgAQAEJjCxGgAEo5IBAAIC",
-        "big_file_id": "AQADBAAD8tBgAQAEJjCxGgAEpZIBAAEBAg"
+        "_": "ChatPhoto",
+        "small_file_id": "AbCdE...EdCbA",
+        "small_photo_unique_id": "VwXyZ...ZyXwV",
+        "big_file_id": "AbCdE...EdCbA",
+        "big_photo_unique_id": "VwXyZ...ZyXwV"
     }
-
-However, the bracket notation ``[]`` is also supported, but its usage is discouraged:
-
-.. warning::
-
-    Bracket notation in Python is not commonly used for getting/setting object attributes. While it works for Pyrogram
-    objects, it might not work for anything else and you should not rely on this.
-
-.. code-block:: python
-
-    dan_photo_big = dan["photo"]["big_file_id"]
-    print(dan_photo_big)  # str
-
-.. code-block:: text
-
-    AQADBAAD8tBgAQAEJjCxGgAEpZIBAAEBAg
 
 Checking an Object's Type
 -------------------------
@@ -111,8 +91,8 @@ error. The correct way to get the object type is by using the built-in function 
 
 .. code-block:: python
 
-    dan_status = dan.status
-    print(type(dan_status))
+    status = me.status
+    print(type(status))
 
 .. code-block:: text
 
@@ -125,8 +105,8 @@ And to check if an object is an instance of a given class, you use the built-in 
 
     from pyrogram.types import UserStatus
 
-    dan_status = dan.status
-    print(isinstance(dan_status, UserStatus))
+    status = me.status
+    print(isinstance(status, UserStatus))
 
 .. code-block:: text
 

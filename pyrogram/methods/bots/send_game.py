@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -30,6 +30,7 @@ class SendGame(Scaffold):
         game_short_name: str,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -54,6 +55,9 @@ class SendGame(Scaffold):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An object for an inline keyboard. If empty, one ‘Play game_title’ button will be shown automatically.
@@ -80,7 +84,8 @@ class SendGame(Scaffold):
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
-                reply_markup=reply_markup.write() if reply_markup else None
+                noforwards=protect_content,
+                reply_markup=await reply_markup.write(self) if reply_markup else None
             )
         )
 

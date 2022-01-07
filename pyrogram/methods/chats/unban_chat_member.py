@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -28,7 +28,7 @@ class UnbanChatMember(Scaffold):
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> bool:
-        """Unban a previously kicked user in a supergroup or channel.
+        """Unban a previously banned user in a supergroup or channel.
         The user will **not** return to the group or channel automatically, but will be able to join via link, etc.
         You must be an administrator for this to work.
 
@@ -52,7 +52,7 @@ class UnbanChatMember(Scaffold):
         await self.send(
             raw.functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
-                user_id=await self.resolve_peer(user_id),
+                participant=await self.resolve_peer(user_id),
                 banned_rights=raw.types.ChatBannedRights(
                     until_date=0
                 )

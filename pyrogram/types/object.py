@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -56,7 +56,7 @@ class Object(metaclass=Meta):
             "_": obj.__class__.__name__,
             **{
                 attr: (
-                    "*" * len(getattr(obj, attr))
+                    "*" * 9
                     if attr == "phone_number" else
                     str(datetime.fromtimestamp(getattr(obj, attr)))
                     if attr.endswith("date") else

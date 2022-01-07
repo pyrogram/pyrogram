@@ -8,7 +8,6 @@ found starting from this page.
 This page is about the Client class, which exposes high-level methods for an easy access to the API.
 
 .. code-block:: python
-    :emphasize-lines: 1-3
 
     from pyrogram import Client
 

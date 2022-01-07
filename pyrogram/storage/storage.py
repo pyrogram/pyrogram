@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -20,10 +20,14 @@ import base64
 import struct
 from typing import List, Tuple
 
+from pyrogram import utils
+
 
 class Storage:
     SESSION_STRING_FORMAT = ">B?256sI?"
+    SESSION_STRING_FORMAT_64 = ">B?256sQ?"
     SESSION_STRING_SIZE = 351
+    SESSION_STRING_SIZE_64 = 356
 
     def __init__(self, name: str):
         self.name = name
@@ -71,13 +75,14 @@ class Storage:
         raise NotImplementedError
 
     async def export_session_string(self):
+        user_id = await self.user_id()
         return base64.urlsafe_b64encode(
             struct.pack(
-                self.SESSION_STRING_FORMAT,
+                self.SESSION_STRING_FORMAT if user_id < utils.MAX_USER_ID_OLD else self.SESSION_STRING_FORMAT_64,
                 await self.dc_id(),
                 await self.test_mode(),
                 await self.auth_key(),
-                await self.user_id(),
+                user_id,
                 await self.is_bot()
             )
         ).decode().rstrip("=")

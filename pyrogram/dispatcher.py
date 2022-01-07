@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -26,7 +26,7 @@ from pyrogram import utils
 from pyrogram.handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler,
-    ChosenInlineResultHandler
+    ChosenInlineResultHandler, ChatMemberUpdatedHandler, ChatJoinRequestHandler
 )
 from pyrogram.raw.types import (
     UpdateNewMessage, UpdateNewChannelMessage, UpdateNewScheduledMessage,
@@ -34,7 +34,8 @@ from pyrogram.raw.types import (
     UpdateDeleteMessages, UpdateDeleteChannelMessages,
     UpdateBotCallbackQuery, UpdateInlineBotCallbackQuery,
     UpdateUserStatus, UpdateBotInlineQuery, UpdateMessagePoll,
-    UpdateBotInlineSend
+    UpdateBotInlineSend, UpdateChatParticipant, UpdateChannelParticipant,
+    UpdateBotChatInviteRequester
 )
 
 log = logging.getLogger(__name__)
@@ -60,6 +61,11 @@ class Dispatcher:
     CALLBACK_QUERY_UPDATES = (
         UpdateBotCallbackQuery,
         UpdateInlineBotCallbackQuery
+    )
+
+    CHAT_MEMBER_UPDATES = (
+        UpdateChatParticipant,
+        UpdateChannelParticipant
     )
 
     MESSAGE_UPDATES = NEW_MESSAGE_UPDATES + EDIT_MESSAGE_UPDATES
@@ -98,6 +104,12 @@ class Dispatcher:
         async def chosen_inline_result_parser(update, users, chats):
             return pyrogram.types.ChosenInlineResult._parse(self.client, update, users), ChosenInlineResultHandler
 
+        async def chat_member_updated_parser(update, users, chats):
+            return pyrogram.types.ChatMemberUpdated._parse(self.client, update, users, chats), ChatMemberUpdatedHandler
+
+        async def chat_join_request_parser(update, users, chats):
+            return pyrogram.types.ChatJoinRequest._parse(self.client, update, users, chats), ChatJoinRequestHandler
+
         self.update_parsers = {
             Dispatcher.MESSAGE_UPDATES: message_parser,
             Dispatcher.DELETE_MESSAGES_UPDATES: deleted_messages_parser,
@@ -105,7 +117,9 @@ class Dispatcher:
             (UpdateUserStatus,): user_status_parser,
             (UpdateBotInlineQuery,): inline_query_parser,
             (UpdateMessagePoll,): poll_parser,
-            (UpdateBotInlineSend,): chosen_inline_result_parser
+            (UpdateBotInlineSend,): chosen_inline_result_parser,
+            Dispatcher.CHAT_MEMBER_UPDATES: chat_member_updated_parser,
+            (UpdateBotChatInviteRequester,): chat_join_request_parser
         }
 
         self.update_parsers = {key: value for key_tuple, value in self.update_parsers.items() for key in key_tuple}

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -43,6 +43,12 @@ class InlineQuery(Object, Update):
         offset (``str``):
             Offset of the results to be returned, can be controlled by the bot.
 
+        chat_type (``str``, *optional*):
+            Type of the chat, from which the inline query was sent.
+            Can be either "sender" for a private chat with the inline query sender, "private", "group", "supergroup", or
+            "channel". The chat type should be always known for requests sent from official clients and most
+            third-party clients, unless the request was sent from a secret chat.
+
         location (:obj:`~pyrogram.types.Location`. *optional*):
             Sender location, only for bots that request user location.
 
@@ -59,6 +65,7 @@ class InlineQuery(Object, Update):
         from_user: "types.User",
         query: str,
         offset: str,
+        chat_type: str,
         location: "types.Location" = None,
         matches: List[Match] = None
     ):
@@ -68,16 +75,32 @@ class InlineQuery(Object, Update):
         self.from_user = from_user
         self.query = query
         self.offset = offset
+        self.chat_type = chat_type
         self.location = location
         self.matches = matches
 
     @staticmethod
     def _parse(client, inline_query: raw.types.UpdateBotInlineQuery, users: dict) -> "InlineQuery":
+        peer_type = inline_query.peer_type
+        chat_type = None
+
+        if isinstance(peer_type, raw.types.InlineQueryPeerTypeSameBotPM):
+            chat_type = "sender"
+        elif isinstance(peer_type, raw.types.InlineQueryPeerTypePM):
+            chat_type = "private"
+        elif isinstance(peer_type, raw.types.InlineQueryPeerTypeChat):
+            chat_type = "group"
+        elif isinstance(peer_type, raw.types.InlineQueryPeerTypeMegagroup):
+            chat_type = "supergroup"
+        elif isinstance(peer_type, raw.types.InlineQueryPeerTypeBroadcast):
+            chat_type = "channel"
+
         return InlineQuery(
             id=str(inline_query.query_id),
             from_user=types.User._parse(client, users[inline_query.user_id]),
             query=inline_query.query,
             offset=inline_query.offset,
+            chat_type=chat_type,
             location=types.Location(
                 longitude=inline_query.geo.long,
                 latitude=inline_query.geo.lat,

@@ -1,16 +1,12 @@
 Decorators
 ==========
 
-While still being methods bound to the :class:`~pyrogram.Client` class, decorators are of a special kind and thus
-deserve a dedicated page.
-
 Decorators are able to register callback functions for handling updates in a much easier and cleaner way compared to
 :doc:`Handlers <handlers>`; they do so by instantiating the correct handler and calling
 :meth:`~pyrogram.Client.add_handler` automatically. All you need to do is adding the decorators on top of your
 functions.
 
 .. code-block:: python
-    :emphasize-lines: 6
 
     from pyrogram import Client
 
@@ -43,6 +39,7 @@ Index
     - :meth:`~Client.on_callback_query`
     - :meth:`~Client.on_inline_query`
     - :meth:`~Client.on_chosen_inline_result`
+    - :meth:`~Client.on_chat_member_updated`
     - :meth:`~Client.on_deleted_messages`
     - :meth:`~Client.on_user_status`
     - :meth:`~Client.on_poll`
@@ -59,6 +56,7 @@ Details
 .. autodecorator:: pyrogram.Client.on_callback_query()
 .. autodecorator:: pyrogram.Client.on_inline_query()
 .. autodecorator:: pyrogram.Client.on_chosen_inline_result()
+.. autodecorator:: pyrogram.Client.on_chat_member_updated()
 .. autodecorator:: pyrogram.Client.on_deleted_messages()
 .. autodecorator:: pyrogram.Client.on_user_status()
 .. autodecorator:: pyrogram.Client.on_poll()
