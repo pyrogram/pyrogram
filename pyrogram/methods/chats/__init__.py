@@ -48,6 +48,7 @@ from .set_administrator_title import SetAdministratorTitle
 from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
+from .set_chat_protected_content import SetChatProtectedContent
 from .set_chat_title import SetChatTitle
 from .set_send_as_chat import SetSendAsChat
 from .set_slow_mode import SetSlowMode
@@ -98,6 +99,7 @@ class Chats(
     GetChatEventLog,
     GetChatOnlineCount,
     GetSendAsChats,
-    SetSendAsChat
+    SetSendAsChat,
+    SetChatProtectedContent
 ):
     pass

@@ -331,7 +331,7 @@ class Chat(Object):
                         send_as_raw = users[default_send_as.user_id]
                     else:
                         send_as_raw = chats[default_send_as.channel_id]
-    
+
                     parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
 
             if full_chat.pinned_msg_id:
@@ -1019,3 +1019,30 @@ class Chat(Object):
         """
 
         return await self._client.mark_chat_unread(self.id)
+
+    async def set_protected_content(self, enabled: bool) -> bool:
+        """Bound method *set_protected_content* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_protected_content(chat_id, enabled)
+
+        Parameters:
+            enabled (``bool``):
+                Pass True to enable the protected content setting, False to disable.
+
+        Example:
+            .. code-block:: python
+
+                chat.set_protected_content(enabled)
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.set_chat_protected_content(
+            self.id,
+            enabled=enabled
+        )

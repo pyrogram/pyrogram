@@ -226,6 +226,7 @@ def pyrogram_api():
             get_chat_online_count
             get_send_as_chats
             set_send_as_chat
+            set_chat_protected_content
         """,
         users="""
         Users
@@ -515,6 +516,7 @@ def pyrogram_api():
             Chat.join
             Chat.leave
             Chat.mark_unread
+            Chat.set_protected_content
         """,
         user="""
         User
