@@ -178,27 +178,27 @@ class Client(Methods, Scaffold):
 
     def __init__(
         self,
-        session_name: Union[str, Storage],
-        api_id: Union[int, str] = None,
-        api_hash: str = None,
-        app_version: str = None,
-        device_model: str = None,
-        system_version: str = None,
-        lang_code: str = None,
-        ipv6: bool = False,
-        proxy: dict = None,
+        session_name: Optional[Union[str, Storage]],
+        api_id: Optional[Union[int, str]] = None,
+        api_hash: Optional[str] = None,
+        app_version: Optional[str] = None,
+        device_model: Optional[str] = None,
+        system_version: Optional[str] = None,
+        lang_code: Optional[str] = None,
+        ipv6: Optional[bool] = False,
+        proxy: Optional[dict] = None,
         test_mode: bool = False,
-        bot_token: str = None,
-        phone_number: str = None,
-        phone_code: str = None,
-        password: str = None,
+        bot_token: Optional[str] = None,
+        phone_number: Optional[str] = None,
+        phone_code: Optional[str] = None,
+        password: Optional[str] = None,
         force_sms: bool = False,
         workers: int = Scaffold.WORKERS,
         workdir: str = Scaffold.WORKDIR,
         config_file: str = Scaffold.CONFIG_FILE,
-        plugins: dict = None,
+        plugins: Optional[dict] = None,
         parse_mode: str = Scaffold.PARSE_MODES[0],
-        no_updates: bool = None,
+        no_updates: bool = False,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
         hide_password: bool = False
@@ -232,6 +232,19 @@ class Client(Methods, Scaffold):
         self.hide_password = hide_password
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
+        self.session_name = session_name
+
+        self.dispatcher = Dispatcher(self)
+        self.loop = asyncio.get_event_loop()
+
+    @property
+    async def session_name(self):
+        return await self.export_session_string()
+
+    @session_name.setter
+    def session_name(self, session_name):
+        if session_name is None:
+            return
 
         if isinstance(session_name, str):
             if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
@@ -243,9 +256,6 @@ class Client(Methods, Scaffold):
             self.storage = session_name
         else:
             raise ValueError("Unknown storage engine")
-
-        self.dispatcher = Dispatcher(self)
-        self.loop = asyncio.get_event_loop()
 
     def __enter__(self):
         return self.start()
