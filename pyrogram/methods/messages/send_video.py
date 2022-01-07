@@ -163,7 +163,7 @@ class SendVideo(Scaffold):
                 app.send_video("me", "video.mp4")
 
                 # Add caption to the video
-                app.send_video("me", "video.mp4", caption="recording")
+                app.send_video("me", "video.mp4", caption="video caption")
 
                 # Send self-destructing video
                 app.send_video("me", "video.mp4", ttl_seconds=10)

@@ -71,10 +71,10 @@ class GetMessages(Scaffold):
             .. code-block:: python
 
                 # Get one message
-                app.get_messages("pyrogramchat", 51110)
+                app.get_messages(chat_id, 12345)
 
                 # Get more than one message (list of messages)
-                app.get_messages("pyrogramchat", [44625, 51110])
+                app.get_messages(chat_id, [12345, 12346])
 
                 # Get message by ignoring any replied-to message
                 app.get_messages(chat_id, message_id, replies=0)

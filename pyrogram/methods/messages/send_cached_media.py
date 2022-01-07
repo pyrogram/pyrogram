@@ -91,7 +91,7 @@ class SendCachedMedia(Scaffold):
         Example:
             .. code-block:: python
 
-                app.send_cached_media("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
+                app.send_cached_media("me", file_id)
         """
 
         r = await self.send(

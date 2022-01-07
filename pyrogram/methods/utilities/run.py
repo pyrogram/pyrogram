@@ -28,16 +28,13 @@ class Run(Scaffold):
         """Start the client, idle the main script and finally stop the client.
 
         This is a convenience method that calls :meth:`~pyrogram.Client.start`, :meth:`~pyrogram.idle` and
-        :meth:`~pyrogram.Client.stop` in sequence. It makes running a client less verbose, but is not suitable in case
-        you want to run more than one client in a single main script, since :meth:`~pyrogram.idle` will block after
-        starting the own client.
+        :meth:`~pyrogram.Client.stop` in sequence. It makes running a single client less verbose.
 
         Raises:
             ConnectionError: In case you try to run an already started client.
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 7
 
                 from pyrogram import Client
 

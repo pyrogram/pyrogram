@@ -101,6 +101,8 @@ class SearchMessages(Scaffold):
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Search for text and media messages inside a specific chat.
 
+        If you want to get the messages count only, see :meth:`~pyrogram.Client.search_messages_count`.
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
@@ -142,7 +144,7 @@ class SearchMessages(Scaffold):
                 Limits the number of messages to be retrieved.
                 By default, no limit is applied and all messages are returned.
 
-            from_user (``int`` | ``str``):
+            from_user (``int`` | ``str``, *optional*):
                 Unique identifier (int) or username (str) of the target user you want to search for messages from.
 
         Returns:
@@ -151,16 +153,16 @@ class SearchMessages(Scaffold):
         Example:
             .. code-block:: python
 
-                # Search for text messages in @pyrogramchat. Get the last 333 results
-                for message in app.search_messages("pyrogramchat", query="dan", limit=333):
+                # Search for text messages in chat. Get the last 120 results
+                for message in app.search_messages(chat_id, query="hello", limit=120):
                     print(message.text)
 
-                # Search for pinned messages in @pyrogramchat
-                for message in app.search_messages("pyrogramchat", filter="pinned"):
+                # Search for pinned messages in chat
+                for message in app.search_messages(chat_id, filter="pinned"):
                     print(message.text)
 
-                # Search for messages containing "hi" sent by @haskell in @pyrogramchat
-                for message in app.search_messages("pyrogramchat", "hi", from_user="haskell"):
+                # Search for messages containing "hello" sent by yourself in chat
+                for message in app.search_messages(chat, "hello", from_user="me"):
                     print(message.text)
         """
         current = 0

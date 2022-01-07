@@ -50,7 +50,6 @@ async def idle():
 
     Example:
         .. code-block:: python
-            :emphasize-lines: 13
 
             from pyrogram import Client, idle
 

@@ -1370,7 +1370,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_contact(phone_number, "Dan")
+                message.reply_contact("+1-123-456-7890", "Name")
 
         Parameters:
             phone_number (``str``):

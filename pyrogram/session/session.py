@@ -25,7 +25,6 @@ from hashlib import sha1
 from io import BytesIO
 
 import pyrogram
-from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
@@ -54,8 +53,6 @@ class Session:
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
 
-    notice_displayed = False
-
     def __init__(
         self,
         client: "pyrogram.Client",
@@ -65,11 +62,6 @@ class Session:
         is_media: bool = False,
         is_cdn: bool = False
     ):
-        if not Session.notice_displayed:
-            print(f"Pyrogram v{__version__}, {__copyright__}")
-            print(f"Licensed under the terms of the {__license__}", end="\n\n")
-            Session.notice_displayed = True
-
         self.client = client
         self.dc_id = dc_id
         self.auth_key = auth_key

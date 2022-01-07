@@ -39,7 +39,6 @@ class Start(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 4
 
                 from pyrogram import Client
 

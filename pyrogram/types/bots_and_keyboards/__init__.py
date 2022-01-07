@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from .bot_command import BotCommand
 from .callback_game import CallbackGame
 from .callback_query import CallbackQuery
 from .force_reply import ForceReply
@@ -26,7 +27,6 @@ from .keyboard_button import KeyboardButton
 from .login_url import LoginUrl
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
-from .bot_command import BotCommand
 
 __all__ = [
     "CallbackGame",

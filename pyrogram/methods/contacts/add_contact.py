@@ -38,7 +38,7 @@ class AddContact(Scaffold):
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
 
-            first_name (``str``, *optional*):
+            first_name (``str``):
                 User's first name.
 
             last_name (``str``, *optional*):

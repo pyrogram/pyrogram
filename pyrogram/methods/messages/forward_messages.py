@@ -67,7 +67,6 @@ class ForwardMessages(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5
 
                 # Forward a single message
                 app.forward_messages("me", "pyrogram", 20)

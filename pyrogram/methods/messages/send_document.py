@@ -146,7 +146,7 @@ class SendDocument(Scaffold):
                 app.send_document("me", "document.zip")
 
                 # Add caption to the document file
-                app.send_document("me", "document.zip", caption="archive")
+                app.send_document("me", "document.zip", caption="document caption")
 
                 # Keep track of the progress while uploading
                 def progress(current, total):

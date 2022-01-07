@@ -29,7 +29,6 @@ class StopTransmission(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 9
 
                 from pyrogram import Client
 
@@ -42,6 +41,6 @@ class StopTransmission(Scaffold):
                         client.stop_transmission()
 
                 with app:
-                    app.send_document("me", "files.zip", progress=progress, progress_args=(app,))
+                    app.send_document("me", "file.zip", progress=progress, progress_args=(app,))
         """
         raise pyrogram.StopTransmission

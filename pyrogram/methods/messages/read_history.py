@@ -47,10 +47,10 @@ class ReadHistory(Scaffold):
             .. code-block:: python
 
                 # Mark the whole chat as read
-                app.read_history("pyrogramlounge")
+                app.read_history(chat_id)
 
                 # Mark messages as read only up to the given message id
-                app.read_history("pyrogramlounge", 123456)
+                app.read_history(chat_id, 123456)
         """
 
         peer = await self.resolve_peer(chat_id)

@@ -17,9 +17,9 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Optional
 from binascii import crc32
 from struct import pack, unpack
+from typing import Optional
 
 from .tcp import TCP
 

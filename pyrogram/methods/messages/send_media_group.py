@@ -83,7 +83,7 @@ class SendMediaGroup(Scaffold):
                     [
                         InputMediaPhoto("photo1.jpg"),
                         InputMediaPhoto("photo2.jpg", caption="photo caption"),
-                        InputMediaVideo("video.mp4", caption="a video")
+                        InputMediaVideo("video.mp4", caption="video caption")
                     ]
                 )
         """

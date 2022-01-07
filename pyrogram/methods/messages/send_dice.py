@@ -78,13 +78,13 @@ class SendDice(Scaffold):
             .. code-block:: python
 
                 # Send a dice
-                app.send_dice("pyrogramlounge")
+                app.send_dice(chat_id)
 
                 # Send a dart
-                app.send_dice("pyrogramlounge", "🎯")
+                app.send_dice(chat_id, "🎯")
 
                 # Send a basketball
-                app.send_dice("pyrogramlounge", "🏀")
+                app.send_dice(chat_id, "🏀")
         """
 
         r = await self.send(

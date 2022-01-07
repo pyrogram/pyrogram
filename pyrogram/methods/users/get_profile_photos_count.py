@@ -38,7 +38,7 @@ class GetProfilePhotosCount(Scaffold):
         Example:
             .. code-block:: python
 
-                count = app.get_profile_photos_count("haskell")
+                count = app.get_profile_photos_count("me")
                 print(count)
         """
 

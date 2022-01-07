@@ -85,7 +85,7 @@ class SendContact(Scaffold):
         Example:
             .. code-block:: python
 
-                app.send_contact("me", "+39 123 456 7890", "Dan")
+                app.send_contact("me", "+1-123-456-7890", "Name")
         """
         r = await self.send(
             raw.functions.messages.SendMedia(

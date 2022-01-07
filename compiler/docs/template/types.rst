@@ -6,7 +6,6 @@ Unless required as argument to a client method, most of the types don't need to 
 are only returned by other methods. You also don't need to import them, unless you want to type-hint your variables.
 
 .. code-block:: python
-    :emphasize-lines: 1
 
     from pyrogram.types import User, Message, ...
 

@@ -934,12 +934,3 @@ class chat(Filter, set):
                          and message.from_user
                          and message.from_user.is_self
                          and not message.outgoing)))
-
-
-# region dan_filter
-async def dan_filter(_, __, m: Message):
-    return bool(m.from_user and m.from_user.id == 23122162)
-
-
-dan = create(dan_filter)
-# endregion

@@ -54,7 +54,7 @@ class IterProfilePhotos(Scaffold):
         Example:
             .. code-block:: python
 
-                for photo in app.iter_profile_photos("haskell"):
+                for photo in app.iter_profile_photos("me"):
                     print(photo.file_id)
         """
         current = 0

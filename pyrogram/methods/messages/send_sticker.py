@@ -113,7 +113,7 @@ class SendSticker(Scaffold):
                 app.send_sticker("me", "sticker.webp")
 
                 # Send sticker using file_id
-                app.send_sticker("me", "CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
+                app.send_sticker("me", file_id)
         """
         file = None
 

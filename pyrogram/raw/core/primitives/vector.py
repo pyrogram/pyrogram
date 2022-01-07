@@ -33,7 +33,7 @@ class Vector(bytes, TLObject):
     def read_bare(b: BytesIO, size: int) -> Union[int, Any]:
         if size == 4:
             return Int.read(b)
-        
+
         if size == 8:
             return Long.read(b)
 

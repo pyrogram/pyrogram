@@ -88,10 +88,9 @@ class SendMessage(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8,11,21-23,26-32
 
                 # Simple example
-                app.send_message("haskell", "Thanks for creating **Pyrogram**!")
+                app.send_message("me", "Message sent with **Pyrogram**!")
 
                 # Disable web page previews
                 app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
@@ -119,7 +118,7 @@ class SendMessage(Scaffold):
                     chat_id, "These are inline buttons",
                     reply_markup=InlineKeyboardMarkup(
                         [
-                            [InlineKeyboardButton("Data", callback_data="hidden_callback_data")],
+                            [InlineKeyboardButton("Data", callback_data="callback_data")],
                             [InlineKeyboardButton("Docs", url="https://docs.pyrogram.org")]
                         ]))
         """

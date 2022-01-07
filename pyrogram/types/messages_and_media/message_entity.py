@@ -87,7 +87,7 @@ class MessageEntity(Object):
             - "bot_command": ``/start@pyrogrambot``.
             - "url": ``https://pyrogram.org`` (see *url* below).
             - "email": ``do-not-reply@pyrogram.org``.
-            - "phone_number": ``+69-420-1337``.
+            - "phone_number": ``+1-123-456-7890``.
             - "bold": **bold text**.
             - "italic": *italic text*.
             - "underline": underlined text.

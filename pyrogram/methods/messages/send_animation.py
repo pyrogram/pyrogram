@@ -158,7 +158,7 @@ class SendAnimation(Scaffold):
                 app.send_animation("me", "animation.gif")
 
                 # Add caption to the animation
-                app.send_animation("me", "animation.gif", caption="cat")
+                app.send_animation("me", "animation.gif", caption="animation caption")
 
                 # Unsave the animation once is sent
                 app.send_animation("me", "animation.gif", unsave=True)

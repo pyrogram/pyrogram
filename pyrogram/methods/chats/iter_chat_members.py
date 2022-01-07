@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from string import ascii_lowercase
 from typing import Union, AsyncGenerator, Optional
 
 from pyrogram import raw
@@ -31,10 +30,6 @@ class Filters:
     BOTS = "bots"
     RECENT = "recent"
     ADMINISTRATORS = "administrators"
-
-
-QUERIES = [""] + [str(i) for i in range(10)] + list(ascii_lowercase)
-QUERYABLE_FILTERS = (Filters.ALL, Filters.BANNED, Filters.RESTRICTED)
 
 
 class IterChatMembers(Scaffold):
@@ -57,11 +52,11 @@ class IterChatMembers(Scaffold):
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
-                By default, no limit is applied and all members are returned [1]_.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Defaults to "" (empty string) [2]_.
+                Defaults to "" (empty string).
+                A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
@@ -74,11 +69,6 @@ class IterChatMembers(Scaffold):
                 *"administrators"* - chat administrators only.
                 Defaults to *"recent"*.
 
-        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
-            on channels.
-
-        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
-
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatMember` objects.
 
@@ -86,58 +76,52 @@ class IterChatMembers(Scaffold):
             .. code-block:: python
 
                 # Iterate though all chat members
-                for member in app.iter_chat_members("pyrogramchat"):
+                for member in app.iter_chat_members(chat_id):
                     print(member.user.first_name)
 
                 # Iterate though all administrators
-                for member in app.iter_chat_members("pyrogramchat", filter="administrators"):
+                for member in app.iter_chat_members(chat_id, filter="administrators"):
                     print(member.user.first_name)
 
                 # Iterate though all bots
-                for member in app.iter_chat_members("pyrogramchat", filter="bots"):
+                for member in app.iter_chat_members(chat_id, filter="bots"):
                     print(member.user.first_name)
         """
         current = 0
         yielded = set()
-        queries = [query] if query else QUERIES
         total = limit or (1 << 31) - 1
         limit = min(200, total)
         resolved_chat_id = await self.resolve_peer(chat_id)
+        offset = 0
 
-        if filter not in QUERYABLE_FILTERS:
-            queries = [""]
+        while True:
+            chat_members = await self.get_chat_members(
+                chat_id=chat_id,
+                offset=offset,
+                limit=limit,
+                query=query,
+                filter=filter
+            )
 
-        for q in queries:
-            offset = 0
+            if not chat_members:
+                break
 
-            while True:
-                chat_members = await self.get_chat_members(
-                    chat_id=chat_id,
-                    offset=offset,
-                    limit=limit,
-                    query=q,
-                    filter=filter
-                )
+            if isinstance(resolved_chat_id, raw.types.InputPeerChat):
+                total = len(chat_members)
 
-                if not chat_members:
-                    break
+            offset += len(chat_members)
 
-                if isinstance(resolved_chat_id, raw.types.InputPeerChat):
-                    total = len(chat_members)
+            for chat_member in chat_members:
+                user_id = chat_member.user.id
 
-                offset += len(chat_members)
+                if user_id in yielded:
+                    continue
 
-                for chat_member in chat_members:
-                    user_id = chat_member.user.id
+                yield chat_member
 
-                    if user_id in yielded:
-                        continue
+                yielded.add(chat_member.user.id)
 
-                    yield chat_member
+                current += 1
 
-                    yielded.add(chat_member.user.id)
-
-                    current += 1
-
-                    if current >= total:
-                        return
+                if current >= total:
+                    return

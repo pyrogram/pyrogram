@@ -40,7 +40,6 @@ class Restart(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 8
 
                 from pyrogram import Client
 

@@ -45,10 +45,10 @@ class SetSlowMode(Scaffold):
             .. code-block:: python
 
                 # Set slow mode to 60 seconds
-                app.set_slow_mode("pyrogramchat", 60)
+                app.set_slow_mode(chat_id, 60)
 
                 # Disable slow mode
-                app.set_slow_mode("pyrogramchat", None)
+                app.set_slow_mode(chat_id, None)
         """
 
         await self.send(

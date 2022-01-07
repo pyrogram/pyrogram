@@ -52,7 +52,7 @@ class SetAdministratorTitle(Scaffold):
         Example:
             .. code-block:: python
 
-                app.set_administrator_title(chat_id, user_id, "ฅ^•ﻌ•^ฅ")
+                app.set_administrator_title(chat_id, user_id, "Admin Title")
         """
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)

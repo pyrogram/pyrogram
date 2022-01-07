@@ -47,7 +47,7 @@ class GetUsers(Scaffold):
             .. code-block:: python
 
                 # Get information about one user
-                app.get_users("haskell")
+                app.get_users("me")
 
                 # Get information about multiple users at once
                 app.get_users([user1, user2, user3])

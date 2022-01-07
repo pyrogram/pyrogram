@@ -158,6 +158,7 @@ def pyrogram_api():
             send_venue
             send_contact
             send_cached_media
+            send_reaction
             edit_message_text
             edit_message_caption
             edit_message_media
@@ -180,7 +181,9 @@ def pyrogram_api():
             retract_vote
             send_dice
             search_messages
+            search_messages_count
             search_global
+            search_global_count
             download_media
             get_discussion_message
         """,
@@ -284,6 +287,7 @@ def pyrogram_api():
             send_game
             set_game_score
             get_game_high_scores
+            set_bot_commands
         """,
         authorization="""
         Authorization
@@ -360,6 +364,7 @@ def pyrogram_api():
             ChatEvent
             ChatEventFilter
             ChatMemberUpdated
+            ChatJoinRequest
             Dialog
             Restriction
         """,
@@ -384,6 +389,7 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            Reaction
             VoiceChatScheduled
             VoiceChatStarted
             VoiceChatEnded
@@ -420,6 +426,8 @@ def pyrogram_api():
             InlineQueryResultArticle
             InlineQueryResultPhoto
             InlineQueryResultAnimation
+            InlineQueryResultAudio
+            InlineQueryResultVideo
             ChosenInlineResult
         """,
         input_message_content="""

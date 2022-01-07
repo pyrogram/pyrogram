@@ -29,35 +29,37 @@ from pygments.styles.friendly import FriendlyStyle
 FriendlyStyle.background_color = "#f3f2f1"
 
 project = "Pyrogram"
-copyright = f"2017-{datetime.now().year}, Dan"
+copyright = f"2017-present, Dan"
 author = "Dan"
+
+version = ".".join(__version__.split(".")[:-1])
 
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
-    "sphinx_copybutton",
-    "sphinx_tabs.tabs"
+    "sphinx_copybutton"
 ]
 
 master_doc = "index"
 source_suffix = ".rst"
 autodoc_member_order = "bysource"
 
-version = __version__
-release = version
-
-templates_path = ["_templates"]
+templates_path = ["_resources/templates"]
+html_copy_source = False
 
 napoleon_use_rtype = False
+napoleon_use_param = False
 
 pygments_style = "friendly"
 
 copybutton_prompt_text = "$ "
 
+suppress_warnings = ["image.not_readable"]
+
 html_title = "Pyrogram Documentation"
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
+html_static_path = ["_resources/static"]
 html_show_sourcelink = True
 html_show_copyright = False
 html_theme_options = {
@@ -65,17 +67,15 @@ html_theme_options = {
     "collapse_navigation": True,
     "sticky_navigation": False,
     "logo_only": True,
-    "display_version": True,
+    "display_version": False,
     "style_external_links": True
 }
 
-napoleon_use_param = False
-
-html_logo = "_images/pyrogram.png"
-html_favicon = "_images/favicon.ico"
+html_logo = "_resources/static/img/pyrogram.png"
+html_favicon = "_resources/static/img/favicon.ico"
 
 latex_engine = "xelatex"
-latex_logo = "_images/pyrogram.png"
+latex_logo = "_resources/static/img/pyrogram.png"
 
 latex_elements = {
     "pointsize": "12pt",

@@ -32,7 +32,6 @@ class ExportSessionString(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 6
 
                 from pyrogram import Client
 

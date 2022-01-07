@@ -47,8 +47,8 @@ class GetChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                dan = app.get_chat_member("pyrogramchat", "haskell")
-                print(dan)
+                member = app.get_chat_member(chat_id, "me")
+                print(member)
         """
         chat = await self.resolve_peer(chat_id)
         user = await self.resolve_peer(user_id)

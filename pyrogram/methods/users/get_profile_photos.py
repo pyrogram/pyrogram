@@ -54,13 +54,13 @@ class GetProfilePhotos(Scaffold):
             .. code-block:: python
 
                 # Get the first 100 profile photos of a user
-                app.get_profile_photos("haskell")
+                app.get_profile_photos("me")
 
                 # Get only the first profile photo of a user
-                app.get_profile_photos("haskell", limit=1)
+                app.get_profile_photos("me", limit=1)
 
                 # Get 3 profile photos of a user, skip the first 5
-                app.get_profile_photos("haskell", limit=3, offset=5)
+                app.get_profile_photos("me", limit=3, offset=5)
         """
         peer_id = await self.resolve_peer(chat_id)
 

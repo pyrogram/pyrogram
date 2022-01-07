@@ -15,7 +15,7 @@ It uses the ``@on_message`` decorator to register a ``MessageHandler`` and appli
 
     @app.on_message(filters.text & filters.private)
     def echo(client, message):
-        message.reply_text(message.text)
+        message.reply(message.text)
 
 
     app.run()  # Automatically start() and idle()

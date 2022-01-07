@@ -1,16 +1,12 @@
 Decorators
 ==========
 
-While still being methods bound to the :class:`~pyrogram.Client` class, decorators are of a special kind and thus
-deserve a dedicated page.
-
 Decorators are able to register callback functions for handling updates in a much easier and cleaner way compared to
 :doc:`Handlers <handlers>`; they do so by instantiating the correct handler and calling
 :meth:`~pyrogram.Client.add_handler` automatically. All you need to do is adding the decorators on top of your
 functions.
 
 .. code-block:: python
-    :emphasize-lines: 6
 
     from pyrogram import Client
 

@@ -132,7 +132,7 @@ class SendVoice(Scaffold):
                 app.send_voice("me", "voice.ogg")
 
                 # Add caption to the voice note
-                app.send_voice("me", "voice.ogg", caption="voice note")
+                app.send_voice("me", "voice.ogg", caption="voice caption")
 
                 # Set voice note duration
                 app.send_voice("me", "voice.ogg", duration=20)

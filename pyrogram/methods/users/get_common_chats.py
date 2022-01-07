@@ -42,7 +42,7 @@ class GetCommonChats(Scaffold):
         Example:
             .. code-block:: python
 
-                common = app.get_common_chats("haskell")
+                common = app.get_common_chats(user_id)
                 print(common)
         """
 

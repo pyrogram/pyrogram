@@ -48,7 +48,7 @@ class GetHistoryCount(Scaffold):
         Example:
             .. code-block:: python
 
-                app.get_history_count("pyrogramchat")
+                app.get_history_count(chat_id)
         """
 
         r = await self.send(

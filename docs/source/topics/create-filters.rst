@@ -87,7 +87,7 @@ Finally, the filter usage remains the same:
 Filters with Arguments
 ----------------------
 
-A much cooler filter would be one that accepts "pyrogram" or any other string as argument at usage time.
+A more flexible filter would be one that accepts "pyrogram" or any other string as argument at usage time.
 A dynamic filter like this will make use of named arguments for the :meth:`~pyrogram.filters.create` method and the
 first argument of the callback function, which is a reference to the filter object itself holding the extra data passed
 via named arguments.

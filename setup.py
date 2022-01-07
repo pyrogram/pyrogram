@@ -133,7 +133,7 @@ if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
 setup(
     name="Pyrogram",
     version=version,
-    description="Telegram MTProto API Client Library and Framework for Python",
+    description="Elegant, modern and asynchronous Telegram MTProto API framework in Python for users and bots",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/pyrogram",
@@ -153,6 +153,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
@@ -166,7 +167,7 @@ setup(
     keywords="telegram chat messenger mtproto api client library python",
     project_urls={
         "Tracker": "https://github.com/pyrogram/pyrogram/issues",
-        "Community": "https://t.me/Pyrogram",
+        "Community": "https://t.me/pyrogram",
         "Source": "https://github.com/pyrogram/pyrogram",
         "Documentation": "https://docs.pyrogram.org",
     },

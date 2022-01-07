@@ -57,16 +57,17 @@ class GetChatMembers(Scaffold):
 
             offset (``int``, *optional*):
                 Sequential number of the first member to be returned.
-                Only applicable to supergroups and channels. Defaults to 0 [1]_.
+                Only applicable to supergroups and channels. Defaults to 0.
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
                 Only applicable to supergroups and channels.
-                Defaults to 200, which is also the maximum server limit allowed per method call.
+                Defaults to 200.
 
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+                Only applicable to supergroups and channels. Defaults to "" (empty string).
+                A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only
 
             filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
@@ -80,11 +81,6 @@ class GetChatMembers(Scaffold):
                 Only applicable to supergroups and channels.
                 Defaults to *"recent"*.
 
-        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
-            on channels.
-
-        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
-
         Returns:
             List of :obj:`~pyrogram.types.ChatMember`: On success, a list of chat members is returned.
 
@@ -95,13 +91,13 @@ class GetChatMembers(Scaffold):
             .. code-block:: python
 
                 # Get first 200 recent members
-                app.get_chat_members("pyrogramchat")
+                app.get_chat_members(chat_id)
 
                 # Get all administrators
-                app.get_chat_members("pyrogramchat", filter="administrators")
+                app.get_chat_members(chat_id, filter="administrators")
 
                 # Get all bots
-                app.get_chat_members("pyrogramchat", filter="bots")
+                app.get_chat_members(chat_id, filter="bots")
         """
         peer = await self.resolve_peer(chat_id)
 

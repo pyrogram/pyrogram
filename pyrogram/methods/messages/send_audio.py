@@ -149,18 +149,17 @@ class SendAudio(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8-10,13-16
 
                 # Send audio file by uploading from file
                 app.send_audio("me", "audio.mp3")
 
                 # Add caption to the audio
-                app.send_audio("me", "audio.mp3", caption="shoegaze")
+                app.send_audio("me", "audio.mp3", caption="audio caption")
 
                 # Set audio metadata
                 app.send_audio(
                     "me", "audio.mp3",
-                    title="Printemps émeraude", performer="Alcest", duration=440)
+                    title="Title", performer="Performer", duration=234)
 
                 # Keep track of the progress while uploading
                 def progress(current, total):

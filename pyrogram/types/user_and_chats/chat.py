@@ -228,7 +228,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
             dc_id=getattr(getattr(chat, "photo", None), "dc_id", None),
-            has_protected_content=chat.noforwards,
+            has_protected_content=getattr(chat, "noforwards", None),
             client=client
         )
 
@@ -252,7 +252,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),
             dc_id=getattr(getattr(channel, "photo", None), "dc_id", None),
-            has_protected_content=channel.noforwards,
+            has_protected_content=getattr(channel, "noforwards", None),
             client=client
         )
 

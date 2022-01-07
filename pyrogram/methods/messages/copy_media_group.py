@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List, Optional
+from typing import Union, List
 
 from pyrogram import types, utils, raw
 from pyrogram.scaffold import Scaffold
@@ -103,7 +103,8 @@ class CopyMediaGroup(Scaffold):
                     **await self.parser.parse(
                         captions[i] if isinstance(captions, list) and i < len(captions) and captions[i] else
                         captions if isinstance(captions, str) and i == 0 else
-                        message.caption if message.caption and message.caption != "None" and not type(captions) is str else "")
+                        message.caption if message.caption and message.caption != "None" and not type(
+                            captions) is str else "")
                 )
             )
 

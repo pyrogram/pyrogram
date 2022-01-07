@@ -39,7 +39,7 @@ class RPCError(Exception):
         is_unknown: bool = False,
         is_signed: bool = False
     ):
-        super().__init__("[{}{} {}]: {} {}".format(
+        super().__init__("Telegram says: [{}{} {}] - {} {}".format(
             "-" if is_signed else "",
             self.CODE,
             self.ID or self.NAME,

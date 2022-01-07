@@ -1,24 +1,12 @@
-Session Settings
-================
+Client Settings
+===============
 
-As you may probably know, Telegram allows users (and bots) having more than one session (authorizations) registered
-in the system at the same time.
+You can control the way your client appears in the Active Sessions menu of an official client by changing some client
+settings. By default you will see something like the following:
 
-Briefly explaining, sessions are simply new logins in your account. They can be reviewed in the settings of an official
-app (or by invoking :class:`~pyrogram.api.functions.account.GetAuthorizations` with Pyrogram). They
-store some useful information such as the client who's using them and from which country and IP address.
-
-.. figure:: https://i.imgur.com/YaqtMLO.png
-    :width: 600
-    :align: center
-
-    **A Pyrogram session running on Linux, Python 3.7.**
-
-That's how a session looks like on the Android app, showing the three main pieces of information.
-
--   ``app_version``: **Pyrogram 0.13.0**
--   ``device_model``: **CPython 3.7.2**
--   ``system_version``: **Linux 4.15.0-23-generic**
+-   Device Model: ``CPython x.y.z``
+-   Application: ``Pyrogram x.y.z``
+-   System Version: ``Linux x.y.z``
 
 .. contents:: Contents
     :backlinks: none
