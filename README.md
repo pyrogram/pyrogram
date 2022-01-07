@@ -46,7 +46,7 @@ If you'd like to support Pyrogram, you can consider:
 
 - [Become a GitHub sponsor](https://github.com/sponsors/delivrance).
 - [Become a LiberaPay patron](https://liberapay.com/delivrance).
-- [Become an OpenCollective backer](https://opencollective.com/pyrogram>).
+- [Become an OpenCollective backer](https://opencollective.com/pyrogram).
 
 ### Key Features
 
