@@ -80,3 +80,55 @@ class ChatJoinRequest(Object, Update):
             invite_link=types.ChatInviteLink._parse(client, update.invite, users),
             client=client
         )
+
+    async def approve(self) -> bool:
+        """Bound method *approve* of :obj:`~pyrogram.types.ChatJoinRequest`.
+        
+        Use as a shortcut for:
+        
+        .. code-block:: python
+            client.approve_chat_join_request(
+                chat_id=request.chat.id,
+                user_id=request.from_user.id
+            )
+            
+        Example:
+            .. code-block:: python
+                request.approve()
+                
+        Returns:
+            ``bool``: True on success.
+        
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return await self._client.approve_chat_join_request(
+            chat_id=self.chat.id,
+            user_id=self.from_user.id
+        )
+
+    async def decline(self) -> bool:
+        """Bound method *decline* of :obj:`~pyrogram.types.ChatJoinRequest`.
+        
+        Use as a shortcut for:
+        
+        .. code-block:: python
+            client.decline_chat_join_request(
+                chat_id=request.chat.id,
+                user_id=request.from_user.id
+            )
+            
+        Example:
+            .. code-block:: python
+                request.decline()
+                
+        Returns:
+            ``bool``: True on success.
+        
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return await self._client.decline_chat_join_request(
+            chat_id=self.chat.id,
+            user_id=self.from_user.id
+        )
