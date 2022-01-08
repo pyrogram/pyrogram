@@ -206,7 +206,7 @@ class Client(Methods, Scaffold):
         super().__init__()
 
         self.session_name = session_name
-        self.api_id = int(api_id) if api_id else None
+        self.api_id = api_id and int(api_id)
         self.api_hash = api_hash
         self.app_version = app_version
         self.device_model = device_model

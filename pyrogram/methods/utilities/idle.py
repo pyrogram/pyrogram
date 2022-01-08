@@ -33,7 +33,7 @@ signals = {
 
 
 def signal_handler(signum, __):
-    logging.info(f"Stop signal received ({signals[signum]}). Exiting...")
+    log.info(f"Stop signal received ({signals[signum]}). Exiting...")
     is_idling.set()
 
 
