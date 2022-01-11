@@ -447,7 +447,7 @@ def start(format: bool = False):
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(b{}) if flags & (1 << {}) else []\n        ".format(
+                    read_types += "{} = TLObject.read(b{}) if flags & (1 << {}) else None\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else "", index
                     )
                 else:
