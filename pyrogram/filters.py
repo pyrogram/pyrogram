@@ -766,31 +766,40 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             Pass True if you want your command(s) to be case sensitive. Defaults to False.
             Examples: when True, command="Start" would trigger /Start but not /start.
     """
+    command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
+
     async def func(flt, client: pyrogram.Client, message: Message):
         username = client.me.username or ""
         text = message.text or message.caption
+        message.command = None
 
         if not text:
             return False
 
-        if not bool(message.command):
-            return False
-
         for prefix in flt.prefixes:
-            if prefix != "/":
-                # TODO: support other prefixes
-                continue
-
             if not text.startswith(prefix):
                 continue
 
+            without_prefix = text[len(prefix):]
+
             for cmd in flt.commands:
-                if re.match(
-                        rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
-                        message.command[0],
-                        flags=re.IGNORECASE if not flt.case_sensitive else 0
-                ):
-                    return True
+                if not re.match(rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)", without_prefix,
+                                flags=re.IGNORECASE if not flt.case_sensitive else 0):
+                    continue
+
+                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1,
+                                         flags=re.IGNORECASE if not flt.case_sensitive else 0)
+
+                # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
+                # between the quotes, group(3) is unquoted, whitespace-split text
+
+                # Remove the escape character from the arguments
+                message.command = [cmd] + [
+                    re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
+                    for m in command_re.finditer(without_command)
+                ]
+
+                return True
 
         return False
 
