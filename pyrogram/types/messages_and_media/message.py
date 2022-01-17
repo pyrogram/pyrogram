@@ -3465,3 +3465,103 @@ class Message(Object, Update):
             chat_id=self.chat.id,
             message_id=self.message_id
         )
+
+    async def ask(
+        self,
+        text: str,
+        quote: bool = None,
+        parse_mode: Optional[str] = object,
+        entities: List["types.MessageEntity"] = None,
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        reply_markup=None,
+        filters=None,
+        timeout: int = None
+    ) -> "Message":
+        """Bound method *ask* of :obj:`~pyrogram.types.Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_message(chat_id, "What is your name?")
+            client.wait_for_message(chat_id)
+
+        Example:
+            .. code-block::python
+
+                message.ask("What is your name?")
+
+        Parameters:
+            text (``str``):
+                Text of the message to be sent.
+
+            quote (``bool``, *optional*):
+                If ``True``, the message will be sent as a reply to this message.
+                If *reply_to_message_id* is passed, this parameter will be ignored.
+                Defaults to ``True`` in group chats and ``False`` in private chats.
+
+            parse_mode (``str``, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+                Pass "markdown" or "md" to enable Markdown-style parsing only.
+                Pass "html" to enable HTML-style parsing only.
+                Pass None to completely disable style parsing.
+
+            entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in message text, which can be specified instead of *parse_mode*.
+
+            disable_web_page_preview (``bool``, *optional*):
+                Disables link previews for links in this message.
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            reply_to_message_id (``int``, *optional*):
+                If the message is a reply, ID of the original message.
+
+            reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
+                Additional interface options. An object for an inline keyboard, custom reply keyboard,
+                instructions to remove reply keyboard or to force a reply from the user.
+
+            filters (:obj:`Filters`):
+                Pass one or more filters to allow only a subset of callback queries to be passed
+                in your callback function.
+
+            timeout (``int``, *optional*):
+                Timeout in seconds.
+
+        Returns:
+            :obj:`~pyrogram.types.Message`: On success, the reply message is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            asyncio.TimeoutError: In case reply not received within the timeout.
+        """
+        if quote is None:
+            quote = self.chat.type != "private"
+
+        if reply_to_message_id is None and quote:
+            reply_to_message_id = self.message_id
+
+        request = await self._client.send_message(
+            chat_id=self.chat.id,
+            text=text,
+            parse_mode=parse_mode,
+            entities=entities,
+            disable_web_page_preview=disable_web_page_preview,
+            disable_notification=disable_notification,
+            reply_to_message_id=reply_to_message_id,
+            reply_markup=reply_markup
+        )
+
+        reply_message = await self._client.wait_for_message(
+            self.chat.id,
+            filters=filters,
+            timeout=timeout
+        )
+
+        reply_message.request = request
+        return reply_message

@@ -61,6 +61,8 @@ from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
 from .stop_poll import StopPoll
 from .vote_poll import VotePoll
+from .wait_for_message import WaitForMessage
+from .wait_for_callback_query import WaitForCallbackQuery
 
 
 class Messages(
@@ -108,6 +110,8 @@ class Messages(
     SearchMessagesCount,
     SearchGlobalCount,
     GetDiscussionMessage,
-    SendReaction
+    SendReaction,
+    WaitForMessage,
+    WaitForCallbackQuery
 ):
     pass

@@ -27,3 +27,4 @@ from .message_handler import MessageHandler
 from .poll_handler import PollHandler
 from .raw_update_handler import RawUpdateHandler
 from .user_status_handler import UserStatusHandler
+from .conversation_handler import ConversationHandler
