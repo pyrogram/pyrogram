@@ -21,14 +21,14 @@ from .inline_query import InlineQuery
 from .inline_query_result import InlineQueryResult
 from .inline_query_result_animation import InlineQueryResultAnimation
 from .inline_query_result_article import InlineQueryResultArticle
+from .inline_query_result_audio import InlineQueryResultAudio
 from .inline_query_result_photo import InlineQueryResultPhoto
 from .inline_query_result_video import InlineQueryResultVideo
-from .inline_query_result_audio import InlineQueryResultAudio
-from .inline_query_result_cached_photo import InlineQueryResultCachedPhoto
 from .inline_query_result_cached_document import InlineQueryResultCachedDocument
+from .inline_query_result_cached_photo import InlineQueryResultCachedPhoto
 
 __all__ = [
     "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle", "InlineQueryResultPhoto",
-    "InlineQueryResultAnimation", "InlineQueryResultAudio", "InlineQueryResultVideo", "InlineQueryResultCachedPhoto", 
-    "InlineQueryResultCachedDocument", "ChosenInlineResult"
+    "InlineQueryResultAnimation", "InlineQueryResultAudio", "InlineQueryResultVideo", "InlineQueryResultCachedDocument", 
+    "InlineQueryResultCachedPhoto", "ChosenInlineResult"
 ]
