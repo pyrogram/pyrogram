@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -52,33 +52,32 @@ class SetChatPermissions(Scaffold):
                 # Completely restrict chat
                 app.set_chat_permissions(chat_id, ChatPermissions())
 
-                # Chat members can only send text messages, media, stickers and GIFs
+                # Chat members can only send text messages and media messages
                 app.set_chat_permissions(
                     chat_id,
                     ChatPermissions(
                         can_send_messages=True,
-                        can_send_media_messages=True,
-                        can_send_stickers=True,
-                        can_send_animations=True
+                        can_send_media_messages=True
                     )
                 )
         """
+
         r = await self.send(
             raw.functions.messages.EditChatDefaultBannedRights(
                 peer=await self.resolve_peer(chat_id),
                 banned_rights=raw.types.ChatBannedRights(
                     until_date=0,
-                    send_messages=True if not permissions.can_send_messages else None,
-                    send_media=True if not permissions.can_send_media_messages else None,
-                    send_stickers=True if not permissions.can_send_stickers else None,
-                    send_gifs=True if not permissions.can_send_animations else None,
-                    send_games=True if not permissions.can_send_games else None,
-                    send_inline=True if not permissions.can_use_inline_bots else None,
-                    embed_links=True if not permissions.can_add_web_page_previews else None,
-                    send_polls=True if not permissions.can_send_polls else None,
-                    change_info=True if not permissions.can_change_info else None,
-                    invite_users=True if not permissions.can_invite_users else None,
-                    pin_messages=True if not permissions.can_pin_messages else None,
+                    send_messages=not permissions.can_send_messages,
+                    send_media=not permissions.can_send_media_messages,
+                    send_stickers=not permissions.can_send_other_messages,
+                    send_gifs=not permissions.can_send_other_messages,
+                    send_games=not permissions.can_send_other_messages,
+                    send_inline=not permissions.can_send_other_messages,
+                    embed_links=not permissions.can_add_web_page_previews,
+                    send_polls=not permissions.can_send_polls,
+                    change_info=not permissions.can_change_info,
+                    invite_users=not permissions.can_invite_users,
+                    pin_messages=not permissions.can_pin_messages,
                 )
             )
         )

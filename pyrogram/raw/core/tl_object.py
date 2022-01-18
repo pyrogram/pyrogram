@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -29,8 +29,8 @@ class TLObject:
     QUALNAME = "Base"
 
     @classmethod
-    def read(cls, data: BytesIO, *args: Any) -> Any:
-        return cast(TLObject, objects[int.from_bytes(data.read(4), "little")]).read(data, *args)
+    def read(cls, b: BytesIO, *args: Any) -> Any:
+        return cast(TLObject, objects[int.from_bytes(b.read(4), "little")]).read(b, *args)
 
     def write(self, *args: Any) -> bytes:
         pass

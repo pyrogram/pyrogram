@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,6 +18,7 @@
 
 from .add_chat_members import AddChatMembers
 from .archive_chats import ArchiveChats
+from .ban_chat_member import BanChatMember
 from .create_channel import CreateChannel
 from .create_group import CreateGroup
 from .create_supergroup import CreateSupergroup
@@ -30,13 +31,14 @@ from .get_chat_event_log import GetChatEventLog
 from .get_chat_member import GetChatMember
 from .get_chat_members import GetChatMembers
 from .get_chat_members_count import GetChatMembersCount
+from .get_chat_online_count import GetChatOnlineCount
 from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
 from .get_nearby_chats import GetNearbyChats
+from .get_send_as_chats import GetSendAsChats
 from .iter_chat_members import IterChatMembers
 from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
-from .kick_chat_member import KickChatMember
 from .leave_chat import LeaveChat
 from .mark_chat_unread import MarkChatUnread
 from .pin_chat_message import PinChatMessage
@@ -46,21 +48,22 @@ from .set_administrator_title import SetAdministratorTitle
 from .set_chat_description import SetChatDescription
 from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
+from .set_chat_protected_content import SetChatProtectedContent
 from .set_chat_title import SetChatTitle
+from .set_send_as_chat import SetSendAsChat
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_username import UpdateChatUsername
-from .get_chat_online_count import GetChatOnlineCount
 
 
 class Chats(
     GetChat,
     LeaveChat,
     JoinChat,
-    KickChatMember,
+    BanChatMember,
     UnbanChatMember,
     RestrictChatMember,
     PromoteChatMember,
@@ -94,6 +97,9 @@ class Chats(
     UnpinAllChatMessages,
     MarkChatUnread,
     GetChatEventLog,
-    GetChatOnlineCount
+    GetChatOnlineCount,
+    GetSendAsChats,
+    SetSendAsChat,
+    SetChatProtectedContent
 ):
     pass

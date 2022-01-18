@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List, Optional
+from typing import Union, List
 
 from pyrogram import types, utils, raw
 from pyrogram.scaffold import Scaffold
@@ -103,7 +103,8 @@ class CopyMediaGroup(Scaffold):
                     **await self.parser.parse(
                         captions[i] if isinstance(captions, list) and i < len(captions) and captions[i] else
                         captions if isinstance(captions, str) and i == 0 else
-                        message.caption if message.caption and message.caption != "None" and not type(captions) is str else "")
+                        message.caption if message.caption and message.caption != "None" and not type(
+                            captions) is str else "")
                 )
             )
 

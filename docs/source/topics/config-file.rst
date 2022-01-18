@@ -15,7 +15,7 @@ Introduction
 ------------
 
 The idea behind using a configuration file is to help keeping your code free of private settings information such as
-the API Key and Proxy, without having you to even deal with how to load such settings. The configuration file, usually
+the API Key and Proxy, without having you to deal with how to load such settings. The configuration file, usually
 referred as ``config.ini`` file, is automatically loaded from the root of your working directory; all you need to do is
 fill in the necessary parts.
 
@@ -23,7 +23,7 @@ fill in the necessary parts.
 
     The configuration file is optional, but recommended. If, for any reason, you prefer not to use it, there's always an
     alternative way to configure Pyrogram via Client's parameters. Doing so, you can have full control on how to store
-    and load your settings (e.g.: from environment variables).
+    and load your settings.
 
     Settings specified via Client's parameter have higher priority and will override any setting stored in the
     configuration file.

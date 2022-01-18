@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -30,7 +30,8 @@ class ForwardMessages(Scaffold):
         from_chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
-        schedule_date: int = None
+        schedule_date: int = None,
+        protect_content: bool = None
     ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
 
@@ -56,6 +57,9 @@ class ForwardMessages(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
         Returns:
             :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was an
             integer, the single forwarded message is returned, otherwise, in case *message_ids* was an iterable,
@@ -63,7 +67,6 @@ class ForwardMessages(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5
 
                 # Forward a single message
                 app.forward_messages("me", "pyrogram", 20)
@@ -82,7 +85,8 @@ class ForwardMessages(Scaffold):
                 id=message_ids,
                 silent=disable_notification or None,
                 random_id=[self.rnd_id() for _ in message_ids],
-                schedule_date=schedule_date
+                schedule_date=schedule_date,
+                noforwards=protect_content
             )
         )
 

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -29,6 +29,11 @@ from ..update import Update
 class ChosenInlineResult(Object, Update):
     """A :doc:`result <InlineQueryResult>` of an inline query chosen by the user and sent to their chat partner.
 
+    .. note::
+
+        In order to receive these updates, your bot must have "inline feedback" enabled. You can enable this feature
+        with `@BotFather <https://t.me/botfather>`_.
+
     Parameters:
         result_id (``str``):
             The unique identifier for the result that was chosen.
@@ -46,11 +51,6 @@ class ChosenInlineResult(Object, Update):
             Identifier of the sent inline message.
             Available only if there is an :doc:`inline keyboard <InlineKeyboardMarkup>` attached to the message.
             Will be also received in :doc:`callback queries <CallbackQuery>` and can be used to edit the message.
-
-    .. note::
-
-        It is necessary to enable inline feedback via `@Botfather <https://t.me/botfather>`_ in order to receive these
-        objects in updates.
     """
 
     def __init__(

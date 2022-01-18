@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -44,6 +44,12 @@ class ChatInviteLink(Object):
         creator (:obj:`~pyrogram.types.User`, *optional*):
             Creator of the link.
 
+        name (``str``, *optional*):
+            Invite link name
+
+        creates_join_request (``bool``, *optional*):
+            True, if users joining the chat via the link need to be approved by chat administrators.
+
         expire_date (``int``, *optional*):
             Point in time (Unix timestamp) when the link will expire or has been expired.
 
@@ -53,36 +59,45 @@ class ChatInviteLink(Object):
 
         member_count (``int``, *optional*):
             Number of users that joined via this link and are currently member of the chat.
+
+        pending_join_request_count (``int``, *optional*):
+            Number of pending join requests created using this link
     """
 
     def __init__(
         self, *,
         invite_link: str,
-        creator: "types.User",
         date: int,
         is_primary: bool = None,
         is_revoked: bool = None,
+        creator: "types.User" = None,
+        name: str = None,
+        creates_join_request: bool = None,
         start_date: int = None,
         expire_date: int = None,
         member_limit: int = None,
-        member_count: int = None
+        member_count: int = None,
+        pending_join_request_count: int = None
     ):
         super().__init__()
 
         self.invite_link = invite_link
-        self.creator = creator
         self.date = date
         self.is_primary = is_primary
         self.is_revoked = is_revoked
+        self.creator = creator
+        self.name = name
+        self.creates_join_request = creates_join_request
         self.start_date = start_date
         self.expire_date = expire_date
         self.member_limit = member_limit
         self.member_count = member_count
+        self.pending_join_request_count = pending_join_request_count
 
     @staticmethod
     def _parse(
         client: "pyrogram.Client",
-        invite: "raw.types.ChatInviteExported",
+        invite: "raw.base.ExportedChatInvite",
         users: Dict[int, "raw.types.User"] = None
     ) -> "ChatInviteLink":
         creator = (
@@ -93,11 +108,14 @@ class ChatInviteLink(Object):
 
         return ChatInviteLink(
             invite_link=invite.link,
-            creator=creator,
             date=invite.date,
             is_primary=invite.permanent,
             is_revoked=invite.revoked,
+            creator=creator,
+            name=invite.title,
+            creates_join_request=invite.request_needed,
             expire_date=invite.expire_date,
             member_limit=invite.usage_limit,
-            member_count=invite.usage
+            member_count=invite.usage,
+            pending_join_request_count=invite.requested
         )

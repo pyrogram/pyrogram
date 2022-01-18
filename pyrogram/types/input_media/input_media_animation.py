@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional, List
+from typing import Optional, List, Union, BinaryIO
 
 from .input_media import InputMedia
 from ..messages_and_media import MessageEntity
@@ -30,6 +30,7 @@ class InputMediaAnimation(InputMedia):
             Animation to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
             pass a file path as string to upload a new file that exists on your local machine or
+            pass a binary file-like object with its attribute “.name” set for in-memory uploads or
             pass an HTTP URL as a string for Telegram to get an animation from the Internet.
 
         thumb (``str``, *optional*):
@@ -64,7 +65,7 @@ class InputMediaAnimation(InputMedia):
 
     def __init__(
         self,
-        media: str,
+        media: Union[str, BinaryIO],
         thumb: str = None,
         caption: str = "",
         parse_mode: Optional[str] = object,

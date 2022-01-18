@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -158,6 +158,7 @@ def pyrogram_api():
             send_venue
             send_contact
             send_cached_media
+            send_reaction
             edit_message_text
             edit_message_caption
             edit_message_media
@@ -180,14 +181,17 @@ def pyrogram_api():
             retract_vote
             send_dice
             search_messages
+            search_messages_count
             search_global
+            search_global_count
             download_media
+            get_discussion_message
         """,
         chats="""
         Chats
             join_chat
             leave_chat
-            kick_chat_member
+            ban_chat_member
             unban_chat_member
             restrict_chat_member
             promote_chat_member
@@ -223,6 +227,9 @@ def pyrogram_api():
             mark_chat_unread
             get_chat_event_log
             get_chat_online_count
+            get_send_as_chats
+            set_send_as_chat
+            set_chat_protected_content
         """,
         users="""
         Users
@@ -253,6 +260,8 @@ def pyrogram_api():
             get_chat_admin_invite_links_count
             get_chat_admins_with_invite_links
             delete_chat_admin_invite_links
+            approve_chat_join_request
+            decline_chat_join_request
         """,
         contacts="""
         Contacts
@@ -278,6 +287,7 @@ def pyrogram_api():
             send_game
             set_game_score
             get_game_high_scores
+            set_bot_commands
         """,
         authorization="""
         Authorization
@@ -354,6 +364,7 @@ def pyrogram_api():
             ChatEvent
             ChatEventFilter
             ChatMemberUpdated
+            ChatJoinRequest
             Dialog
             Restriction
         """,
@@ -378,6 +389,7 @@ def pyrogram_api():
             Poll
             PollOption
             Dice
+            Reaction
             VoiceChatScheduled
             VoiceChatStarted
             VoiceChatEnded
@@ -414,6 +426,8 @@ def pyrogram_api():
             InlineQueryResultArticle
             InlineQueryResultPhoto
             InlineQueryResultAnimation
+            InlineQueryResultAudio
+            InlineQueryResultVideo
             ChosenInlineResult
         """,
         input_message_content="""
@@ -499,7 +513,7 @@ def pyrogram_api():
             Chat.set_title
             Chat.set_description
             Chat.set_photo
-            Chat.kick_member
+            Chat.ban_member
             Chat.unban_member
             Chat.restrict_member
             Chat.promote_member
@@ -510,6 +524,7 @@ def pyrogram_api():
             Chat.join
             Chat.leave
             Chat.mark_unread
+            Chat.set_protected_content
         """,
         user="""
         User

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -61,7 +61,7 @@ class InlineQueryResultVideo(InlineQueryResult):
             Short description of the result.
 
         caption (``str``, *optional*):
-            Caption of the photo to be sent, 0-1024 characters.
+            Caption of the video to be sent, 0-1024 characters.
 
         parse_mode (``str``, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.

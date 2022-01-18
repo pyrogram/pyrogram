@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -21,6 +21,7 @@ from .chat_admin_with_invite_links import ChatAdminWithInviteLinks
 from .chat_event import ChatEvent
 from .chat_event_filter import ChatEventFilter
 from .chat_invite_link import ChatInviteLink
+from .chat_join_request import ChatJoinRequest
 from .chat_member import ChatMember
 from .chat_member_updated import ChatMemberUpdated
 from .chat_permissions import ChatPermissions
@@ -53,5 +54,6 @@ __all__ = [
     "VoiceChatEnded",
     "VoiceChatMembersInvited",
     "ChatMemberUpdated",
-    "VoiceChatScheduled"
+    "VoiceChatScheduled",
+    "ChatJoinRequest"
 ]

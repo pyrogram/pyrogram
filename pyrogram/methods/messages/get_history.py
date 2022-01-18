@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -72,13 +72,13 @@ class GetHistory(Scaffold):
             .. code-block:: python
 
                 # Get the last 100 messages of a chat
-                app.get_history("pyrogramchat")
+                app.get_history(chat_id)
 
                 # Get the last 3 messages of a chat
-                app.get_history("pyrogramchat", limit=3)
+                app.get_history(chat_id, limit=3)
 
                 # Get 3 messages after skipping the first 5
-                app.get_history("pyrogramchat", offset=5, limit=3)
+                app.get_history(chat_id, offset=5, limit=3)
         """
 
         offset_id = offset_id or (1 if reverse else 0)
