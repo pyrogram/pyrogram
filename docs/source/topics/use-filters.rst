@@ -19,16 +19,15 @@ Single Filters
 
 Let's start right away with a simple example:
 
--   This example will show you how to **only** handle messages containing an :class:`~pyrogram.Audio` object and
+-   This example will show you how to **only** handle messages containing a :class:`~pyrogram.types.Sticker` object and
     ignore any other message. Filters are passed as the first argument of the decorator:
 
     .. code-block:: python
-        :emphasize-lines: 4
 
         from pyrogram import filters
 
 
-        @app.on_message(filters.audio)
+        @app.on_message(filters.sticker)
         def my_handler(client, message):
             print(message)
 
@@ -36,7 +35,6 @@ Let's start right away with a simple example:
     callback function itself:
 
     .. code-block:: python
-        :emphasize-lines: 9
 
         from pyrogram import filters
         from pyrogram.handlers import MessageHandler
@@ -46,12 +44,12 @@ Let's start right away with a simple example:
             print(message)
 
 
-        app.add_handler(MessageHandler(my_handler, filters.audio))
+        app.add_handler(MessageHandler(my_handler, filters.sticker))
 
 Combining Filters
 -----------------
 
-Filters can also be used in a more advanced way by inverting and combining more filters together using bitwise
+Filters can be used in a more advanced way by inverting and combining more filters together using bitwise
 operators ``~``, ``&`` and ``|``:
 
 -   Use ``~`` to invert a filter (behaves like the ``not`` operator).

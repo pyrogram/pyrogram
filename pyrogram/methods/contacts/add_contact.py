@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -38,7 +38,7 @@ class AddContact(Scaffold):
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
 
-            first_name (``str``, *optional*):
+            first_name (``str``):
                 User's first name.
 
             last_name (``str``, *optional*):

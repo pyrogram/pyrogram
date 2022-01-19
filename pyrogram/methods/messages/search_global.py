@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -53,6 +53,8 @@ class SearchGlobal(Scaffold):
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Search messages globally from all of your chats.
 
+        If you want to get the messages count only, see :meth:`~pyrogram.Client.search_global_count`.
+
         .. note::
 
             Due to server-side limitations, you can only get up to around ~10,000 messages and each message
@@ -91,12 +93,12 @@ class SearchGlobal(Scaffold):
         Example:
             .. code-block:: python
 
-                # Search for "pyrogram". Get the first 420 results
-                for message in app.search_global("pyrogram", limit=420):
+                # Search for "pyrogram". Get the first 50 results
+                for message in app.search_global("pyrogram", limit=50):
                     print(message.text)
 
-                # Search for recent photos from Global. Get the first 69 results
-                for message in app.search_global(filter="photo", limit=69):
+                # Search for recent photos from Global. Get the first 20 results
+                for message in app.search_global(filter="photo", limit=20):
                     print(message.photo)
         """
         try:

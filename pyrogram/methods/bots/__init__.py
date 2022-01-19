@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -23,8 +23,8 @@ from .get_inline_bot_results import GetInlineBotResults
 from .request_callback_answer import RequestCallbackAnswer
 from .send_game import SendGame
 from .send_inline_bot_result import SendInlineBotResult
-from .set_game_score import SetGameScore
 from .set_bot_commands import SetBotCommands
+from .set_game_score import SetGameScore
 
 
 class Bots(

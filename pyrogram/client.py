@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Union, List, Optional
 
 import pyrogram
+from pyrogram import __version__, __license__
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.crypto import aes
@@ -281,6 +282,10 @@ class Client(Methods, Scaffold):
         if self.bot_token:
             return await self.sign_in_bot(self.bot_token)
 
+        print(f"Welcome to Pyrogram (version {__version__})")
+        print(f"Pyrogram is free software and comes with ABSOLUTELY NO WARRANTY. Licensed\n"
+              f"under the terms of the {__license__}.\n")
+
         while True:
             try:
                 if not self.phone_number:
@@ -428,7 +433,6 @@ class Client(Methods, Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 10,14,18,22
 
                 from pyrogram import Client
 
@@ -436,23 +440,23 @@ class Client(Methods, Scaffold):
 
                 with app:
                     # Default combined mode: Markdown + HTML
-                    app.send_message("haskell", "1. **markdown** and <i>html</i>")
+                    app.send_message("me", "1. **markdown** and <i>html</i>")
 
                     # Force Markdown-only, HTML is disabled
                     app.set_parse_mode("markdown")
-                    app.send_message("haskell", "2. **markdown** and <i>html</i>")
+                    app.send_message("me", "2. **markdown** and <i>html</i>")
 
                     # Force HTML-only, Markdown is disabled
                     app.set_parse_mode("html")
-                    app.send_message("haskell", "3. **markdown** and <i>html</i>")
+                    app.send_message("me", "3. **markdown** and <i>html</i>")
 
                     # Disable the parser completely
                     app.set_parse_mode(None)
-                    app.send_message("haskell", "4. **markdown** and <i>html</i>")
+                    app.send_message("me", "4. **markdown** and <i>html</i>")
 
                     # Bring back the default combined mode
                     app.set_parse_mode()
-                    app.send_message("haskell", "5. **markdown** and <i>html</i>")
+                    app.send_message("me", "5. **markdown** and <i>html</i>")
         """
 
         self.parse_mode = parse_mode
@@ -937,8 +941,8 @@ class Client(Methods, Scaffold):
                                 await self.loop.run_in_executor(self.executor, func)
 
                         if len(chunk) < limit:
-                            break        
-                        
+                            break
+
                         r = await session.send(
                             raw.functions.upload.GetFile(
                                 location=location,

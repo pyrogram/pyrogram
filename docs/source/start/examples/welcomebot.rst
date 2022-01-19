@@ -8,7 +8,7 @@ to make it only work for specific messages in a specific chat.
 
     from pyrogram import Client, emoji, filters
 
-    TARGET = "PyrogramChat"  # Target chat. Can also be a list of multiple chat ids/usernames
+    TARGET = -100123456789  # Target chat. Can also be a list of multiple chat ids/usernames
     MENTION = "[{}](tg://user?id={})"  # User mention markup
     MESSAGE = "{} Welcome to [Pyrogram](https://docs.pyrogram.org/)'s group chat {}!"  # Welcome message
 

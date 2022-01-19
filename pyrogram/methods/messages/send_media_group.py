@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -44,6 +44,7 @@ class SendMediaGroup(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
     ) -> List["types.Message"]:
         """Send a group of photos or videos as an album.
 
@@ -66,6 +67,9 @@ class SendMediaGroup(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of the sent messages is returned.
 
@@ -79,7 +83,7 @@ class SendMediaGroup(Scaffold):
                     [
                         InputMediaPhoto("photo1.jpg"),
                         InputMediaPhoto("photo2.jpg", caption="photo caption"),
-                        InputMediaVideo("video.mp4", caption="a video")
+                        InputMediaVideo("video.mp4", caption="video caption")
                     ]
                 )
         """
@@ -377,7 +381,8 @@ class SendMediaGroup(Scaffold):
                 multi_media=multi_media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
-                schedule_date=schedule_date
+                schedule_date=schedule_date,
+                noforwards=protect_content
             ),
             sleep_threshold=60
         )

@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a bug report affecting the library or the documentation
+about: Create a bug report affecting the framework or the documentation
 ---
 
 <!-- WARNING: Ignoring or altering this template could lead to the issue being closed as invalid -->

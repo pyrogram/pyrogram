@@ -1,10 +1,10 @@
 MTProto vs. Bot API
 ===================
 
-Pyrogram is a framework that acts as a fully-fledged Telegram client based on MTProto, and this very feature makes it
-already superior to, what is usually called, the official Bot API, in many respects. This page will therefore show you
-why Pyrogram might be a better choice for your project by comparing the two APIs, but first, let's make it clear what
-actually is the MTProto and the Bot API.
+Pyrogram is a framework written from the ground up that acts as a fully-fledged Telegram client based on the MTProto
+API. This means that Pyrogram is able to execute any official client and bot API action and more. This page will
+therefore show you why Pyrogram might be a better choice for your project by comparing the two APIs, but first, let's
+make it clear what actually is the MTProto and the Bot API.
 
 .. contents:: Contents
     :backlinks: none
@@ -19,10 +19,11 @@ What is the MTProto API?
 `MTProto`_, took alone, is the name of the custom-made, open and encrypted communication protocol created by Telegram
 itself --- it's the only protocol used to exchange information between a client and the actual Telegram servers.
 
-The MTProto **API** on the other hand, is what people, for convenience, call the main Telegram API as a whole. This API
-is able to authorize both users and bots and is built on top of the MTProto encryption protocol by means of
-`binary data serialized`_ in a specific way, as described by the `TL language`_, and delivered using UDP, TCP or even
-HTTP as transport-layer protocol.
+The MTProto API on the other hand, is what people for convenience call the main Telegram API in order to distinguish it
+from the Bot API. The main Telegram API is able to authorize both users and bots and is built on top of the MTProto
+encryption protocol by means of `binary data serialized`_ in a specific way, as described by the `TL language`_, and
+delivered using UDP, TCP or even HTTP as transport-layer protocol. Clients that make use of Telegram's main API, such as
+Pyrogram, implement all these details.
 
 .. _MTProto: https://core.telegram.org/mtproto
 .. _binary data serialized: https://core.telegram.org/mtproto/serialize
@@ -31,12 +32,12 @@ HTTP as transport-layer protocol.
 What is the Bot API?
 --------------------
 
-The `Bot API`_ is an HTTP(S) interface for building normal bots using a sub-set of the main MTProto API. Bots are special
-accounts that are authorized via tokens instead of phone numbers. The Bot API is built yet again on top of the main
-Telegram API, but runs on an intermediate server application that in turn communicates with the actual Telegram servers
-using MTProto.
+The `Bot API`_ is an HTTP(S) interface for building normal bots using a sub-set of the main Telegram API. Bots are
+special accounts that are authorized via tokens instead of phone numbers. The Bot API is built yet again on top of the
+main Telegram API, but runs on an intermediate server application that in turn communicates with the actual Telegram
+servers using MTProto.
 
-.. figure:: https://i.imgur.com/WvwBoZo.png
+.. figure:: //_static/img/mtproto-vs-bot-api.png
     :align: center
 
 .. _Bot API: https://core.telegram.org/bots/api
@@ -44,8 +45,8 @@ using MTProto.
 Advantages of the MTProto API
 -----------------------------
 
-Here is a list of all the advantages in using MTProto-based libraries -- such as Pyrogram -- instead of the official
-HTTP Bot API. Using Pyrogram you can:
+Here is a non-exhaustive list of all the advantages in using MTProto-based libraries -- such as Pyrogram -- instead of
+the official HTTP Bot API. Using Pyrogram you can:
 
 .. hlist::
     :columns: 1
@@ -69,7 +70,7 @@ HTTP Bot API. Using Pyrogram you can:
 .. hlist::
     :columns: 1
 
-    - :guilabel:`+` **Run multiple sessions at once, up to 10 per account (either bot or user)**
+    - :guilabel:`+` **Run multiple sessions at once (for both user and bot identities)**
     - :guilabel:`--` The Bot API intermediate server will terminate any other session in case you try to use the same
       bot again in a parallel connection.
 

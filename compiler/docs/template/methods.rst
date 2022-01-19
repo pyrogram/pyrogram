@@ -1,18 +1,17 @@
 Available Methods
 =================
 
-This page is about Pyrogram methods. All the methods listed here are bound to a :class:`~pyrogram.Client` instance,
-except for :meth:`~pyrogram.idle()`, which is a special function that can be found in the main package directly.
+This page is about Pyrogram methods. All the methods listed here are bound to a :class:`~pyrogram.Client` instance.
+Some other utility functions can instead be found in the main package directly.
 
 .. code-block:: python
-    :emphasize-lines: 6
 
     from pyrogram import Client
 
     app = Client("my_account")
 
     with app:
-        app.send_message("haskell", "hi")
+        app.send_message("me", "hi")
 
 .. contents:: Contents
     :backlinks: none

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -124,6 +124,10 @@ class Chat(Object):
         send_as_chat (:obj:`~pyrogram.types.Chat`, *optional*):
             The default "send_as" chat.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
+
+        available_reactions (List of ``str``, *optional*):
+            Available reactions in the chat.
+            Returned only in :meth:`~pyrogram.Client.get_chat`.
     """
 
     def __init__(
@@ -156,7 +160,8 @@ class Chat(Object):
         permissions: "types.ChatPermissions" = None,
         distance: int = None,
         linked_chat: "types.Chat" = None,
-        send_as_chat: "types.Chat" = None
+        send_as_chat: "types.Chat" = None,
+        available_reactions: List[str] = None
     ):
         super().__init__(client)
 
@@ -187,6 +192,7 @@ class Chat(Object):
         self.distance = distance
         self.linked_chat = linked_chat
         self.send_as_chat = send_as_chat
+        self.available_reactions = available_reactions
 
     @staticmethod
     def _parse_user_chat(client, user: raw.types.User) -> "Chat":
@@ -222,7 +228,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
             members_count=getattr(chat, "participants_count", None),
             dc_id=getattr(getattr(chat, "photo", None), "dc_id", None),
-            has_protected_content=chat.noforwards,
+            has_protected_content=getattr(chat, "noforwards", None),
             client=client
         )
 
@@ -246,7 +252,7 @@ class Chat(Object):
             permissions=types.ChatPermissions._parse(getattr(channel, "default_banned_rights", None)),
             members_count=getattr(channel, "participants_count", None),
             dc_id=getattr(getattr(channel, "photo", None), "dc_id", None),
-            has_protected_content=channel.noforwards,
+            has_protected_content=getattr(channel, "noforwards", None),
             client=client
         )
 
@@ -325,7 +331,7 @@ class Chat(Object):
                         send_as_raw = users[default_send_as.user_id]
                     else:
                         send_as_raw = chats[default_send_as.channel_id]
-    
+
                     parsed_chat.send_as_chat = Chat._parse_chat(client, send_as_raw)
 
             if full_chat.pinned_msg_id:
@@ -336,6 +342,8 @@ class Chat(Object):
 
             if isinstance(full_chat.exported_invite, raw.types.ChatInviteExported):
                 parsed_chat.invite_link = full_chat.exported_invite.link
+
+            parsed_chat.available_reactions = full_chat.available_reactions or None
 
         return parsed_chat
 
@@ -1011,3 +1019,30 @@ class Chat(Object):
         """
 
         return await self._client.mark_chat_unread(self.id)
+
+    async def set_protected_content(self, enabled: bool) -> bool:
+        """Bound method *set_protected_content* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.set_chat_protected_content(chat_id, enabled)
+
+        Parameters:
+            enabled (``bool``):
+                Pass True to enable the protected content setting, False to disable.
+
+        Example:
+            .. code-block:: python
+
+                chat.set_protected_content(enabled)
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.set_chat_protected_content(
+            self.id,
+            enabled=enabled
+        )

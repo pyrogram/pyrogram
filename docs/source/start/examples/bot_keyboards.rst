@@ -19,7 +19,7 @@ like send_audio(), send_document(), send_location(), etc...
 
     with app:
         app.send_message(
-            "haskell",  # Edit this
+            "me",  # Edit this
             "This is a ReplyKeyboardMarkup example",
             reply_markup=ReplyKeyboardMarkup(
                 [
@@ -33,7 +33,7 @@ like send_audio(), send_document(), send_location(), etc...
         )
 
         app.send_message(
-            "haskell",  # Edit this
+            "me",  # Edit this
             "This is a InlineKeyboardMarkup example",
             reply_markup=InlineKeyboardMarkup(
                 [

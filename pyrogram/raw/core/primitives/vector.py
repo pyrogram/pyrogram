@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -33,7 +33,7 @@ class Vector(bytes, TLObject):
     def read_bare(b: BytesIO, size: int) -> Union[int, Any]:
         if size == 4:
             return Int.read(b)
-        
+
         if size == 8:
             return Long.read(b)
 

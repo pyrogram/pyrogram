@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Ask Pyrogram related questions
     url: https://stackoverflow.com/questions/tagged/pyrogram
-    about: This place is for issues about Pyrogram. If you'd like to ask a question, please do so at StackOverflow.
-  - name: Join the Telegram community
+    about: This place is only for reporting issues about Pyrogram. You can ask questions at StackOverflow.
+  - name: Join the Telegram channel
     url: https://t.me/pyrogram
-    about: Join the official channel to stay tuned for news and updates.
+    about: Join the official channel and stay tuned for news, updates and announcements.

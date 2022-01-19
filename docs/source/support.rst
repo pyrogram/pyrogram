@@ -1,66 +1,62 @@
 Support Pyrogram
 ================
 
-As a developer, you probably understand that "open source" doesn't mean "free work". If you wish to tip me for Pyrogram
--- or any of my `other works`_ -- you can do so by the ways shown below. Your appreciation means a lot and helps
-staying motivated!
+.. raw:: html
 
---- `Dan`_
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <div style="float: right; margin-bottom: 10px">
+        <a class="github-button"
+           href="https://github.com/pyrogram/pyrogram/fork"
+           data-icon="octicon-repo-forked" data-size="large" data-show-count="true"
+           aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
+
+        <a class="github-button"
+           href="https://github.com/pyrogram/pyrogram"
+           data-icon="octicon-star" data-size="large"
+           data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
+    </div>
+
+    <br style="clear: both"/>
+
+Pyrogram is a free and open source project.
+If you enjoy Pyrogram and would like to show your appreciation, consider donating or becoming
+a sponsor of the project. You can support Pyrogram via the ways shown below:
 
 -----
 
-Star
-----
+GitHub Sponsor
+--------------
 
-Pyrogram is free and open source software, and thus powered by your love and support! If you like the project and have
-found it to be useful, give Pyrogram a `Star on GitHub`_.
+`Become a GitHub sponsor <https://github.com/sponsors/delivrance>`_.
 
 .. raw:: html
 
-    <a class="github-button" href="https://github.com/pyrogram/pyrogram" data-size="large" data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
-    <br><br>
+    <a class="github-button"
+       href="https://github.com/sponsors/delivrance"
+       data-icon="octicon-heart"
+       data-size="large"
+       aria-label="Sponsor @delivrance on GitHub">
+    Sponsor</a>
 
 -----
 
-Sponsor
--------
+LiberaPay Patron
+----------------
 
-You can become a GitHub sponsor:
+`Become a LiberaPay patron <https://liberapay.com/delivrance>`_.
 
 .. raw:: html
 
-    <iframe
-        src="https://github.com/sponsors/delivrance/button"
-        title="Sponsor delivrance"
-        height="40" width="120"
-        style="border: 0px; padding-top: 5px; margin-top: -5px">
-    </iframe>
+    <script src="https://liberapay.com/delivrance/widgets/button.js"></script>
 
 -----
 
-Donate
-------
+OpenCollective Backer
+---------------------
 
-You can donate via PayPal using the button below:
+`Become an OpenCollective backer <https://opencollective.com/pyrogram>`_
 
 .. raw:: html
 
-    <form action="https://www.paypal.com/donate" method="post" target="_top">
-    <input type="hidden" name="hosted_button_id" value="WMKAVFE47XEML" />
-    <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-    <img alt="" border="0" src="https://www.paypal.com/en_IT/i/scr/pixel.gif" width="1" height="1" />
-    </form>
-
------
-
-Cloud Credits
--------------
-
-If you need a cloud server to host your applications, try **Hetzner Cloud**. You can sign up with
-`this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram and
-my `other projects`_.
-
-.. _Star on GitHub: https://github.com/pyrogram/pyrogram
-.. _other projects: https://github.com/delivrance
-.. _other works: https://github.com/delivrance
-.. _Dan: https://t.me/haskell
+    <script src="https://opencollective.com/pyrogram/banner.js"></script>

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -42,7 +42,7 @@ class GetChatMembersCount(Scaffold):
         Example:
             .. code-block:: python
 
-                count = app.get_chat_members_count("pyrogramchat")
+                count = app.get_chat_members_count(chat_id)
                 print(count)
         """
         peer = await self.resolve_peer(chat_id)

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -408,7 +408,7 @@ def start(format: bool = False):
                     flag = FLAGS_RE_2.match(i[1])
 
                     if flag:
-                        if flag.group(2) == "true":
+                        if flag.group(2) == "true" or flag.group(2).startswith("Vector"):
                             write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} else 0")
                         else:
                             write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} is not None else 0")
@@ -441,7 +441,7 @@ def start(format: bool = False):
                     sub_type = arg_type.split("<")[1][:-1]
 
                     write_types += "\n        "
-                    write_types += f"if self.{arg_name} is not None:\n            "
+                    write_types += f"if self.{arg_name}:\n            "
                     write_types += "b.write(Vector(self.{}{}))\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )

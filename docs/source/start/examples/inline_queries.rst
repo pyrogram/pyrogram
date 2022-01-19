@@ -26,7 +26,6 @@ It uses the @on_inline_query decorator to register an InlineQueryHandler.
                     ),
                     url="https://docs.pyrogram.org/intro/install",
                     description="How to install Pyrogram",
-                    thumb_url="https://i.imgur.com/JyxrStE.png",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [InlineKeyboardButton(
@@ -43,7 +42,6 @@ It uses the @on_inline_query decorator to register an InlineQueryHandler.
                     ),
                     url="https://docs.pyrogram.org/start/invoking",
                     description="How to use Pyrogram",
-                    thumb_url="https://i.imgur.com/JyxrStE.png",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [InlineKeyboardButton(

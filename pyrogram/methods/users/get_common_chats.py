@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -42,7 +42,7 @@ class GetCommonChats(Scaffold):
         Example:
             .. code-block:: python
 
-                common = app.get_common_chats("haskell")
+                common = app.get_common_chats(user_id)
                 print(common)
         """
 

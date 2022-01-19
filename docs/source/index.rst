@@ -5,7 +5,8 @@ Welcome to Pyrogram
 
     <div align="center">
         <a href="/">
-            <div><img src="_static/pyrogram.png" alt="Pyrogram Logo" width="420"></div>
+            <div class="pyrogram-logo-index"><img src="_static/pyrogram.png" alt="Pyrogram"></div>
+            <div class="pyrogram-text pyrogram-text-index">Pyrogram</div>
         </a>
     </div>
 
@@ -14,15 +15,15 @@ Welcome to Pyrogram
 
         <br>
         <a href="https://github.com/pyrogram/pyrogram">
-            Source Code
+            Development
         </a>
         •
-        <a href="https://github.com/pyrogram/pyrogram/releases">
+        <a href="https://docs.pyrogram.org/releases">
             Releases
         </a>
         •
-        <a href="https://t.me/Pyrogram">
-            Community
+        <a href="https://t.me/pyrogram">
+            News
         </a>
     </p>
 
@@ -35,16 +36,34 @@ Welcome to Pyrogram
 
     @app.on_message(filters.private)
     async def hello(client, message):
-        await message.reply_text(f"Hello {message.from_user.mention}")
+        await message.reply("Hello from Pyrogram!")
 
 
     app.run()
 
-**Pyrogram** is a modern, elegant and easy-to-use Telegram_ framework written from the ground up in Python and C.
-It enables you to easily create custom apps for both user and bot identities (bot API alternative) via the
-:doc:`MTProto API <topics/mtproto-vs-botapi>`.
+**Pyrogram** is a modern, elegant and asynchronous :doc:`MTProto API <topics/mtproto-vs-botapi>` framework.
+It enables you to easily interact with the main Telegram API through a user account (custom client) or a bot identity
+(bot API alternative) using Python.
 
-.. _Telegram: https://telegram.org
+Support
+-------
+
+If you'd like to support Pyrogram, you can consider:
+
+- `Become a GitHub sponsor <https://github.com/sponsors/delivrance>`_.
+- `Become a LiberaPay patron <https://liberapay.com/delivrance>`_.
+- `Become an OpenCollective backer <https://opencollective.com/pyrogram>`_.
+
+Key Features
+------------
+
+- **Ready**: Install Pyrogram with pip and start building your applications right away.
+- **Easy**: Makes the Telegram API simple and intuitive, while still allowing advanced usages.
+- **Elegant**: Low-level details are abstracted and re-presented in a more convenient way.
+- **Fast**: Boosted up by :doc:`TgCrypto <topics/tgcrypto>`, a high-performance crypto library written in pure C.
+- **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
+- **Async**: Fully asynchronous (also usable synchronously if wanted, for convenience).
+- **Powerful**: Full access to Telegram's API to execute any official client action and more.
 
 How the Documentation is Organized
 ----------------------------------
@@ -53,18 +72,11 @@ Contents are organized into sections composed of self-contained topics which can
 following them in order using the :guilabel:`Next` button at the end of each page. Here below you can, instead, find a
 list of the most relevant pages for a quick access.
 
-.. admonition :: Cloud Credits
-    :class: tip
-
-    If you need a cloud server to host your applications, we recommend using **Hetzner Cloud**. Sign up with
-    `this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits and help support Pyrogram as
-    well.
-
 First Steps
 ^^^^^^^^^^^
 
 .. hlist::
-    :columns: 2
+    :columns: 1
 
     - :doc:`Quick Start <intro/quickstart>`: Overview to get you started quickly.
     - :doc:`Calling Methods <start/invoking>`: How to call Pyrogram's methods.
@@ -75,7 +87,7 @@ API Reference
 ^^^^^^^^^^^^^
 
 .. hlist::
-    :columns: 2
+    :columns: 1
 
     - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
     - :doc:`Available Methods <api/methods/index>`: List of available high-level methods.
@@ -86,15 +98,11 @@ Meta
 ^^^^
 
 .. hlist::
-    :columns: 2
+    :columns: 1
 
-    - :doc:`Pyrogram FAQ <faq>`: Answers to common Pyrogram questions.
-    - :doc:`Pyrogram Glossary <glossary>`: List of words with brief explanations.
+    - :doc:`Pyrogram FAQ <faq/index>`: Answers to common Pyrogram questions.
     - :doc:`Support Pyrogram <support>`: Ways to show your appreciation.
-    - :doc:`About the License <license>`: Information about the Project license.
     - :doc:`Release Notes <releases/index>`: Release notes for Pyrogram releases.
-
-Last updated on |today|
 
 .. toctree::
     :hidden:
@@ -136,14 +144,13 @@ Last updated on |today|
     topics/more-on-updates
     topics/config-file
     topics/smart-plugins
-    topics/session-settings
+    topics/client-settings
     topics/tgcrypto
     topics/storage-engines
     topics/text-formatting
     topics/serializing
     topics/proxy
     topics/scheduling
-    topics/bots-interaction
     topics/mtproto-vs-botapi
     topics/debugging
     topics/test-servers
@@ -154,10 +161,8 @@ Last updated on |today|
     :hidden:
     :caption: Meta
 
-    faq
-    glossary
+    faq/index
     support
-    license
     releases/index
 
 .. toctree::

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -53,6 +53,7 @@ from .send_media_group import SendMediaGroup
 from .send_message import SendMessage
 from .send_photo import SendPhoto
 from .send_poll import SendPoll
+from .send_reaction import SendReaction
 from .send_sticker import SendSticker
 from .send_venue import SendVenue
 from .send_video import SendVideo
@@ -106,6 +107,7 @@ class Messages(
     CopyMediaGroup,
     SearchMessagesCount,
     SearchGlobalCount,
-    GetDiscussionMessage
+    GetDiscussionMessage,
+    SendReaction
 ):
     pass

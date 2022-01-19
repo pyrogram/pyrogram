@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -48,6 +48,8 @@ class FutureSalts(TLObject):
 
     def write(self, *args: Any) -> bytes:
         b = BytesIO()
+
+        b.write(Int(self.ID, False))
 
         b.write(Long(self.req_msg_id))
         b.write(Int(self.now))

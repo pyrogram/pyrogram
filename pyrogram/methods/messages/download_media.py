@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -92,7 +92,7 @@ class DownloadMedia(Scaffold):
                 app.download_media(message)
 
                 # Download from file id
-                app.download_media("CAADBAADzg4AAvLQYAEz_x2EOgdRwBYE")
+                app.download_media(message.photo.file_id)
 
                 # Keep track of the progress while downloading
                 def progress(current, total):

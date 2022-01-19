@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -42,6 +42,7 @@ class MessageEntityType(AutoName):
     ITALIC = auto()
     UNDERLINE = auto()
     STRIKETHROUGH = auto()
+    SPOILER = auto()
     CODE = auto()
     PRE = auto()
     TEXT_LINK = auto()
@@ -62,6 +63,7 @@ RAW_ENTITIES_TO_TYPE = {
     raw.types.MessageEntityPre: MessageEntityType.PRE,
     raw.types.MessageEntityUnderline: MessageEntityType.UNDERLINE,
     raw.types.MessageEntityStrike: MessageEntityType.STRIKETHROUGH,
+    raw.types.MessageEntitySpoiler: MessageEntityType.SPOILER,
     raw.types.MessageEntityBlockquote: MessageEntityType.BLOCKQUOTE,
     raw.types.MessageEntityTextUrl: MessageEntityType.TEXT_LINK,
     raw.types.MessageEntityMentionName: MessageEntityType.TEXT_MENTION,
@@ -85,11 +87,12 @@ class MessageEntity(Object):
             - "bot_command": ``/start@pyrogrambot``.
             - "url": ``https://pyrogram.org`` (see *url* below).
             - "email": ``do-not-reply@pyrogram.org``.
-            - "phone_number": ``+69-420-1337``.
+            - "phone_number": ``+1-123-456-7890``.
             - "bold": **bold text**.
             - "italic": *italic text*.
             - "underline": underlined text.
             - "strikethrough": strikethrough text.
+            - "spoiler": spoiler text.
             - "code": monowidth string.
             - "pre": monowidth block (see *language* below).
             - "text_link": for clickable text URLs.
