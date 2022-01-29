@@ -87,6 +87,7 @@ class ChatJoinRequest(Object, Update):
         Use as a shortcut for:
         
         .. code-block:: python
+
             client.approve_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
@@ -94,6 +95,7 @@ class ChatJoinRequest(Object, Update):
             
         Example:
             .. code-block:: python
+
                 request.approve()
                 
         Returns:
@@ -113,6 +115,7 @@ class ChatJoinRequest(Object, Update):
         Use as a shortcut for:
         
         .. code-block:: python
+
             client.decline_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
@@ -120,6 +123,7 @@ class ChatJoinRequest(Object, Update):
             
         Example:
             .. code-block:: python
+
                 request.decline()
                 
         Returns:
