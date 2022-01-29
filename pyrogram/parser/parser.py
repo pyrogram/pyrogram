@@ -31,7 +31,7 @@ class Parser:
         self.markdown = Markdown(client)
 
     async def parse(self, text: str, mode: Optional[str] = object):
-        text = str(text).strip()
+        text = str(text if text else "").strip()
 
         if mode == object:
             if self.client:
