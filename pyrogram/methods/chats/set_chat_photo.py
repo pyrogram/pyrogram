@@ -32,7 +32,7 @@ class SetChatPhoto(Scaffold):
         *,
         photo: Union[str, BinaryIO] = None,
         video: Union[str, BinaryIO] = None,
-        video_start_ts: Union[float, int] = None,
+        video_start_ts: float = None,
     ) -> bool:
         """Set a new chat photo or video (H.264/MPEG-4 AVC video, max 5 seconds).
 
@@ -55,8 +55,8 @@ class SetChatPhoto(Scaffold):
                 from your local machine or a binary file-like object with its attribute
                 ".name" set for in-memory uploads.
 
-            video_start_ts (``float`` | ``int``, *optional*):
-                The timestamp of the video in seconds to use as preview.
+            video_start_ts (``float``, *optional*):
+                The timestamp in seconds of the video frame to use as photo profile preview.
 
         Returns:
             ``bool``: True on success.
