@@ -80,7 +80,7 @@ class Dispatcher:
 
         self.updates_queue = asyncio.Queue()
         self.groups = OrderedDict()
-        
+
         self.conversation_handler = ConversationHandler()
         self.groups[0] = [self.conversation_handler]
 
