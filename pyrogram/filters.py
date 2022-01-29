@@ -448,7 +448,8 @@ private = create(private_filter)
 # endregion
 
 # region group_filter
-async def group_filter(_, __, m: Message):
+async def group_filter(_, __, u: Update):
+    m = u.message if isinstance(u, CallbackQuery) else u
     return bool(m.chat and m.chat.type in {"group", "supergroup"})
 
 
