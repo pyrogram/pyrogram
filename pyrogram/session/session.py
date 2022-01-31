@@ -366,7 +366,8 @@ class Session:
                 if amount > sleep_threshold >= 0:
                     raise
 
-                log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
+                log.warning(f'[{self.client.session_name}] Waiting for {amount} seconds before continuing '
+                            f'(required by "{query}")')
 
                 await asyncio.sleep(amount)
             except (OSError, TimeoutError, InternalServerError, ServiceUnavailable) as e:
