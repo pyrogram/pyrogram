@@ -674,6 +674,14 @@ class Message(Object, Update):
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
                             media_type = "animation"
+                        elif raw.types.DocumentAttributeSticker in attributes:
+                            sticker = await types.Sticker._parse(
+                                client, doc,
+                                attributes.get(raw.types.DocumentAttributeImageSize, None),
+                                attributes[raw.types.DocumentAttributeSticker],
+                                file_name
+                            )
+                            media_type = "sticker"
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
 
@@ -683,14 +691,6 @@ class Message(Object, Update):
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
                                 media_type = "video"
-                        elif raw.types.DocumentAttributeSticker in attributes:
-                            sticker = await types.Sticker._parse(
-                                client, doc,
-                                attributes.get(raw.types.DocumentAttributeImageSize, None),
-                                attributes[raw.types.DocumentAttributeSticker],
-                                file_name
-                            )
-                            media_type = "sticker"
                         else:
                             document = types.Document._parse(client, doc, file_name)
                             media_type = "document"
@@ -3480,62 +3480,45 @@ class Message(Object, Update):
         timeout: int = None
     ) -> "Message":
         """Bound method *ask* of :obj:`~pyrogram.types.Message`.
-
         Use as a shortcut for:
-
         .. code-block:: python
-
             client.send_message(chat_id, "What is your name?")
             client.wait_for_message(chat_id)
-
         Example:
             .. code-block::python
-
                 message.ask("What is your name?")
-
         Parameters:
             text (``str``):
                 Text of the message to be sent.
-
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
-
             parse_mode (``str``, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing.
-
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.
-
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
-
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
-
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
-
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
-
             filters (:obj:`Filters`):
                 Pass one or more filters to allow only a subset of callback queries to be passed
                 in your callback function.
-
             timeout (``int``, *optional*):
                 Timeout in seconds.
-
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the reply message is returned.
-
         Raises:
             RPCError: In case of a Telegram RPC error.
             asyncio.TimeoutError: In case reply not received within the timeout.

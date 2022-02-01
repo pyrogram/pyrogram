@@ -1,0 +1,51 @@
+name: Bug report
+description: Report issues affecting the framework or the documentation
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I am sure the error is coming from Pyrogram's code and not elsewhere
+          required: true
+        - label: I have searched in the issue tracker for similar bug reports, including closed ones
+          required: true
+        - label: I ran `pip3 install -U https://github.com/pyrogram/pyrogram/archive/master.zip` and reproduced the issue using the latest development version
+          required: true
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the issue
+      placeholder: Description...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Explain precisely how to reproduce the issue
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Code example
+      description: Provide a [minimal, reproducible](https://stackoverflow.com/help/minimal-reproducible-example) and properly formatted example (if applicable)
+      placeholder: |
+        from pyrogram import Client
+        ...
+      render: python
+
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Provide the complete traceback (if applicable)
+      placeholder: |
+        Traceback (most recent call last):
+        File "main.py", line 1, in <module>
+        ...
+      render: shell

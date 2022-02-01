@@ -208,7 +208,9 @@ class Session:
                 MsgId.set_server_time(msg.msg_id / (2 ** 32))
 
             if msg.seq_no % 2 != 0:
-                if msg.msg_id not in self.pending_acks:
+                if msg.msg_id in self.pending_acks:
+                    continue
+                else:
                     self.pending_acks.add(msg.msg_id)
 
             if isinstance(msg.body, (raw.types.MsgDetailedInfo, raw.types.MsgNewDetailedInfo)):
@@ -364,7 +366,8 @@ class Session:
                 if amount > sleep_threshold >= 0:
                     raise
 
-                log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
+                log.warning(f'[{self.client.session_name}] Waiting for {amount} seconds before continuing '
+                            f'(required by "{query}")')
 
                 await asyncio.sleep(amount)
             except (OSError, TimeoutError, InternalServerError, ServiceUnavailable) as e:

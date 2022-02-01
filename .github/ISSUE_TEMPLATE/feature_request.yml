@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest ideas, new features or enhancements
+labels: [enhancement]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I believe the idea is awesome and would benefit the framework
+          required: true
+        - label: I have searched in the issue tracker for similar requests, including closed ones
+          required: true
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: Provide a detailed description of the request
+      placeholder: Description...
+    validations:
+      required: true
