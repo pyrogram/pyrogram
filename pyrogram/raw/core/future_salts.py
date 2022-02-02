@@ -49,6 +49,8 @@ class FutureSalts(TLObject):
     def write(self, *args: Any) -> bytes:
         b = BytesIO()
 
+        b.write(Int(self.ID, False))
+
         b.write(Long(self.req_msg_id))
         b.write(Int(self.now))
 

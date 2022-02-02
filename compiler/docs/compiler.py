@@ -544,6 +544,11 @@ def pyrogram_api():
         inline_query="""
         InlineQuery
             InlineQuery.answer
+        """,
+        chat_join_request="""
+        ChatJoinRequest
+            ChatJoinRequest.approve
+            ChatJoinRequest.decline
         """
     )
 

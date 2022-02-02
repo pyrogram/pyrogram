@@ -51,13 +51,10 @@ class GetMediaGroup(Scaffold):
                 In case target message doesn't belong to a media group.
         """
 
-        # There can be maximum 10 items in a media group. 
-        messages = await self.get_messages(chat_id, [msg_id for msg_id in range(message_id - 9, message_id + 10)],
-                                           replies=0)
-
         if message_id <= 0:
             raise ValueError("Passed message_id is negative or equal to zero.")
 
+        # Get messages with id from `id - 9` to `id + 10` to get all possible media group messages.
         messages = await self.get_messages(
             chat_id=chat_id,
             message_ids=[msg_id for msg_id in range(message_id - 9, message_id + 10)],
@@ -65,7 +62,7 @@ class GetMediaGroup(Scaffold):
         )
 
         # There can be maximum 10 items in a media group.
-        # The if/else condition to fix the problem of getting correct `media_group_id` when it has `message_id` less then 10.
+        # If/else condition to fix the problem of getting correct `media_group_id` when `message_id` is less than 10.
         media_group_id = messages[9].media_group_id if len(messages) == 19 else messages[message_id - 1].media_group_id
 
         if media_group_id is None:
