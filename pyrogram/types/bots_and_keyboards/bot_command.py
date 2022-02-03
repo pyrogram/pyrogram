@@ -52,17 +52,42 @@ class BotCommandScope(Object):
 
     Parameters:
         scope (``str``):
-            Scope of the command.
+
+            - DEFAULT: The commands will be valid in all chats (default value)
+
+            - PRIVATE: The specified bot commands will only be valid in all private
+            chats with users.
+
+            - GROUP: The specified bot commands will be valid in all groups and supergroups
+
+            - GROUP_ADMINS: The specified bot commands will be valid only for chat
+            administrators, in all groups and supergroups.
+
+            - PEER: The specified bot commands will be valid only in a specific dialog
+
+            - PEER_ADMINS: The specified bot commands will be valid for all admins of the
+            specified group or supergroup.
+
+            - PEER_USER: The specified bot commands will be valid only for a specific user
+            in the specified chat
     """
 
+    DEFAULT = "default"
+    PRIVATE = "users"
+    GROUP = "chats"
+    GROUP_ADMINS = "chat_admins"
+    PEER = "peer"
+    PEER_ADMINS = "peer_admins"
+    PEER_USER = "peer_user"
+
     raw_scopes = {
-        "default": raw.types.BotCommandScopeDefault,
-        "users": raw.types.BotCommandScopeUsers,
-        "chats": raw.types.BotCommandScopeChats,
-        "chat_admins": raw.types.BotCommandScopeChatAdmins,
-        "peer": lambda peer: raw.types.BotCommandScopePeer(peer),
-        "peer_admins": lambda peer: raw.types.BotCommandScopePeerAdmins(peer),
-        "peer_user": lambda peer, user_id: raw.types.BotCommandScopePeerUser(
+        DEFAULT: raw.types.BotCommandScopeDefault,
+        PRIVATE: raw.types.BotCommandScopeUsers,
+        GROUP: raw.types.BotCommandScopeChats,
+        GROUP_ADMINS: raw.types.BotCommandScopeChatAdmins,
+        PEER: lambda peer: raw.types.BotCommandScopePeer(peer),
+        PEER_ADMINS: lambda peer: raw.types.BotCommandScopePeerAdmins(peer),
+        PEER_USER: lambda peer, user_id: raw.types.BotCommandScopePeerUser(
             peer, user_id
         ),
     }
