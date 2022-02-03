@@ -56,10 +56,10 @@ class BotCommandScope(Object):
     """
 
     raw_scopes = {
-        "default": raw.types.BotCommandScopeDefault(),
-        "users": raw.types.BotCommandScopeUsers(),
-        "chats": raw.types.BotCommandScopeChats(),
-        "chat_admins": raw.types.BotCommandScopeChatAdmins(),
+        "default": raw.types.BotCommandScopeDefault,
+        "users": raw.types.BotCommandScopeUsers,
+        "chats": raw.types.BotCommandScopeChats,
+        "chat_admins": raw.types.BotCommandScopeChatAdmins,
         "peer": lambda peer: raw.types.BotCommandScopePeer(peer),
         "peer_admins": lambda peer: raw.types.BotCommandScopePeerAdmins(peer),
         "peer_user": lambda peer, user_id: raw.types.BotCommandScopePeerUser(
@@ -86,4 +86,4 @@ class BotCommandScope(Object):
         elif self.scope == "peer_user":
             return self.raw_scopes[self.scopes](self.peer, self.user_id)
 
-        return self.raw_scopes[self.scope]
+        return self.raw_scopes[self.scope]()
