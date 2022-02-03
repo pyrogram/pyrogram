@@ -16,10 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional, List
+from typing import List, Optional
 
-from pyrogram import raw
-from pyrogram import types
+from pyrogram import raw, types
 from pyrogram.scaffold import Scaffold
 
 
@@ -27,8 +26,8 @@ class SetBotCommands(Scaffold):
     async def set_bot_commands(
         self,
         commands: Optional[List[types.BotCommand]],
+        scope: types.BotCommandScope = types.BotCommandScope("default"),
         lang_code: str = "",
-        scope: raw.base.BotCommandScope = raw.types.BotCommandScopeDefault(),
     ):
         """Set the bot commands list.
 
@@ -60,7 +59,7 @@ class SetBotCommands(Scaffold):
         return await self.send(
             raw.functions.bots.SetBotCommands(
                 commands=[c.write() for c in commands or []],
-                scope=scope,
+                scope=scope.write(),
                 lang_code=lang_code,
             )
         )
