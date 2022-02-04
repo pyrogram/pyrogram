@@ -45,6 +45,7 @@ CALL_PROTOCOL_FLAGS_INVALID	Call protocol flags invalid
 CDN_METHOD_INVALID	The method can't be used on CDN DCs
 CHANNELS_ADMIN_PUBLIC_TOO_MUCH	You are an administrator of too many public channels
 CHANNELS_TOO_MUCH	You have joined too many channels or supergroups, leave some and try again
+CHANNEL_ADD_INVALID Internal error.
 CHANNEL_BANNED	The channel is banned
 CHANNEL_INVALID	The channel parameter is invalid
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
