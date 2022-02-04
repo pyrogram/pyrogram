@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -37,6 +37,8 @@ class ChatAction:
     PLAYING = raw.types.SendMessageGamePlayAction
     CHOOSE_CONTACT = raw.types.SendMessageChooseContactAction
     SPEAKING = raw.types.SpeakingInGroupCallAction
+    IMPORT_HISTORY = raw.types.SendMessageHistoryImportAction
+    CHOOSE_STICKER = raw.types.SendMessageChooseStickerAction
     CANCEL = raw.types.SendMessageCancelAction
 
 
@@ -59,6 +61,7 @@ class SendChatAction(Scaffold):
                 *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
                 *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
                 *"choose_contact"* for contacts, *"playing"* for games, *"speaking"* for speaking in group calls or
+                *"import_history"* for importing history, *"choose_sticker"* for stickers or
                 *"cancel"* to cancel any chat action currently displayed.
 
         Returns:
@@ -89,7 +92,7 @@ class SendChatAction(Scaffold):
             raise ValueError("Invalid chat action '{}'. Possible values are: {}".format(
                 action, json.dumps(POSSIBLE_VALUES, indent=4))) from None
 
-        if "Upload" in action.__name__:
+        if "Upload" in action.__name__ or "History" in action.__name__:
             action = action(progress=0)
         else:
             action = action()

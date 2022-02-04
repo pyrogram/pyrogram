@@ -14,8 +14,8 @@ non-asynchronous contexts. For more detailed information, you can visit and lear
 
 -----
 
-Using ``apscheduler``
----------------------
+Using apscheduler
+-----------------
 
 - Install with ``pip3 install apscheduler``
 - Documentation: https://apscheduler.readthedocs.io

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -31,14 +31,14 @@ class ChatMember(Object):
 
         status (``str``):
             The member's status in the chat.
-            Can be "creator", "administrator", "member", "restricted", "left" or "kicked".
+            Can be "creator", "administrator", "member", "restricted", "left" or "banned".
 
         title (``str``, *optional*):
             A custom title that will be shown to all members instead of "Owner" or "Admin".
             Creator (owner) and administrators only. Can be None in case there's no custom title set.
 
         until_date (``int``, *optional*):
-            Restricted and kicked only.
+            Restricted and banned only.
             Date when restrictions will be lifted for this user; unix time.
 
         joined_date (``int``, *optional*):
@@ -53,7 +53,7 @@ class ChatMember(Object):
             Administrators only. Information about the user who promoted this member as administrator.
 
         restricted_by (:obj:`~pyrogram.types.User`, *optional*):
-            Restricted and kicked only. Information about the user who restricted or kicked this member.
+            Restricted and banned only. Information about the user who restricted or banned this member.
 
         is_member (``bool``, *optional*):
             Restricted only. True, if the user is a member of the chat at the moment of the request.
@@ -305,7 +305,7 @@ class ChatMember(Object):
 
             return ChatMember(
                 user=user,
-                status="kicked" if member.banned_rights.view_messages else "restricted",
+                status="banned" if member.banned_rights.view_messages else "restricted",
                 until_date=denied_permissions.until_date,
                 joined_date=member.date,
                 is_member=not member.left,

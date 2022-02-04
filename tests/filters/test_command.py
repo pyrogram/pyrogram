@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -104,6 +104,10 @@ async def test_with_args():
     f = filters.command("start")
 
     m = Message("/start")
+    await f(c, m)
+    assert m.command == ["start"]
+
+    m = Message("/StArT")
     await f(c, m)
     assert m.command == ["start"]
 

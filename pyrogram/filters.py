@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -794,7 +794,8 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
                                 flags=re.IGNORECASE if not flt.case_sensitive else 0):
                     continue
 
-                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1)
+                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1,
+                                         flags=re.IGNORECASE if not flt.case_sensitive else 0)
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text
@@ -933,12 +934,3 @@ class chat(Filter, set):
                          and message.from_user
                          and message.from_user.is_self
                          and not message.outgoing)))
-
-
-# region dan_filter
-async def dan_filter(_, __, m: Message):
-    return bool(m.from_user and m.from_user.id == 23122162)
-
-
-dan = create(dan_filter)
-# endregion

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -67,17 +67,17 @@ class SetChatPermissions(Scaffold):
                 peer=await self.resolve_peer(chat_id),
                 banned_rights=raw.types.ChatBannedRights(
                     until_date=0,
-                    send_messages=True if not permissions.can_send_messages else None,
-                    send_media=True if not permissions.can_send_media_messages else None,
-                    send_stickers=permissions.can_send_other_messages,
-                    send_gifs=permissions.can_send_other_messages,
-                    send_games=permissions.can_send_other_messages,
-                    send_inline=permissions.can_send_other_messages,
-                    embed_links=True if not permissions.can_add_web_page_previews else None,
-                    send_polls=True if not permissions.can_send_polls else None,
-                    change_info=True if not permissions.can_change_info else None,
-                    invite_users=True if not permissions.can_invite_users else None,
-                    pin_messages=True if not permissions.can_pin_messages else None,
+                    send_messages=not permissions.can_send_messages,
+                    send_media=not permissions.can_send_media_messages,
+                    send_stickers=not permissions.can_send_other_messages,
+                    send_gifs=not permissions.can_send_other_messages,
+                    send_games=not permissions.can_send_other_messages,
+                    send_inline=not permissions.can_send_other_messages,
+                    embed_links=not permissions.can_add_web_page_previews,
+                    send_polls=not permissions.can_send_polls,
+                    change_info=not permissions.can_change_info,
+                    invite_users=not permissions.can_invite_users,
+                    pin_messages=not permissions.can_pin_messages,
                 )
             )
         )

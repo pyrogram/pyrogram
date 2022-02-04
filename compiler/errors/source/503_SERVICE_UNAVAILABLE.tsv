@@ -1,2 +1,3 @@
 id	message
 Timeout	Telegram is having internal problems. Please try again later.
+ApiCallError	Telegram is having internal problems. Please try again later.

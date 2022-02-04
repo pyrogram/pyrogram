@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -34,6 +34,7 @@ class SendMessage(Scaffold):
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
+        protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -75,6 +76,9 @@ class SendMessage(Scaffold):
             schedule_date (``int``, *optional*):
                 Date when the message will be automatically sent. Unix time.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -84,10 +88,9 @@ class SendMessage(Scaffold):
 
         Example:
             .. code-block:: python
-                :emphasize-lines: 2,5,8,11,21-23,26-32
 
                 # Simple example
-                app.send_message("haskell", "Thanks for creating **Pyrogram**!")
+                app.send_message("me", "Message sent with **Pyrogram**!")
 
                 # Disable web page previews
                 app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
@@ -115,7 +118,7 @@ class SendMessage(Scaffold):
                     chat_id, "These are inline buttons",
                     reply_markup=InlineKeyboardMarkup(
                         [
-                            [InlineKeyboardButton("Data", callback_data="hidden_callback_data")],
+                            [InlineKeyboardButton("Data", callback_data="callback_data")],
                             [InlineKeyboardButton("Docs", url="https://docs.pyrogram.org")]
                         ]))
         """
@@ -132,7 +135,8 @@ class SendMessage(Scaffold):
                 schedule_date=schedule_date,
                 reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=message,
-                entities=entities
+                entities=entities,
+                noforwards=protect_content
             )
         )
 

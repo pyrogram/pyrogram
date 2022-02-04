@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -48,7 +48,7 @@ class GetHistoryCount(Scaffold):
         Example:
             .. code-block:: python
 
-                app.get_history_count("pyrogramchat")
+                app.get_history_count(chat_id)
         """
 
         r = await self.send(

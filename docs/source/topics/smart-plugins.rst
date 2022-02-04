@@ -1,9 +1,9 @@
 Smart Plugins
 =============
 
-Pyrogram embeds a **smart**, lightweight yet powerful plugin system that is meant to further simplify the organization
-of large projects and to provide a way for creating pluggable (modular) components that can be **easily shared** across
-different Pyrogram applications with **minimal boilerplate code**.
+Pyrogram embeds a smart, lightweight yet powerful plugin system that is meant to further simplify the organization
+of large projects and to provide a way for creating pluggable (modular) components that can be easily shared across
+different Pyrogram applications with minimal boilerplate code.
 
 .. tip::
 
@@ -74,8 +74,8 @@ after importing your modules, like this:
 
 This is already nice and doesn't add *too much* boilerplate code, but things can get boring still; you have to
 manually ``import``, manually :meth:`~pyrogram.Client.add_handler` and manually instantiate each
-:class:`~pyrogram.handlers.MessageHandler` object because **you can't use those cool decorators** for your
-functions. So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
+:class:`~pyrogram.handlers.MessageHandler` object because you can't use decorators for your functions.
+So, what if you could? Smart Plugins solve this issue by taking care of handlers registration automatically.
 
 Using Smart Plugins
 -------------------
@@ -91,7 +91,6 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
     This is the same example application as shown above, written using the Smart Plugin system.
 
 .. code-block:: text
-    :emphasize-lines: 2, 3
 
     myproject/
         plugins/
@@ -102,7 +101,6 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
 -   ``plugins/handlers.py``
 
     .. code-block:: python
-        :emphasize-lines: 4, 9
 
         from pyrogram import Client, filters
 
@@ -164,7 +162,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 .. note::
 
     Remember: there can be at most one handler, within a group, dealing with a specific update. Plugins with overlapping
-    filters included a second time will not work. Learn more at :doc:`More on Updates <more-on-updates>`.
+    filters included a second time will not work, by design. Learn more at :doc:`More on Updates <more-on-updates>`.
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``
@@ -300,32 +298,30 @@ In the previous section we've explained how to specify which plugins to load and
 starts. Here we'll show, instead, how to unload and load again a previously registered plugin at runtime.
 
 Each function decorated with the usual ``on_message`` decorator (or any other decorator that deals with Telegram
-updates) will be modified in such a way that a special ``handler`` attribute pointing to a tuple of
+updates) will be modified in such a way that a special ``handlers`` attribute pointing to a list of tuples of
 *(handler: Handler, group: int)* is attached to the function object itself.
 
 -   ``plugins/handlers.py``
 
     .. code-block:: python
-        :emphasize-lines: 5, 6
 
         @Client.on_message(filters.text & filters.private)
         def echo(client, message):
             message.reply(message.text)
 
         print(echo)
-        print(echo.handler)
+        print(echo.handlers)
 
 -   Printing ``echo`` will show something like ``<function echo at 0x10e3b6598>``.
 
--   Printing ``echo.handler`` will reveal the handler, that is, a tuple containing the actual handler and the group it
-    was registered on ``(<MessageHandler object at 0x10e3abc50>, 0)``.
+-   Printing ``echo.handlers`` will reveal the handlers, that is, a list of tuples containing the actual handlers and
+    the groups they were registered on ``[(<MessageHandler object at 0x10e3abc50>, 0)]``.
 
 Unloading
 ^^^^^^^^^
 
 In order to unload a plugin, all you need to do is obtain a reference to it by importing the relevant module and call
-:meth:`~pyrogram.Client.remove_handler` Client's method with your function's *handler* special attribute preceded by the
-star ``*`` operator as argument. Example:
+:meth:`~pyrogram.Client.remove_handler` Client's method with your function's *handler* instance:
 
 -   ``main.py``
 
@@ -333,16 +329,19 @@ star ``*`` operator as argument. Example:
 
         from plugins.handlers import echo
 
-        ...
+        handlers = echo.handlers
 
-        app.remove_handler(*echo.handler)
+        for h in handlers:
+            app.remove_handler(*h)
 
 The star ``*`` operator is used to unpack the tuple into positional arguments so that *remove_handler* will receive
 exactly what is needed. The same could have been achieved with:
 
 .. code-block:: python
 
-    handler, group = echo.handler
+    handlers = echo.handlers
+    handler, group = handlers[0]
+
     app.remove_handler(handler, group)
 
 Loading
@@ -359,4 +358,7 @@ using :meth:`~pyrogram.Client.add_handler` instead. Example:
 
         ...
 
-        app.add_handler(*echo.handler)
+        handlers = echo.handlers
+
+        for h in handlers:
+            app.add_handler(*h)

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -159,7 +159,8 @@ def unpack_inline_message_id(inline_message_id: str) -> "raw.types.InputBotInlin
 MIN_CHANNEL_ID = -1002147483647
 MAX_CHANNEL_ID = -1000000000000
 MIN_CHAT_ID = -2147483647
-MAX_USER_ID = 2147483647
+MAX_USER_ID_OLD = 2147483647
+MAX_USER_ID = 999999999999
 
 
 def get_raw_peer_id(peer: raw.base.Peer) -> Optional[int]:

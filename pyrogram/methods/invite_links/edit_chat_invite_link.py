@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -28,8 +28,10 @@ class EditChatInviteLink(Scaffold):
         self,
         chat_id: Union[int, str],
         invite_link: str,
+        name: str = None,
         expire_date: int = None,
         member_limit: int = None,
+        creates_join_request: bool = None
     ) -> "types.ChatInviteLink":
         """Edit a non-primary invite link.
 
@@ -43,6 +45,9 @@ class EditChatInviteLink(Scaffold):
             invite_link (``str``):
                 The invite link to edit
 
+            name (``str``, *optional*):
+                Invite link name.
+
             expire_date (``int``, *optional*):
                 Point in time (Unix timestamp) when the link will expire.
                 Defaults to None (no change), pass 0 to set no expiration date.
@@ -51,6 +56,10 @@ class EditChatInviteLink(Scaffold):
                 Maximum number of users that can be members of the chat simultaneously after joining the chat via this
                 invite link; 1-99999.
                 Defaults to None (no change), pass 0 to set no member limit.
+
+            creates_join_request (``bool``, *optional*):
+                True, if users joining the chat via the link need to be approved by chat administrators.
+                If True, member_limit can't be specified.
 
         Returns:
             :obj:`~pyrogram.types.ChatInviteLink`: On success, the new invite link is returned
@@ -70,6 +79,8 @@ class EditChatInviteLink(Scaffold):
                 link=invite_link,
                 expire_date=expire_date,
                 usage_limit=member_limit,
+                title=name,
+                request_needed=creates_join_request
             )
         )
 

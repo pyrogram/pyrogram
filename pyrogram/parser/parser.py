@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -31,7 +31,7 @@ class Parser:
         self.markdown = Markdown(client)
 
     async def parse(self, text: str, mode: Optional[str] = object):
-        text = str(text).strip()
+        text = str(text if text else "").strip()
 
         if mode == object:
             if self.client:

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -39,7 +39,7 @@ class RPCError(Exception):
         is_unknown: bool = False,
         is_signed: bool = False
     ):
-        super().__init__("[{}{} {}]: {} {}".format(
+        super().__init__("Telegram says: [{}{} {}] - {} {}".format(
             "-" if is_signed else "",
             self.CODE,
             self.ID or self.NAME,

@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -18,15 +18,14 @@
 
 from typing import AsyncGenerator, Optional
 
-from pyrogram import types
+from pyrogram import types, raw, utils
 from pyrogram.scaffold import Scaffold
 
 
 class IterDialogs(Scaffold):
     async def iter_dialogs(
         self,
-        limit: int = 0,
-        offset_date: int = 0
+        limit: int = 0
     ) -> Optional[AsyncGenerator["types.Dialog", None]]:
         """Iterate through a user's dialogs sequentially.
 
@@ -38,10 +37,6 @@ class IterDialogs(Scaffold):
             limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.
                 By default, no limit is applied and all dialogs are returned.
-
-            offset_date (``int``):
-                The offset date in Unix time taken from the top message of a :obj:`~pyrogram.types.Dialog`.
-                Defaults to 0 (most recent dialog).
 
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.Dialog` objects.
@@ -57,28 +52,50 @@ class IterDialogs(Scaffold):
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
-        pinned_dialogs = await self.get_dialogs(
-            pinned_only=True
-        )
-
-        for dialog in pinned_dialogs:
-            yield dialog
-
-            current += 1
-
-            if current >= total:
-                return
+        offset_date = 0
+        offset_id = 0
+        offset_peer = raw.types.InputPeerEmpty()
 
         while True:
-            dialogs = await self.get_dialogs(
-                offset_date=offset_date,
-                limit=limit
-            )
+            r = (await self.send(
+                raw.functions.messages.GetDialogs(
+                    offset_date=offset_date,
+                    offset_id=offset_id,
+                    offset_peer=offset_peer,
+                    limit=limit,
+                    hash=0
+                ),
+                sleep_threshold=60
+            ))
+
+            users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
+
+            messages = {}
+
+            for message in r.messages:
+                if isinstance(message, raw.types.MessageEmpty):
+                    continue
+
+                chat_id = utils.get_peer_id(message.peer_id)
+                messages[chat_id] = await types.Message._parse(self, message, users, chats)
+
+            dialogs = []
+
+            for dialog in r.dialogs:
+                if not isinstance(dialog, raw.types.Dialog):
+                    continue
+
+                dialogs.append(types.Dialog._parse(self, dialog, messages, users, chats))
 
             if not dialogs:
                 return
 
-            offset_date = dialogs[-1].top_message.date
+            last = dialogs[-1]
+
+            offset_id = last.top_message.message_id
+            offset_date = last.top_message.date
+            offset_peer = await self.resolve_peer(last.chat.id)
 
             for dialog in dialogs:
                 yield dialog

@@ -1,5 +1,5 @@
 sphinx
-sphinx_rtd_theme
+sphinx_rtd_theme==1.0.0
 sphinx_copybutton
 pypandoc
 requests

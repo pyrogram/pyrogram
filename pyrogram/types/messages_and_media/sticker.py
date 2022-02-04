@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -17,8 +17,6 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List
-
-from async_lru import alru_cache
 
 import pyrogram
 from pyrogram import raw
@@ -47,6 +45,9 @@ class Sticker(Object):
 
         is_animated (``bool``):
             True, if the sticker is animated
+
+        is_video (``bool``):
+            True, if the sticker is a video sticker
 
         file_name (``str``, *optional*):
             Sticker file name.
@@ -81,6 +82,7 @@ class Sticker(Object):
         width: int,
         height: int,
         is_animated: bool,
+        is_video: bool,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -100,23 +102,42 @@ class Sticker(Object):
         self.width = width
         self.height = height
         self.is_animated = is_animated
+        self.is_video = is_video
         self.emoji = emoji
         self.set_name = set_name
         self.thumbs = thumbs
         # self.mask_position = mask_position
 
+    cache = {}
+
     @staticmethod
-    @alru_cache(maxsize=256)
     async def _get_sticker_set_name(send, input_sticker_set_id):
         try:
-            return (await send(
+            set_id = input_sticker_set_id[0]
+            set_access_hash = input_sticker_set_id[1]
+
+            name = Sticker.cache.get((set_id, set_access_hash), None)
+
+            if name is not None:
+                return name
+
+            name = (await send(
                 raw.functions.messages.GetStickerSet(
                     stickerset=raw.types.InputStickerSetID(
-                        id=input_sticker_set_id[0],
-                        access_hash=input_sticker_set_id[1]
-                    )
+                        id=set_id,
+                        access_hash=set_access_hash
+                    ),
+                    hash=0
                 )
             )).set.short_name
+
+            Sticker.cache[(set_id, set_access_hash)] = name
+
+            if len(Sticker.cache) > 250:
+                for i in range(50):
+                    Sticker.cache.pop(next(iter(Sticker.cache)))
+
+            return name
         except StickersetInvalid:
             return None
 
@@ -151,6 +172,7 @@ class Sticker(Object):
             width=image_size_attributes.w if image_size_attributes else 512,
             height=image_size_attributes.h if image_size_attributes else 512,
             is_animated=sticker.mime_type == "application/x-tgsticker",
+            is_video=sticker.mime_type == "video/webm",
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

@@ -52,6 +52,7 @@ CHANNEL_TOO_LARGE	The channel is too large to be deleted; this error is issued w
 CHAT_ABOUT_NOT_MODIFIED	The chat about text was not modified because you tried to edit it using the same content
 CHAT_ABOUT_TOO_LONG	The chat about text is too long
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
+CHAT_FORWARDS_RESTRICTED	The chat restricts forwarding content
 CHAT_ID_EMPTY	The provided chat id is empty
 CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
 CHAT_INVALID	The chat is invalid
@@ -61,6 +62,7 @@ CHAT_NOT_MODIFIED	The chat settings (title, permissions, photo, etc..) were not 
 CHAT_RESTRICTED	The chat is restricted and cannot be used
 CHAT_SEND_INLINE_FORBIDDEN	You cannot use inline bots to send messages in this chat
 CHAT_TITLE_EMPTY	The chat title is empty
+CHAT_TOO_BIG	The chat is too big for this action
 CODE_EMPTY	The provided code is empty
 CODE_HASH_INVALID	The provided code hash invalid
 CODE_INVALID	The provided code is invalid (i.e. from email)
@@ -248,7 +250,7 @@ RANDOM_ID_INVALID	The provided random ID is invalid
 RANDOM_LENGTH_INVALID	The random length is invalid
 RANGES_INVALID	Invalid range provided
 REACTION_EMPTY	The reaction provided is empty
-REACTION_INVALID	Invalid reaction provided (only emoji are allowed)
+REACTION_INVALID	Invalid reaction provided (only valid emoji are allowed)
 REFLECTOR_NOT_AVAILABLE	The call reflector is not available
 REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
 REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty

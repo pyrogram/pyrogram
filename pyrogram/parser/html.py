@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -61,6 +61,8 @@ class Parser(HTMLParser):
         elif tag == "pre":
             entity = raw.types.MessageEntityPre
             extra["language"] = ""
+        elif tag == "spoiler":
+            entity = raw.types.MessageEntitySpoiler
         elif tag == "a":
             url = attrs.get("href", "")
 
@@ -156,7 +158,7 @@ class HTML:
             if entity_type in ("bold", "italic", "underline", "strikethrough"):
                 start_tag = f"<{entity_type[0]}>"
                 end_tag = f"</{entity_type[0]}>"
-            elif entity_type in ("code", "pre", "blockquote"):
+            elif entity_type in ("code", "pre", "blockquote", "spoiler"):
                 start_tag = f"<{entity_type}>"
                 end_tag = f"</{entity_type}>"
             elif entity_type == "text_link":
@@ -172,9 +174,15 @@ class HTML:
 
             entities_offsets.append((start_tag, start,))
             entities_offsets.append((end_tag, end,))
-
-        # sorting by offset (desc)
-        entities_offsets.sort(key=lambda x: -x[1])
+            
+        entities_offsets = map(
+            lambda x: x[1],
+            sorted(
+                enumerate(entities_offsets),
+                key = lambda x: (x[1][1], x[0]),
+                reverse = True
+            )
+        )
 
         for entity, offset in entities_offsets:
             text = text[:offset] + entity + text[offset:]

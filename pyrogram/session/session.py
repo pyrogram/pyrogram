@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -19,19 +19,19 @@
 import asyncio
 import logging
 import os
-import time
-from datetime import datetime, timedelta
 from hashlib import sha1
 from io import BytesIO
 
 import pyrogram
-from pyrogram import __copyright__, __license__, __version__
 from pyrogram import raw
 from pyrogram.connection import Connection
 from pyrogram.crypto import mtproto
-from pyrogram.errors import RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable
+from pyrogram.errors import (
+    RPCError, InternalServerError, AuthKeyDuplicated, FloodWait, ServiceUnavailable, BadMsgNotification,
+    SecurityCheckMismatch
+)
 from pyrogram.raw.all import layer
-from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalt, FutureSalts
+from pyrogram.raw.core import TLObject, MsgContainer, Int, FutureSalts
 from .internals import MsgId, MsgFactory
 
 log = logging.getLogger(__name__)
@@ -44,29 +44,12 @@ class Result:
 
 
 class Session:
-    INITIAL_SALT = 0x616e67656c696361
     START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 10
     MAX_RETRIES = 5
     ACKS_THRESHOLD = 8
     PING_INTERVAL = 5
-
-    notice_displayed = False
-
-    BAD_MSG_DESCRIPTION = {
-        16: "[16] msg_id too low, the client time has to be synchronized",
-        17: "[17] msg_id too high, the client time has to be synchronized",
-        18: "[18] incorrect two lower order msg_id bits, the server expects client message msg_id to be divisible by 4",
-        19: "[19] container msg_id is the same as msg_id of a previously received message",
-        20: "[20] message too old, it cannot be verified by the server",
-        32: "[32] msg_seqno too low",
-        33: "[33] msg_seqno too high",
-        34: "[34] an even msg_seqno expected, but odd received",
-        35: "[35] odd msg_seqno expected, but even received",
-        48: "[48] incorrect server salt",
-        64: "[64] invalid container"
-    }
 
     def __init__(
         self,
@@ -77,11 +60,6 @@ class Session:
         is_media: bool = False,
         is_cdn: bool = False
     ):
-        if not Session.notice_displayed:
-            print(f"Pyrogram v{__version__}, {__copyright__}")
-            print(f"Licensed under the terms of the {__license__}", end="\n\n")
-            Session.notice_displayed = True
-
         self.client = client
         self.dc_id = dc_id
         self.auth_key = auth_key
@@ -96,17 +74,16 @@ class Session:
         self.session_id = os.urandom(8)
         self.msg_factory = MsgFactory()
 
-        self.current_salt = None
+        self.salt = 0
 
         self.pending_acks = set()
 
         self.results = {}
 
+        self.stored_msg_ids = []
+
         self.ping_task = None
         self.ping_task_event = asyncio.Event()
-
-        self.next_salt_task = None
-        self.next_salt_task_event = asyncio.Event()
 
         self.network_task = None
 
@@ -129,19 +106,7 @@ class Session:
 
                 self.network_task = self.loop.create_task(self.network_worker())
 
-                self.current_salt = FutureSalt(0, 0, Session.INITIAL_SALT)
-                self.current_salt = FutureSalt(
-                    0, 0,
-                    (await self._send(
-                        raw.functions.Ping(ping_id=0),
-                        timeout=self.START_TIMEOUT
-                    )).new_server_salt
-                )
-                self.current_salt = (await self._send(
-                    raw.functions.GetFutureSalts(num=1),
-                    timeout=self.START_TIMEOUT)).salts[0]
-
-                self.next_salt_task = self.loop.create_task(self.next_salt_worker())
+                await self._send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT)
 
                 if not self.is_cdn:
                     await self._send(
@@ -186,16 +151,11 @@ class Session:
         self.is_connected.clear()
 
         self.ping_task_event.set()
-        self.next_salt_task_event.set()
 
         if self.ping_task is not None:
             await self.ping_task
 
-        if self.next_salt_task is not None:
-            await self.next_salt_task
-
         self.ping_task_event.clear()
-        self.next_salt_task_event.clear()
 
         self.connection.close()
 
@@ -218,14 +178,19 @@ class Session:
         await self.start()
 
     async def handle_packet(self, packet):
-        data = await self.loop.run_in_executor(
-            pyrogram.crypto_executor,
-            mtproto.unpack,
-            BytesIO(packet),
-            self.session_id,
-            self.auth_key,
-            self.auth_key_id
-        )
+        try:
+            data = await self.loop.run_in_executor(
+                pyrogram.crypto_executor,
+                mtproto.unpack,
+                BytesIO(packet),
+                self.session_id,
+                self.auth_key,
+                self.auth_key_id,
+                self.stored_msg_ids
+            )
+        except SecurityCheckMismatch:
+            self.connection.close()
+            return
 
         messages = (
             data.body.messages
@@ -303,35 +268,6 @@ class Session:
 
         log.info("PingTask stopped")
 
-    async def next_salt_worker(self):
-        log.info("NextSaltTask started")
-
-        while True:
-            now = datetime.fromtimestamp(time.perf_counter() - MsgId.reference_clock + MsgId.server_time)
-
-            # Seconds to wait until middle-overlap, which is
-            # 15 minutes before/after the current/next salt end/start time
-            valid_until = datetime.fromtimestamp(self.current_salt.valid_until)
-            dt = (valid_until - now).total_seconds() - 900
-
-            minutes, seconds = divmod(int(dt), 60)
-            log.info(f"Next salt in {minutes:.0f}m {seconds:.0f}s (at {now + timedelta(seconds=dt)})")
-
-            try:
-                await asyncio.wait_for(self.next_salt_task_event.wait(), dt)
-            except asyncio.TimeoutError:
-                pass
-            else:
-                break
-
-            try:
-                self.current_salt = (await self._send(raw.functions.GetFutureSalts(num=1))).salts[0]
-            except (OSError, TimeoutError, RPCError):
-                self.connection.close()
-                break
-
-        log.info("NextSaltTask stopped")
-
     async def network_worker(self):
         log.info("NetworkTask started")
 
@@ -367,7 +303,7 @@ class Session:
             pyrogram.crypto_executor,
             mtproto.pack,
             message,
-            self.current_salt.salt,
+            self.salt,
             self.session_id,
             self.auth_key,
             self.auth_key_id
@@ -395,10 +331,10 @@ class Session:
 
                 RPCError.raise_it(result, type(data))
             elif isinstance(result, raw.types.BadMsgNotification):
-                raise Exception(self.BAD_MSG_DESCRIPTION.get(
-                    result.error_code,
-                    f"Error code {result.error_code}"
-                ))
+                raise BadMsgNotification(result.error_code)
+            elif isinstance(result, raw.types.BadServerSalt):
+                self.salt = result.new_server_salt
+                return await self._send(data, wait_response, timeout)
             else:
                 return result
 
@@ -430,7 +366,8 @@ class Session:
                 if amount > sleep_threshold >= 0:
                     raise
 
-                log.warning(f'[{self.client.session_name}] Sleeping for {amount}s (required by "{query}")')
+                log.warning(f'[{self.client.session_name}] Waiting for {amount} seconds before continuing '
+                            f'(required by "{query}")')
 
                 await asyncio.sleep(amount)
             except (OSError, TimeoutError, InternalServerError, ServiceUnavailable) as e:

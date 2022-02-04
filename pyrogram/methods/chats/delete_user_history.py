@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -42,9 +42,9 @@ class DeleteUserHistory(Scaffold):
         """
 
         r = await self.send(
-            raw.functions.channels.DeleteUserHistory(
+            raw.functions.channels.DeleteParticipantHistory(
                 channel=await self.resolve_peer(chat_id),
-                user_id=await self.resolve_peer(user_id)
+                participant=await self.resolve_peer(user_id)
             )
         )
 

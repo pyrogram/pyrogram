@@ -23,13 +23,13 @@ class {name}(TLObject):  # type: ignore
         {fields}
 
     @staticmethod
-    def read(data: BytesIO, *args: Any) -> "{name}":
+    def read(b: BytesIO, *args: Any) -> "{name}":
         {read_types}
         return {name}({return_arguments})
 
     def write(self) -> bytes:
-        data = BytesIO()
-        data.write(Int(self.ID, False))
+        b = BytesIO()
+        b.write(Int(self.ID, False))
 
         {write_types}
-        return data.getvalue()
+        return b.getvalue()

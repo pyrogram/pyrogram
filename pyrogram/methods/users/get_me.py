@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -34,11 +34,12 @@ class GetMe(Scaffold):
                 me = app.get_me()
                 print(me)
         """
-        return types.User._parse(
-            self,
-            (await self.send(
-                raw.functions.users.GetFullUser(
-                    id=raw.types.InputUserSelf()
-                )
-            )).user
+        r = await self.send(
+            raw.functions.users.GetFullUser(
+                id=raw.types.InputUserSelf()
+            )
         )
+
+        users = {u.id: u for u in r.users}
+
+        return types.User._parse(self, users[r.full_user.id])

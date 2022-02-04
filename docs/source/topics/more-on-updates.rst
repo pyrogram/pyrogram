@@ -24,7 +24,6 @@ group. Dispatching groups hold one or more handlers and are processed sequential
 For example, take these two handlers:
 
 .. code-block:: python
-    :emphasize-lines: 1, 6
 
     @app.on_message(filters.text | filters.sticker)
     def text_or_sticker(client, message):

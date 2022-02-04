@@ -1,8 +1,8 @@
 Error Handling
 ==============
 
-Errors are inevitable when working with the API, and they can be correctly handled with ``try...except`` blocks in order
-to control the behaviour of your application. Pyrogram errors all live inside the ``errors`` package:
+Errors can be correctly handled with ``try...except`` blocks in order to control the behaviour of your application.
+Pyrogram errors all live inside the ``errors`` package:
 
 .. code-block:: python
 
@@ -25,10 +25,10 @@ This error is raised every time a method call against Telegram's API was unsucce
 
     from pyrogram.errors import RPCError
 
-.. warning::
+.. note::
 
-    It must be noted that catching this error is bad practice, especially when no feedback is given (i.e. by
-    logging/printing the full error traceback), because it makes it impossible to understand what went wrong.
+    Avoid catching this error everywhere, especially when no feedback is given (i.e. by logging/printing the full error
+    traceback), because it makes it impossible to understand what went wrong.
 
 Error Categories
 ----------------
@@ -83,9 +83,6 @@ whole category of errors and be sure to also handle these unknown errors.
 
 In case a whole class of errors is unknown (that is, an error code that is unknown), Pyrogram will raise a special
 ``520 UnknownError`` exception.
-
-In both cases, Pyrogram will log them in the ``unknown_errors.txt`` file. Users are invited to report
-these unknown errors in the `discussion group <https://t.me/pyrogram>`_.
 
 Errors with Values
 ------------------

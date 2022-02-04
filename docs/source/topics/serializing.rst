@@ -24,8 +24,7 @@ If you want a nicely formatted, human readable JSON representation of any object
     ...
 
     with app:
-        r = app.get_chat("haskell")
-
+        r = app.get_chat("me")
         print(str(r))
 
 .. tip::
@@ -48,7 +47,7 @@ as the process requires the package to be in scope.
     ...
 
     with app:
-        r = app.get_chat("haskell")
+        r = app.get_chat("me")
 
         print(repr(r))
         print(eval(repr(r)) == r)  # True

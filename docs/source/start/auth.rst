@@ -26,23 +26,20 @@ the :meth:`~pyrogram.Client.run` method:
     app = Client("my_account")
     app.run()
 
-This starts an interactive shell asking you to input your **phone number** (including your `Country Code`_) and the
-**phone code** you will receive in your devices that are already authorized or via SMS:
+This starts an interactive shell asking you to input your **phone number**, including your `Country Code`_ (the plus
+``+`` and minus ``-`` symbols can be omitted) and the **phone code** you will receive in your devices that are already
+authorized or via SMS:
 
 .. code-block:: text
 
-    Enter phone number: +39**********
-    Is "+39**********" correct? (y/n): y
-    Enter phone code: 32768
-    Logged in successfully as Dan
+    Enter phone number: +1-123-456-7890
+    Is "+1-123-456-7890" correct? (y/n): y
+    Enter phone code: 12345
+    Logged in successfully
 
 After successfully authorizing yourself, a new file called ``my_account.session`` will be created allowing Pyrogram to
-execute API calls with your identity. This file will be loaded again when you restart your app, and as long as you
-keep the session alive, Pyrogram won't ask you again to enter your phone number.
-
-.. important::
-
-    Your ``*.session`` file is personal and must be kept secret.
+execute API calls with your identity. This file is personal and will be loaded again when you restart your app, and as
+long as you keep the session alive, Pyrogram won't ask you again to enter your phone number.
 
 .. note::
 

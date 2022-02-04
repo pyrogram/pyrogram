@@ -1,49 +1,54 @@
 Quick Start
 ===========
 
-The next few steps serve as a quick start for all new :term:`Pyrogrammers <Pyrogrammer>` that want to see Pyrogram in
-action as fast as possible. Let's go!
+The next few steps serve as a quick start to see Pyrogram in action as fast as possible.
 
 Get Pyrogram Real Fast
 ----------------------
+
+.. admonition :: Cloud Credits
+    :class: tip
+
+    If you need a cloud server to host your applications, try Hetzner Cloud. You can sign up with
+    `this link <https://hetzner.cloud/?ref=9CyT92gZEINU>`_ to get €20 in cloud credits.
 
 1. Install Pyrogram with ``pip3 install -U pyrogram``.
 
 2. Get your own Telegram API key from https://my.telegram.org/apps.
 
-3.  Open your best text editor and paste the following:
+3.  Open the text editor of your choice and paste the following:
 
     .. code-block:: python
 
+        import asyncio
         from pyrogram import Client
 
         api_id = 12345
         api_hash = "0123456789abcdef0123456789abcdef"
 
-        with Client("my_account", api_id, api_hash) as app:
-            app.send_message("me", "Greetings from **Pyrogram**!")
+        async def main():
+            async with Client("my_account", api_id, api_hash) as app:
+                await app.send_message("me", "Greetings from **Pyrogram**!")
+
+        asyncio.run(main())
 
 4. Replace *api_id* and *api_hash* values with your own.
 
-5. Save the file as ``pyro.py``.
+5. Save the file as ``hello.py``.
 
-6. Run the script with ``python3 pyro.py``
+6. Run the script with ``python3 hello.py``
 
 7. Follow the instructions on your terminal to login.
 
 8. Watch Pyrogram send a message to yourself.
 
-9. Join our `community`_.
-
-10. Say, "hi!".
-
 Enjoy the API
 -------------
 
-That was just a quick overview that barely scratched the surface!
-In the next few pages of the introduction, we'll take a much more in-depth look of what we have just done above.
+That was just a quick overview. In the next few pages of the introduction, we'll take a much more in-depth look of what
+we have just done above.
 
-Feeling eager to continue? You can take a shortcut to :doc:`Calling Methods <../start/invoking>` and come back later to
-learn some more details.
+If you are feeling eager to continue you can take a shortcut to :doc:`Calling Methods <../start/invoking>` and come back
+later to learn some more details.
 
 .. _community: https://t.me/Pyrogram
