@@ -155,3 +155,40 @@ class Poll(Object, Update):
             chosen_option=chosen_option,
             client=client
         )
+
+    async def stop(
+        self,
+        reply_markup: "types.InlineKeyboardMarkup" = None
+    ) -> "types.Poll":
+        """Bound method *stop* of :obj:`~pyrogram.types.Poll`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.stop_poll(
+                chat_id=message.chat.id,
+                message_id=message_id,
+            )
+
+        Parameters:
+            reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
+                An InlineKeyboardMarkup object.
+
+        Example:
+            .. code-block:: python
+
+                message.poll.stop()
+
+        Returns:
+            :obj:`~pyrogram.types.Poll`: On success, the stopped poll with the final results is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return await self._client.stop_poll(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            reply_markup=reply_markup
+        )
