@@ -17,10 +17,11 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+from operator import is_
 import sqlite3
 import time
 from threading import Lock
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Iterable, Optional
 
 from pyrogram import raw
 from .storage import Storage
@@ -136,6 +137,61 @@ class SQLiteStorage(Storage):
                 "VALUES (?, ?, ?, ?, ?)",
                 peers
             )
+
+    async def save_peers(
+        self,
+        *,  # no positional args available
+        users: Optional[Iterable[raw.types.User]] = (),
+        chats: Optional[Iterable[raw.types.Chat]] = (),
+        channels: Optional[Iterable[raw.types.Channel]] = (),
+    ):
+        get_username = utils.get_username
+        get_channel_id = utils.get_channel_id
+
+        is_min = False
+        parsed_peers = []
+
+        for user in users:
+            if getattr(user, "min", False):
+                is_min = True
+                continue
+
+            parsed_peers.append((
+                user.id,
+                user.access_hash,
+                "bot" if user.bot else "user",
+                get_username(user.username),
+                user.phone,
+            ))
+        
+        for chat in chats:
+            if getattr(chat, "min", False):
+                is_min = True
+                continue
+
+            parsed_peers.append((
+                -chat.id,
+                0,
+                "group",
+                None,
+                None,
+            ))
+        
+        for channel in channels:
+            if getattr(channel, "min", False):
+                is_min = True
+                continue
+
+            parsed_peers.append((
+                get_channel_id(channel.id),
+                channel.access_hash,
+                "channel" if channel.broadcast else "supergroup",
+                get_username(channel.username),
+                None,
+            ))
+
+        await self.update_peers(parsed_peers)
+        return is_min
 
     async def get_peer_by_id(self, peer_id: int):
         r = self.conn.execute(

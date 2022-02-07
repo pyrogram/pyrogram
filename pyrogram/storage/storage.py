@@ -18,7 +18,8 @@
 
 import base64
 import struct
-from typing import List, Tuple
+from typing import List, Tuple, Iterable, Optional
+from pyrogram.raw import types as raw_types
 
 from pyrogram import utils
 
@@ -45,6 +46,15 @@ class Storage:
         raise NotImplementedError
 
     async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
+        raise NotImplementedError
+
+    async def save_peers(
+        self,
+        *,  # no positional args available
+        users: Optional[Iterable[raw_types.User]] = (),
+        chats: Optional[Iterable[raw_types.Chat]] = (),
+        channels: Optional[Iterable[raw_types.Channel]] = (),
+    ):
         raise NotImplementedError
 
     async def get_peer_by_id(self, peer_id: int):

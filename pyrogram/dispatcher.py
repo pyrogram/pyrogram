@@ -144,9 +144,13 @@ class Dispatcher:
                 await i
 
             self.handler_worker_tasks.clear()
-            self.groups.clear()
 
             log.info(f"Stopped {self.client.workers} HandlerTasks")
+
+    # OK, it's much better. But why?
+    async def terminate(self):
+        await self.stop()
+        self.groups.clear()
 
     def add_handler(self, handler, group: int):
         async def fn():

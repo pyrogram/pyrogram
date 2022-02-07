@@ -48,9 +48,17 @@ class Connection:
 
         self.protocol = None  # type: TCP
 
+    @property
+    def proxy(self):
+        pass
+
+    @proxy.setter
+    def proxy(self, value: str):
+        pass
+
     async def connect(self):
         for i in range(Connection.MAX_RETRIES):
-            self.protocol = self.mode(self.ipv6, self.proxy)
+            self.protocol = self.mode(self.ipv6, self._proxy)
 
             try:
                 log.info("Connecting...")

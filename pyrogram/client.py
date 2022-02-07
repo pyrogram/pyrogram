@@ -29,7 +29,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
 from pathlib import Path
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Awaitable, Callable
 
 import pyrogram
 from pyrogram import __version__, __license__
@@ -47,12 +47,28 @@ from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
 from pyrogram.storage import Storage, FileStorage, MemoryStorage
 from pyrogram.types import User, TermsOfService
-from pyrogram.utils import ainput
+from pyrogram.utils import ainput as _ainput
 from .dispatcher import Dispatcher
 from .file_id import FileId, FileType, ThumbnailSource
 from .scaffold import Scaffold
 
 log = logging.getLogger(__name__)
+
+# TODO: describe proxy via URI: socks5://user@password@hostname:port
+# TODO: be ready to accept punycode domain names
+# TODO: be ready to change proxy in the runtime
+# TODO: and move this code somewhere else
+proxy_re = re.compile(r"(?P<proto>\w+)://((?P<user>\S+)@(?P<password>\S+):)?(?P<hostname>\S+):(?P<port>\d+)$")
+from_punycode = lambda s: s.encode('utf-8').decode('idna')
+to_punycode = lambda s: s.encode('idna').decode('utf-8')
+
+AnyPeer = Union[
+    raw.types.User,
+    raw.types.Chat,
+    raw.types.ChatForbidden,
+    raw.types.Channel,
+    raw.types.ChannelForbidden,
+]
 
 
 class Client(Methods, Scaffold):
@@ -201,7 +217,9 @@ class Client(Methods, Scaffold):
         no_updates: bool = False,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        ainput: Awaitable = _ainput,
+        output: Callable = print,
     ):
         super().__init__()
 
@@ -236,6 +254,8 @@ class Client(Methods, Scaffold):
 
         self.dispatcher = Dispatcher(self)
         self.loop = asyncio.get_event_loop()
+        self.ainput = ainput
+        self.output = output
 
     @property
     async def session_name(self):
@@ -292,22 +312,24 @@ class Client(Methods, Scaffold):
         if self.bot_token:
             return await self.sign_in_bot(self.bot_token)
 
-        print(f"Welcome to Pyrogram (version {__version__})")
-        print(f"Pyrogram is free software and comes with ABSOLUTELY NO WARRANTY. Licensed\n"
+        self.output(f"Welcome to Pyrogram (version {__version__})")
+        self.output(f"Pyrogram is free software and comes with ABSOLUTELY NO WARRANTY. Licensed\n"
               f"under the terms of the {__license__}.\n")
 
         while True:
             try:
                 if not self.phone_number:
                     while True:
-                        value = await ainput("Enter phone number or bot token: ")
+                        value = await self.ainput("Enter phone number or bot token: ")
 
                         if not value:
                             continue
 
-                        confirm = (await ainput(f'Is "{value}" correct? (y/N): ')).lower()
+                        confirm = await self.ainput(f'Is "{value}" correct? (y/N): ')
+                        confirm = confirm.lower()
+                        confirm = confirm == "y"
 
-                        if confirm == "y":
+                        if confirm:
                             break
 
                     if ":" in value:
@@ -318,7 +340,7 @@ class Client(Methods, Scaffold):
 
                 sent_code = await self.send_code(self.phone_number)
             except BadRequest as e:
-                print(e.MESSAGE)
+                self.output(e.MESSAGE)
                 self.phone_number = None
                 self.bot_token = None
             else:
@@ -327,7 +349,7 @@ class Client(Methods, Scaffold):
         if self.force_sms:
             sent_code = await self.resend_code(self.phone_number, sent_code.phone_code_hash)
 
-        print("The confirmation code has been sent via {}".format(
+        self.output("The confirmation code has been sent via {}".format(
             {
                 "app": "Telegram app",
                 "sms": "SMS",
@@ -338,37 +360,38 @@ class Client(Methods, Scaffold):
 
         while True:
             if not self.phone_code:
-                self.phone_code = await ainput("Enter confirmation code: ")
+                self.phone_code = await self.ainput("Enter confirmation code: ")
 
             try:
                 signed_in = await self.sign_in(self.phone_number, sent_code.phone_code_hash, self.phone_code)
             except BadRequest as e:
-                print(e.MESSAGE)
+                self.output(e.MESSAGE)
                 self.phone_code = None
             except SessionPasswordNeeded as e:
-                print(e.MESSAGE)
+                self.output(e.MESSAGE)
 
                 while True:
-                    print("Password hint: {}".format(await self.get_password_hint()))
+                    password_hint = await self.get_password_hint()
+                    self.output("Password hint: {}".format(password_hint))
 
                     if not self.password:
-                        self.password = await ainput("Enter password (empty to recover): ", hide=self.hide_password)
+                        self.password = await self.ainput("Enter password (empty to recover): ", hide=self.hide_password)
 
                     try:
                         if not self.password:
-                            confirm = await ainput("Confirm password recovery (y/n): ")
+                            confirm = await self.ainput("Confirm password recovery (y/n): ")
 
                             if confirm == "y":
                                 email_pattern = await self.send_recovery_code()
-                                print(f"The recovery code has been sent to {email_pattern}")
+                                self.output(f"The recovery code has been sent to {email_pattern}")
 
                                 while True:
-                                    recovery_code = await ainput("Enter recovery code: ")
+                                    recovery_code = await self.ainput("Enter recovery code: ")
 
                                     try:
                                         return await self.recover_password(recovery_code)
                                     except BadRequest as e:
-                                        print(e.MESSAGE)
+                                        self.output(e.MESSAGE)
                                     except Exception as e:
                                         log.error(e, exc_info=True)
                                         raise
@@ -377,7 +400,7 @@ class Client(Methods, Scaffold):
                         else:
                             return await self.check_password(self.password)
                     except BadRequest as e:
-                        print(e.MESSAGE)
+                        self.output(e.MESSAGE)
                         self.password = None
             else:
                 break
@@ -386,8 +409,8 @@ class Client(Methods, Scaffold):
             return signed_in
 
         while True:
-            first_name = await ainput("Enter first name: ")
-            last_name = await ainput("Enter last name (empty to skip): ")
+            first_name = await self.ainput("Enter first name: ")
+            last_name = await self.ainput("Enter last name (empty to skip): ")
 
             try:
                 signed_up = await self.sign_up(
@@ -397,12 +420,12 @@ class Client(Methods, Scaffold):
                     last_name
                 )
             except BadRequest as e:
-                print(e.MESSAGE)
+                self.output(e.MESSAGE)
             else:
                 break
 
         if isinstance(signed_in, TermsOfService):
-            print("\n" + signed_in.text + "\n")
+            self.output("\n" + signed_in.text + "\n")
             await self.accept_terms_of_service(signed_in.id)
 
         return signed_up
@@ -471,7 +494,8 @@ class Client(Methods, Scaffold):
 
         self.parse_mode = parse_mode
 
-    async def fetch_peers(self, peers: List[Union[raw.types.User, raw.types.Chat, raw.types.Channel]]) -> bool:
+    async def fetch_peers(self, peers: List[AnyPeer]) -> bool:
+        # https://core.telegram.org/api/min
         is_min = False
         parsed_peers = []
 
@@ -535,76 +559,113 @@ class Client(Methods, Scaffold):
         else:
             return final_file_path or None
 
+    async def handle_updates__updates(
+        self,
+        updates: Union[raw.types.Updates, raw.types.UpdatesCombined],
+    ):
+        # is_min = (await self.fetch_peers(updates.users)) or (await self.fetch_peers(updates.chats))
+        # is_min = all((
+        #     # asyncio.gather?
+        #     await self.fetch_peers(updates.users),
+        #     await self.fetch_peers(updates.chats),
+        # ))
+
+        is_min = await self.storage.save_peers(
+            users=updates.users,
+            chats=updates.chats,
+        )
+
+        # FIXME: WHY?
+        # users = {u.id: u for u in updates.users}
+        # chats = {c.id: c for c in updates.chats}
+
+        for update in updates.updates:
+            # channel_id = getattr(
+            #     getattr(
+            #         getattr(
+            #             update, "message", None
+            #         ), "peer_id", None
+            #     ), "channel_id", None
+            # ) or getattr(update, "channel_id", None)
+
+            pts = getattr(update, "pts", None)
+            pts_count = getattr(update, "pts_count", None)
+
+            if isinstance(update, raw.types.UpdateChannelTooLong):
+                log.warning(update)
+
+            if isinstance(update, raw.types.UpdateNewChannelMessage) and is_min:
+                message = update.message
+
+                # WTF?
+                raw_channel_id = getattr(update, "channel_id", None)
+
+                if raw_channel_id is None:
+                    peer_id = getattr(message, "peer_id", None)
+                    raw_channel_id = getattr(peer_id, "channel_id", None)
+
+                channel_id = utils.get_channel_id(raw_channel_id)
+
+                if not isinstance(message, raw.types.MessageEmpty):
+                    try:
+                        diff = await self.send(
+                            raw.functions.updates.GetChannelDifference(
+                                channel=await self.resolve_peer(channel_id),
+                                filter=raw.types.ChannelMessagesFilter(
+                                    ranges=[raw.types.MessageRange(
+                                        min_id=update.message.id,
+                                        max_id=update.message.id
+                                    )]
+                                ),
+                                pts=pts - pts_count,
+                                limit=pts
+                            )
+                        )
+                    except ChannelPrivate:
+                        pass
+                    else:
+                        if not isinstance(diff, raw.types.updates.ChannelDifferenceEmpty):
+                            # users.update({u.id: u for u in diff.users})
+                            # chats.update({c.id: c for c in diff.chats})
+                            await self.storage.save_peers(
+                                users=diff.users,
+                                chats=diff.chats,
+                            )
+
+            self.dispatcher.updates_queue.put_nowait((update, {}, {}))
+            # self.dispatcher.updates_queue.put_nowait((update, users, chats))
+
+    async def handle_updates__message(
+        self,
+        updates: Union[raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage],
+    ):
+        diff = await self.send(
+            raw.functions.updates.GetDifference(
+                pts=updates.pts - updates.pts_count,
+                date=updates.date,
+                qts=-1
+            )
+        )
+
+        if diff.new_messages:
+            self.dispatcher.updates_queue.put_nowait((
+                raw.types.UpdateNewMessage(
+                    message=diff.new_messages[0],
+                    pts=updates.pts,
+                    pts_count=updates.pts_count
+                ),
+                {u.id: u for u in diff.users},
+                {c.id: c for c in diff.chats}
+            ))
+        else:
+            if diff.other_updates:  # The other_updates list can be empty
+                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+
     async def handle_updates(self, updates):
         if isinstance(updates, (raw.types.Updates, raw.types.UpdatesCombined)):
-            is_min = (await self.fetch_peers(updates.users)) or (await self.fetch_peers(updates.chats))
-
-            users = {u.id: u for u in updates.users}
-            chats = {c.id: c for c in updates.chats}
-
-            for update in updates.updates:
-                channel_id = getattr(
-                    getattr(
-                        getattr(
-                            update, "message", None
-                        ), "peer_id", None
-                    ), "channel_id", None
-                ) or getattr(update, "channel_id", None)
-
-                pts = getattr(update, "pts", None)
-                pts_count = getattr(update, "pts_count", None)
-
-                if isinstance(update, raw.types.UpdateChannelTooLong):
-                    log.warning(update)
-
-                if isinstance(update, raw.types.UpdateNewChannelMessage) and is_min:
-                    message = update.message
-
-                    if not isinstance(message, raw.types.MessageEmpty):
-                        try:
-                            diff = await self.send(
-                                raw.functions.updates.GetChannelDifference(
-                                    channel=await self.resolve_peer(utils.get_channel_id(channel_id)),
-                                    filter=raw.types.ChannelMessagesFilter(
-                                        ranges=[raw.types.MessageRange(
-                                            min_id=update.message.id,
-                                            max_id=update.message.id
-                                        )]
-                                    ),
-                                    pts=pts - pts_count,
-                                    limit=pts
-                                )
-                            )
-                        except ChannelPrivate:
-                            pass
-                        else:
-                            if not isinstance(diff, raw.types.updates.ChannelDifferenceEmpty):
-                                users.update({u.id: u for u in diff.users})
-                                chats.update({c.id: c for c in diff.chats})
-
-                self.dispatcher.updates_queue.put_nowait((update, users, chats))
+            return self.handle_updates__updates(updates)
         elif isinstance(updates, (raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage)):
-            diff = await self.send(
-                raw.functions.updates.GetDifference(
-                    pts=updates.pts - updates.pts_count,
-                    date=updates.date,
-                    qts=-1
-                )
-            )
-
-            if diff.new_messages:
-                self.dispatcher.updates_queue.put_nowait((
-                    raw.types.UpdateNewMessage(
-                        message=diff.new_messages[0],
-                        pts=updates.pts,
-                        pts_count=updates.pts_count
-                    ),
-                    {u.id: u for u in diff.users},
-                    {c.id: c for c in diff.chats}
-                ))
-            else:
-                if diff.other_updates:  # The other_updates list can be empty
-                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+            return self.handle_updates__message(updates)
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
@@ -836,8 +897,11 @@ class Client(Methods, Scaffold):
             if session is None:
                 if dc_id != await self.storage.dc_id():
                     session = Session(
-                        self, dc_id, await Auth(self, dc_id, await self.storage.test_mode()).create(),
-                        await self.storage.test_mode(), is_media=True
+                        self,
+                        dc_id,
+                        await Auth(self, dc_id, await self.storage.test_mode()).create(),
+                        await self.storage.test_mode(),
+                        is_media=True,
                     )
                     await session.start()
 

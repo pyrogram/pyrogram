@@ -20,6 +20,7 @@ import asyncio
 import base64
 import functools
 import hashlib
+import inspect
 import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -310,3 +311,12 @@ async def parse_text_entities(
         "message": text,
         "entities": entities
     }
+
+
+def get_username(peer):
+    username = peer.username
+
+    if username:
+        return username.lower()
+
+    return username
