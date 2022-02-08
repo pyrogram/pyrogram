@@ -494,43 +494,6 @@ class Client(Methods, Scaffold):
 
         self.parse_mode = parse_mode
 
-    async def fetch_peers___(self, peers: List[AnyPeer]) -> bool:
-        # https://core.telegram.org/api/min
-        is_min = False
-        parsed_peers = []
-
-        for peer in peers:
-            if getattr(peer, "min", False):
-                is_min = True
-                continue
-
-            username = None
-            phone_number = None
-
-            if isinstance(peer, raw.types.User):
-                peer_id = peer.id
-                access_hash = peer.access_hash
-                username = (peer.username or "").lower() or None
-                phone_number = peer.phone
-                peer_type = "bot" if peer.bot else "user"
-            elif isinstance(peer, (raw.types.Chat, raw.types.ChatForbidden)):
-                peer_id = -peer.id
-                access_hash = 0
-                peer_type = "group"
-            elif isinstance(peer, (raw.types.Channel, raw.types.ChannelForbidden)):
-                peer_id = utils.get_channel_id(peer.id)
-                access_hash = peer.access_hash
-                username = (getattr(peer, "username", None) or "").lower() or None
-                peer_type = "channel" if peer.broadcast else "supergroup"
-            else:
-                continue
-
-            parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
-
-        await self.storage.update_peers(parsed_peers)
-
-        return is_min
-
     async def handle_download(self, packet):
         temp_file_path = ""
         final_file_path = ""
@@ -563,31 +526,15 @@ class Client(Methods, Scaffold):
         self,
         updates: Union[raw.types.Updates, raw.types.UpdatesCombined],
     ):
-        # is_min = (await self.fetch_peers(updates.users)) or (await self.fetch_peers(updates.chats))
-        # is_min = all((
-        #     # asyncio.gather?
-        #     await self.fetch_peers(updates.users),
-        #     await self.fetch_peers(updates.chats),
-        # ))
-
         is_min = await self.storage.save_peers(
             users=updates.users,
             chats=updates.chats,
         )
 
-        # FIXME: WHY?
-        # users = {u.id: u for u in updates.users}
-        # chats = {c.id: c for c in updates.chats}
+        users = {u.id: u for u in updates.users}
+        chats = {c.id: c for c in updates.chats}
 
         for update in updates.updates:
-            # channel_id = getattr(
-            #     getattr(
-            #         getattr(
-            #             update, "message", None
-            #         ), "peer_id", None
-            #     ), "channel_id", None
-            # ) or getattr(update, "channel_id", None)
-
             pts = getattr(update, "pts", None)
             pts_count = getattr(update, "pts_count", None)
 
@@ -625,15 +572,15 @@ class Client(Methods, Scaffold):
                         pass
                     else:
                         if not isinstance(diff, raw.types.updates.ChannelDifferenceEmpty):
-                            # users.update({u.id: u for u in diff.users})
-                            # chats.update({c.id: c for c in diff.chats})
+                            users.update({u.id: u for u in diff.users})
+                            chats.update({c.id: c for c in diff.chats})
+
                             await self.storage.save_peers(
                                 users=diff.users,
                                 chats=diff.chats,
                             )
 
-            self.dispatcher.updates_queue.put_nowait((update, {}, {}))
-            # self.dispatcher.updates_queue.put_nowait((update, users, chats))
+            self.dispatcher.updates_queue.put_nowait((update, users, chats))
 
     async def handle_updates__message(
         self,
