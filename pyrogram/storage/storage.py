@@ -18,7 +18,7 @@
 
 import base64
 import struct
-from typing import List, Tuple, Iterable, Optional
+from typing import List, Tuple, Iterable, Optional, Union
 from pyrogram.raw import types as raw_types
 
 from pyrogram import utils
@@ -52,8 +52,7 @@ class Storage:
         self,
         *,  # no positional args available
         users: Optional[Iterable[raw_types.User]] = (),
-        chats: Optional[Iterable[raw_types.Chat]] = (),
-        channels: Optional[Iterable[raw_types.Channel]] = (),
+        chats: Optional[Iterable[Union[raw_types.Chat, raw_types.Channel]]] = (),
     ):
         raise NotImplementedError
 

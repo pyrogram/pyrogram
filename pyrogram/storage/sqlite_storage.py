@@ -21,7 +21,7 @@ from operator import is_
 import sqlite3
 import time
 from threading import Lock
-from typing import List, Tuple, Any, Iterable, Optional
+from typing import List, Tuple, Any, Iterable, Optional, Union
 
 from pyrogram import raw
 from .storage import Storage
@@ -142,8 +142,7 @@ class SQLiteStorage(Storage):
         self,
         *,  # no positional args available
         users: Optional[Iterable[raw.types.User]] = (),
-        chats: Optional[Iterable[raw.types.Chat]] = (),
-        channels: Optional[Iterable[raw.types.Channel]] = (),
+        chats: Optional[Iterable[Union[raw.types.Chat, raw.types.Channel]]] = (),
     ):
         get_username = utils.get_username
         get_channel_id = utils.get_channel_id
@@ -151,44 +150,40 @@ class SQLiteStorage(Storage):
         is_min = False
         parsed_peers = []
 
-        for user in users:
-            if getattr(user, "min", False):
+        for peer in users:
+            if getattr(peer, "min", False):
                 is_min = True
                 continue
 
             parsed_peers.append((
-                user.id,
-                user.access_hash,
-                "bot" if user.bot else "user",
-                get_username(user.username),
-                user.phone,
+                peer.id,
+                peer.access_hash,
+                "bot" if peer.bot else "user",
+                get_username(peer.username),
+                peer.phone,
             ))
         
-        for chat in chats:
-            if getattr(chat, "min", False):
+        for peer in chats:
+            if getattr(peer, "min", False):
                 is_min = True
                 continue
 
-            parsed_peers.append((
-                -chat.id,
-                0,
-                "group",
-                None,
-                None,
-            ))
-        
-        for channel in channels:
-            if getattr(channel, "min", False):
-                is_min = True
-                continue
-
-            parsed_peers.append((
-                get_channel_id(channel.id),
-                channel.access_hash,
-                "channel" if channel.broadcast else "supergroup",
-                get_username(channel.username),
-                None,
-            ))
+            elif isinstance(peer, (raw.types.Chat, raw.types.ChatForbidden)):
+                parsed_peers.append((
+                    -peer.id,
+                    0,
+                    "group",
+                    None,
+                    None,
+                ))
+            elif isinstance(peer, (raw.types.Channel, raw.types.ChannelForbidden)):
+                parsed_peers.append((
+                    get_channel_id(peer.id),
+                    peer.access_hash,
+                    "channel" if peer.broadcast else "supergroup",
+                    get_username(peer.username),
+                    None,
+                ))
 
         await self.update_peers(parsed_peers)
         return is_min
