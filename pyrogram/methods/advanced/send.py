@@ -81,7 +81,12 @@ class Send(Scaffold):
              else self.sleep_threshold)
         )
 
-        await self.fetch_peers(getattr(r, "users", []))
-        await self.fetch_peers(getattr(r, "chats", []))
+        # await self.fetch_peers(getattr(r, "users", []))
+        # await self.fetch_peers(getattr(r, "chats", []))
+
+        await self.storage.save_peers(
+            users=getattr(r, "users", []),
+            chats=getattr(r, "chats", []),
+        )
 
         return r

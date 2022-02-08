@@ -494,7 +494,7 @@ class Client(Methods, Scaffold):
 
         self.parse_mode = parse_mode
 
-    async def fetch_peers(self, peers: List[AnyPeer]) -> bool:
+    async def fetch_peers___(self, peers: List[AnyPeer]) -> bool:
         # https://core.telegram.org/api/min
         is_min = False
         parsed_peers = []

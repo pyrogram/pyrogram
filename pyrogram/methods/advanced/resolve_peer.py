@@ -87,26 +87,33 @@ class ResolvePeer(Scaffold):
             peer_type = utils.get_peer_type(peer_id)
 
             if peer_type == "user":
-                await self.fetch_peers(
-                    await self.send(
-                        raw.functions.users.GetUsers(
-                            id=[
-                                raw.types.InputUser(
-                                    user_id=peer_id,
-                                    access_hash=0
-                                )
-                            ]
-                        )
+                peers = await self.send(
+                    raw.functions.users.GetUsers(
+                        id=[
+                            raw.types.InputUser(
+                                user_id=peer_id,
+                                access_hash=0
+                            )
+                        ]
                     )
                 )
+                # await self.fetch_peers(user_peer)
+                await self.storage.save_peers(
+                    users=peers,
+                )
             elif peer_type == "chat":
-                await self.send(
+                peers = await self.send(
                     raw.functions.messages.GetChats(
                         id=[-peer_id]
                     )
                 )
+
+                # FIXME: should?
+                await self.storage.save_peers(
+                    chats=peers,
+                )
             else:
-                await self.send(
+                peers = await self.send(
                     raw.functions.channels.GetChannels(
                         id=[
                             raw.types.InputChannel(
@@ -115,6 +122,11 @@ class ResolvePeer(Scaffold):
                             )
                         ]
                     )
+                )
+
+                # FIXME: should?
+                await self.storage.save_peers(
+                    chats=peers,
                 )
 
             try:
