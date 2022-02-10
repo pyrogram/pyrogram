@@ -27,8 +27,6 @@ log = logging.getLogger(__name__)
 
 
 class Connection:
-    MAX_RETRIES = 3
-
     MODES = {
         0: TCPFull,
         1: TCPAbridged,
@@ -50,7 +48,7 @@ class Connection:
         self.is_connected = asyncio.Event()
 
     async def connect(self):
-        for i in range(Connection.MAX_RETRIES):
+        while True:
             self.protocol = self.mode(self.ipv6, self.proxy)
 
             try:
@@ -69,9 +67,6 @@ class Connection:
                     self.mode.__name__,
                 ))
                 break
-        else:
-            log.warning("Couldn't connect. Trying again...")
-            raise TimeoutError
 
         self.is_connected.set()
 
