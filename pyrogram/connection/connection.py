@@ -77,7 +77,10 @@ class Connection:
         log.info("Disconnected")
 
     async def send(self, data: bytes):
-        await self.protocol.send(data)
+        try:
+            await self.protocol.send(data)
+        except Exception:
+            raise OSError
 
     async def recv(self) -> Optional[bytes]:
         return await self.protocol.recv()
