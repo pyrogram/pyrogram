@@ -83,6 +83,7 @@ class Session:
         self.stored_msg_ids = []
 
         self.ping_task = None
+        self.ping_task_event = asyncio.Event()
 
         self.network_task = None
 
@@ -149,23 +150,17 @@ class Session:
     async def stop(self):
         self.is_connected.clear()
 
-        if self.ping_task:
-            self.ping_task.cancel()
+        self.ping_task_event.set()
 
-            try:
-                await self.ping_task
-            except asyncio.CancelledError:
-                pass
+        if self.ping_task is not None:
+            await self.ping_task
+
+        self.ping_task_event.clear()
+
+        self.connection.close()
 
         if self.network_task:
-            self.network_task.cancel()
-
-            try:
-                await self.network_task
-            except asyncio.CancelledError:
-                pass
-
-        await self.connection.close()
+            await self.network_task
 
         for i in self.results.values():
             i.event.set()
@@ -194,7 +189,7 @@ class Session:
                 self.stored_msg_ids
             )
         except SecurityCheckMismatch:
-            await self.connection.close()
+            self.connection.close()
             return
 
         messages = (
@@ -252,52 +247,45 @@ class Session:
                 self.pending_acks.clear()
 
     async def ping_worker(self):
+        log.info("PingTask started")
+
         while True:
+            try:
+                await asyncio.wait_for(self.ping_task_event.wait(), self.PING_INTERVAL)
+            except asyncio.TimeoutError:
+                pass
+            else:
+                break
+
             try:
                 await self._send(
                     raw.functions.PingDelayDisconnect(
-                        ping_id=0,
-                        disconnect_delay=self.WAIT_TIMEOUT + 10
+                        ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                     ), False
                 )
             except (OSError, TimeoutError, RPCError):
                 pass
 
-            await asyncio.sleep(self.PING_INTERVAL)
+        log.info("PingTask stopped")
 
     async def network_worker(self):
+        log.info("NetworkTask started")
+
         while True:
             packet = await self.connection.recv()
 
-            if not packet:
-                await self.connection.reconnect()
+            if packet is None or len(packet) == 4:
+                if packet:
+                    log.warning(f'Server sent "{Int.read(BytesIO(packet))}"')
 
-                try:
-                    await self._send(
-                        raw.functions.InvokeWithLayer(
-                            layer=layer,
-                            query=raw.functions.InitConnection(
-                                api_id=self.client.api_id,
-                                app_version=self.client.app_version,
-                                device_model=self.client.device_model,
-                                system_version=self.client.system_version,
-                                system_lang_code=self.client.lang_code,
-                                lang_code=self.client.lang_code,
-                                lang_pack="",
-                                query=raw.functions.help.GetConfig(),
-                            )
-                        ),
-                        wait_response=False
-                    )
-                except (OSError, TimeoutError, RPCError):
-                    pass
+                if self.is_connected.is_set():
+                    self.loop.create_task(self.restart())
 
-                continue
-
-            if len(packet) == 4:
-                log.warning(f'Server sent "{Int.read(BytesIO(packet))}"')
+                break
 
             self.loop.create_task(self.handle_packet(packet))
+
+        log.info("NetworkTask stopped")
 
     async def _send(self, data: TLObject, wait_response: bool = True, timeout: float = WAIT_TIMEOUT):
         message = self.msg_factory(data)

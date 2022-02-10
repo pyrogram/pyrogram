@@ -27,6 +27,8 @@ log = logging.getLogger(__name__)
 
 
 class Connection:
+    MAX_RETRIES = 3
+
     MODES = {
         0: TCPFull,
         1: TCPAbridged,
@@ -35,7 +37,7 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 1):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
@@ -45,18 +47,17 @@ class Connection:
         self.mode = self.MODES.get(mode, TCPAbridged)
 
         self.protocol = None  # type: TCP
-        self.is_connected = asyncio.Event()
 
     async def connect(self):
-        while True:
+        for i in range(Connection.MAX_RETRIES):
             self.protocol = self.mode(self.ipv6, self.proxy)
 
             try:
                 log.info("Connecting...")
                 await self.protocol.connect(self.address)
             except OSError as e:
-                log.warning(f"Connection failed due to network issues: {e}")
-                await self.protocol.close()
+                log.warning(f"Unable to connect due to network issues: {e}")
+                self.protocol.close()
                 await asyncio.sleep(1)
             else:
                 log.info("Connected! {} DC{}{} - IPv{} - {}".format(
@@ -67,21 +68,19 @@ class Connection:
                     self.mode.__name__,
                 ))
                 break
+        else:
+            log.warning("Connection failed! Trying again...")
+            raise TimeoutError
 
-        self.is_connected.set()
-
-    async def close(self):
-        await self.protocol.close()
-        self.is_connected.clear()
+    def close(self):
+        self.protocol.close()
         log.info("Disconnected")
 
-    async def reconnect(self):
-        await self.close()
-        await self.connect()
-
     async def send(self, data: bytes):
-        await self.is_connected.wait()
-        await self.protocol.send(data)
+        try:
+            await self.protocol.send(data)
+        except Exception:
+            raise OSError
 
     async def recv(self) -> Optional[bytes]:
         return await self.protocol.recv()
