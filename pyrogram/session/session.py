@@ -271,6 +271,27 @@ class Session:
 
             if not packet:
                 await self.connection.reconnect()
+
+                try:
+                    await self._send(
+                        raw.functions.InvokeWithLayer(
+                            layer=layer,
+                            query=raw.functions.InitConnection(
+                                api_id=self.client.api_id,
+                                app_version=self.client.app_version,
+                                device_model=self.client.device_model,
+                                system_version=self.client.system_version,
+                                system_lang_code=self.client.lang_code,
+                                lang_code=self.client.lang_code,
+                                lang_pack="",
+                                query=raw.functions.help.GetConfig(),
+                            )
+                        ),
+                        wait_response=False
+                    )
+                except (OSError, TimeoutError, RPCError):
+                    pass
+
                 continue
 
             if len(packet) == 4:
