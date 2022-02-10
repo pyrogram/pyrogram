@@ -37,7 +37,7 @@ class Connection:
         4: TCPIntermediateO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 1):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
@@ -47,6 +47,7 @@ class Connection:
         self.mode = self.MODES.get(mode, TCPAbridged)
 
         self.protocol = None  # type: TCP
+        self.is_connected = asyncio.Event()
 
     async def connect(self):
         for i in range(Connection.MAX_RETRIES):
@@ -56,8 +57,8 @@ class Connection:
                 log.info("Connecting...")
                 await self.protocol.connect(self.address)
             except OSError as e:
-                log.warning(f"Unable to connect due to network issues: {e}")
-                self.protocol.close()
+                log.warning(f"Connection failed due to network issues: {e}")
+                await self.protocol.close()
                 await asyncio.sleep(1)
             else:
                 log.info("Connected! {} DC{}{} - IPv{} - {}".format(
@@ -69,18 +70,23 @@ class Connection:
                 ))
                 break
         else:
-            log.warning("Connection failed! Trying again...")
+            log.warning("Couldn't connect. Trying again...")
             raise TimeoutError
 
-    def close(self):
-        self.protocol.close()
+        self.is_connected.set()
+
+    async def close(self):
+        await self.protocol.close()
+        self.is_connected.clear()
         log.info("Disconnected")
 
+    async def reconnect(self):
+        await self.close()
+        await self.connect()
+
     async def send(self, data: bytes):
-        try:
-            await self.protocol.send(data)
-        except Exception:
-            raise OSError
+        await self.is_connected.wait()
+        await self.protocol.send(data)
 
     async def recv(self) -> Optional[bytes]:
         return await self.protocol.recv()

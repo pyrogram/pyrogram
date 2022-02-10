@@ -82,7 +82,7 @@ class TCP:
         self.socket.connect(address)
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
 
-    def close(self):
+    async def close(self):
         try:
             self.writer.close()
         except AttributeError:
