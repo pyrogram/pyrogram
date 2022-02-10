@@ -79,8 +79,8 @@ class Connection:
     async def send(self, data: bytes):
         try:
             await self.protocol.send(data)
-        except Exception:
-            raise OSError
+        except Exception as e:
+            raise OSError(e)
 
     async def recv(self) -> Optional[bytes]:
         return await self.protocol.recv()
