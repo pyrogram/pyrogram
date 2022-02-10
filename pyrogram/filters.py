@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
+import asyncio
 import re
 from typing import Callable, Union, List, Pattern
 
@@ -25,7 +26,15 @@ from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMa
 
 
 class Filter:
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    def __call__(self, client: "pyrogram.Client", update: Update):
+        loop = asyncio.get_event_loop()
+        coro = self._call(client, update)
+        if loop.is_running():
+            return coro
+        else:
+            return loop.run_until_complete(coro)
+
+    async def _call(self, client: "pyrogram.Client", update: Update):
         raise NotImplementedError
 
     def __invert__(self):
@@ -42,7 +51,15 @@ class InvertFilter(Filter):
     def __init__(self, base):
         self.base = base
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    def __call__(self, client: "pyrogram.Client", update: Update):
+        loop = asyncio.get_event_loop()
+        coro = self._call(client, update)
+        if loop.is_running():
+            return coro
+        else:
+            return loop.run_until_complete(coro)
+
+    async def _call(self, client: "pyrogram.Client", update: Update):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
@@ -60,7 +77,15 @@ class AndFilter(Filter):
         self.base = base
         self.other = other
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    def __call__(self, client: "pyrogram.Client", update: Update):
+        loop = asyncio.get_event_loop()
+        coro = self._call(client, update)
+        if loop.is_running():
+            return coro
+        else:
+            return loop.run_until_complete(coro)
+
+    async def _call(self, client: "pyrogram.Client", update: Update):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
@@ -91,7 +116,15 @@ class OrFilter(Filter):
         self.base = base
         self.other = other
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    def __call__(self, client: "pyrogram.Client", update: Update):
+        loop = asyncio.get_event_loop()
+        coro = self._call(client, update)
+        if loop.is_running():
+            return coro
+        else:
+            return loop.run_until_complete(coro)
+
+    async def _call(self, client: "pyrogram.Client", update: Update):
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
