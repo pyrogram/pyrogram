@@ -132,11 +132,10 @@ class SQLiteStorage(Storage):
 
     def _update_peers_impl(self, peers):
         with self.conn:
-            for peer in peers:
-                self.conn.execute(
-                    "REPLACE INTO peers (id, access_hash, type, username, phone_number) VALUES (?, ?, ?, ?, ?)",
-                    peer
-                )
+            self.conn.executemany(
+                "REPLACE INTO peers (id, access_hash, type, username, phone_number) VALUES (?, ?, ?, ?, ?)",
+                list(peers)
+            )
 
     async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
         return await self.loop.run_in_executor(self.executor, self._update_peers_impl, peers)
