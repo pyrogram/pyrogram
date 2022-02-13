@@ -26,7 +26,9 @@ class SetBotCommands(Scaffold):
     async def set_bot_commands(
         self,
         commands: Optional[List[types.BotCommand]],
-        scope: types.BotCommandScope = types.BotCommandScope("default"),
+        scope: types.BotCommandScope = types.BotCommandScope(
+            types.BotCommandScope.DEFAULT
+        ),
         lang_code: str = "",
     ):
         """Set the bot commands list.
