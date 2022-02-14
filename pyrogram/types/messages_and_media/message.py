@@ -674,6 +674,14 @@ class Message(Object, Update):
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
                             media_type = "animation"
+                        elif raw.types.DocumentAttributeSticker in attributes:
+                            sticker = await types.Sticker._parse(
+                                client, doc,
+                                attributes.get(raw.types.DocumentAttributeImageSize, None),
+                                attributes[raw.types.DocumentAttributeSticker],
+                                file_name
+                            )
+                            media_type = "sticker"
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
 
@@ -683,14 +691,6 @@ class Message(Object, Update):
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
                                 media_type = "video"
-                        elif raw.types.DocumentAttributeSticker in attributes:
-                            sticker = await types.Sticker._parse(
-                                client, doc,
-                                attributes.get(raw.types.DocumentAttributeImageSize, None),
-                                attributes[raw.types.DocumentAttributeSticker],
-                                file_name
-                            )
-                            media_type = "sticker"
                         else:
                             document = types.Document._parse(client, doc, file_name)
                             media_type = "document"

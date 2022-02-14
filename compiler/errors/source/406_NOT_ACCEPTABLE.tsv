@@ -1,5 +1,6 @@
 id	message
 AUTH_KEY_DUPLICATED	The same authorization key (session file) was used in more than one place simultaneously. You must delete your session file and log in again with your phone number or bot token
+CHANNEL_PRIVATE	The channel/supergroup is not accessible
 FILEREF_UPGRADE_NEEDED	The file reference has expired and you must use a refreshed one by obtaining the original media message
 FRESH_CHANGE_ADMINS_FORBIDDEN	You were just elected admin, you can't add or modify other admins yet
 FRESH_CHANGE_PHONE_FORBIDDEN	You can't change your phone number because your session was logged-in recently

@@ -46,6 +46,9 @@ class Sticker(Object):
         is_animated (``bool``):
             True, if the sticker is animated
 
+        is_video (``bool``):
+            True, if the sticker is a video sticker
+
         file_name (``str``, *optional*):
             Sticker file name.
 
@@ -79,6 +82,7 @@ class Sticker(Object):
         width: int,
         height: int,
         is_animated: bool,
+        is_video: bool,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -98,6 +102,7 @@ class Sticker(Object):
         self.width = width
         self.height = height
         self.is_animated = is_animated
+        self.is_video = is_video
         self.emoji = emoji
         self.set_name = set_name
         self.thumbs = thumbs
@@ -167,6 +172,7 @@ class Sticker(Object):
             width=image_size_attributes.w if image_size_attributes else 512,
             height=image_size_attributes.h if image_size_attributes else 512,
             is_animated=sticker.mime_type == "application/x-tgsticker",
+            is_video=sticker.mime_type == "video/webm",
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,

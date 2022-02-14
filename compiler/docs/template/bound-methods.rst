@@ -91,3 +91,17 @@ InlineQuery
     :hidden:
 
     {inline_query_toctree}
+
+ChatJoinRequest
+---------------
+
+.. hlist::
+    :columns: 2
+
+    {chat_join_request_hlist}
+
+.. toctree::
+    :hidden:
+
+    {chat_join_request_toctree}
+

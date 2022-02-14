@@ -174,9 +174,15 @@ class HTML:
 
             entities_offsets.append((start_tag, start,))
             entities_offsets.append((end_tag, end,))
-
-        # sorting by offset (desc)
-        entities_offsets.sort(key=lambda x: -x[1])
+            
+        entities_offsets = map(
+            lambda x: x[1],
+            sorted(
+                enumerate(entities_offsets),
+                key = lambda x: (x[1][1], x[0]),
+                reverse = True
+            )
+        )
 
         for entity, offset in entities_offsets:
             text = text[:offset] + entity + text[offset:]
