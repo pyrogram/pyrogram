@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -15,11 +15,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
-import inspect
+import asyncio
 import sqlite3
 import time
-from threading import Lock
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, Tuple, Any
 
 from pyrogram import raw
@@ -96,11 +95,12 @@ class SQLiteStorage(Storage):
     def __init__(self, name: str):
         super().__init__(name)
 
-        self.conn = None  # type: sqlite3.Connection
-        self.lock = Lock()
+        self.executor = ThreadPoolExecutor(1)
+        self.loop = asyncio.get_event_loop()
+        self.conn = None  # type: sqlite3.Connection | None
 
-    def create(self):
-        with self.lock, self.conn:
+    def _create_impl(self):
+        with self.conn:
             self.conn.executescript(SCHEMA)
 
             self.conn.execute(
@@ -113,46 +113,57 @@ class SQLiteStorage(Storage):
                 (2, None, None, 0, None, None)
             )
 
+    async def create(self):
+        return await self.loop.run_in_executor(self.executor, self._create_impl)
+
     async def open(self):
         raise NotImplementedError
 
     async def save(self):
         await self.date(int(time.time()))
-
-        with self.lock:
-            self.conn.commit()
+        await self.loop.run_in_executor(self.executor, self.conn.commit)
 
     async def close(self):
-        with self.lock:
-            self.conn.close()
+        await self.loop.run_in_executor(self.executor, self.conn.close)
+        self.executor.shutdown()
 
     async def delete(self):
         raise NotImplementedError
 
-    async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
-        with self.lock:
+    def _update_peers_impl(self, peers):
+        with self.conn:
             self.conn.executemany(
-                "REPLACE INTO peers (id, access_hash, type, username, phone_number)"
-                "VALUES (?, ?, ?, ?, ?)",
-                peers
+                "REPLACE INTO peers (id, access_hash, type, username, phone_number) VALUES (?, ?, ?, ?, ?)",
+                list(peers)
             )
 
+    async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
+        return await self.loop.run_in_executor(self.executor, self._update_peers_impl, peers)
+
+    def _get_peer_by_id_impl(self, peer_id: int):
+        with self.conn:
+            return self.conn.execute(
+                "SELECT id, access_hash, type FROM peers WHERE id = ?",
+                (peer_id,)
+            ).fetchone()
+
     async def get_peer_by_id(self, peer_id: int):
-        r = self.conn.execute(
-            "SELECT id, access_hash, type FROM peers WHERE id = ?",
-            (peer_id,)
-        ).fetchone()
+        r = await self.loop.run_in_executor(self.executor, self._get_peer_by_id_impl, peer_id)
 
         if r is None:
             raise KeyError(f"ID not found: {peer_id}")
 
         return get_input_peer(*r)
 
+    def _get_peer_by_username_impl(self, username: str):
+        with self.conn:
+            return self.conn.execute(
+                "SELECT id, access_hash, type, last_update_on FROM peers WHERE username = ?",
+                (username,)
+            ).fetchone()
+
     async def get_peer_by_username(self, username: str):
-        r = self.conn.execute(
-            "SELECT id, access_hash, type, last_update_on FROM peers WHERE username = ?",
-            (username,)
-        ).fetchone()
+        r = await self.loop.run_in_executor(self.executor, self._get_peer_by_username_impl, username)
 
         if r is None:
             raise KeyError(f"Username not found: {username}")
@@ -162,62 +173,66 @@ class SQLiteStorage(Storage):
 
         return get_input_peer(*r[:3])
 
+    def _get_peer_by_phone_number_impl(self, phone_number: str):
+        with self.conn:
+            return self.conn.execute(
+                "SELECT id, access_hash, type FROM peers WHERE phone_number = ?",
+                (phone_number,)
+            ).fetchone()
+
     async def get_peer_by_phone_number(self, phone_number: str):
-        r = self.conn.execute(
-            "SELECT id, access_hash, type FROM peers WHERE phone_number = ?",
-            (phone_number,)
-        ).fetchone()
+        r = await self.loop.run_in_executor(self.executor, self._get_peer_by_phone_number_impl, phone_number)
 
         if r is None:
             raise KeyError(f"Phone number not found: {phone_number}")
 
         return get_input_peer(*r)
 
-    def _get(self):
-        attr = inspect.stack()[2].function
+    def _get_impl(self, attr: str):
+        with self.conn:
+            return self.conn.execute(f"SELECT {attr} FROM sessions").fetchone()[0]
 
-        return self.conn.execute(
-            f"SELECT {attr} FROM sessions"
-        ).fetchone()[0]
+    async def _get(self, attr: str):
+        return await self.loop.run_in_executor(self.executor, self._get_impl, attr)
 
-    def _set(self, value: Any):
-        attr = inspect.stack()[2].function
+    def _set_impl(self, attr: str, value: any):
+        with self.conn:
+            return self.conn.execute(f"UPDATE sessions SET {attr} = ?", (value,))
 
-        with self.lock, self.conn:
-            self.conn.execute(
-                f"UPDATE sessions SET {attr} = ?",
-                (value,)
-            )
+    async def _set(self, attr: str, value: Any):
+        return await self.loop.run_in_executor(self.executor, self._set_impl, attr, value)
 
-    def _accessor(self, value: Any = object):
-        return self._get() if value == object else self._set(value)
+    async def _accessor(self, attr: str, value: Any = object):
+        return await self._get(attr) if value == object else await self._set(attr, value)
+
+    def _get_version_impl(self):
+        with self.conn:
+            return self.conn.execute("SELECT number FROM version").fetchone()[0]
+
+    def _set_version_impl(self, value):
+        with self.conn:
+            return self.conn.execute("UPDATE version SET number = ?", (value,))
 
     async def dc_id(self, value: int = object):
-        return self._accessor(value)
+        return await self._accessor("dc_id", value)
 
     async def test_mode(self, value: bool = object):
-        return self._accessor(value)
+        return await self._accessor("test_mode", value)
 
     async def auth_key(self, value: bytes = object):
-        return self._accessor(value)
+        return await self._accessor("auth_key", value)
 
     async def date(self, value: int = object):
-        return self._accessor(value)
+        return await self._accessor("date", value)
 
     async def user_id(self, value: int = object):
-        return self._accessor(value)
+        return await self._accessor("user_id", value)
 
     async def is_bot(self, value: bool = object):
-        return self._accessor(value)
+        return await self._accessor("is_bot", value)
 
-    def version(self, value: int = object):
+    async def version(self, value: int = object):
         if value == object:
-            return self.conn.execute(
-                "SELECT number FROM version"
-            ).fetchone()[0]
+            return await self.loop.run_in_executor(self.executor, self._get_version_impl)
         else:
-            with self.lock, self.conn:
-                self.conn.execute(
-                    "UPDATE version SET number = ?",
-                    (value,)
-                )
+            return await self.loop.run_in_executor(self.executor, self._set_version_impl, value)
