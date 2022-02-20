@@ -233,14 +233,14 @@ class Client(Methods, Scaffold):
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
-        if isinstance(session_name, str):
+        if isinstance(session_name, Storage):
+            self.storage = session_name
+        elif isinstance(session_name, str):
             if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
                 session_name = re.sub(r"[\n\s]+", "", session_name)
                 self.storage = MemoryStorage(session_name)
             else:
                 self.storage = FileStorage(session_name, self.workdir)
-        elif isinstance(session_name, Storage):
-            self.storage = session_name
         else:
             raise ValueError("Unknown storage engine")
 
