@@ -20,17 +20,17 @@ import inspect
 from typing import Union
 
 import pyrogram
-from pyrogram.types import Message, CallbackQuery
+from pyrogram.types import Message, CallbackQuery, Poll
 from .message_handler import MessageHandler
 from .callback_query_handler import CallbackQueryHandler
+from .poll_handler import PollHandler
 
-
-class ConversationHandler(MessageHandler, CallbackQueryHandler):
+class ConversationHandler(MessageHandler, CallbackQueryHandler, PollHandler):
     """The Conversation handler class."""
     def __init__(self):
         self.waiters = {}
 
-    async def check(self, client: "pyrogram.Client", update: Union[Message, CallbackQuery]):
+    async def check(self, client: "pyrogram.Client", update: Union[Message, CallbackQuery, Poll]):
         try:
             chat_id = update.chat.id if isinstance(update, Message) else update.message.chat.id
         except AttributeError:
