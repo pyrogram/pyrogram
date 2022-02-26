@@ -1904,7 +1904,7 @@ class Message(Object, Update):
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
-            caption (``bool``, *optional*):
+            caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
