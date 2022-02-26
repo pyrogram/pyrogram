@@ -498,7 +498,7 @@ class Message(Object, Update):
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
                 service_type = "new_chat_members"
-            elif isinstance(action, raw.types.MessageActionChatJoinedByLink):
+            elif isinstance(action, raw.types.MessageActionChatJoinedByLink) or isinstance(action, raw.types.MessageActionChatJoinedByRequest):
                 new_chat_members = [types.User._parse(client, users[utils.get_raw_peer_id(message.from_id)])]
                 service_type = "new_chat_members"
             elif isinstance(action, raw.types.MessageActionChatDeleteUser):
