@@ -863,6 +863,7 @@ class Message(Object, Update):
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup=None
     ) -> "Message":
         """Bound method *reply_text* of :obj:`~pyrogram.types.Message`.
@@ -913,6 +914,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -937,6 +941,7 @@ class Message(Object, Update):
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
@@ -954,6 +959,7 @@ class Message(Object, Update):
         height: int = 0,
         thumb: str = None,
         disable_notification: bool = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1027,6 +1033,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1079,6 +1088,7 @@ class Message(Object, Update):
             thumb=thumb,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -1097,6 +1107,7 @@ class Message(Object, Update):
         thumb: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1169,6 +1180,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1221,6 +1235,7 @@ class Message(Object, Update):
             thumb=thumb,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -1235,6 +1250,7 @@ class Message(Object, Update):
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1288,6 +1304,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1312,6 +1331,7 @@ class Message(Object, Update):
             caption_entities=caption_entities,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
@@ -1362,6 +1382,7 @@ class Message(Object, Update):
         vcard: str = "",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1411,6 +1432,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1435,6 +1459,7 @@ class Message(Object, Update):
             vcard=vcard,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
@@ -1728,6 +1753,7 @@ class Message(Object, Update):
         quote: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1771,6 +1797,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1793,6 +1822,7 @@ class Message(Object, Update):
             longitude=longitude,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
@@ -1801,7 +1831,8 @@ class Message(Object, Update):
         media: List[Union["types.InputMediaPhoto", "types.InputMediaVideo"]],
         quote: bool = None,
         disable_notification: bool = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        schedule_date: int = None,
     ) -> List["types.Message"]:
         """Bound method *reply_media_group* of :obj:`~pyrogram.types.Message`.
 
@@ -1837,6 +1868,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent.
+
         Returns:
             On success, a :obj:`~pyrogram.types.Messages` object is returned containing all the
             single messages sent.
@@ -1854,7 +1888,8 @@ class Message(Object, Update):
             chat_id=self.chat.id,
             media=media,
             disable_notification=disable_notification,
-            reply_to_message_id=reply_to_message_id
+            reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date
         )
 
     async def reply_photo(
@@ -1867,6 +1902,7 @@ class Message(Object, Update):
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1929,6 +1965,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1978,6 +2017,7 @@ class Message(Object, Update):
             ttl_seconds=ttl_seconds,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2093,6 +2133,7 @@ class Message(Object, Update):
         quote: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2136,6 +2177,9 @@ class Message(Object, Update):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -2182,6 +2226,7 @@ class Message(Object, Update):
             sticker=sticker,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2198,6 +2243,7 @@ class Message(Object, Update):
         foursquare_type: str = "",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2256,6 +2302,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2282,6 +2331,7 @@ class Message(Object, Update):
             foursquare_type=foursquare_type,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup
         )
 
@@ -2300,6 +2350,7 @@ class Message(Object, Update):
         supports_streaming: bool = True,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2380,6 +2431,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2434,6 +2488,7 @@ class Message(Object, Update):
             supports_streaming=supports_streaming,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2448,6 +2503,7 @@ class Message(Object, Update):
         thumb: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2504,6 +2560,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2552,6 +2611,7 @@ class Message(Object, Update):
             thumb=thumb,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2567,6 +2627,7 @@ class Message(Object, Update):
         duration: int = 0,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        schedule_date: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2627,6 +2688,9 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. 
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2676,6 +2740,7 @@ class Message(Object, Update):
             duration=duration,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
