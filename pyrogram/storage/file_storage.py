@@ -27,6 +27,24 @@ from .sqlite_storage import SQLiteStorage
 
 log = logging.getLogger(__name__)
 
+def reverse_dict(data: dict, key_type: type = str) -> dict:
+    """This will take a dict and
+    reverse the relationship of K:V pairs.
+
+    Args:
+        data (dict): The dictioanry to reverse.
+        key_type (type, optional): The datatype of the keys. Defaults to str.
+    Returns:
+        Dict: The original dict with a V:K relationship.
+    """
+
+
+    new_data = {}
+    for k,v in data.items():
+        new_data[key_type(v)] = k
+    return new_data
+
+
 
 class FileStorage(SQLiteStorage):
     FILE_EXTENSION = ".session"
@@ -47,7 +65,8 @@ class FileStorage(SQLiteStorage):
         await self.is_bot(session_json.get("is_bot", False))
 
         peers_by_id = session_json.get("peers_by_id", {})
-        peers_by_phone = session_json.get("peers_by_phone", {})
+        peers_by_username = reverse_dict(session_json.get("peers_by_username", {}))
+        peers_by_phone = reverse_dict(session_json.get("peers_by_phone", {}))
 
         peers = {}
 
@@ -58,11 +77,12 @@ class FileStorage(SQLiteStorage):
                 type_ = "channel"
             else:
                 type_ = "user"
-
+            
             peers[int(k)] = [int(k), int(v) if v is not None else None, type_, None, None]
+            peers[int(k)][3] = peers_by_username[k] if k in peers_by_username else None
+            peers[int(k)][4] = peers_by_phone[k] if k in peers_by_phone else None
 
-        for k, v in peers_by_phone.items():
-            peers[v][4] = k
+
 
         # noinspection PyTypeChecker
         await self.update_peers(peers.values())
