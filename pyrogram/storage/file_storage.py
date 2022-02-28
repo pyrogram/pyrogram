@@ -36,15 +36,15 @@ class FileStorage(SQLiteStorage):
 
         self.database = workdir / (self.name + self.FILE_EXTENSION)
 
-    def migrate_from_json(self, session_json: dict):
-        self.open()
+    async def migrate_from_json(self, session_json: dict):
+        await self.open()
 
-        self.dc_id(session_json["dc_id"])
-        self.test_mode(session_json["test_mode"])
-        self.auth_key(base64.b64decode("".join(session_json["auth_key"])))
-        self.user_id(session_json["user_id"])
-        self.date(session_json.get("date", 0))
-        self.is_bot(session_json.get("is_bot", False))
+        await self.dc_id(session_json["dc_id"])
+        await self.test_mode(session_json["test_mode"])
+        await self.auth_key(base64.b64decode("".join(session_json["auth_key"])))
+        await self.user_id(session_json["user_id"])
+        await self.date(session_json.get("date", 0))
+        await self.is_bot(session_json.get("is_bot", False))
 
         peers_by_id = session_json.get("peers_by_id", {})
         peers_by_phone = session_json.get("peers_by_phone", {})
@@ -65,7 +65,7 @@ class FileStorage(SQLiteStorage):
             peers[v][4] = k
 
         # noinspection PyTypeChecker
-        self.update_peers(peers.values())
+        await self.update_peers(peers.values())
 
     def update(self):
         version = self.version()
@@ -95,7 +95,7 @@ class FileStorage(SQLiteStorage):
 
                 log.warning(f'The old session file has been renamed to "{path.name}.OLD"')
 
-                self.migrate_from_json(session_json)
+                await self.migrate_from_json(session_json)
 
                 log.warning("Done! The session has been successfully converted from JSON to SQLite storage")
 
