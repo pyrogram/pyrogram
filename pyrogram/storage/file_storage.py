@@ -63,23 +63,34 @@ class FileStorage(SQLiteStorage):
         await self.user_id(session_json["user_id"])
         await self.date(session_json.get("date", 0))
         await self.is_bot(session_json.get("is_bot", False))
-
+        
+        # id : access_hash
         peers_by_id = session_json.get("peers_by_id", {})
+
+        # id : username by reversing the dict.
         peers_by_username = reverse_dict(session_json.get("peers_by_username", {}))
+        
+        # id : phone by reversing the dict.
         peers_by_phone = reverse_dict(session_json.get("peers_by_phone", {}))
 
         peers = {}
 
         for k, v in peers_by_id.items():
+            
+            # intuitively type guess with access_hash
             if v is None:
                 type_ = "group"
             elif k.startswith("-100"):
                 type_ = "channel"
             else:
                 type_ = "user"
-            
+            # generate a new row, [id, access_hash, type, None, None]
             peers[int(k)] = [int(k), int(v) if v is not None else None, type_, None, None]
+            
+            # add the username in [id, access_hash, type, username, None] (if it exists)
             peers[int(k)][3] = peers_by_username[k] if k in peers_by_username else None
+            
+            # add the phone number [id, access_hash, type, username, phone] (if it exists)
             peers[int(k)][4] = peers_by_phone[k] if k in peers_by_phone else None
 
 
