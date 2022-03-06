@@ -26,7 +26,7 @@ class InputMediaAnimation(InputMedia):
     """An animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent inside an album.
 
     Parameters:
-        media (``str``):
+        media (``str`` | ``BinaryIO``):
             Animation to send.
             Pass a file_id as string to send a file that exists on the Telegram servers or
             pass a file path as string to upload a new file that exists on your local machine or
