@@ -207,7 +207,7 @@ class SendVideo(Scaffold):
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(video, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(video.name) or "video/mp4",
+                    mime_type=self.guess_mime_type(file_name or video.name) or "video/mp4",
                     file=file,
                     ttl_seconds=ttl_seconds,
                     thumb=thumb,
@@ -218,7 +218,7 @@ class SendVideo(Scaffold):
                             w=width,
                             h=height
                         ),
-                        raw.types.DocumentAttributeFilename(file_name=video.name)
+                        raw.types.DocumentAttributeFilename(file_name=file_name or video.name)
                     ]
                 )
 
