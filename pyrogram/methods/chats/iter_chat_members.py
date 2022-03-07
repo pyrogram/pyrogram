@@ -76,7 +76,7 @@ class IterChatMembers(Scaffold):
             .. code-block:: python
 
                 # Iterate though all chat members
-                for member in app.iter_chat_members(chat_id):
+                for member in app.iter_chat_members(chat_id, filter="all"):
                     print(member.user.first_name)
 
                 # Iterate though all administrators
