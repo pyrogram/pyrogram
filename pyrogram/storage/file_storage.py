@@ -78,7 +78,7 @@ class FileStorage(SQLiteStorage):
 
         self.version(version)
 
-    async def checkConnection(self):
+    async def check_connection(self):
         if self.conn is None:
             await self.open()
         else:
