@@ -21,6 +21,7 @@ import logging
 import struct
 from enum import IntEnum
 from io import BytesIO
+from typing import List
 
 from pyrogram.raw.core import Bytes, String
 
@@ -63,7 +64,7 @@ def rle_encode(s: bytes) -> bytes:
     Returns:
         ``bytes``: The encoded bytes
     """
-    r: bytes = b""
+    r: List[int] = []
     n: int = 0
 
     for b in s:
@@ -71,15 +72,15 @@ def rle_encode(s: bytes) -> bytes:
             n += 1
         else:
             if n:
-                r += bytes([0, n])
+                r.extend((0, n))
                 n = 0
 
-            r += bytes([b])
+            r.append(b)
 
     if n:
-        r += bytes([0, n])
+        r.extend((0, n))
 
-    return r
+    return bytes(r)
 
 
 def rle_decode(s: bytes) -> bytes:
