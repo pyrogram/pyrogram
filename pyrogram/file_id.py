@@ -93,7 +93,7 @@ def rle_decode(s: bytes) -> bytes:
     Returns:
         ``bytes``: The decoded bytes
     """
-    r: bytes = b""
+    r: List[int] = []
     z: bool = False
 
     for b in s:
@@ -102,12 +102,12 @@ def rle_decode(s: bytes) -> bytes:
             continue
 
         if z:
-            r += b"\x00" * b
+            r.extend((0,) * b)
             z = False
         else:
-            r += bytes([b])
+            r.append(b)
 
-    return r
+    return bytes(r)
 
 
 class FileType(IntEnum):
