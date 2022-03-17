@@ -88,10 +88,10 @@ def rle_decode(s: bytes) -> bytes:
 
     Parameters:
         s (``bytes``):
-            Bytes to encode
+            Bytes to decode
 
     Returns:
-        ``bytes``: The encoded bytes
+        ``bytes``: The decoded bytes
     """
     r: bytes = b""
     z: bool = False
