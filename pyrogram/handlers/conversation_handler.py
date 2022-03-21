@@ -31,6 +31,9 @@ class ConversationHandler(MessageHandler, CallbackQueryHandler):
         self.waiters = {}
 
     async def check(self, client: "pyrogram.Client", update: Union[Message, CallbackQuery]):
+        if isinstance(update, Message) and update.outgoing:
+            return False
+
         try:
             chat_id = update.chat.id if isinstance(update, Message) else update.message.chat.id
         except AttributeError:
