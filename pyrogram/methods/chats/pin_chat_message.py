@@ -18,7 +18,7 @@
 
 from typing import Union
 
-from pyrogram import raw
+from pyrogram import raw, types
 from pyrogram.scaffold import Scaffold
 
 
@@ -29,7 +29,7 @@ class PinChatMessage(Scaffold):
         message_id: int,
         disable_notification: bool = False,
         both_sides: bool = False,
-    ) -> bool:
+    ) -> "types.Message":
         """Pin a message in a group, channel or your own chat.
         You must be an administrator in the chat for this to work and must have the "can_pin_messages" admin right in
         the supergroup or "can_edit_messages" admin right in the channel.
@@ -50,7 +50,7 @@ class PinChatMessage(Scaffold):
                 Applicable to private chats only. Defaults to False.
 
         Returns:
-            ``bool``: True on success.
+            :obj:`~pyrogram.types.Message`: On success, the service message is returned.
 
         Example:
             .. code-block:: python
@@ -61,7 +61,7 @@ class PinChatMessage(Scaffold):
                 # Pin without notification
                 app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
-        await self.send(
+        r = await self.send(
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
@@ -70,4 +70,10 @@ class PinChatMessage(Scaffold):
             )
         )
 
-        return True
+        users = {u.id: u for u in r.users}
+        chats = {c.id: c for c in r.chats}
+
+        for i in r.updates:
+            if isinstance(i, (raw.types.UpdateNewMessage,
+                              raw.types.UpdateNewChannelMessage)):
+                return await types.Message._parse(self, i.message, users, chats)

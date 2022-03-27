@@ -63,20 +63,20 @@ def rle_encode(s: bytes) -> bytes:
     Returns:
         ``bytes``: The encoded bytes
     """
-    r = b""
-    n = 0
+    r: bytes = b""
+    n: int = 0
 
     for b in s:
-        if b == 0:
+        if not b:
             n += 1
         else:
-            if n > 0:
+            if n:
                 r += bytes([0, n])
                 n = 0
 
             r += bytes([b])
 
-    if n > 0:
+    if n:
         r += bytes([0, n])
 
     return r
@@ -92,17 +92,19 @@ def rle_decode(s: bytes) -> bytes:
     Returns:
         ``bytes``: The encoded bytes
     """
-    r = b""
-    i = 0
+    r: bytes = b""
+    z: bool = False
 
-    while i < len(s):
-        if s[i] != 0:
-            r += bytes([s[i]])
+    for b in s:
+        if not b:
+            z = True
+            continue
+
+        if z:
+            r += b"\x00" * b
+            z = False
         else:
-            r += b"\x00" * s[i + 1]
-            i += 1
-
-        i += 1
+            r += bytes([b])
 
     return r
 
