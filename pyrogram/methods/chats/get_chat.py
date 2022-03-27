@@ -53,9 +53,7 @@ class GetChat(Scaffold):
                 chat = app.get_chat("pyrogram")
                 print(chat)
         """
-        match = self.INVITE_LINK_RE.match(str(chat_id))
-
-        if match:
+        if match := self.INVITE_LINK_RE.match(str(chat_id)):
             r = await self.send(
                 raw.functions.messages.CheckChatInvite(
                     hash=match.group(1)

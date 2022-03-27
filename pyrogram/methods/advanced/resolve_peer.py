@@ -19,7 +19,7 @@
 import logging
 import re
 from typing import Union
-
+from pyrogram import types
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.errors import PeerIdInvalid
@@ -55,16 +55,26 @@ class ResolvePeer(Scaffold):
         """
         if not self.is_connected:
             raise ConnectionError("Client has not been started yet")
-
+        if match := self.INVITE_LINK_RE.match(str(peer_id)):
+            r = await self.send(
+                raw.functions.messages.CheckChatInvite(
+                    hash=match.group(1)
+                )
+            )
+            if isinstance(r, raw.types.ChatInvite):
+                return types.ChatPreview._parse(self, r)
+            await self.fetch_peers([r.chat])
+            if isinstance(r.chat, raw.types.Chat):
+                peer_id = -r.chat.id
+            if isinstance(r.chat, raw.types.Channel):
+                peer_id = utils.get_channel_id(r.chat.id)
         try:
             return await self.storage.get_peer_by_id(peer_id)
         except KeyError:
             if isinstance(peer_id, str):
                 if peer_id in ("self", "me"):
                     return raw.types.InputPeerSelf()
-
                 peer_id = re.sub(r"[@+\s]", "", peer_id.lower())
-
                 try:
                     int(peer_id)
                 except ValueError:
@@ -81,8 +91,8 @@ class ResolvePeer(Scaffold):
                 else:
                     try:
                         return await self.storage.get_peer_by_phone_number(peer_id)
-                    except KeyError:
-                        raise PeerIdInvalid
+                    except KeyError as e:
+                        raise PeerIdInvalid from e
 
             peer_type = utils.get_peer_type(peer_id)
 
@@ -119,5 +129,5 @@ class ResolvePeer(Scaffold):
 
             try:
                 return await self.storage.get_peer_by_id(peer_id)
-            except KeyError:
-                raise PeerIdInvalid
+            except KeyError as exc:
+                raise PeerIdInvalid from exc
