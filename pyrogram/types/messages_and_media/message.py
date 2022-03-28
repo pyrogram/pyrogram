@@ -373,7 +373,8 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        reactions: List["types.Reaction"] = None
+        reactions: List["types.Reaction"] = None,
+        replies: "types.MessageReplies" = None,
     ):
         super().__init__(client)
 
@@ -443,6 +444,7 @@ class Message(Object, Update):
         self.voice_chat_ended = voice_chat_ended
         self.voice_chat_members_invited = voice_chat_members_invited
         self.reactions = reactions
+        self.replies = replies
 
     @staticmethod
     async def _parse(
