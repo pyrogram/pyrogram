@@ -801,6 +801,7 @@ class Message(Object, Update):
                 outgoing=message.out,
                 reply_markup=reply_markup,
                 reactions=reactions,
+                replies=message.replies,
                 client=client
             )
 

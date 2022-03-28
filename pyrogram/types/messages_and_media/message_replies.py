@@ -27,21 +27,22 @@ class MessageReplies(Object):
     Info about the comment section of a channel post, or a simple message thread.
 
     Parameters:
-        replies (int 32-bit) – Contains the total number of replies in this thread or comment section.
-
-        replies_pts (int 32-bit) – PTS of the message that started this thread.
-
-        comments (bool, optional) – Whether this constructor contains information about the comment section of a channel post, or a simple message thread.
-
-        recent_repliers (List of Peer, optional) – For channel post comments, contains information about the last few comment posters for a specific thread, to show a small list of commenter profile pictures in client previews.
-
-        channel_id (int 64-bit, optional) – For channel post comments, contains the ID of the associated discussion supergroup.
-
-        max_id (int 32-bit, optional) – ID of the latest message in this thread or comment section.
-
-        read_max_id (int 32-bit, optional) – Contains the ID of the latest read message in this thread or comment section.
-
-
+        replies (``int``):
+            Contains the total number of replies in this thread or comment section.
+        replies_pts (``int``):
+            PTS of the message that started this thread.
+        comments (``bool``, *optional*):
+            Whether this constructor contains information about the comment section of a channel post,
+            or a simple message thread.
+        recent_repliers (``List[:obj:`pyrogram.types.Peer`]``, *optional*):
+            For channel post comments, contains information about the last few comment posters for a specific thread,
+            to show a small list of commenter profile pictures in client previews.
+        channel_id (``int``, *optional*):
+            For channel post comments, contains the ID of the associated discussion supergroup.
+        max_id (``int``, *optional*):
+            ID of the latest message in this thread or comment section.
+        read_max_id (``int``, *optional*):
+            Contains the ID of the latest read message in this thread or comment section.
     """
 
     def __init__(self, *, client: "pyrogram.Client" = None, replies: int, replies_pts: int,
