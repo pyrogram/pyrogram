@@ -3286,6 +3286,42 @@ class Message(Object, Update):
         else:
             await self.reply(button, quote=quote)
 
+    async def react(self, emoji: str = "") -> bool:
+        """Bound method *react* of :obj:`~pyrogram.types.Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_reaction(
+                chat_id=chat_id,
+                message_id=message.message_id,
+                emoji="🔥"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.react(emoji="🔥")
+
+        Parameters:
+            emoji (``str``, *optional*):
+                Reaction emoji.
+                Pass "" as emoji (default) to retract the reaction.
+
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return await self._client.send_reaction(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            emoji=emoji
+        )
+
     async def retract_vote(
         self,
     ) -> "types.Poll":

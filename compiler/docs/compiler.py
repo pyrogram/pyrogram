@@ -518,6 +518,7 @@ def pyrogram_api():
             Message.reply_video_note
             Message.reply_voice
             Message.get_media_group
+            Message.react
         """,
         chat="""
         Chat
