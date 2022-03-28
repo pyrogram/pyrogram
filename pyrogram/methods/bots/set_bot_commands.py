@@ -16,17 +16,23 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional, List
+from typing import List, Optional
 
-from pyrogram import raw
-from pyrogram import types
+from pyrogram import raw, types
 from pyrogram.scaffold import Scaffold
 
 
 class SetBotCommands(Scaffold):
-    async def set_bot_commands(self, commands: Optional[List[types.BotCommand]]):
+    async def set_bot_commands(
+        self,
+        commands: Optional[List[types.BotCommand]],
+        scope: types.BotCommandScope = types.BotCommandScope(
+            types.BotCommandScope.DEFAULT
+        ),
+        lang_code: str = "",
+    ):
         """Set the bot commands list.
-        
+
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
 
@@ -40,20 +46,22 @@ class SetBotCommands(Scaffold):
 
         Example:
             .. code-block:: python
-                
+
                 from pyrogram.types import BotCommand
-                
+
                 # Set new commands
                 app.set_bot_commands([
                     BotCommand("start", "Start the bot"),
                     BotCommand("settings", "Bot settings")])
-                
+
                 # Remove commands
                 app.set_bot_commands(None)
         """
 
         return await self.send(
             raw.functions.bots.SetBotCommands(
-                commands=[c.write() for c in commands or []]
+                commands=[c.write() for c in commands or []],
+                scope=scope.write(),
+                lang_code=lang_code,
             )
         )
