@@ -3308,6 +3308,7 @@ class Message(Object, Update):
             emoji (``str``, *optional*):
                 Reaction emoji.
                 Pass "" as emoji (default) to retract the reaction.
+
         Returns:
             ``bool``: On success, True is returned.
 
