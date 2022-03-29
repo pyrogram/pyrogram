@@ -78,6 +78,16 @@ class FileStorage(SQLiteStorage):
 
         self.version(version)
 
+    async def check_connection(self):
+        if self.conn is None:
+            await self.open()
+        else:
+            try:
+                with self.lock, self.conn:
+                    self.conn.execute("SELECT id FROM peers LIMIT 1")
+            except sqlite3.ProgrammingError:
+                await self.open()
+
     async def open(self):
         path = self.database
         file_exists = path.is_file()

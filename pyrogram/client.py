@@ -490,6 +490,7 @@ class Client(Methods, Scaffold):
 
             parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
 
+        await self.storage.check_connection()
         await self.storage.update_peers(parsed_peers)
 
         return is_min
