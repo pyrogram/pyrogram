@@ -51,18 +51,31 @@ Messages & Media
 
     {messages_media}
 
-Bots & Keyboards
-----------------
+Bot keyboards
+-------------
 
 .. autosummary::
     :nosignatures:
 
-    {bots_keyboard}
+    {bot_keyboards}
 
 .. toctree::
     :hidden:
 
-    {bots_keyboard}
+    {bot_keyboards}
+
+Bot commands
+-------------
+
+.. autosummary::
+    :nosignatures:
+
+    {bot_commands}
+
+.. toctree::
+    :hidden:
+
+    {bot_commands}
 
 Input Media
 -----------

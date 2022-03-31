@@ -288,6 +288,8 @@ def pyrogram_api():
             set_game_score
             get_game_high_scores
             set_bot_commands
+            get_bot_commands
+            delete_bot_commands
         """,
         authorization="""
         Authorization
@@ -395,8 +397,8 @@ def pyrogram_api():
             VoiceChatEnded
             VoiceChatMembersInvited
         """,
-        bots_keyboard="""
-        Bots & Keyboards
+        bot_keyboards="""
+        Bot keyboards
             ReplyKeyboardMarkup
             KeyboardButton
             ReplyKeyboardRemove
@@ -407,7 +409,18 @@ def pyrogram_api():
             CallbackQuery
             GameHighScore
             CallbackGame
+        """,
+        bot_commands="""
+        Bot commands
             BotCommand
+            BotCommandScope
+            BotCommandScopeDefault
+            BotCommandScopeAllPrivateChats
+            BotCommandScopeAllGroupChats
+            BotCommandScopeAllChatAdministrators
+            BotCommandScopeChat
+            BotCommandScopeChatAdministrators
+            BotCommandScopeChatMember
         """,
         input_media="""
         Input Media
@@ -505,6 +518,7 @@ def pyrogram_api():
             Message.reply_video_note
             Message.reply_voice
             Message.get_media_group
+            Message.react
         """,
         chat="""
         Chat

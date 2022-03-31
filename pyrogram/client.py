@@ -251,10 +251,7 @@ class Client(Methods, Scaffold):
         return self.start()
 
     def __exit__(self, *args):
-        try:
-            self.stop()
-        except ConnectionError:
-            pass
+        self.stop()
 
     async def __aenter__(self):
         return await self.start()
