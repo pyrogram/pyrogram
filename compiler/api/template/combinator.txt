@@ -5,7 +5,7 @@ from io import BytesIO
 from pyrogram.raw.core.primitives import Int, Long, Int128, Int256, Bool, Bytes, String, Double, Vector
 from pyrogram.raw.core import TLObject
 from pyrogram import raw
-from typing import List, Union, Any
+from typing import List, Optional, Any
 
 {warning}
 
