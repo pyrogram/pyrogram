@@ -132,7 +132,7 @@ def sort_args(args):
         args.remove(i)
 
     for i in args[:]:
-        if re.match(r"flags\d?", i[0]):
+        if re.match(r"flags\d?", i[0]) and i[1] == "#":
             args.remove(i)
 
     return args + flags
