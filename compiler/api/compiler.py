@@ -34,9 +34,9 @@ SECTION_RE = re.compile(r"---(\w+)---")
 LAYER_RE = re.compile(r"//\sLAYER\s(\d+)")
 COMBINATOR_RE = re.compile(r"^([\w.]+)#([0-9a-f]+)\s(?:.*)=\s([\w<>.]+);$", re.MULTILINE)
 ARGS_RE = re.compile(r"[^{](\w+):([\w?!.<>#]+)")
-FLAGS_RE = re.compile(r"flags\.(\d+)\?")
-FLAGS_RE_2 = re.compile(r"flags\.(\d+)\?([\w<>.]+)")
-FLAGS_RE_3 = re.compile(r"flags:#")
+FLAGS_RE = re.compile(r"flags(\d?).(\d+)\?")
+FLAGS_RE_2 = re.compile(r"flags(\d?)\.(\d+)\?([\w<>.]+)")
+FLAGS_RE_3 = re.compile(r"flags(\d?):#")
 INT_RE = re.compile(r"int(\d+)")
 
 CORE_TYPES = ["int", "long", "int128", "int256", "double", "bytes", "string", "Bool", "true"]
@@ -131,10 +131,9 @@ def sort_args(args):
     for i in flags:
         args.remove(i)
 
-    try:
-        args.remove(("flags", "#"))
-    except ValueError:
-        pass
+    for i in args[:]:
+        if re.match(r"flags\d?", i[0]):
+            args.remove(i)
 
     return args + flags
 
@@ -401,42 +400,45 @@ def start(format: bool = False):
         for arg_name, arg_type in c.args:
             flag = FLAGS_RE_2.match(arg_type)
 
-            if arg_name == "flags" and arg_type == "#":
+            if re.match(r"flags\d?", arg_name) and arg_type == "#":
                 write_flags = []
 
                 for i in c.args:
                     flag = FLAGS_RE_2.match(i[1])
 
                     if flag:
-                        if flag.group(2) == "true" or flag.group(2).startswith("Vector"):
-                            write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} else 0")
+                        if arg_name != f"flags{flag.group(1)}":
+                            continue
+
+                        if flag.group(3) == "true" or flag.group(3).startswith("Vector"):
+                            write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} else 0")
                         else:
-                            write_flags.append(f"flags |= (1 << {flag.group(1)}) if self.{i[0]} is not None else 0")
+                            write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} is not None else 0")
 
                 write_flags = "\n        ".join([
-                    "flags = 0",
+                    f"{arg_name} = 0",
                     "\n        ".join(write_flags),
-                    "b.write(Int(flags))\n        "
+                    f"b.write(Int({arg_name}))\n        "
                 ])
 
                 write_types += write_flags
-                read_types += "flags = Int.read(b)\n        "
+                read_types += f"\n        {arg_name} = Int.read(b)\n        "
 
                 continue
 
             if flag:
-                index, flag_type = flag.groups()
+                number, index, flag_type = flag.groups()
 
                 if flag_type == "true":
                     read_types += "\n        "
-                    read_types += f"{arg_name} = True if flags & (1 << {index}) else False"
+                    read_types += f"{arg_name} = True if flags{number} & (1 << {index}) else False"
                 elif flag_type in CORE_TYPES:
                     write_types += "\n        "
                     write_types += f"if self.{arg_name} is not None:\n            "
                     write_types += f"b.write({flag_type.title()}(self.{arg_name}))\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = {flag_type.title()}.read(b) if flags & (1 << {index}) else None"
+                    read_types += f"{arg_name} = {flag_type.title()}.read(b) if flags{number} & (1 << {index}) else None"
                 elif "vector" in flag_type.lower():
                     sub_type = arg_type.split("<")[1][:-1]
 
@@ -447,8 +449,8 @@ def start(format: bool = False):
                     )
 
                     read_types += "\n        "
-                    read_types += "{} = TLObject.read(b{}) if flags & (1 << {}) else []\n        ".format(
-                        arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else "", index
+                    read_types += "{} = TLObject.read(b{}) if flags{} & (1 << {}) else []\n        ".format(
+                        arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else "", number, index
                     )
                 else:
                     write_types += "\n        "
@@ -456,7 +458,7 @@ def start(format: bool = False):
                     write_types += f"b.write(self.{arg_name}.write())\n        "
 
                     read_types += "\n        "
-                    read_types += f"{arg_name} = TLObject.read(b) if flags & (1 << {index}) else None\n        "
+                    read_types += f"{arg_name} = TLObject.read(b) if flags{number} & (1 << {index}) else None\n        "
             else:
                 if arg_type in CORE_TYPES:
                     write_types += "\n        "
