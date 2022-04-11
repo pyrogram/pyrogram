@@ -32,7 +32,12 @@ class SendPoll(Scaffold):
         is_anonymous: bool = True,
         allows_multiple_answers: bool = None,
         type: str = "regular",
+        is_closed: bool = None,
+        close_period: int = None,
+        close_date: int = None,
         correct_option_id: int = None,
+        solution: str = None,
+        solution_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: int = None,
@@ -66,6 +71,16 @@ class SendPoll(Scaffold):
                 Poll type, "quiz" or "regular".
                 Defaults to "regular"
 
+            is_closed (``bool``, *optional*):
+                True, if the poll is to be closed.
+                Defaults to False.
+
+            close_period (``int``, *optional*):
+                Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date .
+
+            close_date (``int``, *optional*):
+                Date when the poll will be automatically closed. It must be at least 5 and no more than 600 seconds in the future, can't be used together with close_period. Unix time.
+
             allows_multiple_answers (``bool``, *optional*):
                 True, if the poll allows multiple answers, ignored for polls in quiz mode.
                 Defaults to False
@@ -73,6 +88,12 @@ class SendPoll(Scaffold):
             correct_option_id (``int``, *optional*):
                 0-based identifier of the correct answer option (the index of the correct option)
                 Required for polls in quiz mode.
+
+            solution (``str``, *optional*):
+                Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll.
+
+            solution_entities (List of :obj:`~pyrogram.types.MessageEntity`, *optional*):
+                List of special entities that appear in solution text.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -112,9 +133,14 @@ class SendPoll(Scaffold):
                         ],
                         multiple_choice=allows_multiple_answers or None,
                         public_voters=not is_anonymous or None,
-                        quiz=type == "quiz" or None
+                        quiz=type == "quiz" or None,
+                        closed=is_closed or None,
+                        close_period=close_period,
+                        close_date=close_date
                     ),
-                    correct_answers=None if correct_option_id is None else [bytes([correct_option_id])]
+                    correct_answers=None if correct_option_id is None else [bytes([correct_option_id])],
+                    solution=solution,
+                    solution_entities=solution_entities
                 ),
                 message="",
                 silent=disable_notification or None,
