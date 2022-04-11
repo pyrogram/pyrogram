@@ -115,7 +115,7 @@ def get_type_hint(type: str) -> str:
         type = f"List[{get_type_hint(sub_type)}]"
 
     if is_core:
-        return f"Union[None, {type}] = None" if is_flag else type
+        return f"Optional[{type}] = None" if is_flag else type
     else:
         ns, name = type.split(".") if "." in type else ("", type)
         type = f'"raw.base.' + ".".join([ns, name]).strip(".") + '"'
