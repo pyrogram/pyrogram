@@ -55,6 +55,7 @@ class TLObject:
     def __repr__(self) -> str:
         if not hasattr(self, "QUALNAME"):
             return repr(self)
+
         return "pyrogram.raw.{}({})".format(
             self.QUALNAME,
             ", ".join(
