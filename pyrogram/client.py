@@ -19,6 +19,7 @@
 import asyncio
 import functools
 import inspect
+import io
 import logging
 import os
 import re
@@ -26,6 +27,7 @@ import shutil
 import tempfile
 from concurrent.futures.thread import ThreadPoolExecutor
 from configparser import ConfigParser
+from contextlib import nullcontext
 from hashlib import sha256
 from importlib import import_module
 from pathlib import Path
@@ -813,8 +815,13 @@ class Client(Methods, Scaffold):
         file_id: FileId,
         file_size: int,
         progress: callable,
-        progress_args: tuple = ()
-    ) -> str:
+        progress_args: tuple = (),
+        container: io.IOBase = None,
+    ) -> Union[str, io.IOBase]:
+        """
+        Downloads file to temporarily location on disk and returns its path
+        Or downloads it to `container` provided in corresponding arg and returns it
+        """
         dc_id = file_id.dc_id
 
         async with self.media_sessions_lock:
@@ -901,6 +908,11 @@ class Client(Methods, Scaffold):
         offset = 0
         file_name = ""
 
+        if container is None:
+            get_io_container = tempfile.NamedTemporaryFile("wb", delete=False)
+        else:
+            get_io_container = nullcontext(container)
+
         try:
             r = await session.send(
                 raw.functions.upload.GetFile(
@@ -912,8 +924,9 @@ class Client(Methods, Scaffold):
             )
 
             if isinstance(r, raw.types.upload.File):
-                with tempfile.NamedTemporaryFile("wb", delete=False) as f:
-                    file_name = f.name
+                with get_io_container as f:
+                    if container is None:
+                        file_name = f.name
 
                     while True:
                         chunk = r.bytes
@@ -964,8 +977,9 @@ class Client(Methods, Scaffold):
                         self.media_sessions[r.dc_id] = cdn_session
 
                 try:
-                    with tempfile.NamedTemporaryFile("wb", delete=False) as f:
-                        file_name = f.name
+                    with get_io_container as f:
+                        if container is None:
+                            file_name = f.name
 
                         while True:
                             r2 = await cdn_session.send(
@@ -1045,7 +1059,7 @@ class Client(Methods, Scaffold):
 
             return ""
         else:
-            return file_name
+            return file_name if container is None else container
 
     def guess_mime_type(self, filename: str) -> Optional[str]:
         return self.mimetypes.guess_type(filename)[0]

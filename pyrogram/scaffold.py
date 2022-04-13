@@ -201,3 +201,6 @@ class Scaffold:
 
     async def terminate(self, *args, **kwargs):
         pass
+
+    async def get_file(*args, **kwargs):
+        pass

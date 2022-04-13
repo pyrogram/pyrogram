@@ -17,10 +17,11 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import io
 import os
 import time
 from datetime import datetime
-from typing import Union, Optional
+from typing import Union, Optional, Tuple, Any
 
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES
@@ -28,15 +29,18 @@ from pyrogram.scaffold import Scaffold
 
 DEFAULT_DOWNLOAD_DIR = "downloads/"
 
+_unused = object()
+
 
 class DownloadMedia(Scaffold):
     async def download_media(
         self,
         message: Union["types.Message", str],
-        file_name: str = DEFAULT_DOWNLOAD_DIR,
+        path_or_container: str | io.IOBase = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
         progress: callable = None,
-        progress_args: tuple = ()
+        progress_args: tuple = (),
+        file_name: str = _unused,
     ) -> Optional[str]:
         """Download the media from a message.
 
@@ -45,11 +49,13 @@ class DownloadMedia(Scaffold):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id
                 as string.
 
-            file_name (``str``, *optional*):
+            path_or_container (``str``, :class:`~io.IOBase`, *optional*):
                 A custom *file_name* to be used instead of the one provided by Telegram.
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
+
+                If subclass of io.IOBase container is provided, file instead will be downloaded to that container.
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -65,6 +71,9 @@ class DownloadMedia(Scaffold):
                 Extra custom arguments for the progress callback function.
                 You can pass anything you need to be available in the progress callback scope; for example, a Message
                 object or a Client instance in order to edit the message with the updated progress status.
+
+            file_name (``str``, *optional*):
+                Deprecated name of ``path_or_container`` argument
 
         Other Parameters:
             current (``int``):
@@ -121,9 +130,37 @@ class DownloadMedia(Scaffold):
 
         file_id_obj = FileId.decode(file_id_str)
 
+        file_size = getattr(media, "file_size", 0)
+
+        if file_name is not _unused:
+            import warnings
+            warnings.warn('`file_name` argument is deprecated, please use `path_or_container` instead', DeprecationWarning)
+
+            if path_or_container != DEFAULT_DOWNLOAD_DIR:
+                raise ValueError("Using `path_or_io` and `file_name` at the same time is ambiguous")
+            path_or_container = file_name
+
+        if isinstance(path_or_container, io.IOBase):
+            # save file to provided container
+            downloader = self.get_file(
+                file_id=file_id_obj,
+                file_size=file_size,
+                progress=progress,
+                progress_args=progress_args,
+                container=path_or_container,
+            )
+        else:
+            directory, file_name = self._get_file_path(file_name, media, file_id_obj)
+            downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
+
+        if block:
+            return await downloader
+        else:
+            asyncio.get_event_loop().create_task(downloader)
+
+    def _get_file_path(self, file_name: str, media: Any, file_id_obj: FileId) -> Tuple[str, str]:
         file_type = file_id_obj.file_type
         media_file_name = getattr(media, "file_name", "")
-        file_size = getattr(media, "file_size", 0)
         mime_type = getattr(media, "mime_type", "")
         date = getattr(media, "date", 0)
 
@@ -158,9 +195,4 @@ class DownloadMedia(Scaffold):
                 extension
             )
 
-        downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
-
-        if block:
-            return await downloader
-        else:
-            asyncio.get_event_loop().create_task(downloader)
+        return directory, file_name
