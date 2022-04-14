@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List
+from typing import Iterable
 
 from pyrogram import raw
 from pyrogram import types
@@ -27,7 +27,7 @@ class AnswerInlineQuery(Scaffold):
     async def answer_inline_query(
         self,
         inline_query_id: str,
-        results: List["types.InlineQueryResult"],
+        results: Iterable["types.InlineQueryResult"],
         cache_time: int = 300,
         is_gallery: bool = False,
         is_personal: bool = False,
