@@ -95,6 +95,12 @@ class Message(Object, Update):
         forward_date (``int``, *optional*):
             For forwarded messages, date the original message was sent in Unix time.
 
+        reply_to_message_id (``int``, *optional*):
+            The id of the message which this message directly replied to.
+
+        reply_to_top_message_id (``int``, *optional*):
+            The id of the first message which started this message thread.
+
         reply_to_message (:obj:`~pyrogram.types.Message`, *optional*):
             For replies, the original message. Note that the Message object in this field will not contain
             further reply_to_message fields even if it itself is a reply.
@@ -308,6 +314,8 @@ class Message(Object, Update):
         forward_from_message_id: int = None,
         forward_signature: str = None,
         forward_date: int = None,
+        reply_to_message_id: int = None,
+        reply_to_top_message_id: int = None,
         reply_to_message: "Message" = None,
         mentioned: bool = None,
         empty: bool = None,
@@ -380,6 +388,8 @@ class Message(Object, Update):
         self.forward_from_message_id = forward_from_message_id
         self.forward_signature = forward_signature
         self.forward_date = forward_date
+        self.reply_to_message_id = reply_to_message_id
+        self.reply_to_top_message_id = reply_to_top_message_id
         self.reply_to_message = reply_to_message
         self.mentioned = mentioned
         self.empty = empty
@@ -792,15 +802,19 @@ class Message(Object, Update):
                 client=client
             )
 
-            if message.reply_to and replies:
-                try:
-                    parsed_message.reply_to_message = await client.get_messages(
-                        parsed_message.chat.id,
-                        reply_to_message_ids=message.id,
-                        replies=replies - 1
-                    )
-                except MessageIdsEmpty:
-                    pass
+            if message.reply_to:
+                if replies:
+                    try:
+                        parsed_message.reply_to_message = await client.get_messages(
+                            parsed_message.chat.id,
+                            reply_to_message_ids=message.id,
+                            replies=replies - 1
+                        )
+                    except MessageIdsEmpty:
+                        pass
+
+                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
+                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
 
             return parsed_message
 
@@ -849,7 +863,9 @@ class Message(Object, Update):
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        reply_markup=None
+        schedule_date: int = None,
+        protect_content: bool = None,
+        reply_markup = None
     ) -> "Message":
         """Bound method *reply_text* of :obj:`~pyrogram.types.Message`.
 
@@ -899,6 +915,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            schedule_date (``int``, *optional*):
+                Date when the message will be automatically sent. Unix time.
+
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -923,6 +945,8 @@ class Message(Object, Update):
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             reply_to_message_id=reply_to_message_id,
+            schedule_date=schedule_date,
+            protect_content=protect_content,
             reply_markup=reply_markup
         )
 
@@ -1644,8 +1668,7 @@ class Message(Object, Update):
         result_id: str,
         quote: bool = None,
         disable_notification: bool = None,
-        reply_to_message_id: int = None,
-        hide_via: bool = None
+        reply_to_message_id: int = None
     ) -> "Message":
         """Bound method *reply_inline_bot_result* of :obj:`~pyrogram.types.Message`.
 
@@ -1683,9 +1706,6 @@ class Message(Object, Update):
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            hide_via (``bool``):
-                Sends the message with *via @bot* hidden.
-
         Returns:
             On success, the sent Message is returned.
 
@@ -1703,8 +1723,7 @@ class Message(Object, Update):
             query_id=query_id,
             result_id=result_id,
             disable_notification=disable_notification,
-            reply_to_message_id=reply_to_message_id,
-            hide_via=hide_via
+            reply_to_message_id=reply_to_message_id
         )
 
     async def reply_location(
@@ -1890,7 +1909,7 @@ class Message(Object, Update):
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
-            caption (``bool``, *optional*):
+            caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
 
             parse_mode (``str``, *optional*):
@@ -3262,6 +3281,42 @@ class Message(Object, Update):
         else:
             await self.reply(button, quote=quote)
 
+    async def react(self, emoji: str = "") -> bool:
+        """Bound method *react* of :obj:`~pyrogram.types.Message`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.send_reaction(
+                chat_id=chat_id,
+                message_id=message.message_id,
+                emoji="🔥"
+            )
+
+        Example:
+            .. code-block:: python
+
+                message.react(emoji="🔥")
+
+        Parameters:
+            emoji (``str``, *optional*):
+                Reaction emoji.
+                Pass "" as emoji (default) to retract the reaction.
+
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+
+        return await self._client.send_reaction(
+            chat_id=self.chat.id,
+            message_id=self.message_id,
+            emoji=emoji
+        )
+
     async def retract_vote(
         self,
     ) -> "types.Poll":
@@ -3399,7 +3454,7 @@ class Message(Object, Update):
             options=option
         )
 
-    async def pin(self, disable_notification: bool = False, both_sides: bool = False) -> bool:
+    async def pin(self, disable_notification: bool = False, both_sides: bool = False) -> "types.Message":
         """Bound method *pin* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for:
@@ -3426,7 +3481,7 @@ class Message(Object, Update):
                 Applicable to private chats only. Defaults to False.
 
         Returns:
-            True on success.
+            :obj:`~pyrogram.types.Message`: On success, the service message is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.

@@ -218,7 +218,7 @@ text = create(text_filter)
 
 # region reply_filter
 async def reply_filter(_, __, m: Message):
-    return bool(m.reply_to_message)
+    return bool(m.reply_to_message_id)
 
 
 reply = create(reply_filter)

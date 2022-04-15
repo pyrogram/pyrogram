@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram import raw
+
 from ..object import Object
 
 
@@ -25,10 +26,11 @@ class BotCommand(Object):
 
     Parameters:
         command (``str``):
-            The bot command, for example: "/start".
-            
+            Text of the command; 1-32 characters.
+            Can contain only lowercase English letters, digits and underscores.
+
         description (``str``):
-            Description of the bot command.
+            Description of the command; 1-256 characters.
     """
 
     def __init__(self, command: str, description: str):
@@ -37,8 +39,15 @@ class BotCommand(Object):
         self.command = command
         self.description = description
 
-    def write(self):
+    def write(self) -> "raw.types.BotCommand":
         return raw.types.BotCommand(
             command=self.command,
-            description=self.description
+            description=self.description,
+        )
+
+    @staticmethod
+    def read(c: "raw.types.BotCommand") -> "BotCommand":
+        return BotCommand(
+            command=c.command,
+            description=c.description
         )

@@ -16,30 +16,28 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .answer_callback_query import AnswerCallbackQuery
-from .answer_inline_query import AnswerInlineQuery
-from .delete_bot_commands import DeleteBotCommands
-from .get_bot_commands import GetBotCommands
-from .get_game_high_scores import GetGameHighScores
-from .get_inline_bot_results import GetInlineBotResults
-from .request_callback_answer import RequestCallbackAnswer
-from .send_game import SendGame
-from .send_inline_bot_result import SendInlineBotResult
-from .set_bot_commands import SetBotCommands
-from .set_game_score import SetGameScore
+from typing import Union
+
+import pyrogram
+from pyrogram import raw
+from .bot_command_scope import BotCommandScope
 
 
-class Bots(
-    AnswerCallbackQuery,
-    AnswerInlineQuery,
-    GetInlineBotResults,
-    RequestCallbackAnswer,
-    SendInlineBotResult,
-    SendGame,
-    SetGameScore,
-    GetGameHighScores,
-    SetBotCommands,
-    GetBotCommands,
-    DeleteBotCommands
-):
-    pass
+class BotCommandScopeChat(BotCommandScope):
+    """Represents the scope of bot commands, covering a specific chat.
+
+    Parameters:
+        chat_id (``int`` | ``str``):
+            Unique identifier for the target chat or username of the target supergroup (in the format
+            @supergroupusername).
+    """
+
+    def __init__(self, chat_id: Union[int, str]):
+        super().__init__("chat")
+
+        self.chat_id = chat_id
+
+    async def write(self, client: "pyrogram.Client") -> "raw.base.BotCommandScope":
+        return raw.types.BotCommandScopePeer(
+            peer=await client.resolve_peer(self.chat_id)
+        )

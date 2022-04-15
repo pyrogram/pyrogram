@@ -16,34 +16,28 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = "1.4.15"
-__license__ = "GNU Lesser General Public License v3 or later (LGPLv3+)"
-__copyright__ = "Copyright (C) 2017-present Dan <https://github.com/delivrance>"
+from typing import Union
 
-from concurrent.futures.thread import ThreadPoolExecutor
-
-
-class StopTransmission(StopAsyncIteration):
-    pass
+import pyrogram
+from pyrogram import raw
+from .bot_command_scope import BotCommandScope
 
 
-class StopPropagation(StopAsyncIteration):
-    pass
+class BotCommandScopeChatAdministrators(BotCommandScope):
+    """Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat.
 
+    Parameters:
+        chat_id (``int`` | ``str``):
+            Unique identifier for the target chat or username of the target supergroup (in the format
+            @supergroupusername).
+    """
 
-class ContinuePropagation(StopAsyncIteration):
-    pass
+    def __init__(self, chat_id: Union[int, str]):
+        super().__init__("chat_administrators")
 
+        self.chat_id = chat_id
 
-import asyncio
-
-from . import raw, types, filters, handlers, emoji
-from .client import Client
-from .sync import idle
-
-# Save the main thread loop for future references
-main_event_loop = asyncio.get_event_loop()
-
-CRYPTO_EXECUTOR_SIZE_THRESHOLD = 512
-
-crypto_executor = ThreadPoolExecutor(1, thread_name_prefix="CryptoWorker")
+    async def write(self, client: "pyrogram.Client") -> "raw.base.BotCommandScope":
+        return raw.types.BotCommandScopePeerAdmins(
+            peer=await client.resolve_peer(self.chat_id)
+        )

@@ -29,8 +29,7 @@ class SendInlineBotResult(Scaffold):
         query_id: int,
         result_id: str,
         disable_notification: bool = None,
-        reply_to_message_id: int = None,
-        hide_via: bool = None
+        reply_to_message_id: int = None
     ):
         """Send an inline bot result.
         Bot results can be retrieved using :meth:`~pyrogram.Client.get_inline_bot_results`
@@ -54,9 +53,6 @@ class SendInlineBotResult(Scaffold):
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            hide_via (``bool``):
-                Sends the message with *via @bot* hidden.
-
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the sent inline result message is returned.
 
@@ -72,7 +68,6 @@ class SendInlineBotResult(Scaffold):
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
-                hide_via=hide_via or None
+                reply_to_msg_id=reply_to_message_id
             )
         )
