@@ -361,12 +361,14 @@ def start(format: bool = False):
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
+            is_optional = FLAGS_RE.match(arg_type)
+            flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
             docstring_args.append(
                 "{}{}: {}".format(
                     arg_name,
-                    " (optional)",
+                    " (optional)".format(flag_number) if is_optional else "",
                     get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
                 )
             )
@@ -411,8 +413,7 @@ def start(format: bool = False):
                         if flag.group(3) == "true" or flag.group(3).startswith("Vector"):
                             write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} else 0")
                         else:
-                            write_flags.append(
-                                f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} is not None else 0")
+                            write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} is not None else 0")
 
                 write_flags = "\n        ".join([
                     f"{arg_name} = 0",
