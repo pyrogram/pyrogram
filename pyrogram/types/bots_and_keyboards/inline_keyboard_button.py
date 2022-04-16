@@ -70,17 +70,19 @@ class InlineKeyboardButton(Object):
         text: str,
         callback_data: Union[str, bytes] = None,
         url: str = None,
+        web_app: str = None,
         login_url: "types.LoginUrl" = None,
         user_id: int = None,
         switch_inline_query: str = None,
         switch_inline_query_current_chat: str = None,
-        callback_game: "types.CallbackGame" = None
+        callback_game: "types.CallbackGame" = None,
     ):
         super().__init__()
 
         self.text = str(text)
         self.callback_data = callback_data
         self.url = url
+        self.web_app = web_app
         self.login_url = login_url
         self.user_id = user_id
         self.switch_inline_query = switch_inline_query
@@ -138,6 +140,11 @@ class InlineKeyboardButton(Object):
                 text=b.text,
                 callback_game=types.CallbackGame()
             )
+        if isinstance(b, raw.types.KeyboardButtonWebView):
+            return InlineKeyboardButton(
+                text=b.text,
+                url=b.url
+            )
 
     async def write(self, client: "pyrogram.Client"):
         if self.callback_data is not None:
@@ -183,4 +190,10 @@ class InlineKeyboardButton(Object):
         if self.callback_game is not None:
             return raw.types.KeyboardButtonGame(
                 text=self.text
+            )
+
+        if self.web_app is not None:
+            return raw.types.KeyboardButtonWebView(
+                text=self.text,
+                url=self.web_app
             )
