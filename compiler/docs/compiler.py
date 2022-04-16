@@ -539,6 +539,7 @@ def pyrogram_api():
             Chat.leave
             Chat.mark_unread
             Chat.set_protected_content
+            Chat.unpin_all_messages
         """,
         user="""
         User
