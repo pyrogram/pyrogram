@@ -437,8 +437,9 @@ dice = create(dice_filter)
 # endregion
 
 # region private_filter
-async def private_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"private", "bot"})
+async def private_filter(_, __, u: Update):
+    m = u.message if isinstance(u, CallbackQuery) else u
+    return bool(m and m.chat and m.chat.type in {"private", "bot"})
 
 
 private = create(private_filter)
@@ -448,8 +449,9 @@ private = create(private_filter)
 # endregion
 
 # region group_filter
-async def group_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"group", "supergroup"})
+async def group_filter(_, __, u: Update):
+    m = u.message if isinstance(u, CallbackQuery) else u
+    return bool(m and m.chat and m.chat.type in {"group", "supergroup"})
 
 
 group = create(group_filter)
@@ -459,8 +461,9 @@ group = create(group_filter)
 # endregion
 
 # region channel_filter
-async def channel_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type == "channel")
+async def channel_filter(_, __, u: Update):
+    m = u.message if isinstance(u, CallbackQuery) else u
+    return bool(m and m.chat and m.chat.type == "channel")
 
 
 channel = create(channel_filter)
