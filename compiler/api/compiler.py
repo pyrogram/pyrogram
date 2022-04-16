@@ -413,7 +413,8 @@ def start(format: bool = False):
                         if flag.group(3) == "true" or flag.group(3).startswith("Vector"):
                             write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} else 0")
                         else:
-                            write_flags.append(f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} is not None else 0")
+                            write_flags.append(
+                                f"{arg_name} |= (1 << {flag.group(2)}) if self.{i[0]} is not None else 0")
 
                 write_flags = "\n        ".join([
                     f"{arg_name} = 0",
