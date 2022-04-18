@@ -324,6 +324,7 @@ class Message(Object, Update):
         from_scheduled: bool = None,
         media: str = None,
         edit_date: int = None,
+        edit_hide: bool = False,
         media_group_id: str = None,
         author_signature: str = None,
         has_protected_content: bool = None,
@@ -398,6 +399,7 @@ class Message(Object, Update):
         self.from_scheduled = from_scheduled
         self.media = media
         self.edit_date = edit_date
+        self.edit_hide = edit_hide
         self.media_group_id = media_group_id
         self.author_signature = author_signature
         self.has_protected_content = has_protected_content
@@ -778,6 +780,7 @@ class Message(Object, Update):
                 from_scheduled=message.from_scheduled,
                 media=media_type,
                 edit_date=message.edit_date,
+                edit_hide=message.edit_hide,
                 media_group_id=message.grouped_id,
                 photo=photo,
                 location=location,
