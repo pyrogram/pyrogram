@@ -58,7 +58,7 @@ def async_to_sync(obj, name):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-        if threading.current_thread() is threading.main_thread():
+        if threading.current_thread() is threading.main_thread() or not main_loop.is_running():
             if loop.is_running():
                 return coroutine
             else:

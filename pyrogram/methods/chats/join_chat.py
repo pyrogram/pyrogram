@@ -27,7 +27,7 @@ class JoinChat(Scaffold):
     async def join_chat(
         self,
         chat_id: Union[int, str]
-    ):
+    ) -> "types.Chat":
         """Join a group chat or channel.
 
         Parameters:

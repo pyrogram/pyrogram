@@ -1047,3 +1047,23 @@ class Chat(Object):
             self.id,
             enabled=enabled
         )
+
+    async def unpin_all_messages(self) -> bool:
+        """Bound method *unpin_all_messages* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.unpin_all_chat_messages(chat_id)
+
+        Example:
+            .. code-block:: python
+
+                chat.unpin_all_messages()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.unpin_all_chat_messages(self.id)

@@ -40,6 +40,7 @@ Index
     - :meth:`~Client.on_inline_query`
     - :meth:`~Client.on_chosen_inline_result`
     - :meth:`~Client.on_chat_member_updated`
+    - :meth:`~Client.on_chat_join_request`
     - :meth:`~Client.on_deleted_messages`
     - :meth:`~Client.on_user_status`
     - :meth:`~Client.on_poll`
@@ -57,6 +58,7 @@ Details
 .. autodecorator:: pyrogram.Client.on_inline_query()
 .. autodecorator:: pyrogram.Client.on_chosen_inline_result()
 .. autodecorator:: pyrogram.Client.on_chat_member_updated()
+.. autodecorator:: pyrogram.Client.on_chat_join_request()
 .. autodecorator:: pyrogram.Client.on_deleted_messages()
 .. autodecorator:: pyrogram.Client.on_user_status()
 .. autodecorator:: pyrogram.Client.on_poll()
