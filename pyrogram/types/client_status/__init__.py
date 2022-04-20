@@ -16,24 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Callable
+from .status_update import StatusUpdate
 
-import pyrogram
-from pyrogram.scaffold import Scaffold
-
-
-class OnDisconnect(Scaffold):
-    def on_disconnect(self=None) -> callable:
-        """Decorator for handling disconnections.
-
-        This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.DisconnectHandler`.
-        """
-
-        def decorator(func: Callable) -> Callable:
-            if isinstance(self, pyrogram.Client):
-                self.add_handler(pyrogram.handlers.DisconnectHandler(func))
-
-            return func
-
-        return decorator
+__all__ = [ "StatusUpdate" ]

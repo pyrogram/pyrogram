@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from pyrogram.scaffold import Scaffold
+from pyrogram.types.client_status.status_update import StatusUpdateRaw
 
 
 class Stop(Scaffold):
@@ -53,6 +54,8 @@ class Stop(Scaffold):
         async def do_it():
             await self.terminate()
             await self.disconnect()
+
+        self.dispatcher.updates_queue.put_nowait(StatusUpdateRaw["STOPPING"]._packet())
 
         if block:
             await do_it()

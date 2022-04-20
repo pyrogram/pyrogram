@@ -26,7 +26,7 @@ from pyrogram import utils
 from pyrogram.handlers import (
     CallbackQueryHandler, MessageHandler, DeletedMessagesHandler,
     UserStatusHandler, RawUpdateHandler, InlineQueryHandler, PollHandler,
-    ChosenInlineResultHandler, ChatMemberUpdatedHandler, ChatJoinRequestHandler
+    ChosenInlineResultHandler, ChatMemberUpdatedHandler, ChatJoinRequestHandler, ClientStatusHandler
 )
 from pyrogram.raw.types import (
     UpdateNewMessage, UpdateNewChannelMessage, UpdateNewScheduledMessage,
@@ -37,6 +37,8 @@ from pyrogram.raw.types import (
     UpdateBotInlineSend, UpdateChatParticipant, UpdateChannelParticipant,
     UpdateBotChatInviteRequester
 )
+
+from pyrogram.types.client_status.status_update import StatusUpdateRaw
 
 log = logging.getLogger(__name__)
 
@@ -107,6 +109,9 @@ class Dispatcher:
         async def chat_member_updated_parser(update, users, chats):
             return pyrogram.types.ChatMemberUpdated._parse(self.client, update, users, chats), ChatMemberUpdatedHandler
 
+        async def client_status_update_parser(update, users, chats):
+            return pyrogram.types.StatusUpdate._parse(self.client, update), ClientStatusHandler
+
         async def chat_join_request_parser(update, users, chats):
             return pyrogram.types.ChatJoinRequest._parse(self.client, update, users, chats), ChatJoinRequestHandler
 
@@ -119,6 +124,7 @@ class Dispatcher:
             (UpdateMessagePoll,): poll_parser,
             (UpdateBotInlineSend,): chosen_inline_result_parser,
             Dispatcher.CHAT_MEMBER_UPDATES: chat_member_updated_parser,
+            (StatusUpdateRaw,): client_status_update_parser,
             (UpdateBotChatInviteRequester,): chat_join_request_parser
         }
 

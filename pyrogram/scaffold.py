@@ -105,8 +105,6 @@ class Scaffold:
 
         self.dispatcher = None
 
-        self.disconnect_handler = None
-
         self.loop = None
 
     async def send(self, *args, **kwargs):
