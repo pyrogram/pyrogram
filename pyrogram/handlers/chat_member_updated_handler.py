@@ -16,7 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any, Callable
+
+import pyrogram
+from pyrogram.filters import Filter
 from .handler import Handler
+
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   pyrogram.types.ChatMemberUpdated], Any]
 
 
 class ChatMemberUpdatedHandler(Handler):
@@ -27,21 +34,22 @@ class ChatMemberUpdatedHandler(Handler):
     :meth:`~pyrogram.Client.on_chat_member_updated` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a new ChatMemberUpdated event arrives. It takes
             *(client, chat_member_updated)* as positional arguments (look at the section below for a detailed
             description).
 
-        filters (:obj:`Filters`):
+        filters (:obj:`Filter`):
             Pass one or more filters to allow only a subset of updates to be passed in your callback function.
 
     Other parameters:
         client (:obj:`~pyrogram.Client`):
-            The Client itself, useful when you want to call other API methods inside the handler.
+            The Client itself, useful when you want to call other API methods inside the chat member updated
+            handler.
 
         chat_member_updated (:obj:`~pyrogram.types.ChatMemberUpdated`):
             The received chat member update.
     """
 
-    def __init__(self, callback: callable, filters=None):
+    def __init__(self, callback: CallbackFunc, filters: Filter = None):
         super().__init__(callback, filters)

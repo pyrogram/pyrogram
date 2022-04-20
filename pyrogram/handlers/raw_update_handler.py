@@ -16,7 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any, Callable
+
+import pyrogram
 from .handler import Handler
+
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   pyrogram.types.Update, Any, Any], Any]
 
 
 class RawUpdateHandler(Handler):
@@ -27,7 +33,7 @@ class RawUpdateHandler(Handler):
     :meth:`~pyrogram.Client.on_raw_update` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             A function that will be called when a new update is received from the server. It takes
             *(client, update, users, chats)* as positional arguments (look at the section below for
             a detailed description).
@@ -61,5 +67,5 @@ class RawUpdateHandler(Handler):
         - :obj:`~pyrogram.raw.types.ChannelForbidden`
     """
 
-    def __init__(self, callback: callable):
+    def __init__(self, callback: CallbackFunc):
         super().__init__(callback)

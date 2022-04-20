@@ -16,12 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List, Callable
+from typing import Any, Callable, List
 
 import pyrogram
 from pyrogram.filters import Filter
 from pyrogram.types import Message
 from .handler import Handler
+
+CallbackFunc: Callable = Callable[["pyrogram.Client",
+                                   List[pyrogram.types.Message]], Any]
 
 
 class DeletedMessagesHandler(Handler):
@@ -32,26 +35,26 @@ class DeletedMessagesHandler(Handler):
     :meth:`~pyrogram.Client.on_deleted_messages` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when one or more messages have been deleted.
             It takes *(client, messages)* as positional arguments (look at the section below for a detailed description).
 
-        filters (:obj:`Filters`):
+        filters (:obj:`Filter`):
             Pass one or more filters to allow only a subset of messages to be passed
             in your callback function.
 
     Other parameters:
         client (:obj:`~pyrogram.Client`):
-            The Client itself, useful when you want to call other API methods inside the message handler.
+            The Client itself, useful when you want to call other API methods inside the deleted message handler.
 
         messages (List of :obj:`~pyrogram.types.Message`):
             The deleted messages, as list.
     """
 
-    def __init__(self, callback: Callable, filters: Filter = None):
+    def __init__(self, callback: CallbackFunc, filters: Filter = None):
         super().__init__(callback, filters)
 
-    async def check(self, client: "pyrogram.Client", messages: List[Message]):
+    async def check(self, client: "pyrogram.Client", messages: List[Message]) -> bool:
         # Every message should be checked, if at least one matches the filter True is returned
         # otherwise, or if the list is empty, False is returned
         for message in messages:
