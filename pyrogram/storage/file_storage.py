@@ -76,6 +76,14 @@ class FileStorage(SQLiteStorage):
 
             version += 1
 
+        if version == 2:
+            with self.lock, self.conn:
+                self.conn.execute("ALTER TABLE sessions ADD COLUMN pts INTEGER DEFAULT(1)")
+                self.conn.execute("ALTER TABLE sessions ADD COLUMN qts INTEGER DEFAULT(-1)")
+                self.conn.execute("ALTER TABLE sessions ADD COLUMN seq INTEGER DEFAULT(0)")
+
+            version += 1
+
         self.version(version)
 
     async def open(self):

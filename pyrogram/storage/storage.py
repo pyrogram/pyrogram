@@ -74,6 +74,15 @@ class Storage:
     async def is_bot(self, value: bool = object):
         raise NotImplementedError
 
+    async def pts(self, value: int = object):
+        raise NotImplementedError
+
+    async def qts(self, value: int = object):
+        raise NotImplementedError
+
+    async def seq(self, value: int = object):
+        raise NotImplementedError
+
     async def export_session_string(self):
         user_id = await self.user_id()
         return base64.urlsafe_b64encode(

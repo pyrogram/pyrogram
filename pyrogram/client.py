@@ -174,6 +174,10 @@ class Client(Methods, Scaffold):
             Pass True to hide the password when typing it during the login.
             Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
             terminal environments.
+
+        recover_gaps (``bool``, *optional*):
+            Pass True to fetching updates that arrived while the client was offline.
+            Defaults to False.
     """
 
     def __init__(
@@ -201,7 +205,8 @@ class Client(Methods, Scaffold):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        recover_gaps: bool = False
     ):
         super().__init__()
 
@@ -230,6 +235,7 @@ class Client(Methods, Scaffold):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
+        self.recover_gaps = recover_gaps
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
@@ -570,6 +576,7 @@ class Client(Methods, Scaffold):
                                 chats.update({c.id: c for c in diff.chats})
 
                 self.dispatcher.updates_queue.put_nowait((update, users, chats))
+                await self.storage.pts(pts)
         elif isinstance(updates, (raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage)):
             diff = await self.send(
                 raw.functions.updates.GetDifference(
@@ -592,6 +599,72 @@ class Client(Methods, Scaffold):
             else:
                 if diff.other_updates:  # The other_updates list can be empty
                     self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+        elif isinstance(updates, raw.types.updates.State):
+            local_pts = await self.storage.pts()
+            date = await self.storage.date()
+
+            if self.recover_gaps is False:
+                return
+
+            if local_pts >= updates.pts:
+                return
+
+            while True:
+                diff = await self.send(
+                    raw.functions.updates.GetDifference(
+                        pts=local_pts,
+                        date=date,
+                        qts=-1
+                    )
+                )
+
+                if isinstance(diff, raw.types.updates.DifferenceEmpty):
+                    await self.storage.seq(diff.seq)
+                    await self.storage.date(diff.date)
+                    break
+                elif isinstance(diff, raw.types.updates.DifferenceTooLong):
+                    await self.storage.pts(diff.pts)
+                    log.info(diff)
+                    continue
+
+                # Difference or DifferenceSlice
+
+                users = {u.id: u for u in diff.users}
+                chats = {c.id: c for c in diff.chats}
+                state = getattr(diff, "state", None) or getattr(diff, "intermediate_state", None)
+
+                for msg in diff.new_messages:
+                    self.dispatcher.updates_queue.put_nowait((
+                        raw.types.UpdateNewMessage(
+                            message=msg,
+                            pts=state.pts,
+                            pts_count=-1
+                        ),
+                        users,
+                        chats
+                    ))
+
+                for update in diff.other_updates:
+                    self.dispatcher.updates_queue.put_nowait((update, users, chats))
+
+                local_pts = state.pts
+                date = state.date
+                await self.storage.pts(local_pts)
+                await self.storage.date(date)
+
+                if isinstance(diff, raw.types.updates.Difference):
+                    break
+        elif isinstance(updates, raw.types.UpdateShortSentMessage):
+            local_pts = await self.storage.pts()
+
+            if local_pts >= updates.pts:
+                return
+
+            if local_pts + updates.pts_count != updates.pts:
+                return
+
+            await self.storage.pts(updates.pts)
+            await self.storage.date(updates.date)
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):

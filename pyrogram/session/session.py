@@ -224,8 +224,14 @@ class Session:
 
             if isinstance(msg.body, (raw.types.BadMsgNotification, raw.types.BadServerSalt)):
                 msg_id = msg.body.bad_msg_id
-            elif isinstance(msg.body, (FutureSalts, raw.types.RpcResult)):
+            elif isinstance(msg.body, FutureSalts):
                 msg_id = msg.body.req_msg_id
+            elif isinstance(msg.body, raw.types.RpcResult):
+                msg_id = msg.body.req_msg_id
+                result = getattr(msg.body, "result", None)
+                if isinstance(result, (raw.types.updates.State, raw.types.UpdateShortSentMessage)):
+                    if self.client is not None:
+                        self.loop.create_task(self.client.handle_updates(msg.body.result))
             elif isinstance(msg.body, raw.types.Pong):
                 msg_id = msg.body.msg_id
             else:
