@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import math
 from typing import Union, Optional, BinaryIO
 
 import pyrogram
@@ -62,10 +63,12 @@ class StreamMedia:
                 async for chunk in app.stream_media(message, limit=3):
                     print(len(chunk))
 
-                # Stream the last 3 chunks only
-                import math
-                chunks = math.ceil(message.document.file_size / 1024 / 1024)
-                async for chunk in app.stream_media(message, offset=chunks - 3):
+                # Stream the rest of the media by skipping the first 3 chunks
+                async for chunk in app.stream_media(message, offset=3):
+                    print(len(chunk))
+
+                # Stream the last 3 chunks only (negative offset)
+                async for chunk in app.stream_media(message, offset=-3):
                     print(len(chunk))
         """
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
@@ -89,6 +92,13 @@ class StreamMedia:
 
         file_id_obj = FileId.decode(file_id_str)
         file_size = getattr(media, "file_size", 0)
+
+        if offset < 0:
+            if file_size == 0:
+                raise ValueError("Negative offsets are not supported for file ids, pass a Message object instead")
+
+            chunks = math.ceil(file_size / 1024 / 1024)
+            offset += chunks
 
         async for chunk in self.get_file(file_id_obj, file_size, limit, offset):
             yield chunk
