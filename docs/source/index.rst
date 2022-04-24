@@ -14,8 +14,8 @@ Welcome to Pyrogram
         <b>Telegram MTProto API Framework for Python</b>
 
         <br>
-        <a href="https://github.com/pyrogram/pyrogram">
-            Development
+        <a href="https://pyrogram.org">
+            Website
         </a>
         •
         <a href="https://docs.pyrogram.org/releases">
@@ -53,17 +53,6 @@ If you'd like to support Pyrogram, you can consider:
 - `Become a GitHub sponsor <https://github.com/sponsors/delivrance>`_.
 - `Become a LiberaPay patron <https://liberapay.com/delivrance>`_.
 - `Become an OpenCollective backer <https://opencollective.com/pyrogram>`_.
-
-Key Features
-------------
-
-- **Ready**: Install Pyrogram with pip and start building your applications right away.
-- **Easy**: Makes the Telegram API simple and intuitive, while still allowing advanced usages.
-- **Elegant**: Low-level details are abstracted and re-presented in a more convenient way.
-- **Fast**: Boosted up by :doc:`TgCrypto <topics/tgcrypto>`, a high-performance crypto library written in pure C.
-- **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
-- **Async**: Fully asynchronous (also usable synchronously if wanted, for convenience).
-- **Powerful**: Full access to Telegram's API to execute any official client action and more.
 
 How the Documentation is Organized
 ----------------------------------
@@ -172,7 +161,7 @@ Meta
 
 .. toctree::
     :hidden:
-    :caption: Telegram API
+    :caption: Telegram Raw API
 
     telegram/functions/index
     telegram/types/index
