@@ -23,6 +23,7 @@ from .inline_query_result_animation import InlineQueryResultAnimation
 from .inline_query_result_article import InlineQueryResultArticle
 from .inline_query_result_audio import InlineQueryResultAudio
 from .inline_query_result_cached_animation import InlineQueryResultCachedAnimation
+from .inline_query_result_cached_document import InlineQueryResultCachedDocument
 from .inline_query_result_cached_photo import InlineQueryResultCachedPhoto
 from .inline_query_result_cached_sticker import InlineQueryResultCachedSticker
 from .inline_query_result_contact import InlineQueryResultContact
@@ -38,5 +39,5 @@ __all__ = [
     "InlineQueryResultAnimation", "InlineQueryResultAudio", "InlineQueryResultVideo", "ChosenInlineResult",
     "InlineQueryResultContact", "InlineQueryResultDocument", "InlineQueryResultVoice", "InlineQueryResultLocation",
     "InlineQueryResultVenue", "InlineQueryResultCachedPhoto", "InlineQueryResultCachedAnimation",
-    "InlineQueryResultCachedSticker"
+    "InlineQueryResultCachedSticker", "InlineQueryResultCachedDocument"
 ]
