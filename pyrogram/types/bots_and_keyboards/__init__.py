@@ -39,6 +39,7 @@ from .menu_button_default import MenuButtonDefault
 from .menu_button_web_app import MenuButtonWebApp
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
+from .sent_web_app_message import SentWebAppMessage
 from .web_app_info import WebAppInfo
 
 __all__ = [
@@ -65,5 +66,6 @@ __all__ = [
     "MenuButton",
     "MenuButtonCommands",
     "MenuButtonWebApp",
-    "MenuButtonDefault"
+    "MenuButtonDefault",
+    "SentWebAppMessage"
 ]
