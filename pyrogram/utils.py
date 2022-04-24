@@ -115,10 +115,10 @@ async def parse_messages(client, messages: "raw.types.messages.Messages", replie
             )
 
             for message in parsed_messages:
-                reply_id = messages_with_replies.get(message.message_id, None)
+                reply_id = messages_with_replies.get(message.id, None)
 
                 for reply in reply_messages:
-                    if reply.message_id == reply_id:
+                    if reply.id == reply_id:
                         message.reply_to_message = reply
 
     return types.List(parsed_messages)
@@ -133,10 +133,10 @@ def parse_deleted_messages(client, update) -> List["types.Message"]:
     for message in messages:
         parsed_messages.append(
             types.Message(
-                message_id=message,
+                id=message,
                 chat=types.Chat(
                     id=get_channel_id(channel_id),
-                    type="channel",
+                    type=enums.ChatType.CHANNEL,
                     client=client
                 ) if channel_id is not None else None,
                 client=client

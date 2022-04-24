@@ -149,7 +149,7 @@ class SendMessage(Scaffold):
             )
 
             return types.Message(
-                message_id=r.id,
+                id=r.id,
                 chat=types.Chat(
                     id=peer_id,
                     type=enums.ChatType.PRIVATE,

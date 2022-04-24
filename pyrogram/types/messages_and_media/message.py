@@ -60,7 +60,7 @@ class Message(Object, Update):
     """A message.
 
     Parameters:
-        message_id (``int``):
+        id (``int``):
             Unique message identifier inside this chat.
 
         from_user (:obj:`~pyrogram.types.User`, *optional*):
@@ -302,7 +302,7 @@ class Message(Object, Update):
         self,
         *,
         client: "pyrogram.Client" = None,
-        message_id: int,
+        id: int,
         from_user: "types.User" = None,
         sender_chat: "types.Chat" = None,
         date: datetime = None,
@@ -376,7 +376,7 @@ class Message(Object, Update):
     ):
         super().__init__(client)
 
-        self.message_id = message_id
+        self.id = id
         self.from_user = from_user
         self.sender_chat = sender_chat
         self.date = date
@@ -453,7 +453,7 @@ class Message(Object, Update):
         replies: int = 1
     ):
         if isinstance(message, raw.types.MessageEmpty):
-            return Message(message_id=message.id, empty=True, client=client)
+            return Message(id=message.id, empty=True, client=client)
 
         from_id = utils.get_raw_peer_id(message.from_id)
         peer_id = utils.get_raw_peer_id(message.peer_id)
@@ -542,7 +542,7 @@ class Message(Object, Update):
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
             parsed_message = Message(
-                message_id=message.id,
+                id=message.id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
@@ -739,7 +739,7 @@ class Message(Object, Update):
                          for r in message.reactions.results] if message.reactions else None
 
             parsed_message = Message(
-                message_id=message.id,
+                id=message.id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
@@ -823,9 +823,9 @@ class Message(Object, Update):
             self.chat.type in (enums.ChatType.GROUP, enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL)
             and self.chat.username
         ):
-            return f"https://t.me/{self.chat.username}/{self.message_id}"
+            return f"https://t.me/{self.chat.username}/{self.id}"
         else:
-            return f"https://t.me/c/{utils.get_channel_id(self.chat.id)}/{self.message_id}"
+            return f"https://t.me/c/{utils.get_channel_id(self.chat.id)}/{self.id}"
 
     async def get_media_group(self) -> List["types.Message"]:
         """Bound method *get_media_group* of :obj:`~pyrogram.types.Message`.
@@ -836,7 +836,7 @@ class Message(Object, Update):
 
             client.get_media_group(
                 chat_id=message.chat.id,
-                message_id=message.message_id
+                message_id=message.id
             )
             
         Example:
@@ -853,7 +853,7 @@ class Message(Object, Update):
 
         return await self._client.get_media_group(
             chat_id=self.chat.id,
-            message_id=self.message_id
+            message_id=self.id
         )
 
     async def reply_text(
@@ -880,7 +880,7 @@ class Message(Object, Update):
             client.send_message(
                 chat_id=message.chat.id,
                 text="hello",
-                reply_to_message_id=message.message_id
+                reply_to_message_id=message.id
             )
 
         Example:
@@ -934,7 +934,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_message(
             chat_id=self.chat.id,
@@ -1071,7 +1071,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_animation(
             chat_id=self.chat.id,
@@ -1210,7 +1210,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_audio(
             chat_id=self.chat.id,
@@ -1302,7 +1302,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_cached_media(
             chat_id=self.chat.id,
@@ -1425,7 +1425,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_contact(
             chat_id=self.chat.id,
@@ -1561,7 +1561,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_document(
             chat_id=self.chat.id,
@@ -1639,7 +1639,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_game(
             chat_id=self.chat.id,
@@ -1703,7 +1703,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_inline_bot_result(
             chat_id=self.chat.id,
@@ -1777,7 +1777,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_location(
             chat_id=self.chat.id,
@@ -1840,7 +1840,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_media_group(
             chat_id=self.chat.id,
@@ -1956,7 +1956,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_photo(
             chat_id=self.chat.id,
@@ -2060,7 +2060,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_poll(
             chat_id=self.chat.id,
@@ -2164,7 +2164,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_sticker(
             chat_id=self.chat.id,
@@ -2259,7 +2259,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_venue(
             chat_id=self.chat.id,
@@ -2404,7 +2404,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_video(
             chat_id=self.chat.id,
@@ -2528,7 +2528,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_video_note(
             chat_id=self.chat.id,
@@ -2648,7 +2648,7 @@ class Message(Object, Update):
             quote = self.chat.type != "private"
 
         if reply_to_message_id is None and quote:
-            reply_to_message_id = self.message_id
+            reply_to_message_id = self.id
 
         return await self._client.send_voice(
             chat_id=self.chat.id,
@@ -2682,7 +2682,7 @@ class Message(Object, Update):
 
             client.edit_message_text(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 text="hello"
             )
 
@@ -2716,7 +2716,7 @@ class Message(Object, Update):
         """
         return await self._client.edit_message_text(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             text=text,
             parse_mode=parse_mode,
             entities=entities,
@@ -2741,7 +2741,7 @@ class Message(Object, Update):
 
             client.edit_message_caption(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 caption="hello"
             )
 
@@ -2772,7 +2772,7 @@ class Message(Object, Update):
         """
         return await self._client.edit_message_caption(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             caption=caption,
             parse_mode=parse_mode,
             caption_entities=caption_entities,
@@ -2792,7 +2792,7 @@ class Message(Object, Update):
 
             client.edit_message_media(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 media=media
             )
 
@@ -2816,7 +2816,7 @@ class Message(Object, Update):
         """
         return await self._client.edit_message_media(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             media=media,
             reply_markup=reply_markup
         )
@@ -2830,7 +2830,7 @@ class Message(Object, Update):
 
             client.edit_message_reply_markup(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 reply_markup=inline_reply_markup
             )
 
@@ -2852,7 +2852,7 @@ class Message(Object, Update):
         """
         return await self._client.edit_message_reply_markup(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             reply_markup=reply_markup
         )
 
@@ -2871,7 +2871,7 @@ class Message(Object, Update):
             client.forward_messages(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
-                message_ids=message.message_id
+                message_ids=message.id
             )
 
         Example:
@@ -2901,7 +2901,7 @@ class Message(Object, Update):
         return await self._client.forward_messages(
             chat_id=chat_id,
             from_chat_id=self.chat.id,
-            message_ids=self.message_id,
+            message_ids=self.id,
             disable_notification=disable_notification,
             schedule_date=schedule_date
         )
@@ -2932,7 +2932,7 @@ class Message(Object, Update):
             client.copy_message(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
-                message_id=message.message_id
+                message_id=message.id
             )
 
         Example:
@@ -2985,10 +2985,10 @@ class Message(Object, Update):
         """
         if self.service:
             log.warning(f"Service messages cannot be copied. "
-                        f"chat_id: {self.chat.id}, message_id: {self.message_id}")
+                        f"chat_id: {self.chat.id}, message_id: {self.id}")
         elif self.game and not await self._client.storage.is_bot():
             log.warning(f"Users cannot send messages with Game media type. "
-                        f"chat_id: {self.chat.id}, message_id: {self.message_id}")
+                        f"chat_id: {self.chat.id}, message_id: {self.id}")
         elif self.empty:
             log.warning(f"Empty messages cannot be copied. ")
         elif self.text:
@@ -3102,7 +3102,7 @@ class Message(Object, Update):
 
             client.delete_messages(
                 chat_id=chat_id,
-                message_ids=message.message_id
+                message_ids=message.id
             )
 
         Example:
@@ -3125,7 +3125,7 @@ class Message(Object, Update):
         """
         return await self._client.delete_messages(
             chat_id=self.chat.id,
-            message_ids=self.message_id,
+            message_ids=self.id,
             revoke=revoke
         )
 
@@ -3140,7 +3140,7 @@ class Message(Object, Update):
 
             client.request_callback_answer(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 callback_data=message.reply_markup[i][j].callback_data
             )
 
@@ -3235,7 +3235,7 @@ class Message(Object, Update):
             if button.callback_data:
                 return await self._client.request_callback_answer(
                     chat_id=self.chat.id,
-                    message_id=self.message_id,
+                    message_id=self.id,
                     callback_data=button.callback_data,
                     timeout=timeout
                 )
@@ -3314,7 +3314,7 @@ class Message(Object, Update):
 
         return await self._client.retract_vote(
             chat_id=self.chat.id,
-            message_id=self.message_id
+            message_id=self.id
         )
 
     async def download(
@@ -3397,7 +3397,7 @@ class Message(Object, Update):
 
             client.vote_poll(
                 chat_id=message.chat.id,
-                message_id=message.message_id,
+                message_id=message.id,
                 option=1
             )
 
@@ -3419,7 +3419,7 @@ class Message(Object, Update):
 
         return await self._client.vote_poll(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             options=option
         )
 
@@ -3457,7 +3457,7 @@ class Message(Object, Update):
         """
         return await self._client.pin_chat_message(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             disable_notification=disable_notification,
             both_sides=both_sides
         )
@@ -3487,5 +3487,5 @@ class Message(Object, Update):
         """
         return await self._client.unpin_chat_message(
             chat_id=self.chat.id,
-            message_id=self.message_id
+            message_id=self.id
         )

@@ -93,7 +93,7 @@ class IterDialogs(Scaffold):
 
             last = dialogs[-1]
 
-            offset_id = last.top_message.message_id
+            offset_id = last.top_message.id
             offset_date = last.top_message.date
             offset_peer = await self.resolve_peer(last.chat.id)
 

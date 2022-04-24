@@ -203,7 +203,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_text(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 text=text,
                 parse_mode=parse_mode,
                 disable_web_page_preview=disable_web_page_preview,
@@ -274,7 +274,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_media(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 media=media,
                 reply_markup=reply_markup
             )
@@ -307,7 +307,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_reply_markup(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 reply_markup=reply_markup
             )
         else:
