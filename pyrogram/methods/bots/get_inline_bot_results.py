@@ -84,7 +84,7 @@ class GetInlineBotResults:
             )
         except UnknownError as e:
             # TODO: Add this -503 Timeout error into the Error DB
-            if e.x.error_code == -503 and e.x.error_message == "Timeout":
+            if e.value.error_code == -503 and e.value.error_message == "Timeout":
                 raise TimeoutError("The inline bot didn't answer in time") from None
             else:
                 raise e

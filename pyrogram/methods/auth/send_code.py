@@ -60,7 +60,7 @@ class SendCode:
             except (PhoneMigrate, NetworkMigrate) as e:
                 await self.session.stop()
 
-                await self.storage.dc_id(e.x)
+                await self.storage.dc_id(e.value)
                 await self.storage.auth_key(
                     await Auth(
                         self, await self.storage.dc_id(),

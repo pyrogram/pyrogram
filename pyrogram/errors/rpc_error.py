@@ -30,11 +30,11 @@ class RPCError(Exception):
     ID = None
     CODE = None
     NAME = None
-    MESSAGE = "{x}"
+    MESSAGE = "{value}"
 
     def __init__(
         self,
-        x: Union[int, str, raw.types.RpcError] = None,
+        value: Union[int, str, raw.types.RpcError] = None,
         rpc_name: str = None,
         is_unknown: bool = False,
         is_signed: bool = False
@@ -43,18 +43,18 @@ class RPCError(Exception):
             "-" if is_signed else "",
             self.CODE,
             self.ID or self.NAME,
-            self.MESSAGE.format(x=x),
+            self.MESSAGE.format(value=value),
             f'(caused by "{rpc_name}")' if rpc_name else ""
         ))
 
         try:
-            self.x = int(x)
+            self.value = int(value)
         except (ValueError, TypeError):
-            self.x = x
+            self.value = value
 
         if is_unknown:
             with open("unknown_errors.txt", "a", encoding="utf-8") as f:
-                f.write(f"{datetime.now()}\t{x}\t{rpc_name}\n")
+                f.write(f"{datetime.now()}\t{value}\t{rpc_name}\n")
 
     @staticmethod
     def raise_it(rpc_error: "raw.types.RpcError", rpc_type: Type[TLObject]):
@@ -68,7 +68,7 @@ class RPCError(Exception):
 
         if error_code not in exceptions:
             raise UnknownError(
-                x=f"[{error_code} {error_message}]",
+                value=f"[{error_code} {error_message}]",
                 rpc_name=rpc_name,
                 is_unknown=True,
                 is_signed=is_signed
@@ -80,18 +80,18 @@ class RPCError(Exception):
             raise getattr(
                 import_module("pyrogram.errors"),
                 exceptions[error_code]["_"]
-            )(x=f"[{error_code} {error_message}]",
+            )(value=f"[{error_code} {error_message}]",
               rpc_name=rpc_name,
               is_unknown=True,
               is_signed=is_signed)
 
-        x = re.search(r"_(\d+)", error_message)
-        x = x.group(1) if x is not None else x
+        value = re.search(r"_(\d+)", error_message)
+        value = value.group(1) if value is not None else value
 
         raise getattr(
             import_module("pyrogram.errors"),
             exceptions[error_code][error_id]
-        )(x=x,
+        )(value=value,
           rpc_name=rpc_name,
           is_unknown=False,
           is_signed=is_signed)

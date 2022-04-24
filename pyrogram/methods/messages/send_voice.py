@@ -186,7 +186,7 @@ class SendVoice:
                         )
                     )
                 except FilePartMissing as e:
-                    await self.save_file(voice, file_id=file.id, file_part=e.x)
+                    await self.save_file(voice, file_id=file.id, file_part=e.value)
                 else:
                     for i in r.updates:
                         if isinstance(i, (raw.types.UpdateNewMessage,
