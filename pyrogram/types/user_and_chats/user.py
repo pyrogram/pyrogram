@@ -20,6 +20,7 @@ import html
 from typing import List, Optional
 
 import pyrogram
+from pyrogram import enums
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -28,9 +29,9 @@ from ..update import Update
 
 class Link(str):
     HTML = "<a href={url}>{text}</a>"
-    MD = "[{text}]({url})"
+    MARKDOWN = "[{text}]({url})"
 
-    def __init__(self, url: str, text: str, style: str):
+    def __init__(self, url: str, text: str, style: enums.ParseMode):
         super().__init__()
 
         self.url = url
@@ -38,13 +39,11 @@ class Link(str):
         self.style = style
 
     @staticmethod
-    def format(url: str, text: str, style: str):
-        if style in ["md", "markdown"]:
-            fmt = Link.MD
-        elif style in ["combined", "html", None]:
-            fmt = Link.HTML
+    def format(url: str, text: str, style: enums.ParseMode):
+        if style == enums.ParseMode.MARKDOWN:
+            fmt = Link.MARKDOWN
         else:
-            raise ValueError(f"{style} is not a valid style/parse mode")
+            fmt = Link.HTML
 
         return fmt.format(url=url, text=html.escape(text))
 
@@ -103,16 +102,8 @@ class User(Object, Update):
         last_name (``str``, *optional*):
             User's or bot's last name.
 
-        status (``str``, *optional*):
-            User's Last Seen & Online status.
-            Can be one of the following:
-            "*online*", user is online right now.
-            "*offline*", user is currently offline.
-            "*recently*", user with hidden last seen time who was online between 1 second and 2-3 days ago.
-            "*within_week*", user with hidden last seen time who was online between 2-3 and seven days ago.
-            "*within_month*", user with hidden last seen time who was online between 6-7 days and a month ago.
-            "*long_time_ago*", blocked user or user with hidden last seen time who was online more than a month ago.
-            *None*, for bots.
+        status (:obj:`~pyrogram.enums.UserStatus`, *optional*):
+            User's last seen & online status. *None*, for bots.
 
         last_online_date (``int``, *optional*):
             Last online date of a user, unix time. Only available in case status is "*offline*".
@@ -237,17 +228,17 @@ class User(Object, Update):
     @staticmethod
     def _parse_status(user_status: "raw.base.UserStatus", is_bot: bool = False):
         if isinstance(user_status, raw.types.UserStatusOnline):
-            status, date = "online", user_status.expires
+            status, date = enums.UserStatus.ONLINE, user_status.expires
         elif isinstance(user_status, raw.types.UserStatusOffline):
-            status, date = "offline", user_status.was_online
+            status, date = enums.UserStatus.OFFLINE, user_status.was_online
         elif isinstance(user_status, raw.types.UserStatusRecently):
-            status, date = "recently", None
+            status, date = enums.UserStatus.RECENTLY, None
         elif isinstance(user_status, raw.types.UserStatusLastWeek):
-            status, date = "within_week", None
+            status, date = enums.UserStatus.LAST_WEEK, None
         elif isinstance(user_status, raw.types.UserStatusLastMonth):
-            status, date = "within_month", None
+            status, date = enums.UserStatus.LAST_MONTH, None
         else:
-            status, date = "long_time_ago", None
+            status, date = enums.UserStatus.LONG_AGO, None
 
         last_online_date = None
         next_offline_date = None
@@ -255,10 +246,10 @@ class User(Object, Update):
         if is_bot:
             status = None
 
-        if status == "online":
+        if status == enums.UserStatus.ONLINE:
             next_offline_date = date
 
-        if status == "offline":
+        if status == enums.UserStatus.OFFLINE:
             last_online_date = date
 
         return {

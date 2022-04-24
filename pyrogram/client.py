@@ -33,6 +33,7 @@ from typing import Union, List, Optional
 
 import pyrogram
 from pyrogram import __version__, __license__
+from pyrogram import enums
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.crypto import aes
@@ -146,7 +147,7 @@ class Client(Methods, Scaffold):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
             This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
-        parse_mode (``str``, *optional*):
+        parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             The parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
             to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
             completely.
@@ -197,7 +198,7 @@ class Client(Methods, Scaffold):
         workdir: str = Scaffold.WORKDIR,
         config_file: str = Scaffold.CONFIG_FILE,
         plugins: dict = None,
-        parse_mode: str = Scaffold.PARSE_MODES[0],
+        parse_mode: "enums.ParseMode" = enums.ParseMode.DEFAULT,
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
@@ -394,44 +395,21 @@ class Client(Methods, Scaffold):
 
         return signed_up
 
-    @property
-    def parse_mode(self):
-        return self._parse_mode
-
-    @parse_mode.setter
-    def parse_mode(self, parse_mode: Optional[str] = "combined"):
-        if isinstance(parse_mode, str):
-            parse_mode = parse_mode.lower()
-
-        if parse_mode not in self.PARSE_MODES:
-            raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-                ", ".join(f'"{m}"' for m in self.PARSE_MODES[:-1]),
-                parse_mode
-            ))
-
-        self._parse_mode = parse_mode
-
-    # TODO: redundant, remove in next major version
-    def set_parse_mode(self, parse_mode: Optional[str] = "combined"):
+    def set_parse_mode(self, parse_mode: Optional["enums.ParseMode"]):
         """Set the parse mode to be used globally by the client.
 
         When setting the parse mode with this method, all other methods having a *parse_mode* parameter will follow the
-        global value by default. The default value *"combined"* enables both Markdown and HTML styles to be used and
-        combined together.
+        global value by default.
 
         Parameters:
-            parse_mode (``str``):
-                The new parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
-                to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
-                completely.
-
-        Raises:
-            ValueError: In case the provided *parse_mode* is not a valid parse mode.
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
 
         Example:
             .. code-block:: python
 
-                from pyrogram import Client
+                from pyrogram import Client, enums
 
                 app = Client("my_account")
 
@@ -440,19 +418,19 @@ class Client(Methods, Scaffold):
                     app.send_message("me", "1. **markdown** and <i>html</i>")
 
                     # Force Markdown-only, HTML is disabled
-                    app.set_parse_mode("markdown")
+                    app.set_parse_mode(enums.ParseMode.MARKDOWN)
                     app.send_message("me", "2. **markdown** and <i>html</i>")
 
                     # Force HTML-only, Markdown is disabled
-                    app.set_parse_mode("html")
+                    app.set_parse_mode(enums.ParseMode.HTML)
                     app.send_message("me", "3. **markdown** and <i>html</i>")
 
                     # Disable the parser completely
-                    app.set_parse_mode(None)
+                    app.set_parse_mode(enums.ParseMode.DISABLED)
                     app.send_message("me", "4. **markdown** and <i>html</i>")
 
                     # Bring back the default combined mode
-                    app.set_parse_mode()
+                    app.set_parse_mode(enums.ParseMode.DEFAULT)
                     app.send_message("me", "5. **markdown** and <i>html</i>")
         """
 

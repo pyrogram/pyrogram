@@ -92,6 +92,7 @@ API Reference
     - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
     - :doc:`Available Methods <api/methods/index>`: List of available high-level methods.
     - :doc:`Available Types <api/types/index>`: List of available high-level types.
+    - :doc:`Enumerations <api/enums/index>`: List of available enumerations.
     - :doc:`Bound Methods <api/bound-methods/index>`: List of convenient bound methods.
 
 Meta
@@ -130,6 +131,7 @@ Meta
     api/methods/index
     api/types/index
     api/bound-methods/index
+    api/enums/index
     api/handlers
     api/decorators
     api/errors/index

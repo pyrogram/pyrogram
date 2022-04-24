@@ -20,7 +20,7 @@ from typing import List, Match
 
 import pyrogram
 from pyrogram import raw
-from pyrogram import types
+from pyrogram import types, enums
 from ..object import Object
 from ..update import Update
 
@@ -43,11 +43,8 @@ class InlineQuery(Object, Update):
         offset (``str``):
             Offset of the results to be returned, can be controlled by the bot.
 
-        chat_type (``str``, *optional*):
+        chat_type (:obj:`~pyrogram.enums.ChatType`, *optional*):
             Type of the chat, from which the inline query was sent.
-            Can be either "sender" for a private chat with the inline query sender, "private", "group", "supergroup", or
-            "channel". The chat type should be always known for requests sent from official clients and most
-            third-party clients, unless the request was sent from a secret chat.
 
         location (:obj:`~pyrogram.types.Location`. *optional*):
             Sender location, only for bots that request user location.
@@ -65,7 +62,7 @@ class InlineQuery(Object, Update):
         from_user: "types.User",
         query: str,
         offset: str,
-        chat_type: str,
+        chat_type: "enums.ChatType",
         location: "types.Location" = None,
         matches: List[Match] = None
     ):
@@ -85,15 +82,15 @@ class InlineQuery(Object, Update):
         chat_type = None
 
         if isinstance(peer_type, raw.types.InlineQueryPeerTypeSameBotPM):
-            chat_type = "sender"
+            chat_type = enums.ChatType.BOT
         elif isinstance(peer_type, raw.types.InlineQueryPeerTypePM):
-            chat_type = "private"
+            chat_type = enums.ChatType.PRIVATE
         elif isinstance(peer_type, raw.types.InlineQueryPeerTypeChat):
-            chat_type = "group"
+            chat_type = enums.ChatType.GROUP
         elif isinstance(peer_type, raw.types.InlineQueryPeerTypeMegagroup):
-            chat_type = "supergroup"
+            chat_type = enums.ChatType.SUPERGROUP
         elif isinstance(peer_type, raw.types.InlineQueryPeerTypeBroadcast):
-            chat_type = "channel"
+            chat_type = enums.ChatType.CHANNEL
 
         return InlineQuery(
             id=str(inline_query.query_id),

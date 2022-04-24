@@ -19,7 +19,7 @@
 import logging
 from typing import Union, List, Optional
 
-from pyrogram import types
+from pyrogram import types, enums
 from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class CopyMessage(Scaffold):
         from_chat_id: Union[int, str],
         message_id: int,
         caption: str = None,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -69,12 +69,9 @@ class CopyMessage(Scaffold):
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the new caption, which can be specified instead of *parse_mode*.

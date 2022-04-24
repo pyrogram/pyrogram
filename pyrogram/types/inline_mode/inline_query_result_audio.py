@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 import pyrogram
-from pyrogram import raw, types, utils
+from pyrogram import raw, types, utils, enums
 from .inline_query_result import InlineQueryResult
 
 
@@ -50,13 +50,10 @@ class InlineQueryResultAudio(InlineQueryResult):
         caption (``str``, *optional*):
             Caption of the audio to be sent, 0-1024 characters.
             
-        parse_mode (``str``, *optional*):
+        parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
             You can combine both syntaxes together.
-            Pass "markdown" or "md" to enable Markdown-style parsing only.
-            Pass "html" to enable HTML-style parsing only.
-            Pass None to completely disable style parsing.
-            
+
         caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
             List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
             
@@ -75,7 +72,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         performer: str = "",
         audio_duration: int = 0,
         caption: str = "",
-        parse_mode: Union[str, None] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None

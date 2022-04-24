@@ -21,7 +21,7 @@ from struct import pack
 from typing import Union, List, Match, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from ..object import Object
 from ..update import Update
@@ -171,7 +171,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_text(
         self,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
@@ -183,12 +183,9 @@ class CallbackQuery(Object, Update):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -224,7 +221,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_caption(
         self,
         caption: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
         """Edit the caption of media messages attached to callback queries.
@@ -235,12 +232,9 @@ class CallbackQuery(Object, Update):
             caption (``str``):
                 New caption of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.

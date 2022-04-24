@@ -21,7 +21,7 @@ import re
 from typing import Union, BinaryIO, List, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
@@ -35,7 +35,7 @@ class SendPhoto(Scaffold):
         chat_id: Union[int, str],
         photo: Union[str, BinaryIO],
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         disable_notification: bool = None,
@@ -69,12 +69,9 @@ class SendPhoto(Scaffold):
             caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.

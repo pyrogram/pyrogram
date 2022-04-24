@@ -28,7 +28,7 @@ class ChatEventFilter(Object):
             True, if member restricted/unrestricted/banned/unbanned events should be returned.
             Defaults to False.
 
-        admin_rights (``bool``, *optional*):
+        new_privileges (``bool``, *optional*):
             True, if member promotion/demotion events should be returned.
             Defaults to False.
 
@@ -74,7 +74,7 @@ class ChatEventFilter(Object):
     def __init__(
         self, *,
         new_restrictions: bool = False,
-        admin_rights: bool = False,
+        new_privileges: bool = False,
         new_members: bool = False,
         chat_info: bool = False,
         chat_settings: bool = False,
@@ -88,7 +88,7 @@ class ChatEventFilter(Object):
         super().__init__()
 
         self.new_restrictions = new_restrictions
-        self.admin_rights = admin_rights
+        self.new_privileges = new_privileges
         self.new_members = new_members
         self.chat_info = chat_info
         self.chat_settings = chat_settings
@@ -123,7 +123,7 @@ class ChatEventFilter(Object):
             kick = True
             unkick = True
 
-        if self.admin_rights:
+        if self.new_privileges:
             promote = True
             demote = True
 

@@ -19,20 +19,10 @@
 import logging
 from typing import Union, List
 
-from pyrogram import raw
-from pyrogram import types
+from pyrogram import raw, types, enums
 from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
-
-
-class Filters:
-    ALL = "all"
-    BANNED = "banned"
-    RESTRICTED = "restricted"
-    BOTS = "bots"
-    RECENT = "recent"
-    ADMINISTRATORS = "administrators"
 
 
 class GetChatMembers(Scaffold):
@@ -42,7 +32,7 @@ class GetChatMembers(Scaffold):
         offset: int = 0,
         limit: int = 200,
         query: str = "",
-        filter: str = Filters.RECENT
+        filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.ANY
     ) -> List["types.ChatMember"]:
         """Get a chunk of the members list of a chat.
 

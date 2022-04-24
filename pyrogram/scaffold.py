@@ -26,7 +26,7 @@ from mimetypes import MimeTypes
 from pathlib import Path
 
 import pyrogram
-from pyrogram import __version__
+from pyrogram import __version__, enums
 from pyrogram.parser import Parser
 from pyrogram.session.internals import MsgId
 from .mime_types import mime_types
@@ -45,8 +45,6 @@ class Scaffold:
     WORKERS = min(32, os.cpu_count() + 4)
     WORKDIR = PARENT_DIR
     CONFIG_FILE = PARENT_DIR / "config.ini"
-
-    PARSE_MODES = ["combined", "markdown", "md", "html", None]
 
     mimetypes = MimeTypes()
     mimetypes.readfp(StringIO(mime_types))
@@ -90,7 +88,7 @@ class Scaffold:
         self.rnd_id = MsgId
 
         self.parser = Parser(self)
-        self.parse_mode = "combined"
+        self.parse_mode = enums.ParseMode.DEFAULT
 
         self.session = None
 

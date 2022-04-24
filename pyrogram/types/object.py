@@ -18,6 +18,7 @@
 
 import typing
 from datetime import datetime
+from enum import Enum
 from json import dumps
 
 import pyrogram
@@ -51,6 +52,9 @@ class Object(metaclass=Meta):
         # Instead of re.Match, which breaks for python <=3.6
         if isinstance(obj, typing.Match):
             return repr(obj)
+
+        if isinstance(obj, Enum):
+            return str(obj)
 
         return {
             "_": obj.__class__.__name__,

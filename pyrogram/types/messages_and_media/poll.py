@@ -19,7 +19,7 @@
 from typing import List, Union
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from ..object import Object
 from ..update import Update
@@ -47,8 +47,8 @@ class Poll(Object, Update):
         is_anonymous (``bool``, *optional*):
             True, if the poll is anonymous
 
-        type (``str``, *optional*):
-            Poll type, currently can be "regular" or "quiz".
+        type (:obj:`~pyrogram.enums.PollType`, *optional*):
+            Poll type.
 
         allows_multiple_answers (``bool``, *optional*):
             True, if the poll allows multiple answers.
@@ -67,7 +67,7 @@ class Poll(Object, Update):
         total_voter_count: int,
         is_closed: bool,
         is_anonymous: bool = None,
-        type: str = None,
+        type: "enums.PollType" = None,
         allows_multiple_answers: bool = None,
         # correct_option_id: int,
         chosen_option: int = None
@@ -118,7 +118,7 @@ class Poll(Object, Update):
             total_voter_count=media_poll.results.total_voters,
             is_closed=poll.closed,
             is_anonymous=not poll.public_voters,
-            type="quiz" if poll.quiz else "regular",
+            type=enums.PollType.QUIZ if poll.quiz else enums.PollType.REGULAR,
             allows_multiple_answers=poll.multiple_choice,
             chosen_option=chosen_option,
             client=client

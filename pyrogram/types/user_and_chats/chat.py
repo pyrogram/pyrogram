@@ -19,7 +19,7 @@
 from typing import Union, List, Generator, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
 from ..object import Object
@@ -32,8 +32,8 @@ class Chat(Object):
         id (``int``):
             Unique identifier for this chat.
 
-        type (``str``):
-            Type of chat, can be either "private", "bot", "group", "supergroup" or "channel".
+        type (:obj:`~pyrogram.enums.ChatType`):
+            Type of chat.
 
         is_verified (``bool``, *optional*):
             True, if this chat has been verified by Telegram. Supergroups, channels and bots only.
@@ -135,7 +135,7 @@ class Chat(Object):
         *,
         client: "pyrogram.Client" = None,
         id: int,
-        type: str,
+        type: "enums.ChatType",
         is_verified: bool = None,
         is_restricted: bool = None,
         is_creator: bool = None,
@@ -200,7 +200,7 @@ class Chat(Object):
 
         return Chat(
             id=peer_id,
-            type="bot" if user.bot else "private",
+            type=enums.ChatType.BOT if user.bot else enums.ChatType.PRIVATE,
             is_verified=getattr(user, "verified", None),
             is_restricted=getattr(user, "restricted", None),
             is_scam=getattr(user, "scam", None),
@@ -221,7 +221,7 @@ class Chat(Object):
 
         return Chat(
             id=peer_id,
-            type="group",
+            type=enums.ChatType.GROUP,
             title=chat.title,
             is_creator=getattr(chat, "creator", None),
             photo=types.ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
@@ -239,7 +239,7 @@ class Chat(Object):
 
         return Chat(
             id=peer_id,
-            type="supergroup" if getattr(channel, "megagroup", None) else "channel",
+            type=enums.ChatType.SUPERGROUP if getattr(channel, "megagroup", None) else enums.ChatType.CHANNEL,
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
@@ -842,7 +842,7 @@ class Chat(Object):
         offset: int = 0,
         limit: int = 200,
         query: str = "",
-        filter: str = "all"
+        filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.ANY
     ) -> List["types.ChatMember"]:
         """Bound method *get_members* of :obj:`~pyrogram.types.Chat`.
 
@@ -930,17 +930,9 @@ class Chat(Object):
                 Query string to filter members based on their display names and usernames.
                 Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
 
-            filter (``str``, *optional*):
+            filter (:obj:`~pyrogram.enums.ChatMembersFilter`, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
-                and channels. It can be any of the followings:
-                *"all"* - all kind of members,
-                *"banned"* - banned members only,
-                *"restricted"* - restricted members only,
-                *"bots"* - bots only,
-                *"recent"* - recent members only,
-                *"administrators"* - chat administrators only.
-                Only applicable to supergroups and channels.
-                Defaults to *"recent"*.
+                and channels.
 
         .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
             on channels.
@@ -950,16 +942,18 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
+                from pyrogram import enums
+
                 # Get first 200 recent members
                 for member in chat.get_members():
                     print(member.user.first_name)
 
                 # Get all administrators
-                for member in chat.iter_members(filter="administrators"):
+                for member in chat.iter_members(filter=enums.ChatMembersFilter.ADMINISTRATORS):
                     print(member.user.first_name)
 
                 # Get first 3 bots
-                for member in chat.iter_members(filter="bots", limit=3):
+                for member in chat.iter_members(filter=enums.ChatMembersFilter.BOTS, limit=3):
                     print(member.user.first_name)
 
         Returns:

@@ -43,7 +43,7 @@ class InlineKeyboardButton(Object):
              An HTTP URL used to automatically authorize the user. Can be used as a replacement for
              the `Telegram Login Widget <https://core.telegram.org/widgets/login>`_.
 
-        user_id (``id``, *optional*):
+        user_id (``int``, *optional*):
             User id, for links to the user profile.
 
         switch_inline_query (``str``, *optional*):

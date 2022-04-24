@@ -174,13 +174,13 @@ class HTML:
 
             entities_offsets.append((start_tag, start,))
             entities_offsets.append((end_tag, end,))
-            
+
         entities_offsets = map(
             lambda x: x[1],
             sorted(
                 enumerate(entities_offsets),
-                key = lambda x: (x[1][1], x[0]),
-                reverse = True
+                key=lambda x: (x[1][1], x[0]),
+                reverse=True
             )
         )
 

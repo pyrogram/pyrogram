@@ -19,7 +19,7 @@
 from typing import Union, List
 
 from pyrogram import raw
-from pyrogram import types
+from pyrogram import types, enums
 from pyrogram.scaffold import Scaffold
 
 
@@ -31,7 +31,7 @@ class SendPoll(Scaffold):
         options: List[str],
         is_anonymous: bool = True,
         allows_multiple_answers: bool = None,
-        type: str = "regular",
+        type: "enums.PollType" = enums.PollType.REGULAR,
         correct_option_id: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -62,9 +62,9 @@ class SendPoll(Scaffold):
                 True, if the poll needs to be anonymous.
                 Defaults to True.
 
-            type (``str``, *optional*):
-                Poll type, "quiz" or "regular".
-                Defaults to "regular"
+            type (:obj`~pyrogram.enums.PollType`, *optional*):
+                Poll type, :obj:`~pyrogram.enums.PollType.QUIZ` or :obj:`~pyrogram.enums.PollType.REGULAR`.
+                Defaults to :obj:`~pyrogram.enums.PollType.REGULAR`.
 
             allows_multiple_answers (``bool``, *optional*):
                 True, if the poll allows multiple answers, ignored for polls in quiz mode.
@@ -112,7 +112,7 @@ class SendPoll(Scaffold):
                         ],
                         multiple_choice=allows_multiple_answers or None,
                         public_voters=not is_anonymous or None,
-                        quiz=type == "quiz" or None
+                        quiz=type == enums.PollType.QUIZ or None
                     ),
                     correct_answers=None if correct_option_id is None else [bytes([correct_option_id])]
                 ),

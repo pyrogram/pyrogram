@@ -20,7 +20,7 @@ import os
 import re
 from typing import Union, BinaryIO, List, Optional
 
-from pyrogram import StopTransmission
+from pyrogram import StopTransmission, enums
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
@@ -36,7 +36,7 @@ class SendDocument(Scaffold):
         document: Union[str, BinaryIO],
         thumb: Union[str, BinaryIO] = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         file_name: str = None,
         force_document: bool = None,
@@ -77,12 +77,9 @@ class SendDocument(Scaffold):
             caption (``str``, *optional*):
                 Document caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.

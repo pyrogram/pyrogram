@@ -20,7 +20,7 @@ import os
 import re
 from typing import Union, BinaryIO, List, Optional
 
-from pyrogram import StopTransmission
+from pyrogram import StopTransmission, enums
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
@@ -36,7 +36,7 @@ class SendAnimation(Scaffold):
         animation: Union[str, BinaryIO],
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
@@ -78,12 +78,9 @@ class SendAnimation(Scaffold):
                 By default, the server will save into your own collection any new animation you send.
                 Pass True to automatically unsave the sent animation. Defaults to False.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.

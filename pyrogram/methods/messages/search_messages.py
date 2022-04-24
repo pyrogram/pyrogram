@@ -18,33 +18,8 @@
 
 from typing import Union, List, AsyncGenerator, Optional
 
-from pyrogram import raw
-from pyrogram import types
-from pyrogram import utils
+from pyrogram import raw, types, utils, enums
 from pyrogram.scaffold import Scaffold
-
-
-class Filters:
-    EMPTY = raw.types.InputMessagesFilterEmpty()
-    PHOTO = raw.types.InputMessagesFilterPhotos()
-    VIDEO = raw.types.InputMessagesFilterVideo()
-    PHOTO_VIDEO = raw.types.InputMessagesFilterPhotoVideo()
-    DOCUMENT = raw.types.InputMessagesFilterDocument()
-    URL = raw.types.InputMessagesFilterUrl()
-    ANIMATION = raw.types.InputMessagesFilterGif()
-    VOICE_NOTE = raw.types.InputMessagesFilterVoice()
-    AUDIO = raw.types.InputMessagesFilterMusic()
-    CHAT_PHOTO = raw.types.InputMessagesFilterChatPhotos()
-    PHONE_CALL = raw.types.InputMessagesFilterPhoneCalls()
-    AUDIO_VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
-    VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
-    MENTION = raw.types.InputMessagesFilterMyMentions()
-    LOCATION = raw.types.InputMessagesFilterGeo()
-    CONTACT = raw.types.InputMessagesFilterContacts()
-    PINNED = raw.types.InputMessagesFilterPinned()
-
-
-POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), Filters.__dict__.keys())))
 
 
 # noinspection PyShadowingBuiltins
@@ -52,22 +27,16 @@ async def get_chunk(
     client: Scaffold,
     chat_id: Union[int, str],
     query: str = "",
-    filter: str = "empty",
+    filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
     offset: int = 0,
     limit: int = 100,
     from_user: Union[int, str] = None
 ) -> List["types.Message"]:
-    try:
-        filter = Filters.__dict__[filter.upper()]
-    except KeyError:
-        raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
-            filter, ", ".join(f'"{v}"' for v in POSSIBLE_VALUES))) from None
-
     r = await client.send(
         raw.functions.messages.Search(
             peer=await client.resolve_peer(chat_id),
             q=query,
-            filter=filter,
+            filter=filter.value(),
             min_date=0,
             max_date=0,
             offset_id=0,
@@ -95,7 +64,7 @@ class SearchMessages(Scaffold):
         chat_id: Union[int, str],
         query: str = "",
         offset: int = 0,
-        filter: str = "empty",
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
         limit: int = 0,
         from_user: Union[int, str] = None
     ) -> Optional[AsyncGenerator["types.Message", None]]:
@@ -119,26 +88,9 @@ class SearchMessages(Scaffold):
                 Sequential number of the first message to be returned.
                 Defaults to 0.
 
-            filter (``str``, *optional*):
-                Pass a filter in order to search for specific kind of messages only:
-
-                - ``"empty"``: Search for all kind of messages (default).
-                - ``"photo"``: Search for photos.
-                - ``"video"``: Search for video.
-                - ``"photo_video"``: Search for either photo or video.
-                - ``"document"``: Search for documents (generic files).
-                - ``"url"``: Search for messages containing URLs (web links).
-                - ``"animation"``: Search for animations (GIFs).
-                - ``"voice_note"``: Search for voice notes.
-                - ``"audio"``: Search for audio files (music).
-                - ``"chat_photo"``: Search for chat photos.
-                - ``"phone_call"``: Search for phone calls.
-                - ``"audio_video_note"``: Search for either audio or video notes.
-                - ``"video_note"``: Search for video notes.
-                - ``"mention"``: Search for messages containing mentions to yourself.
-                - ``"location"``: Search for location messages.
-                - ``"contact"``: Search for contact messages.
-                - ``"pinned"``: Search for pinned messages.
+            filter (:obj:`~pyrogram.enums.MessagesFilter`, *optional*):
+                Pass a filter in order to search for specific kind of messages only.
+                Defaults to any message (no filter).
 
             limit (``int``, *optional*):
                 Limits the number of messages to be retrieved.
@@ -153,18 +105,21 @@ class SearchMessages(Scaffold):
         Example:
             .. code-block:: python
 
+                from pyrogram import enums
+
                 # Search for text messages in chat. Get the last 120 results
                 for message in app.search_messages(chat_id, query="hello", limit=120):
                     print(message.text)
 
                 # Search for pinned messages in chat
-                for message in app.search_messages(chat_id, filter="pinned"):
+                for message in app.search_messages(chat_id, filter=enums.MessagesFilter.PINNED):
                     print(message.text)
 
                 # Search for messages containing "hello" sent by yourself in chat
                 for message in app.search_messages(chat, "hello", from_user="me"):
                     print(message.text)
         """
+
         current = 0
         total = abs(limit) or (1 << 31) - 1
         limit = min(100, total)

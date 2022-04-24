@@ -18,7 +18,7 @@
 
 from typing import Union, List, Optional
 
-from pyrogram import raw, utils
+from pyrogram import raw, utils, enums
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
@@ -28,7 +28,7 @@ class SendMessage(Scaffold):
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
@@ -53,12 +53,9 @@ class SendMessage(Scaffold):
             text (``str``):
                 Text of the message to be sent.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.

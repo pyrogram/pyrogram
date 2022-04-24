@@ -21,7 +21,7 @@ from functools import partial
 from typing import List, Match, Union, BinaryIO, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid
@@ -112,17 +112,15 @@ class Message(Object, Update):
             The message is empty.
             A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
 
-        service (``str``, *optional*):
-            The message is a service message. This field will contain the name of the service message.
-            A service message has one and only one of these fields set: new_chat_members, left_chat_member,
-            new_chat_title, new_chat_photo, delete_chat_photo, group_chat_created, channel_chat_created,
-            migrate_to_chat_id, migrate_from_chat_id, pinned_message, game_high_score, voice_chat_started,
-            voice_chat_ended, voice_chat_scheduled, voice_chat_members_invited.
+        service (:obj:`~pyrogram.enums.MessageService`, *optional*):
+            The message is a service message.
+            This field will contain the enumeration type of the service message.
+            You can use ``service = getattr(message, message.service.value)`` to access the service message.
 
-        media (``str``, *optional*):
-            The message is a media message. This field will contain the name of the media message.
-            A media message has one and only one of these fields set: audio, document, photo, sticker, video, animation,
-            voice, video_note, contact, location, venue, poll, web_page, dice, game.
+        media (:obj:`~pyrogram.enums.MessageMedia`, *optional*):
+            The message is a media message.
+            This field will contain the enumeration type of the media message.
+            You can use ``media = getattr(message, message.media.value)`` to access the media message.
 
         edit_date (``int``, *optional*):
             Date the message was last edited in Unix time.
@@ -319,7 +317,7 @@ class Message(Object, Update):
         reply_to_message: "Message" = None,
         mentioned: bool = None,
         empty: bool = None,
-        service: str = None,
+        service: "enums.MessageService" = None,
         scheduled: bool = None,
         from_scheduled: bool = None,
         media: str = None,
@@ -497,47 +495,47 @@ class Message(Object, Update):
 
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
-                service_type = "new_chat_members"
+                service_type = enums.MessageService.NEW_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatJoinedByLink):
                 new_chat_members = [types.User._parse(client, users[utils.get_raw_peer_id(message.from_id)])]
-                service_type = "new_chat_members"
+                service_type = enums.MessageService.NEW_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatDeleteUser):
                 left_chat_member = types.User._parse(client, users[action.user_id])
-                service_type = "left_chat_member"
+                service_type = enums.MessageService.LEFT_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatEditTitle):
                 new_chat_title = action.title
-                service_type = "new_chat_title"
+                service_type = enums.MessageService.NEW_CHAT_TITLE
             elif isinstance(action, raw.types.MessageActionChatDeletePhoto):
                 delete_chat_photo = True
-                service_type = "delete_chat_photo"
+                service_type = enums.MessageService.DELETE_CHAT_PHOTO
             elif isinstance(action, raw.types.MessageActionChatMigrateTo):
                 migrate_to_chat_id = action.channel_id
-                service_type = "migrate_to_chat_id"
+                service_type = enums.MessageService.MIGRATE_TO_CHAT_ID
             elif isinstance(action, raw.types.MessageActionChannelMigrateFrom):
                 migrate_from_chat_id = action.chat_id
-                service_type = "migrate_from_chat_id"
+                service_type = enums.MessageService.MIGRATE_FROM_CHAT_ID
             elif isinstance(action, raw.types.MessageActionChatCreate):
                 group_chat_created = True
-                service_type = "group_chat_created"
+                service_type = enums.MessageService.GROUP_CHAT_CREATED
             elif isinstance(action, raw.types.MessageActionChannelCreate):
                 channel_chat_created = True
-                service_type = "channel_chat_created"
+                service_type = enums.MessageService.CHANNEL_CHAT_CREATED
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
-                service_type = "new_chat_photo"
+                service_type = enums.MessageService.NEW_CHAT_PHOTO
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
                 voice_chat_scheduled = types.VoiceChatScheduled._parse(action)
-                service_type = "voice_chat_scheduled"
+                service_type = enums.MessageService.VOICE_CHAT_SCHEDULED
             elif isinstance(action, raw.types.MessageActionGroupCall):
                 if action.duration:
                     voice_chat_ended = types.VoiceChatEnded._parse(action)
-                    service_type = "voice_chat_ended"
+                    service_type = enums.MessageService.VOICE_CHAT_ENDED
                 else:
                     voice_chat_started = types.VoiceChatStarted()
-                    service_type = "voice_chat_started"
+                    service_type = enums.MessageService.VOICE_CHAT_STARTED
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
                 voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
-                service_type = "voice_chat_members_invited"
+                service_type = enums.MessageService.VOICE_CHAT_MEMBERS_INVITED
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -574,7 +572,7 @@ class Message(Object, Update):
                         replies=0
                     )
 
-                    parsed_message.service = "pinned_message"
+                    parsed_message.service = enums.MessageService.PINNED_MESSAGE
                 except MessageIdsEmpty:
                     pass
 
@@ -589,7 +587,7 @@ class Message(Object, Update):
                             replies=0
                         )
 
-                        parsed_message.service = "game_high_score"
+                        parsed_message.service = enums.MessageService.GAME_HIGH_SCORE
                     except MessageIdsEmpty:
                         pass
 
@@ -646,19 +644,19 @@ class Message(Object, Update):
             if media:
                 if isinstance(media, raw.types.MessageMediaPhoto):
                     photo = types.Photo._parse(client, media.photo, media.ttl_seconds)
-                    media_type = "photo"
+                    media_type = enums.MessageMedia.PHOTO
                 elif isinstance(media, raw.types.MessageMediaGeo):
                     location = types.Location._parse(client, media.geo)
-                    media_type = "location"
+                    media_type = enums.MessageMedia.LOCATION
                 elif isinstance(media, raw.types.MessageMediaContact):
                     contact = types.Contact._parse(client, media)
-                    media_type = "contact"
+                    media_type = enums.MessageMedia.CONTACT
                 elif isinstance(media, raw.types.MessageMediaVenue):
                     venue = types.Venue._parse(client, media)
-                    media_type = "venue"
+                    media_type = enums.MessageMedia.VENUE
                 elif isinstance(media, raw.types.MessageMediaGame):
                     game = types.Game._parse(client, message)
-                    media_type = "game"
+                    media_type = enums.MessageMedia.GAME
                 elif isinstance(media, raw.types.MessageMediaDocument):
                     doc = media.document
 
@@ -676,14 +674,14 @@ class Message(Object, Update):
 
                             if audio_attributes.voice:
                                 voice = types.Voice._parse(client, doc, audio_attributes)
-                                media_type = "voice"
+                                media_type = enums.MessageMedia.VOICE
                             else:
                                 audio = types.Audio._parse(client, doc, audio_attributes, file_name)
-                                media_type = "audio"
+                                media_type = enums.MessageMedia.AUDIO
                         elif raw.types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
-                            media_type = "animation"
+                            media_type = enums.MessageMedia.ANIMATION
                         elif raw.types.DocumentAttributeSticker in attributes:
                             sticker = await types.Sticker._parse(
                                 client, doc,
@@ -691,31 +689,31 @@ class Message(Object, Update):
                                 attributes[raw.types.DocumentAttributeSticker],
                                 file_name
                             )
-                            media_type = "sticker"
+                            media_type = enums.MessageMedia.STICKER
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
 
                             if video_attributes.round_message:
                                 video_note = types.VideoNote._parse(client, doc, video_attributes)
-                                media_type = "video_note"
+                                media_type = enums.MessageMedia.VIDEO_NOTE
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
-                                media_type = "video"
+                                media_type = enums.MessageMedia.VIDEO
                         else:
                             document = types.Document._parse(client, doc, file_name)
-                            media_type = "document"
+                            media_type = enums.MessageMedia.DOCUMENT
                 elif isinstance(media, raw.types.MessageMediaWebPage):
                     if isinstance(media.webpage, raw.types.WebPage):
                         web_page = types.WebPage._parse(client, media.webpage)
-                        media_type = "web_page"
+                        media_type = enums.MessageMedia.WEB_PAGE
                     else:
                         media = None
                 elif isinstance(media, raw.types.MessageMediaPoll):
                     poll = types.Poll._parse(client, media)
-                    media_type = "poll"
+                    media_type = enums.MessageMedia.POLL
                 elif isinstance(media, raw.types.MessageMediaDice):
                     dice = types.Dice._parse(client, media)
-                    media_type = "dice"
+                    media_type = enums.MessageMedia.DICE
                 else:
                     media = None
 
@@ -820,7 +818,10 @@ class Message(Object, Update):
 
     @property
     def link(self) -> str:
-        if self.chat.type in ("group", "supergroup", "channel") and self.chat.username:
+        if (
+            self.chat.type in (enums.ChatType.GROUP, enums.ChatType.SUPERGROUP, enums.ChatType.CHANNEL)
+            and self.chat.username
+        ):
             return f"https://t.me/{self.chat.username}/{self.message_id}"
         else:
             return f"https://t.me/c/{utils.get_channel_id(self.chat.id)}/{self.message_id}"
@@ -858,7 +859,7 @@ class Message(Object, Update):
         self,
         text: str,
         quote: bool = None,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
@@ -895,12 +896,9 @@ class Message(Object, Update):
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.
@@ -957,7 +955,7 @@ class Message(Object, Update):
         animation: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
@@ -1005,12 +1003,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Animation caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -1099,7 +1094,7 @@ class Message(Object, Update):
         audio: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         performer: str = None,
@@ -1147,12 +1142,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -1241,7 +1233,7 @@ class Message(Object, Update):
         file_id: str,
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -1281,12 +1273,9 @@ class Message(Object, Update):
             caption (``bool``, *optional*):
                 Media caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -1454,7 +1443,7 @@ class Message(Object, Update):
         quote: bool = None,
         thumb: str = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         file_name: str = None,
         force_document: bool = None,
@@ -1507,12 +1496,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Document caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -1867,7 +1853,7 @@ class Message(Object, Update):
         photo: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         disable_notification: bool = None,
@@ -1912,12 +1898,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Photo caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -2295,7 +2278,7 @@ class Message(Object, Update):
         video: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         ttl_seconds: int = None,
         duration: int = 0,
@@ -2345,12 +2328,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Video caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -2567,7 +2547,7 @@ class Message(Object, Update):
         voice: Union[str, BinaryIO],
         quote: bool = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         disable_notification: bool = None,
@@ -2612,12 +2592,9 @@ class Message(Object, Update):
             caption (``str``, *optional*):
                 Voice message caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -2689,7 +2666,7 @@ class Message(Object, Update):
     async def edit_text(
         self,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
@@ -2717,12 +2694,9 @@ class Message(Object, Update):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.
@@ -2754,7 +2728,7 @@ class Message(Object, Update):
     async def edit_caption(
         self,
         caption: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "Message":
@@ -2779,12 +2753,9 @@ class Message(Object, Update):
             caption (``str``):
                 New caption of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -2938,7 +2909,7 @@ class Message(Object, Update):
         self,
         chat_id: Union[int, str],
         caption: str = None,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -2979,12 +2950,9 @@ class Message(Object, Update):
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the new caption, which can be specified instead of *parse_mode*.

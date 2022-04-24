@@ -21,6 +21,7 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
+from pyrogram import enums
 from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
 
 
@@ -438,7 +439,7 @@ dice = create(dice_filter)
 
 # region private_filter
 async def private_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"private", "bot"})
+    return bool(m.chat and m.chat.type in {enums.ChatType.PRIVATE, enums.ChatType.BOT})
 
 
 private = create(private_filter)
@@ -449,7 +450,7 @@ private = create(private_filter)
 
 # region group_filter
 async def group_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"group", "supergroup"})
+    return bool(m.chat and m.chat.type in {enums.ChatType.GROUP, enums.ChatType.SUPERGROUP})
 
 
 group = create(group_filter)
@@ -460,7 +461,7 @@ group = create(group_filter)
 
 # region channel_filter
 async def channel_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type == "channel")
+    return bool(m.chat and m.chat.type == enums.ChatType.CHANNEL)
 
 
 channel = create(channel_filter)
