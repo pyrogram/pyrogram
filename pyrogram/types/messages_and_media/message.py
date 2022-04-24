@@ -3319,7 +3319,7 @@ class Message(Object, Update):
 
             await client.send_reaction(
                 chat_id=chat_id,
-                message_id=message.message_id,
+                message_id=message.id,
                 emoji="🔥"
             )
 
@@ -3342,7 +3342,7 @@ class Message(Object, Update):
 
         return await self._client.send_reaction(
             chat_id=self.chat.id,
-            message_id=self.message_id,
+            message_id=self.id,
             emoji=emoji
         )
 
