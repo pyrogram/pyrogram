@@ -88,6 +88,9 @@ class Object:
     def __eq__(self, other: "Object") -> bool:
         for attr in self.__dict__:
             try:
+                if attr.startswith("_"):
+                    continue
+
                 if getattr(self, attr) != getattr(other, attr):
                     return False
             except AttributeError:
