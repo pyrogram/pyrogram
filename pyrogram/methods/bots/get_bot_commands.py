@@ -16,17 +16,18 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import List
+
 import pyrogram
 from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
 
 
-class GetBotCommands(Scaffold):
+class GetBotCommands:
     async def get_bot_commands(
         self: "pyrogram.Client",
         scope: "types.BotCommandScope" = types.BotCommandScopeDefault(),
         language_code: str = "",
-    ):
+    ) -> List["types.BotCommand"]:
         """Get the current list of the bot's commands for the given scope and user language.
         Returns Array of BotCommand on success. If commands aren't set, an empty list is returned.
 
@@ -54,9 +55,11 @@ class GetBotCommands(Scaffold):
                 print(commands)
         """
 
-        return await self.send(
+        r = await self.invoke(
             raw.functions.bots.GetBotCommands(
                 scope=await scope.write(self),
                 lang_code=language_code,
             )
         )
+
+        return types.List(types.BotCommand.read(c) for c in r)

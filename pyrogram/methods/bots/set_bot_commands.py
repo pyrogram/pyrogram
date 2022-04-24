@@ -29,7 +29,7 @@ class SetBotCommands:
         commands: List["types.BotCommand"],
         scope: "types.BotCommandScope" = types.BotCommandScopeDefault(),
         language_code: str = "",
-    ):
+    ) -> bool:
         """Set the list of the bot's commands.
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
