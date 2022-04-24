@@ -426,6 +426,7 @@ def pyrogram_api():
             MenuButtonCommands
             MenuButtonWebApp
             MenuButtonDefault
+            SentWebAppMessage
         """,
         bot_commands="""
         Bot commands
