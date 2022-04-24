@@ -21,8 +21,6 @@ import os
 import re
 import shutil
 
-import pyrogram
-
 HOME = "compiler/docs"
 DESTINATION = "docs/source/telegram"
 PYROGRAM_API_DEST = "docs/source/api"
@@ -114,7 +112,6 @@ def generate(source_path, base):
                 toctree.format(
                     title=k.title(),
                     title_markup="=" * len(k),
-                    layer=pyrogram.raw.all.layer,
                     module=module,
                     entities="\n    ".join(entities)
                 )

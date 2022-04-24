@@ -1,8 +1,6 @@
 {title}
 {title_markup}
 
-Layer {layer}
-
 .. module:: {module}
 
 .. toctree::
