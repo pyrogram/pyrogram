@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, List, Generator, Optional
 
 import pyrogram
@@ -513,7 +514,7 @@ class Chat(Object):
     async def ban_member(
         self,
         user_id: Union[int, str],
-        until_date: int = 0
+        until_date: datetime = datetime.fromtimestamp(0)
     ) -> Union["types.Message", bool]:
         """Bound method *ban_member* of :obj:`~pyrogram.types.Chat`.
 
@@ -541,10 +542,10 @@ class Chat(Object):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unbanned.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
+                considered to be banned forever. Defaults to epoch (ban forever).
 
         Returns:
             :obj:`~pyrogram.types.Message` | ``bool``: On success, a service message will be returned (when applicable), otherwise, in
@@ -601,7 +602,7 @@ class Chat(Object):
         self,
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",
-        until_date: int = 0,
+        until_date: datetime = datetime.fromtimestamp(0),
     ) -> "types.Chat":
         """Bound method *unban_member* of :obj:`~pyrogram.types.Chat`.
 
@@ -628,10 +629,10 @@ class Chat(Object):
             permissions (:obj:`~pyrogram.types.ChatPermissions`):
                 New user permissions.
 
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unbanned.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
+                considered to be banned forever. Defaults to epoch (ban forever).
 
         Returns:
             :obj:`~pyrogram.types.Chat`: On success, a chat object is returned.

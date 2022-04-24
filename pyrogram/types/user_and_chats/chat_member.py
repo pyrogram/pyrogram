@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, Dict
 
 import pyrogram
@@ -36,17 +37,17 @@ class ChatMember(Object):
         chat (:obj:`~pyrogram.types.Chat`, *optional*):
             Information about the chat (useful in case of banned channel senders).
 
-        joined_date (``int``, *optional*):
-            Date when the user joined, unix time.
+        joined_date (:py:obj:`~datetime.datetime`, *optional*):
+            Date when the user joined..
             Not available for the owner.
 
         custom_title (``str``, *optional*):
             A custom title that will be shown to all members instead of "Owner" or "Admin".
             Creator (owner) and administrators only. Can be None in case there's no custom title set.
 
-        until_date (``int``, *optional*):
+        until_date (:py:obj:`~datetime.datetime`, *optional*):
             Restricted and banned only.
-            Date when restrictions will be lifted for this user; unix time.
+            Date when restrictions will be lifted for this user.
 
         invited_by (:obj:`~pyrogram.types.User`, *optional*):
             Administrators and self member only. Information about the user who invited this member.
@@ -79,8 +80,8 @@ class ChatMember(Object):
         user: "types.User" = None,
         chat: "types.Chat" = None,
         custom_title: str = None,
-        until_date: int = None,
-        joined_date: int = None,
+        until_date: datetime = None,
+        joined_date: datetime = None,
         invited_by: "types.User" = None,
         promoted_by: "types.User" = None,
         restricted_by: "types.User" = None,
@@ -109,15 +110,15 @@ class ChatMember(Object):
     def _parse(
             client: "pyrogram.Client",
             member: Union["raw.base.ChatParticipant", "raw.base.ChannelParticipant"],
-            users: Dict[int, "raw.base.User"],
-            chats: Dict[int, "raw.base.Chat"]
+        users: Dict[int, "raw.base.User"],
+        chats: Dict[int, "raw.base.Chat"]
     ) -> "ChatMember":
         # Chat participants
         if isinstance(member, raw.types.ChatParticipant):
             return ChatMember(
                 status=enums.ChatMemberStatus.MEMBER,
                 user=types.User._parse(client, users[member.user_id]),
-                joined_date=member.date,
+                joined_date=utils.timestamp_to_datetime(member.date),
                 invited_by=types.User._parse(client, users[member.inviter_id]),
                 client=client
             )
@@ -125,7 +126,7 @@ class ChatMember(Object):
             return ChatMember(
                 status=enums.ChatMemberStatus.ADMINISTRATOR,
                 user=types.User._parse(client, users[member.user_id]),
-                joined_date=member.date,
+                joined_date=utils.timestamp_to_datetime(member.date),
                 invited_by=types.User._parse(client, users[member.inviter_id]),
                 client=client
             )
@@ -141,14 +142,14 @@ class ChatMember(Object):
             return ChatMember(
                 status=enums.ChatMemberStatus.MEMBER,
                 user=types.User._parse(client, users[member.user_id]),
-                joined_date=member.date,
+                joined_date=utils.timestamp_to_datetime(member.date),
                 client=client
             )
         elif isinstance(member, raw.types.ChannelParticipantAdmin):
             return ChatMember(
                 status=enums.ChatMemberStatus.ADMINISTRATOR,
                 user=types.User._parse(client, users[member.user_id]),
-                joined_date=member.date,
+                joined_date=utils.timestamp_to_datetime(member.date),
                 promoted_by=types.User._parse(client, users[member.promoted_by]),
                 invited_by=types.User._parse(client, users[member.inviter_id]),
                 custom_title=member.rank,
@@ -178,8 +179,8 @@ class ChatMember(Object):
                 ),
                 user=user,
                 chat=chat,
-                until_date=member.banned_rights.until_date,
-                joined_date=member.date,
+                until_date=utils.timestamp_to_datetime(member.banned_rights.until_date),
+                joined_date=utils.timestamp_to_datetime(member.date),
                 is_member=not member.left,
                 restricted_by=types.User._parse(client, users[member.kicked_by]),
                 permissions=types.ChatPermissions._parse(member.banned_rights),
@@ -217,7 +218,7 @@ class ChatMember(Object):
             return ChatMember(
                 status=enums.ChatMemberStatus.MEMBER,
                 user=types.User._parse(client, users[member.user_id]),
-                joined_date=member.date,
+                joined_date=utils.timestamp_to_datetime(member.date),
                 invited_by=types.User._parse(client, users[member.inviter_id]),
                 client=client
             )

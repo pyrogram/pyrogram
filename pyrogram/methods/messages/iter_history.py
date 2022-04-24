@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, Optional, AsyncGenerator
 
 from pyrogram import types
@@ -29,7 +30,7 @@ class IterHistory(Scaffold):
         limit: int = 0,
         offset: int = 0,
         offset_id: int = 0,
-        offset_date: int = 0,
+        offset_date: datetime = datetime.fromtimestamp(0),
         reverse: bool = False
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Iterate through a chat history sequentially.
@@ -55,8 +56,8 @@ class IterHistory(Scaffold):
             offset_id (``int``, *optional*):
                 Identifier of the first message to be returned.
 
-            offset_date (``int``, *optional*):
-                Pass a date in Unix time as offset to retrieve only older messages starting from that date.
+            offset_date (:py:obj:`~datetime.datetime`, *optional*):
+                Pass a date as offset to retrieve only older messages starting from that date.
 
             reverse (``bool``, *optional*):
                 Pass True to retrieve the messages in reversed order (from older to most recent).

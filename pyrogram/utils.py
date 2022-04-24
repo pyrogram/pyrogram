@@ -23,11 +23,12 @@ import hashlib
 import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
+from datetime import datetime
 from getpass import getpass
 from typing import Union, List, Dict, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
 
@@ -294,7 +295,7 @@ def compute_password_check(r: raw.types.account.Password, password: str) -> raw.
 async def parse_text_entities(
     client: "pyrogram.Client",
     text: str,
-    parse_mode: str,
+    parse_mode: enums.ParseMode,
     entities: List["types.MessageEntity"]
 ) -> Dict[str, raw.base.MessageEntity]:
     if entities:
@@ -310,3 +311,11 @@ async def parse_text_entities(
         "message": text,
         "entities": entities
     }
+
+
+def timestamp_to_datetime(ts: Optional[int]) -> Optional[datetime]:
+    return datetime.fromtimestamp(ts) if ts else None
+
+
+def datetime_to_timestamp(dt: Optional[datetime]) -> Optional[int]:
+    return int(dt.timestamp()) if dt else None

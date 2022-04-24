@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
@@ -29,7 +30,7 @@ class RestrictChatMember(Scaffold):
         chat_id: Union[int, str],
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",
-        until_date: int = 0
+        until_date: datetime = datetime.fromtimestamp(0)
     ) -> "types.Chat":
         """Restrict a user in a supergroup.
 
@@ -47,10 +48,10 @@ class RestrictChatMember(Scaffold):
             permissions (:obj:`~pyrogram.types.ChatPermissions`):
                 New user permissions.
 
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unbanned.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
+                considered to be banned forever. Defaults to epoch (ban forever).
 
         Returns:
             :obj:`~pyrogram.types.Chat`: On success, a chat object is returned.
@@ -58,7 +59,7 @@ class RestrictChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                from time import time
+                from datetime import datetime, timedelta
 
                 from pyrogram.types import ChatPermissions
 
@@ -66,7 +67,7 @@ class RestrictChatMember(Scaffold):
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions())
 
                 # Chat member muted for 24h
-                app.restrict_chat_member(chat_id, user_id, ChatPermissions(), int(time() + 86400))
+                app.restrict_chat_member(chat_id, user_id, ChatPermissions(), datetime.now() + timedelta(days=1))
 
                 # Chat member can only send text messages
                 app.restrict_chat_member(chat_id, user_id, ChatPermissions(can_send_messages=True))
@@ -76,7 +77,7 @@ class RestrictChatMember(Scaffold):
                 channel=await self.resolve_peer(chat_id),
                 participant=await self.resolve_peer(user_id),
                 banned_rights=raw.types.ChatBannedRights(
-                    until_date=until_date,
+                    until_date=utils.datetime_to_timestamp(until_date),
                     send_messages=not permissions.can_send_messages,
                     send_media=not permissions.can_send_media_messages,
                     send_stickers=not permissions.can_send_other_messages,

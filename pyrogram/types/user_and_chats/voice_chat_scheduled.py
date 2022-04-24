@@ -16,7 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+from datetime import datetime
+
+from pyrogram import raw, utils
 from ..object import Object
 
 
@@ -24,13 +26,13 @@ class VoiceChatScheduled(Object):
     """A service message about a voice chat scheduled in the chat.
 
     Parameters:
-        start_date (``int``):
-            Point in time (Unix timestamp) when the voice chat is supposed to be started by a chat administrator.
+        start_date (:py:obj:`~datetime.datetime`):
+            Point in time when the voice chat is supposed to be started by a chat administrator.
     """
 
     def __init__(
         self, *,
-        start_date: int
+        start_date: datetime
     ):
         super().__init__()
 
@@ -38,4 +40,4 @@ class VoiceChatScheduled(Object):
 
     @staticmethod
     def _parse(action: "raw.types.MessageActionGroupCallScheduled") -> "VoiceChatScheduled":
-        return VoiceChatScheduled(start_date=action.schedule_date)
+        return VoiceChatScheduled(start_date=utils.timestamp_to_datetime(action.schedule_date))

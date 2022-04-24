@@ -17,10 +17,11 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import html
+from datetime import datetime
 from typing import List, Optional
 
 import pyrogram
-from pyrogram import enums
+from pyrogram import enums, utils
 from pyrogram import raw
 from pyrogram import types
 from ..object import Object
@@ -103,13 +104,13 @@ class User(Object, Update):
             User's or bot's last name.
 
         status (:obj:`~pyrogram.enums.UserStatus`, *optional*):
-            User's last seen & online status. *None*, for bots.
+            User's last seen & online status. ``None``, for bots.
 
-        last_online_date (``int``, *optional*):
-            Last online date of a user, unix time. Only available in case status is "*offline*".
+        last_online_date (:py:obj:`~datetime.datetime`, *optional*):
+            Last online date of a user. Only available in case status is :obj:`~pyrogram.enums.UserStatus.OFFLINE`.
 
-        next_offline_date (``int``, *optional*):
-            Date when a user will automatically go offline, unix time. Only available in case status is "*online*".
+        next_offline_date (:py:obj:`~datetime.datetime`, *optional*):
+            Date when a user will automatically go offline. Only available in case status is :obj:`~pyrogram.enums.UserStatus.ONLINE`.
 
         username (``str``, *optional*):
             User's or bot's username.
@@ -158,8 +159,8 @@ class User(Object, Update):
         first_name: str = None,
         last_name: str = None,
         status: str = None,
-        last_online_date: int = None,
-        next_offline_date: int = None,
+        last_online_date: datetime = None,
+        next_offline_date: datetime = None,
         username: str = None,
         language_code: str = None,
         dc_id: int = None,
@@ -247,10 +248,10 @@ class User(Object, Update):
             status = None
 
         if status == enums.UserStatus.ONLINE:
-            next_offline_date = date
+            next_offline_date = utils.timestamp_to_datetime(date)
 
         if status == enums.UserStatus.OFFLINE:
-            last_online_date = date
+            last_online_date = utils.timestamp_to_datetime(date)
 
         return {
             "status": status,

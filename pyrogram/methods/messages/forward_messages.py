@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, Iterable, List
 
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.scaffold import Scaffold
 
@@ -30,7 +31,7 @@ class ForwardMessages(Scaffold):
         from_chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None
     ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
@@ -54,8 +55,8 @@ class ForwardMessages(Scaffold):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -85,7 +86,7 @@ class ForwardMessages(Scaffold):
                 id=message_ids,
                 silent=disable_notification or None,
                 random_id=[self.rnd_id() for _ in message_ids],
-                schedule_date=schedule_date,
+                schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content
             )
         )

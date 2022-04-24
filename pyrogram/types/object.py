@@ -56,14 +56,14 @@ class Object(metaclass=Meta):
         if isinstance(obj, Enum):
             return str(obj)
 
+        if isinstance(obj, datetime):
+            return str(obj)
+
         return {
             "_": obj.__class__.__name__,
             **{
                 attr: (
-                    "*" * 9
-                    if attr == "phone_number" else
-                    str(datetime.fromtimestamp(getattr(obj, attr)))
-                    if attr.endswith("date") else
+                    "*" * 9 if attr == "phone_number" else
                     getattr(obj, attr)
                 )
                 for attr in filter(lambda x: not x.startswith("_"), obj.__dict__)

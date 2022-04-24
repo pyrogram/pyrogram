@@ -16,7 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+from datetime import datetime
+
+from pyrogram import raw, utils
 from pyrogram import types
 from ..object import Object
 
@@ -25,14 +27,18 @@ class InviteLinkImporter(Object):
     """The date and user of when someone has joined with an invite link.
 
     Parameters:
-        date (``int``):
-            The unix time of when this user used the given link
+        date (:py:obj:`~datetime.datetime`):
+            The time of when this user used the given link
 
         user (:obj:`~pyrogram.types.User`):
             The user that has used the given invite link
     """
 
-    def __init__(self, *, date, user):
+    def __init__(
+        self, *,
+        date: datetime,
+        user: "types.User"
+    ):
         super().__init__(None)
 
         self.date = date
@@ -47,7 +53,7 @@ class InviteLinkImporter(Object):
         for j in invite_importers.importers:
             importers.append(
                 InviteLinkImporter(
-                    date=j.date,
+                    date=utils.timestamp_to_datetime(j.date),
                     user=types.User._parse(client=None, user=d[j.user_id])
                 )
             )

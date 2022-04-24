@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, List
 
 from pyrogram import types, utils, raw
@@ -31,7 +32,7 @@ class CopyMediaGroup(Scaffold):
         captions: Union[List[str], str] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
     ) -> List["types.Message"]:
         """Copy a media group by providing one of the message ids.
 
@@ -65,8 +66,8 @@ class CopyMediaGroup(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of copied messages is returned.
@@ -114,7 +115,7 @@ class CopyMediaGroup(Scaffold):
                 multi_media=multi_media,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
-                schedule_date=schedule_date
+                schedule_date=utils.datetime_to_timestamp(schedule_date)
             ),
             sleep_threshold=60
         )

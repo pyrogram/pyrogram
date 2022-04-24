@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from datetime import datetime
 from typing import Union, List
 
 from pyrogram import raw
@@ -34,7 +35,7 @@ class GetHistory(Scaffold):
         limit: int = 100,
         offset: int = 0,
         offset_id: int = 0,
-        offset_date: int = 0,
+        offset_date: datetime = datetime.fromtimestamp(0),
         reverse: bool = False
     ) -> List["types.Message"]:
         """Retrieve a chunk of the history of a chat.
@@ -59,8 +60,8 @@ class GetHistory(Scaffold):
             offset_id (``int``, *optional*):
                 Pass a message identifier as offset to retrieve only older messages starting from that message.
 
-            offset_date (``int``, *optional*):
-                Pass a date in Unix time as offset to retrieve only older messages starting from that date.
+            offset_date (:py:obj:`~datetime.datetime`, *optional*):
+                Pass a date as offset to retrieve only older messages starting from that date.
 
             reverse (``bool``, *optional*):
                 Pass True to retrieve the messages in reversed order (from older to most recent).
@@ -89,7 +90,7 @@ class GetHistory(Scaffold):
                 raw.functions.messages.GetHistory(
                     peer=await self.resolve_peer(chat_id),
                     offset_id=offset_id,
-                    offset_date=offset_date,
+                    offset_date=utils.datetime_to_timestamp(offset_date),
                     add_offset=offset * (-1 if reverse else 1) - (limit if reverse else 0),
                     limit=limit,
                     max_id=0,

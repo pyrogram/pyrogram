@@ -19,10 +19,11 @@
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
+from datetime import datetime
 
 
 class VideoNote(Object):
@@ -48,8 +49,8 @@ class VideoNote(Object):
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the video note was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the video note was sent.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Video thumbnails.
@@ -66,7 +67,7 @@ class VideoNote(Object):
         thumbs: List["types.Thumbnail"] = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None
+        date: datetime = None
     ):
         super().__init__(client)
 
@@ -101,7 +102,7 @@ class VideoNote(Object):
             duration=video_attributes.duration,
             file_size=video_note.size,
             mime_type=video_note.mime_type,
-            date=video_note.date,
+            date=utils.timestamp_to_datetime(video_note.date),
             thumbs=types.Thumbnail._parse(client, video_note),
             client=client
         )

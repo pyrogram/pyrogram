@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Dict
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from ..object import Object
 
@@ -32,8 +33,8 @@ class ChatInviteLink(Object):
             The invite link. If the link was created by another chat administrator, then the second part of the
             link will be replaced with "...".
 
-        date (``int``):
-            The date in Unix timestamp when the link was created.
+        date (:py:obj:`~datetime.datetime`):
+            The date when the link was created.
 
         is_primary (``bool``):
             True, if the link is primary.
@@ -50,8 +51,11 @@ class ChatInviteLink(Object):
         creates_join_request (``bool``, *optional*):
             True, if users joining the chat via the link need to be approved by chat administrators.
 
-        expire_date (``int``, *optional*):
-            Point in time (Unix timestamp) when the link will expire or has been expired.
+        start_date (:py:obj:`~datetime.datetime`, *optional*):
+            Point in time when the link has been edited.
+
+        expire_date (:py:obj:`~datetime.datetime`, *optional*):
+            Point in time when the link will expire or has been expired.
 
         member_limit (``int``, *optional*):
             Maximum number of users that can be members of the chat simultaneously after joining the chat via this
@@ -67,14 +71,14 @@ class ChatInviteLink(Object):
     def __init__(
         self, *,
         invite_link: str,
-        date: int,
+        date: datetime,
         is_primary: bool = None,
         is_revoked: bool = None,
         creator: "types.User" = None,
         name: str = None,
         creates_join_request: bool = None,
-        start_date: int = None,
-        expire_date: int = None,
+        start_date: datetime = None,
+        expire_date: datetime = None,
         member_limit: int = None,
         member_count: int = None,
         pending_join_request_count: int = None
@@ -108,13 +112,14 @@ class ChatInviteLink(Object):
 
         return ChatInviteLink(
             invite_link=invite.link,
-            date=invite.date,
+            date=utils.timestamp_to_datetime(invite.date),
             is_primary=invite.permanent,
             is_revoked=invite.revoked,
             creator=creator,
             name=invite.title,
             creates_join_request=invite.request_needed,
-            expire_date=invite.expire_date,
+            start_date=utils.timestamp_to_datetime(invite.start_date),
+            expire_date=utils.timestamp_to_datetime(invite.expire_date),
             member_limit=invite.usage_limit,
             member_count=invite.usage,
             pending_join_request_count=invite.requested

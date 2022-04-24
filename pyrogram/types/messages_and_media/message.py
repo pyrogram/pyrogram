@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from datetime import datetime
 from functools import partial
 from typing import List, Match, Union, BinaryIO, Optional
 
@@ -71,8 +72,8 @@ class Message(Object, Update):
             The supergroup itself for messages from anonymous group administrators.
             The linked channel for messages automatically forwarded to the discussion group.
 
-        date (``int``, *optional*):
-            Date the message was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the message was sent.
 
         chat (:obj:`~pyrogram.types.Chat`, *optional*):
             Conversation the message belongs to.
@@ -92,8 +93,8 @@ class Message(Object, Update):
         forward_signature (``str``, *optional*):
             For messages forwarded from channels, signature of the post author if present.
 
-        forward_date (``int``, *optional*):
-            For forwarded messages, date the original message was sent in Unix time.
+        forward_date (:py:obj:`~datetime.datetime`, *optional*):
+            For forwarded messages, date the original message was sent.
 
         reply_to_message_id (``int``, *optional*):
             The id of the message which this message directly replied to.
@@ -122,8 +123,8 @@ class Message(Object, Update):
             This field will contain the enumeration type of the media message.
             You can use ``media = getattr(message, message.media.value)`` to access the media message.
 
-        edit_date (``int``, *optional*):
-            Date the message was last edited in Unix time.
+        edit_date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the message was last edited.
 
         media_group_id (``str``, *optional*):
             The unique identifier of a media message group this message belongs to.
@@ -304,14 +305,14 @@ class Message(Object, Update):
         message_id: int,
         from_user: "types.User" = None,
         sender_chat: "types.Chat" = None,
-        date: int = None,
+        date: datetime = None,
         chat: "types.Chat" = None,
         forward_from: "types.User" = None,
         forward_sender_name: str = None,
         forward_from_chat: "types.Chat" = None,
         forward_from_message_id: int = None,
         forward_signature: str = None,
-        forward_date: int = None,
+        forward_date: datetime = None,
         reply_to_message_id: int = None,
         reply_to_top_message_id: int = None,
         reply_to_message: "Message" = None,
@@ -321,7 +322,7 @@ class Message(Object, Update):
         scheduled: bool = None,
         from_scheduled: bool = None,
         media: str = None,
-        edit_date: int = None,
+        edit_date: datetime = None,
         media_group_id: str = None,
         author_signature: str = None,
         has_protected_content: bool = None,
@@ -542,7 +543,7 @@ class Message(Object, Update):
 
             parsed_message = Message(
                 message_id=message.id,
-                date=message.date,
+                date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
@@ -607,7 +608,7 @@ class Message(Object, Update):
             forward_header = message.fwd_from  # type: raw.types.MessageFwdHeader
 
             if forward_header:
-                forward_date = forward_header.date
+                forward_date = utils.timestamp_to_datetime(forward_header.date)
 
                 if forward_header.from_id:
                     raw_peer_id = utils.get_raw_peer_id(forward_header.from_id)
@@ -739,7 +740,7 @@ class Message(Object, Update):
 
             parsed_message = Message(
                 message_id=message.id,
-                date=message.date,
+                date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
                 sender_chat=sender_chat,
@@ -775,7 +776,7 @@ class Message(Object, Update):
                 scheduled=is_scheduled,
                 from_scheduled=message.from_scheduled,
                 media=media_type,
-                edit_date=message.edit_date,
+                edit_date=utils.timestamp_to_datetime(message.edit_date),
                 media_group_id=message.grouped_id,
                 photo=photo,
                 location=location,
@@ -864,7 +865,7 @@ class Message(Object, Update):
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup = None
     ) -> "Message":
@@ -913,8 +914,8 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -1449,7 +1450,7 @@ class Message(Object, Update):
         force_document: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1519,8 +1520,8 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
             
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -1982,7 +1983,7 @@ class Message(Object, Update):
         correct_option_id: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2042,8 +2043,8 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
             
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -2859,7 +2860,7 @@ class Message(Object, Update):
         self,
         chat_id: Union[int, str],
         disable_notification: bool = None,
-        schedule_date: int = None
+        schedule_date: datetime = None
     ) -> Union["types.Message", List["types.Message"]]:
         """Bound method *forward* of :obj:`~pyrogram.types.Message`.
 
@@ -2888,8 +2889,8 @@ class Message(Object, Update):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
         Returns:
             On success, the forwarded Message is returned.
@@ -2913,7 +2914,7 @@ class Message(Object, Update):
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -2964,8 +2965,8 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
