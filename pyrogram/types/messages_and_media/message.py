@@ -3329,6 +3329,7 @@ class Message(Object, Update):
     async def download(
         self,
         file_name: str = "",
+        in_memory: bool = False,
         block: bool = True,
         progress: Callable = None,
         progress_args: tuple = ()
@@ -3352,6 +3353,11 @@ class Message(Object, Update):
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
+
+            in_memory (``bool``, *optional*):
+                Pass True to download the media in-memory.
+                A binary file-like object with its attribute ".name" set will be returned.
+                Defaults to False.
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -3389,6 +3395,7 @@ class Message(Object, Update):
         return await self._client.download_media(
             message=self,
             file_name=file_name,
+            in_memory=in_memory,
             block=block,
             progress=progress,
             progress_args=progress_args,

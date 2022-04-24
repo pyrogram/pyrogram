@@ -18,9 +18,8 @@
 
 import asyncio
 import os
-import time
 from datetime import datetime
-from typing import Union, Optional, Callable
+from typing import Union, Optional, Callable, BinaryIO
 
 import pyrogram
 from pyrogram import types
@@ -34,10 +33,11 @@ class DownloadMedia:
         self: "pyrogram.Client",
         message: Union["types.Message", str],
         file_name: str = DEFAULT_DOWNLOAD_DIR,
+        in_memory: bool = False,
         block: bool = True,
         progress: Callable = None,
         progress_args: tuple = ()
-    ) -> Optional[str]:
+    ) -> Optional[Union[str, BinaryIO]]:
         """Download the media from a message.
 
         Parameters:
@@ -50,6 +50,11 @@ class DownloadMedia:
                 By default, all files are downloaded in the *downloads* folder in your working directory.
                 You can also specify a path for downloading files in a custom location: paths that end with "/"
                 are considered directories. All non-existent folders will be created automatically.
+
+            in_memory (``bool``, *optional*):
+                Pass True to download the media in-memory.
+                A binary file-like object with its attribute ".name" set will be returned.
+                Defaults to False.
 
             block (``bool``, *optional*):
                 Blocks the code execution until the file has been downloaded.
@@ -78,14 +83,17 @@ class DownloadMedia:
                 You can either keep ``*args`` or add every single extra argument in your function signature.
 
         Returns:
-            ``str`` | ``None``: On success, the absolute path of the downloaded file is returned, otherwise, in case
-            the download failed or was deliberately stopped with :meth:`~pyrogram.Client.stop_transmission`, None is
-            returned.
+            ``str`` | ``None`` | ``BinaryIO``: On success, the absolute path of the downloaded file is returned,
+            otherwise, in case the download failed or was deliberately stopped with
+            :meth:`~pyrogram.Client.stop_transmission`, None is returned.
+            Otherwise, in case ``in_memory=True``, a binary file-like object with its attribute ".name" set is returned.
 
         Raises:
             ValueError: if the message doesn't contain any downloadable media
 
         Example:
+            Download media to file
+
             .. code-block:: python
 
                 # Download from Message
@@ -99,6 +107,15 @@ class DownloadMedia:
                     print(f"{current * 100 / total:.1f}%")
 
                 await app.download_media(message, progress=progress)
+
+            Download media in-memory
+
+            .. code-block:: python
+
+                file = await app.download_media(message, in_memory=True)
+
+                file_name = file.name
+                file_bytes = bytes(file.getbuffer())
         """
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
                            "new_chat_photo")
@@ -125,7 +142,7 @@ class DownloadMedia:
         media_file_name = getattr(media, "file_name", "")
         file_size = getattr(media, "file_size", 0)
         mime_type = getattr(media, "mime_type", "")
-        date = getattr(media, "date", 0)
+        date = getattr(media, "date", None)
 
         directory, file_name = os.path.split(file_name)
         file_name = file_name or media_file_name or ""
@@ -153,12 +170,14 @@ class DownloadMedia:
 
             file_name = "{}_{}_{}{}".format(
                 FileType(file_id_obj.file_type).name.lower(),
-                datetime.fromtimestamp(date or time.time()).strftime("%Y-%m-%d_%H-%M-%S"),
+                (date or datetime.now()).strftime("%Y-%m-%d_%H-%M-%S"),
                 self.rnd_id(),
                 extension
             )
 
-        downloader = self.handle_download((file_id_obj, directory, file_name, file_size, progress, progress_args))
+        downloader = self.handle_download(
+            (file_id_obj, directory, file_name, in_memory, file_size, progress, progress_args)
+        )
 
         if block:
             return await downloader
