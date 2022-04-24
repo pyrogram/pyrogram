@@ -14,7 +14,7 @@ and how to handle new incoming messages or other events in Pyrogram.
 Defining Updates
 ----------------
 
-As hinted already, updates are events that happen in your Telegram account (incoming messages, new members join,
+Updates are events that happen in your Telegram account (incoming messages, new members join,
 bot button presses, etc.), which are meant to notify you about a new specific state that has changed. These updates are
 handled by registering one or more callback functions in your app using :doc:`Handlers <../api/handlers>`.
 

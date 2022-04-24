@@ -21,4 +21,4 @@ help:
 
 lhtml: # live html
 	sphinx-autobuild --host $(shell ifconfig | grep "inet " | grep -v 127.0.0.1 | cut -d\  -f2) \
-	    --watch ../pyrogram -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)
+	    --watch ../pyrogram --watch resources -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS)

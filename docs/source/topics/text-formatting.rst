@@ -80,7 +80,7 @@ To strictly use this mode, pass :obj:`~pyrogram.enums.ParseMode.MARKDOWN` to the
 
     from pyrogram import enums
 
-    app.send_message(
+    await app.send_message(
         "me",
         (
             "**bold**, "
@@ -134,7 +134,7 @@ To strictly use this mode, pass :obj:`~pyrogram.enums.HTML` to the *parse_mode* 
 
     from pyrogram import enums
 
-    app.send_message(
+    await app.send_message(
         "me",
         (
             "<b>bold</b>, "
@@ -179,7 +179,7 @@ This means you can combine together both syntaxes in the same text:
 
 .. code-block:: python
 
-    app.send_message("me", "**bold**, <i>italic</i>")
+    await app.send_message("me", "**bold**, <i>italic</i>")
 
 Result:
 
@@ -192,8 +192,8 @@ If you don't like this behaviour you can always choose to only enable either Mar
 
     from pyrogram import enums
 
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.MARKDOWN)
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.HTML)
+    await app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.MARKDOWN)
+    await app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.HTML)
 
 Result:
 
@@ -208,7 +208,7 @@ The text will be sent as-is.
 
     from pyrogram import enums
 
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.DISABLED)
+    await app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.DISABLED)
 
 Result:
 

@@ -82,8 +82,8 @@ after the session name, which will be ``my_bot.session`` for the example below.
 
 .. note::
 
-    The API key (api_id and api_hash) and the bot_token is not needed anymore after a successful authorization.
-    This means you can now simply use:
+    The API key (api_id and api_hash) and the bot_token are not required anymore after a successful authorization.
+    This means you can now simply use the following:
 
     .. code-block:: python
 

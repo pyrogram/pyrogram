@@ -50,8 +50,8 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions
 
-        with Client("my_account") as app:
-            app.send(
+        async with Client("my_account") as app:
+            await app.send(
                 functions.account.UpdateProfile(
                     first_name="First Name", last_name="Last Name",
                     about="New bio text"
@@ -65,12 +65,12 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions, types
 
-        with Client("my_account") as app:
+        async with Client("my_account") as app:
             # Set online status
-            app.send(functions.account.UpdateStatus(offline=False))
+            await app.send(functions.account.UpdateStatus(offline=False))
 
             # Set offline status
-            app.send(functions.account.UpdateStatus(offline=True))
+            await app.send(functions.account.UpdateStatus(offline=True))
 
 -   Get chat info:
 
@@ -79,8 +79,8 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions, types
 
-        with Client("my_account") as app:
-            r = app.send(
+        async with Client("my_account") as app:
+            r = await app.send(
                 functions.channels.GetFullChannel(
                     channel=app.resolve_peer("username")
                 )
