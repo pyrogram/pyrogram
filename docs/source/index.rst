@@ -15,7 +15,7 @@ Welcome to Pyrogram
 
         <br>
         <a href="https://pyrogram.org">
-            Website
+            Homepage
         </a>
         •
         <a href="https://github.com/pyrogram/pyrogram">
