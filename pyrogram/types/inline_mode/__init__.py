@@ -26,9 +26,10 @@ from .inline_query_result_photo import InlineQueryResultPhoto
 from .inline_query_result_video import InlineQueryResultVideo
 from .inline_query_result_contact import InlineQueryResultContact
 from .inline_query_result_document import InlineQueryResultDocument
+from .inline_query_result_voice import InlineQueryResultVoice
 
 __all__ = [
     "InlineQuery", "InlineQueryResult", "InlineQueryResultArticle", "InlineQueryResultPhoto",
     "InlineQueryResultAnimation", "InlineQueryResultAudio", "InlineQueryResultVideo", "ChosenInlineResult",
-    "InlineQueryResultContact", "InlineQueryResultDocument"
+    "InlineQueryResultContact", "InlineQueryResultDocument", "InlineQueryResultVoice"
 ]
