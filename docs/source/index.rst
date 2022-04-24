@@ -75,7 +75,7 @@ First Steps
     :columns: 1
 
     - :doc:`Quick Start <intro/quickstart>`: Overview to get you started quickly.
-    - :doc:`Calling Methods <start/invoking>`: How to call Pyrogram's methods.
+    - :doc:`Invoking Methods <start/invoking>`: How to call Pyrogram's methods.
     - :doc:`Handling Updates <start/updates>`: How to handle Telegram updates.
     - :doc:`Error Handling <start/errors>`: How to handle API errors correctly.
 
