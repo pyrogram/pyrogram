@@ -39,9 +39,11 @@ The most elegant way to register a message handler is by using the :meth:`~pyrog
 
     app = Client("my_account")
 
+
     @app.on_message()
     async def my_handler(client, message):
         await message.forward("me")
+
 
     app.run()
 
@@ -63,8 +65,10 @@ function and registers it in your Client. It is useful in case you want to progr
     from pyrogram import Client
     from pyrogram.handlers import MessageHandler
 
+
     async def my_function(client, message):
         await message.forward("me")
+
 
     app = Client("my_account")
 

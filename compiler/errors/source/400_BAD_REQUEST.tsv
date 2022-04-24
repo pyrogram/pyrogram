@@ -89,7 +89,7 @@ DOCUMENT_INVALID	The document is invalid
 EMAIL_HASH_EXPIRED	The email hash expired and cannot be used to verify it
 EMAIL_INVALID	The email provided is invalid
 EMAIL_UNCONFIRMED	Email unconfirmed
-EMAIL_UNCONFIRMED_X	The provided email isn't confirmed, {x} is the length of the verification code that was just sent to the email
+EMAIL_UNCONFIRMED_X	The provided email isn't confirmed, {value} is the length of the verification code that was just sent to the email
 EMAIL_VERIFY_EXPIRED	The verification email has expired
 EMOTICON_EMPTY	The emoticon parameter is empty
 EMOTICON_INVALID	The emoticon parameter is invalid
@@ -108,7 +108,7 @@ EXTERNAL_URL_INVALID	The external media URL is invalid
 FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
 FIELD_NAME_INVALID	The field with the name FIELD_NAME is invalid
 FILE_ID_INVALID	The file id is invalid
-FILE_MIGRATE_X	The file is in Data Center No. {x}
+FILE_MIGRATE_X	The file is in Data Center No. {value}
 FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 4000
 FILE_PART_EMPTY	The file part sent is empty
 FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 3999
@@ -116,7 +116,7 @@ FILE_PART_LENGTH_INVALID	The length of a file part is invalid
 FILE_PART_SIZE_CHANGED	The part size is different from the size of one of the previous parts in the same file
 FILE_PART_SIZE_INVALID	512 KB cannot be evenly divided by part_size
 FILE_PART_TOO_BIG	The size limit (512 KB) for the content of the file part has been exceeded
-FILE_PART_X_MISSING	Part {x} of the file is missing from storage
+FILE_PART_X_MISSING	Part {value} of the file is missing from storage
 FILE_REFERENCE_EMPTY	The file id contains an empty file reference, you must obtain a valid one by fetching the message from the origin context
 FILE_REFERENCE_EXPIRED	The file id contains an expired file reference, you must obtain a valid one by fetching the message from the origin context
 FILE_REFERENCE_INVALID	The file id contains an invalid file reference, you must obtain a valid one by fetching the message from the origin context
@@ -198,7 +198,7 @@ PASSWORD_HASH_INVALID	The two-step verification password is invalid
 PASSWORD_MISSING	The account is missing the two-step verification password
 PASSWORD_RECOVERY_NA	The password recovery e-mail is not available
 PASSWORD_REQUIRED	The two-step verification password is required for this method
-PASSWORD_TOO_FRESH_X	The two-step verification password was added recently and you are required to wait {x} seconds
+PASSWORD_TOO_FRESH_X	The two-step verification password was added recently and you are required to wait {value} seconds
 PAYMENT_PROVIDER_INVALID	The payment provider was not recognised or its token was invalid
 PEER_FLOOD	The method can't be used because your account is currently limited
 PEER_ID_INVALID	The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it

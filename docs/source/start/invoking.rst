@@ -22,9 +22,11 @@ Making API calls with Pyrogram is very simple. Here's a basic example we are goi
 
     app = Client("my_account")
 
+
     async def main():
         async with app:
             await app.send_message("me", "Hi!")
+
 
     app.run(main())
 
@@ -76,10 +78,12 @@ Below there's the same example as above, but without the use of the context mana
 
     app = Client("my_account")
 
+
     async def main():
         await app.start()
         await app.send_message("me", "Hi!")
         await app.stop()
+
 
     app.run(main())
 
@@ -95,10 +99,12 @@ be instantiated inside the main function.
     import asyncio
     from pyrogram import Client
 
+
     async def main():
         app = Client("my_account")
 
         async with app:
             await app.send_message("me", "Hi!")
+
 
     asyncio.run(main())

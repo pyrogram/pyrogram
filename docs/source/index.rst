@@ -111,12 +111,12 @@ Meta
 
     intro/quickstart
     intro/install
-    intro/setup
 
 .. toctree::
     :hidden:
     :caption: Getting Started
 
+    start/setup
     start/auth
     start/invoking
     start/updates
@@ -144,7 +144,6 @@ Meta
     topics/use-filters
     topics/create-filters
     topics/more-on-updates
-    topics/config-file
     topics/smart-plugins
     topics/client-settings
     topics/tgcrypto

@@ -1,8 +1,8 @@
-SOCKS5 Proxy
-============
+Proxy Settings
+==============
 
 Pyrogram supports proxies with and without authentication. This feature allows Pyrogram to exchange data with Telegram
-through an intermediate SOCKS5 proxy server.
+through an intermediate SOCKS 4/5 or HTTP (CONNECT) proxy server.
 
 .. contents:: Contents
     :backlinks: none
@@ -14,44 +14,22 @@ through an intermediate SOCKS5 proxy server.
 Usage
 -----
 
--  To use Pyrogram with a proxy, simply append the following to your ``config.ini`` file and replace the values
-   with your own settings:
+To use Pyrogram with a proxy, use the *proxy* parameter in the Client class. If your proxy doesn't require authorization
+you can omit ``username`` and ``password``.
 
-   .. code-block:: ini
+.. code-block:: python
 
-       [proxy]
-       enabled = True
-       hostname = 11.22.33.44
-       port = 1080
-       username = <your_username>
-       password = <your_password>
+   from pyrogram import Client
 
-   To enable or disable the proxy without deleting your settings from the config file,
-   change the ``enabled`` value as follows:
-
-      -   ``1``, ``yes``, ``True`` or ``on``: Enables the proxy
-      -   ``0``, ``no``, ``False`` or ``off``: Disables the proxy
-
--  Alternatively, you can setup your proxy without the need of the ``config.ini`` file by using the *proxy* parameter
-   in the Client class:
-
-   .. code-block:: python
-
-       from pyrogram import Client
-
-       app = Client(
-           session_name="example",
-           proxy=dict(
-               hostname="11.22.33.44",
-               port=1080,
-               username="<your_username>",
-               password="<your_password>"
-           )
+   app = Client(
+       "my_account",
+       proxy=dict(
+           scheme="socks5",  # "socks4", "socks5" and "http" are supported
+           hostname="11.22.33.44",
+           port=1234,
+           username="<your_username>",
+           password="<your_password>"
        )
+   )
 
-       app.start()
-
-       ...
-
-.. note:: If your proxy doesn't require authorization you can omit ``username`` and ``password`` by either leaving the
-   values blank/empty or completely delete the lines.
+   app.run()

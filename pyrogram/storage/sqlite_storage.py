@@ -31,6 +31,7 @@ SCHEMA = """
 CREATE TABLE sessions
 (
     dc_id     INTEGER PRIMARY KEY,
+    api_id    INTEGER,
     test_mode INTEGER,
     auth_key  BLOB,
     date      INTEGER NOT NULL,
@@ -90,7 +91,7 @@ def get_input_peer(peer_id: int, access_hash: int, peer_type: str):
 
 
 class SQLiteStorage(Storage):
-    VERSION = 2
+    VERSION = 3
     USERNAME_TTL = 8 * 60 * 60
 
     def __init__(self, name: str):
@@ -109,8 +110,8 @@ class SQLiteStorage(Storage):
             )
 
             self.conn.execute(
-                "INSERT INTO sessions VALUES (?, ?, ?, ?, ?, ?)",
-                (2, None, None, 0, None, None)
+                "INSERT INTO sessions VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (2, None, None, None, 0, None, None)
             )
 
     async def open(self):
@@ -193,6 +194,9 @@ class SQLiteStorage(Storage):
         return self._get() if value == object else self._set(value)
 
     async def dc_id(self, value: int = object):
+        return self._accessor(value)
+
+    async def api_id(self, value: int = object):
         return self._accessor(value)
 
     async def test_mode(self, value: bool = object):

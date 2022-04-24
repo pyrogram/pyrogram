@@ -27,7 +27,6 @@ import shutil
 import sys
 import tempfile
 from concurrent.futures.thread import ThreadPoolExecutor
-from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
 from io import StringIO
@@ -76,38 +75,37 @@ class Client(Methods):
             pass here as argument.
 
         api_id (``int`` | ``str``, *optional*):
-            The *api_id* part of your Telegram API Key, as integer. E.g.: "12345".
-            This is an alternative way to pass it if you don't want to use the *config.ini* file.
+            The *api_id* part of your Telegram API key, as integer.
+            E.g.: 12345.
 
         api_hash (``str``, *optional*):
-            The *api_hash* part of your Telegram API Key, as string. E.g.: "0123456789abcdef0123456789abcdef".
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
+            The *api_hash* part of your Telegram API key, as string.
+            E.g.: "0123456789abcdef0123456789abcdef".
 
         app_version (``str``, *optional*):
-            Application version. Defaults to "Pyrogram |version|".
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
+            Application version.
+            Defaults to "Pyrogram x.y.z".
 
         device_model (``str``, *optional*):
-            Device model. Defaults to *platform.python_implementation() + " " + platform.python_version()*.
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
+            Device model.
+            Defaults to *platform.python_implementation() + " " + platform.python_version()*.
 
         system_version (``str``, *optional*):
-            Operating System version. Defaults to *platform.system() + " " + platform.release()*.
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
+            Operating System version.
+            Defaults to *platform.system() + " " + platform.release()*.
 
         lang_code (``str``, *optional*):
-            Code of the language used on the client, in ISO 639-1 standard. Defaults to "en".
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
+            Code of the language used on the client, in ISO 639-1 standard.
+            Defaults to "en".
 
         ipv6 (``bool``, *optional*):
             Pass True to connect to Telegram using IPv6.
             Defaults to False (IPv4).
 
         proxy (``dict``, *optional*):
-            Your SOCKS5 Proxy settings as dict,
-            e.g.: *dict(hostname="11.22.33.44", port=1080, username="user", password="pass")*.
+            The Proxy settings as dict.
+            E.g.: *dict(scheme="socks5", hostname="11.22.33.44", port=1234, username="user", password="pass")*.
             The *username* and *password* can be omitted if your proxy doesn't require authorization.
-            This is an alternative way to setup a proxy if you don't want to use the *config.ini* file.
 
         test_mode (``bool``, *optional*):
             Enable or disable login to the test servers.
@@ -117,7 +115,6 @@ class Client(Methods):
         bot_token (``str``, *optional*):
             Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
-            This is an alternative way to set it if you don't want to use the *config.ini* file.
 
         phone_number (``str``, *optional*):
             Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
@@ -131,11 +128,6 @@ class Client(Methods):
             Pass your Two-Step Verification password as string (if you have one) to avoid entering it manually.
             Only applicable for new sessions.
 
-        force_sms (``bool``, *optional*):
-            Pass True to force Telegram sending the authorization code via SMS.
-            Only applicable for new sessions.
-            Defaults to False.
-
         workers (``int``, *optional*):
             Number of maximum concurrent workers for handling incoming updates.
             Defaults to ``min(32, os.cpu_count() + 4)``.
@@ -145,13 +137,8 @@ class Client(Methods):
             will store your session files.
             Defaults to the parent directory of the main script.
 
-        config_file (``str``, *optional*):
-            Path of the configuration file.
-            Defaults to ./config.ini
-
         plugins (``dict``, *optional*):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
-            This is an alternative way to setup plugins if you don't want to use the *config.ini* file.
 
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             The parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
@@ -194,7 +181,6 @@ class Client(Methods):
     INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/(?:joinchat/|\+))([\w-]+)$")
     WORKERS = min(32, (os.cpu_count() or 0) + 4)  # os.cpu_count() can be None
     WORKDIR = PARENT_DIR
-    CONFIG_FILE = PARENT_DIR / "config.ini"
 
     mimetypes = MimeTypes()
     mimetypes.readfp(StringIO(mime_types))
@@ -204,10 +190,10 @@ class Client(Methods):
         session_name: Union[str, Storage],
         api_id: int = None,
         api_hash: str = None,
-        app_version: str = None,
-        device_model: str = None,
-        system_version: str = None,
-        lang_code: str = None,
+        app_version: str = APP_VERSION,
+        device_model: str = DEVICE_MODEL,
+        system_version: str = SYSTEM_VERSION,
+        lang_code: str = LANG_CODE,
         ipv6: bool = False,
         proxy: dict = None,
         test_mode: bool = False,
@@ -215,10 +201,8 @@ class Client(Methods):
         phone_number: str = None,
         phone_code: str = None,
         password: str = None,
-        force_sms: bool = False,
         workers: int = WORKERS,
         workdir: str = WORKDIR,
-        config_file: str = CONFIG_FILE,
         plugins: dict = None,
         parse_mode: "enums.ParseMode" = enums.ParseMode.DEFAULT,
         no_updates: bool = None,
@@ -236,17 +220,14 @@ class Client(Methods):
         self.system_version = system_version
         self.lang_code = lang_code
         self.ipv6 = ipv6
-        # TODO: Make code consistent, use underscore for private/protected fields
-        self._proxy = proxy
+        self.proxy = proxy
         self.test_mode = test_mode
         self.bot_token = bot_token
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
-        self.force_sms = force_sms
         self.workers = workers
         self.workdir = Path(workdir)
-        self.config_file = Path(config_file)
         self.plugins = plugins
         self.parse_mode = parse_mode
         self.no_updates = no_updates
@@ -295,29 +276,19 @@ class Client(Methods):
         return self.start()
 
     def __exit__(self, *args):
-        self.stop()
+        try:
+            self.stop()
+        except ConnectionError:
+            pass
 
     async def __aenter__(self):
         return await self.start()
 
     async def __aexit__(self, *args):
-        await self.stop()
-
-    @property
-    def proxy(self):
-        return self._proxy
-
-    @proxy.setter
-    def proxy(self, value):
-        if value is None:
-            self._proxy = None
-            return
-
-        if self._proxy is None:
-            self._proxy = {}
-
-        self._proxy["enabled"] = bool(value.get("enabled", True))
-        self._proxy.update(value)
+        try:
+            await self.stop()
+        except ConnectionError:
+            pass
 
     async def authorize(self) -> User:
         if self.bot_token:
@@ -355,17 +326,14 @@ class Client(Methods):
             else:
                 break
 
-        if self.force_sms:
-            sent_code = await self.resend_code(self.phone_number, sent_code.phone_code_hash)
+        sent_code_descriptions = {
+            enums.SentCodeType.APP: "Telegram app",
+            enums.SentCodeType.SMS: "SMS",
+            enums.SentCodeType.CALL: "phone call",
+            enums.SentCodeType.FLASH_CALL: "phone flash call"
+        }
 
-        print("The confirmation code has been sent via {}".format(
-            {
-                "app": "Telegram app",
-                "sms": "SMS",
-                "call": "phone call",
-                "flash_call": "phone flash call"
-            }[sent_code.type]
-        ))
+        print(f"The confirmation code has been sent via {sent_code_descriptions[sent_code.type]}")
 
         while True:
             if not self.phone_code:
@@ -615,79 +583,6 @@ class Client(Methods):
         elif isinstance(updates, raw.types.UpdatesTooLong):
             log.info(updates)
 
-    def load_config(self):
-        parser = ConfigParser()
-        parser.read(str(self.config_file))
-
-        if self.bot_token:
-            pass
-        else:
-            self.bot_token = parser.get("pyrogram", "bot_token", fallback=None)
-
-        if self.api_id and self.api_hash:
-            pass
-        else:
-            if parser.has_section("pyrogram"):
-                self.api_id = parser.getint("pyrogram", "api_id")
-                self.api_hash = parser.get("pyrogram", "api_hash")
-            else:
-                raise AttributeError("No API Key found. More info: https://docs.pyrogram.org/intro/setup")
-
-        for option in ["app_version", "device_model", "system_version", "lang_code"]:
-            if getattr(self, option):
-                pass
-            else:
-                if parser.has_section("pyrogram"):
-                    setattr(self, option, parser.get(
-                        "pyrogram",
-                        option,
-                        fallback=getattr(Client, option.upper())
-                    ))
-                else:
-                    setattr(self, option, getattr(Client, option.upper()))
-
-        if self._proxy:
-            self._proxy["enabled"] = bool(self._proxy.get("enabled", True))
-        else:
-            self._proxy = {}
-
-            if parser.has_section("proxy"):
-                self._proxy["enabled"] = parser.getboolean("proxy", "enabled", fallback=True)
-                self._proxy["hostname"] = parser.get("proxy", "hostname")
-                self._proxy["port"] = parser.getint("proxy", "port")
-                self._proxy["username"] = parser.get("proxy", "username", fallback=None) or None
-                self._proxy["password"] = parser.get("proxy", "password", fallback=None) or None
-
-        if self.plugins:
-            self.plugins = {
-                "enabled": bool(self.plugins.get("enabled", True)),
-                "root": self.plugins.get("root", None),
-                "include": self.plugins.get("include", []),
-                "exclude": self.plugins.get("exclude", [])
-            }
-        else:
-            try:
-                section = parser["plugins"]
-
-                self.plugins = {
-                    "enabled": section.getboolean("enabled", True),
-                    "root": section.get("root", None),
-                    "include": section.get("include", []),
-                    "exclude": section.get("exclude", [])
-                }
-
-                include = self.plugins["include"]
-                exclude = self.plugins["exclude"]
-
-                if include:
-                    self.plugins["include"] = include.strip().split("\n")
-
-                if exclude:
-                    self.plugins["exclude"] = exclude.strip().split("\n")
-
-            except KeyError:
-                self.plugins = None
-
     async def load_session(self):
         await self.storage.open()
 
@@ -699,6 +594,12 @@ class Client(Methods):
         ])
 
         if session_empty:
+            if not self.api_id or not self.api_hash:
+                raise AttributeError("The API key is required for new authorizations. "
+                                     "More info: https://docs.pyrogram.org/start/auth")
+
+            await self.storage.api_id(self.api_id)
+
             await self.storage.dc_id(2)
             await self.storage.date(0)
 
@@ -711,6 +612,24 @@ class Client(Methods):
             )
             await self.storage.user_id(None)
             await self.storage.is_bot(None)
+        else:
+            # Needed for migration from storage v2 to v3
+            if not await self.storage.api_id():
+                while True:
+                    try:
+                        value = int(await ainput("Enter the api_id part of the API key: "))
+
+                        if value <= 0:
+                            print("Invalid value")
+                            continue
+
+                        confirm = (await ainput(f'Is "{value}" correct? (y/N): ')).lower()
+
+                        if confirm == "y":
+                            await self.storage.api_id(value)
+                            break
+                    except Exception as e:
+                        print(e)
 
     def load_plugins(self):
         if self.plugins:

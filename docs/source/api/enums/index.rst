@@ -25,6 +25,7 @@ to apply only a valid value among the expected ones.
     ParseMode
     PollType
     SentCodeType
+    NextCodeType
     UserStatus
 
 .. toctree::
@@ -42,4 +43,5 @@ to apply only a valid value among the expected ones.
     ParseMode
     PollType
     SentCodeType
+    NextCodeType
     UserStatus

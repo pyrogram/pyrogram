@@ -31,7 +31,7 @@ class SentCode(Object):
             Confirmation code identifier useful for the next authorization steps (either
             :meth:`~pyrogram.Client.sign_in` or :meth:`~pyrogram.Client.sign_up`).
 
-        next_type (:obj:`~pyrogram.enums.SentCodeType`, *optional*):
+        next_type (:obj:`~pyrogram.enums.NextCodeType`, *optional*):
             Type of the next code to be sent with :meth:`~pyrogram.Client.resend_code`.
 
         timeout (``int``, *optional*):
@@ -42,7 +42,7 @@ class SentCode(Object):
         self, *,
         type: "enums.SentCodeType",
         phone_code_hash: str,
-        next_type: "enums.SentCodeType" = None,
+        next_type: "enums.NextCodeType" = None,
         timeout: int = None
     ):
         super().__init__()
@@ -57,6 +57,6 @@ class SentCode(Object):
         return SentCode(
             type=enums.SentCodeType(type(sent_code.type)),
             phone_code_hash=sent_code.phone_code_hash,
-            next_type=enums.SentCodeType(type(sent_code.next_type)) if sent_code.next_type else None,
+            next_type=enums.NextCodeType(type(sent_code.next_type)) if sent_code.next_type else None,
             timeout=sent_code.timeout
         )

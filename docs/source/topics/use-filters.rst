@@ -57,11 +57,11 @@ operators ``~``, ``&`` and ``|``:
 
 Here are some examples:
 
--   Message is a **text** message **and** is **not edited**.
+-   Message is a **text** message **or** a **photo**.
 
     .. code-block:: python
 
-        @app.on_message(filters.text & ~filters.edited)
+        @app.on_message(filters.text | filters.photo)
         def my_handler(client, message):
             print(message)
 

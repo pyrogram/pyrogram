@@ -33,7 +33,7 @@ class SentCodeType(AutoName):
     "The code will be sent via a flash phone call, that will be closed immediately."
 
     MISSED_CALL = raw.types.auth.SentCodeTypeMissedCall
-    "Missed call"
+    "Missed call."
 
     SMS = raw.types.auth.SentCodeTypeSms
     "The code was sent via SMS."

@@ -37,7 +37,6 @@ class Connect:
         if self.is_connected:
             raise ConnectionError("Client is already connected")
 
-        self.load_config()
         await self.load_session()
 
         self.session = Session(

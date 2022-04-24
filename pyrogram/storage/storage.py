@@ -59,6 +59,9 @@ class Storage:
     async def dc_id(self, value: int = object):
         raise NotImplementedError
 
+    async def api_id(self, value: int = object):
+        raise NotImplementedError
+
     async def test_mode(self, value: bool = object):
         raise NotImplementedError
 

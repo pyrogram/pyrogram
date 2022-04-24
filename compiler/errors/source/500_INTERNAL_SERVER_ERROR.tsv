@@ -13,8 +13,8 @@ GROUPCALL_ADD_PARTICIPANTS_FAILED	Failure while adding voice chat member due to 
 GROUPED_ID_OCCUPY_FAILED	Telegram is having internal problems. Please try again later
 HISTORY_GET_FAILED	The chat history couldn't be retrieved due to Telegram having internal problems. Please try again later
 IMAGE_ENGINE_DOWN	Image engine down due to Telegram having internal problems. Please try again later
-INTERDC_X_CALL_ERROR	An error occurred while Telegram was intercommunicating with DC{x}. Please try again later
-INTERDC_X_CALL_RICH_ERROR	A rich error occurred while Telegram was intercommunicating with DC{x}. Please try again later
+INTERDC_X_CALL_ERROR	An error occurred while Telegram was intercommunicating with DC{value}. Please try again later
+INTERDC_X_CALL_RICH_ERROR	A rich error occurred while Telegram was intercommunicating with DC{value}. Please try again later
 MEMBER_FETCH_FAILED	Telegram is having internal problems. Please try again later
 MEMBER_NO_LOCATION	Couldn't find the member's location due to Telegram having internal problems. Please try again later
 MEMBER_OCCUPY_PRIMARY_LOC_FAILED	Telegram is having internal problems. Please try again later

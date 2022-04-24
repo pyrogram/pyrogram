@@ -16,17 +16,21 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .chat_action import ChatAction
-from .chat_event_action import ChatEventAction
-from .chat_member_status import ChatMemberStatus
-from .chat_members_filter import ChatMembersFilter
-from .chat_type import ChatType
-from .message_entity_type import MessageEntityType
-from .message_media import MessageMedia
-from .message_service import MessageService
-from .messages_filter import MessagesFilter
-from .next_code_type import NextCodeType
-from .parse_mode import ParseMode
-from .poll_type import PollType
-from .sent_code_type import SentCodeType
-from .user_status import UserStatus
+from pyrogram import raw
+from .auto_name import AutoName
+
+
+class NextCodeType(AutoName):
+    """Next code type enumeration used in :obj:`~pyrogram.types.SentCode`."""
+
+    CALL = raw.types.auth.CodeTypeCall
+    "The code will be sent via a phone call. A synthesized voice will tell the user which verification code to input."
+
+    FLASH_CALL = raw.types.auth.CodeTypeFlashCall
+    "The code will be sent via a flash phone call, that will be closed immediately."
+
+    MISSED_CALL = raw.types.auth.CodeTypeMissedCall
+    "Missed call."
+
+    SMS = raw.types.auth.CodeTypeSms
+    "The code was sent via SMS."
