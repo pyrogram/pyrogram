@@ -19,13 +19,13 @@
 from datetime import datetime
 from typing import Union, Optional, AsyncGenerator
 
+import pyrogram
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class IterHistory(Scaffold):
+class IterHistory:
     async def iter_history(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
         offset: int = 0,

@@ -18,13 +18,13 @@
 
 from typing import AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import types, raw, utils
-from pyrogram.scaffold import Scaffold
 
 
-class IterDialogs(Scaffold):
+class IterDialogs:
     async def iter_dialogs(
-        self,
+        self: "pyrogram.Client",
         limit: int = 0
     ) -> Optional[AsyncGenerator["types.Dialog", None]]:
         """Iterate through a user's dialogs sequentially.

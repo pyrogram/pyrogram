@@ -22,19 +22,19 @@ import re
 from datetime import datetime
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class SendMediaGroup(Scaffold):
+class SendMediaGroup:
     # TODO: Add progress parameter
     async def send_media_group(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         media: List[Union[
             "types.InputMediaPhoto",

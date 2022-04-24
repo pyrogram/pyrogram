@@ -19,15 +19,15 @@
 import os
 from typing import Union, BinaryIO
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatPhoto(Scaffold):
+class SetChatPhoto:
     async def set_chat_photo(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         *,
         photo: Union[str, BinaryIO] = None,

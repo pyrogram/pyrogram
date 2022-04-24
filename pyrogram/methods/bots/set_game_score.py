@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SetGameScore(Scaffold):
+class SetGameScore:
     async def set_game_score(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str],
         score: int,
         force: bool = None,

@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class RetractVote(Scaffold):
+class RetractVote:
     async def retract_vote(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int
     ) -> "types.Poll":

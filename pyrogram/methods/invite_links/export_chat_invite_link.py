@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class ExportChatInviteLink(Scaffold):
+class ExportChatInviteLink:
     async def export_chat_invite_link(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
     ) -> "types.ChatInviteLink":
         """Generate a new primary invite link for a chat; any previously generated primary link is revoked.

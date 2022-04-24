@@ -16,13 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UpdateProfile(Scaffold):
+class UpdateProfile:
     async def update_profile(
-        self,
+        self: "pyrogram.Client",
         first_name: str = None,
         last_name: str = None,
         bio: str = None

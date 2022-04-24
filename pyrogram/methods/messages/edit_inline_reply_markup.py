@@ -16,16 +16,16 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineReplyMarkup(Scaffold):
+class EditInlineReplyMarkup:
     async def edit_inline_reply_markup(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> bool:

@@ -20,12 +20,11 @@ from typing import Union
 
 import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SendChatAction(Scaffold):
+class SendChatAction:
     async def send_chat_action(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         action: "pyrogram.enums.ChatAction"
     ) -> bool:

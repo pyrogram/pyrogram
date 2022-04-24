@@ -20,15 +20,15 @@ import logging
 from datetime import datetime
 from typing import Union, List, Optional
 
+import pyrogram
 from pyrogram import types, enums
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class CopyMessage(Scaffold):
+class CopyMessage:
     async def copy_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_id: int,

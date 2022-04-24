@@ -18,14 +18,14 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetGameHighScores(Scaffold):
+class GetGameHighScores:
     async def get_game_high_scores(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str],
         chat_id: Union[int, str],
         message_id: int = None

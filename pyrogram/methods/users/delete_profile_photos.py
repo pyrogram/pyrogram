@@ -18,15 +18,15 @@
 
 from typing import List, Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteProfilePhotos(Scaffold):
+class DeleteProfilePhotos:
     async def delete_profile_photos(
-        self,
+        self: "pyrogram.Client",
         photo_ids: Union[str, List[str]]
     ) -> bool:
         """Delete your own profile photos.

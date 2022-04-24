@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SendGame(Scaffold):
+class SendGame:
     async def send_game(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         game_short_name: str,
         disable_notification: bool = None,

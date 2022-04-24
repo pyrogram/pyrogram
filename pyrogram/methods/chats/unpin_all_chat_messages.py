@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnpinAllChatMessages(Scaffold):
+class UnpinAllChatMessages:
     async def unpin_all_chat_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
     ) -> bool:
         """Use this method to clear the list of pinned messages in a chat.

@@ -18,13 +18,13 @@
 
 from typing import Optional
 
+import pyrogram
 from pyrogram import types, enums
-from pyrogram.scaffold import Scaffold
 
 
-class EditInlineCaption(Scaffold):
+class EditInlineCaption:
     async def edit_inline_caption(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         caption: str,
         parse_mode: Optional["enums.ParseMode"] = None,

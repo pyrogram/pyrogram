@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatAdminsWithInviteLinks(Scaffold):
+class GetChatAdminsWithInviteLinks:
     async def get_chat_admins_with_invite_links(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
     ):
         """Get the list of the administrators that have exported invite links in a chat.

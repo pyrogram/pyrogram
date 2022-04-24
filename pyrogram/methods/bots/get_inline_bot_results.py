@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram.errors import UnknownError
-from pyrogram.scaffold import Scaffold
 
 
-class GetInlineBotResults(Scaffold):
+class GetInlineBotResults:
     async def get_inline_bot_results(
-        self,
+        self: "pyrogram.Client",
         bot: Union[int, str],
         query: str = "",
         offset: str = "",

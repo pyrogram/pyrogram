@@ -18,14 +18,16 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class GetPasswordHint(Scaffold):
-    async def get_password_hint(self) -> str:
+class GetPasswordHint:
+    async def get_password_hint(
+        self: "pyrogram.Client",
+    ) -> str:
         """Get your Two-Step Verification password hint.
 
         Returns:

@@ -18,9 +18,9 @@
 
 from typing import Union, AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
 class Filters:
@@ -32,9 +32,9 @@ class Filters:
     ADMINISTRATORS = "administrators"
 
 
-class IterChatMembers(Scaffold):
+class IterChatMembers:
     async def iter_chat_members(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
         query: str = "",

@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnblockUser(Scaffold):
+class UnblockUser:
     async def unblock_user(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str]
     ) -> bool:
         """Unblock a user.

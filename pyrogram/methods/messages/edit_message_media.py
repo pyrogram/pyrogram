@@ -20,16 +20,16 @@ import os
 import re
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageMedia(Scaffold):
+class EditMessageMedia:
     async def edit_message_media(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         media: "types.InputMedia",

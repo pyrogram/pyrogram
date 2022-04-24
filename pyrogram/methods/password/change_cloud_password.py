@@ -18,14 +18,14 @@
 
 import os
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 from pyrogram.utils import compute_password_hash, compute_password_check, btoi, itob
 
 
-class ChangeCloudPassword(Scaffold):
+class ChangeCloudPassword:
     async def change_cloud_password(
-        self,
+        self: "pyrogram.Client",
         current_password: str,
         new_password: str,
         new_hint: str = ""

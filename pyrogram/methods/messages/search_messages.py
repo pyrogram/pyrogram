@@ -18,13 +18,13 @@
 
 from typing import Union, List, AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import raw, types, utils, enums
-from pyrogram.scaffold import Scaffold
 
 
 # noinspection PyShadowingBuiltins
 async def get_chunk(
-    client: Scaffold,
+    client,
     chat_id: Union[int, str],
     query: str = "",
     filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
@@ -57,10 +57,10 @@ async def get_chunk(
     return await utils.parse_messages(client, r)
 
 
-class SearchMessages(Scaffold):
+class SearchMessages:
     # noinspection PyShadowingBuiltins
     async def search_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         query: str = "",
         offset: int = 0,

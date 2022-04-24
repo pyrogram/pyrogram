@@ -18,14 +18,14 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class VotePoll(Scaffold):
+class VotePoll:
     async def vote_poll(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: id,
         options: Union[int, List[int]]

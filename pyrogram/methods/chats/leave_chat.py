@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class LeaveChat(Scaffold):
+class LeaveChat:
     async def leave_chat(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         delete: bool = False
     ):

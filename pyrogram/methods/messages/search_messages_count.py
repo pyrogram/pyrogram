@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, enums
-from pyrogram.scaffold import Scaffold
 
 
-class SearchMessagesCount(Scaffold):
+class SearchMessagesCount:
     async def search_messages_count(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         query: str = "",
         filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,

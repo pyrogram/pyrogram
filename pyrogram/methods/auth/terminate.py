@@ -18,15 +18,17 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 from pyrogram.syncer import Syncer
 
 log = logging.getLogger(__name__)
 
 
-class Terminate(Scaffold):
-    async def terminate(self):
+class Terminate:
+    async def terminate(
+        self: "pyrogram.Client",
+    ):
         """Terminate the client by shutting down workers.
 
         This method does the opposite of :meth:`~pyrogram.Client.initialize`.

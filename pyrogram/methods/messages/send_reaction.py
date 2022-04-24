@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SendReaction(Scaffold):
+class SendReaction:
     async def send_reaction(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         emoji: str = ""

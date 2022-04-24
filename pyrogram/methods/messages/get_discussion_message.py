@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetDiscussionMessage(Scaffold):
+class GetDiscussionMessage:
     async def get_discussion_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
     ) -> "types.Message":

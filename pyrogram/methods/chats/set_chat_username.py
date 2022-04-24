@@ -18,13 +18,13 @@
 
 from typing import Union, Optional
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatUsername(Scaffold):
+class SetChatUsername:
     async def set_chat_username(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         username: Optional[str]
     ) -> bool:

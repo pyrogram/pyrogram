@@ -16,12 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetDialogsCount(Scaffold):
-    async def get_dialogs_count(self, pinned_only: bool = False) -> int:
+class GetDialogsCount:
+    async def get_dialogs_count(
+        self: "pyrogram.Client",
+        pinned_only: bool = False
+    ) -> int:
         """Get the total count of your dialogs.
 
         pinned_only (``bool``, *optional*):

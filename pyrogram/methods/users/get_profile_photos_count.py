@@ -18,12 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetProfilePhotosCount(Scaffold):
-    async def get_profile_photos_count(self, chat_id: Union[int, str]) -> int:
+class GetProfilePhotosCount:
+    async def get_profile_photos_count(
+        self: "pyrogram.Client",
+        chat_id: Union[int, str]
+    ) -> int:
         """Get the total count of profile pictures for a user.
 
         Parameters:

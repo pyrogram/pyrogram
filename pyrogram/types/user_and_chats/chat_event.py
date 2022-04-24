@@ -254,10 +254,10 @@ class ChatEvent(Object):
 
     @staticmethod
     async def _parse(
-            client: "pyrogram.Client",
-            event: "raw.base.ChannelAdminLogEvent",
-            users: List["raw.base.User"],
-            chats: List["raw.base.Chat"]
+        client: "pyrogram.Client",
+        event: "raw.base.ChannelAdminLogEvent",
+        users: List["raw.base.User"],
+        chats: List["raw.base.Chat"]
     ):
         users = {i.id: i for i in users}
         chats = {i.id: i for i in chats}

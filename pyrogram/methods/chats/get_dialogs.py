@@ -20,17 +20,17 @@ import logging
 from datetime import datetime
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class GetDialogs(Scaffold):
+class GetDialogs:
     async def get_dialogs(
-        self,
+        self: "pyrogram.Client",
         offset_date: datetime = datetime.fromtimestamp(0),
         limit: int = 100,
         pinned_only: bool = False

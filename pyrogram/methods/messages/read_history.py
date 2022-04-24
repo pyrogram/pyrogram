@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class ReadHistory(Scaffold):
+class ReadHistory:
     async def read_history(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         max_id: int = 0
     ) -> bool:

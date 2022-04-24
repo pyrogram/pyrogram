@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 from .handler import Handler
 
 
@@ -27,7 +29,7 @@ class InlineQueryHandler(Handler):
     :meth:`~pyrogram.Client.on_inline_query` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a new InlineQuery arrives. It takes *(client, inline_query)*
             as positional arguments (look at the section below for a detailed description).
 
@@ -43,5 +45,5 @@ class InlineQueryHandler(Handler):
             The received inline query.
     """
 
-    def __init__(self, callback: callable, filters=None):
+    def __init__(self, callback: Callable, filters=None):
         super().__init__(callback, filters)

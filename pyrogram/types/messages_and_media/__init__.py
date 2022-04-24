@@ -28,6 +28,7 @@ from .message_entity import MessageEntity
 from .photo import Photo
 from .poll import Poll
 from .poll_option import PollOption
+from .reaction import Reaction
 from .sticker import Sticker
 from .stripped_thumbnail import StrippedThumbnail
 from .thumbnail import Thumbnail
@@ -36,7 +37,6 @@ from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
 from .webpage import WebPage
-from .reaction import Reaction
 
 __all__ = [
     "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",

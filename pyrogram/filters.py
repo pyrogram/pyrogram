@@ -127,7 +127,7 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
 
     Parameters:
-        func (``callable``):
+        func (``Callable``):
             A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
             update should be handled, False otherwise. 
             The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 

@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteChatPhoto(Scaffold):
+class DeleteChatPhoto:
     async def delete_chat_photo(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> bool:
         """Delete a chat photo.

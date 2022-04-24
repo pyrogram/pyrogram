@@ -19,7 +19,7 @@
 import logging
 from datetime import datetime
 from functools import partial
-from typing import List, Match, Union, BinaryIO, Optional
+from typing import List, Match, Union, BinaryIO, Optional, Callable
 
 import pyrogram
 from pyrogram import raw, enums
@@ -867,7 +867,7 @@ class Message(Object, Update):
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
-        reply_markup = None
+        reply_markup=None
     ) -> "Message":
         """Bound method *reply_text* of :obj:`~pyrogram.types.Message`.
 
@@ -970,7 +970,7 @@ class Message(Object, Update):
             "types.ForceReply"
         ] = None,
         reply_to_message_id: int = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_animation* :obj:`~pyrogram.types.Message`.
@@ -1037,7 +1037,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -1109,7 +1109,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_audio* of :obj:`~pyrogram.types.Message`.
@@ -1176,7 +1176,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -1457,7 +1457,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_document* of :obj:`~pyrogram.types.Message`.
@@ -1527,7 +1527,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -1865,7 +1865,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_photo* of :obj:`~pyrogram.types.Message`.
@@ -1922,7 +1922,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -2088,7 +2088,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_sticker* of :obj:`~pyrogram.types.Message`.
@@ -2130,7 +2130,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -2295,7 +2295,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_video* of :obj:`~pyrogram.types.Message`.
@@ -2370,7 +2370,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -2440,7 +2440,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_video_note* of :obj:`~pyrogram.types.Message`.
@@ -2494,7 +2494,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -2559,7 +2559,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
         """Bound method *reply_voice* of :obj:`~pyrogram.types.Message`.
@@ -2614,7 +2614,7 @@ class Message(Object, Update):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -3321,7 +3321,7 @@ class Message(Object, Update):
         self,
         file_name: str = "",
         block: bool = True,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> str:
         """Bound method *download* of :obj:`~pyrogram.types.Message`.
@@ -3348,7 +3348,7 @@ class Message(Object, Update):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully

@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetAdministratorTitle(Scaffold):
+class SetAdministratorTitle:
     async def set_administrator_title(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         title: str,

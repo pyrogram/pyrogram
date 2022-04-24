@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class EditChatInviteLink(Scaffold):
+class EditChatInviteLink:
     async def edit_chat_invite_link(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         invite_link: str,
         name: str = None,

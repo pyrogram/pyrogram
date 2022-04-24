@@ -19,12 +19,15 @@
 import asyncio
 import inspect
 
+import pyrogram
 from pyrogram.methods.utilities.idle import idle
-from pyrogram.scaffold import Scaffold
 
 
-class Run(Scaffold):
-    def run(self, coroutine=None):
+class Run:
+    def run(
+        self: "pyrogram.Client",
+        coroutine=None
+    ):
         """Start the client, idle the main script and finally stop the client.
 
         This is a convenience method that calls :meth:`~pyrogram.Client.start`, :meth:`~pyrogram.idle` and

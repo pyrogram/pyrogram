@@ -17,10 +17,9 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyrogram
-from pyrogram.scaffold import Scaffold
 
 
-class StopTransmission(Scaffold):
+class StopTransmission:
     def stop_transmission(self):
         """Stop downloading or uploading a file.
 

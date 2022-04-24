@@ -16,13 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class AnswerCallbackQuery(Scaffold):
+class AnswerCallbackQuery:
     async def answer_callback_query(
-        self,
+        self: "pyrogram.Client",
         callback_query_id: str,
         text: str = None,
         show_alert: bool = None,

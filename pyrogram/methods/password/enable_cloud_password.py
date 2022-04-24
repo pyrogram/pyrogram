@@ -18,14 +18,14 @@
 
 import os
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 from pyrogram.utils import compute_password_hash, btoi, itob
 
 
-class EnableCloudPassword(Scaffold):
+class EnableCloudPassword:
     async def enable_cloud_password(
-        self,
+        self: "pyrogram.Client",
         password: str,
         hint: str = "",
         email: str = None

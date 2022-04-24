@@ -19,15 +19,15 @@
 from datetime import datetime
 from typing import Union, List, Optional
 
+import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class SendCachedMedia(Scaffold):
+class SendCachedMedia:
     async def send_cached_media(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         file_id: str,
         caption: str = "",

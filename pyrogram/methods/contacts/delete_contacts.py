@@ -18,13 +18,13 @@
 
 from typing import List, Union
 
+import pyrogram
 from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteContacts(Scaffold):
+class DeleteContacts:
     async def delete_contacts(
-        self,
+        self: "pyrogram.Client",
         user_ids: Union[int, str, List[Union[int, str]]]
     ) -> Union["types.User", List["types.User"], None]:
         """Delete contacts from your Telegram address book.

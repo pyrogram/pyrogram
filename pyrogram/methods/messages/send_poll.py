@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union, List
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types, enums
-from pyrogram.scaffold import Scaffold
 
 
-class SendPoll(Scaffold):
+class SendPoll:
     async def send_poll(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         question: str,
         options: List[str],

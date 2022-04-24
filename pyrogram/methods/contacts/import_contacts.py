@@ -18,14 +18,14 @@
 
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class ImportContacts(Scaffold):
+class ImportContacts:
     async def import_contacts(
-        self,
+        self: "pyrogram.Client",
         contacts: List["types.InputPhoneContact"]
     ):
         """Import contacts to your Telegram address book.

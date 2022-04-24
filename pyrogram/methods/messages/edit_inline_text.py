@@ -18,16 +18,16 @@
 
 from typing import Optional
 
+import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineText(Scaffold):
+class EditInlineText:
     async def edit_inline_text(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         text: str,
         parse_mode: Optional["enums.ParseMode"] = None,

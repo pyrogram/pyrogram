@@ -20,22 +20,22 @@ import asyncio
 import os
 import time
 from datetime import datetime
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 
+import pyrogram
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES
-from pyrogram.scaffold import Scaffold
 
 DEFAULT_DOWNLOAD_DIR = "downloads/"
 
 
-class DownloadMedia(Scaffold):
+class DownloadMedia:
     async def download_media(
-        self,
+        self: "pyrogram.Client",
         message: Union["types.Message", str],
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         block: bool = True,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> Optional[str]:
         """Download the media from a message.
@@ -55,7 +55,7 @@ class DownloadMedia(Scaffold):
                 Blocks the code execution until the file has been downloaded.
                 Defaults to True.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully

@@ -19,17 +19,17 @@
 import os
 import re
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineMedia(Scaffold):
+class EditInlineMedia:
     async def edit_inline_media(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         media: "types.InputMedia",
         reply_markup: "types.InlineKeyboardMarkup" = None

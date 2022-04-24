@@ -18,15 +18,15 @@
 
 from typing import Union, List, Optional
 
+import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageText(Scaffold):
+class EditMessageText:
     async def edit_message_text(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         text: str,

@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class BanChatMember(Scaffold):
+class BanChatMember:
     async def ban_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         until_date: datetime = datetime.fromtimestamp(0)

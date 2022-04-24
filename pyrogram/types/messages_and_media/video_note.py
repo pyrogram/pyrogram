@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
@@ -23,7 +24,6 @@ from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
-from datetime import datetime
 
 
 class VideoNote(Object):

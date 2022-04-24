@@ -18,15 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.errors import UserNotParticipant
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatMember(Scaffold):
+class GetChatMember:
     async def get_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> "types.ChatMember":

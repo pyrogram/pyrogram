@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class ApproveChatJoinRequest(Scaffold):
+class ApproveChatJoinRequest:
     async def approve_chat_join_request(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: int,
     ) -> bool:

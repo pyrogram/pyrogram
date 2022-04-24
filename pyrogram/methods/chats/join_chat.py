@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class JoinChat(Scaffold):
+class JoinChat:
     async def join_chat(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> "types.Chat":
         """Join a group chat or channel.

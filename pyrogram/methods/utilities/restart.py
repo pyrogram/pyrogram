@@ -16,11 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class Restart(Scaffold):
-    async def restart(self, block: bool = True):
+class Restart:
+    async def restart(
+        self: "pyrogram.Client",
+        block: bool = True
+    ):
         """Restart the Client.
 
         This method will first call :meth:`~pyrogram.Client.stop` and then :meth:`~pyrogram.Client.start` in a row in

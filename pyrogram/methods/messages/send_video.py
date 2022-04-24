@@ -19,20 +19,20 @@
 import os
 import re
 from datetime import datetime
-from typing import Union, BinaryIO, List, Optional
+from typing import Union, BinaryIO, List, Optional, Callable
 
+import pyrogram
 from pyrogram import StopTransmission, enums
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class SendVideo(Scaffold):
+class SendVideo:
     async def send_video(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         video: Union[str, BinaryIO],
         caption: str = "",
@@ -55,7 +55,7 @@ class SendVideo(Scaffold):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> Optional["types.Message"]:
         """Send video files.
@@ -128,7 +128,7 @@ class SendVideo(Scaffold):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully

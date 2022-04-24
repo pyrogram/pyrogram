@@ -18,15 +18,15 @@
 
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class GetNearbyChats(Scaffold):
+class GetNearbyChats:
     async def get_nearby_chats(
-        self,
+        self: "pyrogram.Client",
         latitude: float,
         longitude: float
     ) -> List["types.Chat"]:

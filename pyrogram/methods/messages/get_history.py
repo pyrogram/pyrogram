@@ -20,17 +20,17 @@ import logging
 from datetime import datetime
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class GetHistory(Scaffold):
+class GetHistory:
     async def get_history(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 100,
         offset: int = 0,

@@ -18,14 +18,14 @@
 
 from typing import Union, Optional, AsyncGenerator
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatAdminInviteLinks(Scaffold):
+class GetChatAdminInviteLinks:
     async def get_chat_admin_invite_links(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         admin_id: Union[int, str],
         revoked: bool = False,

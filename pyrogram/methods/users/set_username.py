@@ -18,13 +18,13 @@
 
 from typing import Optional
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetUsername(Scaffold):
+class SetUsername:
     async def set_username(
-        self,
+        self: "pyrogram.Client",
         username: Optional[str]
     ) -> bool:
         """Set your own username.

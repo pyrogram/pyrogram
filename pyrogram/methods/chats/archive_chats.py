@@ -18,13 +18,13 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class ArchiveChats(Scaffold):
+class ArchiveChats:
     async def archive_chats(
-        self,
+        self: "pyrogram.Client",
         chat_ids: Union[int, str, List[Union[int, str]]],
     ) -> bool:
         """Archive one or more chats.

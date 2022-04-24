@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SendContact(Scaffold):
+class SendContact:
     async def send_contact(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         phone_number: str,
         first_name: str,

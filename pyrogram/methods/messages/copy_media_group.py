@@ -19,13 +19,13 @@
 from datetime import datetime
 from typing import Union, List
 
+import pyrogram
 from pyrogram import types, utils, raw
-from pyrogram.scaffold import Scaffold
 
 
-class CopyMediaGroup(Scaffold):
+class CopyMediaGroup:
     async def copy_media_group(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_id: int,

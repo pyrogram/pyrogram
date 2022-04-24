@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SendInlineBotResult(Scaffold):
+class SendInlineBotResult:
     async def send_inline_bot_result(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         query_id: int,
         result_id: str,

@@ -18,17 +18,20 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.errors import PhoneMigrate, NetworkMigrate
-from pyrogram.scaffold import Scaffold
 from pyrogram.session import Session, Auth
 
 log = logging.getLogger(__name__)
 
 
-class SendCode(Scaffold):
-    async def send_code(self, phone_number: str) -> "types.SentCode":
+class SendCode:
+    async def send_code(
+        self: "pyrogram.Client",
+        phone_number: str
+    ) -> "types.SentCode":
         """Send the confirmation code to the given phone number.
 
         Parameters:

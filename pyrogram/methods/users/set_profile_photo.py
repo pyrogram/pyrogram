@@ -18,13 +18,13 @@
 
 from typing import Union, BinaryIO
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetProfilePhoto(Scaffold):
+class SetProfilePhoto:
     async def set_profile_photo(
-        self,
+        self: "pyrogram.Client",
         *,
         photo: Union[str, BinaryIO] = None,
         video: Union[str, BinaryIO] = None

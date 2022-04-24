@@ -19,15 +19,15 @@
 import logging
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw, types, enums
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class GetChatMembers(Scaffold):
+class GetChatMembers:
     async def get_chat_members(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 200,
@@ -105,17 +105,17 @@ class GetChatMembers(Scaffold):
         elif isinstance(peer, raw.types.InputPeerChannel):
             filter = filter.lower()
 
-            if filter == Filters.ALL:
+            if filter == enums.ChatMembersFilter.ANY:
                 filter = raw.types.ChannelParticipantsSearch(q=query)
-            elif filter == Filters.BANNED:
+            elif filter == enums.ChatMembersFilter.BANNED:
                 filter = raw.types.ChannelParticipantsKicked(q=query)
-            elif filter == Filters.RESTRICTED:
+            elif filter == enums.ChatMembersFilter.RESTRICTED:
                 filter = raw.types.ChannelParticipantsBanned(q=query)
-            elif filter == Filters.BOTS:
+            elif filter == enums.ChatMembersFilter.BOTS:
                 filter = raw.types.ChannelParticipantsBots()
-            elif filter == Filters.RECENT:
+            elif filter == enums.ChatMembersFilter.RECENT:
                 filter = raw.types.ChannelParticipantsRecent()
-            elif filter == Filters.ADMINISTRATORS:
+            elif filter == enums.ChatMembersFilter.ADMINISTRATORS:
                 filter = raw.types.ChannelParticipantsAdmins()
             else:
                 raise ValueError(f'Invalid filter "{filter}"')

@@ -19,11 +19,11 @@
 from typing import List
 
 import pyrogram
-from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
+from pyrogram import raw
+from pyrogram import types
 
 
-class SetBotCommands(Scaffold):
+class SetBotCommands:
     async def set_bot_commands(
         self: "pyrogram.Client",
         commands: List["types.BotCommand"],
@@ -31,7 +31,6 @@ class SetBotCommands(Scaffold):
         language_code: str = "",
     ):
         """Set the list of the bot's commands.
-
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
 

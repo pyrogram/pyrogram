@@ -32,7 +32,7 @@ class DeletedMessagesHandler(Handler):
     :meth:`~pyrogram.Client.on_deleted_messages` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when one or more messages have been deleted.
             It takes *(client, messages)* as positional arguments (look at the section below for a detailed description).
 

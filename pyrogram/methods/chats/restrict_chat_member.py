@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class RestrictChatMember(Scaffold):
+class RestrictChatMember:
     async def restrict_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",

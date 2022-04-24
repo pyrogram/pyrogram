@@ -18,15 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class GetChat(Scaffold):
+class GetChat:
     async def get_chat(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> Union["types.Chat", "types.ChatPreview"]:
         """Get up to date information about a chat.

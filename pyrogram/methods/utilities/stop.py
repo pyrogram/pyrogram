@@ -16,11 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class Stop(Scaffold):
-    async def stop(self, block: bool = True):
+class Stop:
+    async def stop(
+        self: "pyrogram.Client",
+        block: bool = True
+    ):
         """Stop the Client.
 
         This method disconnects the client from Telegram and stops the underlying tasks.

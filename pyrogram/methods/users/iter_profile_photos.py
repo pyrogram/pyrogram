@@ -18,13 +18,13 @@
 
 from typing import Union, AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class IterProfilePhotos(Scaffold):
+class IterProfilePhotos:
     async def iter_profile_photos(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 0,

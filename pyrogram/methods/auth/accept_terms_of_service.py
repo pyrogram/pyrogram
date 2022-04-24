@@ -16,12 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class AcceptTermsOfService(Scaffold):
-    async def accept_terms_of_service(self, terms_of_service_id: str) -> bool:
+class AcceptTermsOfService:
+    async def accept_terms_of_service(
+        self: "pyrogram.Client",
+        terms_of_service_id: str
+    ) -> bool:
         """Accept the given terms of service.
 
         Parameters:

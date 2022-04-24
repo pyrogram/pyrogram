@@ -16,18 +16,17 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, List, Optional
 
+import pyrogram
 from pyrogram import raw, utils, enums
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
-
-from datetime import datetime
 
 
-class SendMessage(Scaffold):
+class SendMessage:
     async def send_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         text: str,
         parse_mode: Optional["enums.ParseMode"] = None,

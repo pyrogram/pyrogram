@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class RevokeChatInviteLink(Scaffold):
+class RevokeChatInviteLink:
     async def revoke_chat_invite_link(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         invite_link: str,
     ) -> "types.ChatInviteLink":

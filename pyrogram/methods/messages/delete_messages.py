@@ -18,13 +18,13 @@
 
 from typing import Union, Iterable
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteMessages(Scaffold):
+class DeleteMessages:
     async def delete_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
         revoke: bool = True

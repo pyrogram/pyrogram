@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class RequestCallbackAnswer(Scaffold):
+class RequestCallbackAnswer:
     async def request_callback_answer(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         callback_data: Union[str, bytes],

@@ -18,14 +18,14 @@
 
 from typing import Iterable
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class AnswerInlineQuery(Scaffold):
+class AnswerInlineQuery:
     async def answer_inline_query(
-        self,
+        self: "pyrogram.Client",
         inline_query_id: str,
         results: Iterable["types.InlineQueryResult"],
         cache_time: int = 300,

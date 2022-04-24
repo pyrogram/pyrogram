@@ -19,10 +19,10 @@
 import logging
 from typing import Union, Iterable, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ log = logging.getLogger(__name__)
 # TODO: Rewrite using a flag for replied messages and have message_ids non-optional
 
 
-class GetMessages(Scaffold):
+class GetMessages:
     async def get_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]] = None,
         reply_to_message_ids: Union[int, Iterable[int]] = None,

@@ -18,17 +18,17 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
 from pyrogram.raw.core import TLObject
-from pyrogram.scaffold import Scaffold
 from pyrogram.session import Session
 
 log = logging.getLogger(__name__)
 
 
-class Send(Scaffold):
+class Send:
     async def send(
-        self,
+        self: "pyrogram.Client",
         data: TLObject,
         retries: int = Session.MAX_RETRIES,
         timeout: float = Session.WAIT_TIMEOUT,

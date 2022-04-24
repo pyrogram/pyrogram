@@ -18,15 +18,15 @@
 
 from typing import AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class SearchGlobal(Scaffold):
+class SearchGlobal:
     async def search_global(
-        self,
+        self: "pyrogram.Client",
         query: str = "",
         filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
         limit: int = 0,

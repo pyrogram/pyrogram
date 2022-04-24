@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageReplyMarkup(Scaffold):
+class EditMessageReplyMarkup:
     async def edit_message_reply_markup(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         reply_markup: "types.InlineKeyboardMarkup" = None,

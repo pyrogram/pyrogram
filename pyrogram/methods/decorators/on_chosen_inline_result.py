@@ -20,15 +20,14 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnChosenInlineResult(Scaffold):
+class OnChosenInlineResult:
     def on_chosen_inline_result(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
+    ) -> Callable:
         """Decorator for handling chosen inline results.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

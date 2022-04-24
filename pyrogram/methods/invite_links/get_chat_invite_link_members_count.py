@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatInviteLinkMembersCount(Scaffold):
+class GetChatInviteLinkMembersCount:
     async def get_chat_invite_link_members_count(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         invite_link: str
     ) -> int:

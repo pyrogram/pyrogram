@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
 
 
-class PromoteChatMember(Scaffold):
+class PromoteChatMember:
     async def promote_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         privileges: "types.ChatPrivileges" = types.ChatPrivileges(),

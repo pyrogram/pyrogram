@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram.raw import functions
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatProtectedContent(Scaffold):
+class SetChatProtectedContent:
     async def set_chat_protected_content(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         enabled: bool
     ) -> bool:

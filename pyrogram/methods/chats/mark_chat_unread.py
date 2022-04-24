@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram.raw import functions
-from pyrogram.scaffold import Scaffold
 
 
-class MarkChatUnread(Scaffold):
+class MarkChatUnread:
     async def mark_chat_unread(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
     ) -> bool:
         """Mark a chat as unread.

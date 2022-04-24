@@ -18,12 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteSupergroup(Scaffold):
-    async def delete_supergroup(self, chat_id: Union[int, str]) -> bool:
+class DeleteSupergroup:
+    async def delete_supergroup(
+        self: "pyrogram.Client",
+        chat_id: Union[int, str]
+    ) -> bool:
         """Delete a supergroup.
 
         Parameters:

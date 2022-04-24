@@ -18,15 +18,15 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class GetProfilePhotos(Scaffold):
+class GetProfilePhotos:
     async def get_profile_photos(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         offset: int = 0,
         limit: int = 100

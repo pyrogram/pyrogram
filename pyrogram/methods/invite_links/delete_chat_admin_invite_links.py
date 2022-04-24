@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteChatAdminInviteLinks(Scaffold):
+class DeleteChatAdminInviteLinks:
     async def delete_chat_admin_invite_links(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         admin_id: Union[int, str],
     ) -> bool:

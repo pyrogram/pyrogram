@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 from .handler import Handler
 
 
@@ -27,7 +29,7 @@ class DisconnectHandler(Handler):
     :meth:`~pyrogram.Client.on_disconnect` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a disconnection occurs. It takes *(client)*
             as positional argument (look at the section below for a detailed description).
 
@@ -37,5 +39,5 @@ class DisconnectHandler(Handler):
             is established.
     """
 
-    def __init__(self, callback: callable):
+    def __init__(self, callback: Callable):
         super().__init__(callback)

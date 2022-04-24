@@ -25,23 +25,23 @@ import math
 import os
 from hashlib import md5
 from pathlib import PurePath
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Callable
 
+import pyrogram
 from pyrogram import StopTransmission
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 from pyrogram.session import Session
 
 log = logging.getLogger(__name__)
 
 
-class SaveFile(Scaffold):
+class SaveFile:
     async def save_file(
-        self,
+        self: "pyrogram.Client",
         path: Union[str, BinaryIO],
         file_id: int = None,
         file_part: int = 0,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ):
         """Upload a file onto Telegram servers, without actually sending the message to anyone.
@@ -64,7 +64,7 @@ class SaveFile(Scaffold):
             file_part (``int``, *optional*):
                 In case a file part expired, pass the file_id and the file_part to retry uploading that specific chunk.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully

@@ -21,15 +21,19 @@ import functools
 import inspect
 import logging
 import os
+import platform
 import re
 import shutil
+import sys
 import tempfile
 from concurrent.futures.thread import ThreadPoolExecutor
 from configparser import ConfigParser
 from hashlib import sha256
 from importlib import import_module
+from io import StringIO
+from mimetypes import MimeTypes
 from pathlib import Path
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Callable
 
 import pyrogram
 from pyrogram import __version__, __license__
@@ -51,12 +55,14 @@ from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
 from .file_id import FileId, FileType, ThumbnailSource
-from .scaffold import Scaffold
+from .mime_types import mime_types
+from .parser import Parser
+from .session.internals import MsgId
 
 log = logging.getLogger(__name__)
 
 
-class Client(Methods, Scaffold):
+class Client(Methods):
     """Pyrogram Client, the main means for interacting with Telegram.
 
     Parameters:
@@ -177,10 +183,26 @@ class Client(Methods, Scaffold):
             terminal environments.
     """
 
+    APP_VERSION = f"Pyrogram {__version__}"
+    DEVICE_MODEL = f"{platform.python_implementation()} {platform.python_version()}"
+    SYSTEM_VERSION = f"{platform.system()} {platform.release()}"
+
+    LANG_CODE = "en"
+
+    PARENT_DIR = Path(sys.argv[0]).parent
+
+    INVITE_LINK_RE = re.compile(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/(?:joinchat/|\+))([\w-]+)$")
+    WORKERS = min(32, (os.cpu_count() or 0) + 4)  # os.cpu_count() can be None
+    WORKDIR = PARENT_DIR
+    CONFIG_FILE = PARENT_DIR / "config.ini"
+
+    mimetypes = MimeTypes()
+    mimetypes.readfp(StringIO(mime_types))
+
     def __init__(
         self,
         session_name: Union[str, Storage],
-        api_id: Union[int, str] = None,
+        api_id: int = None,
         api_hash: str = None,
         app_version: str = None,
         device_model: str = None,
@@ -194,9 +216,9 @@ class Client(Methods, Scaffold):
         phone_code: str = None,
         password: str = None,
         force_sms: bool = False,
-        workers: int = Scaffold.WORKERS,
-        workdir: str = Scaffold.WORKDIR,
-        config_file: str = Scaffold.CONFIG_FILE,
+        workers: int = WORKERS,
+        workdir: str = WORKDIR,
+        config_file: str = CONFIG_FILE,
         plugins: dict = None,
         parse_mode: "enums.ParseMode" = enums.ParseMode.DEFAULT,
         no_updates: bool = None,
@@ -207,7 +229,7 @@ class Client(Methods, Scaffold):
         super().__init__()
 
         self.session_name = session_name
-        self.api_id = int(api_id) if api_id else None
+        self.api_id = api_id
         self.api_hash = api_hash
         self.app_version = app_version
         self.device_model = device_model
@@ -246,6 +268,24 @@ class Client(Methods, Scaffold):
             raise ValueError("Unknown storage engine")
 
         self.dispatcher = Dispatcher(self)
+
+        self.rnd_id = MsgId
+
+        self.parser = Parser(self)
+        self.parse_mode = enums.ParseMode.DEFAULT
+
+        self.session = None
+
+        self.media_sessions = {}
+        self.media_sessions_lock = asyncio.Lock()
+
+        self.is_connected = None
+        self.is_initialized = None
+
+        self.takeout_id = None
+
+        self.disconnect_handler = None
+
         self.loop = asyncio.get_event_loop()
 
     def __enter__(self):
@@ -790,7 +830,7 @@ class Client(Methods, Scaffold):
         self,
         file_id: FileId,
         file_size: int,
-        progress: callable,
+        progress: Callable,
         progress_args: tuple = ()
     ) -> str:
         dc_id = file_id.dc_id

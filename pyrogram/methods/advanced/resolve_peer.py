@@ -20,17 +20,17 @@ import logging
 import re
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.errors import PeerIdInvalid
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class ResolvePeer(Scaffold):
+class ResolvePeer:
     async def resolve_peer(
-        self,
+        self: "pyrogram.Client",
         peer_id: Union[int, str]
     ) -> Union[raw.base.InputPeer, raw.base.InputUser, raw.base.InputChannel]:
         """Get the InputPeer of a known peer id.

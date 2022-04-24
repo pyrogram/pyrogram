@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatPermissions(Scaffold):
+class SetChatPermissions:
     async def set_chat_permissions(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         permissions: "types.ChatPermissions",
     ) -> "types.Chat":

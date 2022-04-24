@@ -19,15 +19,17 @@
 import logging
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class GetContacts(Scaffold):
-    async def get_contacts(self) -> List["types.User"]:
+class GetContacts:
+    async def get_contacts(
+        self: "pyrogram.Client"
+    ) -> List["types.User"]:
         """Get contacts from your Telegram address book.
 
         Returns:

@@ -18,13 +18,16 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetCommonChats(Scaffold):
-    async def get_common_chats(self, user_id: Union[int, str]) -> list:
+class GetCommonChats:
+    async def get_common_chats(
+        self: "pyrogram.Client",
+        user_id: Union[int, str]
+    ) -> list:
         """Get the common chats you have with a user.
 
         Parameters:

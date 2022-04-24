@@ -18,16 +18,16 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class SignUp(Scaffold):
+class SignUp:
     async def sign_up(
-        self,
+        self: "pyrogram.Client",
         phone_number: str,
         phone_code_hash: str,
         first_name: str,

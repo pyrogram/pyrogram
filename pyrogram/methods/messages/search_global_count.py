@@ -16,13 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw, enums
-from pyrogram.scaffold import Scaffold
 
 
-class SearchGlobalCount(Scaffold):
+class SearchGlobalCount:
     async def search_global_count(
-        self,
+        self: "pyrogram.Client",
         query: str = "",
         filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
     ) -> int:

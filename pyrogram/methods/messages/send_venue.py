@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SendVenue(Scaffold):
+class SendVenue:
     async def send_venue(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         latitude: float,
         longitude: float,

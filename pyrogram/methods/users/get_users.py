@@ -19,14 +19,14 @@
 import asyncio
 from typing import Iterable, Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetUsers(Scaffold):
+class GetUsers:
     async def get_users(
-        self,
+        self: "pyrogram.Client",
         user_ids: Union[Iterable[Union[int, str]], int, str]
     ) -> Union["types.User", List["types.User"]]:
         """Get information about a user.

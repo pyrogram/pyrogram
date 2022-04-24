@@ -18,14 +18,14 @@
 
 from typing import Union, List, AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatEventLog(Scaffold):
+class GetChatEventLog:
     async def get_chat_event_log(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         query: str = "",
         offset_id: int = 0,

@@ -19,14 +19,14 @@
 from datetime import datetime
 from typing import Union, Iterable, List
 
+import pyrogram
 from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class ForwardMessages(Scaffold):
+class ForwardMessages:
     async def forward_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
