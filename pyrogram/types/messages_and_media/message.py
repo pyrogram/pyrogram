@@ -3340,7 +3340,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            await lient.download_media(message)
+            await client.download_media(message)
 
         Example:
             .. code-block:: python
