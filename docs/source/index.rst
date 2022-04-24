@@ -143,7 +143,7 @@ Meta
     topics/client-settings
     topics/synchronous
     topics/text-formatting
-    topics/tgcrypto
+    topics/speedups
     topics/smart-plugins
     topics/storage-engines
     topics/serializing
