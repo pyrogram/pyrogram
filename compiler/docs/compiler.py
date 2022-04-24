@@ -339,7 +339,7 @@ def pyrogram_api():
                     f2.write(title + "\n" + "=" * len(title) + "\n\n")
                     f2.write(".. automethod:: pyrogram.Client.{}()".format(method))
 
-            functions = ["idle"]
+            functions = ["idle", "compose"]
 
             for func in functions:
                 with open(root + "/{}.rst".format(func), "w") as f2:
