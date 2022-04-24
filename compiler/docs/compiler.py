@@ -295,6 +295,8 @@ def pyrogram_api():
             set_bot_commands
             get_bot_commands
             delete_bot_commands
+            set_bot_default_privileges
+            get_bot_default_privileges
         """,
         authorization="""
         Authorization
