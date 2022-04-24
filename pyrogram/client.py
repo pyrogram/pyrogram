@@ -614,7 +614,7 @@ class Client(Methods):
             plugins = self.plugins.copy()
 
             for option in ["include", "exclude"]:
-                if plugins[option]:
+                if plugins.get(option, []):
                     plugins[option] = [
                         (i.split()[0], i.split()[1:] or None)
                         for i in self.plugins[option]
@@ -622,10 +622,10 @@ class Client(Methods):
         else:
             return
 
-        if plugins.get("enabled", False):
+        if plugins.get("enabled", True):
             root = plugins["root"]
-            include = plugins["include"]
-            exclude = plugins["exclude"]
+            include = plugins.get("include", [])
+            exclude = plugins.get("exclude", [])
 
             count = 0
 
