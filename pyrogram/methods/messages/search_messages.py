@@ -27,7 +27,7 @@ async def get_chunk(
     client,
     chat_id: Union[int, str],
     query: str = "",
-    filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
+    filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
     offset: int = 0,
     limit: int = 100,
     from_user: Union[int, str] = None
@@ -64,7 +64,7 @@ class SearchMessages:
         chat_id: Union[int, str],
         query: str = "",
         offset: int = 0,
-        filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
         limit: int = 0,
         from_user: Union[int, str] = None
     ) -> Optional[AsyncGenerator["types.Message", None]]:

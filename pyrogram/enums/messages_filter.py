@@ -23,8 +23,8 @@ from .auto_name import AutoName
 class MessagesFilter(AutoName):
     """Messages filter enumeration used in used in :meth:`~pyrogram.Client.search_messages` and used in :meth:`~pyrogram.Client.search_global`"""
 
-    ANY = raw.types.InputMessagesFilterEmpty
-    "Any kind of message"
+    EMPTY = raw.types.InputMessagesFilterEmpty
+    "Empty filter (any kind of messages)"
 
     PHOTO = raw.types.InputMessagesFilterPhotos
     "Photo messages"

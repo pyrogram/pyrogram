@@ -28,7 +28,7 @@ class SearchGlobal:
     async def search_global(
         self: "pyrogram.Client",
         query: str = "",
-        filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
         limit: int = 0,
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Search messages globally from all of your chats.

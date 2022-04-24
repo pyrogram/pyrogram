@@ -24,7 +24,7 @@ class SearchGlobalCount:
     async def search_global_count(
         self: "pyrogram.Client",
         query: str = "",
-        filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
     ) -> int:
         """Get the count of messages resulting from a global search.
 

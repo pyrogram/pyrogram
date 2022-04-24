@@ -843,7 +843,7 @@ class Chat(Object):
         offset: int = 0,
         limit: int = 200,
         query: str = "",
-        filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.ANY
+        filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.SEARCH
     ) -> List["types.ChatMember"]:
         """Bound method *get_members* of :obj:`~pyrogram.types.Chat`.
 

@@ -27,7 +27,7 @@ class SearchMessagesCount:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         query: str = "",
-        filter: "enums.MessagesFilter" = enums.MessagesFilter.ANY,
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
         from_user: Union[int, str] = None
     ) -> int:
         """Get the count of messages resulting from a search inside a chat.
