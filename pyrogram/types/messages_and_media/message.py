@@ -273,16 +273,16 @@ class Message(Object, Update):
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`~pyrogram.filters.command`.
 
-        voice_chat_scheduled (:obj:`~pyrogram.types.VoiceChatScheduled`, *optional*):
+        video_chat_scheduled (:obj:`~pyrogram.types.VideoChatScheduled`, *optional*):
             Service message: voice chat scheduled.
 
-        voice_chat_started (:obj:`~pyrogram.types.VoiceChatStarted`, *optional*):
+        video_chat_started (:obj:`~pyrogram.types.VideoChatStarted`, *optional*):
             Service message: the voice chat started.
 
-        voice_chat_ended (:obj:`~pyrogram.types.VoiceChatEnded`, *optional*):
+        video_chat_ended (:obj:`~pyrogram.types.VideoChatEnded`, *optional*):
             Service message: the voice chat has ended.
 
-        voice_chat_members_invited (:obj:`~pyrogram.types.VoiceChatParticipantsInvited`, *optional*):
+        video_chat_members_invited (:obj:`~pyrogram.types.VoiceChatParticipantsInvited`, *optional*):
             Service message: new members were invited to the voice chat.
 
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
@@ -362,10 +362,10 @@ class Message(Object, Update):
         outgoing: bool = None,
         matches: List[Match] = None,
         command: List[str] = None,
-        voice_chat_scheduled: "types.VoiceChatScheduled" = None,
-        voice_chat_started: "types.VoiceChatStarted" = None,
-        voice_chat_ended: "types.VoiceChatEnded" = None,
-        voice_chat_members_invited: "types.VoiceChatMembersInvited" = None,
+        video_chat_scheduled: "types.VideoChatScheduled" = None,
+        video_chat_started: "types.VideoChatStarted" = None,
+        video_chat_ended: "types.VideoChatEnded" = None,
+        video_chat_members_invited: "types.VideoChatMembersInvited" = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -437,10 +437,10 @@ class Message(Object, Update):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
-        self.voice_chat_scheduled = voice_chat_scheduled
-        self.voice_chat_started = voice_chat_started
-        self.voice_chat_ended = voice_chat_ended
-        self.voice_chat_members_invited = voice_chat_members_invited
+        self.video_chat_scheduled = video_chat_scheduled
+        self.video_chat_started = video_chat_started
+        self.video_chat_ended = video_chat_ended
+        self.video_chat_members_invited = video_chat_members_invited
         self.reactions = reactions
 
     @staticmethod
@@ -487,10 +487,10 @@ class Message(Object, Update):
             group_chat_created = None
             channel_chat_created = None
             new_chat_photo = None
-            voice_chat_scheduled = None
-            voice_chat_started = None
-            voice_chat_ended = None
-            voice_chat_members_invited = None
+            video_chat_scheduled = None
+            video_chat_started = None
+            video_chat_ended = None
+            video_chat_members_invited = None
 
             service_type = None
 
@@ -525,18 +525,18 @@ class Message(Object, Update):
                 new_chat_photo = types.Photo._parse(client, action.photo)
                 service_type = enums.MessageService.NEW_CHAT_PHOTO
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
-                voice_chat_scheduled = types.VoiceChatScheduled._parse(action)
-                service_type = enums.MessageService.VOICE_CHAT_SCHEDULED
+                video_chat_scheduled = types.VideoChatScheduled._parse(action)
+                service_type = enums.MessageService.VIDEO_CHAT_SCHEDULED
             elif isinstance(action, raw.types.MessageActionGroupCall):
                 if action.duration:
-                    voice_chat_ended = types.VoiceChatEnded._parse(action)
-                    service_type = enums.MessageService.VOICE_CHAT_ENDED
+                    video_chat_ended = types.VideoChatEnded._parse(action)
+                    service_type = enums.MessageService.VIDEO_CHAT_ENDED
                 else:
-                    voice_chat_started = types.VoiceChatStarted()
-                    service_type = enums.MessageService.VOICE_CHAT_STARTED
+                    video_chat_started = types.VideoChatStarted()
+                    service_type = enums.MessageService.VIDEO_CHAT_STARTED
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
-                voice_chat_members_invited = types.VoiceChatMembersInvited._parse(client, action, users)
-                service_type = enums.MessageService.VOICE_CHAT_MEMBERS_INVITED
+                video_chat_members_invited = types.VideoChatMembersInvited._parse(client, action, users)
+                service_type = enums.MessageService.VIDEO_CHAT_MEMBERS_INVITED
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -557,10 +557,10 @@ class Message(Object, Update):
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
-                voice_chat_scheduled=voice_chat_scheduled,
-                voice_chat_started=voice_chat_started,
-                voice_chat_ended=voice_chat_ended,
-                voice_chat_members_invited=voice_chat_members_invited,
+                video_chat_scheduled=video_chat_scheduled,
+                video_chat_started=video_chat_started,
+                video_chat_ended=video_chat_ended,
+                video_chat_members_invited=video_chat_members_invited,
                 client=client
                 # TODO: supergroup_chat_created
             )

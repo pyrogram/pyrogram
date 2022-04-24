@@ -96,7 +96,7 @@ class ChatEventAction(AutoName):
     # MEMBER_VOLUME_CHANGED = auto()
     ""
 
-    # VOICE_CHAT_STARTED = auto()
+    # VIDEO_CHAT_STARTED = auto()
     ""
 
     POLL_STOPPED = auto()

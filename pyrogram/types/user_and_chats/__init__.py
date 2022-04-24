@@ -33,10 +33,10 @@ from .dialog import Dialog
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
-from .voice_chat_ended import VoiceChatEnded
-from .voice_chat_members_invited import VoiceChatMembersInvited
-from .voice_chat_scheduled import VoiceChatScheduled
-from .voice_chat_started import VoiceChatStarted
+from .video_chat_ended import VideoChatEnded
+from .video_chat_members_invited import VideoChatMembersInvited
+from .video_chat_scheduled import VideoChatScheduled
+from .video_chat_started import VideoChatStarted
 
 __all__ = [
     "Chat",
@@ -52,11 +52,11 @@ __all__ = [
     "ChatInviteLink",
     "InviteLinkImporter",
     "ChatAdminWithInviteLinks",
-    "VoiceChatStarted",
-    "VoiceChatEnded",
-    "VoiceChatMembersInvited",
+    "VideoChatStarted",
+    "VideoChatEnded",
+    "VideoChatMembersInvited",
     "ChatMemberUpdated",
-    "VoiceChatScheduled",
+    "VideoChatScheduled",
     "ChatJoinRequest",
     "ChatPrivileges",
     "ChatJoiner"

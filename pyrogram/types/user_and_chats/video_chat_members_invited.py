@@ -16,26 +16,35 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+from typing import List, Dict
+
+from pyrogram import raw, types
 from ..object import Object
 
 
-class VoiceChatEnded(Object):
-    """A service message about a voice chat ended in the chat.
+class VideoChatMembersInvited(Object):
+    """A service message about new members invited to a voice chat.
+
 
     Parameters:
-        duration (``int``):
-            Voice chat duration; in seconds.
+        users (List of :obj:`~pyrogram.types.User`):
+            New members that were invited to the voice chat.
     """
 
     def __init__(
         self, *,
-        duration: int
+        users: List["types.User"]
     ):
         super().__init__()
 
-        self.duration = duration
+        self.users = users
 
     @staticmethod
-    def _parse(action: "raw.types.MessageActionGroupCall") -> "VoiceChatEnded":
-        return VoiceChatEnded(duration=action.duration)
+    def _parse(
+        client,
+        action: "raw.types.MessageActionInviteToGroupCall",
+        users: Dict[int, "raw.types.User"]
+    ) -> "VideoChatMembersInvited":
+        users = [types.User._parse(client, users[i]) for i in action.users]
+
+        return VideoChatMembersInvited(users=users)

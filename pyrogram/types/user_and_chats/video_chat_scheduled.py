@@ -22,7 +22,7 @@ from pyrogram import raw, utils
 from ..object import Object
 
 
-class VoiceChatScheduled(Object):
+class VideoChatScheduled(Object):
     """A service message about a voice chat scheduled in the chat.
 
     Parameters:
@@ -39,5 +39,5 @@ class VoiceChatScheduled(Object):
         self.start_date = start_date
 
     @staticmethod
-    def _parse(action: "raw.types.MessageActionGroupCallScheduled") -> "VoiceChatScheduled":
-        return VoiceChatScheduled(start_date=utils.timestamp_to_datetime(action.schedule_date))
+    def _parse(action: "raw.types.MessageActionGroupCallScheduled") -> "VideoChatScheduled":
+        return VideoChatScheduled(start_date=utils.timestamp_to_datetime(action.schedule_date))

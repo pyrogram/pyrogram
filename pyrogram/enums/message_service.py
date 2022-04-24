@@ -57,14 +57,14 @@ class MessageService(AutoName):
     GAME_HIGH_SCORE = auto()
     "Game high score"
 
-    VOICE_CHAT_STARTED = auto()
-    "Voice chat started"
+    VIDEO_CHAT_STARTED = auto()
+    "Video chat started"
 
-    VOICE_CHAT_ENDED = auto()
-    "Voice chat ended"
+    VIDEO_CHAT_ENDED = auto()
+    "Video chat ended"
 
-    VOICE_CHAT_SCHEDULED = auto()
-    "Voice chat scheduled"
+    VIDEO_CHAT_SCHEDULED = auto()
+    "Video chat scheduled"
 
-    VOICE_CHAT_MEMBERS_INVITED = auto()
-    "Voice chat members invited"
+    VIDEO_CHAT_MEMBERS_INVITED = auto()
+    "Video chat members invited"

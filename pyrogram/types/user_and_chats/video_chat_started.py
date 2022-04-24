@@ -19,7 +19,7 @@
 from ..object import Object
 
 
-class VoiceChatStarted(Object):
+class VideoChatStarted(Object):
     """A service message about a voice chat started in the chat.
 
     Currently holds no information.
