@@ -29,7 +29,7 @@ class Object:
         self._client = client
 
     def bind(self, client: "pyrogram.Client"):
-        """Bind a Client instance to this Pyrogram Object
+        """Recursively bind a Client instance to this and to all nested Pyrogram objects.
 
         Parameters:
             client (:obj:`~pyrogram.types.Client`):
@@ -37,6 +37,12 @@ class Object:
                 deserializing Pyrogram objects with ``repr`` and ``eval``.
         """
         self._client = client
+
+        for i in self.__dict__:
+            o = getattr(self, i)
+
+            if isinstance(o, Object):
+                o.bind(client)
 
     @staticmethod
     def default(obj: "Object"):
