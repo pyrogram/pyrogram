@@ -40,14 +40,14 @@ async def get_session(client: "pyrogram.Client", dc_id: int):
         await session.start()
 
         for _ in range(3):
-            exported_auth = await client.send(
+            exported_auth = await client.invoke(
                 raw.functions.auth.ExportAuthorization(
                     dc_id=dc_id
                 )
             )
 
             try:
-                await session.send(
+                await session.invoke(
                     raw.functions.auth.ImportAuthorization(
                         id=exported_auth.id,
                         bytes=exported_auth.bytes

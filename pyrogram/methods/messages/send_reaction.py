@@ -54,7 +54,7 @@ class SendReaction:
                 # Retract a reaction
                 app.send_reaction(chat_id, message_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.SendReaction(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,

@@ -70,7 +70,7 @@ class SendChatAction:
         else:
             action = action.value()
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.SetTyping(
                 peer=await self.resolve_peer(chat_id),
                 action=action

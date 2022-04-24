@@ -48,7 +48,7 @@ class GetChatMembersCount:
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, raw.types.InputPeerChat):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetChats(
                     id=[peer.chat_id]
                 )
@@ -56,7 +56,7 @@ class GetChatMembersCount:
 
             return r.chats[0].participants_count
         elif isinstance(peer, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetFullChannel(
                     channel=peer
                 )

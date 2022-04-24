@@ -53,7 +53,7 @@ class ExportChatInviteLink:
                 # Generate a new primary link
                 link = app.export_chat_invite_link(chat_id)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.ExportChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 legacy_revoke_permanent=True

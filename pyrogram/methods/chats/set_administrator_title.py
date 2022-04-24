@@ -57,7 +57,7 @@ class SetAdministratorTitle:
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)
 
-        r = (await self.send(
+        r = (await self.invoke(
             raw.functions.channels.GetParticipant(
                 channel=chat_id,
                 participant=user_id
@@ -71,7 +71,7 @@ class SetAdministratorTitle:
         else:
             raise ValueError("Custom titles can only be applied to owners or administrators of supergroups")
 
-        await self.send(
+        await self.invoke(
             raw.functions.channels.EditAdmin(
                 channel=chat_id,
                 user_id=user_id,

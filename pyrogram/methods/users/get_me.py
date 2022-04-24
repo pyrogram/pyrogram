@@ -36,7 +36,7 @@ class GetMe:
                 me = app.get_me()
                 print(me)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.users.GetFullUser(
                 id=raw.types.InputUserSelf()
             )

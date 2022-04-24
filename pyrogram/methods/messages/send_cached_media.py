@@ -96,7 +96,7 @@ class SendCachedMedia:
                 app.send_cached_media("me", file_id)
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
                 media=utils.get_input_media_from_file_id(file_id),

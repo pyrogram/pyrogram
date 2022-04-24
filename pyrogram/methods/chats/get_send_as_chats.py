@@ -43,7 +43,7 @@ class GetSendAsChats:
                 chats = app.get_send_as_chats(chat_id)
                 print(chats)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.GetSendAs(
                 peer=await self.resolve_peer(chat_id)
             )

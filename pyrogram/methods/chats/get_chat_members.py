@@ -92,7 +92,7 @@ class GetChatMembers:
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, raw.types.InputPeerChat):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetFullChat(
                     chat_id=peer.chat_id
                 )
@@ -120,7 +120,7 @@ class GetChatMembers:
             else:
                 raise ValueError(f'Invalid filter "{filter}"')
 
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetParticipants(
                     channel=peer,
                     filter=filter,

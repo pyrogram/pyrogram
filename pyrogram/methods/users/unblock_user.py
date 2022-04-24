@@ -44,7 +44,7 @@ class UnblockUser:
                 app.unblock_user(user_id)
         """
         return bool(
-            await self.send(
+            await self.invoke(
                 raw.functions.contacts.Unblock(
                     id=await self.resolve_peer(user_id)
                 )

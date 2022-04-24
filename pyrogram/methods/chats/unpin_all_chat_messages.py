@@ -44,7 +44,7 @@ class UnpinAllChatMessages:
                 # Unpin all chat messages
                 app.unpin_all_chat_messages(chat_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.UnpinAllMessages(
                 peer=await self.resolve_peer(chat_id)
             )

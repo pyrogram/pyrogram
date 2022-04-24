@@ -57,7 +57,7 @@ class IterDialogs:
         offset_peer = raw.types.InputPeerEmpty()
 
         while True:
-            r = (await self.send(
+            r = (await self.invoke(
                 raw.functions.messages.GetDialogs(
                     offset_date=offset_date,
                     offset_id=offset_id,

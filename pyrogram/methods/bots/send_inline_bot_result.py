@@ -61,7 +61,7 @@ class SendInlineBotResult:
 
                 app.send_inline_bot_result(chat_id, query_id, result_id)
         """
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.SendInlineBotResult(
                 peer=await self.resolve_peer(chat_id),
                 query_id=query_id,

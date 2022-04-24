@@ -87,7 +87,7 @@ class EditMessageMedia:
 
         if isinstance(media, types.InputMediaPhoto):
             if os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedPhoto(
@@ -111,7 +111,7 @@ class EditMessageMedia:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -148,7 +148,7 @@ class EditMessageMedia:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
             if os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -184,7 +184,7 @@ class EditMessageMedia:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -222,7 +222,7 @@ class EditMessageMedia:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
             if os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -252,7 +252,7 @@ class EditMessageMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.DOCUMENT)
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

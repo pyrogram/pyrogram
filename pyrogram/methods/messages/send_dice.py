@@ -88,7 +88,7 @@ class SendDice:
                 app.send_dice(chat_id, "🏀")
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
                 media=raw.types.InputMediaDice(emoticon=emoji),

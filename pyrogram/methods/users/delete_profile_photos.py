@@ -54,7 +54,7 @@ class DeleteProfilePhotos:
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = [utils.get_input_media_from_file_id(i, FileType.PHOTO).id for i in photo_ids]
 
-        return bool(await self.send(
+        return bool(await self.invoke(
             raw.functions.photos.DeletePhotos(
                 id=input_photos
             )

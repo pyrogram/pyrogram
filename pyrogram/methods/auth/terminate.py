@@ -41,7 +41,7 @@ class Terminate:
             raise ConnectionError("Client is already terminated")
 
         if self.takeout_id:
-            await self.send(raw.functions.account.FinishTakeoutSession())
+            await self.invoke(raw.functions.account.FinishTakeoutSession())
             log.warning(f"Takeout session {self.takeout_id} finished")
 
         await Syncer.remove(self)

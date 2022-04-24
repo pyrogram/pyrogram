@@ -58,7 +58,7 @@ class EditInlineReplyMarkup:
 
         session = await get_session(self, dc_id)
 
-        return await session.send(
+        return await session.invoke(
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
                 reply_markup=await reply_markup.write(self) if reply_markup else None,

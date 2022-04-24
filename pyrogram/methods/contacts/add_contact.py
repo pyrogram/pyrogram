@@ -60,7 +60,7 @@ class AddContact:
                 app.add_contact(12345678, "Foo")
                 app.add_contact("username", "Bar")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.contacts.AddContact(
                 id=await self.resolve_peer(user_id),
                 first_name=first_name,

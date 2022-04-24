@@ -44,7 +44,7 @@ class DeleteChatAdminInviteLinks:
             ``bool``: On success ``True`` is returned.
         """
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.DeleteRevokedExportedChatInvites(
                 peer=await self.resolve_peer(chat_id),
                 admin_id=await self.resolve_peer(admin_id),

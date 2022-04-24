@@ -46,7 +46,7 @@ class SignInBot:
         """
         while True:
             try:
-                r = await self.send(
+                r = await self.invoke(
                     raw.functions.auth.ImportBotAuthorization(
                         flags=0,
                         api_id=self.api_id,

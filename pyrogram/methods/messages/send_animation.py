@@ -216,7 +216,7 @@ class SendAnimation:
 
             while True:
                 try:
-                    r = await self.send(
+                    r = await self.invoke(
                         raw.functions.messages.SendMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=media,
@@ -249,7 +249,7 @@ class SendAnimation:
                                     document.file_id, FileType.ANIMATION
                                 ).id
 
-                                await self.send(
+                                await self.invoke(
                                     raw.functions.messages.SaveGif(
                                         id=document_id,
                                         unsave=True

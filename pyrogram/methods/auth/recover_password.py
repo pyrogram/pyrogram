@@ -43,7 +43,7 @@ class RecoverPassword:
         Raises:
             BadRequest: In case the recovery code is invalid.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.RecoverPassword(
                 code=recovery_code
             )

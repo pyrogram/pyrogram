@@ -42,7 +42,7 @@ class GetChatOnlineCount:
                 online = app.get_chat_online_count(chat_id)
                 print(online)
         """
-        return (await self.send(
+        return (await self.invoke(
             raw.functions.messages.GetOnlines(
                 peer=await self.resolve_peer(chat_id)
             )

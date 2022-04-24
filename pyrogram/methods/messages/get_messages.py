@@ -111,7 +111,7 @@ class GetMessages:
         else:
             rpc = raw.functions.messages.GetMessages(id=ids)
 
-        r = await self.send(rpc, sleep_threshold=-1)
+        r = await self.invoke(rpc, sleep_threshold=-1)
 
         messages = await utils.parse_messages(self, r, replies=replies)
 

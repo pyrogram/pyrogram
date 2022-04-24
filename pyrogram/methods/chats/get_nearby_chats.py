@@ -49,7 +49,7 @@ class GetNearbyChats:
                 print(chats)
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.contacts.GetLocated(
                 geo_point=raw.types.InputGeoPoint(
                     lat=latitude,

@@ -56,7 +56,7 @@ class GetChat:
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.CheckChatInvite(
                     hash=match.group(1)
                 )
@@ -76,10 +76,10 @@ class GetChat:
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, raw.types.InputPeerChannel):
-            r = await self.send(raw.functions.channels.GetFullChannel(channel=peer))
+            r = await self.invoke(raw.functions.channels.GetFullChannel(channel=peer))
         elif isinstance(peer, (raw.types.InputPeerUser, raw.types.InputPeerSelf)):
-            r = await self.send(raw.functions.users.GetFullUser(id=peer))
+            r = await self.invoke(raw.functions.users.GetFullUser(id=peer))
         else:
-            r = await self.send(raw.functions.messages.GetFullChat(chat_id=peer.chat_id))
+            r = await self.invoke(raw.functions.messages.GetFullChat(chat_id=peer.chat_id))
 
         return await types.Chat._parse_full(self, r)

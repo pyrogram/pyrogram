@@ -73,7 +73,7 @@ class BanChatMember:
         user_peer = await self.resolve_peer(user_id)
 
         if isinstance(chat_peer, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.EditBanned(
                     channel=chat_peer,
                     participant=user_peer,
@@ -91,7 +91,7 @@ class BanChatMember:
                 )
             )
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer

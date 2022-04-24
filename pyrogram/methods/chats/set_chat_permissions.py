@@ -62,7 +62,7 @@ class SetChatPermissions:
                 )
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditChatDefaultBannedRights(
                 peer=await self.resolve_peer(chat_id),
                 banned_rights=raw.types.ChatBannedRights(

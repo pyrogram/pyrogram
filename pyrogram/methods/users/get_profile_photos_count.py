@@ -48,7 +48,7 @@ class GetProfilePhotosCount:
         peer_id = await self.resolve_peer(chat_id)
 
         if isinstance(peer_id, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetSearchCounters(
                     peer=peer_id,
                     filters=[raw.types.InputMessagesFilterChatPhotos()],
@@ -57,7 +57,7 @@ class GetProfilePhotosCount:
 
             return r[0].count
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.photos.GetUserPhotos(
                     user_id=peer_id,
                     offset=0,

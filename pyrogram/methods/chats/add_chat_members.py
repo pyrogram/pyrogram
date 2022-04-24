@@ -67,7 +67,7 @@ class AddChatMembers:
 
         if isinstance(peer, raw.types.InputPeerChat):
             for user_id in user_ids:
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.AddChatUser(
                         chat_id=peer.chat_id,
                         user_id=await self.resolve_peer(user_id),
@@ -75,7 +75,7 @@ class AddChatMembers:
                     )
                 )
         else:
-            await self.send(
+            await self.invoke(
                 raw.functions.channels.InviteToChannel(
                     channel=peer,
                     users=[

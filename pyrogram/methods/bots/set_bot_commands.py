@@ -62,7 +62,7 @@ class SetBotCommands:
                     BotCommand("settings", "Bot settings")])
         """
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.bots.SetBotCommands(
                 commands=[c.write() for c in commands],
                 scope=await scope.write(self),

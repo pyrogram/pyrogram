@@ -48,7 +48,7 @@ class UnpinChatMessage:
 
                 app.unpin_chat_message(chat_id, message_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

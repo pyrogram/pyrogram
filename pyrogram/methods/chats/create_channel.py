@@ -43,7 +43,7 @@ class CreateChannel:
 
                 app.create_channel("Channel Title", "Channel Description")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.CreateChannel(
                 title=title,
                 about=description,

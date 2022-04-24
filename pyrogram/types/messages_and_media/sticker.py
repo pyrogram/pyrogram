@@ -112,7 +112,7 @@ class Sticker(Object):
     cache = {}
 
     @staticmethod
-    async def _get_sticker_set_name(send, input_sticker_set_id):
+    async def _get_sticker_set_name(invoke, input_sticker_set_id):
         try:
             set_id = input_sticker_set_id[0]
             set_access_hash = input_sticker_set_id[1]
@@ -122,7 +122,7 @@ class Sticker(Object):
             if name is not None:
                 return name
 
-            name = (await send(
+            name = (await invoke(
                 raw.functions.messages.GetStickerSet(
                     stickerset=raw.types.InputStickerSetID(
                         id=set_id,
@@ -154,7 +154,7 @@ class Sticker(Object):
 
         if isinstance(sticker_set, raw.types.InputStickerSetID):
             input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
-            set_name = await Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
+            set_name = await Sticker._get_sticker_set_name(client.invoke, input_sticker_set_id)
         else:
             set_name = None
 

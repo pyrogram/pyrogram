@@ -48,7 +48,7 @@ class RetractVote:
 
                 app.retract_vote(chat_id, message_id)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendVote(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,

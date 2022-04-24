@@ -49,7 +49,7 @@ class SendCode:
 
         while True:
             try:
-                r = await self.send(
+                r = await self.invoke(
                     raw.functions.auth.SendCode(
                         phone_number=phone_number,
                         api_id=self.api_id,

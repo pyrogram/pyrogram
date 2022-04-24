@@ -172,7 +172,7 @@ class SendVoice:
 
             while True:
                 try:
-                    r = await self.send(
+                    r = await self.invoke(
                         raw.functions.messages.SendMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=media,

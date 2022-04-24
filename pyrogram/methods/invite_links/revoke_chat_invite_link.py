@@ -47,7 +47,7 @@ class RevokeChatInviteLink:
             :obj:`~pyrogram.types.ChatInviteLink`: On success, the invite link object is returned.
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditExportedChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 link=invite_link,

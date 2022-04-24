@@ -54,7 +54,7 @@ class GetChatMember:
         user = await self.resolve_peer(user_id)
 
         if isinstance(chat, raw.types.InputPeerChat):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetFullChat(
                     chat_id=chat.chat_id
                 )
@@ -75,7 +75,7 @@ class GetChatMember:
             else:
                 raise UserNotParticipant
         elif isinstance(chat, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetParticipant(
                     channel=chat,
                     participant=user

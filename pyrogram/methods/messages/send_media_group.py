@@ -94,7 +94,7 @@ class SendMediaGroup:
             if isinstance(i, types.InputMediaPhoto):
                 if isinstance(i.media, str):
                     if os.path.isfile(i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaUploadedPhoto(
@@ -111,7 +111,7 @@ class SendMediaGroup:
                             )
                         )
                     elif re.match("^https?://", i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaPhotoExternal(
@@ -130,7 +130,7 @@ class SendMediaGroup:
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
                 else:
-                    media = await self.send(
+                    media = await self.invoke(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=raw.types.InputMediaUploadedPhoto(
@@ -149,7 +149,7 @@ class SendMediaGroup:
             elif isinstance(i, types.InputMediaVideo):
                 if isinstance(i.media, str):
                     if os.path.isfile(i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaUploadedDocument(
@@ -177,7 +177,7 @@ class SendMediaGroup:
                             )
                         )
                     elif re.match("^https?://", i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaDocumentExternal(
@@ -196,7 +196,7 @@ class SendMediaGroup:
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.VIDEO)
                 else:
-                    media = await self.send(
+                    media = await self.invoke(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=raw.types.InputMediaUploadedDocument(
@@ -226,7 +226,7 @@ class SendMediaGroup:
             elif isinstance(i, types.InputMediaAudio):
                 if isinstance(i.media, str):
                     if os.path.isfile(i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaUploadedDocument(
@@ -253,7 +253,7 @@ class SendMediaGroup:
                             )
                         )
                     elif re.match("^https?://", i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaDocumentExternal(
@@ -272,7 +272,7 @@ class SendMediaGroup:
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.AUDIO)
                 else:
-                    media = await self.send(
+                    media = await self.invoke(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=raw.types.InputMediaUploadedDocument(
@@ -301,7 +301,7 @@ class SendMediaGroup:
             elif isinstance(i, types.InputMediaDocument):
                 if isinstance(i.media, str):
                     if os.path.isfile(i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaUploadedDocument(
@@ -323,7 +323,7 @@ class SendMediaGroup:
                             )
                         )
                     elif re.match("^https?://", i.media):
-                        media = await self.send(
+                        media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaDocumentExternal(
@@ -342,7 +342,7 @@ class SendMediaGroup:
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.DOCUMENT)
                 else:
-                    media = await self.send(
+                    media = await self.invoke(
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=raw.types.InputMediaUploadedDocument(
@@ -376,7 +376,7 @@ class SendMediaGroup:
                 )
             )
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMultiMedia(
                 peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,

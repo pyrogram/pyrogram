@@ -66,6 +66,6 @@ class ReadHistory:
                 max_id=max_id
             )
 
-        await self.send(q)
+        await self.invoke(q)
 
         return True

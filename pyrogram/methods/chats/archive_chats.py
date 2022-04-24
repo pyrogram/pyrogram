@@ -60,7 +60,7 @@ class ArchiveChats:
                 )
             )
 
-        await self.send(
+        await self.invoke(
             raw.functions.folders.EditPeerFolders(
                 folder_peers=folder_peers
             )

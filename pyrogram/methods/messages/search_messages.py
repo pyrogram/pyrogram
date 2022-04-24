@@ -32,7 +32,7 @@ async def get_chunk(
     limit: int = 100,
     from_user: Union[int, str] = None
 ) -> List["types.Message"]:
-    r = await client.send(
+    r = await client.invoke(
         raw.functions.messages.Search(
             peer=await client.resolve_peer(chat_id),
             q=query,

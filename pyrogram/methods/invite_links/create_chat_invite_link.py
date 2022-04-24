@@ -72,7 +72,7 @@ class CreateChatInviteLink:
                 # Create a new link for up to 7 new users
                 link = app.create_chat_invite_link(chat_id, member_limit=7)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.ExportChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 expire_date=utils.datetime_to_timestamp(expire_date),

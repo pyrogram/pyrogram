@@ -26,15 +26,15 @@ from pyrogram.session import Session
 log = logging.getLogger(__name__)
 
 
-class Send:
-    async def send(
+class Invoke:
+    async def invoke(
         self: "pyrogram.Client",
-        data: TLObject,
+        query: TLObject,
         retries: int = Session.MAX_RETRIES,
         timeout: float = Session.WAIT_TIMEOUT,
         sleep_threshold: float = None
     ):
-        """Send raw Telegram queries.
+        """Invoke raw Telegram functions.
 
         This method makes it possible to manually call every single Telegram API method in a low-level manner.
         Available functions are listed in the :obj:`functions <pyrogram.api.functions>` package and may accept compound
@@ -47,7 +47,7 @@ class Send:
             available yet in the Client class as an easy-to-use method).
 
         Parameters:
-            data (``RawFunction``):
+            query (``RawFunction``):
                 The API Schema function filled with proper arguments.
 
             retries (``int``):
@@ -69,13 +69,13 @@ class Send:
             raise ConnectionError("Client has not been started yet")
 
         if self.no_updates:
-            data = raw.functions.InvokeWithoutUpdates(query=data)
+            query = raw.functions.InvokeWithoutUpdates(query=query)
 
         if self.takeout_id:
-            data = raw.functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=data)
+            query = raw.functions.InvokeWithTakeout(takeout_id=self.takeout_id, query=query)
 
-        r = await self.session.send(
-            data, retries, timeout,
+        r = await self.session.invoke(
+            query, retries, timeout,
             (sleep_threshold
              if sleep_threshold is not None
              else self.sleep_threshold)

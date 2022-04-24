@@ -58,7 +58,7 @@ class GetChatInviteLinkMembers:
         offset_user = raw.types.InputUserEmpty()
 
         while True:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetChatInviteImporters(
                     peer=await self.resolve_peer(chat_id),
                     link=invite_link,

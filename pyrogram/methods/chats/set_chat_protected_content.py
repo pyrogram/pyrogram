@@ -19,7 +19,7 @@
 from typing import Union
 
 import pyrogram
-from pyrogram.raw import functions
+from pyrogram import raw
 
 
 class SetChatProtectedContent:
@@ -41,8 +41,8 @@ class SetChatProtectedContent:
             ``bool``: On success, True is returned.
         """
 
-        await self.send(
-            functions.messages.ToggleNoForwards(
+        await self.invoke(
+            raw.functions.messages.ToggleNoForwards(
                 peer=await self.resolve_peer(chat_id),
                 enabled=enabled
             )

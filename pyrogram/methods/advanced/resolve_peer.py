@@ -71,7 +71,7 @@ class ResolvePeer:
                     try:
                         return await self.storage.get_peer_by_username(peer_id)
                     except KeyError:
-                        await self.send(
+                        await self.invoke(
                             raw.functions.contacts.ResolveUsername(
                                 username=peer_id
                             )
@@ -88,7 +88,7 @@ class ResolvePeer:
 
             if peer_type == "user":
                 await self.fetch_peers(
-                    await self.send(
+                    await self.invoke(
                         raw.functions.users.GetUsers(
                             id=[
                                 raw.types.InputUser(
@@ -100,13 +100,13 @@ class ResolvePeer:
                     )
                 )
             elif peer_type == "chat":
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.GetChats(
                         id=[-peer_id]
                     )
                 )
             else:
-                await self.send(
+                await self.invoke(
                     raw.functions.channels.GetChannels(
                         id=[
                             raw.types.InputChannel(

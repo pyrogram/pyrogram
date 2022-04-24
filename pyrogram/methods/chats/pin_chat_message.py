@@ -61,7 +61,7 @@ class PinChatMessage:
                 # Pin without notification
                 app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

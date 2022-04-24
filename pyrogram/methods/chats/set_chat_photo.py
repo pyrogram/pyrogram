@@ -100,14 +100,14 @@ class SetChatPhoto:
             )
 
         if isinstance(peer, raw.types.InputPeerChat):
-            await self.send(
+            await self.invoke(
                 raw.functions.messages.EditChatPhoto(
                     chat_id=peer.chat_id,
                     photo=photo,
                 )
             )
         elif isinstance(peer, raw.types.InputPeerChannel):
-            await self.send(
+            await self.invoke(
                 raw.functions.channels.EditPhoto(
                     channel=peer,
                     photo=photo

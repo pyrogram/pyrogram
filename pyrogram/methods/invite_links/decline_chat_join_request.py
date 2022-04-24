@@ -44,7 +44,7 @@ class DeclineChatJoinRequest:
         Returns:
             ``bool``: True on success.
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.HideChatJoinRequest(
                 peer=await self.resolve_peer(chat_id),
                 user_id=await self.resolve_peer(user_id),

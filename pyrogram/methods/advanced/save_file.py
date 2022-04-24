@@ -103,7 +103,7 @@ class SaveFile:
                     return
 
                 try:
-                    await session.send(data)
+                    await session.invoke(data)
                 except Exception as e:
                     log.error(e)
 

@@ -86,7 +86,7 @@ class GetHistory:
 
         messages = await utils.parse_messages(
             self,
-            await self.send(
+            await self.invoke(
                 raw.functions.messages.GetHistory(
                     peer=await self.resolve_peer(chat_id),
                     offset_id=offset_id,

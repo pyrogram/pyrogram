@@ -41,7 +41,7 @@ class GetChatInviteLinkMembersCount:
         Returns:
             ``int``: On success, the joined chat members count is returned.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetChatInviteImporters(
                 peer=await self.resolve_peer(chat_id),
                 link=invite_link,

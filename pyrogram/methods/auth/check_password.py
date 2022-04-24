@@ -43,10 +43,10 @@ class CheckPassword:
         Raises:
             BadRequest: In case the password is invalid.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.CheckPassword(
                 password=compute_password_check(
-                    await self.send(raw.functions.account.GetPassword()),
+                    await self.invoke(raw.functions.account.GetPassword()),
                     password
                 )
             )

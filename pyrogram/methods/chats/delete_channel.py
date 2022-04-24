@@ -41,7 +41,7 @@ class DeleteChannel:
 
                 app.delete_channel(channel_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.channels.DeleteChannel(
                 channel=await self.resolve_peer(chat_id)
             )

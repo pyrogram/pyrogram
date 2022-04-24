@@ -109,7 +109,7 @@ class CopyMediaGroup:
                 )
             )
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMultiMedia(
                 peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,

@@ -79,7 +79,7 @@ class SearchGlobal:
         while True:
             messages = await utils.parse_messages(
                 self,
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.SearchGlobal(
                         q=query,
                         filter=filter.value(),

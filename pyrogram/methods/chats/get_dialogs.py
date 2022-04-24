@@ -67,12 +67,12 @@ class GetDialogs:
         """
 
         if pinned_only:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetPinnedDialogs(folder_id=0),
                 sleep_threshold=60
             )
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetDialogs(
                     offset_date=utils.datetime_to_timestamp(offset_date),
                     offset_id=0,

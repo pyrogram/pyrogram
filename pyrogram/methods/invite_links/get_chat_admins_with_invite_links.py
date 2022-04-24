@@ -40,7 +40,7 @@ class GetChatAdminsWithInviteLinks:
             List of :obj:`~pyrogram.types.ChatAdminWithInviteLink`: On success, the list of admins that have exported
             invite links is returned.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetAdminsWithInvites(
                 peer=await self.resolve_peer(chat_id)
             )

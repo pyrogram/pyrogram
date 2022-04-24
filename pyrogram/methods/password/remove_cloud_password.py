@@ -43,12 +43,12 @@ class RemoveCloudPassword:
 
                 app.remove_cloud_password("password")
         """
-        r = await self.send(raw.functions.account.GetPassword())
+        r = await self.invoke(raw.functions.account.GetPassword())
 
         if not r.has_password:
             raise ValueError("There is no cloud password to remove")
 
-        await self.send(
+        await self.invoke(
             raw.functions.account.UpdatePasswordSettings(
                 password=compute_password_check(r, password),
                 new_settings=raw.types.account.PasswordInputSettings(

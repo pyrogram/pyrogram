@@ -42,7 +42,7 @@ class DeleteChatInviteLink:
             ``bool``: On success ``True`` is returned.
         """
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.DeleteExportedChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 link=invite_link,

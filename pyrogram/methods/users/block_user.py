@@ -44,7 +44,7 @@ class BlockUser:
                 app.block_user(user_id)
         """
         return bool(
-            await self.send(
+            await self.invoke(
                 raw.functions.contacts.Block(
                     id=await self.resolve_peer(user_id)
                 )

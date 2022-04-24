@@ -75,7 +75,7 @@ class SetGameScore:
                 # Force set new score
                 app.set_game_score(user_id, 25, force=True)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SetGameScore(
                 peer=await self.resolve_peer(chat_id),
                 score=score,

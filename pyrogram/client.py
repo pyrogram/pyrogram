@@ -567,7 +567,7 @@ class Client(Methods):
 
                     if not isinstance(message, raw.types.MessageEmpty):
                         try:
-                            diff = await self.send(
+                            diff = await self.invoke(
                                 raw.functions.updates.GetChannelDifference(
                                     channel=await self.resolve_peer(utils.get_channel_id(channel_id)),
                                     filter=raw.types.ChannelMessagesFilter(
@@ -589,7 +589,7 @@ class Client(Methods):
 
                 self.dispatcher.updates_queue.put_nowait((update, users, chats))
         elif isinstance(updates, (raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage)):
-            diff = await self.send(
+            diff = await self.invoke(
                 raw.functions.updates.GetDifference(
                     pts=updates.pts - updates.pts_count,
                     date=updates.date,
@@ -847,14 +847,14 @@ class Client(Methods):
                     await session.start()
 
                     for _ in range(3):
-                        exported_auth = await self.send(
+                        exported_auth = await self.invoke(
                             raw.functions.auth.ExportAuthorization(
                                 dc_id=dc_id
                             )
                         )
 
                         try:
-                            await session.send(
+                            await session.invoke(
                                 raw.functions.auth.ImportAuthorization(
                                     id=exported_auth.id,
                                     bytes=exported_auth.bytes
@@ -920,7 +920,7 @@ class Client(Methods):
         file_name = ""
 
         try:
-            r = await session.send(
+            r = await session.invoke(
                 raw.functions.upload.GetFile(
                     location=location,
                     offset=offset,
@@ -958,7 +958,7 @@ class Client(Methods):
                         if len(chunk) < limit:
                             break
 
-                        r = await session.send(
+                        r = await session.invoke(
                             raw.functions.upload.GetFile(
                                 location=location,
                                 offset=offset,
@@ -986,7 +986,7 @@ class Client(Methods):
                         file_name = f.name
 
                         while True:
-                            r2 = await cdn_session.send(
+                            r2 = await cdn_session.invoke(
                                 raw.functions.upload.GetCdnFile(
                                     file_token=r.file_token,
                                     offset=offset,
@@ -996,7 +996,7 @@ class Client(Methods):
 
                             if isinstance(r2, raw.types.upload.CdnFileReuploadNeeded):
                                 try:
-                                    await session.send(
+                                    await session.invoke(
                                         raw.functions.upload.ReuploadCdnFile(
                                             file_token=r.file_token,
                                             request_token=r2.request_token
@@ -1019,7 +1019,7 @@ class Client(Methods):
                                 )
                             )
 
-                            hashes = await session.send(
+                            hashes = await session.invoke(
                                 raw.functions.upload.GetCdnFileHashes(
                                     file_token=r.file_token,
                                     offset=offset

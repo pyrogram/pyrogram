@@ -70,7 +70,7 @@ class GetInlineBotResults:
         # TODO: Don't return the raw type
 
         try:
-            return await self.send(
+            return await self.invoke(
                 raw.functions.messages.GetInlineBotResults(
                     bot=await self.resolve_peer(bot),
                     peer=raw.types.InputPeerSelf(),

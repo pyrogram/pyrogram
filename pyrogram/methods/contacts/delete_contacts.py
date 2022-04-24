@@ -50,7 +50,7 @@ class DeleteContacts:
         if not is_user_ids_list:
             user_ids = [user_ids]
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.contacts.DeleteContacts(
                 id=[await self.resolve_peer(i) for i in user_ids]
             )

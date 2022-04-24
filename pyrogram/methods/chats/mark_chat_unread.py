@@ -19,7 +19,7 @@
 from typing import Union
 
 import pyrogram
-from pyrogram.raw import functions
+from pyrogram import raw
 
 
 class MarkChatUnread:
@@ -37,8 +37,8 @@ class MarkChatUnread:
             ``bool``: On success, True is returned.
         """
 
-        return await self.send(
-            functions.messages.MarkDialogUnread(
+        return await self.invoke(
+            raw.functions.messages.MarkDialogUnread(
                 peer=await self.resolve_peer(chat_id),
                 unread=True
             )

@@ -52,7 +52,7 @@ class GetCommonChats:
         peer = await self.resolve_peer(user_id)
 
         if isinstance(peer, raw.types.InputPeerUser):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetCommonChats(
                     user_id=peer,
                     max_id=0,

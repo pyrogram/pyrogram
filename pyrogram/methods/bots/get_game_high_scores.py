@@ -59,7 +59,7 @@ class GetGameHighScores:
         """
         # TODO: inline_message_id
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetGameHighScores(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

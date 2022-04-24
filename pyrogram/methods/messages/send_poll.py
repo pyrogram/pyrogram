@@ -100,7 +100,7 @@ class SendPoll:
 
                 app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
                 media=raw.types.InputMediaPoll(

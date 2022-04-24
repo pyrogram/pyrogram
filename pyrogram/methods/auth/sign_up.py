@@ -56,7 +56,7 @@ class SignUp:
         """
         phone_number = phone_number.strip(" +")
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.SignUp(
                 phone_number=phone_number,
                 first_name=first_name,

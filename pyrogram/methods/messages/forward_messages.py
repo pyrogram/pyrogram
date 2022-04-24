@@ -79,7 +79,7 @@ class ForwardMessages:
         is_iterable = not isinstance(message_ids, int)
         message_ids = list(message_ids) if is_iterable else [message_ids]
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.ForwardMessages(
                 to_peer=await self.resolve_peer(chat_id),
                 from_peer=await self.resolve_peer(from_chat_id),

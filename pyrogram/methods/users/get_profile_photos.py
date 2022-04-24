@@ -65,7 +65,7 @@ class GetProfilePhotos:
         peer_id = await self.resolve_peer(chat_id)
 
         if isinstance(peer_id, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetFullChannel(
                     channel=peer_id
                 )
@@ -75,7 +75,7 @@ class GetProfilePhotos:
 
             r = await utils.parse_messages(
                 self,
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.Search(
                         peer=peer_id,
                         q="",
@@ -107,7 +107,7 @@ class GetProfilePhotos:
 
             return types.List(photos[offset:limit])
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.photos.GetUserPhotos(
                     user_id=peer_id,
                     offset=offset,

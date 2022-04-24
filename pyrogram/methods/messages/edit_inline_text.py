@@ -75,7 +75,7 @@ class EditInlineText:
 
         session = await get_session(self, dc_id)
 
-        return await session.send(
+        return await session.invoke(
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
                 no_webpage=disable_web_page_preview or None,

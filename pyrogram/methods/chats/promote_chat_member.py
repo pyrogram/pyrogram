@@ -57,7 +57,7 @@ class PromoteChatMember:
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)
 
-        raw_chat_member = (await self.send(
+        raw_chat_member = (await self.invoke(
             raw.functions.channels.GetParticipant(
                 channel=chat_id,
                 participant=user_id
@@ -68,7 +68,7 @@ class PromoteChatMember:
         if isinstance(raw_chat_member, raw.types.ChannelParticipantAdmin):
             rank = raw_chat_member.rank
 
-        await self.send(
+        await self.invoke(
             raw.functions.channels.EditAdmin(
                 channel=chat_id,
                 user_id=user_id,

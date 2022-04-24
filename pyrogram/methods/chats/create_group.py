@@ -55,7 +55,7 @@ class CreateGroup:
         if not isinstance(users, list):
             users = [users]
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.CreateChat(
                 title=title,
                 users=[await self.resolve_peer(u) for u in users]

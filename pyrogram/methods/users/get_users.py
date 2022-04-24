@@ -56,7 +56,7 @@ class GetUsers:
         user_ids = list(user_ids) if is_iterable else [user_ids]
         user_ids = await asyncio.gather(*[self.resolve_peer(i) for i in user_ids])
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.users.GetUsers(
                 id=user_ids
             )

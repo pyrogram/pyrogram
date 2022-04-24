@@ -462,7 +462,7 @@ class Message(Object, Update):
         if isinstance(message.from_id, raw.types.PeerUser) and isinstance(message.peer_id, raw.types.PeerUser):
             if from_id not in users or peer_id not in users:
                 try:
-                    r = await client.send(
+                    r = await client.invoke(
                         raw.functions.users.GetUsers(
                             id=[
                                 await client.resolve_peer(from_id),

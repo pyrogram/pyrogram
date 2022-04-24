@@ -99,7 +99,7 @@ class SendVenue:
                     "me", 51.500729, -0.124583,
                     "Elizabeth Tower", "Westminster, London SW1A 0AA, UK")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
                 media=raw.types.InputMediaVenue(

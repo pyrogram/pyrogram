@@ -31,7 +31,7 @@ class AcceptTermsOfService:
             terms_of_service_id (``str``):
                 The terms of service identifier.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.help.AcceptTermsOfService(
                 id=raw.types.DataJSON(
                     data=terms_of_service_id

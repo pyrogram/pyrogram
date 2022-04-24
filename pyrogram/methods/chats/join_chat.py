@@ -53,7 +53,7 @@ class JoinChat:
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            chat = await self.send(
+            chat = await self.invoke(
                 raw.functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
@@ -63,7 +63,7 @@ class JoinChat:
             elif isinstance(chat.chats[0], raw.types.Channel):
                 return types.Chat._parse_channel_chat(self, chat.chats[0])
         else:
-            chat = await self.send(
+            chat = await self.invoke(
                 raw.functions.channels.JoinChannel(
                     channel=await self.resolve_peer(chat_id)
                 )

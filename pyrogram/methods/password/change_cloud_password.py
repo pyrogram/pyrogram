@@ -57,7 +57,7 @@ class ChangeCloudPassword:
                 # Change password and hint
                 app.change_cloud_password("current_password", "new_password", new_hint="hint")
         """
-        r = await self.send(raw.functions.account.GetPassword())
+        r = await self.invoke(raw.functions.account.GetPassword())
 
         if not r.has_password:
             raise ValueError("There is no cloud password to change")
@@ -66,7 +66,7 @@ class ChangeCloudPassword:
         new_hash = btoi(compute_password_hash(r.new_algo, new_password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        await self.send(
+        await self.invoke(
             raw.functions.account.UpdatePasswordSettings(
                 password=compute_password_check(r, current_password),
                 new_settings=raw.types.account.PasswordInputSettings(

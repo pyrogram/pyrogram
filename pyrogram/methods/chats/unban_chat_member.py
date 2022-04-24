@@ -49,7 +49,7 @@ class UnbanChatMember:
                 # Unban chat member right now
                 app.unban_chat_member(chat_id, user_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
                 participant=await self.resolve_peer(user_id),

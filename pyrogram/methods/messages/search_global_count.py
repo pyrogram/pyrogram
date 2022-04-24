@@ -41,7 +41,7 @@ class SearchGlobalCount:
         Returns:
             ``int``: On success, the messages count is returned.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SearchGlobal(
                 q=query,
                 filter=filter.value(),

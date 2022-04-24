@@ -41,7 +41,7 @@ class DeleteUserHistory:
             ``bool``: True on success, False otherwise.
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.DeleteParticipantHistory(
                 channel=await self.resolve_peer(chat_id),
                 participant=await self.resolve_peer(user_id)

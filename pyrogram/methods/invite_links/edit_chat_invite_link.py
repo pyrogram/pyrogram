@@ -74,7 +74,7 @@ class EditChatInviteLink:
                 # Set no expiration date of a link
                 link = app.edit_chat_invite_link(chat_id, invite_link, expire_date=0)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditExportedChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 link=invite_link,

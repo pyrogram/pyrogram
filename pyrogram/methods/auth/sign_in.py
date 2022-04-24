@@ -58,7 +58,7 @@ class SignIn:
         """
         phone_number = phone_number.strip(" +")
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.SignIn(
                 phone_number=phone_number,
                 phone_code_hash=phone_code_hash,

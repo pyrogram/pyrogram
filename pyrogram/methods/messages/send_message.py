@@ -123,7 +123,7 @@ class SendMessage:
 
         message, entities = (await utils.parse_text_entities(self, text, parse_mode, entities)).values()
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMessage(
                 peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,

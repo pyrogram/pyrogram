@@ -68,7 +68,7 @@ class AnswerCallbackQuery:
                 # Answer with alert
                 app.answer_callback_query(query_id, text=text, show_alert=True)
         """
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.SetBotCallbackAnswer(
                 query_id=int(callback_query_id),
                 cache_time=cache_time,

@@ -47,7 +47,7 @@ class CreateSupergroup:
 
                 app.create_supergroup("Supergroup Title", "Supergroup Description")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.CreateChannel(
                 title=title,
                 about=description,

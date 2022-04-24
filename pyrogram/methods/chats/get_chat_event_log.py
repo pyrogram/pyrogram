@@ -70,7 +70,7 @@ class GetChatEventLog:
         limit = min(100, total)
 
         while True:
-            r: raw.base.channels.AdminLogResults = await self.send(
+            r: raw.base.channels.AdminLogResults = await self.invoke(
                 raw.functions.channels.GetAdminLog(
                     channel=await self.resolve_peer(chat_id),
                     q=query,

@@ -47,7 +47,7 @@ class SetUsername:
         """
 
         return bool(
-            await self.send(
+            await self.invoke(
                 raw.functions.account.UpdateUsername(
                     username=username or ""
                 )

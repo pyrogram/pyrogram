@@ -94,7 +94,7 @@ class AnswerInlineQuery:
                             InputTextMessageContent("Message content"))])
         """
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.SetInlineBotResults(
                 query_id=int(inline_query_id),
                 results=[await r.write(self) for r in results],

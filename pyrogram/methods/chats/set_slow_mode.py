@@ -51,7 +51,7 @@ class SetSlowMode:
                 app.set_slow_mode(chat_id, None)
         """
 
-        await self.send(
+        await self.invoke(
             raw.functions.channels.ToggleSlowMode(
                 channel=await self.resolve_peer(chat_id),
                 seconds=seconds or 0

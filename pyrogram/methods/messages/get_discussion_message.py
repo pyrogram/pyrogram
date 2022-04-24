@@ -49,7 +49,7 @@ class GetDiscussionMessage:
                 # Comment to the post by replying
                 m.reply("comment")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetDiscussionMessage(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id

@@ -51,7 +51,7 @@ class GetHistoryCount:
                 app.get_history_count(chat_id)
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetHistory(
                 peer=await self.resolve_peer(chat_id),
                 offset_id=0,

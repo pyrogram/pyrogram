@@ -42,7 +42,7 @@ class LogOut:
                 # Log out.
                 app.log_out()
         """
-        await self.send(raw.functions.auth.LogOut())
+        await self.invoke(raw.functions.auth.LogOut())
         await self.stop()
         await self.storage.delete()
 

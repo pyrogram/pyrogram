@@ -42,7 +42,7 @@ class GetChatInviteLink:
         Returns:
             :obj:`~pyrogram.types.ChatInviteLink`: On success, the invite link is returned.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetExportedChatInvite(
                 peer=await self.resolve_peer(chat_id),
                 link=invite_link
