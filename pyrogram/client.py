@@ -734,12 +734,8 @@ class Client(Methods):
         if file and not in_memory:
             file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
             os.makedirs(directory, exist_ok=True)
+            file.close()
             shutil.move(file.name, file_path)
-
-            try:
-                file.close()
-            except FileNotFoundError:
-                pass
 
             return file_path
 
