@@ -69,8 +69,11 @@ How the Documentation is Organized
 ----------------------------------
 
 Contents are organized into sections composed of self-contained topics which can be all accessed from the sidebar, or by
-following them in order using the :guilabel:`Next` button at the end of each page. Here below you can, instead, find a
-list of the most relevant pages for a quick access.
+following them in order using the :guilabel:`Next` button at the end of each page.
+You can also switch to Dark or Light theme or leave on Auto (follows system preferences) by using the dedicated button
+in the top left corner.
+
+Here below you can, instead, find a list of the most relevant pages for a quick access.
 
 First Steps
 ^^^^^^^^^^^
@@ -144,11 +147,12 @@ Meta
     topics/use-filters
     topics/create-filters
     topics/more-on-updates
-    topics/smart-plugins
     topics/client-settings
-    topics/tgcrypto
-    topics/storage-engines
+    topics/synchronous
     topics/text-formatting
+    topics/tgcrypto
+    topics/smart-plugins
+    topics/storage-engines
     topics/serializing
     topics/proxy
     topics/scheduling
