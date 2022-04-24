@@ -95,6 +95,7 @@ class InlineQueryResultCachedDocument(InlineQueryResult):
             id=self.id,
             type=self.type,
             title=self.title,
+            description=self.description,
             document=raw.types.InputDocument(
                 id=file_id.media_id,
                 access_hash=file_id.access_hash,
