@@ -20,19 +20,15 @@ from typing import Union
 
 import pyrogram
 from pyrogram import raw
-from pyrogram import types
 
 
-class GetDiscussionMessage:
-    async def get_discussion_message(
+class GetDiscussionRepliesCount:
+    async def get_discussion_replies_count(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
-    ) -> "types.Message":
-        """Get the first discussion message of a channel post or a discussion thread in a group.
-
-        Reply to the returned message to leave a comment on the linked channel post or to continue
-        the discussion thread.
+    ) -> int:
+        """Get the total count of replies in a discussion thread.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -44,20 +40,21 @@ class GetDiscussionMessage:
         Example:
             .. code-block:: python
 
-                # Get the discussion message
-                m = app.get_discussion_message(channel_id, message_id)
-
-                # Comment to the post by replying
-                m.reply("comment")
+            count = app.get_discussion_replies_count(chat_id, message_id)
         """
+
         r = await self.invoke(
-            raw.functions.messages.GetDiscussionMessage(
+            raw.functions.messages.GetReplies(
                 peer=await self.resolve_peer(chat_id),
-                msg_id=message_id
+                msg_id=message_id,
+                offset_id=0,
+                offset_date=0,
+                add_offset=0,
+                limit=1,
+                max_id=0,
+                min_id=0,
+                hash=0
             )
         )
 
-        users = {u.id: u for u in r.users}
-        chats = {c.id: c for c in r.chats}
-
-        return await types.Message._parse(self, r.messages[0], users, chats)
+        return r.count

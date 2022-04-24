@@ -32,6 +32,8 @@ from .forward_messages import ForwardMessages
 from .get_chat_history import GetChatHistory
 from .get_chat_history_count import GetChatHistoryCount
 from .get_discussion_message import GetDiscussionMessage
+from .get_discussion_replies import GetDiscussionReplies
+from .get_discussion_replies_count import GetDiscussionRepliesCount
 from .get_history import GetHistory
 from .get_media_group import GetMediaGroup
 from .get_messages import GetMessages
@@ -108,6 +110,8 @@ class Messages(
     SearchMessagesCount,
     SearchGlobalCount,
     GetDiscussionMessage,
-    SendReaction
+    SendReaction,
+    GetDiscussionReplies,
+    GetDiscussionRepliesCount
 ):
     pass
