@@ -21,6 +21,7 @@ from .answer_inline_query import AnswerInlineQuery
 from .delete_bot_commands import DeleteBotCommands
 from .get_bot_commands import GetBotCommands
 from .get_bot_default_privileges import GetBotDefaultPrivileges
+from .get_chat_menu_button import GetChatMenuButton
 from .get_game_high_scores import GetGameHighScores
 from .get_inline_bot_results import GetInlineBotResults
 from .request_callback_answer import RequestCallbackAnswer
@@ -28,6 +29,7 @@ from .send_game import SendGame
 from .send_inline_bot_result import SendInlineBotResult
 from .set_bot_commands import SetBotCommands
 from .set_bot_default_privileges import SetBotDefaultPrivileges
+from .set_chat_menu_button import SetChatMenuButton
 from .set_game_score import SetGameScore
 
 
@@ -44,6 +46,8 @@ class Bots(
     GetBotCommands,
     DeleteBotCommands,
     SetBotDefaultPrivileges,
-    GetBotDefaultPrivileges
+    GetBotDefaultPrivileges,
+    SetChatMenuButton,
+    GetChatMenuButton
 ):
     pass

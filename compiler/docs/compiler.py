@@ -297,6 +297,8 @@ def pyrogram_api():
             delete_bot_commands
             set_bot_default_privileges
             get_bot_default_privileges
+            set_chat_menu_button
+            get_chat_menu_button
         """,
         authorization="""
         Authorization
