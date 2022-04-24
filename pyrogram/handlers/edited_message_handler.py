@@ -21,16 +21,16 @@ from typing import Callable
 from .handler import Handler
 
 
-class MessageHandler(Handler):
-    """The Message handler class. Used to handle new messages.
-    It is intended to be used with :meth:`~pyrogram.Client.add_handler`
+class EditedMessageHandler(Handler):
+    """The EditedMessage handler class. Used to handle edited messages.
+     It is intended to be used with :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
-    :meth:`~pyrogram.Client.on_message` decorator.
+    :meth:`~pyrogram.Client.on_edited_message` decorator.
 
     Parameters:
         callback (``Callable``):
-            Pass a function that will be called when a new Message arrives. It takes *(client, message)*
+            Pass a function that will be called when a new edited message arrives. It takes *(client, message)*
             as positional arguments (look at the section below for a detailed description).
 
         filters (:obj:`Filters`):
@@ -41,8 +41,8 @@ class MessageHandler(Handler):
         client (:obj:`~pyrogram.Client`):
             The Client itself, useful when you want to call other API methods inside the message handler.
 
-        message (:obj:`~pyrogram.types.Message`):
-            The received message.
+        edited_message (:obj:`~pyrogram.types.Message`):
+            The received edited message.
     """
 
     def __init__(self, callback: Callable, filters=None):

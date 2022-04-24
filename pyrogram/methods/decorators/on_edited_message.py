@@ -22,16 +22,16 @@ import pyrogram
 from pyrogram.filters import Filter
 
 
-class OnMessage:
-    def on_message(
+class OnEditedMessage:
+    def on_edited_message(
         self=None,
         filters=None,
         group: int = 0
     ) -> Callable:
-        """Decorator for handling new messages.
+        """Decorator for handling edited messages.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
-        :obj:`~pyrogram.handlers.MessageHandler`.
+        :obj:`~pyrogram.handlers.EditedMessageHandler`.
 
         Parameters:
             filters (:obj:`~pyrogram.filters`, *optional*):
@@ -44,7 +44,7 @@ class OnMessage:
 
         def decorator(func: Callable) -> Callable:
             if isinstance(self, pyrogram.Client):
-                self.add_handler(pyrogram.handlers.MessageHandler(func, filters), group)
+                self.add_handler(pyrogram.handlers.EditedMessageHandler(func, filters), group)
             elif isinstance(self, Filter) or self is None:
                 if not hasattr(func, "handlers"):
                     func.handlers = []
