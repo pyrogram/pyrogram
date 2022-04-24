@@ -37,9 +37,10 @@ from .video import Video
 from .video_note import VideoNote
 from .voice import Voice
 from .webpage import WebPage
+from .web_app_data import WebAppData
 
 __all__ = [
     "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
     "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice", "WebPage", "Dice",
-    "Reaction"
+    "Reaction", "WebAppData"
 ]

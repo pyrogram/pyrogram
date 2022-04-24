@@ -285,6 +285,9 @@ class Message(Object, Update):
         video_chat_members_invited (:obj:`~pyrogram.types.VoiceChatParticipantsInvited`, *optional*):
             Service message: new members were invited to the voice chat.
 
+        web_app_data (:obj:`~pyrogram.types.WebAppData`, *optional*):
+            Service message: web app data sent to the bot.
+
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
             instructions to remove reply keyboard or to force a reply from the user.
@@ -366,6 +369,7 @@ class Message(Object, Update):
         video_chat_started: "types.VideoChatStarted" = None,
         video_chat_ended: "types.VideoChatEnded" = None,
         video_chat_members_invited: "types.VideoChatMembersInvited" = None,
+        web_app_data: "types.WebAppData" = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -441,6 +445,7 @@ class Message(Object, Update):
         self.video_chat_started = video_chat_started
         self.video_chat_ended = video_chat_ended
         self.video_chat_members_invited = video_chat_members_invited
+        self.web_app_data = web_app_data
         self.reactions = reactions
 
     @staticmethod
@@ -491,6 +496,7 @@ class Message(Object, Update):
             video_chat_started = None
             video_chat_ended = None
             video_chat_members_invited = None
+            web_app_data = None
 
             service_type = None
 
@@ -537,6 +543,9 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
                 video_chat_members_invited = types.VideoChatMembersInvited._parse(client, action, users)
                 service_type = enums.MessageService.VIDEO_CHAT_MEMBERS_INVITED
+            elif isinstance(action, raw.types.MessageActionWebViewDataSentMe):
+                web_app_data = types.WebAppData._parse(action)
+                service_type = enums.MessageService.WEB_APP_DATA
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -561,6 +570,7 @@ class Message(Object, Update):
                 video_chat_started=video_chat_started,
                 video_chat_ended=video_chat_ended,
                 video_chat_members_invited=video_chat_members_invited,
+                web_app_data=web_app_data,
                 client=client
                 # TODO: supergroup_chat_created
             )

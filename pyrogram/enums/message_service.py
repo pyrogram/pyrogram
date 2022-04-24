@@ -68,3 +68,6 @@ class MessageService(AutoName):
 
     VIDEO_CHAT_MEMBERS_INVITED = auto()
     "Video chat members invited"
+
+    WEB_APP_DATA = auto()
+    "Web app data"
