@@ -445,7 +445,7 @@ class Message(Object, Update):
 
     @staticmethod
     async def _parse(
-        client,
+        client: "pyrogram.Client",
         message: raw.base.Message,
         users: dict,
         chats: dict,
@@ -591,6 +591,8 @@ class Message(Object, Update):
                         parsed_message.service = enums.MessageService.GAME_HIGH_SCORE
                     except MessageIdsEmpty:
                         pass
+
+            client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
 
             return parsed_message
 
@@ -802,18 +804,26 @@ class Message(Object, Update):
             )
 
             if message.reply_to:
+                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
+                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
+
                 if replies:
                     try:
-                        parsed_message.reply_to_message = await client.get_messages(
-                            parsed_message.chat.id,
-                            reply_to_message_ids=message.id,
-                            replies=replies - 1
-                        )
+                        key = (parsed_message.chat.id, parsed_message.reply_to_message_id)
+                        reply_to_message = client.message_cache[key]
+
+                        if not reply_to_message:
+                            reply_to_message = await client.get_messages(
+                                parsed_message.chat.id,
+                                reply_to_message_ids=message.id,
+                                replies=replies - 1
+                            )
+
+                        parsed_message.reply_to_message = reply_to_message
                     except MessageIdsEmpty:
                         pass
 
-                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
-                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
+            client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
 
             return parsed_message
 

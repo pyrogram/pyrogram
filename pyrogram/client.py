@@ -270,6 +270,8 @@ class Client(Methods):
         # Username used for mentioned bot commands, e.g.: /start@usernamebot
         self.username = None
 
+        self.message_cache = Cache(10000)
+
         self.loop = asyncio.get_event_loop()
 
     def __enter__(self):
@@ -989,3 +991,22 @@ class Client(Methods):
 
     def guess_extension(self, mime_type: str) -> Optional[str]:
         return self.mimetypes.guess_extension(mime_type)
+
+
+class Cache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.store = {}
+
+    def __getitem__(self, key):
+        return self.store.get(key, None)
+
+    def __setitem__(self, key, value):
+        if key in self.store:
+            del self.store[key]
+
+        self.store[key] = value
+
+        if len(self.store) > self.capacity:
+            for _ in range(self.capacity // 2 + 1):
+                del self.store[next(iter(self.store))]
