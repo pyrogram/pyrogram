@@ -18,6 +18,10 @@ Welcome to Pyrogram
             Website
         </a>
         •
+        <a href="https://github.com/pyrogram/pyrogram">
+            Development
+        </a>
+        •
         <a href="https://docs.pyrogram.org/releases">
             Releases
         </a>
