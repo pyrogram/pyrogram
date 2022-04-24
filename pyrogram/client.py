@@ -286,6 +286,9 @@ class Client(Methods):
 
         self.disconnect_handler = None
 
+        # Username used for mentioned bot commands, e.g.: /start@usernamebot
+        self.username = None
+
         self.loop = asyncio.get_event_loop()
 
     def __enter__(self):

@@ -48,4 +48,5 @@ class Initialize:
         await self.dispatcher.start()
         await Syncer.add(self)
 
+        self.username = (await self.get_me()).username
         self.is_initialized = True

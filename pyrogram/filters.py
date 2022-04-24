@@ -745,11 +745,6 @@ linked_channel = create(linked_channel_filter)
 
 
 # region command_filter
-
-# Used by the command filter below
-username = None
-
-
 def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
@@ -772,12 +767,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
     async def func(flt, client: pyrogram.Client, message: Message):
-        # Username shared among all commands; used for mention commands, e.g.: /start@username
-        global username
-
-        if username is None:
-            username = (await client.get_me()).username or ""
-
+        username = client.username or ""
         text = message.text or message.caption
         message.command = None
 
