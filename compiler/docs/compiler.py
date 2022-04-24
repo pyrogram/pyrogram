@@ -419,6 +419,10 @@ def pyrogram_api():
             GameHighScore
             CallbackGame
             WebAppInfo
+            MenuButton
+            MenuButtonCommands
+            MenuButtonWebApp
+            MenuButtonDefault
         """,
         bot_commands="""
         Bot commands
