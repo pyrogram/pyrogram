@@ -32,7 +32,7 @@ class ChatPrivileges(Object):
         can_delete_messages (``bool``, *optional*):
             True, if the administrator can delete messages of other users.
 
-        can_manage_voice_chats (``bool``, *optional*):
+        can_manage_video_chats (``bool``, *optional*):
             Groups and supergroups only.
             True, if the administrator can manage voice chats (also called group calls).
 
@@ -71,7 +71,7 @@ class ChatPrivileges(Object):
         *,
         can_manage_chat: bool = True,
         can_delete_messages: bool = False,
-        can_manage_voice_chats: bool = False,  # Groups and supergroups only
+        can_manage_video_chats: bool = False,  # Groups and supergroups only
         can_restrict_members: bool = False,
         can_promote_members: bool = False,
         can_change_info: bool = False,
@@ -85,7 +85,7 @@ class ChatPrivileges(Object):
 
         self.can_manage_chat: bool = can_manage_chat
         self.can_delete_messages: bool = can_delete_messages
-        self.can_manage_voice_chats: bool = can_manage_voice_chats
+        self.can_manage_video_chats: bool = can_manage_video_chats
         self.can_restrict_members: bool = can_restrict_members
         self.can_promote_members: bool = can_promote_members
         self.can_change_info: bool = can_change_info
@@ -100,7 +100,7 @@ class ChatPrivileges(Object):
         return ChatPrivileges(
             can_manage_chat=admin_rights.other,
             can_delete_messages=admin_rights.delete_messages,
-            can_manage_voice_chats=admin_rights.manage_call,
+            can_manage_video_chats=admin_rights.manage_call,
             can_restrict_members=admin_rights.ban_users,
             can_promote_members=admin_rights.add_admins,
             can_change_info=admin_rights.change_info,
