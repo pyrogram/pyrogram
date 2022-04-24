@@ -49,7 +49,7 @@ from pyrogram.errors import (
 from pyrogram.handlers.handler import Handler
 from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
-from pyrogram.storage import Storage, FileStorage, MemoryStorage
+from pyrogram.storage import FileStorage, MemoryStorage
 from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
@@ -65,14 +65,8 @@ class Client(Methods):
     """Pyrogram Client, the main means for interacting with Telegram.
 
     Parameters:
-        session_name (``str``):
-            Pass a string of your choice to give a name to the client session, e.g.: "*my_account*". This name will be
-            used to save a file on disk that stores details needed to reconnect without asking again for credentials.
-            Alternatively, if you don't want a file to be saved on disk, pass the special name ``":memory:"`` to start
-            an in-memory session that will be discarded as soon as you stop the Client. In order to reconnect again
-            using a memory storage without having to login again, you can use
-            :meth:`~pyrogram.Client.export_session_string` before stopping the client to get a session string you can
-            pass here as argument.
+        name (``str``):
+            Pass a string of your choice to give a name to the client, e.g.: "my_account".
 
         api_id (``int`` | ``str``, *optional*):
             The *api_id* part of your Telegram API key, as integer.
@@ -115,6 +109,17 @@ class Client(Methods):
         bot_token (``str``, *optional*):
             Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
+
+        session_string (``str``, *optional*):
+            Pass a session string to load the session in-memory.
+            Implies ``in_memory=True``.
+
+        in_memory (``bool``, *optional*):
+            Pass True to start an in-memory session that will be discarded as soon as the client stops.
+            In order to reconnect again using an in-memory session without having to login again, you can use
+            :meth:`~pyrogram.Client.export_session_string` before stopping the client to get a session string you can
+            pass to the ``session_string`` parameter.
+            Defaults to False.
 
         phone_number (``str``, *optional*):
             Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
@@ -187,7 +192,7 @@ class Client(Methods):
 
     def __init__(
         self,
-        session_name: Union[str, Storage],
+        name: str,
         api_id: int = None,
         api_hash: str = None,
         app_version: str = APP_VERSION,
@@ -198,6 +203,8 @@ class Client(Methods):
         proxy: dict = None,
         test_mode: bool = False,
         bot_token: str = None,
+        session_string: str = None,
+        in_memory: bool = None,
         phone_number: str = None,
         phone_code: str = None,
         password: str = None,
@@ -212,7 +219,7 @@ class Client(Methods):
     ):
         super().__init__()
 
-        self.session_name = session_name
+        self.name = name
         self.api_id = api_id
         self.api_hash = api_hash
         self.app_version = app_version
@@ -223,6 +230,8 @@ class Client(Methods):
         self.proxy = proxy
         self.test_mode = test_mode
         self.bot_token = bot_token
+        self.session_string = session_string
+        self.in_memory = in_memory
         self.phone_number = phone_number
         self.phone_code = phone_code
         self.password = password
@@ -237,16 +246,12 @@ class Client(Methods):
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
-        if isinstance(session_name, str):
-            if session_name == ":memory:" or len(session_name) >= MemoryStorage.SESSION_STRING_SIZE:
-                session_name = re.sub(r"[\n\s]+", "", session_name)
-                self.storage = MemoryStorage(session_name)
-            else:
-                self.storage = FileStorage(session_name, self.workdir)
-        elif isinstance(session_name, Storage):
-            self.storage = session_name
+        if self.session_string:
+            self.storage = MemoryStorage(self.name, self.session_string)
+        elif self.in_memory:
+            self.storage = MemoryStorage(self.name)
         else:
-            raise ValueError("Unknown storage engine")
+            self.storage = FileStorage(self.name, self.workdir)
 
         self.dispatcher = Dispatcher(self)
 
@@ -638,7 +643,7 @@ class Client(Methods):
                                     self.add_handler(handler, group)
 
                                     log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                        self.session_name, type(handler).__name__, name, group, module_path))
+                                        self.name, type(handler).__name__, name, group, module_path))
 
                                     count += 1
                         except Exception:
@@ -651,11 +656,11 @@ class Client(Methods):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.session_name}] [LOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning(f'[{self.name}] [LOAD] Ignoring non-existent module "{module_path}"')
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning(f'[{self.session_name}] [LOAD] Ignoring namespace "{module_path}"')
+                        log.warning(f'[{self.name}] [LOAD] Ignoring namespace "{module_path}"')
                         continue
 
                     if handlers is None:
@@ -670,13 +675,13 @@ class Client(Methods):
                                     self.add_handler(handler, group)
 
                                     log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                        self.session_name, type(handler).__name__, name, group, module_path))
+                                        self.name, type(handler).__name__, name, group, module_path))
 
                                     count += 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.session_name, name, module_path))
+                                    self.name, name, module_path))
 
             if exclude:
                 for path, handlers in exclude:
@@ -686,11 +691,11 @@ class Client(Methods):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.session_name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning(f'[{self.name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning(f'[{self.session_name}] [UNLOAD] Ignoring namespace "{module_path}"')
+                        log.warning(f'[{self.name}] [UNLOAD] Ignoring namespace "{module_path}"')
                         continue
 
                     if handlers is None:
@@ -705,19 +710,19 @@ class Client(Methods):
                                     self.remove_handler(handler, group)
 
                                     log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                        self.session_name, type(handler).__name__, name, group, module_path))
+                                        self.name, type(handler).__name__, name, group, module_path))
 
                                     count -= 1
                         except Exception:
                             if warn_non_existent_functions:
                                 log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.session_name, name, module_path))
+                                    self.name, name, module_path))
 
             if count > 0:
                 log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
-                    self.session_name, count, "s" if count > 1 else "", root))
+                    self.name, count, "s" if count > 1 else "", root))
             else:
-                log.warning(f'[{self.session_name}] No plugin loaded from "{root}"')
+                log.warning(f'[{self.name}] No plugin loaded from "{root}"')
 
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
