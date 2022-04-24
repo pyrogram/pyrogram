@@ -16,8 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from base64 import b64encode
-from struct import pack
 from typing import Union, List, Match, Optional
 
 import pyrogram
@@ -102,15 +100,7 @@ class CallbackQuery(Object, Update):
             if not message:
                 message = await client.get_messages(chat_id, message_id)
         elif isinstance(callback_query, raw.types.UpdateInlineBotCallbackQuery):
-            inline_message_id = b64encode(
-                pack(
-                    "<iqq",
-                    callback_query.msg_id.dc_id,
-                    callback_query.msg_id.id,
-                    callback_query.msg_id.access_hash
-                ),
-                b"-_"
-            ).decode().rstrip("=")
+            inline_message_id = utils.pack_inline_message_id(callback_query.msg_id)
 
         # Try to decode callback query data into string. If that fails, fallback to bytes instead of decoding by
         # ignoring/replacing errors, this way, button clicks will still work.
