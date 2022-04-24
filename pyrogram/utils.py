@@ -166,15 +166,27 @@ def pack_inline_message_id(msg_id: "raw.base.InputBotInlineMessageID"):
     return base64.urlsafe_b64encode(inline_message_id_packed).decode().rstrip("=")
 
 
-def unpack_inline_message_id(inline_message_id: str) -> "raw.types.InputBotInlineMessageID":
-    r = inline_message_id + "=" * (-len(inline_message_id) % 4)
-    r = struct.unpack("<iqq", base64.b64decode(r, altchars=b"-_"))
+def unpack_inline_message_id(inline_message_id: str) -> "raw.base.InputBotInlineMessageID":
+    padded = inline_message_id + "=" * (-len(inline_message_id) % 4)
+    decoded = base64.urlsafe_b64decode(padded)
 
-    return raw.types.InputBotInlineMessageID(
-        dc_id=r[0],
-        id=r[1],
-        access_hash=r[2]
-    )
+    if len(decoded) == 20:
+        unpacked = struct.unpack("<iqq", decoded)
+
+        return raw.types.InputBotInlineMessageID(
+            dc_id=unpacked[0],
+            id=unpacked[1],
+            access_hash=unpacked[2]
+        )
+    else:
+        unpacked = struct.unpack("<iqiq", decoded)
+
+        return raw.types.InputBotInlineMessageID64(
+            dc_id=unpacked[0],
+            owner_id=unpacked[1],
+            id=unpacked[2],
+            access_hash=unpacked[3]
+        )
 
 
 MIN_CHANNEL_ID = -1002147483647
