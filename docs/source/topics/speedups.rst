@@ -45,12 +45,15 @@ Installation
 Usage
 ^^^^^
 
-Call ``uvloop.install()`` before calling ``asyncio.run()`` or ``app.run()``
+Call ``uvloop.install()`` before calling ``asyncio.run()`` or ``app.run()``.
 
 .. code-block:: python
 
     import asyncio
     import uvloop
+
+    from pyrogram import Client
+
 
     async def main():
         app = Client("my_account")
@@ -58,8 +61,28 @@ Call ``uvloop.install()`` before calling ``asyncio.run()`` or ``app.run()``
         async with app:
             print(await app.get_me())
 
+
     uvloop.install()
     asyncio.run(main())
+
+The ``uvloop.install()`` call also needs to be placed before creating a Client instance.
+
+.. code-block:: python
+
+    import uvloop
+    from pyrogram import Client
+
+    uvloop.install()
+
+    app = Client("my_account")
+
+
+    @app.on_message()
+    async def hello(client, message):
+        print(await client.get_me())
+
+
+    app.run()
 
 .. _TgCrypto: https://github.com/pyrogram/tgcrypto
 .. _uvloop: https://github.com/MagicStack/uvloop

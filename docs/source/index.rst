@@ -141,9 +141,9 @@ Meta
     topics/create-filters
     topics/more-on-updates
     topics/client-settings
-    topics/synchronous
-    topics/text-formatting
     topics/speedups
+    topics/text-formatting
+    topics/synchronous
     topics/smart-plugins
     topics/storage-engines
     topics/serializing

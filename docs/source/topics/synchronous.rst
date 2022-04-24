@@ -71,3 +71,18 @@ possible.
     @app.on_edited_message()
     def handler2(client, message):
         message.forward("me")
+
+uvloop usage
+------------
+
+When using Pyrogram in its synchronous mode combined with uvloop, you need to call ``uvloop.install()`` before importing
+Pyrogram.
+
+.. code-block:: python
+
+    import uvloop
+    uvloop.install()
+
+    from pyrogram import Client
+
+    ...
