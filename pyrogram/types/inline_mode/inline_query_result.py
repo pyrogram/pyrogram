@@ -49,8 +49,12 @@ class InlineQueryResult(Object):
     Pyrogram currently supports results of the following types:
 
     - :obj:`~pyrogram.types.InlineQueryResultArticle`
-    - :obj:`~pyrogram.types.InlineQueryResultPhoto`
+    - :obj:`~pyrogram.types.InlineQueryResultAudio`
     - :obj:`~pyrogram.types.InlineQueryResultAnimation`
+    - :obj:`~pyrogram.types.InlineQueryResultContact`
+    - :obj:`~pyrogram.types.InlineQueryResultDocument`
+    - :obj:`~pyrogram.types.InlineQueryResultPhoto`
+    - :obj:`~pyrogram.types.InlineQueryResultVideo`
     """
 
     def __init__(
