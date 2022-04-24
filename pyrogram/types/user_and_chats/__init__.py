@@ -27,6 +27,7 @@ from .chat_member_updated import ChatMemberUpdated
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from .chat_preview import ChatPreview
+from .chat_privileges import ChatPrivileges
 from .dialog import Dialog
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
@@ -55,5 +56,6 @@ __all__ = [
     "VoiceChatMembersInvited",
     "ChatMemberUpdated",
     "VoiceChatScheduled",
-    "ChatJoinRequest"
+    "ChatJoinRequest",
+    "ChatPrivileges"
 ]

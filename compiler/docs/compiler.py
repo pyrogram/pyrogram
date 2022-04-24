@@ -361,6 +361,7 @@ def pyrogram_api():
             ChatPhoto
             ChatMember
             ChatPermissions
+            ChatPrivileges
             ChatInviteLink
             ChatAdminWithInviteLinks
             ChatEvent

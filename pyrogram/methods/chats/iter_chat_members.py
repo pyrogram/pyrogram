@@ -112,14 +112,14 @@ class IterChatMembers(Scaffold):
             offset += len(chat_members)
 
             for chat_member in chat_members:
-                user_id = chat_member.user.id
+                peer_id = chat_member.user.id if chat_member.user else chat_member.chat.id
 
-                if user_id in yielded:
+                if peer_id in yielded:
                     continue
 
                 yield chat_member
 
-                yielded.add(chat_member.user.id)
+                yielded.add(peer_id)
 
                 current += 1
 

@@ -18,7 +18,7 @@
 
 from typing import Union
 
-from pyrogram import raw
+from pyrogram import raw, types
 from pyrogram.scaffold import Scaffold
 
 
@@ -27,17 +27,7 @@ class PromoteChatMember(Scaffold):
         self,
         chat_id: Union[int, str],
         user_id: Union[int, str],
-        is_anonymous: bool = False,
-        can_manage_chat: bool = True,
-        can_change_info: bool = False,
-        can_post_messages: bool = False,
-        can_edit_messages: bool = False,
-        can_delete_messages: bool = False,
-        can_restrict_members: bool = False,
-        can_invite_users: bool = False,
-        can_pin_messages: bool = False,
-        can_promote_members: bool = False,
-        can_manage_voice_chats: bool = False
+        privileges: "types.ChatPrivileges" = types.ChatPrivileges(),
     ) -> bool:
         """Promote or demote a user in a supergroup or a channel.
 
@@ -52,42 +42,8 @@ class PromoteChatMember(Scaffold):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            is_anonymous (``bool``, *optional*):
-                Pass True, if the administrator's presence in the chat is hidden.
-
-            can_manage_chat (``bool``, *optional*):
-                Pass True, if the administrator can access the chat event log, chat statistics, message statistics
-                in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode.
-                Implied by any other administrator privilege.
-
-            can_change_info (``bool``, *optional*):
-                Pass True, if the administrator can change chat title, photo and other settings.
-
-            can_post_messages (``bool``, *optional*):
-                Pass True, if the administrator can create channel posts, channels only.
-
-            can_edit_messages (``bool``, *optional*):
-                Pass True, if the administrator can edit messages of other users and can pin messages, channels only.
-
-            can_delete_messages (``bool``, *optional*):
-                Pass True, if the administrator can delete messages of other users.
-
-            can_restrict_members (``bool``, *optional*):
-                Pass True, if the administrator can restrict, ban or unban chat members.
-
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the administrator can invite new users to the chat.
-
-            can_pin_messages (``bool``, *optional*):
-                Pass True, if the administrator can pin messages, supergroups only.
-
-            can_promote_members (``bool``, *optional*):
-                Pass True, if the administrator can add new administrators with a subset of his own privileges or
-                demote administrators that he has promoted, directly or indirectly (promoted by administrators that
-                were appointed by him).
-
-            can_manage_voice_chats (``bool``, *optional*):
-                Pass True, if the administration can manage voice chats (also called group calls).
+            privileges (:obj:`~pyrogram.types.ChatPrivileges`, *optional*):
+                New user privileges.
 
         Returns:
             ``bool``: True on success.
@@ -95,27 +51,41 @@ class PromoteChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                # Promote chat member to supergroup admin
+                # Promote chat member to admin
                 app.promote_chat_member(chat_id, user_id)
         """
+        chat_id = await self.resolve_peer(chat_id)
+        user_id = await self.resolve_peer(user_id)
+
+        raw_chat_member = (await self.send(
+            raw.functions.channels.GetParticipant(
+                channel=chat_id,
+                participant=user_id
+            )
+        )).participant
+
+        rank = None
+        if isinstance(raw_chat_member, raw.types.ChannelParticipantAdmin):
+            rank = raw_chat_member.rank
+
         await self.send(
             raw.functions.channels.EditAdmin(
-                channel=await self.resolve_peer(chat_id),
-                user_id=await self.resolve_peer(user_id),
+                channel=chat_id,
+                user_id=user_id,
                 admin_rights=raw.types.ChatAdminRights(
-                    anonymous=is_anonymous or None,
-                    change_info=can_change_info or None,
-                    post_messages=can_post_messages or None,
-                    edit_messages=can_edit_messages or None,
-                    delete_messages=can_delete_messages or None,
-                    ban_users=can_restrict_members or None,
-                    invite_users=can_invite_users or None,
-                    pin_messages=can_pin_messages or None,
-                    add_admins=can_promote_members or None,
-                    manage_call=can_manage_voice_chats or None,
-                    other=can_manage_chat or None
+                    anonymous=privileges.is_anonymous,
+                    change_info=privileges.can_change_info,
+                    post_messages=privileges.can_post_messages,
+                    edit_messages=privileges.can_edit_messages,
+                    delete_messages=privileges.can_delete_messages,
+                    ban_users=privileges.can_restrict_members,
+                    invite_users=privileges.can_invite_users,
+                    pin_messages=privileges.can_pin_messages,
+                    add_admins=privileges.can_promote_members,
+                    manage_call=privileges.can_manage_voice_chats,
+                    other=privileges.can_manage_chat
                 ),
-                rank=""
+                rank=rank or ""
             )
         )
 
