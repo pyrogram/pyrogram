@@ -66,14 +66,14 @@ class Client(Methods):
 
     Parameters:
         name (``str``):
-            Pass a string of your choice to give a name to the client, e.g.: "my_account".
+            A name for the client, e.g.: "my_account".
 
         api_id (``int`` | ``str``, *optional*):
-            The *api_id* part of your Telegram API key, as integer.
-            E.g.: 12345.
+            The *api_id* part of the Telegram API key, as integer or string.
+            E.g.: 12345 or "12345".
 
         api_hash (``str``, *optional*):
-            The *api_hash* part of your Telegram API key, as string.
+            The *api_hash* part of the Telegram API key, as string.
             E.g.: "0123456789abcdef0123456789abcdef".
 
         app_version (``str``, *optional*):
@@ -99,7 +99,7 @@ class Client(Methods):
         proxy (``dict``, *optional*):
             The Proxy settings as dict.
             E.g.: *dict(scheme="socks5", hostname="11.22.33.44", port=1234, username="user", password="pass")*.
-            The *username* and *password* can be omitted if your proxy doesn't require authorization.
+            The *username* and *password* can be omitted if the proxy doesn't require authorization.
 
         test_mode (``bool``, *optional*):
             Enable or disable login to the test servers.
@@ -107,7 +107,7 @@ class Client(Methods):
             Defaults to False.
 
         bot_token (``str``, *optional*):
-            Pass your Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            Pass the Bot API token to create a bot session, e.g.: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
             Only applicable for new sessions.
 
         session_string (``str``, *optional*):
@@ -122,7 +122,7 @@ class Client(Methods):
             Defaults to False.
 
         phone_number (``str``, *optional*):
-            Pass your phone number as string (with your Country Code prefix included) to avoid entering it manually.
+            Pass the phone number as string (with the Country Code prefix included) to avoid entering it manually.
             Only applicable for new sessions.
 
         phone_code (``str``, *optional*):
@@ -130,7 +130,7 @@ class Client(Methods):
             Only applicable for new sessions.
 
         password (``str``, *optional*):
-            Pass your Two-Step Verification password as string (if you have one) to avoid entering it manually.
+            Pass the Two-Step Verification password as string (if required) to avoid entering it manually.
             Only applicable for new sessions.
 
         workers (``int``, *optional*):
@@ -138,12 +138,12 @@ class Client(Methods):
             Defaults to ``min(32, os.cpu_count() + 4)``.
 
         workdir (``str``, *optional*):
-            Define a custom working directory. The working directory is the location in your filesystem where Pyrogram
-            will store your session files.
+            Define a custom working directory.
+            The working directory is the location in the filesystem where Pyrogram will store the session files.
             Defaults to the parent directory of the main script.
 
         plugins (``dict``, *optional*):
-            Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
+            Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
 
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             Set the global parse mode of the client. By default, texts are parsed using both Markdown and HTML styles.
@@ -157,7 +157,7 @@ class Client(Methods):
 
         takeout (``bool``, *optional*):
             Pass True to let the client use a takeout session instead of a normal one, implies *no_updates=True*.
-            Useful for exporting your Telegram data. Methods invoked inside a takeout session (such as get_history,
+            Useful for exporting Telegram data. Methods invoked inside a takeout session (such as get_chat_history,
             download_media, ...) are less prone to throw FloodWait exceptions.
             Only available for users, bots will ignore this parameter.
             Defaults to False (normal session).
