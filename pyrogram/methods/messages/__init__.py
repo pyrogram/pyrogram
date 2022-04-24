@@ -34,7 +34,6 @@ from .get_chat_history_count import GetChatHistoryCount
 from .get_discussion_message import GetDiscussionMessage
 from .get_discussion_replies import GetDiscussionReplies
 from .get_discussion_replies_count import GetDiscussionRepliesCount
-from .get_history import GetHistory
 from .get_media_group import GetMediaGroup
 from .get_messages import GetMessages
 from .read_chat_history import ReadChatHistory
@@ -72,7 +71,6 @@ class Messages(
     EditMessageMedia,
     EditMessageText,
     ForwardMessages,
-    GetHistory,
     GetMediaGroup,
     GetMessages,
     SendAudio,
