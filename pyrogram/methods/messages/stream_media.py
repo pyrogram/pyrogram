@@ -32,7 +32,8 @@ class StreamMedia:
     ) -> Optional[Union[str, BinaryIO]]:
         """Stream the media from a message chunk by chunk.
 
-        The chunk size is 1 MiB (1024 * 1024 bytes).
+        You can use this method to partially download a file into memory or to selectively download chunks of file.
+        The chunk maximum size is 1 MiB (1024 * 1024 bytes).
 
         Parameters:
             message (:obj:`~pyrogram.types.Message` | ``str``):
