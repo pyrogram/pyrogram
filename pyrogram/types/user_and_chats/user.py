@@ -195,7 +195,11 @@ class User(Object, Update):
 
     @property
     def mention(self):
-        return Link(f"tg://user?id={self.id}", self.first_name, self._client.parse_mode)
+        return Link(
+            f"tg://user?id={self.id}",
+            self.first_name or "Deleted Account",
+            self._client.parse_mode
+        )
 
     @staticmethod
     def _parse(client, user: "raw.base.User") -> Optional["User"]:
