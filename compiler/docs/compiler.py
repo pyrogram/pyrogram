@@ -310,7 +310,7 @@ def pyrogram_api():
         """,
         advanced="""
         Advanced
-            send
+            invoke
             resolve_peer
             save_file
         """

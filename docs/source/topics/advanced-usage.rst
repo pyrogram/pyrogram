@@ -38,7 +38,7 @@ live in their respective packages (and sub-packages): ``pyrogram.raw.functions``
 as Python classes, meaning you need to create an instance of each every time you need them and fill them in with the
 correct values using named arguments.
 
-Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.send` method provided by the
+Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.invoke` method provided by the
 Client class and pass the function object you created.
 
 Here's some examples:
