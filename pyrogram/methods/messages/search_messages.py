@@ -54,7 +54,7 @@ async def get_chunk(
         sleep_threshold=60
     )
 
-    return await utils.parse_messages(client, r)
+    return await utils.parse_messages(client, r, replies=0)
 
 
 class SearchMessages:
