@@ -514,7 +514,7 @@ class Chat(Object):
     async def ban_member(
         self,
         user_id: Union[int, str],
-        until_date: datetime = datetime.fromtimestamp(0)
+        until_date: datetime = utils.zero_datetime()
     ) -> Union["types.Message", bool]:
         """Bound method *ban_member* of :obj:`~pyrogram.types.Chat`.
 
@@ -602,7 +602,7 @@ class Chat(Object):
         self,
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",
-        until_date: datetime = datetime.fromtimestamp(0),
+        until_date: datetime = utils.zero_datetime(),
     ) -> "types.Chat":
         """Bound method *unban_member* of :obj:`~pyrogram.types.Chat`.
 

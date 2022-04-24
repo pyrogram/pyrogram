@@ -23,7 +23,7 @@ import hashlib
 import os
 import struct
 from concurrent.futures.thread import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timezone
 from getpass import getpass
 from typing import Union, List, Dict, Optional
 
@@ -343,6 +343,10 @@ async def parse_text_entities(
         "message": text,
         "entities": entities
     }
+
+
+def zero_datetime() -> datetime:
+    return datetime.fromtimestamp(0, timezone.utc)
 
 
 def timestamp_to_datetime(ts: Optional[int]) -> Optional[datetime]:

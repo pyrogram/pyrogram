@@ -30,7 +30,7 @@ class RestrictChatMember:
         chat_id: Union[int, str],
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",
-        until_date: datetime = datetime.fromtimestamp(0)
+        until_date: datetime = utils.zero_datetime()
     ) -> "types.Chat":
         """Restrict a user in a supergroup.
 

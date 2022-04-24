@@ -30,7 +30,7 @@ async def get_chunk(
     limit: int = 0,
     offset: int = 0,
     from_message_id: int = 0,
-    from_date: datetime = datetime.fromtimestamp(0)
+    from_date: datetime = utils.zero_datetime()
 ):
     messages = await client.invoke(
         raw.functions.messages.GetHistory(
@@ -56,7 +56,7 @@ class GetChatHistory:
         limit: int = 0,
         offset: int = 0,
         offset_id: int = 0,
-        offset_date: datetime = datetime.fromtimestamp(0)
+        offset_date: datetime = utils.zero_datetime()
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Get messages from a chat history.
 

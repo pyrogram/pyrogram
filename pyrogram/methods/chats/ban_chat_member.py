@@ -29,7 +29,7 @@ class BanChatMember:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
-        until_date: datetime = datetime.fromtimestamp(0)
+        until_date: datetime = utils.zero_datetime()
     ) -> Union["types.Message", bool]:
         """Ban a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using

@@ -51,7 +51,7 @@ class EditChatInviteLink:
 
             expire_date (:py:obj:`~datetime.datetime`, *optional*):
                 Point in time when the link will expire.
-                Defaults to None (no change), pass ``datetime.fromtimestamp(0)`` to set no expiration date.
+                Defaults to None (no change), pass None to set no expiration date.
 
             member_limit (``int``, *optional*):
                 Maximum number of users that can be members of the chat simultaneously after joining the chat via this
