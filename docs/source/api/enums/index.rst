@@ -20,7 +20,7 @@ to apply only a valid value among the expected ones.
     ChatType
     MessageEntityType
     MessageMediaType
-    MessageService
+    MessageServiceType
     MessagesFilter
     ParseMode
     PollType
@@ -38,7 +38,7 @@ to apply only a valid value among the expected ones.
     ChatType
     MessageEntityType
     MessageMediaType
-    MessageService
+    MessageServiceType
     MessagesFilter
     ParseMode
     PollType

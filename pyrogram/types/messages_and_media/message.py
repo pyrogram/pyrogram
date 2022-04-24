@@ -113,7 +113,7 @@ class Message(Object, Update):
             The message is empty.
             A message can be empty in case it was deleted or you tried to retrieve a message that doesn't exist yet.
 
-        service (:obj:`~pyrogram.enums.MessageService`, *optional*):
+        service (:obj:`~pyrogram.enums.MessageServiceType`, *optional*):
             The message is a service message.
             This field will contain the enumeration type of the service message.
             You can use ``service = getattr(message, message.service.value)`` to access the service message.
@@ -321,10 +321,10 @@ class Message(Object, Update):
         reply_to_message: "Message" = None,
         mentioned: bool = None,
         empty: bool = None,
-        service: "enums.MessageService" = None,
+        service: "enums.MessageServiceType" = None,
         scheduled: bool = None,
         from_scheduled: bool = None,
-        media: str = None,
+        media: "enums.MessageMediaType" = None,
         edit_date: datetime = None,
         media_group_id: str = None,
         author_signature: str = None,
@@ -502,50 +502,50 @@ class Message(Object, Update):
 
             if isinstance(action, raw.types.MessageActionChatAddUser):
                 new_chat_members = [types.User._parse(client, users[i]) for i in action.users]
-                service_type = enums.MessageService.NEW_CHAT_MEMBERS
+                service_type = enums.MessageServiceType.NEW_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatJoinedByLink):
                 new_chat_members = [types.User._parse(client, users[utils.get_raw_peer_id(message.from_id)])]
-                service_type = enums.MessageService.NEW_CHAT_MEMBERS
+                service_type = enums.MessageServiceType.NEW_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatDeleteUser):
                 left_chat_member = types.User._parse(client, users[action.user_id])
-                service_type = enums.MessageService.LEFT_CHAT_MEMBERS
+                service_type = enums.MessageServiceType.LEFT_CHAT_MEMBERS
             elif isinstance(action, raw.types.MessageActionChatEditTitle):
                 new_chat_title = action.title
-                service_type = enums.MessageService.NEW_CHAT_TITLE
+                service_type = enums.MessageServiceType.NEW_CHAT_TITLE
             elif isinstance(action, raw.types.MessageActionChatDeletePhoto):
                 delete_chat_photo = True
-                service_type = enums.MessageService.DELETE_CHAT_PHOTO
+                service_type = enums.MessageServiceType.DELETE_CHAT_PHOTO
             elif isinstance(action, raw.types.MessageActionChatMigrateTo):
                 migrate_to_chat_id = action.channel_id
-                service_type = enums.MessageService.MIGRATE_TO_CHAT_ID
+                service_type = enums.MessageServiceType.MIGRATE_TO_CHAT_ID
             elif isinstance(action, raw.types.MessageActionChannelMigrateFrom):
                 migrate_from_chat_id = action.chat_id
-                service_type = enums.MessageService.MIGRATE_FROM_CHAT_ID
+                service_type = enums.MessageServiceType.MIGRATE_FROM_CHAT_ID
             elif isinstance(action, raw.types.MessageActionChatCreate):
                 group_chat_created = True
-                service_type = enums.MessageService.GROUP_CHAT_CREATED
+                service_type = enums.MessageServiceType.GROUP_CHAT_CREATED
             elif isinstance(action, raw.types.MessageActionChannelCreate):
                 channel_chat_created = True
-                service_type = enums.MessageService.CHANNEL_CHAT_CREATED
+                service_type = enums.MessageServiceType.CHANNEL_CHAT_CREATED
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
-                service_type = enums.MessageService.NEW_CHAT_PHOTO
+                service_type = enums.MessageServiceType.NEW_CHAT_PHOTO
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
                 video_chat_scheduled = types.VideoChatScheduled._parse(action)
-                service_type = enums.MessageService.VIDEO_CHAT_SCHEDULED
+                service_type = enums.MessageServiceType.VIDEO_CHAT_SCHEDULED
             elif isinstance(action, raw.types.MessageActionGroupCall):
                 if action.duration:
                     video_chat_ended = types.VideoChatEnded._parse(action)
-                    service_type = enums.MessageService.VIDEO_CHAT_ENDED
+                    service_type = enums.MessageServiceType.VIDEO_CHAT_ENDED
                 else:
                     video_chat_started = types.VideoChatStarted()
-                    service_type = enums.MessageService.VIDEO_CHAT_STARTED
+                    service_type = enums.MessageServiceType.VIDEO_CHAT_STARTED
             elif isinstance(action, raw.types.MessageActionInviteToGroupCall):
                 video_chat_members_invited = types.VideoChatMembersInvited._parse(client, action, users)
-                service_type = enums.MessageService.VIDEO_CHAT_MEMBERS_INVITED
+                service_type = enums.MessageServiceType.VIDEO_CHAT_MEMBERS_INVITED
             elif isinstance(action, raw.types.MessageActionWebViewDataSentMe):
                 web_app_data = types.WebAppData._parse(action)
-                service_type = enums.MessageService.WEB_APP_DATA
+                service_type = enums.MessageServiceType.WEB_APP_DATA
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -583,7 +583,7 @@ class Message(Object, Update):
                         replies=0
                     )
 
-                    parsed_message.service = enums.MessageService.PINNED_MESSAGE
+                    parsed_message.service = enums.MessageServiceType.PINNED_MESSAGE
                 except MessageIdsEmpty:
                     pass
 
@@ -598,7 +598,7 @@ class Message(Object, Update):
                             replies=0
                         )
 
-                        parsed_message.service = enums.MessageService.GAME_HIGH_SCORE
+                        parsed_message.service = enums.MessageServiceType.GAME_HIGH_SCORE
                     except MessageIdsEmpty:
                         pass
 

@@ -21,8 +21,8 @@ from enum import auto
 from .auto_name import AutoName
 
 
-class MessageService(AutoName):
-    """Message service enumeration used in :obj:`~pyrogram.types.Message`."""
+class MessageServiceType(AutoName):
+    """Message service type enumeration used in :obj:`~pyrogram.types.Message`."""
 
     NEW_CHAT_MEMBERS = auto()
     "New members join"

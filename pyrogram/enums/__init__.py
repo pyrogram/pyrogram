@@ -23,7 +23,7 @@ from .chat_members_filter import ChatMembersFilter
 from .chat_type import ChatType
 from .message_entity_type import MessageEntityType
 from .message_media_type import MessageMediaType
-from .message_service import MessageService
+from .message_service_type import MessageServiceType
 from .messages_filter import MessagesFilter
 from .next_code_type import NextCodeType
 from .parse_mode import ParseMode
