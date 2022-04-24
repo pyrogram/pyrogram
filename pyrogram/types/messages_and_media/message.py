@@ -118,7 +118,7 @@ class Message(Object, Update):
             This field will contain the enumeration type of the service message.
             You can use ``service = getattr(message, message.service.value)`` to access the service message.
 
-        media (:obj:`~pyrogram.enums.MessageMedia`, *optional*):
+        media (:obj:`~pyrogram.enums.MessageMediaType`, *optional*):
             The message is a media message.
             This field will contain the enumeration type of the media message.
             You can use ``media = getattr(message, message.media.value)`` to access the media message.
@@ -657,19 +657,19 @@ class Message(Object, Update):
             if media:
                 if isinstance(media, raw.types.MessageMediaPhoto):
                     photo = types.Photo._parse(client, media.photo, media.ttl_seconds)
-                    media_type = enums.MessageMedia.PHOTO
+                    media_type = enums.MessageMediaType.PHOTO
                 elif isinstance(media, raw.types.MessageMediaGeo):
                     location = types.Location._parse(client, media.geo)
-                    media_type = enums.MessageMedia.LOCATION
+                    media_type = enums.MessageMediaType.LOCATION
                 elif isinstance(media, raw.types.MessageMediaContact):
                     contact = types.Contact._parse(client, media)
-                    media_type = enums.MessageMedia.CONTACT
+                    media_type = enums.MessageMediaType.CONTACT
                 elif isinstance(media, raw.types.MessageMediaVenue):
                     venue = types.Venue._parse(client, media)
-                    media_type = enums.MessageMedia.VENUE
+                    media_type = enums.MessageMediaType.VENUE
                 elif isinstance(media, raw.types.MessageMediaGame):
                     game = types.Game._parse(client, message)
-                    media_type = enums.MessageMedia.GAME
+                    media_type = enums.MessageMediaType.GAME
                 elif isinstance(media, raw.types.MessageMediaDocument):
                     doc = media.document
 
@@ -687,14 +687,14 @@ class Message(Object, Update):
 
                             if audio_attributes.voice:
                                 voice = types.Voice._parse(client, doc, audio_attributes)
-                                media_type = enums.MessageMedia.VOICE
+                                media_type = enums.MessageMediaType.VOICE
                             else:
                                 audio = types.Audio._parse(client, doc, audio_attributes, file_name)
-                                media_type = enums.MessageMedia.AUDIO
+                                media_type = enums.MessageMediaType.AUDIO
                         elif raw.types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
-                            media_type = enums.MessageMedia.ANIMATION
+                            media_type = enums.MessageMediaType.ANIMATION
                         elif raw.types.DocumentAttributeSticker in attributes:
                             sticker = await types.Sticker._parse(
                                 client, doc,
@@ -702,31 +702,31 @@ class Message(Object, Update):
                                 attributes[raw.types.DocumentAttributeSticker],
                                 file_name
                             )
-                            media_type = enums.MessageMedia.STICKER
+                            media_type = enums.MessageMediaType.STICKER
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
 
                             if video_attributes.round_message:
                                 video_note = types.VideoNote._parse(client, doc, video_attributes)
-                                media_type = enums.MessageMedia.VIDEO_NOTE
+                                media_type = enums.MessageMediaType.VIDEO_NOTE
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
-                                media_type = enums.MessageMedia.VIDEO
+                                media_type = enums.MessageMediaType.VIDEO
                         else:
                             document = types.Document._parse(client, doc, file_name)
-                            media_type = enums.MessageMedia.DOCUMENT
+                            media_type = enums.MessageMediaType.DOCUMENT
                 elif isinstance(media, raw.types.MessageMediaWebPage):
                     if isinstance(media.webpage, raw.types.WebPage):
                         web_page = types.WebPage._parse(client, media.webpage)
-                        media_type = enums.MessageMedia.WEB_PAGE
+                        media_type = enums.MessageMediaType.WEB_PAGE
                     else:
                         media = None
                 elif isinstance(media, raw.types.MessageMediaPoll):
                     poll = types.Poll._parse(client, media)
-                    media_type = enums.MessageMedia.POLL
+                    media_type = enums.MessageMediaType.POLL
                 elif isinstance(media, raw.types.MessageMediaDice):
                     dice = types.Dice._parse(client, media)
-                    media_type = enums.MessageMedia.DICE
+                    media_type = enums.MessageMediaType.DICE
                 else:
                     media = None
 

@@ -22,7 +22,7 @@ from .chat_member_status import ChatMemberStatus
 from .chat_members_filter import ChatMembersFilter
 from .chat_type import ChatType
 from .message_entity_type import MessageEntityType
-from .message_media import MessageMedia
+from .message_media_type import MessageMediaType
 from .message_service import MessageService
 from .messages_filter import MessagesFilter
 from .next_code_type import NextCodeType

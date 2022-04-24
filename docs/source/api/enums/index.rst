@@ -19,7 +19,7 @@ to apply only a valid value among the expected ones.
     ChatMembersFilter
     ChatType
     MessageEntityType
-    MessageMedia
+    MessageMediaType
     MessageService
     MessagesFilter
     ParseMode
@@ -37,7 +37,7 @@ to apply only a valid value among the expected ones.
     ChatMembersFilter
     ChatType
     MessageEntityType
-    MessageMedia
+    MessageMediaType
     MessageService
     MessagesFilter
     ParseMode

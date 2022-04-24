@@ -21,8 +21,8 @@ from enum import auto
 from .auto_name import AutoName
 
 
-class MessageMedia(AutoName):
-    """Message media enumeration used in :obj:`~pyrogram.types.Message`."""
+class MessageMediaType(AutoName):
+    """Message media type enumeration used in :obj:`~pyrogram.types.Message`."""
 
     AUDIO = auto()
     "Audio media"
