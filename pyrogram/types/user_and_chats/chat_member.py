@@ -151,7 +151,10 @@ class ChatMember(Object):
                 user=types.User._parse(client, users[member.user_id]),
                 joined_date=utils.timestamp_to_datetime(member.date),
                 promoted_by=types.User._parse(client, users[member.promoted_by]),
-                invited_by=types.User._parse(client, users[member.inviter_id]),
+                invited_by=(
+                    types.User._parse(client, users[member.inviter_id])
+                    if member.inviter_id else None
+                ),
                 custom_title=member.rank,
                 can_be_edited=member.can_edit,
                 privileges=types.ChatPrivileges._parse(member.admin_rights),
