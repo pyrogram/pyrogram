@@ -61,6 +61,7 @@ from .send_video import SendVideo
 from .send_video_note import SendVideoNote
 from .send_voice import SendVoice
 from .stop_poll import StopPoll
+from .stream_media import StreamMedia
 from .vote_poll import VotePoll
 
 
@@ -110,6 +111,7 @@ class Messages(
     GetDiscussionMessage,
     SendReaction,
     GetDiscussionReplies,
-    GetDiscussionRepliesCount
+    GetDiscussionRepliesCount,
+    StreamMedia
 ):
     pass

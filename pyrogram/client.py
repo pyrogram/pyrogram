@@ -32,7 +32,7 @@ from importlib import import_module
 from io import StringIO, BytesIO
 from mimetypes import MimeTypes
 from pathlib import Path
-from typing import Union, List, Optional, Callable, BinaryIO
+from typing import Union, List, Optional, Callable, AsyncGenerator
 
 import pyrogram
 from pyrogram import __version__, __license__
@@ -722,13 +722,10 @@ class Client(Methods):
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
 
-        file = await self.get_file(
-            file_id=file_id,
-            file_size=file_size,
-            in_memory=in_memory,
-            progress=progress,
-            progress_args=progress_args
-        )
+        file = BytesIO() if in_memory else tempfile.NamedTemporaryFile("wb", delete=False)
+
+        async for chunk in self.get_file(file_id, file_size, 0, 0, progress, progress_args):
+            file.write(chunk)
 
         if file and not in_memory:
             file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
@@ -749,11 +746,12 @@ class Client(Methods):
     async def get_file(
         self,
         file_id: FileId,
-        file_size: int,
-        in_memory: bool,
-        progress: Callable,
+        file_size: int = 0,
+        limit: int = 0,
+        offset: int = 0,
+        progress: Callable = None,
         progress_args: tuple = ()
-    ) -> Optional[BinaryIO]:
+    ) -> Optional[AsyncGenerator[bytes, None]]:
         dc_id = file_id.dc_id
 
         async with self.media_sessions_lock:
@@ -836,17 +834,17 @@ class Client(Methods):
                 thumb_size=file_id.thumbnail_size
             )
 
-        limit = 1024 * 1024
-        offset = 0
-
-        file = BytesIO() if in_memory else tempfile.NamedTemporaryFile("wb")
+        current = 0
+        total = abs(limit) or (1 << 31) - 1
+        chunk_size = 1024 * 1024
+        offset_bytes = abs(offset) * chunk_size
 
         try:
             r = await session.invoke(
                 raw.functions.upload.GetFile(
                     location=location,
-                    offset=offset,
-                    limit=limit
+                    offset=offset_bytes,
+                    limit=chunk_size
                 ),
                 sleep_threshold=30
             )
@@ -855,16 +853,17 @@ class Client(Methods):
                 while True:
                     chunk = r.bytes
 
-                    file.write(chunk)
+                    yield chunk
 
-                    offset += limit
+                    current += 1
+                    offset_bytes += chunk_size
 
                     if progress:
                         func = functools.partial(
                             progress,
-                            min(offset, file_size)
+                            min(offset_bytes, file_size)
                             if file_size != 0
-                            else offset,
+                            else offset_bytes,
                             file_size,
                             *progress_args
                         )
@@ -874,14 +873,14 @@ class Client(Methods):
                         else:
                             await self.loop.run_in_executor(self.executor, func)
 
-                    if len(chunk) < limit:
+                    if len(chunk) < chunk_size or current >= total:
                         break
 
                     r = await session.invoke(
                         raw.functions.upload.GetFile(
                             location=location,
-                            offset=offset,
-                            limit=limit
+                            offset=offset_bytes,
+                            limit=chunk_size
                         ),
                         sleep_threshold=30
                     )
@@ -905,8 +904,8 @@ class Client(Methods):
                         r2 = await cdn_session.invoke(
                             raw.functions.upload.GetCdnFile(
                                 file_token=r.file_token,
-                                offset=offset,
-                                limit=limit
+                                offset=offset_bytes,
+                                limit=chunk_size
                             )
                         )
 
@@ -931,14 +930,14 @@ class Client(Methods):
                             r.encryption_key,
                             bytearray(
                                 r.encryption_iv[:-4]
-                                + (offset // 16).to_bytes(4, "big")
+                                + (offset_bytes // 16).to_bytes(4, "big")
                             )
                         )
 
                         hashes = await session.invoke(
                             raw.functions.upload.GetCdnFileHashes(
                                 file_token=r.file_token,
-                                offset=offset
+                                offset=offset_bytes
                             )
                         )
 
@@ -947,14 +946,15 @@ class Client(Methods):
                             cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
                             CDNFileHashMismatch.check(h.hash == sha256(cdn_chunk).digest())
 
-                        file.write(decrypted_chunk)
+                        yield decrypted_chunk
 
-                        offset += limit
+                        current += 1
+                        offset_bytes += chunk_size
 
                         if progress:
                             func = functools.partial(
                                 progress,
-                                min(offset, file_size) if file_size != 0 else offset,
+                                min(offset_bytes, file_size) if file_size != 0 else offset_bytes,
                                 file_size,
                                 *progress_args
                             )
@@ -964,19 +964,13 @@ class Client(Methods):
                             else:
                                 await self.loop.run_in_executor(self.executor, func)
 
-                        if len(chunk) < limit:
+                        if len(chunk) < chunk_size or current >= total:
                             break
                 except Exception as e:
                     raise e
         except Exception as e:
             if not isinstance(e, pyrogram.StopTransmission):
                 log.error(e, exc_info=True)
-
-            file.close()
-
-            return None
-        else:
-            return file
 
     def guess_mime_type(self, filename: str) -> Optional[str]:
         return self.mimetypes.guess_type(filename)[0]

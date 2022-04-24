@@ -187,6 +187,7 @@ def pyrogram_api():
             search_global
             search_global_count
             download_media
+            stream_media
             get_discussion_message
             get_discussion_replies
             get_discussion_replies_count
