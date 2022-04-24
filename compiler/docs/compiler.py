@@ -256,14 +256,17 @@ def pyrogram_api():
             edit_chat_invite_link
             revoke_chat_invite_link
             delete_chat_invite_link
-            get_chat_invite_link_members
-            get_chat_invite_link_members_count
+            get_chat_invite_link_joiners
+            get_chat_invite_link_joiners_count
             get_chat_admin_invite_links
             get_chat_admin_invite_links_count
             get_chat_admins_with_invite_links
+            get_chat_join_requests
             delete_chat_admin_invite_links
             approve_chat_join_request
+            approve_all_chat_join_requests
             decline_chat_join_request
+            decline_all_chat_join_requests
         """,
         contacts="""
         Contacts
@@ -370,6 +373,7 @@ def pyrogram_api():
             ChatEventFilter
             ChatMemberUpdated
             ChatJoinRequest
+            ChatJoiner
             Dialog
             Restriction
         """,

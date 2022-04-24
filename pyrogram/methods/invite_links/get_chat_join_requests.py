@@ -23,32 +23,32 @@ from pyrogram import raw
 from pyrogram import types
 
 
-class GetChatInviteLinkMembers:
-    async def get_chat_invite_link_members(
+class GetChatJoinRequests:
+    async def get_chat_join_requests(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        invite_link: str,
-        limit: int = 0
-    ) -> Optional[AsyncGenerator["types.ChatMember", None]]:
-        """Get the members who joined the chat with the invite link.
+        limit: int = 0,
+        query: str = ""
+    ) -> Optional[AsyncGenerator["types.ChatJoiner", None]]:
+        """Get the pending join requests of a chat.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).
 
-            invite_link (str):
-                The invite link.
-
             limit (``int``, *optional*):
                 Limits the number of invite links to be retrieved.
                 By default, no limit is applied and all invite links are returned.
 
+            query (``str``, *optional*):
+                Query to search for a user.
+
         Returns:
-            ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatMember` objects.
+            ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatJoiner` objects.
 
         Yields:
-            :obj:`~pyrogram.types.ChatMember` objects.
+            :obj:`~pyrogram.types.ChatJoiner` objects.
         """
         current = 0
         total = abs(limit) or (1 << 31) - 1
@@ -61,10 +61,11 @@ class GetChatInviteLinkMembers:
             r = await self.invoke(
                 raw.functions.messages.GetChatInviteImporters(
                     peer=await self.resolve_peer(chat_id),
-                    link=invite_link,
                     limit=limit,
                     offset_date=offset_date,
-                    offset_user=offset_user
+                    offset_user=offset_user,
+                    requested=True,
+                    q=query
                 )
             )
 
@@ -77,13 +78,7 @@ class GetChatInviteLinkMembers:
             offset_user = await self.resolve_peer(r.importers[-1].user_id)
 
             for i in r.importers:
-                user = types.User._parse(self, users[i.user_id])
-
-                yield types.ChatMember(
-                    user=user,
-                    status="member",
-                    joined_date=i.date
-                )
+                yield types.ChatJoiner._parse(self, i, users)
 
                 current += 1
 
