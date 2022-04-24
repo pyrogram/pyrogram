@@ -452,11 +452,23 @@ def pyrogram_api():
         Inline Mode
             InlineQuery
             InlineQueryResult
+            InlineQueryResultCachedAudio
+            InlineQueryResultCachedDocument
+            InlineQueryResultCachedAnimation
+            InlineQueryResultCachedPhoto
+            InlineQueryResultCachedSticker
+            InlineQueryResultCachedVideo
+            InlineQueryResultCachedVoice
             InlineQueryResultArticle
-            InlineQueryResultPhoto
-            InlineQueryResultAnimation
             InlineQueryResultAudio
+            InlineQueryResultContact
+            InlineQueryResultDocument
+            InlineQueryResultAnimation
+            InlineQueryResultLocation
+            InlineQueryResultPhoto
+            InlineQueryResultVenue
             InlineQueryResultVideo
+            InlineQueryResultVoice
             ChosenInlineResult
         """,
         input_message_content="""
