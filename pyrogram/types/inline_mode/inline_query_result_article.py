@@ -43,11 +43,17 @@ class InlineQueryResultArticle(InlineQueryResult):
         description (``str``, *optional*):
             Short description of the result.
 
-        thumb_url (``str``, *optional*):
-            URL of the thumbnail for the result.
-
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             Inline keyboard attached to the message.
+
+        thumb_url (``str``, *optional*):
+            Url of the thumbnail for the result.
+
+        thumb_width (``int``, *optional*):
+            Thumbnail width.
+
+        thumb_height (``int``, *optional*):
+            Thumbnail height
     """
 
     def __init__(
@@ -55,10 +61,12 @@ class InlineQueryResultArticle(InlineQueryResult):
         title: str,
         input_message_content: "types.InputMessageContent",
         id: str = None,
-        reply_markup: "types.InlineKeyboardMarkup" = None,
         url: str = None,
         description: str = None,
-        thumb_url: str = None
+        reply_markup: "types.InlineKeyboardMarkup" = None,
+        thumb_url: str = None,
+        thumb_width: int = 0,
+        thumb_height: int = 0
     ):
         super().__init__("article", id, input_message_content, reply_markup)
 
@@ -66,6 +74,8 @@ class InlineQueryResultArticle(InlineQueryResult):
         self.url = url
         self.description = description
         self.thumb_url = thumb_url
+        self.thumb_width = thumb_width
+        self.thumb_height = thumb_height
 
     async def write(self, client: "pyrogram.Client"):
         return raw.types.InputBotInlineResult(
@@ -79,6 +89,11 @@ class InlineQueryResultArticle(InlineQueryResult):
                 url=self.thumb_url,
                 size=0,
                 mime_type="image/jpeg",
-                attributes=[]
+                attributes=[
+                    raw.types.DocumentAttributeImageSize(
+                        w=self.thumb_width,
+                        h=self.thumb_height
+                    )
+                ]
             ) if self.thumb_url else None
         )
