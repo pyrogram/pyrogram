@@ -36,7 +36,6 @@ from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
 from .get_nearby_chats import GetNearbyChats
 from .get_send_as_chats import GetSendAsChats
-from .iter_dialogs import IterDialogs
 from .join_chat import JoinChat
 from .leave_chat import LeaveChat
 from .mark_chat_unread import MarkChatUnread
@@ -76,7 +75,6 @@ class Chats(
     UnpinChatMessage,
     GetDialogs,
     GetChatMembersCount,
-    IterDialogs,
     SetChatUsername,
     SetChatPermissions,
     GetDialogsCount,

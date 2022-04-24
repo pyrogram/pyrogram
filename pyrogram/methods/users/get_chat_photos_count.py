@@ -22,12 +22,12 @@ import pyrogram
 from pyrogram import raw
 
 
-class GetProfilePhotosCount:
-    async def get_profile_photos_count(
+class GetChatPhotosCount:
+    async def get_chat_photos_count(
         self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> int:
-        """Get the total count of profile pictures for a user.
+        """Get the total count of photos for a chat.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -41,7 +41,7 @@ class GetProfilePhotosCount:
         Example:
             .. code-block:: python
 
-                count = await app.get_profile_photos_count("me")
+                count = await app.get_chat_photos_count("me")
                 print(count)
         """
 

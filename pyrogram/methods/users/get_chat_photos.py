@@ -16,22 +16,19 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, List
+from typing import Union, AsyncGenerator, Optional
 
 import pyrogram
-from pyrogram import raw
-from pyrogram import types
-from pyrogram import utils
+from pyrogram import types, raw, utils
 
 
-class GetProfilePhotos:
-    async def get_profile_photos(
+class GetChatPhotos:
+    async def get_chat_photos(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        offset: int = 0,
-        limit: int = 100
-    ) -> List["types.Photo"]:
-        """Get a list of profile pictures for a user or a chat.
+        limit: int = 0,
+    ) -> Optional[AsyncGenerator["types.Photo", None]]:
+        """Get a chat or a user profile photos sequentially.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -39,28 +36,18 @@ class GetProfilePhotos:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            offset (``int``, *optional*):
-                Sequential number of the first photo to be returned.
-                By default, all photos are returned.
-
             limit (``int``, *optional*):
-                Limits the number of photos to be retrieved.
-                Values between 1—100 are accepted. Defaults to 100.
+                Limits the number of profile photos to be retrieved.
+                By default, no limit is applied and all profile photos are returned.
 
         Returns:
-            List of :obj:`~pyrogram.types.Photo`: On success, a list of profile photos is returned.
+            ``Generator``: A generator yielding :obj:`~pyrogram.types.Photo` objects.
 
         Example:
             .. code-block:: python
 
-                # Get the first 100 profile photos of a user
-                await app.get_profile_photos("me")
-
-                # Get only the first profile photo of a user
-                await app.get_profile_photos("me", limit=1)
-
-                # Get 3 profile photos of a user, skip the first 5
-                await app.get_profile_photos("me", limit=3, offset=5)
+                async for photo in app.get_chat_photos("me"):
+                    print(photo)
         """
         peer_id = await self.resolve_peer(chat_id)
 
@@ -105,15 +92,42 @@ class GetProfilePhotos:
                 else:
                     photos = []
 
-            return types.List(photos[offset:limit])
-        else:
-            r = await self.invoke(
-                raw.functions.photos.GetUserPhotos(
-                    user_id=peer_id,
-                    offset=offset,
-                    max_id=0,
-                    limit=limit
-                )
-            )
+            current = 0
 
-            return types.List(types.Photo._parse(self, photo) for photo in r.photos)
+            for photo in photos:
+                yield photo
+
+                current += 1
+
+                if current >= limit:
+                    return
+        else:
+            current = 0
+            total = limit or (1 << 31)
+            limit = min(100, total)
+            offset = 0
+
+            while True:
+                r = await self.invoke(
+                    raw.functions.photos.GetUserPhotos(
+                        user_id=peer_id,
+                        offset=offset,
+                        max_id=0,
+                        limit=limit
+                    )
+                )
+
+                photos = [types.Photo._parse(self, photo) for photo in r.photos]
+
+                if not photos:
+                    return
+
+                offset += len(photos)
+
+                for photo in photos:
+                    yield photo
+
+                    current += 1
+
+                    if current >= total:
+                        return

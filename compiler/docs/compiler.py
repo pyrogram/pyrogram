@@ -213,7 +213,6 @@ def pyrogram_api():
             get_chat_members
             get_chat_members_count
             get_dialogs
-            iter_dialogs
             get_dialogs_count
             set_chat_username
             get_nearby_chats
@@ -238,9 +237,8 @@ def pyrogram_api():
         Users
             get_me
             get_users
-            get_profile_photos
-            get_profile_photos_count
-            iter_profile_photos
+            get_chat_photos
+            get_chat_photos_count
             set_profile_photo
             delete_profile_photos
             set_username

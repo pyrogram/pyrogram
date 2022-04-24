@@ -16,92 +16,87 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-from datetime import datetime
-from typing import List
+from typing import AsyncGenerator, Optional
 
 import pyrogram
-from pyrogram import raw
-from pyrogram import types
-from pyrogram import utils
-
-log = logging.getLogger(__name__)
+from pyrogram import types, raw, utils
 
 
 class GetDialogs:
     async def get_dialogs(
         self: "pyrogram.Client",
-        offset_date: datetime = datetime.fromtimestamp(0),
-        limit: int = 100,
-        pinned_only: bool = False
-    ) -> List["types.Dialog"]:
-        """Get a chunk of the user's dialogs.
-
-        You can get up to 100 dialogs at once.
-        For a more convenient way of getting a user's dialogs see :meth:`~pyrogram.Client.iter_dialogs`.
+        limit: int = 0
+    ) -> Optional[AsyncGenerator["types.Dialog", None]]:
+        """Get a user's dialogs sequentially.
 
         Parameters:
-            offset_date (:py:obj:`~datetime.datetime`):
-                The offset date taken from the top message of a :obj:`~pyrogram.types.Dialog`.
-                Defaults to epoch. Valid for non-pinned dialogs only.
-
-            limit (``str``, *optional*):
+            limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.
-                Defaults to 100. Valid for non-pinned dialogs only.
-
-            pinned_only (``bool``, *optional*):
-                Pass True if you want to get only pinned dialogs.
-                Defaults to False.
+                By default, no limit is applied and all dialogs are returned.
 
         Returns:
-            List of :obj:`~pyrogram.types.Dialog`: On success, a list of dialogs is returned.
+            ``Generator``: A generator yielding :obj:`~pyrogram.types.Dialog` objects.
 
         Example:
             .. code-block:: python
 
-                # Get first 100 dialogs
-                await app.get_dialogs()
-
-                # Get pinned dialogs
-                await app.get_dialogs(pinned_only=True)
+                # Iterate through all dialogs
+                async for dialog in app.get_dialogs():
+                    print(dialog.chat.first_name or dialog.chat.title)
         """
+        current = 0
+        total = limit or (1 << 31) - 1
+        limit = min(100, total)
 
-        if pinned_only:
-            r = await self.invoke(
-                raw.functions.messages.GetPinnedDialogs(folder_id=0),
-                sleep_threshold=60
-            )
-        else:
+        offset_date = 0
+        offset_id = 0
+        offset_peer = raw.types.InputPeerEmpty()
+
+        while True:
             r = await self.invoke(
                 raw.functions.messages.GetDialogs(
-                    offset_date=utils.datetime_to_timestamp(offset_date),
-                    offset_id=0,
-                    offset_peer=raw.types.InputPeerEmpty(),
+                    offset_date=offset_date,
+                    offset_id=offset_id,
+                    offset_peer=offset_peer,
                     limit=limit,
-                    hash=0,
-                    exclude_pinned=True
+                    hash=0
                 ),
                 sleep_threshold=60
             )
 
-        users = {i.id: i for i in r.users}
-        chats = {i.id: i for i in r.chats}
+            users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
 
-        messages = {}
+            messages = {}
 
-        for message in r.messages:
-            if isinstance(message, raw.types.MessageEmpty):
-                continue
+            for message in r.messages:
+                if isinstance(message, raw.types.MessageEmpty):
+                    continue
 
-            chat_id = utils.get_peer_id(message.peer_id)
-            messages[chat_id] = await types.Message._parse(self, message, users, chats)
+                chat_id = utils.get_peer_id(message.peer_id)
+                messages[chat_id] = await types.Message._parse(self, message, users, chats)
 
-        parsed_dialogs = []
+            dialogs = []
 
-        for dialog in r.dialogs:
-            if not isinstance(dialog, raw.types.Dialog):
-                continue
+            for dialog in r.dialogs:
+                if not isinstance(dialog, raw.types.Dialog):
+                    continue
 
-            parsed_dialogs.append(types.Dialog._parse(self, dialog, messages, users, chats))
+                dialogs.append(types.Dialog._parse(self, dialog, messages, users, chats))
 
-        return types.List(parsed_dialogs)
+            if not dialogs:
+                return
+
+            last = dialogs[-1]
+
+            offset_id = last.top_message.id
+            offset_date = utils.datetime_to_timestamp(last.top_message.date)
+            offset_peer = await self.resolve_peer(last.chat.id)
+
+            for dialog in dialogs:
+                yield dialog
+
+                current += 1
+
+                if current >= total:
+                    return
