@@ -19,17 +19,16 @@ you can omit ``username`` and ``password``.
 
 .. code-block:: python
 
-   from pyrogram import Client
+    from pyrogram import Client
 
-   app = Client(
-       "my_account",
-       proxy=dict(
-           scheme="socks5",  # "socks4", "socks5" and "http" are supported
-           hostname="11.22.33.44",
-           port=1234,
-           username="<your_username>",
-           password="<your_password>"
-       )
-   )
+    proxy = {
+        "scheme": "socks5",  # "socks4", "socks5" and "http" are supported
+        "hostname": "11.22.33.44",
+        "port": 1234,
+        "username": "username",
+        "password": "password"
+    }
+
+   app = Client("my_account", proxy=proxy)
 
    app.run()
