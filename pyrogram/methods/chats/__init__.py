@@ -50,13 +50,13 @@ from .set_chat_permissions import SetChatPermissions
 from .set_chat_photo import SetChatPhoto
 from .set_chat_protected_content import SetChatProtectedContent
 from .set_chat_title import SetChatTitle
+from .set_chat_username import SetChatUsername
 from .set_send_as_chat import SetSendAsChat
 from .set_slow_mode import SetSlowMode
 from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
-from .update_chat_username import UpdateChatUsername
 
 
 class Chats(
@@ -79,7 +79,7 @@ class Chats(
     GetChatMembersCount,
     IterDialogs,
     IterChatMembers,
-    UpdateChatUsername,
+    SetChatUsername,
     SetChatPermissions,
     GetDialogsCount,
     ArchiveChats,

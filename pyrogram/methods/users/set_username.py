@@ -22,16 +22,16 @@ from pyrogram import raw
 from pyrogram.scaffold import Scaffold
 
 
-class UpdateUsername(Scaffold):
-    async def update_username(
+class SetUsername(Scaffold):
+    async def set_username(
         self,
         username: Optional[str]
     ) -> bool:
-        """Update your own username.
+        """Set your own username.
 
         This method only works for users, not bots. Bot usernames must be changed via Bot Support or by recreating
-        them from scratch using BotFather. To update a channel or supergroup username you can use
-        :meth:`~pyrogram.Client.update_chat_username`.
+        them from scratch using BotFather. To set a channel or supergroup username you can use
+        :meth:`~pyrogram.Client.set_chat_username`.
 
         Parameters:
             username (``str`` | ``None``):
@@ -43,7 +43,7 @@ class UpdateUsername(Scaffold):
         Example:
             .. code-block:: python
 
-                app.update_username("new_username")
+                app.set_username("new_username")
         """
 
         return bool(

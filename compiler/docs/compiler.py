@@ -212,7 +212,7 @@ def pyrogram_api():
             get_dialogs
             iter_dialogs
             get_dialogs_count
-            update_chat_username
+            set_chat_username
             get_nearby_chats
             archive_chats
             unarchive_chats
@@ -240,7 +240,7 @@ def pyrogram_api():
             iter_profile_photos
             set_profile_photo
             delete_profile_photos
-            update_username
+            set_username
             update_profile
             block_user
             unblock_user
