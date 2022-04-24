@@ -38,7 +38,7 @@ class ChatMember(Object):
             Information about the chat (useful in case of banned channel senders).
 
         joined_date (:py:obj:`~datetime.datetime`, *optional*):
-            Date when the user joined..
+            Date when the user joined.
             Not available for the owner.
 
         custom_title (``str``, *optional*):
