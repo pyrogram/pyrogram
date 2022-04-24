@@ -70,10 +70,10 @@ class SetGameScore:
             .. code-block:: python
 
                 # Set new score
-                app.set_game_score(user_id, 1000)
+                await app.set_game_score(user_id, 1000)
 
                 # Force set new score
-                app.set_game_score(user_id, 25, force=True)
+                await app.set_game_score(user_id, 25, force=True)
         """
         r = await self.invoke(
             raw.functions.messages.SetGameScore(

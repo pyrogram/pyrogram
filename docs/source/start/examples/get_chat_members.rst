@@ -7,9 +7,16 @@ This example shows how to get all the members of a chat.
 
     from pyrogram import Client
 
-    app = Client("my_account")
-    target = "pyrogramchat"  # Target channel/supergroup
+    # Target channel/supergroup
+    TARGET = -100123456789
 
-    with app:
-        for member in app.iter_chat_members(target):
-            print(member.user.first_name)
+    app = Client("my_account")
+
+
+    async def main():
+        async with app:
+            async for member in app.get_chat_members(TARGET):
+                print(member)
+
+
+    app.run(main())

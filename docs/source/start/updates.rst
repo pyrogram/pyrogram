@@ -1,8 +1,8 @@
 Handling Updates
 ================
 
-Calling :doc:`API methods <invoking>` sequentially is one way to use Pyrogram, but how to react when, for example, a
-new message arrives? This page deals with updates and how to handle such events in Pyrogram.
+:doc:`Invoking API methods <invoking>` sequentially is one way to use Pyrogram. This page deals with Telegram updates
+and how to handle new incoming messages or other events in Pyrogram.
 
 .. contents:: Contents
     :backlinks: none
@@ -14,7 +14,7 @@ new message arrives? This page deals with updates and how to handle such events 
 Defining Updates
 ----------------
 
-As hinted already, updates are simply events that happen in your Telegram account (incoming messages, new members join,
+As hinted already, updates are events that happen in your Telegram account (incoming messages, new members join,
 bot button presses, etc.), which are meant to notify you about a new specific state that has changed. These updates are
 handled by registering one or more callback functions in your app using :doc:`Handlers <../api/handlers>`.
 
@@ -52,25 +52,6 @@ In the last line we see again the :meth:`~pyrogram.Client.run` method, this time
 Its purpose here is simply to automatically :meth:`~pyrogram.Client.start`, keep the Client online so that it can listen
 for updates and :meth:`~pyrogram.Client.stop` it once you hit ``CTRL+C``.
 
-Synchronous handlers
-^^^^^^^^^^^^^^^^^^^^^
-
-You can also have synchronous handlers; you only need to define the callback function without using ``async def`` and
-call API methods by not placing ``await`` in front of them:
-
-.. code-block:: python
-
-    @app.on_message()
-    def my_handler(client, message):
-        message.forward("me")
-
-.. note::
-
-    You can mix ``def`` and ``async def`` handlers as much as you like, Pyrogram will still work concurrently and
-    efficiently regardless of what you choose. However, it is recommended to use Pyrogram in its native, asynchronous
-    form at all times, unless you want to write something without the boilerplate or in case you want to combine
-    Pyrogram with other libraries that are not async.
-
 Using add_handler()
 ^^^^^^^^^^^^^^^^^^^
 
@@ -91,16 +72,3 @@ function and registers it in your Client. It is useful in case you want to progr
     app.add_handler(my_handler)
 
     app.run()
-
-The same about synchronous handlers applies for :meth:`~pyrogram.Client.add_handler`:
-
-.. code-block:: python
-
-    def my_function(client, message):
-        message.forward("me")
-
-.. note::
-
-    From now on, you'll see examples using synchronous code (i.e.: without ``async`` and ``await``, unless when actually
-    relevant). This is done to keep snippets concise and more readable. Once you get the idea behind a feature, you can
-    easily turn examples asynchronous later on.

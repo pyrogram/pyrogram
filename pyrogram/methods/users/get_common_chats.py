@@ -45,7 +45,7 @@ class GetCommonChats:
         Example:
             .. code-block:: python
 
-                common = app.get_common_chats(user_id)
+                common = await app.get_common_chats(user_id)
                 print(common)
         """
 

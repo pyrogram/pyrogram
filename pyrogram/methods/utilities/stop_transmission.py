@@ -29,17 +29,15 @@ class StopTransmission:
         Example:
             .. code-block:: python
 
-                from pyrogram import Client
-
-                app = Client("my_account")
-
-                # Example to stop transmission once the upload progress reaches 50%
-                # Useless in practice, but shows how to stop on command
-                def progress(current, total, client):
+                # Stop transmission once the upload progress reaches 50%
+                async def progress(current, total, client):
                     if (current * 100 / total) > 50:
                         client.stop_transmission()
 
-                with app:
-                    app.send_document("me", "file.zip", progress=progress, progress_args=(app,))
+                async with app:
+                    await app.send_document(
+                        "me", "file.zip",
+                        progress=progress,
+                        progress_args=(app,))
         """
         raise pyrogram.StopTransmission

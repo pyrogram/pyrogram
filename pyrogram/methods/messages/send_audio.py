@@ -149,21 +149,21 @@ class SendAudio:
             .. code-block:: python
 
                 # Send audio file by uploading from file
-                app.send_audio("me", "audio.mp3")
+                await app.send_audio("me", "audio.mp3")
 
                 # Add caption to the audio
-                app.send_audio("me", "audio.mp3", caption="audio caption")
+                await app.send_audio("me", "audio.mp3", caption="audio caption")
 
                 # Set audio metadata
-                app.send_audio(
+                await app.send_audio(
                     "me", "audio.mp3",
                     title="Title", performer="Performer", duration=234)
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_audio("me", "audio.mp3", progress=progress)
+                await app.send_audio("me", "audio.mp3", progress=progress)
         """
         file = None
 

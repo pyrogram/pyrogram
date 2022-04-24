@@ -86,7 +86,7 @@ class AnswerInlineQuery:
 
                 from pyrogram.types import InlineQueryResultArticle, InputTextMessageContent
 
-                app.answer_inline_query(
+                await app.answer_inline_query(
                     inline_query_id,
                     results=[
                         InlineQueryResultArticle(

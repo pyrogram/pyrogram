@@ -37,7 +37,7 @@ class GetDialogsCount:
         Example:
             .. code-block:: python
 
-                count = app.get_dialogs_count()
+                count = await app.get_dialogs_count()
                 print(count)
         """
 

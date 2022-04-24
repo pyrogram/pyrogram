@@ -79,13 +79,13 @@ class SendDice:
             .. code-block:: python
 
                 # Send a dice
-                app.send_dice(chat_id)
+                await app.send_dice(chat_id)
 
                 # Send a dart
-                app.send_dice(chat_id, "🎯")
+                await app.send_dice(chat_id, "🎯")
 
                 # Send a basketball
-                app.send_dice(chat_id, "🏀")
+                await app.send_dice(chat_id, "🏀")
         """
 
         r = await self.invoke(

@@ -53,7 +53,7 @@ class EditMessageReplyMarkup:
                 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
                 # Bots only
-                app.edit_message_reply_markup(
+                await app.edit_message_reply_markup(
                     chat_id, message_id,
                     InlineKeyboardMarkup([[
                         InlineKeyboardButton("New button", callback_data="new_data")]]))

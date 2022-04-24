@@ -69,7 +69,7 @@ class SendGame:
         Example:
             .. code-block:: python
 
-                app.send_game(chat_id, "gamename")
+                await app.send_game(chat_id, "gamename")
         """
         r = await self.invoke(
             raw.functions.messages.SendMedia(

@@ -51,7 +51,7 @@ class ExportChatInviteLink:
             .. code-block:: python
 
                 # Generate a new primary link
-                link = app.export_chat_invite_link(chat_id)
+                link = await app.export_chat_invite_link(chat_id)
         """
         r = await self.invoke(
             raw.functions.messages.ExportChatInvite(

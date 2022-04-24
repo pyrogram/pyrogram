@@ -47,7 +47,7 @@ class GetChatMember:
         Example:
             .. code-block:: python
 
-                member = app.get_chat_member(chat_id, "me")
+                member = await app.get_chat_member(chat_id, "me")
                 print(member)
         """
         chat = await self.resolve_peer(chat_id)

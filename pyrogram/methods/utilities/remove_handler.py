@@ -45,12 +45,12 @@ class RemoveHandler:
                 from pyrogram import Client
                 from pyrogram.handlers import MessageHandler
 
-                def dump(client, message):
+                async def hello(client, message):
                     print(message)
 
                 app = Client("my_account")
 
-                handler = app.add_handler(MessageHandler(dump))
+                handler = app.add_handler(MessageHandler(hello))
 
                 # Starred expression to unpack (handler, group)
                 app.remove_handler(*handler)

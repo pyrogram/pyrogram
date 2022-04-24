@@ -47,10 +47,10 @@ class ReadChatHistory:
             .. code-block:: python
 
                 # Mark the whole chat as read
-                app.read_history(chat_id)
+                await app.read_history(chat_id)
 
                 # Mark messages as read only up to the given message id
-                app.read_history(chat_id, 123456)
+                await app.read_history(chat_id, 12345)
         """
 
         peer = await self.resolve_peer(chat_id)

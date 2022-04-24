@@ -47,7 +47,7 @@ class UnbanChatMember:
             .. code-block:: python
 
                 # Unban chat member right now
-                app.unban_chat_member(chat_id, user_id)
+                await app.unban_chat_member(chat_id, user_id)
         """
         await self.invoke(
             raw.functions.channels.EditBanned(

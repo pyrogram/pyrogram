@@ -46,7 +46,7 @@ class UnpinChatMessage:
         Example:
             .. code-block:: python
 
-                app.unpin_chat_message(chat_id, message_id)
+                await app.unpin_chat_message(chat_id, message_id)
         """
         await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(

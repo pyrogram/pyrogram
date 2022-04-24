@@ -125,10 +125,10 @@ class SendVideoNote:
             .. code-block:: python
 
                 # Send video note by uploading from local file
-                app.send_video_note("me", "video_note.mp4")
+                await app.send_video_note("me", "video_note.mp4")
 
                 # Set video note length
-                app.send_video_note("me", "video_note.mp4", length=25)
+                await app.send_video_note("me", "video_note.mp4", length=25)
         """
         file = None
 

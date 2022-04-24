@@ -33,7 +33,7 @@ class GetMe:
         Example:
             .. code-block:: python
 
-                me = app.get_me()
+                me = await app.get_me()
                 print(me)
         """
         r = await self.invoke(

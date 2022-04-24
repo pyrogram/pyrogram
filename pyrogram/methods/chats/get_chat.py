@@ -50,7 +50,7 @@ class GetChat:
         Example:
             .. code-block:: python
 
-                chat = app.get_chat("pyrogram")
+                chat = await app.get_chat("pyrogram")
                 print(chat)
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))

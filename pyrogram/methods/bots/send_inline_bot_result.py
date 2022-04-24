@@ -59,7 +59,7 @@ class SendInlineBotResult:
         Example:
             .. code-block:: python
 
-                app.send_inline_bot_result(chat_id, query_id, result_id)
+                await app.send_inline_bot_result(chat_id, query_id, result_id)
         """
         return await self.invoke(
             raw.functions.messages.SendInlineBotResult(

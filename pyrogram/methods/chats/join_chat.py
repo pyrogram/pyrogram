@@ -41,14 +41,14 @@ class JoinChat:
         Example:
             .. code-block:: python
 
-                # Join chat via username
-                app.join_chat("pyrogram")
-
                 # Join chat via invite link
-                app.join_chat("https://t.me/joinchat/AAAAAE0QmSW3IUmm3UFR7A")
+                await app.join_chat("https://t.me/+AbCdEf0123456789")
+
+                # Join chat via username
+                await app.join_chat("pyrogram")
 
                 # Join a linked chat
-                app.join_chat(app.get_chat("pyrogram").linked_chat.id)
+                await app.join_chat(app.get_chat("pyrogram").linked_chat.id)
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))
 

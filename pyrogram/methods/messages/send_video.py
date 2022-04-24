@@ -158,19 +158,19 @@ class SendVideo:
             .. code-block:: python
 
                 # Send video by uploading from local file
-                app.send_video("me", "video.mp4")
+                await app.send_video("me", "video.mp4")
 
                 # Add caption to the video
-                app.send_video("me", "video.mp4", caption="video caption")
+                await app.send_video("me", "video.mp4", caption="video caption")
 
                 # Send self-destructing video
-                app.send_video("me", "video.mp4", ttl_seconds=10)
+                await app.send_video("me", "video.mp4", ttl_seconds=10)
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_video("me", "video.mp4", progress=progress)
+                await app.send_video("me", "video.mp4", progress=progress)
         """
         file = None
 

@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from typing import Union, List, Generator, Optional
+from typing import Union, List
 
 import pyrogram
 from pyrogram import raw, enums
@@ -365,12 +365,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.archive_chats(-100123456789)
+            await client.archive_chats(-100123456789)
 
         Example:
             .. code-block:: python
 
-                chat.archive()
+                await chat.archive()
 
         Returns:
             True on success.
@@ -388,12 +388,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.unarchive_chats(-100123456789)
+            await client.unarchive_chats(-100123456789)
 
         Example:
             .. code-block:: python
 
-                chat.unarchive()
+                await chat.unarchive()
 
         Returns:
             True on success.
@@ -412,7 +412,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.set_chat_title(
+            await client.set_chat_title(
                 chat_id=chat_id,
                 title=title
             )
@@ -420,7 +420,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.set_title("Lounge")
+                await chat.set_title("Lounge")
 
         Note:
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
@@ -450,7 +450,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.set_chat_description(
+            await client.set_chat_description(
                 chat_id=chat_id,
                 description=description
             )
@@ -458,7 +458,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.set_chat_description("Don't spam!")
+                await chat.set_chat_description("Don't spam!")
 
         Parameters:
             description (``str``):
@@ -484,7 +484,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.set_chat_photo(
+            await client.set_chat_photo(
                 chat_id=chat_id,
                 photo=photo
             )
@@ -492,7 +492,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.set_photo("photo.png")
+                await chat.set_photo("photo.png")
 
         Parameters:
             photo (``str``):
@@ -522,7 +522,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.ban_chat_member(
+            await client.ban_chat_member(
                 chat_id=chat_id,
                 user_id=user_id
             )
@@ -530,7 +530,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.ban_member(123456789)
+                await chat.ban_member(123456789)
 
         Note:
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins" setting is
@@ -571,7 +571,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.unban_chat_member(
+            await client.unban_chat_member(
                 chat_id=chat_id,
                 user_id=user_id
             )
@@ -579,7 +579,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.unban_member(123456789)
+                await chat.unban_member(123456789)
 
         Parameters:
             user_id (``int`` | ``str``):
@@ -610,7 +610,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.restrict_chat_member(
+            await client.restrict_chat_member(
                 chat_id=chat_id,
                 user_id=user_id,
                 permissions=ChatPermissions()
@@ -619,7 +619,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.restrict_member(user_id, ChatPermissions())
+                await chat.restrict_member(user_id, ChatPermissions())
 
         Parameters:
             user_id (``int`` | ``str``):
@@ -648,19 +648,12 @@ class Chat(Object):
             until_date=until_date,
         )
 
+    # Set None as privileges default due to issues with partially initialized module, because at the time Chat
+    # is being initialized, ChatPrivileges would be required here, but was not initialized yet.
     async def promote_member(
         self,
         user_id: Union[int, str],
-        can_manage_chat: bool = True,
-        can_change_info: bool = True,
-        can_post_messages: bool = False,
-        can_edit_messages: bool = False,
-        can_delete_messages: bool = True,
-        can_restrict_members: bool = True,
-        can_invite_users: bool = True,
-        can_pin_messages: bool = False,
-        can_promote_members: bool = False,
-        can_manage_voice_chats: bool = False
+        privileges: "types.ChatPrivileges" = None
     ) -> bool:
         """Bound method *promote_member* of :obj:`~pyrogram.types.Chat`.
 
@@ -668,7 +661,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.promote_chat_member(
+            await client.promote_chat_member(
                 chat_id=chat_id,
                 user_id=user_id
             )
@@ -677,46 +670,15 @@ class Chat(Object):
 
             .. code-block:: python
 
-                chat.promote_member(123456789)
+                await chat.promote_member(123456789)
 
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            can_manage_chat (``bool``, *optional*):
-                Pass True, if the administrator can access the chat event log, chat statistics, message statistics
-                in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode.
-                Implied by any other administrator privilege.
-
-            can_change_info (``bool``, *optional*):
-                Pass True, if the administrator can change chat title, photo and other settings.
-
-            can_post_messages (``bool``, *optional*):
-                Pass True, if the administrator can create channel posts, channels only.
-
-            can_edit_messages (``bool``, *optional*):
-                Pass True, if the administrator can edit messages of other users and can pin messages, channels only.
-
-            can_delete_messages (``bool``, *optional*):
-                Pass True, if the administrator can delete messages of other users.
-
-            can_restrict_members (``bool``, *optional*):
-                Pass True, if the administrator can restrict, ban or unban chat members.
-
-            can_invite_users (``bool``, *optional*):
-                Pass True, if the administrator can invite new users to the chat.
-
-            can_pin_messages (``bool``, *optional*):
-                Pass True, if the administrator can pin messages, supergroups only.
-
-            can_promote_members (``bool``, *optional*):
-                Pass True, if the administrator can add new administrators with a subset of his own privileges or
-                demote administrators that he has promoted, directly or indirectly (promoted by administrators that
-                were appointed by him).
-
-            can_manage_voice_chats (``bool``, *optional*):
-                Pass True, if the administration can manage voice chats (also called group calls).
+            privileges (:obj:`~pyrogram.types.ChatPrivileges`, *optional*):
+                New user privileges.
 
         Returns:
             ``bool``: True on success.
@@ -728,16 +690,7 @@ class Chat(Object):
         return await self._client.promote_chat_member(
             chat_id=self.id,
             user_id=user_id,
-            can_manage_chat=can_manage_chat,
-            can_change_info=can_change_info,
-            can_post_messages=can_post_messages,
-            can_edit_messages=can_edit_messages,
-            can_delete_messages=can_delete_messages,
-            can_restrict_members=can_restrict_members,
-            can_invite_users=can_invite_users,
-            can_pin_messages=can_pin_messages,
-            can_promote_members=can_promote_members,
-            can_manage_voice_chats=can_manage_voice_chats
+            privileges=privileges
         )
 
     async def join(self):
@@ -747,12 +700,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.join_chat(123456789)
+            await client.join_chat(123456789)
 
         Example:
             .. code-block:: python
 
-                chat.join()
+                await chat.join()
 
         Note:
             This only works for public groups, channels that have set a username or linked chats.
@@ -773,12 +726,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.leave_chat(123456789)
+            await client.leave_chat(123456789)
 
         Example:
             .. code-block:: python
 
-                chat.leave()
+                await chat.leave()
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -819,7 +772,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.get_chat_member(
+            await client.get_chat_member(
                 chat_id=chat_id,
                 user_id=user_id
             )
@@ -827,7 +780,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.get_member(user_id)
+                await chat.get_member(user_id)
 
         Returns:
             :obj:`~pyrogram.types.ChatMember`: On success, a chat member is returned.
@@ -840,9 +793,8 @@ class Chat(Object):
 
     async def get_members(
         self,
-        offset: int = 0,
-        limit: int = 200,
         query: str = "",
+        limit: int = 0,
         filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.SEARCH
     ) -> List["types.ChatMember"]:
         """Bound method *get_members* of :obj:`~pyrogram.types.Chat`.
@@ -851,120 +803,38 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.get_chat_members(chat_id)
-
-
-        Parameters:
-            offset (``int``, *optional*):
-                Sequential number of the first member to be returned.
-                Only applicable to supergroups and channels. Defaults to 0 [1]_.
-
-            limit (``int``, *optional*):
-                Limits the number of members to be retrieved.
-                Only applicable to supergroups and channels.
-                Defaults to 200, which is also the maximum server limit allowed per method call.
-
-            query (``str``, *optional*):
-                Query string to filter members based on their display names and usernames.
-                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
-
-            filter (``str``, *optional*):
-                Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
-                and channels. It can be any of the followings:
-                *"all"* - all kind of members,
-                *"banned"* - banned members only,
-                *"restricted"* - restricted members only,
-                *"bots"* - bots only,
-                *"recent"* - recent members only,
-                *"administrators"* - chat administrators only.
-                Only applicable to supergroups and channels.
-                Defaults to *"recent"*.
-
-        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
-            on channels.
-
-        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
+            async for member in client.get_chat_members(chat_id):
+                print(member)
 
         Example:
             .. code-block:: python
 
-                # Get first 200 recent members
-                chat.get_members()
-
-                # Get all administrators
-                chat.get_members(filter="administrators")
-
-                # Get all bots
-                chat.get_members(filter="bots")
-
-        Returns:
-            List of :obj:`~pyrogram.types.ChatMember`: On success, a list of chat members is returned.
-        """
-
-        return await self._client.get_chat_members(
-            self.id,
-            offset=offset,
-            limit=limit,
-            query=query,
-            filter=filter
-        )
-
-    def iter_members(
-        self,
-        limit: int = 0,
-        query: str = "",
-        filter: str = "all"
-    ) -> Optional[Generator["types.ChatMember", None, None]]:
-        """Bound method *iter_members* of :obj:`~pyrogram.types.Chat`.
-
-        Use as a shortcut for:
-
-        .. code-block:: python
+                async for member in chat.get_members():
+                    print(member)
 
         Parameters:
-            limit (``int``, *optional*):
-                Limits the number of members to be retrieved.
-                Only applicable to supergroups and channels.
-                Defaults to 200, which is also the maximum server limit allowed per method call [1]_.
-
             query (``str``, *optional*):
                 Query string to filter members based on their display names and usernames.
-                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+                Only applicable to supergroups and channels. Defaults to "" (empty string).
+                A query string is applicable only for :obj:`~pyrogram.enums.ChatMembersFilter.SEARCH`,
+                :obj:`~pyrogram.enums.ChatMembersFilter.BANNED` and :obj:`~pyrogram.enums.ChatMembersFilter.RESTRICTED`
+                filters only.
+
+            limit (``int``, *optional*):
+                Limits the number of members to be retrieved.
 
             filter (:obj:`~pyrogram.enums.ChatMembersFilter`, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
                 and channels.
 
-        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
-            on channels.
-
-        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
-
-        Example:
-            .. code-block:: python
-
-                from pyrogram import enums
-
-                # Get first 200 recent members
-                for member in chat.get_members():
-                    print(member.user.first_name)
-
-                # Get all administrators
-                for member in chat.iter_members(filter=enums.ChatMembersFilter.ADMINISTRATORS):
-                    print(member.user.first_name)
-
-                # Get first 3 bots
-                for member in chat.iter_members(filter=enums.ChatMembersFilter.BOTS, limit=3):
-                    print(member.user.first_name)
-
         Returns:
-            ``Generator``: A generator yielding :obj:`~pyrogram.types.ChatMember` objects.
+            ``Generator``: On success, a generator yielding :obj:`~pyrogram.types.ChatMember` objects is returned.
         """
 
-        return self._client.iter_chat_members(
+        return self._client.get_chat_members(
             self.id,
-            limit=limit,
             query=query,
+            limit=limit,
             filter=filter
         )
 
@@ -979,12 +849,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.add_chat_members(chat_id, user_id)
+            await client.add_chat_members(chat_id, user_id)
 
         Example:
             .. code-block:: python
 
-                chat.add_members(user_id)
+                await chat.add_members(user_id)
 
         Returns:
             ``bool``: On success, True is returned.
@@ -1003,12 +873,12 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.mark_unread(chat_id)
+            await client.mark_unread(chat_id)
 
         Example:
             .. code-block:: python
 
-                chat.mark_unread()
+                await chat.mark_unread()
 
         Returns:
             ``bool``: On success, True is returned.
@@ -1023,7 +893,7 @@ class Chat(Object):
 
         .. code-block:: python
 
-            client.set_chat_protected_content(chat_id, enabled)
+            await client.set_chat_protected_content(chat_id, enabled)
 
         Parameters:
             enabled (``bool``):
@@ -1032,7 +902,7 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                chat.set_protected_content(enabled)
+                await chat.set_protected_content(enabled)
 
         Returns:
             ``bool``: On success, True is returned.

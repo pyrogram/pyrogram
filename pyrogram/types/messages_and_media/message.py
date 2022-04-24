@@ -834,7 +834,7 @@ class Message(Object, Update):
         
         .. code-block:: python
 
-            client.get_media_group(
+            await client.get_media_group(
                 chat_id=message.chat.id,
                 message_id=message.id
             )
@@ -842,7 +842,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.get_media_group()
+                await message.get_media_group()
                 
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of messages of the media group is returned.
@@ -877,7 +877,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_message(
+            await client.send_message(
                 chat_id=message.chat.id,
                 text="hello",
                 reply_to_message_id=message.id
@@ -886,7 +886,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_text("hello", quote=True)
+                await message.reply_text("hello", quote=True)
 
         Parameters:
             text (``str``):
@@ -979,7 +979,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_animation(
+            await client.send_animation(
                 chat_id=message.chat.id,
                 animation=animation
             )
@@ -987,7 +987,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_animation(animation)
+                await message.reply_animation(animation)
 
         Parameters:
             animation (``str``):
@@ -1118,7 +1118,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_audio(
+            await client.send_audio(
                 chat_id=message.chat.id,
                 audio=audio
             )
@@ -1126,7 +1126,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_audio(audio)
+                await message.reply_audio(audio)
 
         Parameters:
             audio (``str``):
@@ -1251,7 +1251,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_cached_media(
+            await client.send_cached_media(
                 chat_id=message.chat.id,
                 file_id=file_id
             )
@@ -1259,7 +1259,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_cached_media(file_id)
+                await message.reply_cached_media(file_id)
 
         Parameters:
             file_id (``str``):
@@ -1315,31 +1315,30 @@ class Message(Object, Update):
             reply_markup=reply_markup
         )
 
-    async def reply_chat_action(self, action: str) -> bool:
+    async def reply_chat_action(self, action: "enums.ChatAction") -> bool:
         """Bound method *reply_chat_action* of :obj:`~pyrogram.types.Message`.
 
         Use as a shortcut for:
 
         .. code-block:: python
 
-            client.send_chat_action(
+            from pyrogram import enums
+
+            await client.send_chat_action(
                 chat_id=message.chat.id,
-                action="typing"
+                action=enums.ChatAction.TYPING
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_chat_action("typing")
+                from pyrogram import enums
+
+                await message.reply_chat_action(enums.ChatAction.TYPING)
 
         Parameters:
-            action (``str``):
-                Type of action to broadcast. Choose one, depending on what the user is about to receive: *"typing"* for
-                text messages, *"upload_photo"* for photos, *"record_video"* or *"upload_video"* for videos,
-                *"record_audio"* or *"upload_audio"* for audio files, *"upload_document"* for general files,
-                *"find_location"* for location data, *"record_video_note"* or *"upload_video_note"* for video notes,
-                *"choose_contact"* for contacts, *"playing"* for games or *"cancel"* to cancel any chat action currently
-                displayed.
+            action (:obj:`~pyrogram.enums.ChatAction`):
+                Type of action to broadcast.
 
         Returns:
             ``bool``: On success, True is returned.
@@ -1375,7 +1374,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_contact(
+            await client.send_contact(
                 chat_id=message.chat.id,
                 phone_number=phone_number,
                 first_name=first_name
@@ -1384,7 +1383,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_contact("+1-123-456-7890", "Name")
+                await message.reply_contact("+1-123-456-7890", "Name")
 
         Parameters:
             phone_number (``str``):
@@ -1466,7 +1465,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_document(
+            await client.send_document(
                 chat_id=message.chat.id,
                 document=document
             )
@@ -1474,7 +1473,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_document(document)
+                await message.reply_document(document)
 
         Parameters:
             document (``str``):
@@ -1599,7 +1598,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_game(
+            await client.send_game(
                 chat_id=message.chat.id,
                 game_short_name="lumberjack"
             )
@@ -1607,7 +1606,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_game("lumberjack")
+                await message.reply_game("lumberjack")
 
         Parameters:
             game_short_name (``str``):
@@ -1663,7 +1662,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_inline_bot_result(
+            await client.send_inline_bot_result(
                 chat_id=message.chat.id,
                 query_id=query_id,
                 result_id=result_id
@@ -1672,7 +1671,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_inline_bot_result(query_id, result_id)
+                await message.reply_inline_bot_result(query_id, result_id)
 
         Parameters:
             query_id (``int``):
@@ -1733,16 +1732,16 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_location(
+            await client.send_location(
                 chat_id=message.chat.id,
-                latitude=41.890251,
-                longitude=12.492373
+                latitude=latitude,
+                longitude=longitude
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_location(41.890251, 12.492373)
+                await message.reply_location(latitude, longitude)
 
         Parameters:
             latitude (``float``):
@@ -1801,7 +1800,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_media_group(
+            await client.send_media_group(
                 chat_id=message.chat.id,
                 media=list_of_media
             )
@@ -1809,7 +1808,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_media_group(list_of_media)
+                await message.reply_media_group(list_of_media)
 
         Parameters:
             media (``list``):
@@ -1874,7 +1873,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_photo(
+            await client.send_photo(
                 chat_id=message.chat.id,
                 photo=photo
             )
@@ -1882,7 +1881,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_photo(photo)
+                await message.reply_photo(photo)
 
         Parameters:
             photo (``str``):
@@ -1997,16 +1996,16 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_poll(
+            await client.send_poll(
                 chat_id=message.chat.id,
-                question="Is Pyrogram the best?",
-                options=["Yes", "Yes"]
+                question="This is a poll",
+                options=["A", "B", "C]
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_poll("Is Pyrogram the best?", ["Yes", "Yes"])
+                await message.reply_poll("This is a poll", ["A", "B", "C"])
 
         Parameters:
             question (``str``):
@@ -2097,7 +2096,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_sticker(
+            await client.send_sticker(
                 chat_id=message.chat.id,
                 sticker=sticker
             )
@@ -2105,7 +2104,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_sticker(sticker)
+                await message.reply_sticker(sticker)
 
         Parameters:
             sticker (``str``):
@@ -2200,18 +2199,18 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_venue(
+            await client.send_venue(
                 chat_id=message.chat.id,
-                latitude=41.890251,
-                longitude=12.492373,
-                title="Coliseum",
-                address="Piazza del Colosseo, 1, 00184 Roma RM"
+                latitude=latitude,
+                longitude=longitude,
+                title="Venue title",
+                address="Venue address"
             )
 
         Example:
             .. code-block:: python
 
-                message.reply_venue(41.890251, 12.492373, "Coliseum", "Piazza del Colosseo, 1, 00184 Roma RM")
+                await message.reply_venue(latitude, longitude, "Venue title", "Venue address")
 
         Parameters:
             latitude (``float``):
@@ -2304,7 +2303,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_video(
+            await client.send_video(
                 chat_id=message.chat.id,
                 video=video
             )
@@ -2312,7 +2311,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_video(video)
+                await message.reply_video(video)
 
         Parameters:
             video (``str``):
@@ -2449,7 +2448,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_video_note(
+            await client.send_video_note(
                 chat_id=message.chat.id,
                 video_note=video_note
             )
@@ -2457,7 +2456,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_video_note(video_note)
+                await message.reply_video_note(video_note)
 
         Parameters:
             video_note (``str``):
@@ -2568,7 +2567,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_voice(
+            await client.send_voice(
                 chat_id=message.chat.id,
                 voice=voice
             )
@@ -2576,7 +2575,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.reply_voice(voice)
+                await message.reply_voice(voice)
 
         Parameters:
             voice (``str``):
@@ -2680,7 +2679,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.edit_message_text(
+            await client.edit_message_text(
                 chat_id=message.chat.id,
                 message_id=message.id,
                 text="hello"
@@ -2689,7 +2688,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.edit_text("hello")
+                await message.edit_text("hello")
 
         Parameters:
             text (``str``):
@@ -2739,7 +2738,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.edit_message_caption(
+            await client.edit_message_caption(
                 chat_id=message.chat.id,
                 message_id=message.id,
                 caption="hello"
@@ -2748,7 +2747,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.edit_caption("hello")
+                await message.edit_caption("hello")
 
         Parameters:
             caption (``str``):
@@ -2790,7 +2789,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.edit_message_media(
+            await client.edit_message_media(
                 chat_id=message.chat.id,
                 message_id=message.id,
                 media=media
@@ -2799,7 +2798,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.edit_media(media)
+                await message.edit_media(media)
 
         Parameters:
             media (:obj:`~pyrogram.types.InputMedia`):
@@ -2828,7 +2827,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.edit_message_reply_markup(
+            await client.edit_message_reply_markup(
                 chat_id=message.chat.id,
                 message_id=message.id,
                 reply_markup=inline_reply_markup
@@ -2837,7 +2836,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.edit_reply_markup(inline_reply_markup)
+                await message.edit_reply_markup(inline_reply_markup)
 
         Parameters:
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`):
@@ -2868,7 +2867,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.forward_messages(
+            await client.forward_messages(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
                 message_ids=message.id
@@ -2877,7 +2876,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.forward(chat_id)
+                await message.forward(chat_id)
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -2929,7 +2928,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.copy_message(
+            await client.copy_message(
                 chat_id=chat_id,
                 from_chat_id=message.chat.id,
                 message_id=message.id
@@ -2938,7 +2937,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.copy(chat_id)
+                await message.copy(chat_id)
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -3100,7 +3099,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.delete_messages(
+            await client.delete_messages(
                 chat_id=chat_id,
                 message_ids=message.id
             )
@@ -3108,7 +3107,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.delete()
+                await message.delete()
 
         Parameters:
             revoke (``bool``, *optional*):
@@ -3138,7 +3137,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.request_callback_answer(
+            await client.request_callback_answer(
                 chat_id=message.chat.id,
                 message_id=message.id,
                 callback_data=message.reply_markup[i][j].callback_data
@@ -3148,7 +3147,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_message(
+            await client.send_message(
                 chat_id=message.chat.id,
                 text=message.reply_markup[i][j].text
             )
@@ -3257,7 +3256,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.send_reaction(
+            await client.send_reaction(
                 chat_id=chat_id,
                 message_id=message.message_id,
                 emoji="🔥"
@@ -3266,7 +3265,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.react(emoji="🔥")
+                await message.react(emoji="🔥")
 
         Parameters:
             emoji (``str``, *optional*):
@@ -3330,12 +3329,12 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.download_media(message)
+            await lient.download_media(message)
 
         Example:
             .. code-block:: python
 
-                message.download()
+                await message.download()
 
         Parameters:
             file_name (``str``, *optional*):
@@ -3430,7 +3429,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.pin_chat_message(
+            await client.pin_chat_message(
                 chat_id=message.chat.id,
                 message_id=message_id
             )
@@ -3438,7 +3437,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.pin()
+                await message.pin()
 
         Parameters:
             disable_notification (``bool``):
@@ -3469,7 +3468,7 @@ class Message(Object, Update):
 
         .. code-block:: python
 
-            client.unpin_chat_message(
+            await client.unpin_chat_message(
                 chat_id=message.chat.id,
                 message_id=message_id
             )
@@ -3477,7 +3476,7 @@ class Message(Object, Update):
         Example:
             .. code-block:: python
 
-                message.unpin()
+                await message.unpin()
 
         Returns:
             True on success.

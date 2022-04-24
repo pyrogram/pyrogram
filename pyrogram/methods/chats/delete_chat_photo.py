@@ -44,7 +44,7 @@ class DeleteChatPhoto:
         Example:
             .. code-block:: python
 
-                app.delete_chat_photo(chat_id)
+                await app.delete_chat_photo(chat_id)
         """
         peer = await self.resolve_peer(chat_id)
 

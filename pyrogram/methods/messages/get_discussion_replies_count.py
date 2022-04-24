@@ -40,7 +40,7 @@ class GetDiscussionRepliesCount:
         Example:
             .. code-block:: python
 
-            count = app.get_discussion_replies_count(chat_id, message_id)
+                count = await app.get_discussion_replies_count(chat_id, message_id)
         """
 
         r = await self.invoke(

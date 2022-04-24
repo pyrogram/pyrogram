@@ -16,8 +16,8 @@ It uses the @on_inline_query decorator to register an InlineQueryHandler.
 
 
     @app.on_inline_query()
-    def answer(client, inline_query):
-        inline_query.answer(
+    async def answer(client, inline_query):
+        await inline_query.answer(
             results=[
                 InlineQueryResultArticle(
                     title="Installation",

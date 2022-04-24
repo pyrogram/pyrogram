@@ -41,7 +41,7 @@ class BlockUser:
         Example:
             .. code-block:: python
 
-                app.block_user(user_id)
+                await app.block_user(user_id)
         """
         return bool(
             await self.invoke(

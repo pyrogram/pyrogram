@@ -61,13 +61,13 @@ class EditInlineMedia:
                 # Bots only
 
                 # Replace the current media with a local photo
-                app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
+                await app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
 
                 # Replace the current media with a local video
-                app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
+                await app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
 
                 # Replace the current media with a local audio
-                app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
+                await app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode

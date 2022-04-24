@@ -86,7 +86,7 @@ class SendContact:
         Example:
             .. code-block:: python
 
-                app.send_contact("me", "+1-123-456-7890", "Name")
+                await app.send_contact("me", "+1-123-456-7890", "Name")
         """
         r = await self.invoke(
             raw.functions.messages.SendMedia(

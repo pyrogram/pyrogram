@@ -101,7 +101,7 @@ class CopyMessage:
             .. code-block:: python
 
                 # Copy a message
-                app.copy_message("me", "pyrogram", 20)
+                await app.copy_message(to_chat, from_chat, 123)
 
         """
         message: types.Message = await self.get_messages(from_chat_id, message_id)

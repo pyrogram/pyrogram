@@ -45,10 +45,10 @@ class GetDiscussionMessage:
             .. code-block:: python
 
                 # Get the discussion message
-                m = app.get_discussion_message(channel_id, message_id)
+                m = await app.get_discussion_message(channel_id, message_id)
 
                 # Comment to the post by replying
-                m.reply("comment")
+                await m.reply("comment")
         """
         r = await self.invoke(
             raw.functions.messages.GetDiscussionMessage(

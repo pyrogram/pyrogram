@@ -58,7 +58,7 @@ class RequestCallbackAnswer:
         Example:
             .. code-block:: python
 
-                app.request_callback_answer(chat_id, message_id, "callback_data")
+                await app.request_callback_answer(chat_id, message_id, "callback_data")
         """
 
         # Telegram only wants bytes, but we are allowed to pass strings too.

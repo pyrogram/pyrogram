@@ -45,7 +45,7 @@ class SetSendAsChat:
         Example:
             .. code-block:: python
 
-                app.set_send_as_chat(chat_id, send_as_chat_id)
+                await app.set_send_as_chat(chat_id, send_as_chat_id)
         """
         return await self.invoke(
             raw.functions.messages.SaveDefaultSendAs(

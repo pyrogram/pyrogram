@@ -41,10 +41,10 @@ class ArchiveChats:
             .. code-block:: python
 
                 # Archive chat
-                app.archive_chats(chat_id)
+                await app.archive_chats(chat_id)
 
                 # Archive multiple chats at once
-                app.archive_chats([chat_id1, chat_id2, chat_id3])
+                await app.archive_chats([chat_id1, chat_id2, chat_id3])
         """
 
         if not isinstance(chat_ids, list):

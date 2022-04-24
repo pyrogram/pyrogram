@@ -56,10 +56,10 @@ class PinChatMessage:
             .. code-block:: python
 
                 # Pin with notification
-                app.pin_chat_message(chat_id, message_id)
+                await app.pin_chat_message(chat_id, message_id)
 
                 # Pin without notification
-                app.pin_chat_message(chat_id, message_id, disable_notification=True)
+                await app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
         r = await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(

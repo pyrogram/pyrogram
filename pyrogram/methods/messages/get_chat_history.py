@@ -88,7 +88,7 @@ class GetChatHistory:
         Example:
             .. code-block:: python
 
-                for message in app.get_chat_history(chat_id):
+                async for message in app.get_chat_history(chat_id):
                     print(message.text)
         """
         current = 0

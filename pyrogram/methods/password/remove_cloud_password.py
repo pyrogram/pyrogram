@@ -41,7 +41,7 @@ class RemoveCloudPassword:
         Example:
             .. code-block:: python
 
-                app.remove_cloud_password("password")
+                await app.remove_cloud_password("password")
         """
         r = await self.invoke(raw.functions.account.GetPassword())
 

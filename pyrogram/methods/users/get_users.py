@@ -47,10 +47,10 @@ class GetUsers:
             .. code-block:: python
 
                 # Get information about one user
-                app.get_users("me")
+                await app.get_users("me")
 
                 # Get information about multiple users at once
-                app.get_users([user1, user2, user3])
+                await app.get_users([user_id1, user_id2, user_id3])
         """
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]

@@ -78,7 +78,7 @@ class SendLocation:
         Example:
             .. code-block:: python
 
-                app.send_location("me", 51.500729, -0.124583)
+                app.send_location("me", latitude, longitude)
         """
         r = await self.invoke(
             raw.functions.messages.SendMedia(

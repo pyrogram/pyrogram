@@ -41,7 +41,7 @@ class UnblockUser:
         Example:
             .. code-block:: python
 
-                app.unblock_user(user_id)
+                await app.unblock_user(user_id)
         """
         return bool(
             await self.invoke(

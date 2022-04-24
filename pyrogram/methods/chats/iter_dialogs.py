@@ -45,7 +45,7 @@ class IterDialogs:
             .. code-block:: python
 
                 # Iterate through all dialogs
-                for dialog in app.iter_dialogs():
+                async for dialog in app.iter_dialogs():
                     print(dialog.chat.first_name or dialog.chat.title)
         """
         current = 0

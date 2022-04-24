@@ -54,13 +54,13 @@ class DeleteMessages:
             .. code-block:: python
 
                 # Delete one message
-                app.delete_messages(chat_id, message_id)
+                await app.delete_messages(chat_id, message_id)
 
                 # Delete multiple messages at once
-                app.delete_messages(chat_id, list_of_message_ids)
+                await app.delete_messages(chat_id, list_of_message_ids)
 
                 # Delete messages only on your side (without revoking)
-                app.delete_messages(chat_id, message_id, revoke=False)
+                await app.delete_messages(chat_id, message_id, revoke=False)
         """
         peer = await self.resolve_peer(chat_id)
         message_ids = list(message_ids) if not isinstance(message_ids, int) else [message_ids]

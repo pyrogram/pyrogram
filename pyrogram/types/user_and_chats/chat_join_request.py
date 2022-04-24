@@ -89,7 +89,7 @@ class ChatJoinRequest(Object, Update):
         
         .. code-block:: python
 
-            client.approve_chat_join_request(
+            await client.approve_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
             )
@@ -97,7 +97,7 @@ class ChatJoinRequest(Object, Update):
         Example:
             .. code-block:: python
 
-                request.approve()
+                await request.approve()
                 
         Returns:
             ``bool``: True on success.
@@ -117,7 +117,7 @@ class ChatJoinRequest(Object, Update):
         
         .. code-block:: python
 
-            client.decline_chat_join_request(
+            await client.decline_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
             )
@@ -125,7 +125,7 @@ class ChatJoinRequest(Object, Update):
         Example:
             .. code-block:: python
 
-                request.decline()
+                await request.decline()
                 
         Returns:
             ``bool``: True on success.

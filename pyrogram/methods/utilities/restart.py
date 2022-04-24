@@ -32,7 +32,7 @@ class Restart:
         Parameters:
             block (``bool``, *optional*):
                 Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
-                you want to restart the own client *within* an handler in order not to cause a deadlock.
+                you want to restart the own client within an handler in order not to cause a deadlock.
                 Defaults to True.
 
         Returns:
@@ -47,15 +47,17 @@ class Restart:
                 from pyrogram import Client
 
                 app = Client("my_account")
-                app.start()
 
-                ...  # Call API methods
 
-                app.restart()
+                async def main():
+                    await app.start()
+                    ...  # Invoke API methods
+                    await app.restart()
+                    ...  # Invoke other API methods
+                    await app.stop()
 
-                ...  # Call other API methods
 
-                app.stop()
+                app.run(main())
         """
 
         async def do_it():

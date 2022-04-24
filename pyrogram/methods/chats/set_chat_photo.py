@@ -68,17 +68,17 @@ class SetChatPhoto:
             .. code-block:: python
 
                 # Set chat photo using a local file
-                app.set_chat_photo(chat_id, photo="photo.jpg")
+                await app.set_chat_photo(chat_id, photo="photo.jpg")
 
                 # Set chat photo using an exiting Photo file_id
-                app.set_chat_photo(chat_id, photo=photo.file_id)
+                await app.set_chat_photo(chat_id, photo=photo.file_id)
 
 
                 # Set chat video using a local file
-                app.set_chat_photo(chat_id, video="video.mp4")
+                await app.set_chat_photo(chat_id, video="video.mp4")
 
                 # Set chat photo using an exiting Video file_id
-                app.set_chat_photo(chat_id, video=video.file_id)
+                await app.set_chat_photo(chat_id, video=video.file_id)
         """
         peer = await self.resolve_peer(chat_id)
 

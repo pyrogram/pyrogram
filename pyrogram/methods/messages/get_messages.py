@@ -71,19 +71,19 @@ class GetMessages:
             .. code-block:: python
 
                 # Get one message
-                app.get_messages(chat_id, 12345)
+                await app.get_messages(chat_id, 12345)
 
                 # Get more than one message (list of messages)
-                app.get_messages(chat_id, [12345, 12346])
+                await app.get_messages(chat_id, [12345, 12346])
 
                 # Get message by ignoring any replied-to message
-                app.get_messages(chat_id, message_id, replies=0)
+                await app.get_messages(chat_id, message_id, replies=0)
 
                 # Get message with all chained replied-to messages
-                app.get_messages(chat_id, message_id, replies=-1)
+                await app.get_messages(chat_id, message_id, replies=-1)
 
                 # Get the replied-to message of a message
-                app.get_messages(chat_id, reply_to_message_ids=message_id)
+                await app.get_messages(chat_id, reply_to_message_ids=message_id)
 
         Raises:
             ValueError: In case of invalid arguments.

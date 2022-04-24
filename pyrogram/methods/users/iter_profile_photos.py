@@ -54,8 +54,8 @@ class IterProfilePhotos:
         Example:
             .. code-block:: python
 
-                for photo in app.iter_profile_photos("me"):
-                    print(photo.file_id)
+                async for photo in app.iter_profile_photos("me"):
+                    print(photo)
         """
         current = 0
         total = limit or (1 << 31)

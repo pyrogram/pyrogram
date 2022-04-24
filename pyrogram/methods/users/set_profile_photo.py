@@ -57,10 +57,10 @@ class SetProfilePhoto:
             .. code-block:: python
 
                 # Set a new profile photo
-                app.set_profile_photo(photo="new_photo.jpg")
+                await app.set_profile_photo(photo="new_photo.jpg")
 
                 # Set a new profile video
-                app.set_profile_photo(video="new_video.mp4")
+                await app.set_profile_photo(video="new_video.mp4")
         """
 
         return bool(

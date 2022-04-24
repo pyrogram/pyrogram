@@ -153,19 +153,19 @@ class SendAnimation:
             .. code-block:: python
 
                 # Send animation by uploading from local file
-                app.send_animation("me", "animation.gif")
+                await app.send_animation("me", "animation.gif")
 
                 # Add caption to the animation
-                app.send_animation("me", "animation.gif", caption="animation caption")
+                await app.send_animation("me", "animation.gif", caption="animation caption")
 
                 # Unsave the animation once is sent
-                app.send_animation("me", "animation.gif", unsave=True)
+                await app.send_animation("me", "animation.gif", unsave=True)
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_animation("me", "animation.gif", progress=progress)
+                await app.send_animation("me", "animation.gif", progress=progress)
         """
         file = None
 

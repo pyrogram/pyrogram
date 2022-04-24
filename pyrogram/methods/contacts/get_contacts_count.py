@@ -32,7 +32,7 @@ class GetContactsCount:
         Example:
             .. code-block:: python
 
-                count = app.get_contacts_count()
+                count = await app.get_contacts_count()
                 print(count)
         """
 

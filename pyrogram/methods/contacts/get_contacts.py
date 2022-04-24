@@ -38,7 +38,7 @@ class GetContacts:
         Example:
             .. code-block:: python
 
-                contacts = app.get_contacts()
+                contacts = await app.get_contacts()
                 print(contacts)
         """
         contacts = await self.invoke(raw.functions.contacts.GetContacts(hash=0))

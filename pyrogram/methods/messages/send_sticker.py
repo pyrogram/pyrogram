@@ -111,10 +111,10 @@ class SendSticker:
             .. code-block:: python
 
                 # Send sticker by uploading from local file
-                app.send_sticker("me", "sticker.webp")
+                await app.send_sticker("me", "sticker.webp")
 
                 # Send sticker using file_id
-                app.send_sticker("me", file_id)
+                await app.send_sticker("me", file_id)
         """
         file = None
 

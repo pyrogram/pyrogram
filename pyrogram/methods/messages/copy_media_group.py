@@ -76,9 +76,12 @@ class CopyMediaGroup:
             .. code-block:: python
 
                 # Copy a media group
-                app.copy_media_group("me", source_chat, message_id)
-                app.copy_media_group("me", source_chat, message_id, captions="single caption")
-                app.copy_media_group("me", source_chat, message_id, captions=["caption 1", None, ""])
+                await app.copy_media_group(to_chat, from_chat, 123)
+
+                await app.copy_media_group(to_chat, from_chat, 123, captions="single caption")
+                
+                await app.copy_media_group(to_chat, from_chat, 123,
+                    captions=["caption 1", None, ""])
         """
 
         media_group = await self.get_media_group(from_chat_id, message_id)

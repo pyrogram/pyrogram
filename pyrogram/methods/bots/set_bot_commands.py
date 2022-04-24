@@ -57,7 +57,7 @@ class SetBotCommands:
                 from pyrogram.types import BotCommand
 
                 # Set new commands
-                app.set_bot_commands([
+                await app.set_bot_commands([
                     BotCommand("start", "Start the bot"),
                     BotCommand("settings", "Bot settings")])
         """

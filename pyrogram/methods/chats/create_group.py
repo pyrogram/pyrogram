@@ -50,7 +50,7 @@ class CreateGroup:
         Example:
             .. code-block:: python
 
-                app.create_group("Group Title", user_id)
+                await app.create_group("Group Title", user_id)
         """
         if not isinstance(users, list):
             users = [users]

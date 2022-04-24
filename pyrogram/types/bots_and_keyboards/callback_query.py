@@ -131,7 +131,7 @@ class CallbackQuery(Object, Update):
 
         .. code-block:: python
 
-            client.answer_callback_query(
+            await client.answer_callback_query(
                 callback_query.id,
                 text="Hello",
                 show_alert=True
@@ -140,7 +140,7 @@ class CallbackQuery(Object, Update):
         Example:
             .. code-block:: python
 
-                callback_query.answer("Hello", show_alert=True)
+                await callback_query.answer("Hello", show_alert=True)
 
         Parameters:
             text (``str``, *optional*):

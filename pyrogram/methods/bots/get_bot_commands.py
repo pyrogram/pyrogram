@@ -51,7 +51,7 @@ class GetBotCommands:
             .. code-block:: python
 
                 # Get commands
-                commands = app.get_bot_commands()
+                commands = await app.get_bot_commands()
                 print(commands)
         """
 

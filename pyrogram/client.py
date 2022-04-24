@@ -452,29 +452,26 @@ class Client(Methods):
         Example:
             .. code-block:: python
 
-                from pyrogram import Client, enums
+                from pyrogram import enums
 
-                app = Client("my_account")
+                # Default combined mode: Markdown + HTML
+                await app.send_message("me", "1. **markdown** and <i>html</i>")
 
-                with app:
-                    # Default combined mode: Markdown + HTML
-                    app.send_message("me", "1. **markdown** and <i>html</i>")
+                # Force Markdown-only, HTML is disabled
+                app.set_parse_mode(enums.ParseMode.MARKDOWN)
+                await app.send_message("me", "2. **markdown** and <i>html</i>")
 
-                    # Force Markdown-only, HTML is disabled
-                    app.set_parse_mode(enums.ParseMode.MARKDOWN)
-                    app.send_message("me", "2. **markdown** and <i>html</i>")
+                # Force HTML-only, Markdown is disabled
+                app.set_parse_mode(enums.ParseMode.HTML)
+                await app.send_message("me", "3. **markdown** and <i>html</i>")
 
-                    # Force HTML-only, Markdown is disabled
-                    app.set_parse_mode(enums.ParseMode.HTML)
-                    app.send_message("me", "3. **markdown** and <i>html</i>")
+                # Disable the parser completely
+                app.set_parse_mode(enums.ParseMode.DISABLED)
+                await app.send_message("me", "4. **markdown** and <i>html</i>")
 
-                    # Disable the parser completely
-                    app.set_parse_mode(enums.ParseMode.DISABLED)
-                    app.send_message("me", "4. **markdown** and <i>html</i>")
-
-                    # Bring back the default combined mode
-                    app.set_parse_mode(enums.ParseMode.DEFAULT)
-                    app.send_message("me", "5. **markdown** and <i>html</i>")
+                # Bring back the default combined mode
+                app.set_parse_mode(enums.ParseMode.DEFAULT)
+                await app.send_message("me", "5. **markdown** and <i>html</i>")
         """
 
         self.parse_mode = parse_mode

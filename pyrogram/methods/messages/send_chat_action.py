@@ -19,14 +19,14 @@
 from typing import Union
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 
 
 class SendChatAction:
     async def send_chat_action(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        action: "pyrogram.enums.ChatAction"
+        action: "enums.ChatAction"
     ) -> bool:
         """Tell the other party that something is happening on your side.
 
@@ -51,16 +51,16 @@ class SendChatAction:
                 from pyrogram import enums
 
                 # Send "typing" chat action
-                app.send_chat_action(chat_id, enums.ChatAction.TYPING)
+                await app.send_chat_action(chat_id, enums.ChatAction.TYPING)
 
                 # Send "upload_video" chat action
-                app.send_chat_action(chat_id, enums.ChatAction.UPLOAD_VIDEO)
+                await app.send_chat_action(chat_id, enums.ChatAction.UPLOAD_VIDEO)
 
                 # Send "playing" chat action
-                app.send_chat_action(chat_id, enums.ChatAction.PLAYING)
+                await app.send_chat_action(chat_id, enums.ChatAction.PLAYING)
 
                 # Cancel any current chat action
-                app.send_chat_action(chat_id, enums.ChatAction.CANCEL)
+                await app.send_chat_action(chat_id, enums.ChatAction.CANCEL)
         """
 
         action_name = action.name.lower()

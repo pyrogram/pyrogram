@@ -60,13 +60,13 @@ class AnswerCallbackQuery:
             .. code-block:: python
 
                 # Answer only (remove the spinning circles)
-                app.answer_callback_query(query_id)
+                await app.answer_callback_query(query_id)
 
                 # Answer without alert
-                app.answer_callback_query(query_id, text=text)
+                await app.answer_callback_query(query_id, text=text)
 
                 # Answer with alert
-                app.answer_callback_query(query_id, text=text, show_alert=True)
+                await app.answer_callback_query(query_id, text=text, show_alert=True)
         """
         return await self.invoke(
             raw.functions.messages.SetBotCallbackAnswer(

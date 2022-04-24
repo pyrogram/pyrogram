@@ -53,7 +53,7 @@ class EditInlineCaption:
             .. code-block:: python
 
                 # Bots only
-                app.edit_inline_caption(inline_message_id, "new media caption")
+                await app.edit_inline_caption(inline_message_id, "new media caption")
         """
         return await self.edit_inline_text(
             inline_message_id=inline_message_id,

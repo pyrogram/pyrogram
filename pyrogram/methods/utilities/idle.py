@@ -41,33 +41,35 @@ async def idle():
     It is useful for event-driven application only, that are, applications which react upon incoming Telegram
     updates through handlers, rather than executing a set of methods sequentially.
 
-    The way Pyrogram works, it will keep your handlers in a pool of worker threads, which are executed concurrently
-    outside the main thread; calling idle() will ensure the client(s) will be kept alive by not letting the main
-    script to end, until you decide to quit.
-
     Once a signal is received (e.g.: from CTRL+C) the function will terminate and your main script will continue.
     Don't forget to call :meth:`~pyrogram.Client.stop` for each running client before the script ends.
 
     Example:
         .. code-block:: python
 
+            import asyncio
             from pyrogram import Client, idle
 
-            app1 = Client("account1")
-            app2 = Client("account2")
-            app3 = Client("account3")
 
-            ...  # Set handlers up
+            async def main():
+                apps = [
+                    Client("account1"),
+                    Client("account2"),
+                    Client("account3")
+                ]
 
-            app1.start()
-            app2.start()
-            app3.start()
+                ...  # Set up handlers
 
-            idle()
+                for app in apps:
+                    await app.start()
 
-            app1.stop()
-            app2.stop()
-            app3.stop()
+                await idle()
+
+                for app in apps:
+                    await app.stop()
+
+
+            asyncio.run(main())
     """
     global is_idling
 

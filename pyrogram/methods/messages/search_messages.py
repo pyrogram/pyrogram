@@ -108,15 +108,15 @@ class SearchMessages:
                 from pyrogram import enums
 
                 # Search for text messages in chat. Get the last 120 results
-                for message in app.search_messages(chat_id, query="hello", limit=120):
+                async for message in app.search_messages(chat_id, query="hello", limit=120):
                     print(message.text)
 
                 # Search for pinned messages in chat
-                for message in app.search_messages(chat_id, filter=enums.MessagesFilter.PINNED):
+                async for message in app.search_messages(chat_id, filter=enums.MessagesFilter.PINNED):
                     print(message.text)
 
                 # Search for messages containing "hello" sent by yourself in chat
-                for message in app.search_messages(chat, "hello", from_user="me"):
+                async for message in app.search_messages(chat, "hello", from_user="me"):
                     print(message.text)
         """
 

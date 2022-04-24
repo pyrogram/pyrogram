@@ -97,16 +97,16 @@ class GetChatMembers:
                 from pyrogram import enums
 
                 # Get members
-                for member in app.get_chat_members(chat_id):
+                async for member in app.get_chat_members(chat_id):
                     print(member)
 
                 # Get administrators
-                administrators = list(app.get_chat_members(
+                administrators = list(await app.get_chat_members(
                     chat_id,
                     filter=enums.ChatMembersFilter.ADMINISTRATORS))
 
                 # Get bots
-                bots = list(app.get_chat_members(
+                bots = list(await app.get_chat_members(
                     chat_id,
                     filter=enums.ChatMembersFilter.BOTS))
         """

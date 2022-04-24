@@ -42,7 +42,7 @@ class ImportContacts:
 
                 from pyrogram.types import InputPhoneContact
 
-                app.import_contacts([
+                await app.import_contacts([
                     InputPhoneContact("+1-123-456-7890", "Foo"),
                     InputPhoneContact("+1-456-789-0123", "Bar"),
                     InputPhoneContact("+1-789-012-3456", "Baz")])

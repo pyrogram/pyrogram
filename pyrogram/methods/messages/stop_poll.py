@@ -52,7 +52,7 @@ class StopPoll:
         Example:
             .. code-block:: python
 
-                app.stop_poll(chat_id, message_id)
+                await app.stop_poll(chat_id, message_id)
         """
         poll = (await self.get_messages(chat_id, message_id)).poll
 

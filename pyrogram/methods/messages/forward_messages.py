@@ -70,10 +70,10 @@ class ForwardMessages:
             .. code-block:: python
 
                 # Forward a single message
-                app.forward_messages("me", "pyrogram", 20)
+                await app.forward_messages(to_chat, from_chat, 123)
 
                 # Forward multiple messages at once
-                app.forward_messages("me", "pyrogram", [3, 20, 27])
+                await app.forward_messages(to_chat, from_chat, [1, 2, 3])
         """
 
         is_iterable = not isinstance(message_ids, int)

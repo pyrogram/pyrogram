@@ -48,7 +48,7 @@ class SetChatUsername:
         Example:
             .. code-block:: python
 
-                app.set_chat_username(chat_id, "new_username")
+                await app.set_chat_username(chat_id, "new_username")
         """
 
         peer = await self.resolve_peer(chat_id)

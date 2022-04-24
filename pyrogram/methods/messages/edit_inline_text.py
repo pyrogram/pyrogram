@@ -62,10 +62,10 @@ class EditInlineText:
                 # Bots only
 
                 # Simple edit text
-                app.edit_inline_text(inline_message_id, "new text")
+                await app.edit_inline_text(inline_message_id, "new text")
 
                 # Take the same text message, remove the web page preview only
-                app.edit_inline_text(
+                await app.edit_inline_text(
                     inline_message_id, message.text,
                     disable_web_page_preview=True)
         """

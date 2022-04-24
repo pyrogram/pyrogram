@@ -64,6 +64,12 @@ class GetChatEventLog:
 
         Yields:
             :obj:`~pyrogram.types.ChatEvent` objects.
+
+        Example:
+            .. code-block:: python
+
+                async for event in app.get_chat_event_log(chat_id):
+                    print(event)
         """
         current = 0
         total = abs(limit) or (1 << 31)

@@ -79,7 +79,7 @@ class SendMediaGroup:
 
                 from pyrogram.types import InputMediaPhoto, InputMediaVideo
 
-                app.send_media_group(
+                await app.send_media_group(
                     "me",
                     [
                         InputMediaPhoto("photo1.jpg"),

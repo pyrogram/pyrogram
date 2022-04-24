@@ -45,8 +45,8 @@ class GetDiscussionReplies:
         Example:
             .. code-block:: python
 
-            for m in app.get_discussion_replies(chat_id, message_id):
-                print(m)
+                async for message in app.get_discussion_replies(chat_id, message_id):
+                    print(message)
         """
 
         current = 0

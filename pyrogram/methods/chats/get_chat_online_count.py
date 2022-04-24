@@ -39,7 +39,7 @@ class GetChatOnlineCount:
         Example:
             .. code-block:: python
 
-                online = app.get_chat_online_count(chat_id)
+                online = await app.get_chat_online_count(chat_id)
                 print(online)
         """
         return (await self.invoke(

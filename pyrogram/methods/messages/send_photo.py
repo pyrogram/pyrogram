@@ -128,16 +128,16 @@ class SendPhoto:
             .. code-block:: python
 
                 # Send photo by uploading from local file
-                app.send_photo("me", "photo.jpg")
+                await app.send_photo("me", "photo.jpg")
 
                 # Send photo by uploading from URL
-                app.send_photo("me", "https://i.imgur.com/BQBTP7d.png")
+                await app.send_photo("me", "https://example.com/example.jpg)
 
                 # Add caption to a photo
-                app.send_photo("me", "photo.jpg", caption="Holidays!")
+                await app.send_photo("me", "photo.jpg", caption="Caption")
 
                 # Send self-destructing photo
-                app.send_photo("me", "photo.jpg", ttl_seconds=10)
+                await app.send_photo("me", "photo.jpg", ttl_seconds=10)
         """
         file = None
 

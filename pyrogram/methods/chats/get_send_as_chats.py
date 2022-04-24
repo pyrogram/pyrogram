@@ -40,7 +40,7 @@ class GetSendAsChats:
         Example:
             .. code-block:: python
 
-                chats = app.get_send_as_chats(chat_id)
+                chats = await app.get_send_as_chats(chat_id)
                 print(chats)
         """
         r = await self.invoke(

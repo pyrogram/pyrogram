@@ -27,7 +27,7 @@ class PromoteChatMember:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
-        privileges: "types.ChatPrivileges" = types.ChatPrivileges(),
+        privileges: "types.ChatPrivileges" = None,
     ) -> bool:
         """Promote or demote a user in a supergroup or a channel.
 
@@ -52,10 +52,14 @@ class PromoteChatMember:
             .. code-block:: python
 
                 # Promote chat member to admin
-                app.promote_chat_member(chat_id, user_id)
+                await app.promote_chat_member(chat_id, user_id)
         """
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)
+
+        # See Chat.promote_member for the reason of this (instead of setting types.ChatPrivileges() as default arg).
+        if privileges is None:
+            privileges = types.ChatPrivileges()
 
         raw_chat_member = (await self.invoke(
             raw.functions.channels.GetParticipant(

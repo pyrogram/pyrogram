@@ -67,10 +67,10 @@ class CreateChatInviteLink:
             .. code-block:: python
 
                 # Create a new link without limits
-                link = app.create_chat_invite_link(chat_id)
+                link = await app.create_chat_invite_link(chat_id)
 
-                # Create a new link for up to 7 new users
-                link = app.create_chat_invite_link(chat_id, member_limit=7)
+                # Create a new link for up to 3 new users
+                link = await app.create_chat_invite_link(chat_id, member_limit=3)
         """
         r = await self.invoke(
             raw.functions.messages.ExportChatInvite(

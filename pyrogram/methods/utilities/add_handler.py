@@ -50,12 +50,12 @@ class AddHandler:
                 from pyrogram import Client
                 from pyrogram.handlers import MessageHandler
 
-                def dump(client, message):
+                async def hello(client, message):
                     print(message)
 
                 app = Client("my_account")
 
-                app.add_handler(MessageHandler(dump))
+                app.add_handler(MessageHandler(hello))
 
                 app.run()
         """

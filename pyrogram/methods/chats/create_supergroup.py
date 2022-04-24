@@ -45,7 +45,7 @@ class CreateSupergroup:
         Example:
             .. code-block:: python
 
-                app.create_supergroup("Supergroup Title", "Supergroup Description")
+                await app.create_supergroup("Supergroup Title", "Supergroup Description")
         """
         r = await self.invoke(
             raw.functions.channels.CreateChannel(

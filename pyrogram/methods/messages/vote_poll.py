@@ -50,7 +50,7 @@ class VotePoll:
         Example:
             .. code-block:: python
 
-                app.vote_poll(chat_id, message_id, 6)
+                await app.vote_poll(chat_id, message_id, 6)
         """
 
         poll = (await self.get_messages(chat_id, message_id)).poll

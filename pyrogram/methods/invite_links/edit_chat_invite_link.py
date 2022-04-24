@@ -69,10 +69,10 @@ class EditChatInviteLink:
             .. code-block:: python
 
                 # Edit the member limit of a link
-                link = app.edit_chat_invite_link(chat_id, invite_link, member_limit=9)
+                link = await app.edit_chat_invite_link(chat_id, invite_link, member_limit=5)
 
                 # Set no expiration date of a link
-                link = app.edit_chat_invite_link(chat_id, invite_link, expire_date=0)
+                link = await app.edit_chat_invite_link(chat_id, invite_link, expire_date=0)
         """
         r = await self.invoke(
             raw.functions.messages.EditExportedChatInvite(

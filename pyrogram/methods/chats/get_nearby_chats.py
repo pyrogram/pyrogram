@@ -45,7 +45,7 @@ class GetNearbyChats:
         Example:
             .. code-block:: python
 
-                chats = app.get_nearby_chats(51.500729, -0.124583)
+                chats = await app.get_nearby_chats(latitude, longitude)
                 print(chats)
         """
 

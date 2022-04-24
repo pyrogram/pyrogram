@@ -54,7 +54,7 @@ class GetGameHighScores:
         Example:
             .. code-block:: python
 
-                scores = app.get_game_high_scores(user_id, chat_id, message_id)
+                scores = await app.get_game_high_scores(user_id, chat_id, message_id)
                 print(scores)
         """
         # TODO: inline_message_id

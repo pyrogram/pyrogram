@@ -50,10 +50,10 @@ class SetChatPermissions:
                 from pyrogram.types import ChatPermissions
 
                 # Completely restrict chat
-                app.set_chat_permissions(chat_id, ChatPermissions())
+                await app.set_chat_permissions(chat_id, ChatPermissions())
 
                 # Chat members can only send text messages and media messages
-                app.set_chat_permissions(
+                await app.set_chat_permissions(
                     chat_id,
                     ChatPermissions(
                         can_send_messages=True,

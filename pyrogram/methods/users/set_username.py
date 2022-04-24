@@ -43,7 +43,7 @@ class SetUsername:
         Example:
             .. code-block:: python
 
-                app.set_username("new_username")
+                await app.set_username("new_username")
         """
 
         return bool(

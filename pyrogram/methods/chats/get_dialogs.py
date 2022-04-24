@@ -60,10 +60,10 @@ class GetDialogs:
             .. code-block:: python
 
                 # Get first 100 dialogs
-                app.get_dialogs()
+                await app.get_dialogs()
 
                 # Get pinned dialogs
-                app.get_dialogs(pinned_only=True)
+                await app.get_dialogs(pinned_only=True)
         """
 
         if pinned_only:

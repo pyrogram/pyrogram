@@ -89,7 +89,7 @@ Errors with Values
 
 Exception objects may also contain some informative values. For example, ``FloodWait`` holds the amount of seconds you
 have to wait before you can try again, some other errors contain the DC number on which the request must be repeated on.
-The value is stored in the ``x`` attribute of the exception object:
+The value is stored in the ``value`` attribute of the exception object:
 
 .. code-block:: python
 
@@ -100,5 +100,5 @@ The value is stored in the ``x`` attribute of the exception object:
         try:
             ...  # Your code
         except FloodWait as e:
-            await asyncio.sleep(e.x)  # Wait "x" seconds before continuing
+            await asyncio.sleep(e.value)  # Wait N seconds before continuing
     ...

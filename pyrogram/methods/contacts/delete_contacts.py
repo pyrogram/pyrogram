@@ -42,8 +42,8 @@ class DeleteContacts:
         Example:
             .. code-block:: python
 
-                app.delete_contacts(user_id)
-                app.delete_contacts([user_id1, user_id2, user_id3])
+                await app.delete_contacts(user_id)
+                await app.delete_contacts([user_id1, user_id2, user_id3])
         """
         is_user_ids_list = isinstance(user_ids, list)
 

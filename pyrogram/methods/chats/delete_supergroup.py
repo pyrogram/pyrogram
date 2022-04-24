@@ -39,7 +39,7 @@ class DeleteSupergroup:
         Example:
             .. code-block:: python
 
-                app.delete_supergroup(supergroup_id)
+                await app.delete_supergroup(supergroup_id)
         """
         await self.invoke(
             raw.functions.channels.DeleteChannel(

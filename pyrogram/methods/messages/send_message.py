@@ -88,31 +88,29 @@ class SendMessage:
             .. code-block:: python
 
                 # Simple example
-                app.send_message("me", "Message sent with **Pyrogram**!")
+                await app.send_message("me", "Message sent with **Pyrogram**!")
 
                 # Disable web page previews
-                app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
+                await app.send_message("me", "https://docs.pyrogram.org",
+                    disable_web_page_preview=True)
 
                 # Reply to a message using its id
-                app.send_message("me", "this is a reply", reply_to_message_id=12345)
+                await app.send_message("me", "this is a reply", reply_to_message_id=123)
 
-                # Force HTML-only styles for this request only
-                app.send_message("me", "**not bold**, <i>italic<i>", parse_mode="html")
+            .. code-block:: python
 
-                ##
                 # For bots only, send messages with keyboards attached
-                ##
 
                 from pyrogram.types import (
                     ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton)
 
                 # Send a normal keyboard
-                app.send_message(
+                await app.send_message(
                     chat_id, "Look at that button!",
                     reply_markup=ReplyKeyboardMarkup([["Nice!"]]))
 
                 # Send an inline keyboard
-                app.send_message(
+                await app.send_message(
                     chat_id, "These are inline buttons",
                     reply_markup=InlineKeyboardMarkup(
                         [

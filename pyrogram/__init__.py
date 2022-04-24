@@ -35,15 +35,8 @@ class ContinuePropagation(StopAsyncIteration):
     pass
 
 
-import asyncio
-
 from . import raw, types, filters, handlers, emoji, enums
 from .client import Client
 from .sync import idle
-
-# Save the main thread loop for future references
-main_event_loop = asyncio.get_event_loop()
-
-CRYPTO_EXECUTOR_SIZE_THRESHOLD = 512
 
 crypto_executor = ThreadPoolExecutor(1, thread_name_prefix="CryptoWorker")

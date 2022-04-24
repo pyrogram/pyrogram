@@ -46,11 +46,15 @@ class Stop:
                 from pyrogram import Client
 
                 app = Client("my_account")
-                app.start()
 
-                ...  # Call API methods
 
-                app.stop()
+                async def main():
+                    await app.start()
+                    ...  # Invoke API methods
+                    await app.stop()
+
+
+                app.run(main())
         """
 
         async def do_it():

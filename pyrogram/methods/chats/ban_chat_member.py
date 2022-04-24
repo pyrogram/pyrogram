@@ -64,10 +64,10 @@ class BanChatMember:
                 from datetime import datetime, timedelta
 
                 # Ban chat member forever
-                app.ban_chat_member(chat_id, user_id)
+                await app.ban_chat_member(chat_id, user_id)
 
                 # Ban chat member and automatically unban after 24h
-                app.ban_chat_member(chat_id, user_id, datetime.now() + timedelta(days=1))
+                await app.ban_chat_member(chat_id, user_id, datetime.now() + timedelta(days=1))
         """
         chat_peer = await self.resolve_peer(chat_id)
         user_peer = await self.resolve_peer(user_id)

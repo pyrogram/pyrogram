@@ -45,10 +45,10 @@ class SetSlowMode:
             .. code-block:: python
 
                 # Set slow mode to 60 seconds
-                app.set_slow_mode(chat_id, 60)
+                await app.set_slow_mode(chat_id, 60)
 
                 # Disable slow mode
-                app.set_slow_mode(chat_id, None)
+                await app.set_slow_mode(chat_id, None)
         """
 
         await self.invoke(

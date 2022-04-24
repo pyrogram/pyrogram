@@ -35,11 +35,6 @@ class ExportSessionString:
         Example:
             .. code-block:: python
 
-                from pyrogram import Client
-
-                app = Client("my_account")
-
-                with app:
-                    print(app.export_session_string())
+                s = await app.export_session_string()
         """
         return await self.storage.export_session_string()

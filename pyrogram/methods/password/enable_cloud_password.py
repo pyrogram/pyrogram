@@ -54,13 +54,13 @@ class EnableCloudPassword:
             .. code-block:: python
 
                 # Enable password without hint and email
-                app.enable_cloud_password("password")
+                await app.enable_cloud_password("password")
 
                 # Enable password with hint and without email
-                app.enable_cloud_password("password", hint="hint")
+                await app.enable_cloud_password("password", hint="hint")
 
                 # Enable password with hint and email
-                app.enable_cloud_password("password", hint="hint", email="user@email.com")
+                await app.enable_cloud_password("password", hint="hint", email="user@email.com")
         """
         r = await self.invoke(raw.functions.account.GetPassword())
 

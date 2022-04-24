@@ -39,7 +39,7 @@ class DeleteChannel:
         Example:
             .. code-block:: python
 
-                app.delete_channel(channel_id)
+                await app.delete_channel(channel_id)
         """
         await self.invoke(
             raw.functions.channels.DeleteChannel(

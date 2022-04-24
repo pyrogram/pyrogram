@@ -59,12 +59,14 @@ class SearchGlobal:
         Example:
             .. code-block:: python
 
+                from pyrogram import enums
+
                 # Search for "pyrogram". Get the first 50 results
-                for message in app.search_global("pyrogram", limit=50):
+                async for message in app.search_global("pyrogram", limit=50):
                     print(message.text)
 
                 # Search for recent photos from Global. Get the first 20 results
-                for message in app.search_global(filter="photo", limit=20):
+                async for message in app.search_global(filter=enums.MessagesFilter.PHOTO, limit=20):
                     print(message.photo)
         """
         current = 0

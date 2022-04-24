@@ -69,10 +69,10 @@ class EditMessageText:
             .. code-block:: python
 
                 # Simple edit text
-                app.edit_message_text(chat_id, message_id, "new text")
+                await app.edit_message_text(chat_id, message_id, "new text")
 
                 # Take the same text message, remove the web page preview only
-                app.edit_message_text(
+                await app.edit_message_text(
                     chat_id, message_id, message.text,
                     disable_web_page_preview=True)
         """

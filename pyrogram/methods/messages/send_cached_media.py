@@ -93,7 +93,7 @@ class SendCachedMedia:
         Example:
             .. code-block:: python
 
-                app.send_cached_media("me", file_id)
+                await app.send_cached_media("me", file_id)
         """
 
         r = await self.invoke(

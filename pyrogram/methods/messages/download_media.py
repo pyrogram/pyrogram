@@ -89,16 +89,16 @@ class DownloadMedia:
             .. code-block:: python
 
                 # Download from Message
-                app.download_media(message)
+                await app.download_media(message)
 
                 # Download from file id
-                app.download_media(message.photo.file_id)
+                await app.download_media(message.photo.file_id)
 
                 # Keep track of the progress while downloading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.download_media(message, progress=progress)
+                await app.download_media(message, progress=progress)
         """
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
                            "new_chat_photo")

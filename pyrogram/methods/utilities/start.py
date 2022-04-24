@@ -30,7 +30,7 @@ class Start:
     ):
         """Start the client.
 
-        This method connects the client to Telegram and, in case of new sessions, automatically manages the full
+        This method connects the client to Telegram and, in case of new sessions, automatically manages the
         authorization process using an interactive prompt.
 
         Returns:
@@ -45,11 +45,15 @@ class Start:
                 from pyrogram import Client
 
                 app = Client("my_account")
-                app.start()
 
-                ...  # Call API methods
 
-                app.stop()
+                async def main():
+                    await app.start()
+                    ...  # Invoke API methods
+                    await app.stop()
+
+
+                app.run(main())
         """
         is_authorized = await self.connect()
 

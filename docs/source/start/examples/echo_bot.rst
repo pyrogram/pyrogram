@@ -1,5 +1,5 @@
-echobot
-=======
+echo_bot
+========
 
 This simple echo bot replies to every private text message.
 
@@ -14,8 +14,8 @@ It uses the ``@on_message`` decorator to register a ``MessageHandler`` and appli
 
 
     @app.on_message(filters.text & filters.private)
-    def echo(client, message):
-        message.reply(message.text)
+    async def echo(client, message):
+        await message.reply(message.text)
 
 
     app.run()  # Automatically start() and idle()

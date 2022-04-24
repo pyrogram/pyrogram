@@ -42,7 +42,7 @@ class UnpinAllChatMessages:
             .. code-block:: python
 
                 # Unpin all chat messages
-                app.unpin_all_chat_messages(chat_id)
+                await app.unpin_all_chat_messages(chat_id)
         """
         await self.invoke(
             raw.functions.messages.UnpinAllMessages(

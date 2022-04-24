@@ -41,7 +41,7 @@ class GetProfilePhotosCount:
         Example:
             .. code-block:: python
 
-                count = app.get_profile_photos_count("me")
+                count = await app.get_profile_photos_count("me")
                 print(count)
         """
 

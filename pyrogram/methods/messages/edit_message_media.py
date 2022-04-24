@@ -69,13 +69,16 @@ class EditMessageMedia:
                 from pyrogram.types import InputMediaPhoto, InputMediaVideo, InputMediaAudio
 
                 # Replace the current media with a local photo
-                app.edit_message_media(chat_id, message_id, InputMediaPhoto("new_photo.jpg"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaPhoto("new_photo.jpg"))
 
                 # Replace the current media with a local video
-                app.edit_message_media(chat_id, message_id, InputMediaVideo("new_video.mp4"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaVideo("new_video.mp4"))
 
                 # Replace the current media with a local audio
-                app.edit_message_media(chat_id, message_id, InputMediaAudio("new_audio.mp3"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode

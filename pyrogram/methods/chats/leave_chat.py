@@ -43,10 +43,10 @@ class LeaveChat:
             .. code-block:: python
 
                 # Leave chat or channel
-                app.leave_chat(chat_id)
+                await app.leave_chat(chat_id)
 
                 # Leave basic chat and also delete the dialog
-                app.leave_chat(chat_id, delete=True)
+                await app.leave_chat(chat_id, delete=True)
         """
         peer = await self.resolve_peer(chat_id)
 

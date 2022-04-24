@@ -122,7 +122,7 @@ class InlineQuery(Object, Update):
 
         .. code-block:: python
 
-            client.answer_inline_query(
+            await client.answer_inline_query(
                 inline_query.id,
                 results=[...]
             )
@@ -130,7 +130,7 @@ class InlineQuery(Object, Update):
         Example:
             .. code-block:: python
 
-                inline_query.answer([...])
+                await inline_query.answer([...])
 
         Parameters:
             results (List of :obj:`~pyrogram.types.InlineQueryResult`):

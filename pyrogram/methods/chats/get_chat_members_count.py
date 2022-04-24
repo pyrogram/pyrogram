@@ -42,7 +42,7 @@ class GetChatMembersCount:
         Example:
             .. code-block:: python
 
-                count = app.get_chat_members_count(chat_id)
+                count = await app.get_chat_members_count(chat_id)
                 print(count)
         """
         peer = await self.resolve_peer(chat_id)

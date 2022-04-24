@@ -64,7 +64,7 @@ class GetInlineBotResults:
         Example:
             .. code-block:: python
 
-                results = app.get_inline_bot_results("pyrogrambot")
+                results = await app.get_inline_bot_results("pyrogrambot")
                 print(results)
         """
         # TODO: Don't return the raw type

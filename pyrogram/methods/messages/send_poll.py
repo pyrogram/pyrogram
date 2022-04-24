@@ -98,7 +98,7 @@ class SendPoll:
         Example:
             .. code-block:: python
 
-                app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
+                await app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
         r = await self.invoke(
             raw.functions.messages.SendMedia(

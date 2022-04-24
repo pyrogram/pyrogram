@@ -49,10 +49,10 @@ class SendReaction:
             .. code-block:: python
 
                 # Send a reaction
-                app.send_reaction(chat_id, message_id, "🔥")
+                await app.send_reaction(chat_id, message_id, "🔥")
 
                 # Retract a reaction
-                app.send_reaction(chat_id, message_id)
+                await app.send_reaction(chat_id, message_id)
         """
         await self.invoke(
             raw.functions.messages.SendReaction(

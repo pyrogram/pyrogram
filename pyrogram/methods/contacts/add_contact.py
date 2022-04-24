@@ -57,8 +57,11 @@ class AddContact:
         Example:
             .. code-block:: python
 
-                app.add_contact(12345678, "Foo")
-                app.add_contact("username", "Bar")
+                # Add contact by id
+                await app.add_contact(12345678, "Foo")
+
+                # Add contact by username
+                await app.add_contact("username", "Bar")
         """
         r = await self.invoke(
             raw.functions.contacts.AddContact(

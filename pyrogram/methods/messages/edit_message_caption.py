@@ -62,7 +62,7 @@ class EditMessageCaption:
         Example:
             .. code-block:: python
 
-                app.edit_message_caption(chat_id, message_id, "new media caption")
+                await app.edit_message_caption(chat_id, message_id, "new media caption")
         """
         return await self.edit_message_text(
             chat_id=chat_id,

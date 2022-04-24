@@ -47,7 +47,7 @@ class SetChatDescription:
         Example:
             .. code-block:: python
 
-                app.set_chat_description(chat_id, "New Description")
+                await app.set_chat_description(chat_id, "New Description")
         """
         peer = await self.resolve_peer(chat_id)
 

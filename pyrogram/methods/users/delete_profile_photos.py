@@ -43,13 +43,13 @@ class DeleteProfilePhotos:
             .. code-block:: python
 
                 # Get the photos to be deleted
-                photos = app.get_profile_photos("me")
+                photos = await app.get_profile_photos("me")
 
                 # Delete one photo
-                app.delete_profile_photos(photos[0].file_id)
+                await app.delete_profile_photos(photos[0].file_id)
 
                 # Delete the rest of the photos
-                app.delete_profile_photos([p.file_id for p in photos[1:]])
+                await app.delete_profile_photos([p.file_id for p in photos[1:]])
         """
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = [utils.get_input_media_from_file_id(i, FileType.PHOTO).id for i in photo_ids]

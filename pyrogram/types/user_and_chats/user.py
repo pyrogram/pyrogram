@@ -274,12 +274,12 @@ class User(Object, Update):
 
         .. code-block:: python
 
-            client.archive_chats(123456789)
+            await client.archive_chats(123456789)
 
         Example:
             .. code-block:: python
 
-                user.archive()
+               await user.archive()
 
         Returns:
             True on success.
@@ -297,12 +297,12 @@ class User(Object, Update):
 
         .. code-block:: python
 
-            client.unarchive_chats(123456789)
+            await client.unarchive_chats(123456789)
 
         Example:
             .. code-block:: python
 
-                user.unarchive()
+                await user.unarchive()
 
         Returns:
             True on success.
@@ -320,12 +320,12 @@ class User(Object, Update):
 
         .. code-block:: python
 
-            client.block_user(123456789)
+            await client.block_user(123456789)
 
         Example:
             .. code-block:: python
 
-                user.block()
+                await user.block()
 
         Returns:
             True on success.

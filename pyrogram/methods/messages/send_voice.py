@@ -127,13 +127,13 @@ class SendVoice:
             .. code-block:: python
 
                 # Send voice note by uploading from local file
-                app.send_voice("me", "voice.ogg")
+                await app.send_voice("me", "voice.ogg")
 
                 # Add caption to the voice note
-                app.send_voice("me", "voice.ogg", caption="voice caption")
+                await app.send_voice("me", "voice.ogg", caption="voice caption")
 
                 # Set voice note duration
-                app.send_voice("me", "voice.ogg", duration=20)
+                await app.send_voice("me", "voice.ogg", duration=20)
         """
         file = None
 

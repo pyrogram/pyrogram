@@ -52,7 +52,7 @@ class SetChatTitle:
         Example:
             .. code-block:: python
 
-                app.set_chat_title(chat_id, "New Title")
+                await app.set_chat_title(chat_id, "New Title")
         """
         peer = await self.resolve_peer(chat_id)
 

@@ -46,7 +46,7 @@ class RetractVote:
         Example:
             .. code-block:: python
 
-                app.retract_vote(chat_id, message_id)
+                await app.retract_vote(chat_id, message_id)
         """
         r = await self.invoke(
             raw.functions.messages.SendVote(

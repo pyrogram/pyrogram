@@ -141,16 +141,16 @@ class SendDocument:
             .. code-block:: python
 
                 # Send document by uploading from local file
-                app.send_document("me", "document.zip")
+                await app.send_document("me", "document.zip")
 
                 # Add caption to the document file
-                app.send_document("me", "document.zip", caption="document caption")
+                await app.send_document("me", "document.zip", caption="document caption")
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_document("me", "document.zip", progress=progress)
+                await app.send_document("me", "document.zip", progress=progress)
         """
         file = None
 

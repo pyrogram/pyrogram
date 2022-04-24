@@ -41,7 +41,7 @@ class CreateChannel:
         Example:
             .. code-block:: python
 
-                app.create_channel("Channel Title", "Channel Description")
+                await app.create_channel("Channel Title", "Channel Description")
         """
         r = await self.invoke(
             raw.functions.channels.CreateChannel(

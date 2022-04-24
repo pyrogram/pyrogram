@@ -12,8 +12,10 @@ It uses the @on_callback_query decorator to register a CallbackQueryHandler.
 
 
     @app.on_callback_query()
-    def answer(client, callback_query):
-        callback_query.answer(f"Button contains: '{callback_query.data}'", show_alert=True)
+    async def answer(client, callback_query):
+        await callback_query.answer(
+            f"Button contains: '{callback_query.data}'",
+            show_alert=True)
 
 
     app.run()  # Automatically start() and idle()
