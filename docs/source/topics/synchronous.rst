@@ -1,7 +1,7 @@
 Synchronous Usage
 =================
 
-Pyrogram is an asynchronous framework and as such it is subject to the asynchronous rules. It can, however, run in
+Pyrogram is an asynchronous framework and as such is subject to the asynchronous rules. It can, however, run in
 synchronous mode (also known as non-asynchronous or sync/non-async for short). This mode exists mainly as a convenience
 way for invoking methods without the need of ``async``/``await`` keywords and the extra boilerplate, but **it's not the
 intended way to use the framework**.

@@ -50,7 +50,7 @@ Enjoy the API
 That was just a quick overview. In the next few pages of the introduction, we'll take a much more in-depth look of what
 we have just done above.
 
-If you are feeling eager to continue you can take a shortcut to :doc:`Invoking Methods <../start/invoking>` and come back
+If you are feeling eager to continue you can take a shortcut to :doc:`../start/invoking` and come back
 later to learn some more details.
 
 .. _community: https://t.me/Pyrogram

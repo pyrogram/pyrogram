@@ -74,8 +74,8 @@ In case you want to use an in-memory storage, but also want to keep access to th
     async with Client("my_account", in_memory=True) as app:
         print(await app.export_session_string())
 
-...and save the resulting string. You can use this string as session name the next time you want to login
-using the same session; the storage used will still be in-memory:
+...and save the resulting string. You can use this string by passing it as Client argument the next time you want to
+login using the same session; the storage used will still be in-memory:
 
 .. code-block:: python
 
