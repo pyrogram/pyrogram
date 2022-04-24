@@ -416,6 +416,7 @@ def pyrogram_api():
             CallbackQuery
             GameHighScore
             CallbackGame
+            WebAppInfo
         """,
         bot_commands="""
         Bot commands

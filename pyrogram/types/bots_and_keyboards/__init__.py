@@ -35,6 +35,7 @@ from .keyboard_button import KeyboardButton
 from .login_url import LoginUrl
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
+from .web_app_info import WebAppInfo
 
 __all__ = [
     "CallbackGame",
@@ -56,4 +57,5 @@ __all__ = [
     "BotCommandScopeChatAdministrators",
     "BotCommandScopeChatMember",
     "BotCommandScopeDefault",
+    "WebAppInfo"
 ]

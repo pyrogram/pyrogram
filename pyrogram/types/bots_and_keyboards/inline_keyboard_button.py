@@ -39,6 +39,12 @@ class InlineKeyboardButton(Object):
         url (``str``, *optional*):
             HTTP url to be opened when button is pressed.
 
+        web_app (:obj:`~pyrogram.types.WebAppInfo`, *optional*):
+            Description of the `Web App <https://core.telegram.org/bots/webapps>`_ that will be launched when the user
+            presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the
+            method :meth:`~pyrogram.Client.answer_web_app_query`. Available only in private chats between a user and the
+            bot.
+
         login_url (:obj:`~pyrogram.types.LoginUrl`, *optional*):
              An HTTP URL used to automatically authorize the user. Can be used as a replacement for
              the `Telegram Login Widget <https://core.telegram.org/widgets/login>`_.
@@ -70,6 +76,7 @@ class InlineKeyboardButton(Object):
         text: str,
         callback_data: Union[str, bytes] = None,
         url: str = None,
+        web_app: "types.WebAppInfo" = None,
         login_url: "types.LoginUrl" = None,
         user_id: int = None,
         switch_inline_query: str = None,
@@ -81,6 +88,7 @@ class InlineKeyboardButton(Object):
         self.text = str(text)
         self.callback_data = callback_data
         self.url = url
+        self.web_app = web_app
         self.login_url = login_url
         self.user_id = user_id
         self.switch_inline_query = switch_inline_query
@@ -139,6 +147,14 @@ class InlineKeyboardButton(Object):
                 callback_game=types.CallbackGame()
             )
 
+        if isinstance(b, raw.types.KeyboardButtonWebView):
+            return InlineKeyboardButton(
+                text=b.text,
+                web_app=types.WebAppInfo(
+                    url=b.url
+                )
+            )
+
     async def write(self, client: "pyrogram.Client"):
         if self.callback_data is not None:
             # Telegram only wants bytes, but we are allowed to pass strings too, for convenience.
@@ -183,4 +199,10 @@ class InlineKeyboardButton(Object):
         if self.callback_game is not None:
             return raw.types.KeyboardButtonGame(
                 text=self.text
+            )
+
+        if self.web_app is not None:
+            return raw.types.KeyboardButtonWebView(
+                text=self.text,
+                url=self.web_app.url
             )
