@@ -192,7 +192,7 @@ class Client(Methods):
     def __init__(
         self,
         name: str,
-        api_id: int = None,
+        api_id: Union[int, str] = None,
         api_hash: str = None,
         app_version: str = APP_VERSION,
         device_model: str = DEVICE_MODEL,
@@ -219,7 +219,7 @@ class Client(Methods):
         super().__init__()
 
         self.name = name
-        self.api_id = api_id
+        self.api_id = int(api_id) if api_id else None
         self.api_hash = api_hash
         self.app_version = app_version
         self.device_model = device_model
