@@ -299,6 +299,7 @@ def pyrogram_api():
             get_bot_default_privileges
             set_chat_menu_button
             get_chat_menu_button
+            answer_web_app_query
         """,
         authorization="""
         Authorization
