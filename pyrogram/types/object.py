@@ -29,7 +29,7 @@ class Object:
         self._client = client
 
     def bind(self, client: "pyrogram.Client"):
-        """Recursively bind a Client instance to this and to all nested Pyrogram objects.
+        """Bind a Client instance to this and to all nested Pyrogram objects.
 
         Parameters:
             client (:obj:`~pyrogram.types.Client`):
