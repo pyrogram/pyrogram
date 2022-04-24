@@ -39,6 +39,12 @@ class InlineQueryResultPhoto(InlineQueryResult):
             URL of the thumbnail for the photo.
             Defaults to the value passed in *photo_url*.
 
+        photo_width (``int``, *optional*):
+            Width of the photo.
+
+        photo_height (``int``, *optional*):
+            Height of the photo
+
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
@@ -70,6 +76,8 @@ class InlineQueryResultPhoto(InlineQueryResult):
         self,
         photo_url: str,
         thumb_url: str = None,
+        photo_width: int = 0,
+        photo_height: int = 0,
         id: str = None,
         title: str = None,
         description: str = None,
@@ -83,6 +91,8 @@ class InlineQueryResultPhoto(InlineQueryResult):
 
         self.photo_url = photo_url
         self.thumb_url = thumb_url
+        self.photo_width = photo_width
+        self.photo_height = photo_height
         self.title = title
         self.description = description
         self.caption = caption
@@ -96,7 +106,12 @@ class InlineQueryResultPhoto(InlineQueryResult):
             url=self.photo_url,
             size=0,
             mime_type="image/jpeg",
-            attributes=[]
+            attributes=[
+                raw.types.DocumentAttributeImageSize(
+                    w=self.photo_width,
+                    h=self.photo_height
+                )
+            ]
         )
 
         if self.thumb_url is None:
