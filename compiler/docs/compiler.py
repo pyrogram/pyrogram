@@ -401,10 +401,10 @@ def pyrogram_api():
             PollOption
             Dice
             Reaction
-            VoiceChatScheduled
-            VoiceChatStarted
-            VoiceChatEnded
-            VoiceChatMembersInvited
+            VideoChatScheduled
+            VideoChatStarted
+            VideoChatEnded
+            VideoChatMembersInvited
         """,
         bot_keyboards="""
         Bot keyboards
