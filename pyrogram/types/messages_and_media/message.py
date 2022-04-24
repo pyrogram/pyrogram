@@ -951,7 +951,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1088,7 +1088,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1227,7 +1227,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1319,7 +1319,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1441,7 +1441,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1577,7 +1577,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1655,7 +1655,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1719,7 +1719,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1793,7 +1793,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1856,7 +1856,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1972,7 +1972,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -1995,12 +1995,19 @@ class Message(Object, Update):
         self,
         question: str,
         options: List[str],
-        quote: bool = None,
         is_anonymous: bool = True,
+        type: "enums.PollType" = enums.PollType.REGULAR,
         allows_multiple_answers: bool = None,
-        type: str = "regular",
         correct_option_id: int = None,
+        explanation: str = None,
+        explanation_parse_mode: "enums.ParseMode" = None,
+        explanation_entities: List["types.MessageEntity"] = None,
+        open_period: int = None,
+        close_date: datetime = None,
+        is_closed: bool = None,
+        quote: bool = None,
         disable_notification: bool = None,
+        protect_content: bool = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         reply_markup: Union[
@@ -2029,39 +2036,66 @@ class Message(Object, Update):
 
         Parameters:
             question (``str``):
-                The poll question, as string.
+                Poll question, 1-255 characters.
 
             options (List of ``str``):
-                The poll options, as list of strings (2 to 10 options are allowed).
+                List of answer options, 2-10 strings 1-100 characters each.
+
+            is_anonymous (``bool``, *optional*):
+                True, if the poll needs to be anonymous.
+                Defaults to True.
+
+            type (:obj`~pyrogram.enums.PollType`, *optional*):
+                Poll type, :obj:`~pyrogram.enums.PollType.QUIZ` or :obj:`~pyrogram.enums.PollType.REGULAR`.
+                Defaults to :obj:`~pyrogram.enums.PollType.REGULAR`.
+
+            allows_multiple_answers (``bool``, *optional*):
+                True, if the poll allows multiple answers, ignored for polls in quiz mode.
+                Defaults to False.
+
+            correct_option_id (``int``, *optional*):
+                0-based identifier of the correct answer option, required for polls in quiz mode.
+
+            explanation (``str``, *optional*):
+                Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style
+                poll, 0-200 characters with at most 2 line feeds after entities parsing.
+
+            explanation_parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            explanation_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the poll explanation, which can be specified instead of
+                *parse_mode*.
+
+            open_period (``int``, *optional*):
+                Amount of time in seconds the poll will be active after creation, 5-600.
+                Can't be used together with *close_date*.
+
+            close_date (:py:obj:`~datetime.datetime`, *optional*):
+                Point in time when the poll will be automatically closed.
+                Must be at least 5 and no more than 600 seconds in the future.
+                Can't be used together with *open_period*.
+
+            is_closed (``bool``, *optional*):
+                Pass True, if the poll needs to be immediately closed.
+                This can be useful for poll preview.
 
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as a reply to this message.
                 If *reply_to_message_id* is passed, this parameter will be ignored.
                 Defaults to ``True`` in group chats and ``False`` in private chats.
-            
-            is_anonymous (``bool``, *optional*):
-                True, if the poll needs to be anonymous.
-                Defaults to True.
-
-            type (``str``, *optional*):
-                Poll type, "quiz" or "regular".
-                Defaults to "regular"
-
-            allows_multiple_answers (``bool``, *optional*):
-                True, if the poll allows multiple answers, ignored for polls in quiz mode.
-                Defaults to False
-            
-            correct_option_id (``int``, *optional*):
-                0-based identifier of the correct answer option (the index of the correct option)
-                Required for polls in quiz mode.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent message from forwarding and saving.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
-            
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -2076,7 +2110,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -2086,10 +2120,17 @@ class Message(Object, Update):
             question=question,
             options=options,
             is_anonymous=is_anonymous,
-            allows_multiple_answers=allows_multiple_answers,
             type=type,
+            allows_multiple_answers=allows_multiple_answers,
             correct_option_id=correct_option_id,
+            explanation=explanation,
+            explanation_parse_mode=explanation_parse_mode,
+            explanation_entities=explanation_entities,
+            open_period=open_period,
+            close_date=close_date,
+            is_closed=is_closed,
             disable_notification=disable_notification,
+            protect_content=protect_content,
             reply_to_message_id=reply_to_message_id,
             schedule_date=schedule_date,
             reply_markup=reply_markup
@@ -2180,7 +2221,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -2275,7 +2316,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -2420,7 +2461,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -2544,7 +2585,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
@@ -2664,7 +2705,7 @@ class Message(Object, Update):
             RPCError: In case of a Telegram RPC error.
         """
         if quote is None:
-            quote = self.chat.type != "private"
+            quote = self.chat.type != enums.ChatType.PRIVATE
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
