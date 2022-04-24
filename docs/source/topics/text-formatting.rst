@@ -44,14 +44,10 @@ list of the basic styles currently supported by Pyrogram.
       fixed-width
         code block
 
-.. note::
-
-    User text mentions are only guaranteed to work if you have already met the user (in groups or private chats).
-
 Markdown Style
 --------------
 
-To strictly use this mode, pass "markdown" to the *parse_mode* parameter when using
+To strictly use this mode, pass :obj:`~pyrogram.enums.ParseMode.MARKDOWN` to the *parse_mode* parameter when using
 :meth:`~pyrogram.Client.send_message`. Use the following syntax in your message:
 
 .. code-block:: text
@@ -82,6 +78,8 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
 
 .. code-block:: python
 
+    from pyrogram import enums
+
     app.send_message(
         "me",
         (
@@ -97,14 +95,14 @@ To strictly use this mode, pass "markdown" to the *parse_mode* parameter when us
             "    print(i)"
             "```"
         ),
-        parse_mode="markdown"
+        parse_mode=enums.ParseMode.MARKDOWN
     )
 
 HTML Style
 ----------
 
-To strictly use this mode, pass "html" to the *parse_mode* parameter when using :meth:`~pyrogram.Client.send_message`.
-The following tags are currently supported:
+To strictly use this mode, pass :obj:`~pyrogram.enums.HTML` to the *parse_mode* parameter when using
+:meth:`~pyrogram.Client.send_message`. The following tags are currently supported:
 
 .. code-block:: text
 
@@ -134,6 +132,8 @@ The following tags are currently supported:
 
 .. code-block:: python
 
+    from pyrogram import enums
+
     app.send_message(
         "me",
         (
@@ -149,7 +149,7 @@ The following tags are currently supported:
             "    print(i)"
             "</pre>"
         ),
-        parse_mode="html"
+        parse_mode=enums.ParseMode.HTML
     )
 
 .. note::
@@ -186,12 +186,14 @@ Result:
     **bold**, *italic*
 
 If you don't like this behaviour you can always choose to only enable either Markdown or HTML in strict mode by passing
-"markdown" or "html" as argument to the *parse_mode* parameter.
+:obj:`~pyrogram.enums.MARKDOWN` or :obj:`~pyrogram.enums.HTML` as argument to the *parse_mode* parameter.
 
-.. code-block::
+.. code-block:: python
 
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode="markdown")
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode="html")
+    from pyrogram import enums
+
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.MARKDOWN)
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.HTML)
 
 Result:
 
@@ -199,12 +201,14 @@ Result:
 
     \*\*bold**, *italic*
 
-In case you want to completely turn off the style parser, simply pass ``None`` to *parse_mode*. The text will be sent
-as-is.
+In case you want to completely turn off the style parser, simply pass :obj:`~pyrogram.enums.DISABLED` to *parse_mode*.
+The text will be sent as-is.
 
 .. code-block:: python
 
-    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=None)
+    from pyrogram import enums
+
+    app.send_message("me", "**bold**, <i>italic</i>", parse_mode=enums.ParseMode.DISABLED)
 
 Result:
 
