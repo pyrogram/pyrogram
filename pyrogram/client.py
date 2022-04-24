@@ -146,15 +146,14 @@ class Client(Methods):
             Your Smart Plugins settings as dict, e.g.: *dict(root="plugins")*.
 
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
-            The parse mode, can be any of: *"combined"*, for the default combined mode. *"markdown"* or *"md"*
-            to force Markdown-only styles. *"html"* to force HTML-only styles. *None* to disable the parser
-            completely.
+            Set the global parse mode of the client. By default, texts are parsed using both Markdown and HTML styles.
+            You can combine both syntaxes together.
 
         no_updates (``bool``, *optional*):
-            Pass True to completely disable incoming updates for the current session.
-            When updates are disabled your client can't receive any new message.
+            Pass True to disable incoming updates.
+            When updates are disabled the client can't receive messages or other updates.
             Useful for batch programs that don't need to deal with updates.
-            Defaults to False (updates enabled and always received).
+            Defaults to False (updates enabled and received).
 
         takeout (``bool``, *optional*):
             Pass True to let the client use a takeout session instead of a normal one, implies *no_updates=True*.
