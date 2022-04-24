@@ -31,13 +31,14 @@ class SetChatMenuButton:
     ) -> bool:
         """Change the bot's menu button in a private chat, or the default menu button.
 
-        chat_id (``int`` | ``str``, *optional*):
-            Unique identifier (int) or username (str) of the target chat.
-            If not specified, default bot's menu button will be changed.
+        Parameters:
+            chat_id (``int`` | ``str``, *optional*):
+                Unique identifier (int) or username (str) of the target chat.
+                If not specified, default bot's menu button will be changed.
 
-        menu_button (:obj:`~pyrogram.types.MenuButton`, *optional*):
-            The new bot's menu button.
-            Defaults to :obj:`~pyrogram.types.MenuButtonDefault`.
+            menu_button (:obj:`~pyrogram.types.MenuButton`, *optional*):
+                The new bot's menu button.
+                Defaults to :obj:`~pyrogram.types.MenuButtonDefault`.
         """
 
         await self.invoke(

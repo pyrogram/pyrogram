@@ -66,8 +66,8 @@ class ChatEventFilter(Object):
             True, if members leaving events should be returned.
             Defaults to False.
 
-        voice_chats (``bool``, *optional*):
-            True, if voice chats events should be returned.
+        video_chats (``bool``, *optional*):
+            True, if video chats events should be returned.
             Defaults to False.
     """
 
@@ -83,7 +83,7 @@ class ChatEventFilter(Object):
         edited_messages: bool = False,
         pinned_messages: bool = False,
         leaving_members: bool = False,
-        voice_chats: bool = False
+        video_chats: bool = False
     ):
         super().__init__()
 
@@ -97,7 +97,7 @@ class ChatEventFilter(Object):
         self.edited_messages = edited_messages
         self.pinned_messages = pinned_messages
         self.leaving_members = leaving_members
-        self.voice_chats = voice_chats
+        self.video_chats = video_chats
 
     def write(self) -> "raw.base.ChannelAdminLogEventsFilter":
         join = False
@@ -152,7 +152,7 @@ class ChatEventFilter(Object):
         if self.leaving_members:
             leave = True
 
-        if self.voice_chats:
+        if self.video_chats:
             group_call = True
 
         return raw.types.ChannelAdminLogEventsFilter(

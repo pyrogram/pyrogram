@@ -34,7 +34,7 @@ class ChatPrivileges(Object):
 
         can_manage_video_chats (``bool``, *optional*):
             Groups and supergroups only.
-            True, if the administrator can manage voice chats (also called group calls).
+            True, if the administrator can manage video chats (also called group calls).
 
         can_restrict_members (``bool``, *optional*):
             True, if the administrator can restrict, ban or unban chat members.

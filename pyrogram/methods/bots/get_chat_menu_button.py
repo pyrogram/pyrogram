@@ -30,9 +30,10 @@ class GetChatMenuButton:
     ) -> "types.MenuButton":
         """Get the current value of the bot's menu button in a private chat, or the default menu button.
 
-        chat_id (``int`` | ``str``):
-            Unique identifier (int) or username (str) of the target chat.
-            If not specified, default bot's menu button will be returned.
+        Parameters:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                If not specified, default bot's menu button will be returned.
         """
 
         if chat_id:

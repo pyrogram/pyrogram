@@ -642,7 +642,7 @@ async def video_chat_started_filter(_, __, m: Message):
 
 
 video_chat_started = create(video_chat_started_filter)
-"""Filter messages for started voice chats"""
+"""Filter messages for started video chats"""
 
 
 # endregion
@@ -653,7 +653,7 @@ async def video_chat_ended_filter(_, __, m: Message):
 
 
 video_chat_ended = create(video_chat_ended_filter)
-"""Filter messages for ended voice chats"""
+"""Filter messages for ended video chats"""
 
 
 # endregion
