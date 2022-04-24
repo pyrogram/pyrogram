@@ -22,8 +22,8 @@ import pyrogram
 from pyrogram import raw
 
 
-class ReadHistory:
-    async def read_history(
+class ReadChatHistory:
+    async def read_chat_history(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         max_id: int = 0

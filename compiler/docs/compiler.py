@@ -171,10 +171,9 @@ def pyrogram_api():
             delete_messages
             get_messages
             get_media_group
-            get_history
-            get_history_count
-            read_history
-            iter_history
+            get_chat_history
+            get_chat_history_count
+            read_chat_history
             send_poll
             vote_poll
             stop_poll

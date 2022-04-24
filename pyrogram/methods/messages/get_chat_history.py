@@ -20,24 +20,47 @@ from datetime import datetime
 from typing import Union, Optional, AsyncGenerator
 
 import pyrogram
-from pyrogram import types
+from pyrogram import types, raw, utils
 
 
-class IterHistory:
-    async def iter_history(
+async def get_chunk(
+    *,
+    client: "pyrogram.Client",
+    chat_id: Union[int, str],
+    limit: int = 0,
+    offset: int = 0,
+    from_message_id: int = 0,
+    from_date: datetime = datetime.fromtimestamp(0)
+):
+    messages = await client.invoke(
+        raw.functions.messages.GetHistory(
+            peer=await client.resolve_peer(chat_id),
+            offset_id=from_message_id,
+            offset_date=utils.datetime_to_timestamp(from_date),
+            add_offset=offset,
+            limit=limit,
+            max_id=0,
+            min_id=0,
+            hash=0
+        ),
+        sleep_threshold=60
+    )
+
+    return await utils.parse_messages(client, messages, replies=0)
+
+
+class GetChatHistory:
+    async def get_chat_history(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
         offset: int = 0,
         offset_id: int = 0,
-        offset_date: datetime = datetime.fromtimestamp(0),
-        reverse: bool = False
+        offset_date: datetime = datetime.fromtimestamp(0)
     ) -> Optional[AsyncGenerator["types.Message", None]]:
-        """Iterate through a chat history sequentially.
+        """Get messages from a chat history.
 
-        This convenience method does the same as repeatedly calling :meth:`~pyrogram.Client.get_history` in a loop, thus saving
-        you from the hassle of setting up boilerplate code. It is useful for getting the whole chat history with a
-        single call.
+        The messages are returned in reverse chronological order.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -59,37 +82,33 @@ class IterHistory:
             offset_date (:py:obj:`~datetime.datetime`, *optional*):
                 Pass a date as offset to retrieve only older messages starting from that date.
 
-            reverse (``bool``, *optional*):
-                Pass True to retrieve the messages in reversed order (from older to most recent).
-
         Returns:
             ``Generator``: A generator yielding :obj:`~pyrogram.types.Message` objects.
 
         Example:
             .. code-block:: python
 
-                for message in app.iter_history("pyrogram"):
+                for message in app.get_chat_history(chat_id):
                     print(message.text)
         """
-        offset_id = offset_id or (1 if reverse else 0)
         current = 0
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
         while True:
-            messages = await self.get_history(
+            messages = await get_chunk(
+                client=self,
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
-                offset_id=offset_id,
-                offset_date=offset_date,
-                reverse=reverse
+                from_message_id=offset_id,
+                from_date=offset_date
             )
 
             if not messages:
                 return
 
-            offset_id = messages[-1].id + (1 if reverse else 0)
+            offset_id = messages[-1].id
 
             for message in messages:
                 yield message

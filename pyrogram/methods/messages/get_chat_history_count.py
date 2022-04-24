@@ -25,8 +25,8 @@ from pyrogram import raw
 log = logging.getLogger(__name__)
 
 
-class GetHistoryCount:
-    async def get_history_count(
+class GetChatHistoryCount:
+    async def get_chat_history_count(
         self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> int:
