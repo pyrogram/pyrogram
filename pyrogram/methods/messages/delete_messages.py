@@ -47,7 +47,7 @@ class DeleteMessages:
                 Defaults to True.
 
         Returns:
-            ``bool``: True on success, False otherwise.
+            ``int``: Amount of affected messages
 
         Example:
             .. code-block:: python
@@ -83,4 +83,4 @@ class DeleteMessages:
 
         # Deleting messages you don't have right onto, won't raise any error.
         # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)
+        return r.pts_count
