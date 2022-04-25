@@ -21,6 +21,7 @@ import re
 from typing import Optional
 
 import pyrogram
+from pyrogram.enums import MessageEntityType
 from . import utils
 from .html import HTML
 
@@ -119,25 +120,25 @@ class Markdown:
             start = entity.offset
             end = start + entity.length
 
-            if entity_type == "bold":
+            if entity_type == MessageEntityType.BOLD:
                 start_tag = end_tag = BOLD_DELIM
-            elif entity_type == "italic":
+            elif entity_type == MessageEntityType.ITALIC:
                 start_tag = end_tag = ITALIC_DELIM
-            elif entity_type == "underline":
+            elif entity_type == MessageEntityType.UNDERLINE:
                 start_tag = end_tag = UNDERLINE_DELIM
-            elif entity_type == "strikethrough":
+            elif entity_type == MessageEntityType.STRIKETHROUGH:
                 start_tag = end_tag = STRIKE_DELIM
-            elif entity_type == "code":
+            elif entity_type == MessageEntityType.CODE:
                 start_tag = end_tag = CODE_DELIM
-            elif entity_type in ("pre", "blockquote"):
+            elif entity_type in (MessageEntityType.PRE, MessageEntityType.BLOCKQUOTE):
                 start_tag = end_tag = PRE_DELIM
-            elif entity_type == "spoiler":
+            elif entity_type == MessageEntityType.SPOILER:
                 start_tag = end_tag = SPOILER_DELIM
-            elif entity_type == "text_link":
+            elif entity_type == MessageEntityType.TEXT_LINK:
                 url = entity.url
                 start_tag = "["
                 end_tag = f"]({url})"
-            elif entity_type == "text_mention":
+            elif entity_type == MessageEntityType.TEXT_MENTION:
                 user = entity.user
                 start_tag = "["
                 end_tag = f"](tg://user?id={user.id})"
