@@ -71,12 +71,21 @@ class MessageEntity(Object):
 
     @staticmethod
     def _parse(client, entity: "raw.base.MessageEntity", users: dict) -> Optional["MessageEntity"]:
+        # Special case for InputMessageEntityMentionName -> MessageEntityType.TEXT_MENTION
+        # This happens in case of UpdateShortSentMessage inside send_message() where entities are parsed from the input
+        if isinstance(entity, raw.types.InputMessageEntityMentionName):
+            entity_type = enums.MessageEntityType.TEXT_MENTION
+            user_id = entity.user_id.user_id
+        else:
+            entity_type = enums.MessageEntityType(entity.__class__)
+            user_id = getattr(entity, "user_id", None)
+
         return MessageEntity(
-            type=enums.MessageEntityType(entity.__class__),
+            type=entity_type,
             offset=entity.offset,
             length=entity.length,
             url=getattr(entity, "url", None),
-            user=types.User._parse(client, users.get(getattr(entity, "user_id", None), None)),
+            user=types.User._parse(client, users.get(user_id, None)),
             language=getattr(entity, "language", None),
             client=client
         )
