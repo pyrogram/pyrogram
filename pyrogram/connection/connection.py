@@ -34,7 +34,9 @@ class Connection:
         1: TCPAbridged,
         2: TCPIntermediate,
         3: TCPAbridgedO,
-        4: TCPIntermediateO
+        4: TCPIntermediateO,
+        5: TCPPaddedIntermediate,
+        6: TCPPaddedIntermediateO
     }
 
     def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3):
