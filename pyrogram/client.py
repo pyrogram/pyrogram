@@ -257,7 +257,6 @@ class Client(Methods):
         self.rnd_id = MsgId
 
         self.parser = Parser(self)
-        self.parse_mode = enums.ParseMode.DEFAULT
 
         self.session = None
 
