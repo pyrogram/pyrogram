@@ -65,13 +65,19 @@ def generate(source_path, base):
                 if level:
                     full_path = base + "/" + full_path
 
+                namespace = path.split("/")[-1]
+                if namespace in ["base", "types", "functions"]:
+                    namespace = ""
+
+                full_name = f"{(namespace + '.') if namespace else ''}{name}"
+
                 os.makedirs(os.path.dirname(DESTINATION + "/" + full_path), exist_ok=True)
 
                 with open(DESTINATION + "/" + full_path, "w", encoding="utf-8") as f:
                     f.write(
                         page_template.format(
-                            title=name,
-                            title_markup="=" * len(name),
+                            title=full_name,
+                            title_markup="=" * len(full_name),
                             full_class_path="pyrogram.raw.{}".format(
                                 ".".join(full_path.split("/")[:-1]) + "." + name
                             )
@@ -90,7 +96,7 @@ def generate(source_path, base):
         entities = []
 
         for i in v:
-            entities.append(snek(i).replace("_", "-"))
+            entities.append(f'{i} <{snek(i).replace("_", "-")}>')
 
         if k != base:
             inner_path = base + "/" + k + "/index" + ".rst"
