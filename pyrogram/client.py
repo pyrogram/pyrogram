@@ -49,7 +49,7 @@ from pyrogram.errors import (
 from pyrogram.handlers.handler import Handler
 from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
-from pyrogram.storage import FileStorage, MemoryStorage
+from pyrogram.storage import FileStorage, MemoryStorage, Storage
 from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
@@ -214,7 +214,8 @@ class Client(Methods):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        storage: Storage = None
     ):
         super().__init__()
 
@@ -245,7 +246,9 @@ class Client(Methods):
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
-        if self.session_string:
+        if storage:
+            self.storage = storage
+        elif self.session_string:
             self.storage = MemoryStorage(self.name, self.session_string)
         elif self.in_memory:
             self.storage = MemoryStorage(self.name)
