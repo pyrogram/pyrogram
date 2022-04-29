@@ -592,21 +592,24 @@ class Client(Methods):
         else:
             # Needed for migration from storage v2 to v3
             if not await self.storage.api_id():
-                while True:
-                    try:
-                        value = int(await ainput("Enter the api_id part of the API key: "))
+                if self.api_id:
+                    await self.storage.api_id(self.api_id)
+                else:
+                    while True:
+                        try:
+                            value = int(await ainput("Enter the api_id part of the API key: "))
 
-                        if value <= 0:
-                            print("Invalid value")
-                            continue
+                            if value <= 0:
+                                print("Invalid value")
+                                continue
 
-                        confirm = (await ainput(f'Is "{value}" correct? (y/N): ')).lower()
+                            confirm = (await ainput(f'Is "{value}" correct? (y/N): ')).lower()
 
-                        if confirm == "y":
-                            await self.storage.api_id(value)
-                            break
-                    except Exception as e:
-                        print(e)
+                            if confirm == "y":
+                                await self.storage.api_id(value)
+                                break
+                        except Exception as e:
+                            print(e)
 
     def load_plugins(self):
         if self.plugins:
