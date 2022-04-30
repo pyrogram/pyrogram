@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, Iterable
+from typing import Union, List
 
 import pyrogram
 from pyrogram import raw
@@ -26,7 +26,7 @@ class DeleteMessages:
     async def delete_messages(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        message_ids: Union[int, list[int]],
+        message_ids: Union[int, List[int]],
         revoke: bool = True
     ) -> bool:
         """Delete messages, including service messages.
@@ -37,7 +37,7 @@ class DeleteMessages:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``int`` | ``list[int]``):
+            message_ids (``int`` | List of ``int``):
                 A list of Message identifiers to delete (integers) or a single message id.
 
             revoke (``bool``, *optional*):
@@ -63,7 +63,7 @@ class DeleteMessages:
         """
         peer = await self.resolve_peer(chat_id)
         # Follow type annotation of the raw function "DeleteMessage".
-        if isinstance(message_ids, int):
+        if not isinstance(message_ids, list):
             message_ids = [message_ids]
 
         if isinstance(peer, raw.types.InputPeerChannel):

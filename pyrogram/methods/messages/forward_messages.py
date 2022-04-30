@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from typing import Union, Iterable, List
+from typing import Union, List
 
 import pyrogram
 from pyrogram import raw, utils
@@ -29,7 +29,7 @@ class ForwardMessages:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
-        message_ids: Union[int, Iterable[int]],
+        message_ids: Union[int, List[int]],
         disable_notification: bool = None,
         schedule_date: datetime = None,
         protect_content: bool = None
@@ -49,7 +49,6 @@ class ForwardMessages:
 
             message_ids (``int`` | List of ``int``):
                 A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
-                Iterators and Generators are also accepted.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -63,8 +62,8 @@ class ForwardMessages:
 
         Returns:
             :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was an
-            integer, the single forwarded message is returned, otherwise, in case *message_ids* was an iterable,
-            the returned value will be a list of messages, even if such iterable contained just a single element.
+            integer, the single forwarded message is returned, otherwise, in case *message_ids* was an list,
+            the returned value will be a list of messages, even if such list contained just a single element.
 
         Example:
             .. code-block:: python
@@ -76,8 +75,9 @@ class ForwardMessages:
                 await app.forward_messages(to_chat, from_chat, [1, 2, 3])
         """
 
-        is_iterable = not isinstance(message_ids, int)
-        message_ids = list(message_ids) if is_iterable else [message_ids]
+        is_list = isinstance(message_ids, list)
+        if not is_list:
+            message_ids = [message_ids]
 
         r = await self.invoke(
             raw.functions.messages.ForwardMessages(
@@ -107,4 +107,4 @@ class ForwardMessages:
                     )
                 )
 
-        return types.List(forwarded_messages) if is_iterable else forwarded_messages[0]
+        return types.List(forwarded_messages) if is_list else forwarded_messages[0]

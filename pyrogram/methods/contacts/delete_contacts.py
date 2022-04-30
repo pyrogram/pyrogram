@@ -45,9 +45,9 @@ class DeleteContacts:
                 await app.delete_contacts(user_id)
                 await app.delete_contacts([user_id1, user_id2, user_id3])
         """
-        is_user_ids_list = isinstance(user_ids, list)
+        is_list = isinstance(user_ids, list)
 
-        if not is_user_ids_list:
+        if not is_list:
             user_ids = [user_ids]
 
         r = await self.invoke(
@@ -61,7 +61,4 @@ class DeleteContacts:
 
         users = types.List([types.User._parse(self, i) for i in r.users])
 
-        if is_user_ids_list:
-            return users
-        else:
-            return users[0]
+        return users if is_list else users[0]
