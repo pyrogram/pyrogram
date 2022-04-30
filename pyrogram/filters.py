@@ -250,6 +250,16 @@ caption = create(caption_filter)
 
 # endregion
 
+# region edited_filter
+async def edited_filter(_, __, m: Message):
+    return bool(m.edit_date)
+
+
+edited = create(edited_filter)
+"""Filter edited messages."""
+
+
+# endregion
 
 # region audio_filter
 async def audio_filter(_, __, m: Message):
