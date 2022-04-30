@@ -70,14 +70,14 @@ class SetChatPhoto:
                 # Set chat photo using a local file
                 await app.set_chat_photo(chat_id, photo="photo.jpg")
 
-                # Set chat photo using an exiting Photo file_id
+                # Set chat photo using an existing Photo file_id
                 await app.set_chat_photo(chat_id, photo=photo.file_id)
 
 
                 # Set chat video using a local file
                 await app.set_chat_photo(chat_id, video="video.mp4")
 
-                # Set chat photo using an exiting Video file_id
+                # Set chat photo using an existing Video file_id
                 await app.set_chat_photo(chat_id, video=video.file_id)
         """
         peer = await self.resolve_peer(chat_id)
