@@ -23,7 +23,7 @@ __copyright__ = "Copyright (C) 2017-present Dan <https://github.com/delivrance>"
 from concurrent.futures.thread import ThreadPoolExecutor
 
 
-class StopTransmission(StopAsyncIteration):
+class StopTransmission(Exception):
     pass
 
 

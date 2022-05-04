@@ -727,23 +727,27 @@ class Client(Methods):
 
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
-
         file = BytesIO() if in_memory else tempfile.NamedTemporaryFile("wb", delete=False)
 
-        async for chunk in self.get_file(file_id, file_size, 0, 0, progress, progress_args):
-            file.write(chunk)
+        try:
+            async for chunk in self.get_file(file_id, file_size, 0, 0, progress, progress_args):
+                file.write(chunk)
+        except pyrogram.StopTransmission:
+            if not in_memory:
+                file.close()
+                os.remove(file.name)
 
-        if file and not in_memory:
-            file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
-            os.makedirs(directory, exist_ok=True)
-            file.close()
-            shutil.move(file.name, file_path)
-
-            return file_path
-
-        if file and in_memory:
-            file.name = file_name
-            return file
+            return None
+        else:
+            if in_memory:
+                file.name = file_name
+                return file
+            else:
+                file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
+                os.makedirs(directory, exist_ok=True)
+                file.close()
+                shutil.move(file.name, file_path)
+                return file_path
 
     async def get_file(
         self,
@@ -970,9 +974,10 @@ class Client(Methods):
                             break
                 except Exception as e:
                     raise e
+        except pyrogram.StopTransmission:
+            raise
         except Exception as e:
-            if not isinstance(e, pyrogram.StopTransmission):
-                log.error(e, exc_info=True)
+            log.error(e, exc_info=True)
 
     def guess_mime_type(self, filename: str) -> Optional[str]:
         return self.mimetypes.guess_type(filename)[0]
