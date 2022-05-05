@@ -21,7 +21,7 @@ from .auto_name import AutoName
 
 
 class MessagesFilter(AutoName):
-    """Messages filter enumeration used in used in :meth:`~pyrogram.Client.search_messages` and used in :meth:`~pyrogram.Client.search_global`"""
+    """Messages filter enumeration used in :meth:`~pyrogram.Client.search_messages` and :meth:`~pyrogram.Client.search_global`"""
 
     EMPTY = raw.types.InputMessagesFilterEmpty
     "Empty filter (any kind of messages)"
