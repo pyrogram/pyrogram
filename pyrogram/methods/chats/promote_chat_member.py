@@ -19,7 +19,7 @@
 from typing import Union
 
 import pyrogram
-from pyrogram import raw, types
+from pyrogram import raw, types, errors
 
 
 class PromoteChatMember:
@@ -61,12 +61,15 @@ class PromoteChatMember:
         if privileges is None:
             privileges = types.ChatPrivileges()
 
-        raw_chat_member = (await self.invoke(
-            raw.functions.channels.GetParticipant(
-                channel=chat_id,
-                participant=user_id
-            )
-        )).participant
+        try:
+            raw_chat_member = (await self.invoke(
+                raw.functions.channels.GetParticipant(
+                    channel=chat_id,
+                    participant=user_id
+                )
+            )).participant
+        except errors.RPCError:
+            raw_chat_member = None
 
         rank = None
         if isinstance(raw_chat_member, raw.types.ChannelParticipantAdmin):
