@@ -4,7 +4,7 @@ ACCESS_TOKEN_EXPIRED	The bot token has expired
 ACCESS_TOKEN_INVALID	The bot access token is invalid
 ADMINS_TOO_MUCH	The chat has too many administrators
 ADMIN_RANK_EMOJI_NOT_ALLOWED	Emoji are not allowed in custom administrator titles
-ADMIN_RANK_INVALID	The custom administrator title is invalid or is longer than 16 characters
+ADMIN_RANK_INVALID	The custom administrator title is invalid or too long
 ALBUM_PHOTOS_TOO_MANY	Too many photos were included in the album
 API_ID_INVALID	The api_id/api_hash combination is invalid
 API_ID_PUBLISHED_FLOOD	You are using an API key that is limited on the server side because it was published somewhere
@@ -35,7 +35,7 @@ BOT_SCORE_NOT_MODIFIED	The bot score was not modified
 BROADCAST_ID_INVALID	The channel is invalid
 BROADCAST_PUBLIC_VOTERS_FORBIDDEN	Polls with public voters cannot be sent in channels
 BROADCAST_REQUIRED	The request can only be used with a channel
-BUTTON_DATA_INVALID	The button callback data contains invalid data or exceeds 64 bytes
+BUTTON_DATA_INVALID	The button callback data is invalid or too large
 BUTTON_TYPE_INVALID	The type of one of the buttons you provided is invalid
 BUTTON_URL_INVALID	The button url is invalid
 CALL_ALREADY_ACCEPTED	The call is already accepted
@@ -49,7 +49,7 @@ CHANNEL_ADD_INVALID	Internal error.
 CHANNEL_BANNED	The channel is banned
 CHANNEL_INVALID	The channel parameter is invalid
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
-CHANNEL_TOO_LARGE	The channel is too large to be deleted; this error is issued when trying to delete channels with more than 1000 members (subject to change)
+CHANNEL_TOO_LARGE	The channel is too large
 CHAT_ABOUT_NOT_MODIFIED	The chat about text was not modified because you tried to edit it using the same content
 CHAT_ABOUT_TOO_LONG	The chat about text is too long
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
@@ -109,13 +109,13 @@ FIELD_NAME_EMPTY	The field with the name FIELD_NAME is missing
 FIELD_NAME_INVALID	The field with the name FIELD_NAME is invalid
 FILE_ID_INVALID	The file id is invalid
 FILE_MIGRATE_X	The file is in Data Center No. {value}
-FILE_PARTS_INVALID	Invalid number of parts. The value is not between 1 and 4000
+FILE_PARTS_INVALID	Invalid number of parts.
 FILE_PART_EMPTY	The file part sent is empty
-FILE_PART_INVALID	The file part number is invalid. The value is not between 0 and 3999
+FILE_PART_INVALID	The file part number is invalid.
 FILE_PART_LENGTH_INVALID	The length of a file part is invalid
 FILE_PART_SIZE_CHANGED	The part size is different from the size of one of the previous parts in the same file
-FILE_PART_SIZE_INVALID	512 KB cannot be evenly divided by part_size
-FILE_PART_TOO_BIG	The size limit (512 KB) for the content of the file part has been exceeded
+FILE_PART_SIZE_INVALID	The file part size is invalid
+FILE_PART_TOO_BIG	The size limit for the content of the file part has been exceeded
 FILE_PART_X_MISSING	Part {value} of the file is missing from storage
 FILE_REFERENCE_EMPTY	The file id contains an empty file reference, you must obtain a valid one by fetching the message from the origin context
 FILE_REFERENCE_EXPIRED	The file id contains an expired file reference, you must obtain a valid one by fetching the message from the origin context
@@ -162,7 +162,7 @@ LOCATION_INVALID	The file location is invalid
 MAX_ID_INVALID	The max_id parameter is invalid
 MAX_QTS_INVALID	The provided QTS is invalid
 MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
-MEDIA_CAPTION_TOO_LONG	The media caption is longer than 1024 characters
+MEDIA_CAPTION_TOO_LONG	The media caption is too long
 MEDIA_EMPTY	The media you tried to send is invalid
 MEDIA_INVALID	The media is invalid
 MEDIA_NEW_INVALID	The new media to edit the message with is invalid
@@ -176,7 +176,7 @@ MESSAGE_IDS_EMPTY	The requested message doesn't exist or you provided no message
 MESSAGE_ID_INVALID	The message id is invalid
 MESSAGE_NOT_MODIFIED	The message was not modified because you tried to edit it using the same content
 MESSAGE_POLL_CLOSED	You can't interact with a closed poll
-MESSAGE_TOO_LONG	The message text is over 4096 characters
+MESSAGE_TOO_LONG	The message text is too long
 METHOD_INVALID	The API method is invalid and cannot be used
 MSG_ID_INVALID	The message ID used in the peer was invalid
 MSG_WAIT_FAILED	A waiting call returned an error
@@ -225,7 +225,7 @@ PHOTO_FILE_MISSING	Profile photo file missing
 PHOTO_ID_INVALID	The photo id is invalid
 PHOTO_INVALID	The photo is invalid
 PHOTO_INVALID_DIMENSIONS	The photo dimensions are invalid
-PHOTO_SAVE_FILE_INVALID	The photo you tried to send cannot be saved by Telegram. A reason may be that it exceeds 10 MB. Try resizing it locally
+PHOTO_SAVE_FILE_INVALID	The photo you tried to send cannot be saved by Telegram
 PHOTO_THUMB_URL_EMPTY	The photo thumb URL is empty
 PHOTO_THUMB_URL_INVALID	The photo thumb URL is invalid
 PINNED_DIALOGS_TOO_MUCH	Too many pinned dialogs
@@ -268,9 +268,9 @@ SCHEDULE_BOT_NOT_ALLOWED	Bots are not allowed to schedule messages
 SCHEDULE_DATE_INVALID	Invalid schedule date provided
 SCHEDULE_DATE_TOO_LATE	The date you tried to schedule is too far in the future (more than one year)
 SCHEDULE_STATUS_PRIVATE	You cannot schedule a message until the person comes online if their privacy does not show this information
-SCHEDULE_TOO_MUCH	You cannot schedule more than 100 messages in this chat
+SCHEDULE_TOO_MUCH	You tried to schedule too many messages in this chat
 SEARCH_QUERY_EMPTY	The search query is empty
-SECONDS_INVALID	The seconds interval is invalid, for slow mode try with 0 (off), 10, 30, 60 (1m), 300 (5m), 900 (15m) or 3600 (1h)
+SECONDS_INVALID	The seconds interval is invalid
 SEND_MESSAGE_MEDIA_INVALID	The message media is invalid
 SEND_MESSAGE_TYPE_INVALID	The message type is invalid
 SESSION_TOO_FRESH_X	You can't do this action because the current session was logged-in recently
