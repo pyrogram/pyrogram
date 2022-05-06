@@ -48,7 +48,7 @@ class InlineQueryResultAudio(InlineQueryResult):
             Audio duration in seconds.
 
         caption (``str``, *optional*):
-            Caption of the audio to be sent, 0-1024 characters.
+            Caption of the audio to be sent, 0-4096 characters.
             
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.

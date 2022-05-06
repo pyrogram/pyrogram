@@ -162,7 +162,7 @@ LOCATION_INVALID	The file location is invalid
 MAX_ID_INVALID	The max_id parameter is invalid
 MAX_QTS_INVALID	The provided QTS is invalid
 MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
-MEDIA_CAPTION_TOO_LONG	The media caption is longer than 1024 characters
+MEDIA_CAPTION_TOO_LONG	The media caption is longer than 4096 characters
 MEDIA_EMPTY	The media you tried to send is invalid
 MEDIA_INVALID	The media is invalid
 MEDIA_NEW_INVALID	The new media to edit the message with is invalid
