@@ -76,7 +76,7 @@ class SendDocument:
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             caption (``str``, *optional*):
-                Document caption, 0-1024 characters.
+                Document caption, 0-4096 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.

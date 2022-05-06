@@ -61,7 +61,7 @@ class SendCachedMedia:
                 Pass a file_id as string to send a media that exists on the Telegram servers.
 
             caption (``str``, *optional*):
-                Media caption, 0-1024 characters.
+                Media caption, 0-4096 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.

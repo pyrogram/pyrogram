@@ -43,7 +43,7 @@ class InputMediaAudio(InputMedia):
             Thumbnails can't be reused and can be only uploaded as a new file.
 
         caption (``str``, *optional*):
-            Caption of the audio to be sent, 0-1024 characters.
+            Caption of the audio to be sent, 0-4096 characters.
             If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
