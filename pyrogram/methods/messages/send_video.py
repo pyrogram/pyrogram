@@ -74,7 +74,7 @@ class SendVideo:
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             caption (``str``, *optional*):
-                Video caption, 0-4096 characters.
+                Video caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.

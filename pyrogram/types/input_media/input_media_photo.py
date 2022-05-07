@@ -36,7 +36,7 @@ class InputMediaPhoto(InputMedia):
             pass an HTTP URL as a string for Telegram to get a photo from the Internet.
 
         caption (``str``, *optional*):
-            Caption of the photo to be sent, 0-4096 characters.
+            Caption of the photo to be sent, 0-1024 characters.
             If not specified, the original caption is kept. Pass "" (empty string) to remove the caption.
 
         parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):

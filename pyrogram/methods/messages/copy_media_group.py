@@ -51,7 +51,7 @@ class CopyMediaGroup:
                 Message identifier in the chat specified in *from_chat_id*.
 
             captions (``str`` | List of ``str`` , *optional*):
-                New caption for media, 0-4096 characters after entities parsing for each media.
+                New caption for media, 0-1024 characters after entities parsing for each media.
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
 

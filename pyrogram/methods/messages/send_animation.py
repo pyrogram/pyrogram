@@ -73,7 +73,7 @@ class SendAnimation:
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             caption (``str``, *optional*):
-                Animation caption, 0-4096 characters.
+                Animation caption, 0-1024 characters.
 
             unsave (``bool``, *optional*):
                 By default, the server will save into your own collection any new animation you send.

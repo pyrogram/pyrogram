@@ -177,7 +177,7 @@ class Message(Object, Update):
             Message is a video note, information about the video message.
 
         caption (``str``, *optional*):
-            Caption for the audio, document, photo, video or voice, 0-4096 characters.
+            Caption for the audio, document, photo, video or voice, 0-1024 characters.
             If the message contains caption entities (bold, italic, ...) you can access *caption.markdown* or
             *caption.html* to get the marked up caption text. In case there is no caption entity, the fields
             will contain the same text as *caption*.
@@ -1022,7 +1022,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``str``, *optional*):
-                Animation caption, 0-4096 characters.
+                Animation caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -1161,7 +1161,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``str``, *optional*):
-                Audio caption, 0-4096 characters.
+                Audio caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -1292,7 +1292,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``bool``, *optional*):
-                Media caption, 0-4096 characters.
+                Media caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -1514,7 +1514,7 @@ class Message(Object, Update):
                 Thumbnails can't be reused and can be only uploaded as a new file.
 
             caption (``str``, *optional*):
-                Document caption, 0-4096 characters.
+                Document caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -1916,7 +1916,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``str``, *optional*):
-                Photo caption, 0-4096 characters.
+                Photo caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -2387,7 +2387,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``str``, *optional*):
-                Video caption, 0-4096 characters.
+                Video caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -2651,7 +2651,7 @@ class Message(Object, Update):
                 Defaults to ``True`` in group chats and ``False`` in private chats.
 
             caption (``str``, *optional*):
-                Voice message caption, 0-4096 characters.
+                Voice message caption, 0-1024 characters.
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -3007,7 +3007,7 @@ class Message(Object, Update):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             caption (``string``, *optional*):
-                New caption for media, 0-4096 characters after entities parsing.
+                New caption for media, 0-1024 characters after entities parsing.
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
 
