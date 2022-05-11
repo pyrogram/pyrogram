@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from typing import Union, List, Optional, AsyncGenerator
+from typing import Union, List, Optional, AsyncGenerator, BinaryIO
 
 import pyrogram
 from pyrogram import raw, enums
@@ -477,7 +477,13 @@ class Chat(Object):
             description=description
         )
 
-    async def set_photo(self, photo: str) -> bool:
+    async def set_photo(
+        self,
+        *,
+        photo: Union[str, BinaryIO] = None,
+        video: Union[str, BinaryIO] = None,
+        video_start_ts: float = None,
+    ) -> bool:
         """Bound method *set_photo* of :obj:`~pyrogram.types.Chat`.
 
         Use as a shortcut for:
@@ -492,11 +498,32 @@ class Chat(Object):
         Example:
             .. code-block:: python
 
-                await chat.set_photo("photo.png")
+                # Set chat photo using a local file
+                await chat.set_photo(photo="photo.jpg")
+
+                # Set chat photo using an existing Photo file_id
+                await chat.set_photo(photo=photo.file_id)
+
+
+                # Set chat video using a local file
+                await chat.set_photo(video="video.mp4")
+
+                # Set chat photo using an existing Video file_id
+                await chat.set_photo(video=video.file_id)
 
         Parameters:
-            photo (``str``):
-                New chat photo. You can pass a :obj:`~pyrogram.types.Photo` id or a file path to upload a new photo.
+            photo (``str`` | ``BinaryIO``, *optional*):
+                New chat photo. You can pass a :obj:`~pyrogram.types.Photo` file_id, a file path to upload a new photo
+                from your local machine or a binary file-like object with its attribute
+                ".name" set for in-memory uploads.
+
+            video (``str`` | ``BinaryIO``, *optional*):
+                New chat video. You can pass a :obj:`~pyrogram.types.Video` file_id, a file path to upload a new video
+                from your local machine or a binary file-like object with its attribute
+                ".name" set for in-memory uploads.
+
+            video_start_ts (``float``, *optional*):
+                The timestamp in seconds of the video frame to use as photo profile preview.
 
         Returns:
             ``bool``: True on success.
@@ -508,7 +535,9 @@ class Chat(Object):
 
         return await self._client.set_chat_photo(
             chat_id=self.id,
-            photo=photo
+            photo=photo,
+            video=video,
+            video_start_ts=video_start_ts
         )
 
     async def ban_member(

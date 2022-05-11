@@ -369,7 +369,7 @@ class ChatEvent(Object):
         elif isinstance(action, raw.types.ChannelAdminLogEventActionParticipantToggleAdmin):
             old_administrator_privileges = types.ChatMember._parse(client, action.prev_participant, users, chats)
             new_administrator_privileges = types.ChatMember._parse(client, action.new_participant, users, chats)
-            action = enums.ChatEventAction.ADMIN_RIGHTS_CHANGED
+            action = enums.ChatEventAction.ADMINISTRATOR_PRIVILEGES_CHANGED
 
         elif isinstance(action, raw.types.ChannelAdminLogEventActionParticipantToggleBan):
             old_member_permissions = types.ChatMember._parse(client, action.prev_participant, users, chats)

@@ -16,7 +16,7 @@ The following shows how to catch the exception in your code and wait the require
       try:
           ...  # Your code
       except FloodWait as e:
-          await asyncio.sleep(e.x)  # Wait "x" seconds before continuing
+          await asyncio.sleep(e.value)  # Wait "value" seconds before continuing
   ...
 
 

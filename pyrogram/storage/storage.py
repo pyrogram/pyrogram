@@ -17,7 +17,6 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import base64
-import lzma
 import struct
 from typing import List, Tuple
 

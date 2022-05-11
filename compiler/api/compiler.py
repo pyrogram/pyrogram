@@ -378,7 +378,7 @@ def start(format: bool = False):
         else:
             docstring += f"Telegram API method.\n\n"
 
-        docstring += f"    Details:\n        - Layer: ``{layer}``\n        - ID: ``{c.id}``\n\n"
+        docstring += f"    Details:\n        - Layer: ``{layer}``\n        - ID: ``{c.id[2:].upper()}``\n\n"
 
         if docstring_args:
             docstring += "    Parameters:\n        " + "\n        ".join(docstring_args)
