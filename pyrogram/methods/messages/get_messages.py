@@ -63,8 +63,8 @@ class GetMessages:
                 Defaults to 1.
 
         Returns:
-            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was not a list,
-            a single message is returned, otherwise a list of messages is returned.
+            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was not
+            a list, a single message is returned, otherwise a list of messages is returned.
 
         Example:
             .. code-block:: python
