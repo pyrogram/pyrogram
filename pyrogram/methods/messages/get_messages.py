@@ -116,4 +116,4 @@ class GetMessages:
 
         messages = await utils.parse_messages(self, r, replies=replies)
 
-        return messages if is_list else messages[0]
+        return messages if is_list else messages[0] if messages else None
