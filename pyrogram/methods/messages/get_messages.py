@@ -63,9 +63,8 @@ class GetMessages:
                 Defaults to 1.
 
         Returns:
-            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was an
-            integer, the single requested message is returned, otherwise, in case *message_ids* was an list, the
-            returned value will be a list of messages, even if such list contained just a single element.
+            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was not a list,
+            a single message is returned, otherwise a list of messages is returned.
 
         Example:
             .. code-block:: python
