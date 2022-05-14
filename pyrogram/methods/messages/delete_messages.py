@@ -28,7 +28,7 @@ class DeleteMessages:
         chat_id: Union[int, str],
         message_ids: Union[int, List[int]],
         revoke: bool = True
-    ) -> bool:
+    ) -> int:
         """Delete messages, including service messages.
 
         Parameters:
@@ -81,6 +81,6 @@ class DeleteMessages:
                 )
             )
 
-        # Deleting messages you don't have right onto, won't raise any error.
+        # Deleting messages you don't have right onto won't raise any error.
         # Check for pts_count, which is 0 in case deletes fail.
         return r.pts_count
