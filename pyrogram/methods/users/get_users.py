@@ -38,9 +38,8 @@ class GetUsers:
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
         Returns:
-            :obj:`~pyrogram.types.User` | List of :obj:`~pyrogram.types.User`: In case *user_ids* was an integer or
-            string the single requested user is returned, otherwise, in case *user_ids* was a list of users
-            is returned, even if the list contained one item only.
+            :obj:`~pyrogram.types.User` | List of :obj:`~pyrogram.types.User`: In case *user_ids* was not a list,
+            a single user is returned, otherwise a list of users is returned.
 
         Example:
             .. code-block:: python
