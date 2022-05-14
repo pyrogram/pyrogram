@@ -351,9 +351,11 @@ class Session:
             pass
 
         if isinstance(query, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
-            query = query.query
+            inner_query = query.query
+        else:
+            inner_query = query
 
-        query_name = ".".join(query.QUALNAME.split(".")[1:])
+        query_name = ".".join(inner_query.QUALNAME.split(".")[1:])
 
         while True:
             try:
