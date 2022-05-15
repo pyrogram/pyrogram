@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union, List
+from typing import Union, List, Iterable
 
 import pyrogram
 from pyrogram import raw
@@ -34,8 +34,8 @@ class GetMessages:
     async def get_messages(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        message_ids: Union[int, List[int]] = None,
-        reply_to_message_ids: Union[int, List[int]] = None,
+        message_ids: Union[int, Iterable[int]] = None,
+        reply_to_message_ids: Union[int, Iterable[int]] = None,
         replies: int = 1
     ) -> Union["types.Message", List["types.Message"]]:
         """Get one or more messages from a chat by using message identifiers.
@@ -48,12 +48,12 @@ class GetMessages:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``int`` | List of ``int``, *optional*):
-                Pass a single message identifier or a list of message ids (as integers) to get the content of the
+            message_ids (``int`` | Iterable of ``int``, *optional*):
+                Pass a single message identifier or an iterable of message ids (as integers) to get the content of the
                 message themselves.
 
-            reply_to_message_ids (``int`` | List of ``int``, *optional*):
-                Pass a single message identifier or a list of message ids (as integers) to get the content of
+            reply_to_message_ids (``int`` | Iterable of ``int``, *optional*):
+                Pass a single message identifier or an iterable of message ids (as integers) to get the content of
                 the previous message you replied to using this message.
                 If *message_ids* is set, this argument will be ignored.
 
@@ -98,10 +98,8 @@ class GetMessages:
 
         peer = await self.resolve_peer(chat_id)
 
-        is_list = isinstance(ids, list)
-        if not is_list:
-            ids = [ids]
-
+        is_iterable = not isinstance(ids, int)
+        ids = list(ids) if is_iterable else [ids]
         ids = [ids_type(id=i) for i in ids]
 
         if replies < 0:
@@ -116,4 +114,4 @@ class GetMessages:
 
         messages = await utils.parse_messages(self, r, replies=replies)
 
-        return messages if is_list else messages[0] if messages else None
+        return messages if is_iterable else messages[0] if messages else None

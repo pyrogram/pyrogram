@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from typing import Union, List
+from typing import Union, List, Iterable
 
 import pyrogram
 from pyrogram import raw, utils
@@ -29,7 +29,7 @@ class ForwardMessages:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
-        message_ids: Union[int, List[int]],
+        message_ids: Union[int, Iterable[int]],
         disable_notification: bool = None,
         schedule_date: datetime = None,
         protect_content: bool = None
@@ -47,8 +47,8 @@ class ForwardMessages:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``int`` | List of ``int``):
-                A list of Message identifiers in the chat specified in *from_chat_id* or a single message id.
+            message_ids (``int`` | Iterable of ``int``):
+                An iterable of message identifiers in the chat specified in *from_chat_id* or a single message id.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
@@ -74,9 +74,8 @@ class ForwardMessages:
                 await app.forward_messages(to_chat, from_chat, [1, 2, 3])
         """
 
-        is_list = isinstance(message_ids, list)
-        if not is_list:
-            message_ids = [message_ids]
+        is_iterable = not isinstance(message_ids, int)
+        message_ids = list(message_ids) if is_iterable else [message_ids]
 
         r = await self.invoke(
             raw.functions.messages.ForwardMessages(
@@ -106,4 +105,4 @@ class ForwardMessages:
                     )
                 )
 
-        return types.List(forwarded_messages) if is_list else forwarded_messages[0]
+        return types.List(forwarded_messages) if is_iterable else forwarded_messages[0]
