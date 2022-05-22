@@ -34,16 +34,17 @@ class Connection:
         1: TCPAbridged,
         2: TCPIntermediate,
         3: TCPAbridgedO,
-        4: TCPIntermediateO
+        4: TCPIntermediateO,
+        5: WEBSOCKETAbridgedO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 5, websocket_endpoint: bool = True):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
         self.proxy = proxy
         self.media = media
-        self.address = DataCenter(dc_id, test_mode, ipv6, media)
+        self.address = DataCenter(dc_id, test_mode, ipv6, media, websocket_endpoint)
         self.mode = self.MODES.get(mode, TCPAbridged)
 
         self.protocol = None  # type: TCP
@@ -51,9 +52,8 @@ class Connection:
     async def connect(self):
         for i in range(Connection.MAX_RETRIES):
             self.protocol = self.mode(self.ipv6, self.proxy)
-
             try:
-                log.info("Connecting...")
+                log.info(f"Connecting to {self.address}...")
                 await self.protocol.connect(self.address)
             except OSError as e:
                 log.warning(f"Unable to connect due to network issues: {e}")

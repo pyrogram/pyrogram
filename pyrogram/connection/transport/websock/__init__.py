@@ -16,5 +16,5 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .tcp import *
-from .websock import *
+from .websock import WEBSOCKET
+from .websocket_abridged_o import WEBSOCKETAbridgedO

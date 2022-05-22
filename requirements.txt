@@ -1,2 +1,4 @@
 pyaes==1.6.1
 pysocks==1.7.1
+websocket-client==1.3.2
+python_socks==2.0.3

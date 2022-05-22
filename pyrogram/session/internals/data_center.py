@@ -58,8 +58,18 @@ class DataCenter:
         4: "2001:067c:04e8:f004:0000:0000:0000:000b"
     }
 
-    def __new__(cls, dc_id: int, test_mode: bool, ipv6: bool, media: bool) -> Tuple[str, int]:
+    WEBSOCKET = {
+        1: "pluto.web.telegram.org",
+        2: "venus.web.telegram.org",
+        3: "aurora.web.telegram.org",
+        4: "vesta.web.telegram.org",
+        5: "flora.web.telegram.org"
+    }
+
+    def __new__(cls, dc_id: int, test_mode: bool, ipv6: bool, media: bool, websocket: bool) -> Tuple[str, int]:
         if test_mode:
+            if websocket:
+                return cls.WEBSOCKET[dc_id], 80
             if ipv6:
                 ip = cls.TEST_IPV6[dc_id]
             else:
@@ -67,6 +77,8 @@ class DataCenter:
 
             return ip, 80
         else:
+            if websocket:
+                return cls.WEBSOCKET[dc_id], 443
             if ipv6:
                 if media:
                     ip = cls.PROD_IPV6_MEDIA.get(dc_id, cls.PROD_IPV6[dc_id])
