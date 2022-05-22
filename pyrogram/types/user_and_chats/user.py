@@ -158,7 +158,7 @@ class User(Object, Update):
         is_support: bool = None,
         first_name: str = None,
         last_name: str = None,
-        status: str = None,
+        status: "enums.UserStatus" = None,
         last_online_date: datetime = None,
         next_offline_date: datetime = None,
         username: str = None,
