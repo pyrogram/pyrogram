@@ -38,7 +38,7 @@ class Connection:
         5: WEBSOCKETAbridgedO
     }
 
-    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 5, websocket_endpoint: bool = True):
+    def __init__(self, dc_id: int, test_mode: bool, ipv6: bool, proxy: dict, media: bool = False, mode: int = 3, websocket_endpoint: bool = False):
         self.dc_id = dc_id
         self.test_mode = test_mode
         self.ipv6 = ipv6
