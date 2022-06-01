@@ -64,6 +64,16 @@ class WEBSOCKET:
             self.http_proxy_port=""
 
         self.data_buffer=b''
+        self.isconnected=False
+
+    async def pingtask(self):
+        try:
+            log.info(f"starting websocket ping task")
+            while self.isconnected:
+                await asyncio.to_thread(self.socket.ping)
+                await asyncio.sleep(30)
+        except Exception as e:
+            log.error(f'{type(e).__name__}: {e}')
 
     async def connect(self, address: tuple):
         try:
@@ -72,6 +82,8 @@ class WEBSOCKET:
                 await asyncio.to_thread(self.socket.connect,f"{scheme}://{address[0]}:{address[1]}/apiws", http_proxy_host=self.http_proxy_host, http_proxy_port=self.http_proxy_port, proxy_type=self.proxy_type, timeout=WEBSOCKET.TIMEOUT)
             else:
                 await asyncio.to_thread(self.socket.connect,f"{scheme}://{address[0]}:{address[1]}/apiws",timeout=WEBSOCKET.TIMEOUT)
+            self.isconnected=True
+            asyncio.create_task(pingtask())
         except (WebSocketException,ProxyError,ProxyTimeoutError,ProxyConnectionError) as e:
             raise OSError(extract_err_message(e))
         except Exception as e:
@@ -79,6 +91,7 @@ class WEBSOCKET:
             raise e
 
     def close(self):
+        self.isconnected=False
         try:
             self.socket.close()
         except (WebSocketException,ProxyError,ProxyTimeoutError,ProxyConnectionError) as e:
