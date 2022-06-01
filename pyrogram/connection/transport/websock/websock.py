@@ -83,7 +83,7 @@ class WEBSOCKET:
             else:
                 await asyncio.to_thread(self.socket.connect,f"{scheme}://{address[0]}:{address[1]}/apiws",timeout=WEBSOCKET.TIMEOUT)
             self.isconnected=True
-            asyncio.create_task(pingtask())
+            asyncio.create_task(self.pingtask())
         except (WebSocketException,ProxyError,ProxyTimeoutError,ProxyConnectionError) as e:
             raise OSError(extract_err_message(e))
         except Exception as e:
