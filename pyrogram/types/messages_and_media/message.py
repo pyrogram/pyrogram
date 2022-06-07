@@ -133,7 +133,7 @@ class Message(Object, Update):
             Signature of the post author for messages in channels, or the custom title of an anonymous group
             administrator.
 
-        has_protected_content (``str``, *optional*):
+        has_protected_content (``bool``, *optional*):
             True, if the message can't be forwarded.
 
         text (``str``, *optional*):
