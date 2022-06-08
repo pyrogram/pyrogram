@@ -31,7 +31,7 @@ class GetInlineBotResults:
         offset: str = "",
         latitude: float = None,
         longitude: float = None
-    ):
+    ) -> raw.types.messages.BotResults:
         """Get bot results via inline queries.
         You can then send a result using :meth:`~pyrogram.Client.send_inline_bot_result`
 
@@ -56,7 +56,7 @@ class GetInlineBotResults:
                 Useful for location-based results only.
 
         Returns:
-            :obj:`BotResults <pyrogram.api.types.messages.BotResults>`: On Success.
+            :obj:`BotResults <pyrogram.raw.types.messages.BotResults>`: On Success.
 
         Raises:
             TimeoutError: In case the bot fails to answer within 10 seconds.

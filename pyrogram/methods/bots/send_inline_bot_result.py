@@ -20,6 +20,7 @@ from typing import Union
 
 import pyrogram
 from pyrogram import raw
+from pyrogram import types
 
 
 class SendInlineBotResult:
@@ -29,8 +30,8 @@ class SendInlineBotResult:
         query_id: int,
         result_id: str,
         disable_notification: bool = None,
-        reply_to_message_id: int = None
-    ):
+        reply_to_message_id: int = None,
+    ) -> "types.Message":
         """Send an inline bot result.
         Bot results can be retrieved using :meth:`~pyrogram.Client.get_inline_bot_results`
 
@@ -61,13 +62,23 @@ class SendInlineBotResult:
 
                 await app.send_inline_bot_result(chat_id, query_id, result_id)
         """
-        return await self.invoke(
+
+        r = await self.invoke(
             raw.functions.messages.SendInlineBotResult(
                 peer=await self.resolve_peer(chat_id),
                 query_id=query_id,
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id
+                reply_to_msg_id=reply_to_message_id,
             )
         )
+
+        for i in r.updates:
+            if isinstance(i, (raw.types.UpdateNewMessage, raw.types.UpdateNewChannelMessage)):
+                return await types.Message._parse(
+                    self,
+                    i.message,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats},
+                )
