@@ -103,7 +103,7 @@ class Object:
             obj = state[attr]
 
             # Maybe a better alternative would be https://docs.python.org/3/library/inspect.html#inspect.signature
-            if isinstance(obj, tuple) and obj[0] == "dt":
+            if isinstance(obj, tuple) and len(obj) == 2 and obj[0] == "dt":
                 state[attr] = datetime.fromtimestamp(obj[1])
 
         self.__dict__ = state
