@@ -98,7 +98,24 @@ class Object:
 
         return True
 
+    def __setstate__(self, state):
+        for attr in state:
+            obj = state[attr]
+
+            # Maybe a better alternative would be https://docs.python.org/3/library/inspect.html#inspect.signature
+            if isinstance(obj, tuple) and obj[0] == "dt":
+                state[attr] = datetime.fromtimestamp(obj[1])
+
+        self.__dict__ = state
+
     def __getstate__(self):
         new_dict = self.__dict__.copy()
         new_dict.pop("_client", None)
+
+        for attr in new_dict:
+            obj = new_dict[attr]
+
+            if isinstance(obj, datetime):
+                new_dict[attr] = ("dt", obj.timestamp())
+
         return new_dict
