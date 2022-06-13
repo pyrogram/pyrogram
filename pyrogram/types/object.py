@@ -109,13 +109,13 @@ class Object:
         self.__dict__ = state
 
     def __getstate__(self):
-        new_dict = self.__dict__.copy()
-        new_dict.pop("_client", None)
+        state = self.__dict__.copy()
+        state.pop("_client", None)
 
-        for attr in new_dict:
-            obj = new_dict[attr]
+        for attr in state:
+            obj = state[attr]
 
             if isinstance(obj, datetime):
-                new_dict[attr] = ("dt", obj.timestamp())
+                state[attr] = ("dt", obj.timestamp())
 
-        return new_dict
+        return state
