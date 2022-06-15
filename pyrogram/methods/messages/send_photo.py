@@ -131,7 +131,7 @@ class SendPhoto:
                 await app.send_photo("me", "photo.jpg")
 
                 # Send photo by uploading from URL
-                await app.send_photo("me", "https://example.com/example.jpg)
+                await app.send_photo("me", "https://example.com/example.jpg")
 
                 # Add caption to a photo
                 await app.send_photo("me", "photo.jpg", caption="Caption")
