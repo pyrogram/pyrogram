@@ -46,5 +46,6 @@ class Initialize:
 
         await self.dispatcher.start()
 
-        self.username = (await self.get_me()).username
+        self.me = await self.get_me()
+
         self.is_initialized = True
