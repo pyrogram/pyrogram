@@ -125,8 +125,10 @@ class SaveFile:
         if file_size == 0:
             raise ValueError("File size equals to 0 B")
 
-        if file_size > 2000 * 1024 * 1024:
-            raise ValueError("Telegram doesn't support uploading files bigger than 2000 MiB")
+        file_size_limit_mib = 4000 if self.me.is_premium else 2000
+
+        if file_size > file_size_limit_mib * 1024 * 1024:
+            raise ValueError(f"Can't upload files bigger than {file_size_limit_mib} MiB")
 
         file_total_parts = int(math.ceil(file_size / part_size))
         is_big = file_size > 10 * 1024 * 1024
