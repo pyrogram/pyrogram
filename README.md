@@ -5,6 +5,10 @@
     <br>
     <b>Telegram MTProto API Framework for Python</b>
     <br>
+    <a href="https://pyrogram.org">
+        Homepage
+    </a>
+    •
     <a href="https://docs.pyrogram.org">
         Documentation
     </a>
