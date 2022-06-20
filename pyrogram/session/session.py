@@ -189,7 +189,6 @@ class Session:
                 self.stored_msg_ids
             )
         except SecurityCheckMismatch:
-            self.connection.close()
             return
 
         messages = (
