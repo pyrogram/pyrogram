@@ -49,13 +49,15 @@ async def compose(
 
 
             async def main():
-                app1 = Client("account1")
-                app2 = Client("account2")
-                app3 = Client("account3")
+                apps = [
+                    Client("account1"),
+                    Client("account2"),
+                    Client("account3")
+                ]
 
                 ...
 
-                await compose([app1, app2, app3])
+                await compose(apps)
 
 
             asyncio.run(main())
