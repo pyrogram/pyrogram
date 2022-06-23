@@ -726,7 +726,13 @@ class Client(Methods):
 
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
-        file = BytesIO() if in_memory else tempfile.NamedTemporaryFile("wb", delete=False)
+
+        if in_memory:
+            file = BytesIO() 
+        else:
+            file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
+            os.makedirs(directory, exist_ok=True)
+            file = open(file_path, "wb")
 
         try:
             async for chunk in self.get_file(file_id, file_size, 0, 0, progress, progress_args):
@@ -742,10 +748,7 @@ class Client(Methods):
                 file.name = file_name
                 return file
             else:
-                file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
-                os.makedirs(directory, exist_ok=True)
                 file.close()
-                shutil.move(file.name, file_path)
                 return file_path
 
     async def get_file(
