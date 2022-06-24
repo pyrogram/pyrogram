@@ -52,13 +52,13 @@ class Session:
     PING_INTERVAL = 5
 
     def __init__(
-        self,
-        client: "pyrogram.Client",
-        dc_id: int,
-        auth_key: bytes,
-        test_mode: bool,
-        is_media: bool = False,
-        is_cdn: bool = False
+            self,
+            client: "pyrogram.Client",
+            dc_id: int,
+            auth_key: bytes,
+            test_mode: bool,
+            is_media: bool = False,
+            is_cdn: bool = False
     ):
         self.client = client
         self.dc_id = dc_id
@@ -92,7 +92,16 @@ class Session:
         self.loop = asyncio.get_event_loop()
 
     async def start(self):
+        max_retries = 0
         while True:
+
+            if max_retries == self.MAX_RETRIES:
+                log.info(f"TIMEOUT {self.WAIT_TIMEOUT} ")
+                await asyncio.sleep(self.WAIT_TIMEOUT)
+                max_retries = 0
+
+
+
             self.connection = Connection(
                 self.dc_id,
                 self.test_mode,
@@ -136,6 +145,7 @@ class Session:
                 await self.stop()
                 raise e
             except (OSError, TimeoutError, RPCError):
+                max_retries += 1
                 await self.stop()
             except Exception as e:
                 await self.stop()
@@ -339,11 +349,11 @@ class Session:
                 return result
 
     async def invoke(
-        self,
-        query: TLObject,
-        retries: int = MAX_RETRIES,
-        timeout: float = WAIT_TIMEOUT,
-        sleep_threshold: float = SLEEP_THRESHOLD
+            self,
+            query: TLObject,
+            retries: int = MAX_RETRIES,
+            timeout: float = WAIT_TIMEOUT,
+            sleep_threshold: float = SLEEP_THRESHOLD
     ):
         try:
             await asyncio.wait_for(self.is_connected.wait(), self.WAIT_TIMEOUT)
