@@ -147,6 +147,10 @@ class Session:
             except (OSError, TimeoutError, RPCError):
                 max_retries += 1
                 await self.stop()
+            except SystemError as e:
+                log.info(e)
+                await self.stop()
+                break
             except Exception as e:
                 await self.stop()
                 raise e

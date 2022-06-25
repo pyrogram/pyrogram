@@ -70,7 +70,13 @@ class Connection:
                 break
         else:
             log.warning("Connection failed! Trying again...")
+
+            if self.proxy:
+                raise SystemError("Proxy invalid")
+
             raise TimeoutError
+
+
 
     def close(self):
         self.protocol.close()

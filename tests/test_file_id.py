@@ -192,3 +192,4 @@ def test_stringify_file_unique_id():
     string = "{'file_unique_type': <FileUniqueType.DOCUMENT: 2>, 'media_id': 5312458109417947140}"
 
     assert str(FileUniqueId.decode(file_unique_id)) == string
+
