@@ -129,7 +129,7 @@ class Session:
                 await self.send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT)
 
                 if not self.is_cdn:
-                    await asyncio.create_task(await self.send(
+                    await asyncio.create_task(self.send(
                         raw.functions.InvokeWithLayer(
                             layer=layer,
                             query=raw.functions.InitConnection(
