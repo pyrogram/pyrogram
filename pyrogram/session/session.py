@@ -97,6 +97,8 @@ class Session:
         while True:
 
             if _max_retries % 10 == 0:
+                log.info(f"TIMEOUT {self.WAIT_TIMEOUT * (_max_retries / 10)}")
+
                 await asyncio.sleep(
                     self.WAIT_TIMEOUT * (_max_retries / 10)
                 )
@@ -120,7 +122,7 @@ class Session:
             )
 
             try:
-                await self.connection.connect()
+                await asyncio.create_task(self.connection.connect())
 
                 self.network_task = self.loop.create_task(self.network_worker())
 
