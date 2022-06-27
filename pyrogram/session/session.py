@@ -105,6 +105,7 @@ class Session:
 {"_"*10}
 TIMEOUT - {timeout}
 QUANTITY_TIMEOUT - {q_timeout}
+
 {"_"*10}          
                     """
                 )
