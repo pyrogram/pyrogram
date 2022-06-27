@@ -93,12 +93,21 @@ class Session:
 
     async def start(self):
         max_retries = 0
+        _max_retries = max_retries
         while True:
 
-            if max_retries == self.MAX_RETRIES:
+            if _max_retries % 10 == 0:
+                await asyncio.sleep(
+                    self.WAIT_TIMEOUT * (_max_retries / 10)
+                )
+                max_retries = 0
+
+            if max_retries % self.MAX_RETRIES == 0:
                 log.info(f"TIMEOUT {self.WAIT_TIMEOUT} ")
                 await asyncio.sleep(self.WAIT_TIMEOUT)
                 max_retries = 0
+
+
 
 
 
@@ -146,6 +155,7 @@ class Session:
                 raise e
             except (OSError, TimeoutError, RPCError):
                 max_retries += 1
+                _max_retries += 1
                 await self.stop()
             except SystemError as e:
                 log.info(e)
