@@ -44,7 +44,7 @@ class Result:
 
 
 class Session:
-    START_TIMEOUT = 5
+    START_TIMEOUT = 1
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 10
     MAX_RETRIES = 5
@@ -93,25 +93,25 @@ class Session:
 
     async def start(self):
         max_retries = 0
-        _max_retries = max_retries
+        q_timeout = 0
+
         while True:
 
-            if _max_retries % 10 == 0:
-                log.info(f"TIMEOUT {self.WAIT_TIMEOUT * (_max_retries / 10)}")
-
+            if max_retries == 5:
+                q_timeout += 1
+                timeout = self.WAIT_TIMEOUT * q_timeout
+                log.info(
+                    f"""
+{"_"*10}
+TIMEOUT - {timeout}
+QUANTITY_TIMEOUT - {q_timeout}
+{"_"*10}          
+                    """
+                )
                 await asyncio.sleep(
-                    self.WAIT_TIMEOUT * (_max_retries / 10)
+                    timeout
                 )
                 max_retries = 0
-
-            if max_retries % self.MAX_RETRIES == 0:
-                log.info(f"TIMEOUT {self.WAIT_TIMEOUT} ")
-                await asyncio.sleep(self.WAIT_TIMEOUT)
-                max_retries = 0
-
-
-
-
 
             self.connection = Connection(
                 self.dc_id,
@@ -123,10 +123,8 @@ class Session:
 
             try:
                 await asyncio.create_task(self.connection.connect())
-
                 self.network_task = self.loop.create_task(self.network_worker())
-
-                await self.send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT)
+                await asyncio.create_task(self.send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT))
 
                 if not self.is_cdn:
                     await asyncio.create_task(self.send(
@@ -157,7 +155,6 @@ class Session:
                 raise e
             except (OSError, TimeoutError, RPCError):
                 max_retries += 1
-                _max_retries += 1
                 await self.stop()
             except SystemError as e:
                 log.info(e)
