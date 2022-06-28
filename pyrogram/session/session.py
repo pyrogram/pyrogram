@@ -94,25 +94,24 @@ class Session:
     async def start(self):
         max_retries = 0
         q_timeout = 0
+        request_timeout = 0
 
         while True:
 
-            if max_retries == 5:
-                q_timeout += 1
-                timeout = self.WAIT_TIMEOUT * q_timeout
-                log.info(
-                    f"""
-{"_"*10}
-TIMEOUT - {timeout}
-QUANTITY_TIMEOUT - {q_timeout}
-
-{"_"*10}          
-                    """
-                )
-                await asyncio.sleep(
-                    timeout
-                )
-                max_retries = 0
+#             if max_retries == 5:
+#                 q_timeout += 1
+#                 timeout = self.WAIT_TIMEOUT * q_timeout
+#                 log.info(
+#                     f"""
+# {"_" * 10}
+# TIMEOUT - {timeout}
+# QUANTITY_TIMEOUT - {q_timeout}
+# {"_" * 10}           """
+#                 )
+#                 await asyncio.sleep(
+#                     timeout
+#                 )
+#                 max_retries = 3
 
             self.connection = Connection(
                 self.dc_id,
@@ -123,12 +122,13 @@ QUANTITY_TIMEOUT - {q_timeout}
             )
 
             try:
-                await asyncio.create_task(self.connection.connect())
+                await asyncio.sleep(request_timeout)
+                await self.connection.connect()
                 self.network_task = self.loop.create_task(self.network_worker())
-                await asyncio.create_task(self.send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT))
+                await self.send(raw.functions.Ping(ping_id=0), timeout=self.START_TIMEOUT)
 
                 if not self.is_cdn:
-                    await asyncio.create_task(self.send(
+                    await self.send(
                         raw.functions.InvokeWithLayer(
                             layer=layer,
                             query=raw.functions.InitConnection(
@@ -143,7 +143,7 @@ QUANTITY_TIMEOUT - {q_timeout}
                             )
                         ),
                         timeout=self.START_TIMEOUT
-                    ))
+                    )
 
                 self.ping_task = self.loop.create_task(self.ping_worker())
 
@@ -156,6 +156,7 @@ QUANTITY_TIMEOUT - {q_timeout}
                 raise e
             except (OSError, TimeoutError, RPCError):
                 max_retries += 1
+                request_timeout += 1
                 await self.stop()
             except SystemError as e:
                 log.info(e)
