@@ -344,7 +344,7 @@ async def parse_text_entities(
 
     return {
         "message": text,
-        "entities": entities
+        "entities": list(filter(lambda x:x.length > 0, entities))
     }
 
 
