@@ -140,6 +140,8 @@ class HTML:
 
             entities.append(entity)
 
+        entities = list(filter(lambda x: x.length > 0, entities))
+
         return {
             "message": utils.remove_surrogates(parser.text),
             "entities": sorted(entities, key=lambda e: e.offset)
@@ -156,13 +158,21 @@ class HTML:
             start = entity.offset
             end = start + entity.length
 
-            if entity_type in (MessageEntityType.BOLD, MessageEntityType.ITALIC, MessageEntityType.UNDERLINE,
-                               MessageEntityType.STRIKETHROUGH):
+            if entity_type in (
+                MessageEntityType.BOLD,
+                MessageEntityType.ITALIC,
+                MessageEntityType.UNDERLINE,
+                MessageEntityType.STRIKETHROUGH,
+            ):
                 name = entity_type.name[0].lower()
                 start_tag = f"<{name}>"
                 end_tag = f"</{name}>"
-            elif entity_type in (MessageEntityType.CODE, MessageEntityType.PRE, MessageEntityType.BLOCKQUOTE,
-                                 MessageEntityType.SPOILER):
+            elif entity_type in (
+                MessageEntityType.CODE,
+                MessageEntityType.PRE,
+                MessageEntityType.BLOCKQUOTE,
+                MessageEntityType.SPOILER,
+            ):
                 name = entity_type.name.lower()
                 start_tag = f"<{name}>"
                 end_tag = f"</{name}>"
