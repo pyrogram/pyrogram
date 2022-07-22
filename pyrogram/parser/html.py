@@ -140,6 +140,7 @@ class HTML:
 
             entities.append(entity)
 
+        # Remove zero-length entities
         entities = list(filter(lambda x: x.length > 0, entities))
 
         return {
