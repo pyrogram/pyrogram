@@ -267,7 +267,8 @@ def xor(a: bytes, b: bytes) -> bytes:
 
 
 def compute_password_hash(
-    algo: raw.types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow, password: str
+    algo: raw.types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow,
+    password: str
 ) -> bytes:
     hash1 = sha256(algo.salt1 + password.encode() + algo.salt1)
     hash2 = sha256(algo.salt2 + hash1 + algo.salt2)
@@ -277,7 +278,10 @@ def compute_password_hash(
 
 
 # noinspection PyPep8Naming
-def compute_password_check(r: raw.types.account.Password, password: str) -> raw.types.InputCheckPasswordSRP:
+def compute_password_check(
+    r: raw.types.account.Password,
+    password: str
+) -> raw.types.InputCheckPasswordSRP:
     algo = r.current_algo
 
     p_bytes = algo.p
