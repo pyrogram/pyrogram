@@ -85,7 +85,9 @@ def get_input_media_from_file_id(
 
 
 async def parse_messages(
-    client, messages: "raw.types.messages.Messages", replies: int = 1
+    client,
+    messages: "raw.types.messages.Messages",
+    replies: int = 1
 ) -> List["types.Message"]:
     users = {i.id: i for i in messages.users}
     chats = {i.id: i for i in messages.chats}
