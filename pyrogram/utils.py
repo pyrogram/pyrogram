@@ -48,8 +48,10 @@ def get_input_media_from_file_id(
     try:
         decoded = FileId.decode(file_id)
     except Exception:
-        raise ValueError(f'Failed to decode "{file_id}". The value does not represent an existing local file, '
-                         f'HTTP URL, or valid file id.')
+        raise ValueError(
+            f'Failed to decode "{file_id}". The value does not represent an existing local file, '
+            f"HTTP URL, or valid file id."
+        )
 
     file_type = decoded.file_type
 
@@ -82,7 +84,11 @@ def get_input_media_from_file_id(
     raise ValueError(f"Unknown file id: {file_id}")
 
 
-async def parse_messages(client, messages: "raw.types.messages.Messages", replies: int = 1) -> List["types.Message"]:
+async def parse_messages(
+    client,
+    messages: "raw.types.messages.Messages",
+    replies: int = 1
+) -> List["types.Message"]:
     users = {i.id: i for i in messages.users}
     chats = {i.id: i for i in messages.chats}
 
@@ -260,8 +266,10 @@ def xor(a: bytes, b: bytes) -> bytes:
     return bytes(i ^ j for i, j in zip(a, b))
 
 
-def compute_password_hash(algo: raw.types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow,
-                          password: str) -> bytes:
+def compute_password_hash(
+    algo: raw.types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow,
+    password: str
+) -> bytes:
     hash1 = sha256(algo.salt1 + password.encode() + algo.salt1)
     hash2 = sha256(algo.salt2 + hash1 + algo.salt2)
     hash3 = hashlib.pbkdf2_hmac("sha512", hash2, algo.salt1, 100000)
@@ -270,7 +278,10 @@ def compute_password_hash(algo: raw.types.PasswordKdfAlgoSHA256SHA256PBKDF2HMACS
 
 
 # noinspection PyPep8Naming
-def compute_password_check(r: raw.types.account.Password, password: str) -> raw.types.InputCheckPasswordSRP:
+def compute_password_check(
+    r: raw.types.account.Password,
+    password: str
+) -> raw.types.InputCheckPasswordSRP:
     algo = r.current_algo
 
     p_bytes = algo.p
