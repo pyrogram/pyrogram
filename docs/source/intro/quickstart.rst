@@ -26,9 +26,11 @@ Get Pyrogram Real Fast
         api_id = 12345
         api_hash = "0123456789abcdef0123456789abcdef"
 
+
         async def main():
             async with Client("my_account", api_id, api_hash) as app:
                 await app.send_message("me", "Greetings from **Pyrogram**!")
+
 
         asyncio.run(main())
 
@@ -48,7 +50,7 @@ Enjoy the API
 That was just a quick overview. In the next few pages of the introduction, we'll take a much more in-depth look of what
 we have just done above.
 
-If you are feeling eager to continue you can take a shortcut to :doc:`Calling Methods <../start/invoking>` and come back
+If you are feeling eager to continue you can take a shortcut to :doc:`../start/invoking` and come back
 later to learn some more details.
 
 .. _community: https://t.me/Pyrogram

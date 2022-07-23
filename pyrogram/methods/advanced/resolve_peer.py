@@ -20,17 +20,17 @@ import logging
 import re
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.errors import PeerIdInvalid
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class ResolvePeer(Scaffold):
+class ResolvePeer:
     async def resolve_peer(
-        self,
+        self: "pyrogram.Client",
         peer_id: Union[int, str]
     ) -> Union[raw.base.InputPeer, raw.base.InputUser, raw.base.InputChannel]:
         """Get the InputPeer of a known peer id.
@@ -71,7 +71,7 @@ class ResolvePeer(Scaffold):
                     try:
                         return await self.storage.get_peer_by_username(peer_id)
                     except KeyError:
-                        await self.send(
+                        await self.invoke(
                             raw.functions.contacts.ResolveUsername(
                                 username=peer_id
                             )
@@ -88,7 +88,7 @@ class ResolvePeer(Scaffold):
 
             if peer_type == "user":
                 await self.fetch_peers(
-                    await self.send(
+                    await self.invoke(
                         raw.functions.users.GetUsers(
                             id=[
                                 raw.types.InputUser(
@@ -100,13 +100,13 @@ class ResolvePeer(Scaffold):
                     )
                 )
             elif peer_type == "chat":
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.GetChats(
                         id=[-peer_id]
                     )
                 )
             else:
-                await self.send(
+                await self.invoke(
                     raw.functions.channels.GetChannels(
                         id=[
                             raw.types.InputChannel(

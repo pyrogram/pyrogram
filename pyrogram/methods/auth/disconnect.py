@@ -16,11 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class Disconnect(Scaffold):
-    async def disconnect(self):
+class Disconnect:
+    async def disconnect(
+        self: "pyrogram.Client",
+    ):
         """Disconnect the client from Telegram servers.
 
         Raises:

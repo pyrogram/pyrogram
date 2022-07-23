@@ -79,7 +79,7 @@ class ChatPermissions(Object):
         self.can_pin_messages = can_pin_messages
 
     @staticmethod
-    def _parse(denied_permissions: "raw.types.ChatBannedRights") -> "ChatPermissions":
+    def _parse(denied_permissions: "raw.base.ChatBannedRights") -> "ChatPermissions":
         if isinstance(denied_permissions, raw.types.ChatBannedRights):
             return ChatPermissions(
                 can_send_messages=not denied_permissions.send_messages,

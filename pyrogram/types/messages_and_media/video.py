@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
@@ -60,8 +61,8 @@ class Video(Object):
         ttl_seconds (``int``. *optional*):
             Time-to-live seconds, for secret photos.
 
-        date (``int``, *optional*):
-            Date the video was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the video was sent.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Video thumbnails.
@@ -81,7 +82,7 @@ class Video(Object):
         file_size: int = None,
         supports_streaming: bool = None,
         ttl_seconds: int = None,
-        date: int = None,
+        date: datetime = None,
         thumbs: List["types.Thumbnail"] = None
     ):
         super().__init__(client)
@@ -126,7 +127,7 @@ class Video(Object):
             mime_type=video.mime_type,
             supports_streaming=video_attributes.supports_streaming,
             file_size=video.size,
-            date=video.date,
+            date=utils.timestamp_to_datetime(video.date),
             ttl_seconds=ttl_seconds,
             thumbs=types.Thumbnail._parse(client, video),
             client=client

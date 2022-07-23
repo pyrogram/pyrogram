@@ -18,14 +18,14 @@
 
 from typing import Union, List, AsyncGenerator, Optional
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatEventLog(Scaffold):
+class GetChatEventLog:
     async def get_chat_event_log(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         query: str = "",
         offset_id: int = 0,
@@ -64,13 +64,19 @@ class GetChatEventLog(Scaffold):
 
         Yields:
             :obj:`~pyrogram.types.ChatEvent` objects.
+
+        Example:
+            .. code-block:: python
+
+                async for event in app.get_chat_event_log(chat_id):
+                    print(event)
         """
         current = 0
         total = abs(limit) or (1 << 31)
         limit = min(100, total)
 
         while True:
-            r: raw.base.channels.AdminLogResults = await self.send(
+            r: raw.base.channels.AdminLogResults = await self.invoke(
                 raw.functions.channels.GetAdminLog(
                     channel=await self.resolve_peer(chat_id),
                     q=query,

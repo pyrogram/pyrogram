@@ -18,15 +18,15 @@
 
 from typing import List, Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteProfilePhotos(Scaffold):
+class DeleteProfilePhotos:
     async def delete_profile_photos(
-        self,
+        self: "pyrogram.Client",
         photo_ids: Union[str, List[str]]
     ) -> bool:
         """Delete your own profile photos.
@@ -43,18 +43,18 @@ class DeleteProfilePhotos(Scaffold):
             .. code-block:: python
 
                 # Get the photos to be deleted
-                photos = app.get_profile_photos("me")
+                photos = list(await app.get_chat_photos("me"))
 
                 # Delete one photo
-                app.delete_profile_photos(photos[0].file_id)
+                await app.delete_profile_photos(photos[0].file_id)
 
                 # Delete the rest of the photos
-                app.delete_profile_photos([p.file_id for p in photos[1:]])
+                await app.delete_profile_photos([p.file_id for p in photos[1:]])
         """
         photo_ids = photo_ids if isinstance(photo_ids, list) else [photo_ids]
         input_photos = [utils.get_input_media_from_file_id(i, FileType.PHOTO).id for i in photo_ids]
 
-        return bool(await self.send(
+        return bool(await self.invoke(
             raw.functions.photos.DeletePhotos(
                 id=input_photos
             )

@@ -18,15 +18,19 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class ResendCode(Scaffold):
-    async def resend_code(self, phone_number: str, phone_code_hash: str) -> "types.SentCode":
+class ResendCode:
+    async def resend_code(
+        self: "pyrogram.Client",
+        phone_number: str,
+        phone_code_hash: str
+    ) -> "types.SentCode":
         """Re-send the confirmation code using a different type.
 
         The type of the code to be re-sent is specified in the *next_type* attribute of the
@@ -48,7 +52,7 @@ class ResendCode(Scaffold):
         """
         phone_number = phone_number.strip(" +")
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.ResendCode(
                 phone_number=phone_number,
                 phone_code_hash=phone_code_hash

@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeclineChatJoinRequest(Scaffold):
+class DeclineChatJoinRequest:
     async def decline_chat_join_request(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: int,
     ) -> bool:
@@ -44,7 +44,7 @@ class DeclineChatJoinRequest(Scaffold):
         Returns:
             ``bool``: True on success.
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.HideChatJoinRequest(
                 peer=await self.resolve_peer(chat_id),
                 user_id=await self.resolve_peer(user_id),

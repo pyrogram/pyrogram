@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnblockUser(Scaffold):
+class UnblockUser:
     async def unblock_user(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str]
     ) -> bool:
         """Unblock a user.
@@ -41,10 +41,10 @@ class UnblockUser(Scaffold):
         Example:
             .. code-block:: python
 
-                app.unblock_user(user_id)
+                await app.unblock_user(user_id)
         """
         return bool(
-            await self.send(
+            await self.invoke(
                 raw.functions.contacts.Unblock(
                     id=await self.resolve_peer(user_id)
                 )

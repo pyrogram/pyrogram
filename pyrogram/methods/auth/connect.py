@@ -16,12 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 from pyrogram.session import Session
 
 
-class Connect(Scaffold):
-    async def connect(self) -> bool:
+class Connect:
+    async def connect(
+        self: "pyrogram.Client",
+    ) -> bool:
         """
         Connect the client to Telegram servers.
 
@@ -35,7 +37,6 @@ class Connect(Scaffold):
         if self.is_connected:
             raise ConnectionError("Client is already connected")
 
-        self.load_config()
         await self.load_session()
 
         self.session = Session(

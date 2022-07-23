@@ -19,7 +19,7 @@
 from typing import Optional, List
 
 import pyrogram
-from pyrogram import raw, types, utils
+from pyrogram import raw, types, utils, enums
 from .input_message_content import InputMessageContent
 
 
@@ -30,12 +30,9 @@ class InputTextMessageContent(InputMessageContent):
         message_text (``str``):
             Text of the message to be sent, 1-4096 characters.
 
-        parse_mode (``str``, *optional*):
+        parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
             You can combine both syntaxes together.
-            Pass "markdown" or "md" to enable Markdown-style parsing only.
-            Pass "html" to enable HTML-style parsing only.
-            Pass None to completely disable style parsing.
 
         entities (List of :obj:`~pyrogram.types.MessageEntity`):
             List of special entities that appear in message text, which can be specified instead of *parse_mode*.
@@ -47,7 +44,7 @@ class InputTextMessageContent(InputMessageContent):
     def __init__(
         self,
         message_text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None
     ):

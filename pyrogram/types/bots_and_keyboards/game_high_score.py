@@ -32,7 +32,7 @@ class GameHighScore(Object):
         score (``int``):
             Score.
 
-        position (``position``, *optional*):
+        position (``int``, *optional*):
             Position in high score table for the game.
     """
 

@@ -16,12 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetContactsCount(Scaffold):
-    async def get_contacts_count(self) -> int:
+class GetContactsCount:
+    async def get_contacts_count(
+        self: "pyrogram.Client"
+    ) -> int:
         """Get the total count of contacts from your Telegram address book.
 
         Returns:
@@ -30,8 +32,8 @@ class GetContactsCount(Scaffold):
         Example:
             .. code-block:: python
 
-                count = app.get_contacts_count()
+                count = await app.get_contacts_count()
                 print(count)
         """
 
-        return len((await self.send(raw.functions.contacts.GetContacts(hash=0))).contacts)
+        return len((await self.invoke(raw.functions.contacts.GetContacts(hash=0))).contacts)

@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
@@ -54,8 +55,8 @@ class Animation(Object):
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the animation was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the animation was sent.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Animation thumbnails.
@@ -73,7 +74,7 @@ class Animation(Object):
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None,
+        date: datetime = None,
         thumbs: List["types.Thumbnail"] = None
     ):
         super().__init__(client)
@@ -114,7 +115,7 @@ class Animation(Object):
             mime_type=animation.mime_type,
             file_size=animation.size,
             file_name=file_name,
-            date=animation.date,
+            date=utils.timestamp_to_datetime(animation.date),
             thumbs=types.Thumbnail._parse(client, animation),
             client=client
         )

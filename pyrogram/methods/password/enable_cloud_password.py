@@ -18,14 +18,14 @@
 
 import os
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 from pyrogram.utils import compute_password_hash, btoi, itob
 
 
-class EnableCloudPassword(Scaffold):
+class EnableCloudPassword:
     async def enable_cloud_password(
-        self,
+        self: "pyrogram.Client",
         password: str,
         hint: str = "",
         email: str = None
@@ -54,15 +54,15 @@ class EnableCloudPassword(Scaffold):
             .. code-block:: python
 
                 # Enable password without hint and email
-                app.enable_cloud_password("password")
+                await app.enable_cloud_password("password")
 
                 # Enable password with hint and without email
-                app.enable_cloud_password("password", hint="hint")
+                await app.enable_cloud_password("password", hint="hint")
 
                 # Enable password with hint and email
-                app.enable_cloud_password("password", hint="hint", email="user@email.com")
+                await app.enable_cloud_password("password", hint="hint", email="user@email.com")
         """
-        r = await self.send(raw.functions.account.GetPassword())
+        r = await self.invoke(raw.functions.account.GetPassword())
 
         if r.has_password:
             raise ValueError("There is already a cloud password enabled")
@@ -71,7 +71,7 @@ class EnableCloudPassword(Scaffold):
         new_hash = btoi(compute_password_hash(r.new_algo, password))
         new_hash = itob(pow(r.new_algo.g, new_hash, btoi(r.new_algo.p)))
 
-        await self.send(
+        await self.invoke(
             raw.functions.account.UpdatePasswordSettings(
                 password=raw.types.InputCheckPasswordEmpty(),
                 new_settings=raw.types.account.PasswordInputSettings(

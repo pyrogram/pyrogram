@@ -17,46 +17,45 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
-from typing import Iterable, Union, List
+from typing import Union, List, Iterable
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetUsers(Scaffold):
+class GetUsers:
     async def get_users(
-        self,
-        user_ids: Union[Iterable[Union[int, str]], int, str]
+        self: "pyrogram.Client",
+        user_ids: Union[int, str, Iterable[Union[int, str]]]
     ) -> Union["types.User", List["types.User"]]:
         """Get information about a user.
         You can retrieve up to 200 users at once.
 
         Parameters:
-            user_ids (``iterable``):
+            user_ids (``int`` | ``str`` | Iterable of ``int`` or ``str``):
                 A list of User identifiers (id or username) or a single user id/username.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
-                Iterators and Generators are also accepted.
 
         Returns:
-            :obj:`~pyrogram.types.User` | List of :obj:`~pyrogram.types.User`: In case *user_ids* was an integer or
-            string the single requested user is returned, otherwise, in case *user_ids* was an iterable a list of users
-            is returned, even if the iterable contained one item only.
+            :obj:`~pyrogram.types.User` | List of :obj:`~pyrogram.types.User`: In case *user_ids* was not a list,
+            a single user is returned, otherwise a list of users is returned.
 
         Example:
             .. code-block:: python
 
                 # Get information about one user
-                app.get_users("me")
+                await app.get_users("me")
 
                 # Get information about multiple users at once
-                app.get_users([user1, user2, user3])
+                await app.get_users([user_id1, user_id2, user_id3])
         """
+
         is_iterable = not isinstance(user_ids, (int, str))
         user_ids = list(user_ids) if is_iterable else [user_ids]
         user_ids = await asyncio.gather(*[self.resolve_peer(i) for i in user_ids])
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.users.GetUsers(
                 id=user_ids
             )

@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 from .handler import Handler
 
 
@@ -26,7 +28,7 @@ class UserStatusHandler(Handler):
     For a nicer way to register this handler, have a look at the :meth:`~pyrogram.Client.on_user_status` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a new user status update arrives. It takes *(client, user)*
             as positional arguments (look at the section below for a detailed description).
 
@@ -41,5 +43,5 @@ class UserStatusHandler(Handler):
             The user containing the updated status.
     """
 
-    def __init__(self, callback: callable, filters=None):
+    def __init__(self, callback: Callable, filters=None):
         super().__init__(callback, filters)

@@ -21,16 +21,16 @@ import re
 import io
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageMedia(Scaffold):
+class EditMessageMedia:
     async def edit_message_media(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         media: "types.InputMedia",
@@ -70,13 +70,16 @@ class EditMessageMedia(Scaffold):
                 from pyrogram.types import InputMediaPhoto, InputMediaVideo, InputMediaAudio
 
                 # Replace the current media with a local photo
-                app.edit_message_media(chat_id, message_id, InputMediaPhoto("new_photo.jpg"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaPhoto("new_photo.jpg"))
 
                 # Replace the current media with a local video
-                app.edit_message_media(chat_id, message_id, InputMediaVideo("new_video.mp4"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaVideo("new_video.mp4"))
 
                 # Replace the current media with a local audio
-                app.edit_message_media(chat_id, message_id, InputMediaAudio("new_audio.mp3"))
+                await app.edit_message_media(chat_id, message_id,
+                    InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode
@@ -88,7 +91,7 @@ class EditMessageMedia(Scaffold):
 
         if isinstance(media, types.InputMediaPhoto):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedPhoto(
@@ -112,7 +115,7 @@ class EditMessageMedia(Scaffold):
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -149,7 +152,7 @@ class EditMessageMedia(Scaffold):
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -185,7 +188,7 @@ class EditMessageMedia(Scaffold):
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -223,7 +226,7 @@ class EditMessageMedia(Scaffold):
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.send(
+                media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
@@ -253,7 +256,7 @@ class EditMessageMedia(Scaffold):
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.DOCUMENT)
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

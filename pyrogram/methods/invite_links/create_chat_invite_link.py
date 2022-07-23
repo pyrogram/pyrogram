@@ -16,19 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class CreateChatInviteLink(Scaffold):
+class CreateChatInviteLink:
     async def create_chat_invite_link(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         name: str = None,
-        expire_date: int = None,
+        expire_date: datetime = None,
         member_limit: int = None,
         creates_join_request: bool = None
     ) -> "types.ChatInviteLink":
@@ -46,8 +47,8 @@ class CreateChatInviteLink(Scaffold):
             name (``str``, *optional*):
                 Invite link name.
 
-            expire_date (``int``, *optional*):
-                Point in time (Unix timestamp) when the link will expire.
+            expire_date (:py:obj:`~datetime.datetime`, *optional*):
+                Point in time when the link will expire.
                 Defaults to None (no expiration date).
 
             member_limit (``int``, *optional*):
@@ -66,15 +67,15 @@ class CreateChatInviteLink(Scaffold):
             .. code-block:: python
 
                 # Create a new link without limits
-                link = app.create_chat_invite_link(chat_id)
+                link = await app.create_chat_invite_link(chat_id)
 
-                # Create a new link for up to 7 new users
-                link = app.create_chat_invite_link(chat_id, member_limit=7)
+                # Create a new link for up to 3 new users
+                link = await app.create_chat_invite_link(chat_id, member_limit=3)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.ExportChatInvite(
                 peer=await self.resolve_peer(chat_id),
-                expire_date=expire_date,
+                expire_date=utils.datetime_to_timestamp(expire_date),
                 usage_limit=member_limit,
                 title=name,
                 request_needed=creates_join_request

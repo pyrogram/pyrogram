@@ -22,19 +22,21 @@ from .chat_event import ChatEvent
 from .chat_event_filter import ChatEventFilter
 from .chat_invite_link import ChatInviteLink
 from .chat_join_request import ChatJoinRequest
+from .chat_joiner import ChatJoiner
 from .chat_member import ChatMember
 from .chat_member_updated import ChatMemberUpdated
 from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from .chat_preview import ChatPreview
+from .chat_privileges import ChatPrivileges
 from .dialog import Dialog
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
-from .voice_chat_ended import VoiceChatEnded
-from .voice_chat_members_invited import VoiceChatMembersInvited
-from .voice_chat_scheduled import VoiceChatScheduled
-from .voice_chat_started import VoiceChatStarted
+from .video_chat_ended import VideoChatEnded
+from .video_chat_members_invited import VideoChatMembersInvited
+from .video_chat_scheduled import VideoChatScheduled
+from .video_chat_started import VideoChatStarted
 
 __all__ = [
     "Chat",
@@ -50,10 +52,12 @@ __all__ = [
     "ChatInviteLink",
     "InviteLinkImporter",
     "ChatAdminWithInviteLinks",
-    "VoiceChatStarted",
-    "VoiceChatEnded",
-    "VoiceChatMembersInvited",
+    "VideoChatStarted",
+    "VideoChatEnded",
+    "VideoChatMembersInvited",
     "ChatMemberUpdated",
-    "VoiceChatScheduled",
-    "ChatJoinRequest"
+    "VideoChatScheduled",
+    "ChatJoinRequest",
+    "ChatPrivileges",
+    "ChatJoiner"
 ]

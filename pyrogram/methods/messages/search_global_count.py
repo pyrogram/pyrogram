@@ -16,16 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
-from pyrogram.scaffold import Scaffold
-from .search_messages import Filters, POSSIBLE_VALUES
+import pyrogram
+from pyrogram import raw, enums
 
 
-class SearchGlobalCount(Scaffold):
+class SearchGlobalCount:
     async def search_global_count(
-        self,
+        self: "pyrogram.Client",
         query: str = "",
-        filter: str = "empty",
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
     ) -> int:
         """Get the count of messages resulting from a global search.
 
@@ -36,37 +35,16 @@ class SearchGlobalCount(Scaffold):
                 Text query string.
                 Use "@" to search for mentions.
 
-            filter (``str``, *optional*):
+            filter (:obj:`~pyrogram.enums.MessagesFilter`, *optional*):
                 Pass a filter in order to search for specific kind of messages only:
-
-                - ``"empty"``: Search for all kind of messages (default).
-                - ``"photo"``: Search for photos.
-                - ``"video"``: Search for video.
-                - ``"photo_video"``: Search for either photo or video.
-                - ``"document"``: Search for documents (generic files).
-                - ``"url"``: Search for messages containing URLs (web links).
-                - ``"animation"``: Search for animations (GIFs).
-                - ``"voice_note"``: Search for voice notes.
-                - ``"audio"``: Search for audio files (music).
-                - ``"chat_photo"``: Search for chat photos.
-                - ``"audio_video_note"``: Search for either audio or video notes.
-                - ``"video_note"``: Search for video notes.
-                - ``"location"``: Search for location messages.
-                - ``"contact"``: Search for contact messages.
 
         Returns:
             ``int``: On success, the messages count is returned.
         """
-        try:
-            filter = Filters.__dict__[filter.upper()]
-        except KeyError:
-            raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
-                filter, ", ".join(f'"{v}"' for v in POSSIBLE_VALUES))) from None
-
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SearchGlobal(
                 q=query,
-                filter=filter,
+                filter=filter.value(),
                 min_date=0,
                 max_date=0,
                 offset_rate=0,

@@ -18,19 +18,19 @@
 
 from typing import Optional
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineText(Scaffold):
+class EditInlineText:
     async def edit_inline_text(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> bool:
@@ -43,12 +43,9 @@ class EditInlineText(Scaffold):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -65,10 +62,10 @@ class EditInlineText(Scaffold):
                 # Bots only
 
                 # Simple edit text
-                app.edit_inline_text(inline_message_id, "new text")
+                await app.edit_inline_text(inline_message_id, "new text")
 
                 # Take the same text message, remove the web page preview only
-                app.edit_inline_text(
+                await app.edit_inline_text(
                     inline_message_id, message.text,
                     disable_web_page_preview=True)
         """
@@ -78,7 +75,7 @@ class EditInlineText(Scaffold):
 
         session = await get_session(self, dc_id)
 
-        return await session.send(
+        return await session.invoke(
             raw.functions.messages.EditInlineBotMessage(
                 id=unpacked,
                 no_webpage=disable_web_page_preview or None,

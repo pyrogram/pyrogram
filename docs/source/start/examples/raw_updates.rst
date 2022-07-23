@@ -11,7 +11,7 @@ This example shows how to handle raw updates.
 
 
     @app.on_raw_update()
-    def raw(client, update, users, chats):
+    async def raw(client, update, users, chats):
         print(update)
 
 

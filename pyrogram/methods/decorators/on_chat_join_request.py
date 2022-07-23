@@ -20,15 +20,14 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnChatJoinRequest(Scaffold):
+class OnChatJoinRequest:
     def on_chat_join_request(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
+    ) -> Callable:
         """Decorator for handling chat join requests.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

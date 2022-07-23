@@ -18,14 +18,16 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class SendRecoveryCode(Scaffold):
-    async def send_recovery_code(self) -> str:
+class SendRecoveryCode:
+    async def send_recovery_code(
+        self: "pyrogram.Client",
+    ) -> str:
         """Send a code to your email to recover your password.
 
         Returns:
@@ -34,6 +36,6 @@ class SendRecoveryCode(Scaffold):
         Raises:
             BadRequest: In case no recovery email was set up.
         """
-        return (await self.send(
+        return (await self.invoke(
             raw.functions.auth.RequestPasswordRecovery()
         )).email_pattern

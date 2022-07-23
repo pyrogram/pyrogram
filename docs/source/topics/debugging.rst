@@ -27,7 +27,7 @@ Consider the following code:
 
 .. code-block:: python
 
-    me = app.get_users("me")
+    me = await app.get_users("me")
     print(me)  # User
 
 This will show a JSON representation of the object returned by :meth:`~pyrogram.Client.get_users`, which is a

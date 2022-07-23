@@ -16,12 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetDialogsCount(Scaffold):
-    async def get_dialogs_count(self, pinned_only: bool = False) -> int:
+class GetDialogsCount:
+    async def get_dialogs_count(
+        self: "pyrogram.Client",
+        pinned_only: bool = False
+    ) -> int:
         """Get the total count of your dialogs.
 
         pinned_only (``bool``, *optional*):
@@ -34,14 +37,14 @@ class GetDialogsCount(Scaffold):
         Example:
             .. code-block:: python
 
-                count = app.get_dialogs_count()
+                count = await app.get_dialogs_count()
                 print(count)
         """
 
         if pinned_only:
-            return len((await self.send(raw.functions.messages.GetPinnedDialogs(folder_id=0))).dialogs)
+            return len((await self.invoke(raw.functions.messages.GetPinnedDialogs(folder_id=0))).dialogs)
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetDialogs(
                     offset_date=0,
                     offset_id=0,

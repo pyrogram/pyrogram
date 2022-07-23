@@ -18,13 +18,13 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class AddChatMembers(Scaffold):
+class AddChatMembers:
     async def add_chat_members(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_ids: Union[Union[int, str], List[Union[int, str]]],
         forward_limit: int = 100
@@ -52,13 +52,13 @@ class AddChatMembers(Scaffold):
             .. code-block:: python
 
                 # Add one member to a group or channel
-                app.add_chat_members(chat_id, user_id)
+                await app.add_chat_members(chat_id, user_id)
 
                 # Add multiple members to a group or channel
-                app.add_chat_members(chat_id, [user_id1, user_id2, user_id3])
+                await app.add_chat_members(chat_id, [user_id1, user_id2, user_id3])
 
                 # Change forward_limit (for basic groups only)
-                app.add_chat_members(chat_id, user_id, forward_limit=25)
+                await app.add_chat_members(chat_id, user_id, forward_limit=25)
         """
         peer = await self.resolve_peer(chat_id)
 
@@ -67,7 +67,7 @@ class AddChatMembers(Scaffold):
 
         if isinstance(peer, raw.types.InputPeerChat):
             for user_id in user_ids:
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.AddChatUser(
                         chat_id=peer.chat_id,
                         user_id=await self.resolve_peer(user_id),
@@ -75,7 +75,7 @@ class AddChatMembers(Scaffold):
                     )
                 )
         else:
-            await self.send(
+            await self.invoke(
                 raw.functions.channels.InviteToChannel(
                     channel=peer,
                     users=[

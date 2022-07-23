@@ -18,14 +18,14 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetGameHighScores(Scaffold):
+class GetGameHighScores:
     async def get_game_high_scores(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str],
         chat_id: Union[int, str],
         message_id: int = None
@@ -54,12 +54,12 @@ class GetGameHighScores(Scaffold):
         Example:
             .. code-block:: python
 
-                scores = app.get_game_high_scores(user_id, chat_id, message_id)
+                scores = await app.get_game_high_scores(user_id, chat_id, message_id)
                 print(scores)
         """
         # TODO: inline_message_id
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetGameHighScores(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

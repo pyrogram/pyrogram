@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw, types
-from pyrogram.scaffold import Scaffold
 
 
-class PinChatMessage(Scaffold):
+class PinChatMessage:
     async def pin_chat_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         disable_notification: bool = False,
@@ -56,12 +56,12 @@ class PinChatMessage(Scaffold):
             .. code-block:: python
 
                 # Pin with notification
-                app.pin_chat_message(chat_id, message_id)
+                await app.pin_chat_message(chat_id, message_id)
 
                 # Pin without notification
-                app.pin_chat_message(chat_id, message_id, disable_notification=True)
+                await app.pin_chat_message(chat_id, message_id, disable_notification=True)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

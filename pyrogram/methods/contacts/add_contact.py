@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class AddContact(Scaffold):
+class AddContact:
     async def add_contact(
-        self,
+        self: "pyrogram.Client",
         user_id: Union[int, str],
         first_name: str,
         last_name: str = "",
@@ -57,10 +57,13 @@ class AddContact(Scaffold):
         Example:
             .. code-block:: python
 
-                app.add_contact(12345678, "Foo")
-                app.add_contact("username", "Bar")
+                # Add contact by id
+                await app.add_contact(12345678, "Foo")
+
+                # Add contact by username
+                await app.add_contact("username", "Bar")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.contacts.AddContact(
                 id=await self.resolve_peer(user_id),
                 first_name=first_name,

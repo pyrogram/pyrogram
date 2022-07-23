@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.errors import StickersetInvalid
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
@@ -58,8 +59,8 @@ class Sticker(Object):
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the sticker was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the sticker was sent.
 
         emoji (``str``, *optional*):
             Emoji associated with the sticker.
@@ -86,7 +87,7 @@ class Sticker(Object):
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None,
+        date: datetime = None,
         emoji: str = None,
         set_name: str = None,
         thumbs: List["types.Thumbnail"] = None
@@ -111,7 +112,7 @@ class Sticker(Object):
     cache = {}
 
     @staticmethod
-    async def _get_sticker_set_name(send, input_sticker_set_id):
+    async def _get_sticker_set_name(invoke, input_sticker_set_id):
         try:
             set_id = input_sticker_set_id[0]
             set_access_hash = input_sticker_set_id[1]
@@ -121,7 +122,7 @@ class Sticker(Object):
             if name is not None:
                 return name
 
-            name = (await send(
+            name = (await invoke(
                 raw.functions.messages.GetStickerSet(
                     stickerset=raw.types.InputStickerSetID(
                         id=set_id,
@@ -153,7 +154,7 @@ class Sticker(Object):
 
         if isinstance(sticker_set, raw.types.InputStickerSetID):
             input_sticker_set_id = (sticker_set.id, sticker_set.access_hash)
-            set_name = await Sticker._get_sticker_set_name(client.send, input_sticker_set_id)
+            set_name = await Sticker._get_sticker_set_name(client.invoke, input_sticker_set_id)
         else:
             set_name = None
 
@@ -179,7 +180,7 @@ class Sticker(Object):
             file_size=sticker.size,
             mime_type=sticker.mime_type,
             file_name=file_name,
-            date=sticker.date,
+            date=utils.timestamp_to_datetime(sticker.date),
             thumbs=types.Thumbnail._parse(client, sticker),
             client=client
         )

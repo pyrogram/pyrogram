@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+from pyrogram import raw, enums
 from ..object import Object
 
 
@@ -24,29 +24,25 @@ class SentCode(Object):
     """Contains info on a sent confirmation code.
 
     Parameters:
-        type (``str``):
+        type (:obj:`~pyrogram.enums.SentCodeType`):
             Type of the current sent code.
-            Can be *"app"* (code sent via Telegram), *"sms"* (code sent via SMS), *"call"* (code sent via voice call) or
-            *"flash_call"* (code is in the last 5 digits of the caller's phone number).
 
         phone_code_hash (``str``):
             Confirmation code identifier useful for the next authorization steps (either
             :meth:`~pyrogram.Client.sign_in` or :meth:`~pyrogram.Client.sign_up`).
 
-        next_type (``str``):
+        next_type (:obj:`~pyrogram.enums.NextCodeType`, *optional*):
             Type of the next code to be sent with :meth:`~pyrogram.Client.resend_code`.
-            Can be *"sms"* (code will be sent via SMS), *"call"* (code will be sent via voice call) or *"flash_call"*
-            (code will be in the last 5 digits of caller's phone number).
 
-        timeout (``int``):
+        timeout (``int``, *optional*):
             Delay in seconds before calling :meth:`~pyrogram.Client.resend_code`.
     """
 
     def __init__(
         self, *,
-        type: str,
+        type: "enums.SentCodeType",
         phone_code_hash: str,
-        next_type: str = None,
+        next_type: "enums.NextCodeType" = None,
         timeout: int = None
     ):
         super().__init__()
@@ -58,29 +54,9 @@ class SentCode(Object):
 
     @staticmethod
     def _parse(sent_code: raw.types.auth.SentCode) -> "SentCode":
-        type = sent_code.type
-
-        if isinstance(type, raw.types.auth.SentCodeTypeApp):
-            type = "app"
-        elif isinstance(type, raw.types.auth.SentCodeTypeSms):
-            type = "sms"
-        elif isinstance(type, raw.types.auth.SentCodeTypeCall):
-            type = "call"
-        elif isinstance(type, raw.types.auth.SentCodeTypeFlashCall):
-            type = "flash_call"
-
-        next_type = sent_code.next_type
-
-        if isinstance(next_type, raw.types.auth.CodeTypeSms):
-            next_type = "sms"
-        elif isinstance(next_type, raw.types.auth.CodeTypeCall):
-            next_type = "call"
-        elif isinstance(next_type, raw.types.auth.CodeTypeFlashCall):
-            next_type = "flash_call"
-
         return SentCode(
-            type=type,
+            type=enums.SentCodeType(type(sent_code.type)),
             phone_code_hash=sent_code.phone_code_hash,
-            next_type=next_type,
+            next_type=enums.NextCodeType(type(sent_code.next_type)) if sent_code.next_type else None,
             timeout=sent_code.timeout
         )

@@ -9,8 +9,8 @@ Telegram's test servers without hassle. All you need to do is start a new sessio
 
     from pyrogram import Client
 
-    with Client("my_account_test", test_mode=True) as app:
-        print(app.get_me())
+    async with Client("my_account_test", test_mode=True) as app:
+        print(await app.get_me())
 
 .. note::
 

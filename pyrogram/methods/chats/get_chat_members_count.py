@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatMembersCount(Scaffold):
+class GetChatMembersCount:
     async def get_chat_members_count(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> int:
         """Get the number of members in a chat.
@@ -42,13 +42,13 @@ class GetChatMembersCount(Scaffold):
         Example:
             .. code-block:: python
 
-                count = app.get_chat_members_count(chat_id)
+                count = await app.get_chat_members_count(chat_id)
                 print(count)
         """
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, raw.types.InputPeerChat):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetChats(
                     id=[peer.chat_id]
                 )
@@ -56,7 +56,7 @@ class GetChatMembersCount(Scaffold):
 
             return r.chats[0].participants_count
         elif isinstance(peer, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetFullChannel(
                     channel=peer
                 )

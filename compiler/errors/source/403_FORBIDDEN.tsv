@@ -25,3 +25,4 @@ USER_IS_BLOCKED	The user is blocked
 USER_NOT_MUTUAL_CONTACT	The provided user is not a mutual contact
 USER_PRIVACY_RESTRICTED	The user's privacy settings is preventing you to perform this action
 USER_RESTRICTED	You are limited/restricted. You can't perform this action
+PREMIUM_ACCOUNT_REQUIRED	This action requires a premium account

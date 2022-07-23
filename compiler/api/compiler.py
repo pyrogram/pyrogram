@@ -361,12 +361,14 @@ def start(format: bool = False):
 
         for i, arg in enumerate(sorted_args):
             arg_name, arg_type = arg
+            is_optional = FLAGS_RE.match(arg_type)
+            flag_number = is_optional.group(1) if is_optional else -1
             arg_type = arg_type.split("?")[-1]
 
             docstring_args.append(
                 "{}{}: {}".format(
                     arg_name,
-                    " (optional)",
+                    " (optional)".format(flag_number) if is_optional else "",
                     get_docstring_arg_type(arg_type, is_pyrogram_type=c.namespace == "pyrogram")
                 )
             )
@@ -376,7 +378,7 @@ def start(format: bool = False):
         else:
             docstring += f"Telegram API method.\n\n"
 
-        docstring += f"    Details:\n        - Layer: ``{layer}``\n        - ID: ``{c.id}``\n\n"
+        docstring += f"    Details:\n        - Layer: ``{layer}``\n        - ID: ``{c.id[2:].upper()}``\n\n"
 
         if docstring_args:
             docstring += "    Parameters:\n        " + "\n        ".join(docstring_args)

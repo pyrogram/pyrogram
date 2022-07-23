@@ -18,7 +18,6 @@
 
 import os
 import sys
-from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
@@ -38,14 +37,19 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
     "sphinx_copybutton"
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None)
+}
 
 master_doc = "index"
 source_suffix = ".rst"
 autodoc_member_order = "bysource"
 
-templates_path = ["_resources/templates"]
+templates_path = ["../resources/templates"]
 html_copy_source = False
 
 napoleon_use_rtype = False
@@ -59,7 +63,7 @@ suppress_warnings = ["image.not_readable"]
 
 html_title = "Pyrogram Documentation"
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_resources/static"]
+html_static_path = ["../resources/static"]
 html_show_sourcelink = True
 html_show_copyright = False
 html_theme_options = {
@@ -71,11 +75,11 @@ html_theme_options = {
     "style_external_links": True
 }
 
-html_logo = "_resources/static/img/pyrogram.png"
-html_favicon = "_resources/static/img/favicon.ico"
+html_logo = "../resources/static/img/pyrogram.png"
+html_favicon = "../resources/static/img/favicon.ico"
 
 latex_engine = "xelatex"
-latex_logo = "_resources/static/img/pyrogram.png"
+latex_logo = "../resources/static/img/pyrogram.png"
 
 latex_elements = {
     "pointsize": "12pt",

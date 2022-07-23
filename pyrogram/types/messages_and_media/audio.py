@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
@@ -54,8 +55,8 @@ class Audio(Object):
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the audio was originally sent, in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the audio was originally sent.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Thumbnails of the music file album cover.
@@ -73,7 +74,7 @@ class Audio(Object):
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None,
+        date: datetime = None,
         thumbs: List["types.Thumbnail"] = None
     ):
         super().__init__(client)
@@ -114,7 +115,7 @@ class Audio(Object):
             mime_type=audio.mime_type,
             file_size=audio.size,
             file_name=file_name,
-            date=audio.date,
+            date=utils.timestamp_to_datetime(audio.date),
             thumbs=types.Thumbnail._parse(client, audio),
             client=client
         )

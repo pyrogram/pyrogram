@@ -59,7 +59,7 @@ class Auth:
         b.seek(20)  # Skip auth_key_id (8), message_id (8) and message_length (4)
         return TLObject.read(b)
 
-    async def send(self, data: TLObject):
+    async def invoke(self, data: TLObject):
         data = self.pack(data)
         await self.connection.send(data)
         response = BytesIO(await self.connection.recv())
@@ -86,7 +86,7 @@ class Auth:
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
                 log.debug(f"Send req_pq: {nonce}")
-                res_pq = await self.send(raw.functions.ReqPqMulti(nonce=nonce))
+                res_pq = await self.invoke(raw.functions.ReqPqMulti(nonce=nonce))
                 log.debug(f"Got ResPq: {res_pq.server_nonce}")
                 log.debug(f"Server public key fingerprints: {res_pq.server_public_key_fingerprints}")
 
@@ -130,7 +130,7 @@ class Auth:
 
                 # Step 5. TODO: Handle "server_DH_params_fail". Code assumes response is ok
                 log.debug("Send req_DH_params")
-                server_dh_params = await self.send(
+                server_dh_params = await self.invoke(
                     raw.functions.ReqDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,
@@ -190,7 +190,7 @@ class Auth:
                 encrypted_data = aes.ige256_encrypt(data_with_hash, tmp_aes_key, tmp_aes_iv)
 
                 log.debug("Send set_client_DH_params")
-                set_client_dh_params_answer = await self.send(
+                set_client_dh_params_answer = await self.invoke(
                     raw.functions.SetClientDHParams(
                         nonce=nonce,
                         server_nonce=server_nonce,

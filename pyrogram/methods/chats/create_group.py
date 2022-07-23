@@ -18,14 +18,14 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class CreateGroup(Scaffold):
+class CreateGroup:
     async def create_group(
-        self,
+        self: "pyrogram.Client",
         title: str,
         users: Union[Union[int, str], List[Union[int, str]]]
     ) -> "types.Chat":
@@ -50,12 +50,12 @@ class CreateGroup(Scaffold):
         Example:
             .. code-block:: python
 
-                app.create_group("Group Title", user_id)
+                await app.create_group("Group Title", user_id)
         """
         if not isinstance(users, list):
             users = [users]
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.CreateChat(
                 title=title,
                 users=[await self.resolve_peer(u) for u in users]

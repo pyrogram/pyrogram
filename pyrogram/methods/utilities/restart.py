@@ -16,11 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class Restart(Scaffold):
-    async def restart(self, block: bool = True):
+class Restart:
+    async def restart(
+        self: "pyrogram.Client",
+        block: bool = True
+    ):
         """Restart the Client.
 
         This method will first call :meth:`~pyrogram.Client.stop` and then :meth:`~pyrogram.Client.start` in a row in
@@ -29,7 +32,7 @@ class Restart(Scaffold):
         Parameters:
             block (``bool``, *optional*):
                 Blocks the code execution until the client has been restarted. It is useful with ``block=False`` in case
-                you want to restart the own client *within* an handler in order not to cause a deadlock.
+                you want to restart the own client within an handler in order not to cause a deadlock.
                 Defaults to True.
 
         Returns:
@@ -44,15 +47,17 @@ class Restart(Scaffold):
                 from pyrogram import Client
 
                 app = Client("my_account")
-                app.start()
 
-                ...  # Call API methods
 
-                app.restart()
+                async def main():
+                    await app.start()
+                    ...  # Invoke API methods
+                    await app.restart()
+                    ...  # Invoke other API methods
+                    await app.stop()
 
-                ...  # Call other API methods
 
-                app.stop()
+                app.run(main())
         """
 
         async def do_it():

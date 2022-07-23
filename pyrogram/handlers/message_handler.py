@@ -16,18 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 from .handler import Handler
 
 
 class MessageHandler(Handler):
-    """The Message handler class. Used to handle text, media and service messages coming from
-    any chat (private, group, channel). It is intended to be used with :meth:`~pyrogram.Client.add_handler`
+    """The Message handler class. Used to handle new messages.
+    It is intended to be used with :meth:`~pyrogram.Client.add_handler`
 
     For a nicer way to register this handler, have a look at the
     :meth:`~pyrogram.Client.on_message` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a new Message arrives. It takes *(client, message)*
             as positional arguments (look at the section below for a detailed description).
 
@@ -43,5 +45,5 @@ class MessageHandler(Handler):
             The received message.
     """
 
-    def __init__(self, callback: callable, filters=None):
+    def __init__(self, callback: Callable, filters=None):
         super().__init__(callback, filters)

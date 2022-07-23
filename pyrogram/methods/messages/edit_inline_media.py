@@ -18,19 +18,23 @@
 
 import os
 import re
+import asyncio
 import io
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.errors import RPCError, MediaEmpty
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineMedia(Scaffold):
+class EditInlineMedia:
+    MAX_RETRIES = 3
+
     async def edit_inline_media(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         media: "types.InputMedia",
         reply_markup: "types.InlineKeyboardMarkup" = None
@@ -62,13 +66,13 @@ class EditInlineMedia(Scaffold):
                 # Bots only
 
                 # Replace the current media with a local photo
-                app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
+                await app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
 
                 # Replace the current media with a local video
-                app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
+                await app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
 
                 # Replace the current media with a local audio
-                app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
+                await app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode
@@ -148,7 +152,8 @@ class EditInlineMedia(Scaffold):
                             file_name=os.path.basename(media.media)
                         ),
                         raw.types.DocumentAttributeAnimated()
-                    ]
+                    ],
+                    nosound_video=True
                 )
             elif re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
@@ -166,7 +171,8 @@ class EditInlineMedia(Scaffold):
                         raw.types.DocumentAttributeFilename(
                             file_name=os.path.basename(media.media)
                         )
-                    ]
+                    ],
+                    force_file=True
                 )
             elif re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
@@ -180,12 +186,34 @@ class EditInlineMedia(Scaffold):
 
         session = await get_session(self, dc_id)
 
-        return await session.send(
-            raw.functions.messages.EditInlineBotMessage(
-                id=unpacked,
-                media=media,
-                reply_markup=await reply_markup.write(self) if reply_markup else None,
-                **await self.parser.parse(caption, parse_mode)
-            ),
-            sleep_threshold=self.sleep_threshold
+        actual_media = await self.invoke(
+            raw.functions.messages.UploadMedia(
+                peer=raw.types.InputPeerSelf(),
+                media=media
+            )
         )
+
+        for i in range(self.MAX_RETRIES):
+            try:
+                return await session.invoke(
+                    raw.functions.messages.EditInlineBotMessage(
+                        id=unpacked,
+                        media=raw.types.InputMediaDocument(
+                            id=raw.types.InputDocument(
+                                id=actual_media.document.id,
+                                access_hash=actual_media.document.access_hash,
+                                file_reference=actual_media.document.file_reference
+                            )
+                        ),
+                        reply_markup=await reply_markup.write(self) if reply_markup else None,
+                        **await self.parser.parse(caption, parse_mode)
+                    ),
+                    sleep_threshold=self.sleep_threshold
+                )
+            except RPCError as e:
+                if i == self.MAX_RETRIES - 1:
+                    raise
+
+                if isinstance(e, MediaEmpty):
+                    # Must wait due to a server race condition
+                    await asyncio.sleep(1)

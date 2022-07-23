@@ -47,9 +47,8 @@ class TCP:
         self.lock = asyncio.Lock()
         self.loop = asyncio.get_event_loop()
 
-        if proxy.get("enabled", False):
-            hostname = proxy.get("hostname", None)
-            port = proxy.get("port", None)
+        if proxy:
+            hostname = proxy.get("hostname")
 
             try:
                 ip_address = ipaddress.ip_address(hostname)
@@ -62,14 +61,14 @@ class TCP:
                     self.socket = socks.socksocket(socket.AF_INET)
 
             self.socket.set_proxy(
-                proxy_type=socks.SOCKS5,
+                proxy_type=getattr(socks, proxy.get("scheme").upper()),
                 addr=hostname,
-                port=port,
+                port=proxy.get("port", None),
                 username=proxy.get("username", None),
                 password=proxy.get("password", None)
             )
 
-            log.info(f"Using proxy {hostname}:{port}")
+            log.info(f"Using proxy {hostname}")
         else:
             self.socket = socks.socksocket(
                 socket.AF_INET6 if ipv6

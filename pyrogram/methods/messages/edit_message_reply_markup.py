@@ -18,14 +18,14 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageReplyMarkup(Scaffold):
+class EditMessageReplyMarkup:
     async def edit_message_reply_markup(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         reply_markup: "types.InlineKeyboardMarkup" = None,
@@ -53,12 +53,12 @@ class EditMessageReplyMarkup(Scaffold):
                 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
                 # Bots only
-                app.edit_message_reply_markup(
+                await app.edit_message_reply_markup(
                     chat_id, message_id,
                     InlineKeyboardMarkup([[
                         InlineKeyboardButton("New button", callback_data="new_data")]]))
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

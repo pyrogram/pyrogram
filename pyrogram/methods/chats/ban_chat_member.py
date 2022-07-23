@@ -16,19 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class BanChatMember(Scaffold):
+class BanChatMember:
     async def ban_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
-        until_date: int = 0
+        until_date: datetime = utils.zero_datetime()
     ) -> Union["types.Message", bool]:
         """Ban a user from a group, a supergroup or a channel.
         In the case of supergroups and channels, the user will not be able to return to the group on their own using
@@ -48,10 +49,10 @@ class BanChatMember(Scaffold):
                 Unique identifier (int) or username (str) of the target user.
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unbanned.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
+                considered to be banned forever. Defaults to epoch (ban forever).
 
         Returns:
             :obj:`~pyrogram.types.Message` | ``bool``: On success, a service message will be returned (when applicable),
@@ -60,24 +61,24 @@ class BanChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                from time import time
+                from datetime import datetime, timedelta
 
                 # Ban chat member forever
-                app.ban_chat_member(chat_id, user_id)
+                await app.ban_chat_member(chat_id, user_id)
 
                 # Ban chat member and automatically unban after 24h
-                app.ban_chat_member(chat_id, user_id, int(time.time() + 86400))
+                await app.ban_chat_member(chat_id, user_id, datetime.now() + timedelta(days=1))
         """
         chat_peer = await self.resolve_peer(chat_id)
         user_peer = await self.resolve_peer(user_id)
 
         if isinstance(chat_peer, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.EditBanned(
                     channel=chat_peer,
                     participant=user_peer,
                     banned_rights=raw.types.ChatBannedRights(
-                        until_date=until_date,
+                        until_date=utils.datetime_to_timestamp(until_date),
                         view_messages=True,
                         send_messages=True,
                         send_media=True,
@@ -90,7 +91,7 @@ class BanChatMember(Scaffold):
                 )
             )
         else:
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.DeleteChatUser(
                     chat_id=abs(chat_id),
                     user_id=user_peer

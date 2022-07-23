@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import OrderedDict
 from typing import Optional
 
 import pyrogram
+from pyrogram import enums
 from .html import HTML
 from .markdown import Markdown
 
@@ -30,36 +30,28 @@ class Parser:
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    async def parse(self, text: str, mode: Optional[str] = object):
+    async def parse(self, text: str, mode: Optional[enums.ParseMode] = None):
         text = str(text if text else "").strip()
 
-        if mode == object:
+        if mode is None:
             if self.client:
                 mode = self.client.parse_mode
             else:
-                mode = "combined"
+                mode = enums.ParseMode.DEFAULT
 
-        if mode is None:
-            return OrderedDict([
-                ("message", text),
-                ("entities", [])
-            ])
-
-        mode = mode.lower()
-
-        if mode == "combined":
+        if mode == enums.ParseMode.DEFAULT:
             return await self.markdown.parse(text)
 
-        if mode in ["markdown", "md"]:
+        if mode == enums.ParseMode.MARKDOWN:
             return await self.markdown.parse(text, True)
 
-        if mode == "html":
+        if mode == enums.ParseMode.HTML:
             return await self.html.parse(text)
 
-        raise ValueError('parse_mode must be one of {} or None. Not "{}"'.format(
-            ", ".join(f'"{m}"' for m in pyrogram.Client.PARSE_MODES[:-1]),
-            mode
-        ))
+        if mode == enums.ParseMode.DISABLED:
+            return {"message": text, "entities": []}
+
+        raise ValueError(f'Invalid parse mode "{mode}"')
 
     @staticmethod
     def unparse(text: str, entities: list, is_html: bool):

@@ -53,6 +53,9 @@ class TLObject:
         return dumps(self, indent=4, default=TLObject.default, ensure_ascii=False)
 
     def __repr__(self) -> str:
+        if not hasattr(self, "QUALNAME"):
+            return repr(self)
+
         return "pyrogram.raw.{}({})".format(
             self.QUALNAME,
             ", ".join(
@@ -74,12 +77,6 @@ class TLObject:
 
     def __len__(self) -> int:
         return len(self.write())
-
-    def __getitem__(self, item: Any) -> Any:
-        return getattr(self, item)
-
-    def __setitem__(self, key: Any, value: Any) -> Any:
-        setattr(self, key, value)
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         pass

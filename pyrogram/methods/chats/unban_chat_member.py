@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnbanChatMember(Scaffold):
+class UnbanChatMember:
     async def unban_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> bool:
@@ -47,9 +47,9 @@ class UnbanChatMember(Scaffold):
             .. code-block:: python
 
                 # Unban chat member right now
-                app.unban_chat_member(chat_id, user_id)
+                await app.unban_chat_member(chat_id, user_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
                 participant=await self.resolve_peer(user_id),
