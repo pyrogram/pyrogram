@@ -21,6 +21,7 @@ import ipaddress
 import logging
 import socket
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 try:
     import socks
@@ -78,7 +79,11 @@ class TCP:
         self.socket.settimeout(TCP.TIMEOUT)
 
     async def connect(self, address: tuple):
-        self.socket.connect(address)
+        # The socket used by the whole logic is blocking and thus it blocks when connecting.
+        # Offload the task to a thread executor to avoid blocking the main event loop.
+        with ThreadPoolExecutor(1) as executor:
+            await self.loop.run_in_executor(executor, self.socket.connect, address)
+
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
 
     def close(self):
