@@ -65,6 +65,8 @@ class DownloadMedia:
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
                 transmitted.
+                Note that progress is only possible when downloading media with message objects.
+                For more information, please refer to these issues https://github.com/pyrogram/pyrogram/issues/636 and https://github.com/pyrogram/pyrogram/issues/835.
 
             progress_args (``tuple``, *optional*):
                 Extra custom arguments for the progress callback function.
@@ -103,6 +105,7 @@ class DownloadMedia:
                 await app.download_media(message.photo.file_id)
 
                 # Keep track of the progress while downloading
+                # This only possible when downloading media with message object
                 async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
