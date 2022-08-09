@@ -23,8 +23,6 @@ from signal import signal as signal_fn, SIGINT, SIGTERM, SIGABRT
 
 log = logging.getLogger(__name__)
 
-is_idling = False
-
 # Signal number to name
 signals = {
     k: v for v, k in signal.__dict__.items()
@@ -71,18 +69,19 @@ async def idle():
 
             asyncio.run(main())
     """
-    global is_idling
+    task = None
 
     def signal_handler(signum, __):
-        global is_idling
-
         logging.info(f"Stop signal received ({signals[signum]}). Exiting...")
-        is_idling = False
+        task.cancel()
 
     for s in (SIGINT, SIGTERM, SIGABRT):
         signal_fn(s, signal_handler)
 
-    is_idling = True
+    while True:
+        task = asyncio.create_task(asyncio.sleep(600))
 
-    while is_idling:
-        await asyncio.sleep(1)
+        try:
+            await task
+        except asyncio.CancelledError:
+            break

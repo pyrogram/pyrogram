@@ -757,7 +757,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
     async def func(flt, client: pyrogram.Client, message: Message):
-        username = client.username or ""
+        username = client.me.username or ""
         text = message.text or message.caption
         message.command = None
 

@@ -97,6 +97,9 @@ class User(Object, Update):
         is_support (``bool``, *optional*):
             True, if this user is part of the Telegram support team.
 
+        is_premium (``bool``, *optional*):
+            True, if this user is a premium user.
+
         first_name (``str``, *optional*):
             User's or bot's first name.
 
@@ -156,9 +159,10 @@ class User(Object, Update):
         is_scam: bool = None,
         is_fake: bool = None,
         is_support: bool = None,
+        is_premium: bool = None,
         first_name: str = None,
         last_name: str = None,
-        status: str = None,
+        status: "enums.UserStatus" = None,
         last_online_date: datetime = None,
         next_offline_date: datetime = None,
         username: str = None,
@@ -181,6 +185,7 @@ class User(Object, Update):
         self.is_scam = is_scam
         self.is_fake = is_fake
         self.is_support = is_support
+        self.is_premium = is_premium
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
@@ -218,6 +223,7 @@ class User(Object, Update):
             is_scam=user.scam,
             is_fake=user.fake,
             is_support=user.support,
+            is_premium=user.premium,
             first_name=user.first_name,
             last_name=user.last_name,
             **User._parse_status(user.status, user.bot),

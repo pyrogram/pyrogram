@@ -18,10 +18,10 @@
 
 class Client:
     def __init__(self):
-        self.username = "username"
+        self.me = User("username")
 
     async def get_me(self):
-        return User(self.username)
+        return self.me
 
 
 class User:

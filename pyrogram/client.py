@@ -273,8 +273,7 @@ class Client(Methods):
 
         self.disconnect_handler = None
 
-        # Username used for mentioned bot commands, e.g.: /start@usernamebot
-        self.username = None
+        self.me: Optional[User] = None
 
         self.message_cache = Cache(10000)
 

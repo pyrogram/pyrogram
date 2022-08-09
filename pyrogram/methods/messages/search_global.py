@@ -102,7 +102,7 @@ class SearchGlobal:
 
             last = messages[-1]
 
-            offset_date = last.date
+            offset_date = utils.datetime_to_timestamp(last.date)
             offset_peer = await self.resolve_peer(last.chat.id)
             offset_id = last.id
 

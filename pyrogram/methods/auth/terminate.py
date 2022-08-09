@@ -20,7 +20,6 @@ import logging
 
 import pyrogram
 from pyrogram import raw
-from pyrogram.syncer import Syncer
 
 log = logging.getLogger(__name__)
 
@@ -44,7 +43,7 @@ class Terminate:
             await self.invoke(raw.functions.account.FinishTakeoutSession())
             log.warning(f"Takeout session {self.takeout_id} finished")
 
-        await Syncer.remove(self)
+        await self.storage.save()
         await self.dispatcher.stop()
 
         for media_session in self.media_sessions.values():

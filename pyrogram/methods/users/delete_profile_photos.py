@@ -43,7 +43,7 @@ class DeleteProfilePhotos:
             .. code-block:: python
 
                 # Get the photos to be deleted
-                photos = await app.get_profile_photos("me")
+                photos = list(await app.get_chat_photos("me"))
 
                 # Delete one photo
                 await app.delete_profile_photos(photos[0].file_id)

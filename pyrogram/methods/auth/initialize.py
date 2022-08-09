@@ -19,7 +19,6 @@
 import logging
 
 import pyrogram
-from pyrogram.syncer import Syncer
 
 log = logging.getLogger(__name__)
 
@@ -45,8 +44,8 @@ class Initialize:
 
         self.load_plugins()
 
-        await self.dispatcher.start()
-        await Syncer.add(self)
+        self.me = await self.get_me()
 
-        self.username = (await self.get_me()).username
+        await self.dispatcher.start()
+
         self.is_initialized = True
