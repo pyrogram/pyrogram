@@ -49,7 +49,7 @@ from pyrogram.errors import (
 from pyrogram.handlers.handler import Handler
 from pyrogram.methods import Methods
 from pyrogram.session import Auth, Session
-from pyrogram.storage import FileStorage, MemoryStorage
+from pyrogram.storage import FileStorage, MemoryStorage, Storage
 from pyrogram.types import User, TermsOfService
 from pyrogram.utils import ainput
 from .dispatcher import Dispatcher
@@ -172,6 +172,10 @@ class Client(Methods):
             Pass True to hide the password when typing it during the login.
             Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
             terminal environments.
+
+        storage (:obj:`~pyrogram.storage.Storage`, *optional*):
+            Set custom storage for storing session.
+            Default creates storage based on other parameters.
     """
 
     APP_VERSION = f"Pyrogram {__version__}"
@@ -214,7 +218,8 @@ class Client(Methods):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        storage: Storage = None
     ):
         super().__init__()
 
@@ -242,15 +247,17 @@ class Client(Methods):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
+        self.storage = storage
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 
-        if self.session_string:
-            self.storage = MemoryStorage(self.name, self.session_string)
-        elif self.in_memory:
-            self.storage = MemoryStorage(self.name)
-        else:
-            self.storage = FileStorage(self.name, self.workdir)
+        if not self.storage:
+            if self.session_string:
+                self.storage = MemoryStorage(self.name, self.session_string)
+            elif self.in_memory:
+                self.storage = MemoryStorage(self.name)
+            else:
+                self.storage = FileStorage(self.name, self.workdir)
 
         self.dispatcher = Dispatcher(self)
 
