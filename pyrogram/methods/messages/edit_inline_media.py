@@ -19,6 +19,7 @@
 import os
 import re
 import asyncio
+import io
 
 import pyrogram
 from pyrogram import raw
@@ -77,7 +78,7 @@ class EditInlineMedia:
         parse_mode = media.parse_mode
 
         if isinstance(media, types.InputMediaPhoto):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = raw.types.InputMediaUploadedPhoto(
                     file=await self.save_file(media.media)
                 )
@@ -88,7 +89,7 @@ class EditInlineMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = raw.types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(media.media) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
@@ -112,7 +113,7 @@ class EditInlineMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = raw.types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
                     thumb=await self.save_file(media.thumb),
@@ -135,7 +136,7 @@ class EditInlineMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = raw.types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(media.media) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
@@ -161,7 +162,7 @@ class EditInlineMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = raw.types.InputMediaUploadedDocument(
                     mime_type=self.guess_mime_type(media.media) or "application/zip",
                     thumb=await self.save_file(media.thumb),
