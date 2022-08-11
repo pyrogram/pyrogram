@@ -287,7 +287,7 @@ START_PARAM_TOO_LONG	The start parameter is too long
 STICKERSET_INVALID	The requested sticker set is invalid
 STICKERSET_NOT_MODIFIED	The sticker set is not modified
 STICKERS_EMPTY	The sticker provided is empty
-STICKERS_TOO_MUCH	Too much stickers in the set
+STICKERS_TOO_MUCH	Too many stickers in the set
 STICKER_DOCUMENT_INVALID	The sticker document is invalid
 STICKER_EMOJI_INVALID	The sticker emoji is invalid
 STICKER_FILE_INVALID	The sticker file is invalid
