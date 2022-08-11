@@ -20,6 +20,7 @@ import os
 import re
 import io
 import asyncio
+import io
 
 import pyrogram
 from pyrogram import raw
