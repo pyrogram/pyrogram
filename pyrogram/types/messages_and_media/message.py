@@ -700,7 +700,8 @@ class Message(Object, Update):
                                 client, doc,
                                 attributes.get(raw.types.DocumentAttributeImageSize, None),
                                 attributes[raw.types.DocumentAttributeSticker],
-                                file_name
+                                file_name,
+                                attributes.get(raw.types.DocumentAttributeVideo, None)
                             )
                             media_type = enums.MessageMediaType.STICKER
                         elif raw.types.DocumentAttributeVideo in attributes:

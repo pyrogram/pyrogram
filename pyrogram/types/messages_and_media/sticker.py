@@ -50,6 +50,9 @@ class Sticker(Object):
         is_video (``bool``):
             True, if the sticker is a video sticker
 
+        duration (``int``):
+            Video sticker duration in seconds.
+
         file_name (``str``, *optional*):
             Sticker file name.
 
@@ -84,6 +87,7 @@ class Sticker(Object):
         height: int,
         is_animated: bool,
         is_video: bool,
+        duration: int = None,
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
@@ -148,7 +152,8 @@ class Sticker(Object):
         sticker: "raw.types.Document",
         image_size_attributes: "raw.types.DocumentAttributeImageSize",
         sticker_attributes: "raw.types.DocumentAttributeSticker",
-        file_name: str
+        file_name: str,
+        video_attributes: "raw.types.DocumentAttributeVideo"
     ) -> "Sticker":
         sticker_set = sticker_attributes.stickerset
 
@@ -170,10 +175,11 @@ class Sticker(Object):
                 file_unique_type=FileUniqueType.DOCUMENT,
                 media_id=sticker.id
             ).encode(),
-            width=image_size_attributes.w if image_size_attributes else 512,
-            height=image_size_attributes.h if image_size_attributes else 512,
+            width=image_size_attributes.w if image_size_attributes else (video_attributes.w if video_attributes else 512),
+            height=image_size_attributes.h if image_size_attributes else (video_attributes.h if video_attributes else 512),
             is_animated=sticker.mime_type == "application/x-tgsticker",
             is_video=sticker.mime_type == "video/webm",
+            duration=video_attributes.duration if video_attributes else None,
             # TODO: mask_position
             set_name=set_name,
             emoji=sticker_attributes.alt or None,
