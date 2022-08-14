@@ -50,9 +50,10 @@ class GetCustomEmojiStickers:
 
             sticker = await types.Sticker._parse(
                 self, item,
-                attributes[raw.types.DocumentAttributeImageSize],
+                attributes[raw.types.DocumentAttributeImageSize] if raw.types.DocumentAttributeImageSize in attributes else None,
                 attributes[raw.types.DocumentAttributeCustomEmoji],
-                attributes[raw.types.DocumentAttributeFilename].file_name
+                attributes[raw.types.DocumentAttributeFilename].file_name,
+                attributes[raw.types.DocumentAttributeVideo] if raw.types.DocumentAttributeVideo in attributes else None
             )
 
             stickers.append(sticker)
