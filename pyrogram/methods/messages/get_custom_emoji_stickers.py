@@ -47,14 +47,7 @@ class GetCustomEmojiStickers:
         stickers = []
         for item in result:
             attributes = {type(i): i for i in item.attributes}
-
-            sticker = await types.Sticker._parse(
-                self, item,
-                attributes[raw.types.DocumentAttributeImageSize],
-                attributes[raw.types.DocumentAttributeCustomEmoji],
-                attributes[raw.types.DocumentAttributeFilename].file_name
-            )
-
+            sticker = await types.Sticker._parse(self, item, attributes)
             stickers.append(sticker)
 
         return pyrogram.types.List(stickers)
