@@ -112,8 +112,9 @@ class MessageEntity(Object):
         if self.language is None:
             args.pop("language")
 
-        if self.custom_emoji_id is None:
-            args.pop("custom_emoji_id")
+        args.pop("custom_emoji_id")
+        if self.custom_emoji_id is not None:
+            args["document_id"] = self.custom_emoji_id
 
         entity = self.type.value
 
