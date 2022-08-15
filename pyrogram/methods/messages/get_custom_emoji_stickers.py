@@ -32,7 +32,7 @@ class GetCustomEmojiStickers:
 
         Parameters:
             custom_emoji_ids (``int`` | Iterable of ``int``):
-                List of custom emoji identifiers.
+                Pass a single custom emoji identifier or an iterable of custom emoji identifiers (as integers).
                 At most 200 custom emoji identifiers can be specified.
 
         Returns:
