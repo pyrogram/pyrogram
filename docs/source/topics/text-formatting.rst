@@ -122,6 +122,8 @@ To strictly use this mode, pass :obj:`~pyrogram.enums.HTML` to the *parse_mode* 
 
     <code>inline fixed-width code</code>
 
+    <emoji id="12345678901234567890">🔥</emoji>
+
     <pre>
     pre-formatted
       fixed-width
