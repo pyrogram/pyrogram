@@ -31,7 +31,7 @@ class GetCustomEmojiStickers:
         """Get information about custom emoji stickers by their identifiers.
 
         Parameters:
-            custom_emoji_ids (``int``):
+            custom_emoji_ids (List of ``int``):
                 List of custom emoji identifiers.
                 At most 200 custom emoji identifiers can be specified.
 
