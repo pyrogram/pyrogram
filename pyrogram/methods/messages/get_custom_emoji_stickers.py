@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import List, Union, Iterable
+from typing import List
 
 import pyrogram
 from pyrogram import raw
@@ -26,21 +26,16 @@ from pyrogram import types
 class GetCustomEmojiStickers:
     async def get_custom_emoji_stickers(
         self: "pyrogram.Client",
-        custom_emoji_ids: Union[int, Iterable[int]],
+        custom_emoji_ids: List[int],
     ) -> List["types.Sticker"]:
         """Get information about custom emoji stickers by their identifiers.
-
         Parameters:
-            custom_emoji_ids (``int`` | Iterable of ``int``):
-                Pass a single custom emoji identifier or an iterable of custom emoji identifiers (as integers).
+            custom_emoji_ids (List of ``int``):
+                List of custom emoji identifiers.
                 At most 200 custom emoji identifiers can be specified.
-
         Returns:
             List of :obj:`~pyrogram.types.Sticker`: On success, a list of sticker objects is returned.
         """
-
-        custom_emoji_ids = [custom_emoji_ids] if isinstance(custom_emoji_ids, int) else list(custom_emoji_ids)
-
         result = await self.invoke(
             raw.functions.messages.GetCustomEmojiDocuments(
                 document_id=custom_emoji_ids
