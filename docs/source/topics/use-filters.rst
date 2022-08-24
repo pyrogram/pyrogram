@@ -7,11 +7,6 @@ from the server, but there's much more than that to come.
 Here we'll discuss about :obj:`~pyrogram.filters`. Filters enable a fine-grain control over what kind of
 updates are allowed or not to be passed in your callback functions, based on their inner details.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Single Filters

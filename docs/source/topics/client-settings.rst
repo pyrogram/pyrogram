@@ -8,11 +8,6 @@ settings. By default you will see something like the following:
 -   Application: ``Pyrogram x.y.z``
 -   System Version: ``Linux x.y.z``
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Set Custom Values

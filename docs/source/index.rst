@@ -3,9 +3,9 @@ Welcome to Pyrogram
 
 .. raw:: html
 
-    <div align="center">
+    <div class="index-logo" align="center">
         <a href="/">
-            <div class="pyrogram-logo-index"><img src="_static/pyrogram.png" alt="Pyrogram"></div>
+            <div class="pyrogram-logo-index"><img src="_static/img/pyrogram.png" alt="Pyrogram"></div>
             <div class="pyrogram-text pyrogram-text-index">Pyrogram</div>
         </a>
     </div>

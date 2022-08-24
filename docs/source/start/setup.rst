@@ -4,11 +4,6 @@ Project Setup
 We have just :doc:`installed Pyrogram <../intro/install>`. In this page we'll discuss what you need to do in order to set up a
 project with the framework.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 API Key

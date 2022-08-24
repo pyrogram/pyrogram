@@ -7,11 +7,6 @@ useful, for example, to send recurring messages to specific chats or users.
 This page will show examples on how to integrate Pyrogram with ``apscheduler`` in both asynchronous and
 non-asynchronous contexts. For more detailed information, you can visit and learn from the library documentation.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Using apscheduler

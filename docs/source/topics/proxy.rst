@@ -4,11 +4,6 @@ Proxy Settings
 Pyrogram supports proxies with and without authentication. This feature allows Pyrogram to exchange data with Telegram
 through an intermediate SOCKS 4/5 or HTTP (CONNECT) proxy server.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Usage

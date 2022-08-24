@@ -318,14 +318,14 @@ def start(format: bool = False):
         items = "\n            ".join([f"- :obj:`{c} <pyrogram.raw.types.{c}>`" for c in constructors])
 
         docstring = f"This base type has {constr_count} constructor{'s' if constr_count > 1 else ''} available.\n\n"
-        docstring += f"    Constructors:\n        .. hlist::\n            :columns: 2\n\n            {items}"
+        docstring += f"    Constructors:\n        .. hlist::\n            :columns: 1\n\n            {items}"
 
         references, ref_count = get_references(qualtype, "types")
 
         if references:
             docstring += f"\n\n    See Also:\n        This object can be returned by " \
                          f"{ref_count} method{'s' if ref_count > 1 else ''}:" \
-                         f"\n\n        .. hlist::\n            :columns: 2\n\n            " + references
+                         f"\n\n        .. hlist::\n            :columns: 1\n\n            " + references
 
         with open(dir_path / f"{snake(module)}.py", "w") as f:
             f.write(
@@ -393,7 +393,7 @@ def start(format: bool = False):
             if references:
                 docstring += f"\n\n    See Also:\n        This object can be returned by " \
                              f"{count} method{'s' if count > 1 else ''}:" \
-                             f"\n\n        .. hlist::\n            :columns: 2\n\n            " + references
+                             f"\n\n        .. hlist::\n            :columns: 1\n\n            " + references
 
         write_types = read_types = "" if c.has_flags else "# No flags\n        "
 

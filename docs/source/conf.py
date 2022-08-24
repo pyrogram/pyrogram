@@ -23,10 +23,6 @@ sys.path.insert(0, os.path.abspath("../.."))
 
 from pyrogram import __version__
 
-from pygments.styles.friendly import FriendlyStyle
-
-FriendlyStyle.background_color = "#f3f2f1"
-
 project = "Pyrogram"
 copyright = f"2017-present, Dan"
 author = "Dan"
@@ -56,36 +52,21 @@ napoleon_use_rtype = False
 napoleon_use_param = False
 
 pygments_style = "friendly"
+pygments_dark_style = "zenburn"
 
 copybutton_prompt_text = "$ "
 
 suppress_warnings = ["image.not_readable"]
 
 html_title = "Pyrogram Documentation"
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_static_path = ["../resources/static"]
-html_show_sourcelink = True
+html_css_files = ["css/custom.css"]
 html_show_copyright = False
 html_theme_options = {
-    "canonical_url": "https://docs.pyrogram.org/",
-    "collapse_navigation": True,
-    "sticky_navigation": False,
-    "logo_only": True,
-    "display_version": False,
-    "style_external_links": True
+    "sidebar_hide_name": True,
+    "navigation_with_keys": True,
 }
 
 html_logo = "../resources/static/img/pyrogram.png"
 html_favicon = "../resources/static/img/favicon.ico"
-
-latex_engine = "xelatex"
-latex_logo = "../resources/static/img/pyrogram.png"
-
-latex_elements = {
-    "pointsize": "12pt",
-    "fontpkg": r"""
-        \setmainfont{Open Sans}
-        \setsansfont{Bitter}
-        \setmonofont{Ubuntu Mono}
-        """
-}

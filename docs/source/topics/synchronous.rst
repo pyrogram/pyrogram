@@ -15,11 +15,6 @@ async boilerplate or in case you want to combine Pyrogram with other libraries t
     with other non-async libraries because thread blocking operations that clog the asynchronous event loop underneath
     will make the program run erratically.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Synchronous Invocations

@@ -3,11 +3,6 @@ Speedups
 
 Pyrogram's speed can be boosted up by using TgCrypto and uvloop.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 TgCrypto

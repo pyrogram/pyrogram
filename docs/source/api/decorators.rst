@@ -20,11 +20,6 @@ functions.
 
     app.run()
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 .. currentmodule:: pyrogram

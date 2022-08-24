@@ -17,11 +17,6 @@ Telegram's test servers without hassle. All you need to do is start a new sessio
     If this is the first time you login into test servers, you will be asked to register your account first.
     Accounts registered on test servers reside in a different, parallel instance of a Telegram server.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Test Mode in Official Apps

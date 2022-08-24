@@ -4,11 +4,6 @@ Invoking Methods
 At this point, we have successfully :doc:`installed Pyrogram <../intro/install>` and :doc:`authorized <auth>` our
 account; we are now aiming towards the core of the framework.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Basic Usage

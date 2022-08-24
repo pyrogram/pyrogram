@@ -4,11 +4,6 @@ Install Guide
 Being a modern Python framework, Pyrogram requires an up to date version of Python to be installed in your system.
 We recommend using the latest versions of both Python 3 and pip.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Install Pyrogram

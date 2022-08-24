@@ -5,11 +5,6 @@ Pyrogram already provides lots of built-in :class:`~pyrogram.filters` to work wi
 specific one for your needs or want to build a custom filter by yourself you can use
 :meth:`filters.create() <pyrogram.filters.create>`.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 Custom Filters

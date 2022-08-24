@@ -6,11 +6,6 @@ API. This means that Pyrogram is able to execute any official client and bot API
 therefore show you why Pyrogram might be a better choice for your project by comparing the two APIs, but first, let's
 make it clear what actually is the MTProto and the Bot API.
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 What is the MTProto API?

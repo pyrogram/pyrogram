@@ -8,11 +8,6 @@ Pyrogram errors all live inside the ``errors`` package:
 
     from pyrogram import errors
 
-.. contents:: Contents
-    :backlinks: none
-    :depth: 1
-    :local:
-
 -----
 
 RPCError
