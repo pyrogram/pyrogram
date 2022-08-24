@@ -1,8 +1,13 @@
 # Development
+docs
+!docs/source
+docs/source/releases
+!docs/requirements.txt
 *.session
 config.ini
 main.py
 unknown_errors.txt
+.DS_Store
 
 # Pyrogram generated code
 pyrogram/errors/exceptions/
