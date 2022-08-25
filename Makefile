@@ -53,13 +53,13 @@ docs-live-full:
 
 docs:
 	make clean-docs
-	rm docs/html.tar.gz
+	rm -f docs/html.tar.gz
 	cd compiler/docs && ../../$(PYTHON) compiler.py
 	cp -r docs/resources/releases docs/source
 	$(VENV)/bin/sphinx-build -b html "docs/source" "docs/build/html" -j auto
 	cd docs/scripts && ../../$(PYTHON) sitemap.py && mv sitemap.xml ../build/html
 	cp docs/robots.txt docs/build/html
-	tar zcf docs/html.tar.gz docs/build/html
+	cd docs/build && tar zcf html.tar.gz html && mv html.tar.gz ..
 	make clean-docs
 
 build:
