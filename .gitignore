@@ -3,6 +3,7 @@ docs
 !docs/source
 docs/source/releases
 !docs/requirements.txt
+compiler/*/*docs*
 *.session
 config.ini
 main.py
