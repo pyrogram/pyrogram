@@ -31,10 +31,11 @@ clean:
 api:
 	cd compiler/api && ../../$(PYTHON) compiler.py
 	cd compiler/errors && ../../$(PYTHON) compiler.py
+	cd compiler/docs && ../../$(PYTHON) compiler.py
 
 docs-live:
-	make clean-docs
-	cd compiler/docs && ../../$(PYTHON) compiler.py
+	make clean
+	make api
 	$(RM) docs/source/telegram
 	cp -r docs/resources/releases docs/source
 	$(VENV)/bin/sphinx-autobuild \
@@ -43,8 +44,8 @@ docs-live:
 		-b html "docs/source" "docs/build/html" -j auto
 
 docs-live-full:
-	make clean-docs
-	cd compiler/docs && ../../$(PYTHON) compiler.py
+	make clean
+	make api
 	cp -r docs/resources/releases docs/source
 	$(VENV)/bin/sphinx-autobuild \
 		--host $(shell ifconfig | grep "inet " | grep -v 127.0.0.1 | cut -d\  -f2) \
@@ -52,9 +53,9 @@ docs-live-full:
 		-b html "docs/source" "docs/build/html" -j auto
 
 docs:
-	make clean-docs
+	make clean
+	make api
 	rm -f docs/html.tar.gz
-	cd compiler/docs && ../../$(PYTHON) compiler.py
 	cp -r docs/resources/releases docs/source
 	$(VENV)/bin/sphinx-build -b html "docs/source" "docs/build/html" -j auto
 	cd docs/scripts && ../../$(PYTHON) sitemap.py && mv sitemap.xml ../build/html
