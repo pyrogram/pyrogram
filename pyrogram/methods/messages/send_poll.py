@@ -155,7 +155,7 @@ class SendPoll:
                     ),
                     correct_answers=[bytes([correct_option_id])] if correct_option_id is not None else None,
                     solution=solution,
-                    solution_entities=solution_entities
+                    solution_entities=solution_entities or []
                 ),
                 message="",
                 silent=disable_notification,
