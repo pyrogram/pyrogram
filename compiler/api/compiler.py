@@ -494,7 +494,7 @@ def start(format: bool = False):
                     sub_type = arg_type.split("<")[1][:-1]
 
                     write_types += "\n        "
-                    write_types += f"if self.{arg_name}:\n            "
+                    write_types += f"if self.{arg_name} is not None:\n            "
                     write_types += "b.write(Vector(self.{}{}))\n        ".format(
                         arg_name, f", {sub_type.title()}" if sub_type in CORE_TYPES else ""
                     )

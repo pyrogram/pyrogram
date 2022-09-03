@@ -16,64 +16,62 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Optional
 
 import pyrogram
 from pyrogram import raw
+from pyrogram import utils
 from ..object import Object
 
 
-class Reaction(Object):
-    """Contains information about a reaction.
+class EmojiStatus(Object):
+    """A user emoji status.
 
     Parameters:
-        emoji (``str``, *optional*):
-            Reaction emoji.
-
-        custom_emoji_id (``int``, *optional*):
+        custom_emoji_id (``int``):
             Custom emoji id.
 
-        count (``int``, *optional*):
-            Reaction count.
+        until_date (:py:obj:`~datetime.datetime`, *optional*):
+            Valid until date.
     """
 
     def __init__(
         self,
         *,
         client: "pyrogram.Client" = None,
-        emoji: Optional[str] = None,
-        custom_emoji_id: Optional[int] = None,
-        count: Optional[int] = None
+        custom_emoji_id: int,
+        until_date: Optional[datetime] = None
     ):
         super().__init__(client)
 
-        self.emoji = emoji
         self.custom_emoji_id = custom_emoji_id
-        self.count = count
+        self.until_date = until_date
 
     @staticmethod
-    def _parse(
-        client: "pyrogram.Client",
-        reaction: "raw.base.Reaction"
-    ) -> "Reaction":
-        if isinstance(reaction, raw.types.ReactionEmoji):
-            return Reaction(
+    def _parse(client, emoji_status: "raw.base.EmojiStatus") -> Optional["EmojiStatus"]:
+        if isinstance(emoji_status, raw.types.EmojiStatus):
+            return EmojiStatus(
                 client=client,
-                emoji=reaction.emoticon
+                custom_emoji_id=emoji_status.document_id
             )
 
-        if isinstance(reaction, raw.types.ReactionCustomEmoji):
-            return Reaction(
+        if isinstance(emoji_status, raw.types.EmojiStatusUntil):
+            return EmojiStatus(
                 client=client,
-                custom_emoji_id=reaction.document_id
+                custom_emoji_id=emoji_status.document_id,
+                until_date=utils.timestamp_to_datetime(emoji_status.until)
             )
 
-    @staticmethod
-    def _parse_count(
-        client: "pyrogram.Client",
-        reaction_count: "raw.base.ReactionCount"
-    ) -> "Reaction":
-        reaction = Reaction._parse(client, reaction_count.reaction)
-        reaction.count = reaction_count.count
+        return None
 
-        return reaction
+    def write(self):
+        if self.until_date:
+            return raw.types.EmojiStatusUntil(
+                document_id=self.custom_emoji_id,
+                until=utils.datetime_to_timestamp(self.until_date)
+            )
+
+        return raw.types.EmojiStatus(
+            document_id=self.custom_emoji_id
+        )

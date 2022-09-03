@@ -131,14 +131,9 @@ class SendPoll:
                 await app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
 
-        message, entities = (await utils.parse_text_entities(
+        solution, solution_entities = (await utils.parse_text_entities(
             self, explanation, explanation_parse_mode, explanation_entities
         )).values()
-
-        # For some reason passing None or [] as solution_entities will lead to INPUT_CONSTRUCTOR_INVALID_00
-        # Add a dummy message entity with no length as workaround
-        solution = message or None
-        solution_entities = entities or ([raw.types.MessageEntityBold(offset=0, length=0)] if solution else None)
 
         r = await self.invoke(
             raw.functions.messages.SendMedia(
@@ -160,7 +155,7 @@ class SendPoll:
                     ),
                     correct_answers=[bytes([correct_option_id])] if correct_option_id is not None else None,
                     solution=solution,
-                    solution_entities=solution_entities
+                    solution_entities=solution_entities or []
                 ),
                 message="",
                 silent=disable_notification,

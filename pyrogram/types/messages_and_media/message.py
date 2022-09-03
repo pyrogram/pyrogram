@@ -742,8 +742,7 @@ class Message(Object, Update):
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
-            reactions = [types.Reaction(emoji=r.reaction, count=r.count, chosen=r.chosen)
-                         for r in message.reactions.results] if message.reactions else None
+            reactions = types.MessageReactions._parse(client, message.reactions)
 
             parsed_message = Message(
                 id=message.id,

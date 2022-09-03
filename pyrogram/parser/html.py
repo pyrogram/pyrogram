@@ -149,7 +149,7 @@ class HTML:
 
         return {
             "message": utils.remove_surrogates(parser.text),
-            "entities": sorted(entities, key=lambda e: e.offset)
+            "entities": sorted(entities, key=lambda e: e.offset) or None
         }
 
     @staticmethod

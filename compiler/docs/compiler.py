@@ -251,6 +251,8 @@ def pyrogram_api():
             block_user
             unblock_user
             get_common_chats
+            get_default_emoji_statuses
+            set_emoji_status
         """,
         invite_links="""
         Invite Links
@@ -385,6 +387,7 @@ def pyrogram_api():
             ChatJoiner
             Dialog
             Restriction
+            EmojiStatus
         """,
         messages_media="""
         Messages & Media
@@ -413,6 +416,8 @@ def pyrogram_api():
             VideoChatEnded
             VideoChatMembersInvited
             WebAppData
+            MessageReactions
+            ChatReactions
         """,
         bot_keyboards="""
         Bot keyboards

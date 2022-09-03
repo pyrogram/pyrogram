@@ -49,7 +49,7 @@ class Parser:
             return await self.html.parse(text)
 
         if mode == enums.ParseMode.DISABLED:
-            return {"message": text, "entities": []}
+            return {"message": text, "entities": None}
 
         raise ValueError(f'Invalid parse mode "{mode}"')
 
