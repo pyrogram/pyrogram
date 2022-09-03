@@ -251,6 +251,7 @@ def pyrogram_api():
             block_user
             unblock_user
             get_common_chats
+            get_default_emoji_statuses
         """,
         invite_links="""
         Invite Links

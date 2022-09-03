@@ -16,32 +16,28 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .block_user import BlockUser
-from .delete_profile_photos import DeleteProfilePhotos
-from .get_chat_photos import GetChatPhotos
-from .get_chat_photos_count import GetChatPhotosCount
-from .get_common_chats import GetCommonChats
-from .get_default_emoji_statuses import GetDefaultEmojiStatuses
-from .get_me import GetMe
-from .get_users import GetUsers
-from .set_profile_photo import SetProfilePhoto
-from .set_username import SetUsername
-from .unblock_user import UnblockUser
-from .update_profile import UpdateProfile
+import pyrogram
+from pyrogram import raw
+from pyrogram import types
 
 
-class Users(
-    BlockUser,
-    GetCommonChats,
-    GetChatPhotos,
-    SetProfilePhoto,
-    DeleteProfilePhotos,
-    GetUsers,
-    GetMe,
-    SetUsername,
-    GetChatPhotosCount,
-    UnblockUser,
-    UpdateProfile,
-    GetDefaultEmojiStatuses
-):
-    pass
+class GetDefaultEmojiStatuses:
+    async def get_default_emoji_statuses(
+        self: "pyrogram.Client",
+    ) -> types.List["types.EmojiStatus"]:
+        """Get the default emoji statuses.
+
+        Returns:
+            List of :obj:`~pyrogram.types.EmojiStatus`: On success, a list of emoji statuses is returned.
+
+        Example:
+            .. code-block:: python
+
+                default_emoji_statuses = await app.get_default_emoji_statuses()
+                print(default_emoji_statuses)
+        """
+        r = await self.invoke(
+            raw.functions.account.GetDefaultEmojiStatuses(hash=0)
+        )
+
+        return types.List([types.EmojiStatus._parse(self, i) for i in r.statuses])
