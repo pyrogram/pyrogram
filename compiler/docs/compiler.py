@@ -385,6 +385,7 @@ def pyrogram_api():
             ChatJoiner
             Dialog
             Restriction
+            EmojiStatus
         """,
         messages_media="""
         Messages & Media
