@@ -414,6 +414,8 @@ def pyrogram_api():
             VideoChatEnded
             VideoChatMembersInvited
             WebAppData
+            MessageReactions
+            ChatReactions
         """,
         bot_keyboards="""
         Bot keyboards
