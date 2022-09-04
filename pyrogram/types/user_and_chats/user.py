@@ -121,6 +121,9 @@ class User(Object, Update):
         language_code (``str``, *optional*):
             IETF language tag of the user's language.
 
+        emoji_status (:obj:`~pyrogram.types.EmojiStatus`, *optional*):
+            Emoji status.
+
         dc_id (``int``, *optional*):
             User's or bot's assigned DC (data center). Available only in case the user has set a public profile photo.
             Note that this information is approximate; it is based on where Telegram stores a user profile pictures and
@@ -167,6 +170,7 @@ class User(Object, Update):
         next_offline_date: datetime = None,
         username: str = None,
         language_code: str = None,
+        emoji_status: Optional[str] = None,
         dc_id: int = None,
         phone_number: str = None,
         photo: "types.ChatPhoto" = None,
@@ -193,6 +197,7 @@ class User(Object, Update):
         self.next_offline_date = next_offline_date
         self.username = username
         self.language_code = language_code
+        self.emoji_status = emoji_status
         self.dc_id = dc_id
         self.phone_number = phone_number
         self.photo = photo
@@ -229,6 +234,7 @@ class User(Object, Update):
             **User._parse_status(user.status, user.bot),
             username=user.username,
             language_code=user.lang_code,
+            emoji_status=types.EmojiStatus._parse(client, user.emoji_status),
             dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
             photo=types.ChatPhoto._parse(client, user.photo, user.id, user.access_hash),

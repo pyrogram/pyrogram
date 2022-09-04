@@ -151,7 +151,8 @@ class SQLiteStorage(Storage):
 
     async def get_peer_by_username(self, username: str):
         r = self.conn.execute(
-            "SELECT id, access_hash, type, last_update_on FROM peers WHERE username = ?",
+            "SELECT id, access_hash, type, last_update_on FROM peers WHERE username = ?"
+            "ORDER BY last_update_on DESC",
             (username,)
         ).fetchone()
 
