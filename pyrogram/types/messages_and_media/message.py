@@ -827,7 +827,8 @@ class Message(Object, Update):
                     except MessageIdsEmpty:
                         pass
 
-            client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
+            if not parsed_message.poll:  # Do not cache poll messages
+                client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
 
             return parsed_message
 
