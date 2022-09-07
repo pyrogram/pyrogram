@@ -25,7 +25,7 @@ import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid
+from pyrogram.errors import ChannelPrivate, MessageIdsEmpty, PeerIdInvalid
 from pyrogram.parser import utils as parser_utils, Parser
 from ..object import Object
 from ..update import Update
@@ -584,7 +584,7 @@ class Message(Object, Update):
                     )
 
                     parsed_message.service = enums.MessageServiceType.PINNED_MESSAGE
-                except MessageIdsEmpty:
+                except (ChannelPrivate, MessageIdsEmpty):
                     pass
 
             if isinstance(action, raw.types.MessageActionGameScore):
@@ -599,7 +599,7 @@ class Message(Object, Update):
                         )
 
                         parsed_message.service = enums.MessageServiceType.GAME_HIGH_SCORE
-                    except MessageIdsEmpty:
+                    except (ChannelPrivate, MessageIdsEmpty):
                         pass
 
             client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
@@ -824,7 +824,7 @@ class Message(Object, Update):
                             )
 
                         parsed_message.reply_to_message = reply_to_message
-                    except MessageIdsEmpty:
+                    except (ChannelPrivate, MessageIdsEmpty):
                         pass
 
             if not parsed_message.poll:  # Do not cache poll messages
